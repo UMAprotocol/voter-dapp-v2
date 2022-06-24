@@ -1,14 +1,16 @@
 import { init, useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import walletConnectModule from "@web3-onboard/walletconnect";
+import gnosisModule from "@web3-onboard/gnosis";
 import { ethers } from "ethers";
 import { useEffect } from "react";
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
+const gnosis = gnosisModule();
 
 init({
-  wallets: [injected, walletConnect],
+  wallets: [injected, walletConnect, gnosis],
   chains: [
     {
       id: "0x1",
