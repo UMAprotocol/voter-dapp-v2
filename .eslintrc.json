@@ -8,8 +8,7 @@
     "quotes": ["error", "double", { "avoidEscape": true }],
     "semi": ["error", "always"],
     "spaced-comment": ["error", "always", { "exceptions": ["-", "+"] }],
-    "no-console": "off",
-    "object-curly-newline": ["warn", "never"]
+    "no-console": "off"
   },
   "overrides": [
     {
