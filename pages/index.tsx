@@ -1,3 +1,4 @@
+import { PriceRequests } from "components/PriceRequests";
 import { Wallet } from "components/Wallet/Wallet";
 import useMounted from "hooks/useMounted";
 import type { NextPage } from "next";
@@ -10,6 +11,7 @@ const Home: NextPage = () => {
   return (
     <div>
       <Wallet />
+      <PriceRequests />
     </div>
   );
 };
