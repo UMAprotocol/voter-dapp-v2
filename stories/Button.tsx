@@ -1,15 +1,11 @@
 import React from "react";
-import "./button.css";
+import styled, { CSSProperties } from "styled-components";
 
-interface ButtonProps {
+interface Props {
   /**
    * Is this the principal call to action on the page?
    */
   primary?: boolean;
-  /**
-   * What background color to use
-   */
-  backgroundColor?: string;
   /**
    * How large should the button be?
    */
@@ -27,16 +23,44 @@ interface ButtonProps {
 /**
  * Primary UI component for user interaction
  */
-export const Button = ({ primary = false, size = "medium", backgroundColor, label, ...props }: ButtonProps) => {
-  const mode = primary ? "storybook-button--primary" : "storybook-button--secondary";
+export function Button({ primary = false, size = "medium", label, ...props }: Props) {
+  const color = primary ? "white" : "#333";
+  const backgroundColor = primary ? "#1ea7fd" : "transparent";
+  const boxShadow = primary ? "" : "rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset";
+  const fontSize = size === "small" ? 12 : size === "medium" ? 14 : 16;
+  const paddingBlock = size === "small" ? 10 : size === "medium" ? 11 : 12;
+  const paddingInline = size === "small" ? 16 : size === "medium" ? 20 : 24;
   return (
-    <button
-      type="button"
-      className={["storybook-button", `storybook-button--${size}`, mode].join(" ")}
-      style={{ backgroundColor }}
+    <_Button
       {...props}
+      style={
+        {
+          "--color": color,
+          "--background-color": backgroundColor,
+          "--box-shadow": boxShadow,
+          "--font-size": fontSize + "px",
+          "--padding-block": paddingBlock + "px",
+          "--padding-inline": paddingInline + "px",
+        } as CSSProperties
+      }
     >
       {label}
-    </button>
+    </_Button>
   );
-};
+}
+
+const _Button = styled.button`
+  font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  border: 0;
+  border-radius: 3em;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1;
+  color: var(--color);
+  background-color: var(--background-color);
+  box-shadow: var(--box-shadow);
+  font-size: var(--font-size);
+  padding-block: var(--padding-block);
+  padding-inline: var(--padding-inline);
+`;
