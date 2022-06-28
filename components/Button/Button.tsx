@@ -1,3 +1,4 @@
+import { black, gray100, red, white } from "constants/colors";
 import React from "react";
 import styled, { CSSProperties } from "styled-components";
 
@@ -24,8 +25,8 @@ interface Props {
  * Primary UI component for user interaction
  */
 export function Button({ primary = false, size = "medium", label, ...props }: Props) {
-  const color = primary ? "white" : "#333";
-  const backgroundColor = primary ? "#1ea7fd" : "transparent";
+  const color = primary ? white : black;
+  const backgroundColor = primary ? red : gray100;
   const boxShadow = primary ? "" : "rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset";
   const fontSize = size === "small" ? 12 : size === "medium" ? 14 : 16;
   const paddingBlock = size === "small" ? 10 : size === "medium" ? 11 : 12;
