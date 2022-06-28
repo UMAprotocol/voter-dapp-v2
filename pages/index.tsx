@@ -1,5 +1,5 @@
 import { PriceRequests } from "components/PriceRequests";
-import { Wallet } from "components/Wallet/Wallet";
+import { Wallet } from "components/Wallet";
 import useMounted from "hooks/useMounted";
 import type { NextPage } from "next";
 
