@@ -1,0 +1,5 @@
+export const red = "hsla(0, 100%, 65%, 1)";
+export const white = "hsla(0, 0%, 100%, 1)";
+export const black = "hsla(280, 4%, 15%, 1)";
+export const grey50 = "hsla(0, 0%, 96%, 1)";
+export const grey100 = "hsla(0, 0%, 94%, 1)";
