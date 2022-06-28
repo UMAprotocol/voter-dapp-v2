@@ -1,31 +1,37 @@
-import { init, useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
-import injectedModule from "@web3-onboard/injected-wallets";
-import walletConnectModule from "@web3-onboard/walletconnect";
-import gnosisModule from "@web3-onboard/gnosis";
+import { OnboardAPI } from "@web3-onboard/core";
+import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
-import { useEffect } from "react";
-
-const injected = injectedModule();
-const walletConnect = walletConnectModule();
-const gnosis = gnosisModule();
-
-init({
-  wallets: [injected, walletConnect, gnosis],
-  chains: [
-    {
-      id: "0x1",
-      token: "ETH",
-      label: "Ethereum Mainnet",
-      rpcUrl: `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_ID}`,
-    },
-  ],
-});
+import { initOnboard } from "helpers/initOnboard";
+import { useEffect, useState } from "react";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
   const connectedWallets = useWallets();
+  const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
   let provider;
+
+  useEffect(() => {
+    setOnboard(initOnboard);
+  }, []);
+
+  useEffect(() => {
+    if (!connectedWallets.length) return;
+
+    const connectedWalletsLabelArray = connectedWallets.map(({ label }) => label);
+
+    window.localStorage.setItem("connectedWallets", JSON.stringify(connectedWalletsLabelArray));
+  }, [connectedWallets, wallet]);
+
+  useEffect(() => {
+    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]");
+
+    if (previousConnectedWallets?.length) {
+      (async () => {
+        await connect({ autoSelect: previousConnectedWallets[0] });
+      })();
+    }
+  }, [onboard, connect]);
 
   useEffect(() => {
     if (!wallet?.provider) {
@@ -35,6 +41,8 @@ export function Wallet() {
       provider = new ethers.providers.Web3Provider(wallet.provider, "any");
     }
   }, [wallet]);
+
+  if (!onboard) return <div>Loading...</div>;
 
   return (
     <div>
