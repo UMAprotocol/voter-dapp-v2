@@ -1,6 +1,5 @@
-import React from "react";
 import styled from "styled-components";
-import { Button } from "../Button/Button";
+import { Button } from "components/Button";
 
 type User = {
   name: string;

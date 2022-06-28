@@ -1,5 +1,4 @@
 import { black, gray100, red, white } from "constants/colors";
-import React from "react";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
