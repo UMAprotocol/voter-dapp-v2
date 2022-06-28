@@ -55,7 +55,6 @@ export function Wallet() {
           ) : (
             <select
               onChange={({ target: { value } }) => {
-                console.log("onChange called");
                 setChain({ chainId: value });
               }}
               value={connectedChain?.id}
@@ -69,7 +68,14 @@ export function Wallet() {
               })}
             </select>
           )}
-          <button onClick={() => disconnect(wallet)}>Disconnect Wallet</button>
+          <button
+            onClick={() => {
+              disconnect(wallet);
+              window.localStorage.removeItem("connectedWallets");
+            }}
+          >
+            Disconnect Wallet
+          </button>
         </div>
       )}
 
