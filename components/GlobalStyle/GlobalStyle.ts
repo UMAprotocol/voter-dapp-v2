@@ -1,6 +1,11 @@
+import { black, gray100, gray50, red, white } from "constants/colors";
 import { createGlobalStyle } from "styled-components";
 
+/** Creates the global style object for the dapp.
+ * All global styles must be defined here.
+ */
 export const GlobalStyle = createGlobalStyle`
+  /* CSS Reset */
 * {
   /* Remove default margin on everything */
   margin: 0;
@@ -159,4 +164,16 @@ a:not([class]) {
 :where(button, button[type], input[type="button"], input[type="submit"], input[type="reset"])[disabled] {
   cursor: not-allowed;
 }
+
+  /* Global style definitions */
+
+  /*  All CSS custom properties that are intended to be global must be defined here */
+
+  html {
+    --color-white: ${white};
+    --color-black: ${black};
+    --color-red: ${red};
+    --color-gray-50: ${gray50};
+    --color-gray-100: ${gray100};
+  }
 `;
