@@ -17,8 +17,14 @@ export const initOnboard = init({
     {
       id: "0x1",
       token: "ETH",
-      label: "Ethereum Mainnet",
+      label: "Ethereum",
       rpcUrl: `https://mainnet.infura.io/v3/${infuraId}`,
+    },
+    {
+      id: "0x5",
+      token: "GOR",
+      label: "Görli",
+      rpcUrl: `https://goerli.infura.io/v3/${infuraId}`,
     },
   ],
   appMetadata: {
