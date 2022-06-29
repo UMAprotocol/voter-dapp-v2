@@ -1,4 +1,16 @@
 import { black, gray100, gray50, green, red, white } from "constants/colors";
+import {
+  headerXl,
+  headerLg,
+  headerMd,
+  headerSm,
+  headerXs,
+  textLg,
+  textMd,
+  textSm,
+  textXs,
+  textFine,
+} from "constants/fonts";
 import { createGlobalStyle } from "styled-components";
 
 /** Creates the global style object for the dapp.
@@ -170,11 +182,23 @@ a:not([class]) {
   /*  All CSS custom properties that are intended to be global must be defined here */
 
   html {
+    /* Colors */
     --color-white: ${white};
     --color-black: ${black};
     --color-red: ${red};
     --color-green: ${green};
     --color-gray-50: ${gray50};
     --color-gray-100: ${gray100};
+    /* Fonts */
+    --header-xl: ${headerXl};
+    --header-lg: ${headerLg};
+    --header-md: ${headerMd};
+    --header-sm: ${headerSm};
+    --header-xs: ${headerXs};
+    --text-lg: ${textLg};
+    --text-md: ${textMd};
+    --text-sm: ${textSm};
+    --text-xs: ${textXs};
+    --text-fine: ${textFine};
   }
 `;
