@@ -4,12 +4,13 @@ import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
 import { useEffect, useState } from "react";
 
+let provider: ethers.providers.Web3Provider | null;
+
 export function Wallet() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
-  let provider;
 
   useEffect(() => {
     setOnboard(initOnboard);
@@ -43,9 +44,17 @@ export function Wallet() {
       provider = null;
     } else {
       // After this is set you can use the provider to sign or transact
-      provider = new ethers.providers.Web3Provider(wallet.provider, "any");
+      provider = new ethers.providers.Web3Provider(wallet.provider);
     }
   }, [wallet]);
+
+  async function signMessage() {
+    if (!provider) return;
+    const signer = provider.getSigner();
+    const message = "Hello World";
+    const signature = await signer.signMessage(message);
+    console.log({ signature });
+  }
 
   if (!onboard) return <div>Loading...</div>;
 
@@ -54,6 +63,7 @@ export function Wallet() {
       <button onClick={() => connect()}>{connecting ? "connecting" : "connect"}</button>
       {wallet && (
         <div>
+          <button onClick={signMessage}>sign</button>
           <label>Switch Chain</label>
           {settingChain ? (
             <span>Switching chain...</span>
