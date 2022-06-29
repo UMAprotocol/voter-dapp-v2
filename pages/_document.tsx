@@ -1,4 +1,4 @@
-import Document, { DocumentContext } from "next/document";
+import Document, { DocumentContext, Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
 export default class MyDocument extends Document {
@@ -20,5 +20,62 @@ export default class MyDocument extends Document {
     } finally {
       sheet.seal();
     }
+  }
+
+  render() {
+    return (
+      <Html>
+        <Head>
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplayLight.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplay-Regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplaySemiBold.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplay-Bold.woff2"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+          <link rel="preload" href="/fonts/HalyardDisplayLight.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplay-Regular.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplaySemiBold.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
+          <link rel="preload" href="/fonts/HalyardDisplay-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
   }
 }
