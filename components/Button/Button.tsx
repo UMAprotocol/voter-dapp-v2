@@ -1,4 +1,5 @@
 import { black, gray100, red, white } from "constants/colors";
+import { textMd, textSm, textXs } from "constants/fonts";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
@@ -27,7 +28,7 @@ export function Button({ primary = false, size = "medium", label, ...props }: Pr
   const color = primary ? white : black;
   const backgroundColor = primary ? red : gray100;
   const boxShadow = primary ? "" : "rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset";
-  const fontSize = size === "small" ? 12 : size === "medium" ? 14 : 16;
+  const font = size === "small" ? textXs : size === "medium" ? textSm : textMd;
   const paddingBlock = size === "small" ? 10 : size === "medium" ? 11 : 12;
   const paddingInline = size === "small" ? 16 : size === "medium" ? 20 : 24;
   return (
@@ -38,7 +39,7 @@ export function Button({ primary = false, size = "medium", label, ...props }: Pr
           "--color": color,
           "--background-color": backgroundColor,
           "--box-shadow": boxShadow,
-          "--font-size": fontSize + "px",
+          "--font": font,
           "--padding-block": paddingBlock + "px",
           "--padding-inline": paddingInline + "px",
         } as CSSProperties
@@ -60,7 +61,7 @@ const _Button = styled.button`
   color: var(--color);
   background-color: var(--background-color);
   box-shadow: var(--box-shadow);
-  font-size: var(--font-size);
+  font: var(--font);
   padding-block: var(--padding-block);
   padding-inline: var(--padding-inline);
 `;
