@@ -51,17 +51,14 @@ export function Button({ primary = false, size = "medium", label, ...props }: Pr
 }
 
 const _Button = styled.button`
-  font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 700;
   border: 0;
   border-radius: 3em;
   cursor: pointer;
   display: inline-block;
-  line-height: 1;
   color: var(--color);
+  font: var(--font);
   background-color: var(--background-color);
   box-shadow: var(--box-shadow);
-  font: var(--font);
   padding-block: var(--padding-block);
   padding-inline: var(--padding-inline);
 `;
