@@ -28,7 +28,12 @@ export function Wallet() {
 
     if (previousConnectedWallets?.length) {
       (async () => {
-        await connect({ autoSelect: previousConnectedWallets[0] });
+        await connect({
+          autoSelect: {
+            label: previousConnectedWallets[0],
+            disableModals: true,
+          },
+        });
       })();
     }
   }, [onboard, connect]);
