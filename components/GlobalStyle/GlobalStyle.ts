@@ -1,4 +1,4 @@
-import { black, gray100, gray50, red, white } from "constants/colors";
+import { black, gray100, gray50, green, red, white } from "constants/colors";
 import { createGlobalStyle } from "styled-components";
 
 /** Creates the global style object for the dapp.
@@ -173,6 +173,7 @@ a:not([class]) {
     --color-white: ${white};
     --color-black: ${black};
     --color-red: ${red};
+    --color-green: ${green};
     --color-gray-50: ${gray50};
     --color-gray-100: ${gray100};
   }
