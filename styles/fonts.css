@@ -1,0 +1,35 @@
+@font-face {
+  font-family: "Halyard Display";
+  src: url("/fonts/HalyardDisplayLight.woff2") format("woff2"),
+    url("/fonts/HalyardDisplayLight.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Halyard Display";
+  src: url("/fonts/HalyardDisplay-Regular.woff2") format("woff2"),
+    url("/fonts/HalyardDisplay-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Halyard Display";
+  src: url("/fonts/HalyardDisplaySemiBold.woff2") format("woff2"),
+    url("/fonts/HalyardDisplaySemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Halyard Display";
+  src: url("/fonts/HalyardDisplay-Bold.woff2") format("woff2"),
+    url("/fonts/HalyardDisplay-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: fallback;
+}
