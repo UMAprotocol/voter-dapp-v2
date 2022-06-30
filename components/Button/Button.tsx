@@ -1,5 +1,6 @@
 import { black, gray100, red, white } from "constants/colors";
 import { textMd, textSm, textXs } from "constants/fonts";
+import { shadow1 } from "constants/shadows";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
@@ -27,7 +28,7 @@ interface Props {
 export function Button({ primary = false, size = "medium", label, ...props }: Props) {
   const color = primary ? white : black;
   const backgroundColor = primary ? red : gray100;
-  const boxShadow = primary ? "" : "rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset";
+  const boxShadow = primary ? "" : shadow1;
   const font = size === "small" ? textXs : size === "medium" ? textSm : textMd;
   const paddingBlock = size === "small" ? 10 : size === "medium" ? 11 : 12;
   const paddingInline = size === "small" ? 16 : size === "medium" ? 20 : 24;
