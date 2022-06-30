@@ -35,4 +35,19 @@ export const initOnboard = init({
     recommendedInjectedWallets: [{ name: "MetaMask", url: "https://metamask.io" }],
   },
   apiKey: blocknativeDappId,
+  notify: {
+    enabled: true,
+    transactionHandler: (transaction) => {
+      console.log({ transaction });
+      if (transaction.eventCode === "txPool") {
+        return {
+          // autoDismiss set to zero will persist the notification until the user excuses it
+          autoDismiss: 0,
+          // message: `Your transaction is pending, click <a href="https://etherscan.io/tx/${transaction.hash}" rel="noopener noreferrer" target="_blank">here</a> for more info.`,
+          // or you could use onClick for when someone clicks on the notification itself
+          onClick: () => window.open(`https://etherscan.io/tx/${transaction.hash}`),
+        };
+      }
+    },
+  },
 });
