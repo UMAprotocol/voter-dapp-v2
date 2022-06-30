@@ -7,20 +7,28 @@ export function Nav() {
 
   const links = [
     { href: "/", label: "Vote" },
-    { href: "/TODO", label: "Settled Disputes" },
+    { href: "/TODO", label: "Settled disputes" },
     { href: "/TODO", label: "Calendar" },
     { href: "/TODO", label: "Docs" },
   ];
 
   return (
     <Wrapper>
-      <nav>
+      <_Nav>
         {links.map(({ href, label }) => (
           <NavLink href={href} label={label} active={pathname === href} key={label} />
         ))}
-      </nav>
+      </_Nav>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  max-width: 384px;
+`;
+
+const _Nav = styled.nav`
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+`;
