@@ -50,4 +50,8 @@ export const initOnboard = init({
       }
     },
   },
+  accountCenter: {
+    desktop: { enabled: false },
+    mobile: { enabled: false },
+  },
 });
