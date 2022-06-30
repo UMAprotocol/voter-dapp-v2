@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 
 interface Props {
   href: string;
@@ -9,8 +9,9 @@ interface Props {
 }
 
 export function NavLink({ href, label, active }: Props) {
+  const borderBottom = active ? "2px solid var(--color-red)" : "none";
   return (
-    <Wrapper>
+    <Wrapper style={{ "--border-bottom": borderBottom } as CSSProperties}>
       <Link href={href} passHref>
         <A>{label}</A>
       </Link>
@@ -18,6 +19,15 @@ export function NavLink({ href, label, active }: Props) {
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  width: fit-content;
+  padding-bottom: 5px;
+  border-bottom: var(--border-bottom);
+`;
 
-const A = styled.a``;
+const A = styled.a`
+  outline: none;
+  text-decoration: none;
+  color: var(--color-black);
+  font: var(--text-sm);
+`;
