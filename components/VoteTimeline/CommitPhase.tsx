@@ -53,6 +53,7 @@ const Wrapper = styled.div`
   font: var(--text-md);
   color: var(--color);
   background-color: var(--background-color);
+  clip-path: polygon(97% 0, 100% 50%, 97% 100%, 0 100%, 0 0);
 `;
 const Message = styled.p``;
 const CommitIcon = styled(Commit)`
