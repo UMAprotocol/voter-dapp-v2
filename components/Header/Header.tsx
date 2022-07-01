@@ -1,39 +1,52 @@
+import Image from "next/image";
+import Link from "next/link";
 import styled from "styled-components";
-import { Button } from "components/Button";
+import { Nav } from "./Nav";
+import logo from "public/assets/logo.svg";
 
 export function Header() {
   return (
-    <header>
-      <Wrapper></Wrapper>
-    </header>
+    <Wrapper>
+      <HomeLinkAndPageDescriptionWrapper>
+        <HomeLinkWrapper>
+          <Link href="/">
+            <HomeLink>
+              <Image src={logo} alt="UMA logo" />
+            </HomeLink>
+          </Link>
+        </HomeLinkWrapper>
+        <PageDescription>VOTING</PageDescription>
+      </HomeLinkAndPageDescriptionWrapper>
+      <Nav />
+    </Wrapper>
   );
 }
 
-const Wrapper = styled.div`
-  font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 15px 20px;
+const Wrapper = styled.header`
+  min-height: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding-inline: 45px;
+`;
+
+const HomeLinkWrapper = styled.div`
+  max-width: 90px;
+`;
+
+const HomeLink = styled.a``;
+
+const HomeLinkAndPageDescriptionWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
 `;
 
-const SVG = styled.svg`
-  display: inline-block;
-  vertical-align: top;
-`;
-
-const Welcome = styled.span`
-  color: #333;
-  font-size: 14px;
-  margin-right: 10px;
-`;
-
-const Title = styled.h1`
-  font-weight: 900;
-  font-size: 20px;
-  line-height: 1;
-  margin: 6px 0 6px 10px;
-  display: inline-block;
-  vertical-align: top;
+const PageDescription = styled.p`
+  font-family: "Halyard Display";
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14.5946px;
+  line-height: 20px;
+  color: var(--color-black);
 `;
