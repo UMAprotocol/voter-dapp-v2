@@ -3,11 +3,12 @@ import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
-  active: boolean;
+  phase: "commit" | "reveal" | null;
   startsIn: string | null;
   timeRemaining: string | null;
 }
-export function RevealPhase({ active, startsIn, timeRemaining }: Props) {
+export function RevealPhase({ phase, startsIn, timeRemaining }: Props) {
+  const active = phase === "reveal";
   const textColor = active ? white : black;
   const backgroundColor = active ? red : white;
   const iconStrokeColor = active ? red : white;

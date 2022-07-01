@@ -18,16 +18,8 @@ export function VoteTimeline({ phase, commitPhaseStart, revealPhaseStart, commit
 
   return (
     <Wrapper>
-      <CommitPhase
-        active={phase === "commit"}
-        startsIn={commitPhaseStartsIn}
-        timeRemaining={commitPhaseTimeRemaining}
-      />
-      <RevealPhase
-        active={phase === "reveal"}
-        startsIn={revealPhaseStartsIn}
-        timeRemaining={revealPhaseTimeRemaining}
-      />
+      <CommitPhase phase={phase} startsIn={commitPhaseStartsIn} timeRemaining={commitPhaseTimeRemaining} />
+      <RevealPhase phase={phase} startsIn={revealPhaseStartsIn} timeRemaining={revealPhaseTimeRemaining} />
     </Wrapper>
   );
 }

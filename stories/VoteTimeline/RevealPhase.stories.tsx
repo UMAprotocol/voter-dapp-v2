@@ -10,21 +10,21 @@ const Template: ComponentStory<typeof RevealPhase> = (args) => <RevealPhase {...
 
 export const Upcoming = Template.bind({});
 Upcoming.args = {
-  active: false,
+  phase: "commit",
   startsIn: "20h 10min",
   timeRemaining: null,
 };
 
 export const Active = Template.bind({});
 Active.args = {
-  active: true,
+  phase: "reveal",
   startsIn: null,
   timeRemaining: "7h 43min",
 };
 
 export const Over = Template.bind({});
 Over.args = {
-  active: false,
+  phase: null,
   startsIn: null,
   timeRemaining: null,
 };
