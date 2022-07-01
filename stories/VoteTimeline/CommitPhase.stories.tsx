@@ -8,12 +8,23 @@ export default {
 
 const Template: ComponentStory<typeof CommitPhase> = (args) => <CommitPhase {...args} />;
 
-export const NotActive = Template.bind({});
-NotActive.args = {
+export const Upcoming = Template.bind({});
+Upcoming.args = {
   active: false,
+  startsIn: "20h 10min",
+  timeRemaining: null,
 };
 
 export const Active = Template.bind({});
 Active.args = {
   active: true,
+  startsIn: null,
+  timeRemaining: "7h 43min",
+};
+
+export const Over = Template.bind({});
+Over.args = {
+  active: false,
+  startsIn: null,
+  timeRemaining: null,
 };
