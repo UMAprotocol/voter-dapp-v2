@@ -25,6 +25,7 @@ export function VoteTimeline({ phase, commitPhaseStart, revealPhaseStart, commit
 }
 
 const Wrapper = styled.div`
+  max-width: 1200px;
   display: grid;
   grid-template-columns: 1fr 1fr;
 `;

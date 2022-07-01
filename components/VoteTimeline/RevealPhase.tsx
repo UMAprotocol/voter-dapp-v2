@@ -56,7 +56,9 @@ const Wrapper = styled.div`
   color: var(--color);
   background-color: var(--background-color);
 `;
+
 const Message = styled.p``;
+
 const RevealIcon = styled(Reveal)`
   * {
     stroke: var(--stroke-color);
