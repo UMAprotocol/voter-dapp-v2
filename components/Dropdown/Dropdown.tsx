@@ -10,7 +10,7 @@ export type Item = {
 
 interface Props {
   items: Item[];
-  selected: Item;
+  selected?: Item;
   onSelect: (item: Item) => void;
 }
 export function Dropdown({ items, selected, onSelect }: Props) {
@@ -21,7 +21,11 @@ export function Dropdown({ items, selected, onSelect }: Props) {
           <ToggleButton>{isExpanded ? "Close" : "Open"}</ToggleButton>
           <DropdownList>
             {items.map((item) => (
-              <DropdownItem isSelected={selected.value === item.value} onSelect={() => onSelect(item)} key={item.label}>
+              <DropdownItem
+                isSelected={selected?.value === item.value}
+                onSelect={() => onSelect(item)}
+                key={item.label}
+              >
                 <Label>{item.label}</Label>
                 {item.secondaryLabel ? <SecondaryLabel>{item.secondaryLabel}</SecondaryLabel> : null}
               </DropdownItem>
