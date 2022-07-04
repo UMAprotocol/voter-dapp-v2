@@ -1,4 +1,5 @@
-import { Menu, MenuList, MenuButton, MenuItem, MenuContextValue } from "@reach/menu-button";
+import { Menu, MenuButton, MenuItem, MenuContextValue, MenuPopover } from "@reach/menu-button";
+import { positionMatchWidth } from "@reach/popover";
 import "@reach/menu-button/styles.css";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
@@ -27,13 +28,12 @@ export function Dropdown({ items, label, selected, onSelect, borderColor = black
             {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
-          <DropdownList>
+          <DropdownList position={positionMatchWidth} style={{ "--border-color": borderColor } as CSSProperties}>
             {items.map((item) => (
               <DropdownItem
                 $isSelected={selected?.value === item.value}
                 onSelect={() => onSelect(item)}
                 key={item.label}
-                style={{ "--border-color": borderColor } as CSSProperties}
               >
                 <Label>{item.label}</Label>
                 {item.secondaryLabel ? <SecondaryLabel>({item.secondaryLabel})</SecondaryLabel> : null}
@@ -73,7 +73,7 @@ const ToggleButton = styled(MenuButton)`
   border-radius: 5px;
 `;
 
-const DropdownList = styled(MenuList)`
+const DropdownList = styled(MenuPopover)`
   width: 100%;
   background-color: var(--white);
   border: 1px solid var(--border-color);
@@ -83,6 +83,7 @@ const DropdownList = styled(MenuList)`
 `;
 
 const DropdownItem = styled(MenuItem)<{ $isSelected: boolean }>`
+  width: 100%;
   height: 40px;
   display: flex;
   align-items: center;
