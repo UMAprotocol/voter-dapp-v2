@@ -22,7 +22,7 @@ export function Dropdown({ items, label, selected, onSelect }: Props) {
       {({ isExpanded }: MenuContextValue) => (
         <>
           <ToggleButton>
-            {selected ? selected.value : label}
+            {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
           <DropdownList>
