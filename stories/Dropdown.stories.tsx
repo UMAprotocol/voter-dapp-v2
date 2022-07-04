@@ -17,6 +17,13 @@ export default {
     selected: null,
     items: defaultMockItems,
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 240 }}>
+        <Story />
+      </div>
+    ),
+  ],
 } as ComponentMeta<typeof Dropdown>;
 
 const Template: ComponentStory<typeof Dropdown> = (args) => {
