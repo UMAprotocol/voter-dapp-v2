@@ -1,5 +1,6 @@
 import { Menu, MenuList, MenuButton, MenuItem, MenuContextValue } from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
+import { ReactNode } from "react";
 import styled from "styled-components";
 
 export type Item = {
@@ -10,15 +11,19 @@ export type Item = {
 
 interface Props {
   items: Item[];
-  selected?: Item;
+  label: ReactNode;
+  selected: Item | null;
   onSelect: (item: Item) => void;
 }
-export function Dropdown({ items, selected, onSelect }: Props) {
+export function Dropdown({ items, label, selected, onSelect }: Props) {
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (
         <>
-          <ToggleButton>{isExpanded ? "Close" : "Open"}</ToggleButton>
+          <ToggleButton>
+            {selected ? selected.value : label}
+            {isExpanded ? "Close" : "Open"}
+          </ToggleButton>
           <DropdownList>
             {items.map((item) => (
               <DropdownItem
