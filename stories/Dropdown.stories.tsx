@@ -1,6 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Dropdown } from "components/Dropdown";
 import { useArgs } from "@storybook/client-api";
+import { blackOpacity25, gray100 } from "constants/colors";
 
 const defaultMockItems = [
   { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -40,3 +41,8 @@ const Template: ComponentStory<typeof Dropdown> = (args) => {
 };
 
 export const Default = Template.bind({});
+
+export const WithBorderColor = Template.bind({});
+WithBorderColor.args = {
+  borderColor: blackOpacity25,
+};

@@ -95,9 +95,9 @@ const ConnectWallet = styled.div`
   justify-content: center;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--color-black);
-  background-color: var(--color-white);
-  border: 1.18px solid var(--color-black);
+  color: var(--black);
+  background-color: var(--white);
+  border: 1.18px solid var(--black);
   border-radius: 5px;
 `;
 

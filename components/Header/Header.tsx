@@ -49,7 +49,7 @@ const PageDescription = styled.p`
   font-weight: 300;
   font-size: 14.5946px;
   line-height: 20px;
-  color: var(--color-black);
+  color: var(--black);
 `;
 
 const LogoIcon = styled(Logo)``;

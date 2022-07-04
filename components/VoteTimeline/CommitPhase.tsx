@@ -81,7 +81,7 @@ const ArrowBorder = styled.div`
   height: 50px;
   width: 100%;
   clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0 100%, 0 0);
-  background-color: var(--color-gray-100);
+  background-color: var(--gray-100);
   top: 0;
   left: 2px;
 `;

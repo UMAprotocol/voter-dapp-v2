@@ -184,14 +184,14 @@ a:not([class]) {
 
   html {
     /* Colors */
-    --color-white: ${white};
-    --color-black: ${black};
-    --color-black-opacity-25: ${blackOpacity25};
-    --color-black-opacity-50: ${blackOpacity50};
-    --color-red: ${red};
-    --color-green: ${green};
-    --color-gray-50: ${gray50};
-    --color-gray-100: ${gray100};
+    --white: ${white};
+    --black: ${black};
+    --black-opacity-25: ${blackOpacity25};
+    --black-opacity-50: ${blackOpacity50};
+    --red: ${red};
+    --green: ${green};
+    --gray-50: ${gray50};
+    --gray-100: ${gray100};
     /* Fonts */
     --header-xl: ${headerXl};
     --header-lg: ${headerLg};

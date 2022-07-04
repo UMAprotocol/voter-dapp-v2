@@ -1,8 +1,9 @@
 import { Menu, MenuList, MenuButton, MenuItem, MenuContextValue } from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
 import { ReactNode } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { CSSProperties, keyframes } from "styled-components";
 import Chevron from "public/assets/icons/chevron.svg";
+import { black } from "constants/colors";
 
 export type Item = {
   value: string;
@@ -15,13 +16,14 @@ interface Props {
   label: ReactNode;
   selected: Item | null;
   onSelect: (item: Item) => void;
+  borderColor?: string;
 }
-export function Dropdown({ items, label, selected, onSelect }: Props) {
+export function Dropdown({ items, label, selected, onSelect, borderColor = black }: Props) {
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (
         <>
-          <ToggleButton>
+          <ToggleButton style={{ "--border-color": borderColor } as CSSProperties}>
             {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
@@ -31,6 +33,7 @@ export function Dropdown({ items, label, selected, onSelect }: Props) {
                 $isSelected={selected?.value === item.value}
                 onSelect={() => onSelect(item)}
                 key={item.label}
+                style={{ "--border-color": borderColor } as CSSProperties}
               >
                 <Label>{item.label}</Label>
                 {item.secondaryLabel ? <SecondaryLabel>({item.secondaryLabel})</SecondaryLabel> : null}
@@ -64,16 +67,16 @@ const ToggleButton = styled(MenuButton)`
   justify-content: space-between;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--color-black-opacity-50);
-  background-color: var(--color-white);
-  border: 1.18px solid var(--color-black);
+  color: var(--black-opacity-50);
+  background-color: var(--white);
+  border: 1.18px solid var(--border-color);
   border-radius: 5px;
 `;
 
 const DropdownList = styled(MenuList)`
   width: 100%;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-black);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
   border-radius: 5px;
   padding: 0;
   animation: ${slideDown} 0.2s ease-in-out;
@@ -86,22 +89,22 @@ const DropdownItem = styled(MenuItem)<{ $isSelected: boolean }>`
   justify-content: space-between;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--color-black);
+  color: var(--black);
   border-radius: 5px;
-  background-color: ${({ $isSelected }) => ($isSelected ? "var(--color-gray-50)" : "var(--color-white)")};
+  background-color: ${({ $isSelected }) => ($isSelected ? "var(--gray-50)" : "var(--white)")};
   &:hover {
-    background-color: var(--color-gray-50);
+    background-color: var(--gray-50);
     color: currentColor;
   }
   &:not(:last-child) {
-    border-bottom: 1px solid var(--color-gray-50);
+    border-bottom: 1px solid var(--gray-50);
   }
 `;
 
 const Label = styled.p``;
 
 const SecondaryLabel = styled.p`
-  color: var(--color-black-opacity-50);
+  color: var(--black-opacity-50);
 `;
 
 const ChevronIcon = styled(Chevron)<{ $isExpanded: boolean }>`

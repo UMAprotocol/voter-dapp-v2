@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function NavLink({ href, label, active }: Props) {
-  const borderBottom = active ? "2px solid var(--color-red)" : "none";
+  const borderBottom = active ? "2px solid var(--red)" : "none";
   return (
     <Wrapper style={{ "--border-bottom": borderBottom } as CSSProperties}>
       <Link href={href} passHref>
@@ -28,6 +28,6 @@ const Wrapper = styled.div`
 const A = styled.a`
   outline: none;
   text-decoration: none;
-  color: var(--color-black);
+  color: var(--black);
   font: var(--text-sm);
 `;
