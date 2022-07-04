@@ -2,6 +2,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import { Nav } from "./Nav";
 import Logo from "public/assets/logo.svg";
+import { Wallet } from "components/Wallet";
 
 export function Header() {
   return (
@@ -17,6 +18,7 @@ export function Header() {
         <PageDescription>VOTING</PageDescription>
       </HomeLinkAndPageDescriptionWrapper>
       <Nav />
+      <Wallet />
     </Wrapper>
   );
 }
@@ -24,7 +26,7 @@ export function Header() {
 const Wrapper = styled.header`
   min-height: 80px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 200px;
   align-items: center;
   padding-inline: 45px;
 `;
