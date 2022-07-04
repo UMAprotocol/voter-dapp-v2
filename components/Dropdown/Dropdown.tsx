@@ -4,7 +4,7 @@ import "@reach/menu-button/styles.css";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
 import Chevron from "public/assets/icons/chevron.svg";
-import { black } from "constants/colors";
+import { black, blackOpacity50 } from "constants/colors";
 
 export type Item = {
   value: string;
@@ -20,11 +20,12 @@ interface Props {
   borderColor?: string;
 }
 export function Dropdown({ items, label, selected, onSelect, borderColor = black }: Props) {
+  const toggleTextColor = selected ? black : blackOpacity50;
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (
         <>
-          <ToggleButton style={{ "--border-color": borderColor } as CSSProperties}>
+          <ToggleButton style={{ "--color": toggleTextColor, "--border-color": borderColor } as CSSProperties}>
             {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
@@ -67,7 +68,7 @@ const ToggleButton = styled(MenuButton)`
   justify-content: space-between;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--black-opacity-50);
+  color: var(--color);
   background-color: var(--white);
   border: 1.18px solid var(--border-color);
   border-radius: 5px;
