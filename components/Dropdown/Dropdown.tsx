@@ -57,7 +57,7 @@ const slideDown = keyframes`
 const Wrapper = styled(Menu)``;
 
 const ToggleButton = styled(MenuButton)`
-  min-width: 240px;
+  width: 100%;
   height: 40px;
   display: flex;
   align-items: center;
@@ -71,7 +71,7 @@ const ToggleButton = styled(MenuButton)`
 `;
 
 const DropdownList = styled(MenuList)`
-  min-width: 240px;
+  width: 100%;
   background-color: var(--color-white);
   border: 1px solid var(--color-black);
   border-radius: 5px;
