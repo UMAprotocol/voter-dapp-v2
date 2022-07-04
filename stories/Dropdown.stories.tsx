@@ -3,10 +3,10 @@ import { Dropdown } from "components/Dropdown";
 import { useArgs } from "@storybook/client-api";
 
 const defaultMockItems = [
-  { label: "Item 1", value: "item-1", secondaryLabel: "Item 1 secondary label" },
-  { label: "Item 2", value: "item-2", secondaryLabel: "Item 2 secondary label" },
-  { label: "Item 3", value: "item-3", secondaryLabel: "Item 3 secondary label" },
-  { label: "Item 4", value: "item-4", secondaryLabel: "Item 4 secondary label" },
+  { label: "Item 1", value: "item-1", secondaryLabel: "p0" },
+  { label: "Item 2", value: "item-2", secondaryLabel: "p1" },
+  { label: "Item 3", value: "item-3", secondaryLabel: "p2" },
+  { label: "Item 4", value: "item-4", secondaryLabel: "p3" },
 ];
 
 export default {
