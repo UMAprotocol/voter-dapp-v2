@@ -1,6 +1,7 @@
 import { OnboardAPI, WalletState } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { Dropdown } from "components/Dropdown";
+import { blackOpacity25 } from "constants/colors";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
 import truncateEthAddress from "helpers/truncateEthAddress";
@@ -73,6 +74,7 @@ export function Wallet() {
           items={connectedWallets.map(makeWalletDropdownItem)}
           selected={connectedWallets.map(makeWalletDropdownItem)[0]}
           onSelect={() => null}
+          borderColor={blackOpacity25}
         />
       ) : (
         <ConnectWallet>
@@ -95,9 +97,9 @@ const ConnectWallet = styled.div`
   justify-content: center;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--black);
+  color: var(--black-opacity-50);
   background-color: var(--white);
-  border: 1.18px solid var(--black);
+  border: 1.18px solid var(--black-opacity-25);
   border-radius: 5px;
 `;
 
