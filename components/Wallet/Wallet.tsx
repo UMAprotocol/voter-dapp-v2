@@ -1,16 +1,18 @@
-import { OnboardAPI } from "@web3-onboard/core";
-import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
+import { OnboardAPI, WalletState } from "@web3-onboard/core";
+import { useConnectWallet, useWallets } from "@web3-onboard/react";
+import { Dropdown } from "components/Dropdown";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
+import truncateEthAddress from "helpers/truncateEthAddress";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
-  const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
-  const { provider, setProvider } = useWalletProviderContext();
+  const { setProvider } = useWalletProviderContext();
 
   useEffect(() => {
     setOnboard(initOnboard);
@@ -48,60 +50,57 @@ export function Wallet() {
     }
   }, [setProvider, wallet]);
 
-  async function signMessage() {
-    if (!provider) return;
-    const signer = provider.getSigner();
-    const message = "Hello World";
-    const signature = await signer.signMessage(message);
-    console.log({ signature });
+  function handleDisconnectWallet() {
+    if (!wallet) return;
+    disconnect(wallet);
+    window.localStorage.removeItem("connectedWallets");
   }
 
-  if (!onboard) return <div>Loading...</div>;
+  if (!onboard) return null;
 
+  function makeWalletDropdownItem(wallet: WalletState) {
+    const address = wallet.accounts[0].address;
+    return {
+      value: address,
+      label: truncateEthAddress(address),
+    };
+  }
   return (
-    <div>
-      <button onClick={() => connect()}>{connecting ? "connecting" : "connect"}</button>
-      {wallet && (
-        <div>
-          <button onClick={signMessage}>sign</button>
-          <label>Switch Chain</label>
-          {settingChain ? (
-            <span>Switching chain...</span>
-          ) : (
-            <select
-              onChange={({ target: { value } }) => {
-                setChain({ chainId: value });
-              }}
-              value={connectedChain?.id}
-            >
-              {chains.map(({ id, label }) => {
-                return (
-                  <option value={id} key={id}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
-          )}
-          <button
-            onClick={() => {
-              disconnect(wallet);
-              window.localStorage.removeItem("connectedWallets");
-            }}
-          >
-            Disconnect Wallet
-          </button>
-        </div>
+    <Wrapper>
+      {connectedWallets.length ? (
+        <Dropdown
+          label={truncateEthAddress(connectedWallets[0].accounts[0].address)}
+          items={connectedWallets.map(makeWalletDropdownItem)}
+          selected={connectedWallets.map(makeWalletDropdownItem)[0]}
+          onSelect={() => null}
+        />
+      ) : (
+        <ConnectWallet>
+          <ConnectWalletButton onClick={() => connect()}>
+            {connecting ? "Connecting..." : "Connect wallet"}
+          </ConnectWalletButton>
+        </ConnectWallet>
       )}
-
-      {connectedWallets.map(({ label, accounts }) => {
-        return (
-          <div key={label}>
-            <div>{label}</div>
-            <div>Accounts: {JSON.stringify(accounts, null, 2)}</div>
-          </div>
-        );
-      })}
-    </div>
+    </Wrapper>
   );
 }
+
+const Wrapper = styled.div``;
+
+const ConnectWallet = styled.div`
+  width: 200px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 15px;
+  font: var(--text-md);
+  color: var(--color-black);
+  background-color: var(--color-white);
+  border: 1.18px solid var(--color-black);
+  border-radius: 5px;
+`;
+
+const ConnectWalletButton = styled.button`
+  background: none;
+`;
