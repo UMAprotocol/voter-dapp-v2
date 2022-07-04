@@ -1,5 +1,6 @@
 import { addDecorator } from "@storybook/react";
 import { GlobalStyle } from 'components/GlobalStyle';
+import { WalletProvider } from "contexts/WalletContext";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -12,8 +13,8 @@ export const parameters = {
 }
 
 addDecorator((story) => (
-  <>
+  <WalletProvider>
     <GlobalStyle />
     {story()}
-  </>
+  </WalletProvider>
 ));
