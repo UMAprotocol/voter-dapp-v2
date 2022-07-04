@@ -56,9 +56,6 @@ const Label = styled.p``;
 const SecondaryLabel = styled.p``;
 
 const ChevronIcon = styled(Chevron)<{ $isExpanded: boolean }>`
-  * {
-    fill: none;
-  }
   transform: rotate(${({ $isExpanded }) => ($isExpanded ? "0deg" : "180deg")});
   transition: transform 0.2s ease-in-out;
 `;
