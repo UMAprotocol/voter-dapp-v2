@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import styled from "styled-components";
 import { Nav } from "./Nav";
-import logo from "public/assets/logo.svg";
+import Logo from "public/assets/logo.svg";
 
 export function Header() {
   return (
@@ -11,7 +10,7 @@ export function Header() {
         <HomeLinkWrapper>
           <Link href="/">
             <HomeLink>
-              <Image src={logo} alt="UMA logo" />
+              <LogoIcon />
             </HomeLink>
           </Link>
         </HomeLinkWrapper>
@@ -50,3 +49,5 @@ const PageDescription = styled.p`
   line-height: 20px;
   color: var(--color-black);
 `;
+
+const LogoIcon = styled(Logo)``;
