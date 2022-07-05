@@ -1,4 +1,14 @@
-import { black, blackOpacity25, blackOpacity50, gray100, gray50, green, red, white } from "constants/colors";
+import {
+  black,
+  blackOpacity25,
+  blackOpacity50,
+  blackOpacity60,
+  gray100,
+  gray50,
+  green,
+  red,
+  white,
+} from "constants/colors";
 import {
   headerXl,
   headerLg,
@@ -188,6 +198,7 @@ a:not([class]) {
     --black: ${black};
     --black-opacity-25: ${blackOpacity25};
     --black-opacity-50: ${blackOpacity50};
+    --black-opacity-60: ${blackOpacity60};
     --red: ${red};
     --green: ${green};
     --gray-50: ${gray50};
