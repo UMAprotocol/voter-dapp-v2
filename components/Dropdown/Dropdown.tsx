@@ -5,13 +5,13 @@ import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
 import Chevron from "public/assets/icons/chevron.svg";
 import { black, blackOpacity50 } from "constants/colors";
-import { DropdownItem } from "types/global";
+import { DropdownItemT } from "types/global";
 
 interface Props {
-  items: DropdownItem[];
+  items: DropdownItemT[];
   label: ReactNode;
-  selected: DropdownItem | null;
-  onSelect: (item: DropdownItem) => void;
+  selected: DropdownItemT | null;
+  onSelect: (item: DropdownItemT) => void;
   borderColor?: string;
 }
 export function Dropdown({ items, label, selected, onSelect, borderColor = black }: Props) {

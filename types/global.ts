@@ -1,10 +1,15 @@
-export type DropdownItem = {
+export type DropdownItemT = {
   value: string;
   label: string;
   secondaryLabel?: string;
 };
 
-export type Dispute = {
+export type DisputeT = {
   title: string;
-  origin: "UMA" | "Polymarket";
+  origin: DisputeOriginT;
 };
+
+export enum DisputeOriginT {
+  UMA = "UMA",
+  Polymarket = "Polymarket",
+}
