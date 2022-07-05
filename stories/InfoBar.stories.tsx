@@ -1,5 +1,5 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { InfoBar } from "components/InfoBar/InfoBar";
+import { InfoBar } from "components/InfoBar";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 
