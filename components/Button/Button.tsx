@@ -6,7 +6,7 @@ interface Props {
   /**
    * button contents
    */
-  label: string;
+  label: ReactNode;
   /**
    * optional click handler
    */
