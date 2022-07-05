@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Dropdown } from "components/Dropdown";
 import { useArgs } from "@storybook/client-api";
-import { blackOpacity25, gray100 } from "constants/colors";
+import { blackOpacity25 } from "constants/colors";
 
 const defaultMockItems = [
   { label: "Yes", value: "p0", secondaryLabel: "p0" },
