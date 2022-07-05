@@ -1,65 +1,71 @@
-import { black, gray100, red, white } from "constants/colors";
-import { textMd, textSm, textXs } from "constants/fonts";
-import { shadow1 } from "constants/shadows";
-import styled, { CSSProperties } from "styled-components";
+import Link from "next/link";
+import { ReactNode } from "react";
+import styled from "styled-components";
 
 interface Props {
   /**
-   * Is this the principal call to action on the page?
-   */
-  primary?: boolean;
-  /**
-   * How large should the button be?
-   */
-  size?: "small" | "medium" | "large";
-  /**
-   * Button contents
+   * button contents
    */
   label: string;
   /**
-   * Optional click handler
+   * optional click handler
    */
   onClick?: () => void;
+  /**
+   * optional link
+   */
+  href?: string;
 }
 
 /**
  * Primary UI component for user interaction
+ *
+ * @param onClick - behaves as a button when provided
+ * @param href - behaves as a link when provided
+ * @param label - button label
+ * @throws if both onClick and href are provided
  */
-export function Button({ primary = false, size = "medium", label, ...props }: Props) {
-  const color = primary ? white : black;
-  const backgroundColor = primary ? red : gray100;
-  const boxShadow = primary ? "" : shadow1;
-  const font = size === "small" ? textXs : size === "medium" ? textSm : textMd;
-  const paddingBlock = size === "small" ? 10 : size === "medium" ? 11 : 12;
-  const paddingInline = size === "small" ? 16 : size === "medium" ? 20 : 24;
+export function Button({ label, onClick, href }: Props) {
+  if (onClick && href) {
+    throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
+  }
+
   return (
-    <_Button
-      {...props}
-      style={
-        {
-          "--color": color,
-          "--background-color": backgroundColor,
-          "--box-shadow": boxShadow,
-          "--font": font,
-          "--padding-block": paddingBlock + "px",
-          "--padding-inline": paddingInline + "px",
-        } as CSSProperties
-      }
-    >
-      {label}
-    </_Button>
+    <>
+      {href ? <_Link href={href}>{label}</_Link> : null}
+      {onClick ? <_Button onClick={onClick}>{label}</_Button> : null}
+    </>
   );
 }
 
-const _Button = styled.button`
-  border: 0;
-  border-radius: 3em;
-  cursor: pointer;
-  display: inline-block;
-  color: var(--color);
-  font: var(--font);
-  background-color: var(--background-color);
-  box-shadow: var(--box-shadow);
-  padding-block: var(--padding-block);
-  padding-inline: var(--padding-inline);
+interface LinkProps {
+  href: string;
+  children: ReactNode;
+}
+function _Link({ href, children }: LinkProps) {
+  return (
+    <Link href={href} passHref>
+      <A>{children}</A>
+    </Link>
+  );
+}
+
+const A = styled.a`
+  text-decoration: none;
+  color: var(--red);
+  font: var(--text-md);
+`;
+
+interface ButtonProps {
+  onClick: () => void;
+  children: ReactNode;
+}
+function _Button({ onClick, children }: ButtonProps) {
+  return <__Button onClick={onClick}>{children}</__Button>;
+}
+
+const __Button = styled.button`
+  color: var(--red);
+  background: transparent;
+  font: var(--text-md);
 `;
