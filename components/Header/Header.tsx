@@ -6,29 +6,35 @@ import { Wallet } from "components/Wallet";
 
 export function Header() {
   return (
-    <Wrapper>
-      <HomeLinkAndPageDescriptionWrapper>
-        <HomeLinkWrapper>
-          <Link href="/">
-            <HomeLink>
-              <LogoIcon />
-            </HomeLink>
-          </Link>
-        </HomeLinkWrapper>
-        <PageDescription>VOTING</PageDescription>
-      </HomeLinkAndPageDescriptionWrapper>
-      <Nav />
-      <Wallet />
-    </Wrapper>
+    <OuterWrapper>
+      <InnerWrapper>
+        <HomeLinkAndPageDescriptionWrapper>
+          <HomeLinkWrapper>
+            <Link href="/">
+              <HomeLink>
+                <LogoIcon />
+              </HomeLink>
+            </Link>
+          </HomeLinkWrapper>
+          <PageDescription>VOTING</PageDescription>
+        </HomeLinkAndPageDescriptionWrapper>
+        <Nav />
+        <Wallet />
+      </InnerWrapper>
+    </OuterWrapper>
   );
 }
 
-const Wrapper = styled.header`
+const OuterWrapper = styled.header``;
+
+const InnerWrapper = styled.div`
+  max-width: 1280px;
   min-height: 80px;
   display: grid;
   grid-template-columns: 1fr 1fr 200px;
   align-items: center;
   padding-inline: 45px;
+  margin-inline: auto;
 `;
 
 const HomeLinkWrapper = styled.div`
