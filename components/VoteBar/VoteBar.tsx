@@ -62,6 +62,8 @@ const Wrapper = styled.div`
   grid-template-columns: 45% auto auto auto;
   align-items: center;
   justify-items: center;
+  padding-right: 30px;
+  background: var(--white);
 `;
 
 const Dispute = styled.div`
