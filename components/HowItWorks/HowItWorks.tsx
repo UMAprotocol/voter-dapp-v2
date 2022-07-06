@@ -7,6 +7,7 @@ import Three from "public/assets/icons/three.svg";
 export function HowItWorks() {
   return (
     <Wrapper>
+      <Title>How it works:</Title>
       <InfoBar
         label={
           <>
@@ -57,7 +58,14 @@ export function HowItWorks() {
 }
 
 const Wrapper = styled.div`
+  padding-inline: 45px;
+  padding-block: 30px;
   div {
     margin-bottom: 5px;
   }
+`;
+
+const Title = styled.h1`
+  font: var(--header-md);
+  margin-bottom: 20px;
 `;

@@ -43,7 +43,7 @@ const Wrapper = styled.div`
 
 const Title = styled.h1`
   font: var(--header-md);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 `;
 
 const VotesWrapper = styled.div`
