@@ -2,20 +2,27 @@ import styled from "styled-components";
 
 export function Banner() {
   return (
-    <Wrapper>
-      <Text>
-        Stake, vote &amp; earn up to <Emphasis>30% APY</Emphasis>
-      </Text>
-    </Wrapper>
+    <OuterWrapper>
+      <InnerWrapper>
+        <Text>
+          Stake, vote &amp; earn up to <Emphasis>30% APY</Emphasis>
+        </Text>
+      </InnerWrapper>
+    </OuterWrapper>
   );
 }
 
-const Wrapper = styled.div`
-  height: 125px;
+const OuterWrapper = styled.div`
   background: var(--black);
+`;
+
+const InnerWrapper = styled.div`
+  max-width: 1280px;
+  height: 125px;
   display: flex;
   align-items: center;
   padding-left: 45px;
+  margin-inline: auto;
 `;
 
 const Text = styled.h1`

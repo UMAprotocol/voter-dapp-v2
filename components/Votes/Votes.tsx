@@ -15,28 +15,35 @@ export function Votes({ votes, voteTimeline, moreDetailsAction }: Props) {
   }
 
   return (
-    <Wrapper>
-      <Title>Vote on active disputes:</Title>
-      <VoteTimeline {...voteTimeline} />
-      <VotesWrapper>
-        <TableHeadingsWrapper>
-          <DisputeHeading>Dispute</DisputeHeading>
-          <YourVoteHeading>Your vote</YourVoteHeading>
-          <VoteStatusHeading>Vote status</VoteStatusHeading>
-        </TableHeadingsWrapper>
-        {votes.map((vote) => (
-          <VoteBar vote={vote} key={vote.dispute.title} moreDetailsAction={moreDetailsAction} />
-        ))}
-      </VotesWrapper>
-      <CommitVotesButtonWrapper>
-        <Button variant="primary" label="Commit votes" onClick={commitVotes} />
-      </CommitVotesButtonWrapper>
-    </Wrapper>
+    <OuterWrapper>
+      <InnerWrapper>
+        <Title>Vote on active disputes:</Title>
+        <VoteTimeline {...voteTimeline} />
+        <VotesWrapper>
+          <TableHeadingsWrapper>
+            <DisputeHeading>Dispute</DisputeHeading>
+            <YourVoteHeading>Your vote</YourVoteHeading>
+            <VoteStatusHeading>Vote status</VoteStatusHeading>
+          </TableHeadingsWrapper>
+          {votes.map((vote) => (
+            <VoteBar vote={vote} key={vote.dispute.title} moreDetailsAction={moreDetailsAction} />
+          ))}
+        </VotesWrapper>
+        <CommitVotesButtonWrapper>
+          <Button variant="primary" label="Commit votes" onClick={commitVotes} />
+        </CommitVotesButtonWrapper>
+      </InnerWrapper>
+    </OuterWrapper>
   );
 }
 
-const Wrapper = styled.div`
+const OuterWrapper = styled.div`
   background: var(--gray-100);
+`;
+
+const InnerWrapper = styled.div`
+  margin-inline: auto;
+  max-width: 1280px;
   padding-inline: 45px;
   padding-block: 45px;
 `;
