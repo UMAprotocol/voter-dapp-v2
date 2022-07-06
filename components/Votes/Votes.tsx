@@ -46,7 +46,11 @@ const Title = styled.h1`
   margin-bottom: 30px;
 `;
 
-const VotesWrapper = styled.div``;
+const VotesWrapper = styled.div`
+  > :not(:last-child) {
+    margin-bottom: 5px;
+  }
+`;
 
 const TableHeadingsWrapper = styled.div`
   display: grid;
