@@ -17,7 +17,7 @@ const OuterWrapper = styled.div`
 `;
 
 const InnerWrapper = styled.div`
-  max-width: 1280px;
+  max-width: 1190px;
   height: 125px;
   display: flex;
   align-items: center;

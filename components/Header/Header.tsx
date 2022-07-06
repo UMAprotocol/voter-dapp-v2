@@ -28,7 +28,7 @@ export function Header() {
 const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
-  max-width: 1280px;
+  max-width: 1190px;
   min-height: 80px;
   display: grid;
   grid-template-columns: 1fr 1fr 200px;

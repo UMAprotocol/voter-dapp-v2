@@ -60,7 +60,7 @@ export function HowItWorks() {
 }
 
 const OuterWrapper = styled.section`
-  max-width: 1280px;
+  max-width: 1190px;
   margin-inline: auto;
 `;
 
