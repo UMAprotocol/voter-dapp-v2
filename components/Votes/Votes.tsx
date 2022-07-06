@@ -16,24 +16,62 @@ export function Votes({ votes, voteTimeline, moreDetailsAction }: Props) {
 
   return (
     <Wrapper>
-      <Title>Vote on active disputes</Title>
+      <Title>Vote on active disputes:</Title>
       <VoteTimeline {...voteTimeline} />
       <VotesWrapper>
+        <TableHeadingsWrapper>
+          <DisputeHeading>Dispute</DisputeHeading>
+          <YourVoteHeading>Your vote</YourVoteHeading>
+          <VoteStatusHeading>Vote status</VoteStatusHeading>
+        </TableHeadingsWrapper>
         {votes.map((vote) => (
           <VoteBar vote={vote} key={vote.dispute.title} moreDetailsAction={moreDetailsAction} />
         ))}
       </VotesWrapper>
       <CommitVotesButtonWrapper>
-        <Button label="Commit votes" onClick={commitVotes} />
+        <Button variant="primary" label="Commit votes" onClick={commitVotes} />
       </CommitVotesButtonWrapper>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  background: var(--gray-100);
+  padding-inline: 45px;
+  padding-block: 45px;
+`;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  font: var(--header-md);
+  margin-bottom: 30px;
+`;
 
 const VotesWrapper = styled.div``;
 
-const CommitVotesButtonWrapper = styled.div``;
+const TableHeadingsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 45% 240px 1fr;
+  justify-items: start;
+  margin-bottom: 5px;
+  margin-top: 40px;
+`;
+
+const DisputeHeading = styled.h2`
+  font: var(--text-sm);
+`;
+
+const YourVoteHeading = styled.h2`
+  font: var(--text-sm);
+`;
+
+const VoteStatusHeading = styled.h2`
+  margin-left: 45px;
+  font: var(--text-sm);
+`;
+
+const CommitVotesButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-top: 30px;
+`;
