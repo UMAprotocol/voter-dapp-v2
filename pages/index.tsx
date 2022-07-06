@@ -1,19 +1,13 @@
-import { PriceRequests } from "components/PriceRequests";
-import { Wallet } from "components/Wallet";
+import { Overview } from "components/pages";
 import useMounted from "hooks/useMounted";
 import type { NextPage } from "next";
 
-const Home: NextPage = () => {
+const OverviewPage: NextPage = () => {
   const mounted = useMounted();
   if (!mounted) {
     return null;
   }
-  return (
-    <div>
-      <Wallet />
-      <PriceRequests />
-    </div>
-  );
+  return <Overview />;
 };
 
-export default Home;
+export default OverviewPage;
