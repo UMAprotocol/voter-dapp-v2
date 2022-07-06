@@ -2,15 +2,15 @@ import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { VoteTimelineT } from "types/global";
 
-interface Props {
-  phase: "commit" | "reveal" | null;
-  commitPhaseStart: Date | null;
-  revealPhaseStart: Date | null;
-  commitPhaseEnd: Date | null;
-  revealPhaseEnd: Date | null;
-}
-export function VoteTimeline({ phase, commitPhaseStart, revealPhaseStart, commitPhaseEnd, revealPhaseEnd }: Props) {
+export function VoteTimeline({
+  phase,
+  commitPhaseStart,
+  revealPhaseStart,
+  commitPhaseEnd,
+  revealPhaseEnd,
+}: VoteTimelineT) {
   const commitPhaseStartsIn = commitPhaseStart && formatDistanceToNowStrict(commitPhaseStart);
   const revealPhaseStartsIn = revealPhaseStart && formatDistanceToNowStrict(revealPhaseStart);
   const commitPhaseTimeRemaining = commitPhaseEnd && formatDistanceToNowStrict(commitPhaseEnd);

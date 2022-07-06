@@ -6,10 +6,24 @@ export type DropdownItemT = {
 
 export type DisputeT = {
   title: string;
-  origin: DisputeOriginT;
+  origin: DisputeOrigins;
 };
 
-export enum DisputeOriginT {
+export enum DisputeOrigins {
   UMA = "UMA",
   Polymarket = "Polymarket",
 }
+
+export type VoteT = {
+  dispute: DisputeT;
+  voteOptions: DropdownItemT[];
+  isCommitted: boolean;
+};
+
+export type VoteTimelineT = {
+  phase: "commit" | "reveal" | null;
+  commitPhaseStart: Date | null;
+  revealPhaseStart: Date | null;
+  commitPhaseEnd: Date | null;
+  revealPhaseEnd: Date | null;
+};

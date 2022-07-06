@@ -2,22 +2,21 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { useState } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { DisputeOriginT, DisputeT, DropdownItemT } from "types/global";
+import { DisputeOrigins, DropdownItemT, VoteT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
 import { green, red } from "constants/colors";
 
 interface Props {
-  dispute: DisputeT;
-  voteOptions: DropdownItemT[];
-  isCommitted: boolean;
-  moreDetailsAction: () => void;
+  vote: VoteT;
+  moreDetailsAction: (vote: VoteT) => void;
 }
-export function VoteBar({ dispute, voteOptions, isCommitted, moreDetailsAction }: Props) {
-  const [vote, setVote] = useState<DropdownItemT | null>(null);
+export function VoteBar({ vote, moreDetailsAction }: Props) {
+  const { dispute, voteOptions, isCommitted } = vote;
+  const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
 
-  const Icon = dispute.origin === DisputeOriginT.UMA ? UMAIcon : PolymarketIcon;
+  const Icon = dispute.origin === DisputeOrigins.UMA ? UMAIcon : PolymarketIcon;
 
   const dotColor = isCommitted ? green : red;
 
@@ -33,7 +32,12 @@ export function VoteBar({ dispute, voteOptions, isCommitted, moreDetailsAction }
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
-        <Dropdown label="Choose answer" items={voteOptions} selected={vote} onSelect={(vote) => setVote(vote)} />
+        <Dropdown
+          label="Choose answer"
+          items={voteOptions}
+          selected={selectedVote}
+          onSelect={(vote) => setSelectedVote(vote)}
+        />
       </Vote>
       <Status>
         <DotIcon
@@ -46,7 +50,7 @@ export function VoteBar({ dispute, voteOptions, isCommitted, moreDetailsAction }
         {isCommitted ? "Committed" : "Not committed"}
       </Status>
       <MoreDetails>
-        <Button label="More details" onClick={moreDetailsAction} />
+        <Button label="More details" onClick={() => moreDetailsAction(vote)} />
       </MoreDetails>
     </Wrapper>
   );
