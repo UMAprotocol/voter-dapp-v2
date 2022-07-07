@@ -9,6 +9,7 @@ import {
   red,
   white,
 } from "constants/colors";
+import { desktopMaxWidth } from "constants/containers";
 import {
   headerXl,
   headerLg,
@@ -214,6 +215,8 @@ a:not([class]) {
     --text-sm: ${textSm};
     --text-xs: ${textXs};
     --text-fine: ${textFine};
+    /* Containers */
+    --desktop-max-width: ${desktopMaxWidth};
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};
