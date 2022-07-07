@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Votes } from "components/Votes";
+import { desktopMaxWidth } from "constants/containers";
 import { VoteTimelineT } from "types/global";
 import * as VoteBarStories from "./VoteBar.stories";
 import { CommitPhase } from "./VoteTimeline/VoteTimeline.stories";
@@ -9,7 +10,7 @@ export default {
   component: Votes,
   decorators: [
     (Story) => (
-      <div style={{ width: 1190 }}>
+      <div style={{ width: desktopMaxWidth }}>
         <Story />
       </div>
     ),

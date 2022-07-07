@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
+import { desktopMaxWidth } from "constants/containers";
 import { DisputeOrigins } from "types/global";
 
 export default {
@@ -7,7 +8,7 @@ export default {
   component: VoteBar,
   decorators: [
     (Story) => (
-      <div style={{ width: 1190 }}>
+      <div style={{ width: desktopMaxWidth }}>
         <Story />
       </div>
     ),

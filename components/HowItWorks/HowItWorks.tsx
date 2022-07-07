@@ -60,7 +60,7 @@ export function HowItWorks() {
 }
 
 const OuterWrapper = styled.section`
-  max-width: 1190px;
+  max-width: var(--desktop-max-width);
   margin-inline: auto;
 `;
 
