@@ -33,6 +33,7 @@ const InnerWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 200px;
   align-items: center;
+  gap: 15px;
   padding-inline: 45px;
   margin-inline: auto;
 `;
