@@ -12,6 +12,7 @@
     "chromatic": "npx chromatic --project-token=9e9ed15fd825"
   },
   "dependencies": {
+    "@reach/dialog": "^0.17.0",
     "@reach/menu-button": "^0.17.0",
     "@web3-onboard/core": "^2.3.1",
     "@web3-onboard/gnosis": "^2.0.4",
