@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Panel, ClaimPanel, VotePanel } from "components/Panel";
+import { Panel } from "components/Panel";
 
 export default {
   title: "Panel",
@@ -10,14 +10,14 @@ const Template: ComponentStory<typeof Panel> = (args) => <Panel {...args} />;
 
 export const AsClaimPanel = Template.bind({});
 AsClaimPanel.args = {
-  PanelComponent: ClaimPanel,
+  panelType: "claim",
   isOpen: true,
   onDismiss: () => {},
 };
 
 export const AsVotePanel = Template.bind({});
 AsVotePanel.args = {
-  PanelComponent: VotePanel,
+  panelType: "vote",
   isOpen: true,
   onDismiss: () => {},
 };

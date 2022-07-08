@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useState } from "react";
-import { PanelComponentT, PanelContentT } from "types/global";
+import { PanelContentT, PanelTypeT } from "types/global";
 
 interface PanelContextState {
-  PanelComponent: PanelComponentT;
-  setPanelComponent: (PanelComponent: PanelComponentT) => void;
+  panelType: PanelTypeT;
+  setPanelType: (panelType: PanelTypeT) => void;
   content: PanelContentT;
   setContent: (content: PanelContentT) => void;
   isOpen: boolean;
@@ -11,8 +11,8 @@ interface PanelContextState {
 }
 
 const defaultPanelContextState = {
-  PanelComponent: null,
-  setPanelComponent: () => null,
+  panelType: null,
+  setPanelType: () => null,
   content: null,
   setContent: () => null,
   isOpen: false,
@@ -22,15 +22,15 @@ const defaultPanelContextState = {
 export const PanelContext = createContext<PanelContextState>(defaultPanelContextState);
 
 export function PanelProvider({ children }: { children: ReactNode }) {
-  const [PanelComponent, setPanelComponent] = useState<PanelComponentT>(null);
+  const [panelType, setPanelType] = useState<PanelTypeT>(null);
   const [content, setContent] = useState<PanelContentT>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <PanelContext.Provider
       value={{
-        PanelComponent,
-        setPanelComponent,
+        panelType,
+        setPanelType,
         content,
         setContent,
         isOpen,

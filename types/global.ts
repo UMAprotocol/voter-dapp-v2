@@ -1,5 +1,3 @@
-import { ClaimPanel, VotePanel } from "components/Panel";
-
 export type DropdownItemT = {
   value: string;
   label: string;
@@ -30,7 +28,7 @@ export type VoteTimelineT = {
   revealPhaseEnd: Date | null;
 };
 
-export type PanelComponentT = typeof ClaimPanel | typeof VotePanel | null;
+export type PanelTypeT = "claim" | "vote" | null;
 
 export type PanelContentT = {
   title: string;
