@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "styles/fonts.css";
 import { WalletProvider } from "contexts/WalletContext";
+import { PanelProvider } from "contexts/PanelContext";
 
 const queryClient = new QueryClient();
 
@@ -11,8 +12,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WalletProvider>
       <QueryClientProvider client={queryClient}>
-        <GlobalStyle />
-        <Component {...pageProps} />
+        <PanelProvider>
+          <GlobalStyle />
+          <Component {...pageProps} />
+        </PanelProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
     </WalletProvider>
