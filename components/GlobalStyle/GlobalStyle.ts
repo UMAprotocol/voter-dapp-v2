@@ -216,7 +216,7 @@ a:not([class]) {
     --text-xs: ${textXs};
     --text-fine: ${textFine};
     /* Containers */
-    --desktop-max-width: ${desktopMaxWidth};
+    --desktop-max-width: ${desktopMaxWidth}px;
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};
