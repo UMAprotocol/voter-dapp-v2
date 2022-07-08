@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
 import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
+import { animated, useTransition } from "react-spring";
 
 const panelTypeToPanelComponent = {
   claim: ClaimPanel,
@@ -14,6 +15,12 @@ const panelTypeToPanelComponent = {
 export function Panel() {
   const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
 
+  const transitions = useTransition(panelOpen, {
+    from: { opacity: 0, x: 1000 },
+    enter: { opacity: 1, x: 0 },
+    leave: { opacity: 0, x: 1000 },
+  });
+
   if (!panelType) return null;
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
@@ -22,23 +29,39 @@ export function Panel() {
     setPanelOpen(false);
   }
   return (
-    <Overlay isOpen={panelOpen} onDismiss={closePanel}>
-      <Content>
-        <TitleWrapper>
-          <Title>{panelContent?.title ?? ""}</Title>
-          <CloseButton onClick={closePanel}>
-            <CloseIcon />
-          </CloseButton>
-        </TitleWrapper>
-        <PanelComponent content={panelContent} />
-      </Content>
-    </Overlay>
+    <>
+      {transitions(
+        (styles, item) =>
+          item && (
+            <Overlay onDismiss={closePanel} style={{ opacity: styles.opacity }}>
+              <Content
+                aria-labelledby="panel-title"
+                style={{
+                  transform: styles.x.to((value) => `translate3d(${value}px, 0px, 0px)`),
+                }}
+              >
+                <TitleWrapper>
+                  <Title id="panel-title">{panelContent?.title ?? ""}</Title>
+                  <CloseButton onClick={closePanel}>
+                    <CloseIcon />
+                  </CloseButton>
+                </TitleWrapper>
+                <PanelComponent content={panelContent} />
+              </Content>
+            </Overlay>
+          )
+      )}
+    </>
   );
 }
 
-const Overlay = styled(DialogOverlay)``;
+const AnimatedOverlay = animated(DialogOverlay);
 
-const Content = styled(DialogContent)`
+const AnimatedContent = animated(DialogContent);
+
+const Overlay = styled(AnimatedOverlay)``;
+
+const Content = styled(AnimatedContent)`
   width: 570px;
   height: 100%;
   margin: 0;
