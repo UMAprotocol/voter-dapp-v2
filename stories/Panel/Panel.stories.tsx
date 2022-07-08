@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Panel } from "components/Panel";
-import { useArgs } from "@storybook/client-api";
 import { Button } from "components/Button";
+import { PanelContext } from "contexts/PanelContext";
+import { useArgs } from "@storybook/client-api";
 
 export default {
   title: "Panel",
@@ -10,23 +11,44 @@ export default {
 
 const Template: ComponentStory<typeof Panel> = (args) => {
   const [_args, updateArgs] = useArgs();
-
+  const mockPanelContextState = {
+    // @ts-expect-error - ignore ts error args is of type unknown
+    panelType: args.panelType,
+    setPanelType: () => null,
+    // @ts-expect-error - ignore ts error args is of type unknown
+    panelContent: args.panelContent,
+    setPanelContent: () => null,
+    // @ts-expect-error - ignore ts error args is of type unknown
+    panelOpen: args.panelOpen,
+    // @ts-expect-error - ignore ts error args is of type unknown
+    setPanelOpen: () => updateArgs({ panelOpen: !args.panelOpen }),
+  };
+  function handleClose() {
+    // @ts-expect-error - ignore ts error args is of type unknown
+    updateArgs({ panelOpen: !args.panelOpen });
+  }
   return (
-    <div>
-      <Button variant="primary" onClick={() => updateArgs({ isOpen: true })} label="Open panel" />
-      <Panel {...args} onDismiss={() => updateArgs({ isOpen: false })} />
-    </div>
+    <PanelContext.Provider value={mockPanelContextState}>
+      <Button variant="primary" onClick={handleClose} label="Open panel" />
+      <Panel />
+    </PanelContext.Provider>
   );
 };
 
 export const AsClaimPanel = Template.bind({});
 AsClaimPanel.args = {
   panelType: "claim",
-  isOpen: true,
+  panelContent: {
+    title: "Claim",
+    description: "Claim description",
+  },
 };
 
 export const AsVotePanel = Template.bind({});
 AsVotePanel.args = {
   panelType: "vote",
-  isOpen: true,
+  panelContent: {
+    title: "Vote",
+    description: "Vote description",
+  },
 };
