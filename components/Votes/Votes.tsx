@@ -43,7 +43,7 @@ const OuterWrapper = styled.div`
 
 const InnerWrapper = styled.div`
   margin-inline: auto;
-  max-width: 1190px;
+  max-width: var(--desktop-max-width);
   padding-inline: 45px;
   padding-block: 45px;
 `;
