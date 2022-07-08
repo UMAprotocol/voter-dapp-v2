@@ -1,15 +1,11 @@
 import { Banner } from "components/Banner";
 import { HowItWorks } from "components/HowItWorks";
 import { Layout } from "components/Layout";
-import { Panel } from "components/Panel";
 import { Votes } from "components/Votes";
 import { add } from "date-fns";
-import { usePanelContext } from "hooks/usePanelContext";
 import { DisputeOrigins } from "types/global";
 
 export function Overview() {
-  const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
-
   const mockVotes = [
     {
       dispute: {
@@ -82,12 +78,6 @@ export function Overview() {
       <Banner />
       <HowItWorks />
       <Votes votes={mockVotes} voteTimeline={mockVoteTimeline} moreDetailsAction={mockMoreDetailsAction} />
-      <Panel
-        isOpen={panelOpen}
-        panelType={panelType}
-        panelContent={panelContent}
-        onDismiss={() => setPanelOpen(false)}
-      />
     </Layout>
   );
 }
