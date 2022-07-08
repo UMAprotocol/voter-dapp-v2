@@ -1,6 +1,6 @@
 import { DialogOverlay, DialogContent } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { PanelTypeT } from "types/global";
+import { PanelContentT, PanelTypeT } from "types/global";
 import { ClaimPanel } from "./ClaimPanel";
 import { VotePanel } from "./VotePanel";
 
@@ -11,11 +11,11 @@ const panelTypeToPanelComponent = {
 
 interface Props {
   panelType: PanelTypeT;
-  content: { title: string; description: string };
+  panelContent: PanelContentT;
   isOpen: boolean;
   onDismiss: () => void;
 }
-export function Panel({ panelType, isOpen, onDismiss, content }: Props) {
+export function Panel({ panelType, panelContent, isOpen, onDismiss }: Props) {
   if (!panelType) return null;
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
@@ -23,7 +23,7 @@ export function Panel({ panelType, isOpen, onDismiss, content }: Props) {
   return (
     <DialogOverlay isOpen={isOpen} onDismiss={onDismiss}>
       <DialogContent>
-        <PanelComponent content={content} />
+        <PanelComponent content={panelContent} />
       </DialogContent>
     </DialogOverlay>
   );
