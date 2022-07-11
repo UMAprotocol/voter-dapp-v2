@@ -63,13 +63,8 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--font-size": 18 + "px",
     } as CSSProperties,
     tertiary: {
-      "--display": "unset",
-      "--place-items": "unset",
       "--color": red,
       "--background-color": "transparent",
-      "--width": "unset",
-      "--height": "unset",
-      "--border-radius": "unset",
       "--font-size": 16 + "px",
     } as CSSProperties,
   };
