@@ -42,6 +42,7 @@ AsClaimPanel.args = {
     title: "Claim",
     description: "Claim description",
   },
+  panelOpen: true,
 };
 
 export const AsVotePanel = Template.bind({});
@@ -51,4 +52,5 @@ AsVotePanel.args = {
     title: "Vote",
     description: "Vote description",
   },
+  panelOpen: true,
 };
