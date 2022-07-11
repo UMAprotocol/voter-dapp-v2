@@ -18,7 +18,7 @@ export function Panel() {
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0, x: -desktopPanelWidth },
-    enter: { opacity: 0.5, x: 0 },
+    enter: { opacity: 0.75, x: 0 },
     leave: { opacity: 0, x: -desktopPanelWidth },
   });
 
@@ -36,7 +36,7 @@ export function Panel() {
           item && (
             <Overlay
               onDismiss={closePanel}
-              style={{ backgroundColor: styles.opacity.to((value) => `hsla(0, 0%, 0%, ${value})`) }}
+              style={{ backgroundColor: styles.opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content
                 aria-labelledby="panel-title"
