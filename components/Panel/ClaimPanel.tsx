@@ -14,41 +14,81 @@ export function ClaimPanel({ content }: Props) {
           <strong>92.678</strong> UMA
         </Rewards>
       </RewardsWrapper>
-      <ClaimAndStakeWrapper>
-        <ClaimAndStakeHeader>Claim and Stake</ClaimAndStakeHeader>
-        <ClaimAndStakeDescription>
-          Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
-        </ClaimAndStakeDescription>
-        <Button variant="primary" label="Claim and Stake" onClick={() => console.log("TODO Claim and Stake")} />
-      </ClaimAndStakeWrapper>
-      <ClaimToWalletWrapper>
-        <ClaimToWalletHeader>Claim to Wallet</ClaimToWalletHeader>
-        <ClaimToWalletDescription>
-          By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
-          text TODO.
-        </ClaimToWalletDescription>
-        <Button variant="secondary" label="Claim to Wallet" onClick={() => console.log("TODO Claim to Wallet")} />
-      </ClaimToWalletWrapper>
+      <InnerWrapper>
+        <ClaimAndStakeWrapper>
+          <SectionHeader>Claim and Stake</SectionHeader>
+          <SectionDescription>
+            Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
+          </SectionDescription>
+          <Button
+            variant="primary"
+            width="100%"
+            height={45}
+            label="Claim and Stake"
+            onClick={() => console.log("TODO Claim and Stake")}
+          />
+        </ClaimAndStakeWrapper>
+        <ClaimToWalletWrapper>
+          <SectionHeader>Claim to Wallet</SectionHeader>
+          <SectionDescription>
+            By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
+            text TODO.
+          </SectionDescription>
+          <Button
+            variant="secondary"
+            width="100%"
+            height={45}
+            label="Claim to Wallet"
+            onClick={() => console.log("TODO Claim to Wallet")}
+          />
+        </ClaimToWalletWrapper>
+      </InnerWrapper>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div``;
 
-const RewardsWrapper = styled.div``;
+const InnerWrapper = styled.div`
+  padding-inline: 30px;
+  padding-block: 20px;
+`;
 
-const RewardsHeader = styled.h2``;
+const RewardsWrapper = styled.div`
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: var(--white);
+`;
 
-const Rewards = styled.p``;
+const RewardsHeader = styled.h2`
+  font: var(--text-md);
+`;
 
-const ClaimAndStakeWrapper = styled.div``;
+const Rewards = styled.p`
+  font: var(--header-lg);
+  font-weight: 300;
+  strong {
+    font-weight: 700;
+  }
+`;
 
-const ClaimAndStakeHeader = styled.h2``;
+const SectionHeader = styled.h2`
+  font: var(--header-sm);
+`;
 
-const ClaimAndStakeDescription = styled.p``;
+const SectionDescription = styled.p`
+  font: var(--text-sm);
+  margin-bottom: 15px;
+`;
+
+const ClaimAndStakeWrapper = styled.div`
+  padding-bottom: 25px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--black-opacity-25);
+`;
 
 const ClaimToWalletWrapper = styled.div``;
-
-const ClaimToWalletHeader = styled.h2``;
-
-const ClaimToWalletDescription = styled.p``;
