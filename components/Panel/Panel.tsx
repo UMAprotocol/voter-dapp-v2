@@ -6,6 +6,7 @@ import { ClaimPanel } from "./ClaimPanel";
 import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
+import { desktopPanelWidth } from "constants/containers";
 
 const panelTypeToPanelComponent = {
   claim: ClaimPanel,
@@ -16,9 +17,9 @@ export function Panel() {
   const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
 
   const transitions = useTransition(panelOpen, {
-    from: { opacity: 0, x: -1000 },
+    from: { opacity: 0, x: -desktopPanelWidth },
     enter: { opacity: 0.5, x: 0 },
-    leave: { opacity: 0, x: -1000 },
+    leave: { opacity: 0, x: -desktopPanelWidth },
   });
 
   if (!panelType) return null;
@@ -63,16 +64,14 @@ const AnimatedOverlay = animated(DialogOverlay);
 const AnimatedContent = animated(DialogContent);
 
 const Overlay = styled(AnimatedOverlay)`
-  background-color: hsla(0, 0%, 0%, 0);
   overflow: hidden;
 `;
 
 const Content = styled(AnimatedContent)`
-  width: 570px;
+  width: var(--desktop-panel-width);
   height: 100%;
   margin: 0;
   padding: 0;
-  right: -1000px;
   position: fixed;
   background: var(--white);
 `;
