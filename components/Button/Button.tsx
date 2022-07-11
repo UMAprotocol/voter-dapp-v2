@@ -24,6 +24,10 @@ interface Props {
    * optionally override the default width
    */
   width?: CSSProperties["width"];
+  /**
+   * optionally override the default height
+   */
+  height?: CSSProperties["height"];
 }
 
 /**
@@ -35,12 +39,13 @@ interface Props {
  * @param label - button label
  * @throws if both onClick and href are provided
  */
-export function Button({ variant = "tertiary", label, onClick, href, width = 200 }: Props) {
+export function Button({ variant = "tertiary", label, onClick, href, width = 200, height = 50 }: Props) {
   if (onClick && href) {
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
   }
 
   width = typeof width === "string" ? width : `${width}px`;
+  height = typeof height === "string" ? height : `${height}px`;
 
   const styles = {
     primary: {
@@ -49,7 +54,7 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--color": white,
       "--background-color": red,
       "--width": width,
-      "--height": 50 + "px",
+      "--height": height,
       "--border-radius": 5 + "px",
       "--font-size": 18 + "px",
     } as CSSProperties,
@@ -59,7 +64,7 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--color": red,
       "--background-color": white,
       "--width": width,
-      "--height": 50 + "px",
+      "--height": height,
       "--border-radius": 5 + "px",
       "--border": `1px solid ${red}`,
       "--font-size": 18 + "px",
