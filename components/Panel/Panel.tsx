@@ -23,9 +23,9 @@ export function Panel() {
   const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
 
   const transitions = useTransition(panelOpen, {
-    from: { opacity: 0, x: -desktopPanelWidth },
-    enter: { opacity: 0.75, x: 0 },
-    leave: { opacity: 0, x: -desktopPanelWidth },
+    from: { opacity: 0, right: -desktopPanelWidth },
+    enter: { opacity: 0.75, right: 0 },
+    leave: { opacity: 0, right: -desktopPanelWidth },
   });
 
   if (!panelType || !panelContent) return null;
@@ -38,18 +38,13 @@ export function Panel() {
   return (
     <>
       {transitions(
-        (styles, item) =>
-          item && (
+        ({ opacity, right }, isOpen) =>
+          isOpen && (
             <Overlay
               onDismiss={closePanel}
-              style={{ backgroundColor: styles.opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
+              style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
-              <Content
-                aria-labelledby="panel-title"
-                style={{
-                  right: styles.x,
-                }}
-              >
+              <Content aria-labelledby="panel-title" style={{ right }}>
                 <TitleWrapper>
                   <Title id="panel-title">{panelContent?.title ?? ""}</Title>
                   <CloseButton onClick={closePanel}>
