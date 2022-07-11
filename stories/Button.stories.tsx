@@ -8,28 +8,54 @@ export default {
 
 const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />;
 
-export const AsButton = Template.bind({});
-AsButton.args = {
+export const AsButtonPrimary = Template.bind({});
+AsButtonPrimary.args = {
+  variant: "primary",
   label: "Button",
   onClick: () => console.log("Button clicked"),
   href: undefined,
 };
 
-export const AsButtonPrimary = Template.bind({});
-AsButtonPrimary.args = {
-  ...AsButton.args,
+export const AsLinkPrimary = Template.bind({});
+AsLinkPrimary.args = {
   variant: "primary",
-};
-
-export const AsLink = Template.bind({});
-AsLink.args = {
   label: "Link",
   href: "https://www.google.com",
   onClick: undefined,
 };
 
-export const AsLinkPrimary = Template.bind({});
-AsLinkPrimary.args = {
-  ...AsLink.args,
-  variant: "primary",
+export const AsButtonSecondary = Template.bind({});
+AsButtonSecondary.args = {
+  ...AsButtonPrimary.args,
+  variant: "secondary",
+};
+
+export const AsLinkSecondary = Template.bind({});
+AsLinkSecondary.args = {
+  ...AsLinkPrimary.args,
+  variant: "secondary",
+};
+
+export const AsButtonTertiary = Template.bind({});
+AsButtonTertiary.args = {
+  ...AsButtonPrimary.args,
+  variant: "tertiary",
+};
+
+export const AsLinkTertiary = Template.bind({});
+AsLinkTertiary.args = {
+  ...AsLinkPrimary.args,
+  variant: "tertiary",
+};
+
+export const WithCustomWidthPx = Template.bind({});
+WithCustomWidthPx.args = {
+  ...AsButtonPrimary.args,
+  width: 300,
+};
+
+export const WithCustomWidthPercent = Template.bind({});
+WithCustomWidthPercent.args = {
+  ...AsButtonPrimary.args,
+  width: "50%",
 };

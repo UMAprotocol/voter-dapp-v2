@@ -5,9 +5,9 @@ import styled, { CSSProperties } from "styled-components";
 
 interface Props {
   /**
-   * use `primary` for the most important UI element on the page
+   * use `primary` for the most important UI element on the page, `secondary` for the second most, and so on
    */
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "tertiary";
   /**
    * button contents
    */
@@ -20,45 +20,61 @@ interface Props {
    * optional link
    */
   href?: string;
+  /**
+   * optionally override the default width
+   */
+  width?: CSSProperties["width"];
 }
 
 /**
  * Primary UI component for user interaction
  *
- * @param variant use `primary` for the most important UI element on the page
+ * @param variant use `primary` for the most important UI element on the page, `secondary` for the second most, and so on
  * @param onClick - behaves as a button when provided
  * @param href - behaves as a link when provided
  * @param label - button label
  * @throws if both onClick and href are provided
  */
-export function Button({ variant = "secondary", label, onClick, href }: Props) {
+export function Button({ variant = "tertiary", label, onClick, href, width = 200 }: Props) {
   if (onClick && href) {
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
   }
 
-  const primaryStyle = {
-    "--display": "grid",
-    "--place-items": "center",
-    "--color": white,
-    "--background-color": red,
-    "--width": 200 + "px",
-    "--height": 50 + "px",
-    "--border-radius": 5 + "px",
-    "--font-size": 18 + "px",
-  } as CSSProperties;
+  const styles = {
+    primary: {
+      "--display": "grid",
+      "--place-items": "center",
+      "--color": white,
+      "--background-color": red,
+      "--width": width + "px",
+      "--height": 50 + "px",
+      "--border-radius": 5 + "px",
+      "--font-size": 18 + "px",
+    } as CSSProperties,
+    secondary: {
+      "--display": "grid",
+      "--place-items": "center",
+      "--color": red,
+      "--background-color": white,
+      "--width": width + "px",
+      "--height": 50 + "px",
+      "--border-radius": 5 + "px",
+      "--border": `1px solid ${red}`,
+      "--font-size": 18 + "px",
+    } as CSSProperties,
+    tertiary: {
+      "--display": "unset",
+      "--place-items": "unset",
+      "--color": red,
+      "--background-color": "transparent",
+      "--width": "unset",
+      "--height": "unset",
+      "--border-radius": "unset",
+      "--font-size": 16 + "px",
+    } as CSSProperties,
+  };
 
-  const secondaryStyle = {
-    "--display": "unset",
-    "--place-items": "unset",
-    "--color": red,
-    "--background-color": "transparent",
-    "--width": "unset",
-    "--height": "unset",
-    "--border-radius": "unset",
-    "--font-size": 16 + "px",
-  } as CSSProperties;
-
-  const style = variant === "primary" ? primaryStyle : secondaryStyle;
+  const style = styles[variant];
 
   return (
     <>
@@ -97,6 +113,7 @@ const A = styled.a`
   text-decoration: none;
   color: var(--color);
   background-color: var(--background-color);
+  border: var(--border);
   border-radius: var(--border-radius);
   font: var(--text-md);
   font-size: var(--font-size);
@@ -122,6 +139,7 @@ const __Button = styled.button`
   height: var(--height);
   color: var(--color);
   background-color: var(--background-color);
+  border: var(--border);
   border-radius: var(--border-radius);
   font: var(--text-md);
   font-size: var(--font-size);
