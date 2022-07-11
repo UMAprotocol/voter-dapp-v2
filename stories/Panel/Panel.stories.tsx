@@ -54,3 +54,13 @@ AsVotePanel.args = {
   },
   panelOpen: true,
 };
+
+export const AsStakeUnstakePanel = Template.bind({});
+AsStakeUnstakePanel.args = {
+  panelType: "stake",
+  panelContent: {
+    title: "Stake/Unstake",
+    description: "Stake/Unstake description",
+  },
+  panelOpen: true,
+};
