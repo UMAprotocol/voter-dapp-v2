@@ -7,10 +7,16 @@ import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
 import { desktopPanelWidth } from "constants/containers";
+import { StakeUnstakePanel } from "./StakeUnstakePanel";
+import { RemindMePanel } from "./RemindMePanel";
+import { VoteHistoryPanel } from "./VoteHistoryPanel";
 
 const panelTypeToPanelComponent = {
   claim: ClaimPanel,
   vote: VotePanel,
+  stake: StakeUnstakePanel,
+  remind: RemindMePanel,
+  history: VoteHistoryPanel,
 };
 
 export function Panel() {
@@ -22,7 +28,7 @@ export function Panel() {
     leave: { opacity: 0, x: -desktopPanelWidth },
   });
 
-  if (!panelType) return null;
+  if (!panelType || !panelContent) return null;
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
