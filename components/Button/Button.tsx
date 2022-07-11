@@ -40,13 +40,15 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
   }
 
+  width = typeof width === "string" ? width : `${width}px`;
+
   const styles = {
     primary: {
       "--display": "grid",
       "--place-items": "center",
       "--color": white,
       "--background-color": red,
-      "--width": width + "px",
+      "--width": width,
       "--height": 50 + "px",
       "--border-radius": 5 + "px",
       "--font-size": 18 + "px",
@@ -56,7 +58,7 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--place-items": "center",
       "--color": red,
       "--background-color": white,
-      "--width": width + "px",
+      "--width": width,
       "--height": 50 + "px",
       "--border-radius": 5 + "px",
       "--border": `1px solid ${red}`,
