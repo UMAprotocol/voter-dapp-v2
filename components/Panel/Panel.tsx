@@ -16,9 +16,9 @@ export function Panel() {
   const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
 
   const transitions = useTransition(panelOpen, {
-    from: { opacity: 0, x: 1000 },
-    enter: { opacity: 1, x: 0 },
-    leave: { opacity: 0, x: 1000 },
+    from: { opacity: 0, x: -1000 },
+    enter: { opacity: 0.5, x: 0 },
+    leave: { opacity: 0, x: -1000 },
   });
 
   if (!panelType) return null;
@@ -33,11 +33,14 @@ export function Panel() {
       {transitions(
         (styles, item) =>
           item && (
-            <Overlay onDismiss={closePanel} style={{ opacity: styles.opacity }}>
+            <Overlay
+              onDismiss={closePanel}
+              style={{ backgroundColor: styles.opacity.to((value) => `hsla(0, 0%, 0%, ${value})`) }}
+            >
               <Content
                 aria-labelledby="panel-title"
                 style={{
-                  transform: styles.x.to((value) => `translate3d(${value}px, 0px, 0px)`),
+                  right: styles.x,
                 }}
               >
                 <TitleWrapper>
@@ -59,15 +62,19 @@ const AnimatedOverlay = animated(DialogOverlay);
 
 const AnimatedContent = animated(DialogContent);
 
-const Overlay = styled(AnimatedOverlay)``;
+const Overlay = styled(AnimatedOverlay)`
+  background-color: hsla(0, 0%, 0%, 0);
+  overflow: hidden;
+`;
 
 const Content = styled(AnimatedContent)`
   width: 570px;
   height: 100%;
   margin: 0;
   padding: 0;
-  right: 0;
-  position: absolute;
+  right: -1000px;
+  position: fixed;
+  background: var(--white);
 `;
 
 const TitleWrapper = styled.div`
