@@ -3,6 +3,7 @@ import {
   blackOpacity25,
   blackOpacity50,
   blackOpacity60,
+  blackOpacity75,
   gray100,
   gray50,
   green,
@@ -200,6 +201,7 @@ a:not([class]) {
     --black-opacity-25: ${blackOpacity25};
     --black-opacity-50: ${blackOpacity50};
     --black-opacity-60: ${blackOpacity60};
+    --black-opacity-75: ${blackOpacity75};
     --red: ${red};
     --green: ${green};
     --gray-50: ${gray50};
