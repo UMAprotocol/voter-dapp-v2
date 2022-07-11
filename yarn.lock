@@ -3289,6 +3289,17 @@
     tiny-warning "^1.0.3"
     tslib "^2.3.0"
 
+"@reach/tabs@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@reach/tabs/-/tabs-0.17.0.tgz#42bc24613f47fc798bcf1ebeef807e6f63feb89c"
+  integrity sha512-XMw+5EaF6ZSmdkUQ45Cy8jbVp63Ksq77ZvS6zI64LHO2KPfPuTZTeUcsvvnJfA/POp3Ou9q6FRbs2d2HxWEApw==
+  dependencies:
+    "@reach/auto-id" "0.17.0"
+    "@reach/descendants" "0.17.0"
+    "@reach/utils" "0.17.0"
+    prop-types "^15.7.2"
+    tslib "^2.3.0"
+
 "@reach/utils@0.17.0":
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/@reach/utils/-/utils-0.17.0.tgz#3d1d2ec56d857f04fe092710d8faee2b2b121303"

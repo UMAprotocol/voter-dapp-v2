@@ -14,6 +14,7 @@
   "dependencies": {
     "@reach/dialog": "^0.17.0",
     "@reach/menu-button": "^0.17.0",
+    "@reach/tabs": "^0.17.0",
     "@web3-onboard/core": "^2.3.1",
     "@web3-onboard/gnosis": "^2.0.4",
     "@web3-onboard/injected-wallets": "^2.0.11",
