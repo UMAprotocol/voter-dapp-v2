@@ -59,3 +59,21 @@ WithCustomWidthPercent.args = {
   ...AsButtonPrimary.args,
   width: "50%",
 };
+
+export const WithCustomHeightPx = Template.bind({});
+WithCustomHeightPx.args = {
+  ...AsButtonPrimary.args,
+  height: 30,
+};
+
+export const WithCustomHeightPercent = Template.bind({});
+WithCustomHeightPercent.args = {
+  ...AsButtonPrimary.args,
+  height: "50%",
+};
+
+export const WithCustomFontSize = Template.bind({});
+WithCustomFontSize.args = {
+  ...AsButtonPrimary.args,
+  fontSize: 12,
+};

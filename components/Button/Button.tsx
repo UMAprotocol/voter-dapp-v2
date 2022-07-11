@@ -28,6 +28,10 @@ interface Props {
    * optionally override the default height
    */
   height?: CSSProperties["height"];
+  /**
+   * optionally override the default font size
+   */
+  fontSize?: number;
 }
 
 /**
@@ -39,7 +43,7 @@ interface Props {
  * @param label - button label
  * @throws if both onClick and href are provided
  */
-export function Button({ variant = "tertiary", label, onClick, href, width = 200, height = 50 }: Props) {
+export function Button({ variant = "tertiary", label, onClick, href, width = 200, height = 50, fontSize }: Props) {
   if (onClick && href) {
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
   }
@@ -56,7 +60,7 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--width": width,
       "--height": height,
       "--border-radius": 5 + "px",
-      "--font-size": 18 + "px",
+      "--font-size": (fontSize ? fontSize : 18) + "px",
     } as CSSProperties,
     secondary: {
       "--display": "grid",
@@ -67,12 +71,12 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
       "--height": height,
       "--border-radius": 5 + "px",
       "--border": `1px solid ${red}`,
-      "--font-size": 18 + "px",
+      "--font-size": (fontSize ? fontSize : 18) + "px",
     } as CSSProperties,
     tertiary: {
       "--color": red,
       "--background-color": "transparent",
-      "--font-size": 16 + "px",
+      "--font-size": (fontSize ? fontSize : 16) + "px",
     } as CSSProperties,
   };
 
