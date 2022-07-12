@@ -49,6 +49,8 @@ const Box = styled(CustomCheckboxContainer)`
   background: var(--box-background-color);
   border: 1px solid var(--black);
   border-radius: 2px;
+
+  transition: background 0.2s ease-in-out;
 `;
 
 const CheckIcon = styled(Check)``;
