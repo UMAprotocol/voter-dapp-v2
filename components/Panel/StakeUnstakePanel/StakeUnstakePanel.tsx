@@ -1,12 +1,8 @@
 import { Tabs } from "components/Tabs";
 import styled from "styled-components";
-import { PanelContentT } from "types/global";
 import { Stake } from "./Stake";
 
-interface Props {
-  content: PanelContentT;
-}
-export function StakeUnstakePanel({ content }: Props) {
+export function StakeUnstakePanel() {
   const tabs = [
     {
       title: "Stake",
