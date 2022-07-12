@@ -53,6 +53,7 @@ const Tab = styled(ReachTab)`
   background: transparent;
   color: var(--black);
   font: var(--text-md);
+  padding-inline: 3px;
   border-bottom: 3px solid transparent;
 `;
 
