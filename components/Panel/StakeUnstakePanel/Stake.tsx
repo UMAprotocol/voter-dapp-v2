@@ -15,16 +15,20 @@ export function Stake() {
         Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for 7 days after
         unstaking.
       </Description>
-      <AmountInput
-        value={stakeAmount}
-        onChange={(e) => setStakeAmount(e.target.value)}
-        onMax={() => setStakeAmount("10000")}
-      />
-      <Checkbox
-        label={disclaimer}
-        checked={disclaimerChecked}
-        onChange={(e) => setDisclaimerChecked(e.target.checked)}
-      />
+      <AmountInputWrapper>
+        <AmountInput
+          value={stakeAmount}
+          onChange={(e) => setStakeAmount(e.target.value)}
+          onMax={() => setStakeAmount("10000")}
+        />
+      </AmountInputWrapper>
+      <CheckboxWrapper>
+        <Checkbox
+          label={disclaimer}
+          checked={disclaimerChecked}
+          onChange={(e) => setDisclaimerChecked(e.target.checked)}
+        />
+      </CheckboxWrapper>
       <Button
         variant="primary"
         label="Stake"
@@ -36,8 +40,25 @@ export function Stake() {
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  padding-top: 25px;
+  padding-inline: 30px;
+`;
 
-const Title = styled.h2``;
+const Title = styled.h2`
+  font: var(--header-sm);
+  font-weight: 700;
+`;
 
-const Description = styled.p``;
+const Description = styled.p`
+  font: var(--text-sm);
+  margin-bottom: 27px;
+`;
+
+const AmountInputWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const CheckboxWrapper = styled.div`
+  margin-bottom: 23px;
+`;
