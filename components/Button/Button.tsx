@@ -21,31 +21,42 @@ interface Props {
    */
   href?: string;
   /**
-   * optionally override the default width
+   * disables the button
+   */
+  disabled?: boolean;
+  /**
+   * optionally override the width
    */
   width?: CSSProperties["width"];
   /**
-   * optionally override the default height
+   * optionally override the height
    */
   height?: CSSProperties["height"];
   /**
-   * optionally override the default font size
+   * optionally override the font size
    */
   fontSize?: number;
 }
-
-/**
- * Primary UI component for user interaction
- *
- * @param variant use `primary` for the most important UI element on the page, `secondary` for the second most, and so on
- * @param onClick - behaves as a button when provided
- * @param href - behaves as a link when provided
- * @param label - button label
- * @throws if both onClick and href are provided
- */
-export function Button({ variant = "tertiary", label, onClick, href, width = 200, height = 50, fontSize }: Props) {
+export function Button({
+  variant = "tertiary",
+  label,
+  onClick,
+  href,
+  width = 200,
+  height = 50,
+  fontSize,
+  disabled,
+}: Props) {
   if (onClick && href) {
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
+  }
+
+  if (!onClick && !href) {
+    throw new Error("Must have either onClick or href. Must behave as either a link or a button.");
+  }
+
+  if (href && disabled) {
+    throw new Error("`disabled` only makes sense on `button` elements. Cannot be used with `href`. ");
   }
 
   width = typeof width === "string" ? width : `${width}px`;
@@ -90,7 +101,7 @@ export function Button({ variant = "tertiary", label, onClick, href, width = 200
         </_Link>
       ) : null}
       {onClick ? (
-        <_Button onClick={onClick} style={style}>
+        <_Button onClick={onClick} style={style} disabled={disabled}>
           {label}
         </_Button>
       ) : null}
@@ -129,10 +140,11 @@ interface ButtonProps {
   onClick: () => void;
   children: ReactNode;
   style: CSSProperties;
+  disabled?: boolean;
 }
-function _Button({ onClick, children, style }: ButtonProps) {
+function _Button({ onClick, children, style, disabled }: ButtonProps) {
   return (
-    <__Button onClick={onClick} style={style}>
+    <__Button onClick={onClick} style={style} disabled={disabled}>
       {children}
     </__Button>
   );
@@ -149,4 +161,9 @@ const __Button = styled.button`
   border-radius: var(--border-radius);
   font: var(--text-md);
   font-size: var(--font-size);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.25;
+  }
 `;

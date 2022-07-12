@@ -77,3 +77,9 @@ WithCustomFontSize.args = {
   ...AsButtonPrimary.args,
   fontSize: 12,
 };
+
+export const WithDisabled = Template.bind({});
+WithDisabled.args = {
+  ...AsButtonPrimary.args,
+  disabled: true,
+};
