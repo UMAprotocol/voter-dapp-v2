@@ -1,6 +1,7 @@
 import { Tabs } from "components/Tabs";
 import styled from "styled-components";
 import { PanelContentT } from "types/global";
+import { Stake } from "./Stake";
 
 interface Props {
   content: PanelContentT;
@@ -9,7 +10,7 @@ export function StakeUnstakePanel({ content }: Props) {
   const tabs = [
     {
       title: "Stake",
-      content: <div>Stake panel</div>,
+      content: <Stake />,
     },
     {
       title: "Unstake",

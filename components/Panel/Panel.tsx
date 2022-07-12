@@ -7,7 +7,7 @@ import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
 import { desktopPanelWidth } from "constants/containers";
-import { StakeUnstakePanel } from "./StakeUnstakePanel";
+import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { VoteHistoryPanel } from "./VoteHistoryPanel";
 
