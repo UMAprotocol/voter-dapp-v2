@@ -166,4 +166,6 @@ const __Button = styled.button`
     cursor: not-allowed;
     opacity: 0.25;
   }
+
+  transition: opacity 0.2s ease-in-out;
 `;
