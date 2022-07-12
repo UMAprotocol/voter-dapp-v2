@@ -18,7 +18,7 @@ interface Props {
 }
 export function Tabs({ tabs }: Props) {
   return (
-    <TabsWrapper defaultIndex={1}>
+    <TabsWrapper>
       <TabList>
         {tabs.map(({ title }) => (
           <Tab key={title}>{title}</Tab>

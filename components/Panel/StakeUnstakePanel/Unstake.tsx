@@ -2,6 +2,9 @@ import { AmountInput } from "components/AmountInput";
 import { Button } from "components/Button";
 import { useState } from "react";
 import styled from "styled-components";
+import One from "public/assets/icons/one.svg";
+import Two from "public/assets/icons/two.svg";
+import Three from "public/assets/icons/three.svg";
 
 export function Unstake() {
   const [unstakeAmount, setStakeAmount] = useState<string>();
@@ -15,9 +18,18 @@ export function Unstake() {
       </Description>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
-        <UnstakeStep>Unstake tokens</UnstakeStep>
-        <UnstakeStep>Cool-off period of 7 days</UnstakeStep>
-        <UnstakeStep>Claim tokens</UnstakeStep>
+        <UnstakeStep>
+          <OneIcon />
+          Unstake tokens
+        </UnstakeStep>
+        <UnstakeStep>
+          <TwoIcon />
+          Cool-off period of 7 days
+        </UnstakeStep>
+        <UnstakeStep>
+          <ThreeIcon />
+          Claim tokens
+        </UnstakeStep>
       </HowItWorks>
       <AmountInputWrapper>
         <AmountInput
@@ -59,13 +71,48 @@ const AmountInputWrapper = styled.div`
 
 const HowItWorks = styled.ol`
   list-style: none;
+  background: var(--gray-50);
+  padding-block: 15px;
+  padding-left: 20px;
+  margin-bottom: 25px;
+  border-radius: 5px;
 `;
 
 const HowItWorksTitle = styled.h3`
   font: var(--text-md);
+  margin-bottom: 13px;
 `;
 
 const UnstakeStep = styled.li`
   display: flex;
+  gap: 15px;
+  margin-bottom: 13px;
   font: var(--text-sm);
+`;
+
+const OneIcon = styled(One)`
+  circle {
+    fill: var(--black);
+  }
+  path {
+    fill: var(--white);
+  }
+`;
+
+const TwoIcon = styled(Two)`
+  circle {
+    fill: var(--black);
+  }
+  path {
+    fill: var(--white);
+  }
+`;
+
+const ThreeIcon = styled(Three)`
+  circle {
+    fill: var(--black);
+  }
+  path {
+    fill: var(--white);
+  }
 `;
