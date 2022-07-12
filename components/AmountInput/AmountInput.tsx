@@ -7,13 +7,15 @@ interface Props {
   value: number;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onMax: () => void;
+  disabled?: boolean;
 }
-export function AmountInput({ value, onChange, onMax }: Props) {
+export function AmountInput({ value, onChange, onMax, disabled }: Props) {
   return (
-    <Wrapper>
+    <Wrapper aria-disabled={disabled}>
       <Input
         value={value}
         onChange={onChange}
+        disabled={disabled}
         type="number"
         inputMode="decimal"
         autoComplete="off"
@@ -25,7 +27,15 @@ export function AmountInput({ value, onChange, onMax }: Props) {
       />
       <UmaTokenIcon />
       <MaxButtonWrapper>
-        <Button label="Max" variant="secondary" width={50} height={25} fontSize={12} onClick={onMax} />
+        <Button
+          label="Max"
+          variant="secondary"
+          width={50}
+          height={25}
+          fontSize={12}
+          onClick={onMax}
+          disabled={disabled}
+        />
       </MaxButtonWrapper>
     </Wrapper>
   );
@@ -35,6 +45,11 @@ const Wrapper = styled.div`
   font: var(--text-md);
   position: relative;
   max-width: 510px;
+
+  /* don't set opacity on the max button wrapper div, otherwise the opacity will be applied twice */
+  > :not(div) {
+    opacity: 0.25;
+  }
 `;
 
 const Input = styled.input`
@@ -44,6 +59,10 @@ const Input = styled.input`
   border-radius: 5px;
   color: var(--black-opacity-50);
   padding-left: 55px;
+
+  :disabled {
+    cursor: not-allowed;
+  }
 
   ::placeholder {
     color: var(--black-opacity-50);
