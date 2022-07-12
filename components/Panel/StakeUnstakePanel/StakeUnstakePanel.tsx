@@ -1,6 +1,7 @@
 import { Tabs } from "components/Tabs";
 import styled from "styled-components";
 import { Stake } from "./Stake";
+import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const tabs = [
@@ -10,7 +11,7 @@ export function StakeUnstakePanel() {
     },
     {
       title: "Unstake",
-      content: <div>Unstake panel</div>,
+      content: <Unstake />,
     },
   ];
 

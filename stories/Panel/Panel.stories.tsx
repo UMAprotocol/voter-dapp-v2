@@ -16,7 +16,7 @@ const Template: ComponentStory<typeof Panel> = (args) => {
     panelType: args.panelType,
     setPanelType: () => null,
     // @ts-expect-error - ignore ts error args is of type unknown
-    panelContent: args.panelContent,
+    panelContent: args?.panelContent ?? null,
     setPanelContent: () => null,
     // @ts-expect-error - ignore ts error args is of type unknown
     panelOpen: args.panelOpen,

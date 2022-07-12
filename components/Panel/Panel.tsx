@@ -28,7 +28,7 @@ export function Panel() {
     leave: { opacity: 0, right: -desktopPanelWidth },
   });
 
-  if (!panelType || !panelContent) return null;
+  if (!panelType) return null;
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
