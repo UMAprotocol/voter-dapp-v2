@@ -4,7 +4,7 @@ import { Button } from "components/Button";
 import { ChangeEvent } from "react";
 
 interface Props {
-  value: number;
+  value: string | undefined;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onMax: () => void;
   disabled?: boolean;
