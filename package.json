@@ -12,6 +12,7 @@
     "chromatic": "npx chromatic --project-token=9e9ed15fd825"
   },
   "dependencies": {
+    "@reach/checkbox": "^0.17.0",
     "@reach/dialog": "^0.17.0",
     "@reach/menu-button": "^0.17.0",
     "@reach/tabs": "^0.17.0",
