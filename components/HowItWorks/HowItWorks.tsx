@@ -3,8 +3,21 @@ import { InfoBar } from "components/InfoBar";
 import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
+import { usePanelContext } from "hooks/usePanelContext";
 
 export function HowItWorks() {
+  const { setPanelType, setPanelOpen } = usePanelContext();
+
+  function openStakeUnstakePanel() {
+    setPanelType("stake");
+    setPanelOpen(true);
+  }
+
+  function openClaimPanel() {
+    setPanelType("claim");
+    setPanelOpen(true);
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -22,7 +35,7 @@ export function HowItWorks() {
             </>
           }
           actionLabel="Stake/Unstake"
-          onClick={() => console.log("TODO")}
+          onClick={openStakeUnstakePanel}
         />
         <InfoBar
           label={
@@ -52,7 +65,7 @@ export function HowItWorks() {
             </>
           }
           actionLabel="Claim"
-          onClick={() => console.log("TODO")}
+          onClick={openClaimPanel}
         />
       </InnerWrapper>
     </OuterWrapper>
