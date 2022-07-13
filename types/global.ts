@@ -30,7 +30,14 @@ export type VoteTimelineT = {
 
 export type PanelTypeT = "claim" | "vote" | "stake" | "history" | "remind" | null;
 
-export type PanelContentT = {
+export type VotePanelContentT = {
   title: string;
+  origin: DisputeOrigins;
   description: string;
-} | null;
+  options: string[];
+  timestamp: Date;
+  links: { href: string; label: string }[];
+  discordLink: string;
+};
+
+export type PanelContentT = VotePanelContentT | null;
