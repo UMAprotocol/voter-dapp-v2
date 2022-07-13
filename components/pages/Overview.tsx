@@ -2,7 +2,7 @@ import { Banner } from "components/Banner";
 import { HowItWorks } from "components/HowItWorks";
 import { Layout } from "components/Layout";
 import { Votes } from "components/Votes";
-import { add } from "date-fns";
+import { add, sub } from "date-fns";
 import { DisputeOrigins } from "types/global";
 
 export function Overview() {
@@ -11,6 +11,31 @@ export function Overview() {
       dispute: {
         title: "SuperUMAn DAO KPI Options funding proposal",
         origin: DisputeOrigins.UMA,
+        description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
+      
+          The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
+          If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
+        disputeNumber: 205,
+        options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
+        timestamp: sub(new Date(), { days: 1 }),
+        number: 123,
+        txid: "0x12345667890987655",
+        umipNumber: 456,
+        links: [
+          {
+            label: "UMIP link",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Dispute txid",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Optimistic Oracle UI",
+            href: "https://www.todo.com",
+          },
+        ],
+        discordLink: "https://www.todo.com",
       },
       voteOptions: [
         { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -24,6 +49,31 @@ export function Overview() {
       dispute: {
         title: "SuperUMAn DAO KPI Options funding proposal",
         origin: DisputeOrigins.UMA,
+        description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
+      
+        The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
+        If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
+        disputeNumber: 205,
+        options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
+        timestamp: sub(new Date(), { days: 1 }),
+        number: 123,
+        txid: "0x12345667890987655",
+        umipNumber: 456,
+        links: [
+          {
+            label: "UMIP link",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Dispute txid",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Optimistic Oracle UI",
+            href: "https://www.todo.com",
+          },
+        ],
+        discordLink: "https://www.todo.com",
       },
       voteOptions: [
         { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -37,6 +87,31 @@ export function Overview() {
       dispute: {
         title: "George Kambosos Jr. vs. Devin Haney",
         origin: DisputeOrigins.Polymarket,
+        description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
+      
+        The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
+        If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
+        disputeNumber: 205,
+        options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
+        timestamp: sub(new Date(), { days: 1 }),
+        number: 123,
+        txid: "0x12345667890987655",
+        umipNumber: 456,
+        links: [
+          {
+            label: "UMIP link",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Dispute txid",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Optimistic Oracle UI",
+            href: "https://www.todo.com",
+          },
+        ],
+        discordLink: "https://www.todo.com",
       },
       voteOptions: [
         { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -50,6 +125,31 @@ export function Overview() {
       dispute: {
         title: "George Kambosos Jr. vs. Devin Haney",
         origin: DisputeOrigins.Polymarket,
+        description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
+      
+        The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
+        If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
+        disputeNumber: 205,
+        options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
+        timestamp: sub(new Date(), { days: 1 }),
+        number: 123,
+        txid: "0x12345667890987655",
+        umipNumber: 456,
+        links: [
+          {
+            label: "UMIP link",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Dispute txid",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Optimistic Oracle UI",
+            href: "https://www.todo.com",
+          },
+        ],
+        discordLink: "https://www.todo.com",
       },
       voteOptions: [
         { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -69,15 +169,11 @@ export function Overview() {
     revealPhaseEnd: null,
   } as const;
 
-  function mockMoreDetailsAction() {
-    console.log("TODO implement more details clicked");
-  }
-
   return (
     <Layout>
       <Banner />
       <HowItWorks />
-      <Votes votes={mockVotes} voteTimeline={mockVoteTimeline} moreDetailsAction={mockMoreDetailsAction} />
+      <Votes votes={mockVotes} voteTimeline={mockVoteTimeline} />
     </Layout>
   );
 }
