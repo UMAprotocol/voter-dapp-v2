@@ -5,6 +5,7 @@ import Doc from "public/assets/icons/doc.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
+import Chat from "public/assets/icons/chat.svg";
 
 interface Props {
   content: PanelContentT;
@@ -15,79 +16,130 @@ export function VotePanel({ content }: Props) {
   const { description, options, timestamp, links, discordLink } = content;
   return (
     <Wrapper>
-      <SectionWrapper>
-        <Title>
-          <IconWrapper>
-            <DescriptionIcon />
-          </IconWrapper>{" "}
-          Description
-        </Title>
-        <Text>{description}</Text>
-      </SectionWrapper>
-      <SectionWrapper>
-        <Title>
-          <IconWrapper>
-            <VotingIcon />
-          </IconWrapper>
-          Voting options
-        </Title>
-        <OptionsList>
-          {options.map((option) => (
-            <OptionsItem key={option}>
-              <Text>{option}</Text>
-            </OptionsItem>
-          ))}
-        </OptionsList>
-      </SectionWrapper>
-      <SectionWrapper>
-        <Title>
-          <IconWrapper>
-            <TimestampIcon />
-          </IconWrapper>
-          Timestamp
-        </Title>
-        <Text>UTC {timestamp.toUTCString()}</Text>
-        <Text>UNIX {timestamp.getTime()}</Text>
-      </SectionWrapper>
-      <SectionWrapper>
-        <Title>
-          <IconWrapper>
-            <LinksIcon />
-          </IconWrapper>
-          Links
-        </Title>
-        <LinksList>
-          {links.map(({ href, label }) => (
-            <LinkItem key={label}>
-              <Button href={href} label={label} />
-            </LinkItem>
-          ))}
-        </LinksList>
-      </SectionWrapper>
+      <SectionsWrapper>
+        <SectionWrapper>
+          <Title>
+            <IconWrapper>
+              <DescriptionIcon />
+            </IconWrapper>{" "}
+            Description
+          </Title>
+          <Text>{description}</Text>
+        </SectionWrapper>
+        <SectionWrapper>
+          <Title>
+            <IconWrapper>
+              <VotingIcon />
+            </IconWrapper>
+            Voting options
+          </Title>
+          <OptionsList>
+            {options.map((option) => (
+              <OptionsItem key={option}>{option}</OptionsItem>
+            ))}
+          </OptionsList>
+        </SectionWrapper>
+        <SectionWrapper>
+          <Title>
+            <IconWrapper>
+              <TimestampIcon />
+            </IconWrapper>
+            Timestamp
+          </Title>
+          <Timestamp>
+            <span>UTC</span> <span>{timestamp.toUTCString()}</span>
+          </Timestamp>
+          <Timestamp>
+            <span>UNIX</span> <span>{timestamp.getTime()}</span>
+          </Timestamp>
+        </SectionWrapper>
+        <SectionWrapper>
+          <Title>
+            <IconWrapper>
+              <LinksIcon />
+            </IconWrapper>
+            Links
+          </Title>
+          <LinksList>
+            {links.map(({ href, label }) => (
+              <LinkItem key={label}>
+                <Button href={href} label={label} />
+              </LinkItem>
+            ))}
+          </LinksList>
+        </SectionWrapper>
+      </SectionsWrapper>
       <DiscordLinkWrapper>
-        <Button href={discordLink} label="Join discussion on Discord" />
+        <Button
+          href={discordLink}
+          variant="primary"
+          width="100%"
+          height={45}
+          fontSize={16}
+          label={
+            <DiscordLinkContent>
+              <IconWrapper>
+                <ChatIcon />
+              </IconWrapper>{" "}
+              Join the discussion on Discord
+            </DiscordLinkContent>
+          }
+        />
       </DiscordLinkWrapper>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin-top: 20px;
+  padding-inline: 30px;
+`;
 
-const SectionWrapper = styled.div``;
+const SectionsWrapper = styled.div``;
 
-const Title = styled.h3``;
+const SectionWrapper = styled.div`
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--black-opacity-25);
+  }
+`;
 
-const Text = styled.p``;
+const Title = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  font: var(--header-sm);
+  font-weight: 700;
+`;
 
-const OptionsList = styled.ol``;
+const Text = styled.p`
+  font: var(--text-md);
+`;
+
+const Timestamp = styled(Text)`
+  display: flex;
+  gap: 30px;
+`;
+
+const OptionsList = styled.ol`
+  margin-left: 5px;
+  list-style-position: inside;
+  font: var(--text-md);
+`;
 
 const OptionsItem = styled.li``;
 
-const LinksList = styled.ul``;
+const LinksList = styled.ul`
+  list-style: none;
+`;
 
 const LinkItem = styled.li``;
 
-const DiscordLinkWrapper = styled.div``;
+const DiscordLinkWrapper = styled.div`
+  margin-bottom: 60px;
+`;
 
 const IconWrapper = styled.div`
   width: 24px;
@@ -117,4 +169,12 @@ const LinksIcon = styled(Link)`
   path {
     fill: var(--red);
   }
+`;
+
+const ChatIcon = styled(Chat)``;
+
+const DiscordLinkContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
