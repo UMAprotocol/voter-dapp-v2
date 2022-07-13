@@ -1,17 +1,54 @@
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import { usePanelContext } from "hooks/usePanelContext";
 import styled from "styled-components";
 import { VoteT, VoteTimelineT } from "types/global";
 
 interface Props {
   votes: VoteT[];
   voteTimeline: VoteTimelineT;
-  moreDetailsAction: (vote: VoteT) => void;
 }
-export function Votes({ votes, voteTimeline, moreDetailsAction }: Props) {
+export function Votes({ votes, voteTimeline }: Props) {
+  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+
   function commitVotes() {
     console.log("TODO Commit votes");
+  }
+
+  function makeVoteLinks(txid: string, umipNumber: number) {
+    return [
+      {
+        label: `UMIP ${umipNumber}`,
+        href: `https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-${umipNumber}.md`,
+      },
+      {
+        label: "Dispute transaction",
+        href: `https://etherscan.io/tx/${txid}`,
+      },
+      {
+        label: "Optimistic Oracle UI",
+        href: `https://oracle.umaproject.org/request?requester=${txid}`,
+      },
+    ];
+  }
+
+  function openVotePanel(vote: VoteT) {
+    const { title, origin, number, description, timestamp, txid, umipNumber } = vote.dispute;
+    const options = vote.voteOptions.map(({ label }) => label);
+    const panelContent = {
+      title,
+      origin,
+      description,
+      timestamp,
+      options,
+      disputeNumber: number,
+      links: makeVoteLinks(txid, umipNumber),
+      discordLink: "https://www.todo.com",
+    };
+    setPanelType("vote");
+    setPanelContent(panelContent);
+    setPanelOpen(true);
   }
 
   return (
@@ -26,7 +63,7 @@ export function Votes({ votes, voteTimeline, moreDetailsAction }: Props) {
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
           {votes.map((vote) => (
-            <VoteBar vote={vote} key={vote.dispute.title} moreDetailsAction={moreDetailsAction} />
+            <VoteBar vote={vote} key={vote.dispute.title} moreDetailsAction={() => openVotePanel(vote)} />
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
