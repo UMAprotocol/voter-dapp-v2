@@ -10,7 +10,7 @@ import { green, red } from "constants/colors";
 
 interface Props {
   vote: VoteT;
-  moreDetailsAction: (vote: VoteT) => void;
+  moreDetailsAction: () => void;
 }
 export function VoteBar({ vote, moreDetailsAction }: Props) {
   const { dispute, voteOptions, isCommitted } = vote;
@@ -50,7 +50,7 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
         {isCommitted ? "Committed" : "Not committed"}
       </Status>
       <MoreDetails>
-        <Button label="More details" onClick={() => moreDetailsAction(vote)} />
+        <Button label="More details" onClick={moreDetailsAction} />
       </MoreDetails>
     </Wrapper>
   );
