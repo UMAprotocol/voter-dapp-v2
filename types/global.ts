@@ -7,6 +7,11 @@ export type DropdownItemT = {
 export type DisputeT = {
   title: string;
   origin: DisputeOrigins;
+  number: number;
+  description: string;
+  timestamp: Date;
+  txid: string;
+  umipNumber: number;
 };
 
 export enum DisputeOrigins {
