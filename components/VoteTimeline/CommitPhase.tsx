@@ -24,14 +24,16 @@ export function CommitPhase({ phase, startsIn, timeRemaining }: Props) {
           } as CSSProperties
         }
       >
-        <CommitIcon
-          style={
-            {
-              "--stroke-color": iconStrokeColor,
-              "--fill-color": iconFillColor,
-            } as CSSProperties
-          }
-        />
+        <CommitIconWrapper>
+          <CommitIcon
+            style={
+              {
+                "--stroke-color": iconStrokeColor,
+                "--fill-color": iconFillColor,
+              } as CSSProperties
+            }
+          />
+        </CommitIconWrapper>
         {startsIn ? (
           <Message>
             Commit phase starts in <strong>{startsIn}</strong>
@@ -65,6 +67,11 @@ const InnerWrapper = styled.div`
 `;
 
 const Message = styled.p``;
+
+const CommitIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
 
 const CommitIcon = styled(Commit)`
   * {
