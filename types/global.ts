@@ -33,6 +33,7 @@ export type PanelTypeT = "claim" | "vote" | "stake" | "history" | "remind" | nul
 export type VotePanelContentT = {
   title: string;
   origin: DisputeOrigins;
+  disputeNumber: number;
   description: string;
   options: string[];
   timestamp: Date;
