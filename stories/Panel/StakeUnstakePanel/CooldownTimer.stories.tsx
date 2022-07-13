@@ -1,0 +1,43 @@
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { CooldownTimer } from "components/Panel/StakeUnstakePanel";
+import { red } from "constants/colors";
+import add from "date-fns/add";
+
+export default {
+  title: "CooldownTimer",
+  component: CooldownTimer,
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          width: 570,
+          height: 200,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: red,
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+} as ComponentMeta<typeof CooldownTimer>;
+
+const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer {...args} />;
+
+export const InCooldown = Template.bind({});
+InCooldown.args = {
+  timeRemaining: add(new Date(), { hours: 1, minutes: 10 }),
+  amount: "100.123",
+  canClaim: false,
+  onClaim: () => alert("Yay rewards!"),
+};
+
+export const ReadyToClaim = Template.bind({});
+ReadyToClaim.args = {
+  timeRemaining: null,
+  amount: "100.123",
+  canClaim: true,
+  onClaim: () => alert("Yay rewards!"),
+};
