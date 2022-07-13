@@ -12,7 +12,7 @@ import { RemindMePanel } from "./RemindMePanel";
 import { VoteHistoryPanel } from "./VoteHistoryPanel";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
-import { DisputeOrigins } from "types/global";
+import { DisputeOrigins, PanelContentT } from "types/global";
 
 const panelTypeToPanelComponent = {
   claim: ClaimPanel,
@@ -37,17 +37,6 @@ export function Panel() {
 
   const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
 
-  const TitleIcon = ({ origin }: { origin: DisputeOrigins | undefined }) => {
-    switch (origin) {
-      case DisputeOrigins.UMA:
-        return <UMAIcon />;
-      case DisputeOrigins.Polymarket:
-        return <PolymarketIcon />;
-      default:
-        return null;
-    }
-  };
-
   function closePanel() {
     setPanelOpen(false);
   }
@@ -63,7 +52,12 @@ export function Panel() {
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <TitleWrapper>
                   <TitleIcon origin={panelContent?.origin} />
-                  <Title id="panel-title">{panelTitle}</Title>
+                  <Title id="panel-title">
+                    {panelTitle}
+                    <SubTitle>
+                      <SubTitleText panelType={panelType} panelContent={panelContent} />
+                    </SubTitle>
+                  </Title>
                   <CloseButton onClick={closePanel}>
                     <CloseIcon />
                   </CloseButton>
@@ -73,6 +67,29 @@ export function Panel() {
             </Overlay>
           )
       )}
+    </>
+  );
+}
+
+function TitleIcon({ origin }: { origin: DisputeOrigins | undefined }) {
+  switch (origin) {
+    case DisputeOrigins.UMA:
+      return <UMAIcon />;
+    case DisputeOrigins.Polymarket:
+      return <PolymarketIcon />;
+    default:
+      return null;
+  }
+}
+
+function SubTitleText({ panelType, panelContent }: { panelType: string; panelContent: PanelContentT }) {
+  if (panelType !== "vote" || !panelContent) return null;
+
+  const { origin, disputeNumber } = panelContent;
+
+  return (
+    <>
+      {origin} | Dispute number <strong>#{disputeNumber}</strong>
     </>
   );
 }
@@ -106,6 +123,10 @@ const TitleWrapper = styled.div`
 
 const Title = styled.h1`
   font: var(--header-md);
+`;
+
+const SubTitle = styled.h2`
+  font: var(--text-sm);
 `;
 
 const CloseButton = styled.button`
