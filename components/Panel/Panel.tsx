@@ -10,6 +10,9 @@ import { desktopPanelWidth } from "constants/containers";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { VoteHistoryPanel } from "./VoteHistoryPanel";
+import UMA from "public/assets/icons/uma.svg";
+import Polymarket from "public/assets/icons/polymarket.svg";
+import { DisputeOrigins } from "types/global";
 
 const panelTypeToPanelComponent = {
   claim: ClaimPanel,
@@ -32,6 +35,19 @@ export function Panel() {
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
+  const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
+
+  const TitleIcon = ({ origin }: { origin: DisputeOrigins | undefined }) => {
+    switch (origin) {
+      case DisputeOrigins.UMA:
+        return <UMAIcon />;
+      case DisputeOrigins.Polymarket:
+        return <PolymarketIcon />;
+      default:
+        return null;
+    }
+  };
+
   function closePanel() {
     setPanelOpen(false);
   }
@@ -46,7 +62,8 @@ export function Panel() {
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <TitleWrapper>
-                  <Title id="panel-title">{panelContent?.title ?? ""}</Title>
+                  <TitleIcon origin={panelContent?.origin} />
+                  <Title id="panel-title">{panelTitle}</Title>
                   <CloseButton onClick={closePanel}>
                     <CloseIcon />
                   </CloseButton>
@@ -81,7 +98,9 @@ const TitleWrapper = styled.div`
   background: var(--black);
   color: var(--white);
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
+  align-items: center;
+  gap: 20px;
   padding: 25px;
 `;
 
@@ -91,6 +110,11 @@ const Title = styled.h1`
 
 const CloseButton = styled.button`
   background: transparent;
+  margin-left: auto;
 `;
 
 const CloseIcon = styled(Close)``;
+
+const UMAIcon = styled(UMA)``;
+
+const PolymarketIcon = styled(Polymarket)``;
