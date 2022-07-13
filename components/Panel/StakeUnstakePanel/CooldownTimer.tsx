@@ -17,7 +17,9 @@ export function CooldownTimer({ timeRemaining, amount, canClaim, onClaim }: Prop
 
   return (
     <Wrapper>
-      <TimeIcon />
+      <IconWrapper>
+        <TimeIcon />
+      </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
           <strong>{amount}</strong> UMA
@@ -60,6 +62,11 @@ const Description = styled.span``;
 const TimeRemaining = styled.div`
   margin-left: auto;
   color: var(--red);
+`;
+
+const IconWrapper = styled.div`
+  width: 14px;
+  height: 14px;
 `;
 
 const TimeIcon = styled(Time)``;
