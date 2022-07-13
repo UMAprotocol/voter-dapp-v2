@@ -76,7 +76,10 @@ const Dispute = styled.div`
 
 const DisputeDetailsWrapper = styled.div``;
 
-const DisputeIconWrapper = styled.div``;
+const DisputeIconWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+`;
 
 const DisputeTitle = styled.h3`
   font: var(--header-sm);

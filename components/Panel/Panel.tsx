@@ -74,9 +74,17 @@ export function Panel() {
 function TitleIcon({ origin }: { origin: DisputeOrigins | undefined }) {
   switch (origin) {
     case DisputeOrigins.UMA:
-      return <UMAIcon />;
+      return (
+        <TitleIconWrapper>
+          <UMAIcon />
+        </TitleIconWrapper>
+      );
     case DisputeOrigins.Polymarket:
-      return <PolymarketIcon />;
+      return (
+        <TitleIconWrapper>
+          <PolymarketIcon />
+        </TitleIconWrapper>
+      );
     default:
       return null;
   }
@@ -142,3 +150,8 @@ const CloseIcon = styled(Close)``;
 const UMAIcon = styled(UMA)``;
 
 const PolymarketIcon = styled(Polymarket)``;
+
+const TitleIconWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+`;
