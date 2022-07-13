@@ -6,22 +6,22 @@ import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
 
-const tabs = [
-  {
-    title: "Stake",
-    content: <Stake />,
-  },
-  {
-    title: "Unstake",
-    content: <Unstake />,
-  },
-];
-
 export function StakeUnstakePanel() {
   const [showCooldownTimer, setShowCooldownTimer] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(add(new Date(), { minutes: 1 }));
   const [claimAmount, setClaimAmount] = useState("100.1234");
   const [canClaim, setCanClaim] = useState(true);
+
+  const tabs = [
+    {
+      title: "Stake",
+      content: <Stake />,
+    },
+    {
+      title: "Unstake",
+      content: <Unstake canClaim={canClaim} />,
+    },
+  ];
   return (
     <Wrapper>
       <BalancesWrapper>

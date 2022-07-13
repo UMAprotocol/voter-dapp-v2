@@ -6,9 +6,11 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 
-export function Unstake() {
+interface Props {
+  canClaim: boolean;
+}
+export function Unstake({ canClaim }: Props) {
   const [unstakeAmount, setStakeAmount] = useState<string>();
-  const [canUnstake, setCanUnstake] = useState(false);
 
   return (
     <Wrapper>
@@ -36,7 +38,7 @@ export function Unstake() {
           value={unstakeAmount}
           onChange={(e) => setStakeAmount(e.target.value)}
           onMax={() => setStakeAmount("10000")}
-          disabled={!canUnstake}
+          disabled={!canClaim}
         />
       </AmountInputWrapper>
       <Button
@@ -44,7 +46,7 @@ export function Unstake() {
         label="Unstake"
         onClick={() => console.log("TODO implement stake")}
         width="100%"
-        disabled={!canUnstake}
+        disabled={!canClaim}
       />
     </Wrapper>
   );
