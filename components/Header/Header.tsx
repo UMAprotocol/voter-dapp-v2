@@ -1,6 +1,5 @@
 import Link from "next/link";
 import styled from "styled-components";
-import { Nav } from "./Nav";
 import Logo from "public/assets/logo.svg";
 import { Wallet } from "components/Wallet";
 
@@ -18,7 +17,6 @@ export function Header() {
           </HomeLinkWrapper>
           <PageDescription>VOTING</PageDescription>
         </HomeLinkAndPageDescriptionWrapper>
-        <Nav />
         <Wallet />
       </InnerWrapper>
     </OuterWrapper>
@@ -30,11 +28,10 @@ const OuterWrapper = styled.header``;
 const InnerWrapper = styled.div`
   max-width: var(--desktop-max-width);
   min-height: 80px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 200px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 15px;
-  padding-inline: 45px;
   margin-inline: auto;
 `;
 
