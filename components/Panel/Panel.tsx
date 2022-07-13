@@ -99,15 +99,18 @@ const AnimatedOverlay = animated(DialogOverlay);
 const AnimatedContent = animated(DialogContent);
 
 const Overlay = styled(AnimatedOverlay)`
-  overflow: hidden;
+  overflow-x: hidden;
 `;
 
 const Content = styled(AnimatedContent)`
   width: var(--desktop-panel-width);
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
   position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow-y: scroll;
   background: var(--white);
 `;
 
