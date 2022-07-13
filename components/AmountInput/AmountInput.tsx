@@ -46,7 +46,7 @@ const Wrapper = styled.div`
   position: relative;
   max-width: 510px;
 
-  &[aria-disabled] {
+  &[aria-disabled="true"] {
     /* don't set opacity on the max button wrapper div, otherwise the opacity will be applied twice */
     > :not(div) {
       opacity: 0.25;
