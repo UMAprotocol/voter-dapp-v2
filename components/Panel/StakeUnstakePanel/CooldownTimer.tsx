@@ -36,12 +36,12 @@ export function CooldownTimer({ timeRemaining, amount, canClaim, onClaim }: Prop
 }
 
 const Wrapper = styled.div`
+  grid-area: "cooldown";
   width: 100%;
   height: 50px;
   display: flex;
   gap: 15px;
   align-items: center;
-  margin-inline: 30px;
   padding-left: 15px;
   padding-right: 20px;
   border-radius: 5px;
@@ -49,7 +49,9 @@ const Wrapper = styled.div`
   font: var(--text-md);
 `;
 
-const AmountDescriptionWrapper = styled.span``;
+const AmountDescriptionWrapper = styled.span`
+  color: var(--black);
+`;
 
 const Amount = styled.span``;
 
