@@ -1,11 +1,7 @@
 import { Button } from "components/Button";
 import styled from "styled-components";
-import { PanelContentT } from "types/global";
 
-interface Props {
-  content: PanelContentT;
-}
-export function ClaimPanel({ content }: Props) {
+export function ClaimPanel() {
   return (
     <Wrapper>
       <RewardsWrapper>
