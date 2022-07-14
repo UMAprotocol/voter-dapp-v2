@@ -107,7 +107,7 @@ export function Button({
           {label}
         </_Link>
       ) : null}
-      {onClick ? (
+      {onClick || type === "submit" ? (
         <_Button onClick={onClick} style={style} disabled={disabled} type={type}>
           {label}
         </_Button>
@@ -144,7 +144,7 @@ const A = styled.a`
 `;
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   children: ReactNode;
   style: CSSProperties;
   disabled?: boolean;
