@@ -3,6 +3,7 @@ import { Checkbox } from "components/Checkbox";
 import { TextInput } from "components/Input";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
+import { NotificationButton } from "./NotificationButton";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -45,10 +46,6 @@ export function RemindMePanel() {
       <NotificationButton />
     </Wrapper>
   );
-}
-
-function NotificationButton() {
-  return <div></div>;
 }
 
 const Wrapper = styled.div`
