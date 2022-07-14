@@ -37,13 +37,15 @@ export function RemindMePanel() {
           </SubmitButtonWrapper>
         </EmailForm>
       </SectionWrapper>
-      <SectionWrapper>
-        <SectionTitle>Browser reminder</SectionTitle>
-        <SectionDescription>
-          You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
-        </SectionDescription>
-      </SectionWrapper>
-      <NotificationButton />
+      <BrowserReminderSectionWrapper>
+        <BrowserReminderTextWrapper>
+          <SectionTitle>Browser reminder</SectionTitle>
+          <SectionDescription>
+            You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
+          </SectionDescription>
+        </BrowserReminderTextWrapper>
+        <NotificationButton />
+      </BrowserReminderSectionWrapper>
     </Wrapper>
   );
 }
@@ -79,4 +81,18 @@ const EmailForm = styled.form``;
 
 const CheckboxWrapper = styled.div`
   margin-block: 15px;
+`;
+
+const BrowserReminderSectionWrapper = styled(SectionWrapper)`
+  display: grid;
+  grid-template-columns: 70% 1fr;
+  align-items: end;
+  justify-items: end;
+  padding-bottom: 30px;
+`;
+
+const BrowserReminderTextWrapper = styled.div`
+  > ${SectionDescription} {
+    margin-bottom: 0;
+  }
 `;
