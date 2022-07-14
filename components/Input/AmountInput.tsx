@@ -9,8 +9,9 @@ interface Props {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onMax: () => void;
   disabled?: boolean;
+  placeholder?: string;
 }
-export function AmountInput({ value, onChange, onMax, disabled }: Props) {
+export function AmountInput({ value, onChange, onMax, disabled, placeholder }: Props) {
   return (
     <_Wrapper aria-disabled={disabled}>
       <_Input
@@ -21,7 +22,7 @@ export function AmountInput({ value, onChange, onMax, disabled }: Props) {
         inputMode="decimal"
         autoComplete="off"
         autoCorrect="off"
-        placeholder="Enter amount"
+        placeholder={placeholder ?? "Enter amount"}
         minLength={1}
         maxLength={79}
         spellCheck="false"

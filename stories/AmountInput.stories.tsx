@@ -21,6 +21,11 @@ const Template: ComponentStory<typeof AmountInput> = (args) => {
 
 export const Default = Template.bind({});
 
+export const WithPlaceholder = Template.bind({});
+WithPlaceholder.args = {
+  placeholder: "Custom placeholder text",
+};
+
 export const Disabled = Template.bind({});
 Disabled.args = {
   disabled: true,
