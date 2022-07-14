@@ -20,6 +20,11 @@ WithPlaceholder.args = {
   placeholder: "Custom placeholder text",
 };
 
+export const WithTypeEmail = Template.bind({});
+WithTypeEmail.args = {
+  type: "email",
+};
+
 export const Disabled = Template.bind({});
 Disabled.args = {
   disabled: true,
