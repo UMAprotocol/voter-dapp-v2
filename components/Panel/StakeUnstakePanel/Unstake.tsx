@@ -1,4 +1,4 @@
-import { AmountInput } from "components/AmountInput";
+import { AmountInput } from "components/Input";
 import { Button } from "components/Button";
 import { useState } from "react";
 import styled from "styled-components";
