@@ -4,14 +4,17 @@ import { TextInput } from "components/Input";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { NotificationButton } from "./NotificationButton";
+import Check from "public/assets/icons/check.svg";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(true);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [notificationButtonClicked, setNotificationButtonClicked] = useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setEmailSubmitted(true);
     console.log(email, "TODO implement submit");
     return false;
   }
@@ -22,26 +25,38 @@ export function RemindMePanel() {
 
   return (
     <Wrapper>
-      <SectionWrapper>
-        <SectionTitle>Email reminder</SectionTitle>
-        <SectionDescription>
-          We’ll send out an email 24 hours before the voting commit and reveal phases end.
-        </SectionDescription>
-        <EmailForm onSubmit={onSubmit}>
-          <TextInput placeholder="Your email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <CheckboxWrapper>
-            <Checkbox
-              label="I consent to receiving email notifications"
-              checked={disclaimerAccepted}
-              onChange={(e) => setDisclaimerAccepted(e.target.checked)}
-              gap={5}
-            />
-          </CheckboxWrapper>
-          <SubmitButtonWrapper>
-            <Button variant="primary" type="submit" label="Submit" width="100%" />
-          </SubmitButtonWrapper>
-        </EmailForm>
-      </SectionWrapper>
+      {emailSubmitted ? (
+        <SectionWrapper>
+          <SuccessTitle>Success!</SuccessTitle>
+          <SuccessDescription>Your email has been added TODO improve copy</SuccessDescription>
+          <SuccessIconOuterWrapper>
+            <SuccessIconWrapper>
+              <SuccessIcon />
+            </SuccessIconWrapper>
+          </SuccessIconOuterWrapper>
+        </SectionWrapper>
+      ) : (
+        <SectionWrapper>
+          <SectionTitle>Email reminder</SectionTitle>
+          <SectionDescription>
+            We’ll send out an email 24 hours before the voting commit and reveal phases end.
+          </SectionDescription>
+          <EmailForm onSubmit={onSubmit}>
+            <TextInput placeholder="Your email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <CheckboxWrapper>
+              <Checkbox
+                label="I consent to receiving email notifications"
+                checked={disclaimerAccepted}
+                onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                gap={5}
+              />
+            </CheckboxWrapper>
+            <SubmitButtonWrapper>
+              <Button variant="primary" type="submit" label="Submit" width="100%" />
+            </SubmitButtonWrapper>
+          </EmailForm>
+        </SectionWrapper>
+      )}
       <BrowserReminderSectionWrapper>
         <BrowserReminderTextWrapper>
           <SectionTitle>Browser reminder</SectionTitle>
@@ -99,5 +114,40 @@ const BrowserReminderSectionWrapper = styled(SectionWrapper)`
 const BrowserReminderTextWrapper = styled.div`
   > ${SectionDescription} {
     margin-bottom: 0;
+  }
+`;
+
+const SuccessTitle = styled.h2`
+  font: var(--text-lg);
+  text-align: center;
+  margin-bottom: 6px;
+`;
+
+const SuccessDescription = styled.p`
+  font: var(--text-sm);
+  text-align: center;
+  margin-bottom: 30px;
+`;
+
+const SuccessIconWrapper = styled.div`
+  width: 16px;
+  height: 11px;
+`;
+
+const SuccessIconOuterWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin-inline: auto;
+  margin-bottom: 38px;
+  border-radius: 50%;
+  background: var(--white);
+`;
+
+const SuccessIcon = styled(Check)`
+  path {
+    fill: var(--white);
+    stroke: var(--green);
   }
 `;
