@@ -7,15 +7,16 @@ interface Props {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   placeholder?: string;
+  type?: "text" | "email";
 }
-export function TextInput({ value, onChange, disabled, placeholder }: Props) {
+export function TextInput({ value, onChange, disabled, placeholder, type = "text" }: Props) {
   return (
     <_Wrapper aria-disabled={disabled}>
       <_Input
         value={value}
         onChange={onChange}
         disabled={disabled}
-        type="text"
+        type={type}
         autoComplete="off"
         autoCorrect="off"
         placeholder={placeholder ?? "Enter value"}
