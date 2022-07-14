@@ -8,7 +8,7 @@ import Check from "public/assets/icons/check.svg";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(true);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [notificationButtonClicked, setNotificationButtonClicked] = useState(false);
 
@@ -52,7 +52,7 @@ export function RemindMePanel() {
               />
             </CheckboxWrapper>
             <SubmitButtonWrapper>
-              <Button variant="primary" type="submit" label="Submit" width="100%" />
+              <Button variant="primary" type="submit" label="Submit" width="100%" disabled={!disclaimerAccepted} />
             </SubmitButtonWrapper>
           </EmailForm>
         </SectionWrapper>
