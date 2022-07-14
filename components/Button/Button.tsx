@@ -36,6 +36,10 @@ interface Props {
    * optionally override the font size
    */
   fontSize?: number;
+  /**
+   * use type = "submit" for when used with a <form>
+   */
+  type?: "submit" | "button";
 }
 export function Button({
   variant = "tertiary",
@@ -46,13 +50,16 @@ export function Button({
   height = 50,
   fontSize,
   disabled,
+  type = "button",
 }: Props) {
   if (onClick && href) {
     throw new Error("Cannot have both onClick and href. Must behave as either a link or a button.");
   }
 
-  if (!onClick && !href) {
-    throw new Error("Must have either onClick or href. Must behave as either a link or a button.");
+  if (!onClick && !href && type !== "submit") {
+    throw new Error(
+      "Must have either onClick or href unless acting as a submit button. Must behave as either a link, a button, or a submit button."
+    );
   }
 
   if (href && disabled) {
@@ -101,7 +108,7 @@ export function Button({
         </_Link>
       ) : null}
       {onClick ? (
-        <_Button onClick={onClick} style={style} disabled={disabled}>
+        <_Button onClick={onClick} style={style} disabled={disabled} type={type}>
           {label}
         </_Button>
       ) : null}
@@ -141,10 +148,11 @@ interface ButtonProps {
   children: ReactNode;
   style: CSSProperties;
   disabled?: boolean;
+  type?: "submit" | "button";
 }
-function _Button({ onClick, children, style, disabled }: ButtonProps) {
+function _Button({ onClick, children, style, disabled, type }: ButtonProps) {
   return (
-    <__Button onClick={onClick} style={style} disabled={disabled}>
+    <__Button onClick={onClick} style={style} disabled={disabled} type={type}>
       {children}
     </__Button>
   );
