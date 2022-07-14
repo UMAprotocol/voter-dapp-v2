@@ -8,11 +8,16 @@ import { NotificationButton } from "./NotificationButton";
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [notificationButtonClicked, setNotificationButtonClicked] = useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(email, "TODO implement submit");
     return false;
+  }
+
+  function onNotificationButtonClick() {
+    setNotificationButtonClicked(!notificationButtonClicked);
   }
 
   return (
@@ -44,7 +49,7 @@ export function RemindMePanel() {
             You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
           </SectionDescription>
         </BrowserReminderTextWrapper>
-        <NotificationButton />
+        <NotificationButton clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
       </BrowserReminderSectionWrapper>
     </Wrapper>
   );
