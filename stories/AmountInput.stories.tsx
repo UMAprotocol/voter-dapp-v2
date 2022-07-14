@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { AmountInput } from "components/AmountInput";
+import { AmountInput } from "components/Input";
 import { useArgs } from "@storybook/client-api";
 
 export default {

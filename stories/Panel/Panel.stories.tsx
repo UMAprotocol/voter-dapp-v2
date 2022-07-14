@@ -84,3 +84,9 @@ AsStakePanel.args = {
   panelType: "stake",
   panelOpen: true,
 };
+
+export const AsRemindPanel = Template.bind({});
+AsRemindPanel.args = {
+  panelType: "remind",
+  panelOpen: true,
+};

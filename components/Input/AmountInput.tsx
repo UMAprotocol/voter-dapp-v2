@@ -2,6 +2,7 @@ import styled from "styled-components";
 import UmaToken from "public/assets/icons/uma-token.svg";
 import { Button } from "components/Button";
 import { ChangeEvent } from "react";
+import { Wrapper, Input } from "./Input";
 
 interface Props {
   value: string | undefined;
@@ -11,8 +12,8 @@ interface Props {
 }
 export function AmountInput({ value, onChange, onMax, disabled }: Props) {
   return (
-    <Wrapper aria-disabled={disabled}>
-      <Input
+    <_Wrapper aria-disabled={disabled}>
+      <_Input
         value={value}
         onChange={onChange}
         disabled={disabled}
@@ -37,14 +38,12 @@ export function AmountInput({ value, onChange, onMax, disabled }: Props) {
           disabled={disabled}
         />
       </MaxButtonWrapper>
-    </Wrapper>
+    </_Wrapper>
   );
 }
 
-const Wrapper = styled.div`
-  font: var(--text-md);
+const _Wrapper = styled(Wrapper)`
   position: relative;
-  max-width: 510px;
 
   &[aria-disabled="true"] {
     /* don't set opacity on the max button wrapper div, otherwise the opacity will be applied twice */
@@ -54,21 +53,8 @@ const Wrapper = styled.div`
   }
 `;
 
-const Input = styled.input`
-  width: 100%;
-  height: 45px;
-  border: 1px solid var(--black);
-  border-radius: 5px;
-  color: var(--black-opacity-50);
+const _Input = styled(Input)`
   padding-left: 55px;
-
-  :disabled {
-    cursor: not-allowed;
-  }
-
-  ::placeholder {
-    color: var(--black-opacity-50);
-  }
 
   ::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
