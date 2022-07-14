@@ -33,7 +33,11 @@ export function Checkbox({ label, checked, onChange, disabled, gap = 15 }: Props
         }
       >
         <CustomCheckboxInput />
-        {checked && <CheckIcon />}
+        {checked && (
+          <CheckIconWrapper>
+            <CheckIcon />
+          </CheckIconWrapper>
+        )}
       </Box>
       {label}
     </Label>
@@ -58,6 +62,11 @@ const Box = styled(CustomCheckboxContainer)`
   border-radius: 2px;
 
   transition: background 0.2s ease-in-out;
+`;
+
+const CheckIconWrapper = styled.div`
+  width: 8px;
+  height: 7px;
 `;
 
 const CheckIcon = styled(Check)``;
