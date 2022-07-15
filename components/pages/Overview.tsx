@@ -9,7 +9,7 @@ export function Overview() {
   const mockVotes = [
     {
       dispute: {
-        title: "SuperUMAn DAO KPI Options funding proposal",
+        title: "SuperUMAn DAO KPI Options funding proposal 1",
         origin: DisputeOrigins.UMA,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
@@ -47,7 +47,7 @@ export function Overview() {
     },
     {
       dispute: {
-        title: "SuperUMAn DAO KPI Options funding proposal",
+        title: "SuperUMAn DAO KPI Options funding proposal 2",
         origin: DisputeOrigins.UMA,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
@@ -85,7 +85,7 @@ export function Overview() {
     },
     {
       dispute: {
-        title: "George Kambosos Jr. vs. Devin Haney",
+        title: "George Kambosos Jr. vs. Devin Haney 3",
         origin: DisputeOrigins.Polymarket,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
@@ -123,7 +123,7 @@ export function Overview() {
     },
     {
       dispute: {
-        title: "George Kambosos Jr. vs. Devin Haney",
+        title: "George Kambosos Jr. vs. Devin Haney 4",
         origin: DisputeOrigins.Polymarket,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
