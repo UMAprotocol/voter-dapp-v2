@@ -15,6 +15,26 @@ AsButtonPrimary.args = {
   onClick: () => console.log("Button clicked"),
   href: undefined,
 };
+export const AsButtonPrimaryHover = Template.bind({});
+AsButtonPrimaryHover.args = {
+  variant: "primary",
+  label: "Button",
+  onClick: () => console.log("Button clicked"),
+  href: undefined,
+};
+AsButtonPrimaryHover.parameters = {
+  pseudo: {
+    hover: true,
+  },
+};
+export const AsButtonPrimaryDisabled = Template.bind({});
+AsButtonPrimaryDisabled.args = {
+  variant: "primary",
+  label: "Button",
+  onClick: () => console.log("Button clicked"),
+  href: undefined,
+  disabled: true,
+};
 
 export const AsLinkPrimary = Template.bind({});
 AsLinkPrimary.args = {
@@ -22,6 +42,18 @@ AsLinkPrimary.args = {
   label: "Link",
   href: "https://www.google.com",
   onClick: undefined,
+};
+export const AsLinkPrimaryHover = Template.bind({});
+AsLinkPrimaryHover.args = {
+  variant: "primary",
+  label: "Link",
+  href: "https://www.google.com",
+  onClick: undefined,
+};
+AsLinkPrimaryHover.parameters = {
+  pseudo: {
+    hover: true,
+  },
 };
 
 export const AsButtonSecondary = Template.bind({});
@@ -76,10 +108,4 @@ export const WithCustomFontSize = Template.bind({});
 WithCustomFontSize.args = {
   ...AsButtonPrimary.args,
   fontSize: 12,
-};
-
-export const WithDisabled = Template.bind({});
-WithDisabled.args = {
-  ...AsButtonPrimary.args,
-  disabled: true,
 };
