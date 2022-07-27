@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { CooldownTimer } from "components/Panel/StakeUnstakePanel";
-import { red } from "constants/colors";
+import { red500 } from "constants/colors";
 import add from "date-fns/add";
 
 export default {
@@ -15,7 +15,7 @@ export default {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          background: red,
+          background: red500,
         }}
       >
         <Story />

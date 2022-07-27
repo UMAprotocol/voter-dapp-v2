@@ -1,4 +1,4 @@
-import { red, white } from "constants/colors";
+import { red500, white } from "constants/colors";
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
@@ -74,7 +74,7 @@ export function Button({
       "--display": "grid",
       "--place-items": "center",
       "--color": white,
-      "--background-color": red,
+      "--background-color": red500,
       "--width": width,
       "--height": height,
       "--border-radius": 5 + "px",
@@ -83,16 +83,16 @@ export function Button({
     secondary: {
       "--display": "grid",
       "--place-items": "center",
-      "--color": red,
+      "--color": red500,
       "--background-color": white,
       "--width": width,
       "--height": height,
       "--border-radius": 5 + "px",
-      "--border": `1px solid ${red}`,
+      "--border": `1px solid ${red500}`,
       "--font-size": (fontSize ? fontSize : 18) + "px",
     } as CSSProperties,
     tertiary: {
-      "--color": red,
+      "--color": red500,
       "--background-color": "transparent",
       "--font-size": (fontSize ? fontSize : 16) + "px",
     } as CSSProperties,

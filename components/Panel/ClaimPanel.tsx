@@ -56,7 +56,7 @@ const RewardsWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--red);
+  background: var(--red-500);
   color: var(--white);
 `;
 

@@ -44,7 +44,7 @@ const TabList = styled(ReachTabList)`
   background: var(--grey-50);
 
   [data-selected] {
-    border-bottom: 3px solid var(--red);
+    border-bottom: 3px solid var(--red-500);
   }
 `;
 

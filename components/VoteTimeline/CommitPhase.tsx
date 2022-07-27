@@ -1,4 +1,4 @@
-import { black, red, white } from "constants/colors";
+import { black, red500, white } from "constants/colors";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
 
@@ -10,8 +10,8 @@ interface Props {
 export function CommitPhase({ phase, startsIn, timeRemaining }: Props) {
   const active = phase === "commit";
   const textColor = active ? white : black;
-  const backgroundColor = active ? red : white;
-  const iconStrokeColor = active ? red : white;
+  const backgroundColor = active ? red500 : white;
+  const iconStrokeColor = active ? red500 : white;
   const iconFillColor = active ? white : black;
   return (
     <OuterWrapper>

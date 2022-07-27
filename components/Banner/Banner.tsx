@@ -31,5 +31,5 @@ const Text = styled.h1`
 `;
 
 const Emphasis = styled.span`
-  color: var(--red);
+  color: var(--red-500);
 `;

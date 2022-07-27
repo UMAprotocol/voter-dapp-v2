@@ -55,7 +55,7 @@ const Wrapper = styled.div``;
 
 const BalancesWrapper = styled.div`
   display: grid;
-  background: var(--red);
+  background: var(--red-500);
   color: var(--white);
   padding-top: 25px;
   padding-bottom: 20px;

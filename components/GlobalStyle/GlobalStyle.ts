@@ -7,7 +7,7 @@ import {
   grey100,
   grey50,
   green,
-  red,
+  red500,
   white,
   grey500,
 } from "constants/colors";
@@ -203,7 +203,7 @@ a:not([class]) {
     --black-opacity-50: ${blackOpacity50};
     --black-opacity-60: ${blackOpacity60};
     --black-opacity-75: ${blackOpacity75};
-    --red: ${red};
+    --red-500: ${red500};
     --green: ${green};
     --grey-50: ${grey50};
     --grey-100: ${grey100};

@@ -6,7 +6,7 @@ import { DisputeOrigins, DropdownItemT, VoteT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
-import { green, red } from "constants/colors";
+import { green, red500 } from "constants/colors";
 
 interface Props {
   vote: VoteT;
@@ -18,7 +18,7 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
 
   const Icon = dispute.origin === DisputeOrigins.UMA ? UMAIcon : PolymarketIcon;
 
-  const dotColor = isCommitted ? green : red;
+  const dotColor = isCommitted ? green : red500;
 
   return (
     <Wrapper>

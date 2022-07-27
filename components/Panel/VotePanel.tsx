@@ -148,26 +148,26 @@ const IconWrapper = styled.div`
 
 const DescriptionIcon = styled(Doc)`
   circle {
-    fill: var(--red);
+    fill: var(--red-500);
   }
 `;
 
 const VotingIcon = styled(Commit)`
   circle {
-    fill: var(--red);
+    fill: var(--red-500);
   }
 `;
 
 const TimestampIcon = styled(Time)`
   path {
     stroke: var(--white);
-    fill: var(--red);
+    fill: var(--red-500);
   }
 `;
 
 const LinksIcon = styled(Link)`
   path {
-    fill: var(--red);
+    fill: var(--red-500);
   }
 `;
 

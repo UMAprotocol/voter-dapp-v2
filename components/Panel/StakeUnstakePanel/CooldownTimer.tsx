@@ -61,7 +61,7 @@ const Description = styled.span``;
 
 const TimeRemaining = styled.div`
   margin-left: auto;
-  color: var(--red);
+  color: var(--red-500);
 `;
 
 const IconWrapper = styled.div`

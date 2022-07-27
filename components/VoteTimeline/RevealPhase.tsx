@@ -1,4 +1,4 @@
-import { black, red, white } from "constants/colors";
+import { black, red500, white } from "constants/colors";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
 
@@ -10,8 +10,8 @@ interface Props {
 export function RevealPhase({ phase, startsIn, timeRemaining }: Props) {
   const active = phase === "reveal";
   const textColor = active ? white : black;
-  const backgroundColor = active ? red : white;
-  const iconStrokeColor = active ? red : white;
+  const backgroundColor = active ? red500 : white;
+  const iconStrokeColor = active ? red500 : white;
   const iconFillColor = active ? white : black;
   return (
     <Wrapper
