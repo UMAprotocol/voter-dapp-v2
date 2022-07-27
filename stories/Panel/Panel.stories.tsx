@@ -37,8 +37,14 @@ const Template: ComponentStory<typeof Panel> = (args) => {
   );
 };
 
-export const AsClaimPanel = Template.bind({});
-AsClaimPanel.args = {
+export const MenuPanel = Template.bind({});
+MenuPanel.args = {
+  panelType: "menu",
+  panelOpen: true,
+};
+
+export const ClaimPanel = Template.bind({});
+ClaimPanel.args = {
   panelType: "claim",
   panelContent: {
     title: "Claim",
@@ -47,8 +53,8 @@ AsClaimPanel.args = {
   panelOpen: true,
 };
 
-export const AsVotePanel = Template.bind({});
-AsVotePanel.args = {
+export const VotePanel = Template.bind({});
+VotePanel.args = {
   panelType: "vote",
   panelContent: {
     title: "George Kambosos Jr. vs. Devin Haney",
@@ -79,14 +85,14 @@ AsVotePanel.args = {
   panelOpen: true,
 };
 
-export const AsStakePanel = Template.bind({});
-AsStakePanel.args = {
+export const StakePanel = Template.bind({});
+StakePanel.args = {
   panelType: "stake",
   panelOpen: true,
 };
 
-export const AsRemindPanel = Template.bind({});
-AsRemindPanel.args = {
+export const RemindPanel = Template.bind({});
+RemindPanel.args = {
   panelType: "remind",
   panelOpen: true,
 };

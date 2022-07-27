@@ -13,8 +13,10 @@ import { VoteHistoryPanel } from "./VoteHistoryPanel";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import { DisputeOrigins, PanelContentT } from "types/global";
+import { MenuPanel } from "./MenuPanel";
 
 const panelTypeToPanelComponent = {
+  menu: MenuPanel,
   claim: ClaimPanel,
   vote: VotePanel,
   stake: StakeUnstakePanel,

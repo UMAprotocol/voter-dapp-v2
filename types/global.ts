@@ -33,7 +33,7 @@ export type VoteTimelineT = {
   revealPhaseEnd: Date | null;
 };
 
-export type PanelTypeT = "claim" | "vote" | "stake" | "history" | "remind" | null;
+export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
 export type VotePanelContentT = {
   title: string;
