@@ -177,8 +177,10 @@ const __Button = styled.button`
   font: var(--text-md);
   font-size: var(--font-size);
 
-  &:hover :not(:disabled) {
-    background-color: var(--hover-background-color);
+  &:hover {
+    &:not(:disabled) {
+      background-color: var(--hover-background-color);
+    }
   }
 
   &:disabled {
