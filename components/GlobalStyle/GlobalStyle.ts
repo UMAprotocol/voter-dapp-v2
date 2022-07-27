@@ -9,6 +9,7 @@ import {
   green,
   red,
   white,
+  grey500,
 } from "constants/colors";
 import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
 import {
@@ -206,6 +207,7 @@ a:not([class]) {
     --green: ${green};
     --grey-50: ${grey50};
     --grey-100: ${grey100};
+    --grey-500: ${grey500};
     /* Fonts */
     --header-xl: ${headerXl};
     --header-lg: ${headerLg};
