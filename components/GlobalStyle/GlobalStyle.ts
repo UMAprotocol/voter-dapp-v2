@@ -10,6 +10,8 @@ import {
   red500,
   white,
   grey500,
+  red100,
+  red600,
 } from "constants/colors";
 import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
 import {
@@ -203,7 +205,9 @@ a:not([class]) {
     --black-opacity-50: ${blackOpacity50};
     --black-opacity-60: ${blackOpacity60};
     --black-opacity-75: ${blackOpacity75};
+    --red-100: ${red100};
     --red-500: ${red500};
+    --red-600: ${red600};
     --green: ${green};
     --grey-50: ${grey50};
     --grey-100: ${grey100};
