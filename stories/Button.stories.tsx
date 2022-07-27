@@ -87,6 +87,11 @@ AsButtonTertiary.args = {
   ...AsButtonPrimary.args,
   variant: "tertiary",
 };
+export const AsButtonTertiaryDisabled = Template.bind({});
+AsButtonTertiaryDisabled.args = {
+  ...AsButtonTertiary.args,
+  disabled: true,
+};
 
 export const AsLinkTertiary = Template.bind({});
 AsLinkTertiary.args = {
