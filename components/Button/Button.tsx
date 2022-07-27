@@ -1,4 +1,4 @@
-import { red500, red600, white } from "constants/colors";
+import { red100, red500, red600, white } from "constants/colors";
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
@@ -86,6 +86,7 @@ export function Button({
       "--place-items": "center",
       "--color": red500,
       "--background-color": white,
+      "--hover-background-color": red100,
       "--width": width,
       "--height": height,
       "--border-radius": 5 + "px",
