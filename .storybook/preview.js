@@ -3,6 +3,7 @@ import { GlobalStyle } from 'components/GlobalStyle';
 import { WalletProvider } from "contexts/WalletContext";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { PanelProvider } from "contexts/PanelContext";
+import "styles/fonts.css";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
