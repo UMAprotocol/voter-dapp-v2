@@ -1,4 +1,4 @@
-import { red500, white } from "constants/colors";
+import { red500, red600, white } from "constants/colors";
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
@@ -75,6 +75,7 @@ export function Button({
       "--place-items": "center",
       "--color": white,
       "--background-color": red500,
+      "--hover-background-color": red600,
       "--width": width,
       "--height": height,
       "--border-radius": 5 + "px",
@@ -141,6 +142,12 @@ const A = styled.a`
   border-radius: var(--border-radius);
   font: var(--text-md);
   font-size: var(--font-size);
+
+  &:hover {
+    background-color: var(--hover-background-color);
+  }
+
+  transition: background-color 0.2s ease-in-out;
 `;
 
 interface ButtonProps {
@@ -170,10 +177,14 @@ const __Button = styled.button`
   font: var(--text-md);
   font-size: var(--font-size);
 
+  &:hover :not(:disabled) {
+    background-color: var(--hover-background-color);
+  }
+
   &:disabled {
     cursor: not-allowed;
     opacity: 0.25;
   }
 
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity, background-color 0.2s ease-in-out;
 `;
