@@ -4,8 +4,8 @@ import {
   blackOpacity50,
   blackOpacity60,
   blackOpacity75,
-  gray100,
-  gray50,
+  grey100,
+  grey50,
   green,
   red,
   white,
@@ -204,8 +204,8 @@ a:not([class]) {
     --black-opacity-75: ${blackOpacity75};
     --red: ${red};
     --green: ${green};
-    --gray-50: ${gray50};
-    --gray-100: ${gray100};
+    --grey-50: ${grey50};
+    --grey-100: ${grey100};
     /* Fonts */
     --header-xl: ${headerXl};
     --header-lg: ${headerLg};

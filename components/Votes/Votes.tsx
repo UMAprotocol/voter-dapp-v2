@@ -75,7 +75,7 @@ export function Votes({ votes, voteTimeline }: Props) {
 }
 
 const OuterWrapper = styled.div`
-  background: var(--gray-100);
+  background: var(--grey-100);
 `;
 
 const InnerWrapper = styled.div`

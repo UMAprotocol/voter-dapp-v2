@@ -27,7 +27,7 @@ const Wrapper = styled.div`
   justify-content: start;
   gap: 30px;
   align-items: center;
-  background: var(--gray-100);
+  background: var(--grey-100);
 `;
 
 const Label = styled.h1`

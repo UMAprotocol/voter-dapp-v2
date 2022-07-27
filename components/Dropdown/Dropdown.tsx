@@ -88,13 +88,13 @@ const DropdownItem = styled(MenuItem)<{ $isSelected: boolean }>`
   font: var(--text-md);
   color: var(--black);
   border-radius: 5px;
-  background-color: ${({ $isSelected }) => ($isSelected ? "var(--gray-50)" : "var(--white)")};
+  background-color: ${({ $isSelected }) => ($isSelected ? "var(--grey-50)" : "var(--white)")};
   &:hover {
-    background-color: var(--gray-50);
+    background-color: var(--grey-50);
     color: currentColor;
   }
   &:not(:last-child) {
-    border-bottom: 1px solid var(--gray-50);
+    border-bottom: 1px solid var(--grey-50);
   }
 `;
 

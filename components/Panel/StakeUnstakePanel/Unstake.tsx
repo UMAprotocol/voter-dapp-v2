@@ -73,7 +73,7 @@ const AmountInputWrapper = styled.div`
 
 const HowItWorks = styled.ol`
   list-style: none;
-  background: var(--gray-50);
+  background: var(--grey-50);
   padding-block: 15px;
   padding-left: 20px;
   margin-bottom: 25px;

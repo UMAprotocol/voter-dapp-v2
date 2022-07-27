@@ -41,7 +41,7 @@ const TabList = styled(ReachTabList)`
   align-items: center;
   gap: 50px;
   padding-left: 30px;
-  background: var(--gray-50);
+  background: var(--grey-50);
 
   [data-selected] {
     border-bottom: 3px solid var(--red);

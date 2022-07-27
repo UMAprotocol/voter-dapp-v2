@@ -78,7 +78,7 @@ const Wrapper = styled.div`
 const SectionWrapper = styled.div`
   padding-block: 20px;
   padding-inline: 20px;
-  background: var(--gray-50);
+  background: var(--grey-50);
   border-radius: 5px;
   margin-bottom: 20px;
 `;
