@@ -17,10 +17,7 @@ AsButtonPrimary.args = {
 };
 export const AsButtonPrimaryHover = Template.bind({});
 AsButtonPrimaryHover.args = {
-  variant: "primary",
-  label: "Button",
-  onClick: () => console.log("Button clicked"),
-  href: undefined,
+  ...AsButtonPrimary.args,
 };
 AsButtonPrimaryHover.parameters = {
   pseudo: {
@@ -29,10 +26,7 @@ AsButtonPrimaryHover.parameters = {
 };
 export const AsButtonPrimaryDisabled = Template.bind({});
 AsButtonPrimaryDisabled.args = {
-  variant: "primary",
-  label: "Button",
-  onClick: () => console.log("Button clicked"),
-  href: undefined,
+  ...AsButtonPrimary.args,
   disabled: true,
 };
 
@@ -45,10 +39,7 @@ AsLinkPrimary.args = {
 };
 export const AsLinkPrimaryHover = Template.bind({});
 AsLinkPrimaryHover.args = {
-  variant: "primary",
-  label: "Link",
-  href: "https://www.google.com",
-  onClick: undefined,
+  ...AsLinkPrimary.args,
 };
 AsLinkPrimaryHover.parameters = {
   pseudo: {
@@ -61,11 +52,34 @@ AsButtonSecondary.args = {
   ...AsButtonPrimary.args,
   variant: "secondary",
 };
+export const AsButtonSecondaryHover = Template.bind({});
+AsButtonSecondaryHover.args = {
+  ...AsButtonSecondary.args,
+};
+AsButtonSecondaryHover.parameters = {
+  pseudo: {
+    hover: true,
+  },
+};
+export const AsButtonSecondaryDisabled = Template.bind({});
+AsButtonSecondaryDisabled.args = {
+  ...AsButtonSecondary.args,
+  disabled: true,
+};
 
 export const AsLinkSecondary = Template.bind({});
 AsLinkSecondary.args = {
   ...AsLinkPrimary.args,
   variant: "secondary",
+};
+export const AsLinkSecondaryHover = Template.bind({});
+AsLinkSecondaryHover.args = {
+  ...AsLinkSecondary.args,
+};
+AsLinkSecondaryHover.parameters = {
+  pseudo: {
+    hover: true,
+  },
 };
 
 export const AsButtonTertiary = Template.bind({});
