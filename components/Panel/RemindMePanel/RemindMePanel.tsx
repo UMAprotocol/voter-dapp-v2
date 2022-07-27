@@ -3,7 +3,7 @@ import { Checkbox } from "components/Checkbox";
 import { TextInput } from "components/Input";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
-import { NotificationButton } from "./NotificationButton";
+import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
 
 export function RemindMePanel() {
@@ -64,7 +64,7 @@ export function RemindMePanel() {
             You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
           </SectionDescription>
         </BrowserReminderTextWrapper>
-        <NotificationButton clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
+        <Toggle clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
       </BrowserReminderSectionWrapper>
     </Wrapper>
   );

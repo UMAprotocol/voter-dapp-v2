@@ -5,7 +5,7 @@ interface Props {
   clicked: boolean;
   onClick: () => void;
 }
-export function NotificationButton({ clicked, onClick }: Props) {
+export function Toggle({ clicked, onClick }: Props) {
   const background = clicked ? green : blackOpacity25;
   const translateX = clicked ? "calc(100% - 5px)" : "2px";
 
