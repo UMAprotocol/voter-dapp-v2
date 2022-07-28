@@ -3,6 +3,7 @@ import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
 import truncateEthAddress from "helpers/truncateEthAddress";
+import { usePanelContext } from "hooks/usePanelContext";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -13,6 +14,7 @@ export function Wallet() {
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
   const { setProvider } = useWalletProviderContext();
+  const { setPanelType, setPanelOpen } = usePanelContext();
 
   useEffect(() => {
     setOnboard(initOnboard);
@@ -56,6 +58,12 @@ export function Wallet() {
     window.localStorage.removeItem("connectedWallets");
   }
 
+  function openMenuPanel() {
+    console.log("hello");
+    setPanelType("menu");
+    setPanelOpen(true);
+  }
+
   if (!onboard) return null;
 
   const connectedWallet = connectedWallets[0];
@@ -67,7 +75,7 @@ export function Wallet() {
     <Wrapper>
       {connectedWallets.length ? (
         <WalletButtonWrapper>
-          <WalletButton>
+          <WalletButton onClick={openMenuPanel}>
             <WalletIcon icon={wallet?.icon} />
             {truncatedAddress}
           </WalletButton>
