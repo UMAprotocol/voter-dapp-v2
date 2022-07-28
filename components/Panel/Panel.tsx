@@ -14,7 +14,7 @@ import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import { DisputeOrigins, PanelContentT } from "types/global";
 import { MenuPanel } from "./MenuPanel";
-import { black, grey100, white } from "constants/colors";
+import { black, white } from "constants/colors";
 
 const panelTypeToPanelComponent = {
   menu: MenuPanel,
@@ -38,12 +38,10 @@ export function Panel() {
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
-  const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
-
   const isMenu = panelType === "menu";
-
-  const titleColor = isMenu ? black : white;
-  const titleBackgroundColor = isMenu ? grey100 : black;
+  const showTitle = !isMenu;
+  const closeButtonColor = isMenu ? black : white;
+  const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
 
   function closePanel() {
     setPanelOpen(false);
@@ -58,31 +56,27 @@ export function Panel() {
               style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
-                <TitleWrapper
+                {showTitle && (
+                  <TitleWrapper>
+                    <TitleIcon origin={panelContent?.origin} />
+                    <Title id="panel-title">
+                      {panelTitle}
+                      <SubTitle>
+                        <SubTitleText panelType={panelType} panelContent={panelContent} />
+                      </SubTitle>
+                    </Title>
+                  </TitleWrapper>
+                )}
+                <PanelComponent content={panelContent} />
+                <CloseButton
+                  onClick={closePanel}
                   style={
                     {
-                      "--title-color": titleColor,
-                      "--title-background-color": titleBackgroundColor,
+                      "--fill": closeButtonColor,
                     } as CSSProperties
                   }
                 >
-                  <TitleIcon origin={panelContent?.origin} />
-                  <Title id="panel-title">
-                    {panelTitle}
-                    <SubTitle>
-                      <SubTitleText panelType={panelType} panelContent={panelContent} />
-                    </SubTitle>
-                  </Title>
-                </TitleWrapper>
-                <PanelComponent content={panelContent} />
-                <CloseButton onClick={closePanel}>
-                  <CloseIcon
-                    style={
-                      {
-                        "--title-color": titleColor,
-                      } as CSSProperties
-                    }
-                  />
+                  <CloseIcon />
                 </CloseButton>
               </Content>
             </Overlay>
@@ -144,8 +138,8 @@ const Content = styled(AnimatedContent)`
 `;
 
 const TitleWrapper = styled.div`
-  background: var(--title-background-color);
-  color: var(--title-color);
+  background: var(--black);
+  color: var(--white);
   display: flex;
   justify-content: start;
   align-items: center;
@@ -170,7 +164,7 @@ const CloseButton = styled.button`
 
 const CloseIcon = styled(Close)`
   path {
-    fill: var(--title-color);
+    fill: var(--fill);
   }
 `;
 
