@@ -1,13 +1,12 @@
 import { OnboardAPI, WalletState } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { Dropdown } from "components/Dropdown";
-import { blackOpacity25 } from "constants/colors";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
 import truncateEthAddress from "helpers/truncateEthAddress";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
@@ -59,50 +58,46 @@ export function Wallet() {
 
   if (!onboard) return null;
 
-  function makeWalletDropdownItem(wallet: WalletState) {
-    const address = wallet.accounts[0].address;
-    return {
-      value: address,
-      label: truncateEthAddress(address),
-    };
-  }
+  const connectedWallet = connectedWallets[0];
+  const account = connectedWallet?.accounts[0];
+  const address = account?.address ?? "";
+  const truncatedAddress = truncateEthAddress(address);
+
   return (
     <Wrapper>
       {connectedWallets.length ? (
-        <Dropdown
-          label={truncateEthAddress(connectedWallets[0].accounts[0].address)}
-          items={connectedWallets.map(makeWalletDropdownItem)}
-          selected={connectedWallets.map(makeWalletDropdownItem)[0]}
-          onSelect={() => null}
-          borderColor={blackOpacity25}
-        />
+        <WalletButtonWrapper>
+          <WalletButton>
+            <WalletIcon icon={wallet?.icon} />
+            {truncatedAddress}
+          </WalletButton>
+        </WalletButtonWrapper>
       ) : (
-        <ConnectWallet>
-          <ConnectWalletButton onClick={() => connect()}>
-            {connecting ? "Connecting..." : "Connect wallet"}
-          </ConnectWalletButton>
-        </ConnectWallet>
+        <WalletButtonWrapper>
+          <WalletButton onClick={() => connect()}>{connecting ? "Connecting..." : "Connect wallet"}</WalletButton>
+        </WalletButtonWrapper>
       )}
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
-
-const ConnectWallet = styled.div`
-  width: 200px;
+const Wrapper = styled.div`
+  width: 180px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--black-opacity-50);
-  background-color: var(--white);
-  border: 1.18px solid var(--black-opacity-25);
+  color: var(--black);
+  background-color: var(--grey-50);
   border-radius: 5px;
 `;
 
-const ConnectWalletButton = styled.button`
+const WalletButtonWrapper = styled.div``;
+
+const WalletButton = styled.button`
   background: none;
+  display: flex;
+  gap: 15px;
 `;
