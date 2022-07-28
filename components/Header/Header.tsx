@@ -33,6 +33,7 @@ const InnerWrapper = styled.div`
   align-items: center;
   gap: 15px;
   margin-inline: auto;
+  padding-inline: 45px;
 `;
 
 const HomeLinkWrapper = styled.div`
