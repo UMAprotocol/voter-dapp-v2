@@ -1,9 +1,18 @@
 import Link from "next/link";
 import styled from "styled-components";
 import Logo from "public/assets/logo.svg";
+import Menu from "/public/assets/icons/menu.svg";
 import { Wallet } from "components/Wallet";
+import { usePanelContext } from "hooks/usePanelContext";
 
 export function Header() {
+  const { setPanelType, setPanelOpen } = usePanelContext();
+
+  function openMenuPanel() {
+    setPanelType("menu");
+    setPanelOpen(true);
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -17,7 +26,14 @@ export function Header() {
           </HomeLinkWrapper>
           <PageDescription>VOTING</PageDescription>
         </HomeLinkAndPageDescriptionWrapper>
-        <Wallet />
+        <WalletAndMenuWrapper>
+          <Wallet />
+          <MenuButton onClick={openMenuPanel}>
+            <MenuIconWrapper>
+              <MenuIcon />
+            </MenuIconWrapper>
+          </MenuButton>
+        </WalletAndMenuWrapper>
       </InnerWrapper>
     </OuterWrapper>
   );
@@ -48,6 +64,11 @@ const HomeLinkAndPageDescriptionWrapper = styled.div`
   gap: 8px;
 `;
 
+const WalletAndMenuWrapper = styled.div`
+  display: flex;
+  gap: 25px;
+`;
+
 const PageDescription = styled.p`
   font-family: "Halyard Display";
   font-style: normal;
@@ -58,3 +79,14 @@ const PageDescription = styled.p`
 `;
 
 const LogoIcon = styled(Logo)``;
+
+const MenuIcon = styled(Menu)``;
+
+const MenuButton = styled.button`
+  background: none;
+`;
+
+const MenuIconWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+`;

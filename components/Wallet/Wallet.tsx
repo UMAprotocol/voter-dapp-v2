@@ -59,7 +59,6 @@ export function Wallet() {
   }
 
   function openMenuPanel() {
-    console.log("hello");
     setPanelType("menu");
     setPanelOpen(true);
   }
