@@ -57,6 +57,7 @@ const socialLinks = [
 export function MenuPanel() {
   return (
     <Wrapper>
+      <AccountPlaceholder />
       <Nav links={links} />
       <FooterWrapper>
         <SocialsWrapper>
@@ -74,7 +75,7 @@ export function MenuPanel() {
         </SocialsWrapper>
         <PoweredByWrapper>
           <PoweredBy>
-            <PoweredByText>Powered by</PoweredByText>
+            Powered by
             <UmaIconWrapper>
               <Logo />
             </UmaIconWrapper>
@@ -85,13 +86,33 @@ export function MenuPanel() {
   );
 }
 
-const Wrapper = styled.div``;
+const AccountPlaceholder = styled.div`
+  height: 160px;
+  background: var(--grey-100);
+`;
 
-const FooterWrapper = styled.div``;
+const Wrapper = styled.div`
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
 
-const SocialsWrapper = styled.div``;
+const FooterWrapper = styled.div`
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+`;
 
-const Socials = styled.div``;
+const SocialsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const Socials = styled.div`
+  width: fit-content;
+  display: flex;
+  gap: 32px;
+`;
 
 const A = styled.a``;
 
@@ -100,11 +121,18 @@ const SocialIconWrapper = styled.div`
   height: 24px;
 `;
 
-const PoweredByWrapper = styled.div``;
+const PoweredByWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
-const PoweredBy = styled.div``;
-
-const PoweredByText = styled.p``;
+const PoweredBy = styled.p`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--red-500);
+  font: var(--text-xs);
+`;
 
 const UmaIconWrapper = styled.div`
   width: 34px;
