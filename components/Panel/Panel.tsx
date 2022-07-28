@@ -1,7 +1,7 @@
 import "@reach/dialog/styles.css";
 import { DialogOverlay, DialogContent } from "@reach/dialog";
 import { usePanelContext } from "hooks/usePanelContext";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
 import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
@@ -14,6 +14,7 @@ import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import { DisputeOrigins, PanelContentT } from "types/global";
 import { MenuPanel } from "./MenuPanel";
+import { black, grey100, white } from "constants/colors";
 
 const panelTypeToPanelComponent = {
   menu: MenuPanel,
@@ -39,6 +40,11 @@ export function Panel() {
 
   const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
 
+  const isMenu = panelType === "menu";
+
+  const titleColor = isMenu ? black : white;
+  const titleBackgroundColor = isMenu ? grey100 : black;
+
   function closePanel() {
     setPanelOpen(false);
   }
@@ -52,7 +58,14 @@ export function Panel() {
               style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
-                <TitleWrapper>
+                <TitleWrapper
+                  style={
+                    {
+                      "--title-color": titleColor,
+                      "--title-background-color": titleBackgroundColor,
+                    } as CSSProperties
+                  }
+                >
                   <TitleIcon origin={panelContent?.origin} />
                   <Title id="panel-title">
                     {panelTitle}
@@ -61,7 +74,13 @@ export function Panel() {
                     </SubTitle>
                   </Title>
                   <CloseButton onClick={closePanel}>
-                    <CloseIcon />
+                    <CloseIcon
+                      style={
+                        {
+                          "--title-color": titleColor,
+                        } as CSSProperties
+                      }
+                    />
                   </CloseButton>
                 </TitleWrapper>
                 <PanelComponent content={panelContent} />
@@ -125,8 +144,8 @@ const Content = styled(AnimatedContent)`
 `;
 
 const TitleWrapper = styled.div`
-  background: var(--black);
-  color: var(--white);
+  background: var(--title-background-color);
+  color: var(--title-color);
   display: flex;
   justify-content: start;
   align-items: center;
@@ -147,7 +166,11 @@ const CloseButton = styled.button`
   margin-left: auto;
 `;
 
-const CloseIcon = styled(Close)``;
+const CloseIcon = styled(Close)`
+  path {
+    fill: var(--title-color);
+  }
+`;
 
 const UMAIcon = styled(UMA)``;
 
