@@ -73,17 +73,17 @@ export function Panel() {
                       <SubTitleText panelType={panelType} panelContent={panelContent} />
                     </SubTitle>
                   </Title>
-                  <CloseButton onClick={closePanel}>
-                    <CloseIcon
-                      style={
-                        {
-                          "--title-color": titleColor,
-                        } as CSSProperties
-                      }
-                    />
-                  </CloseButton>
                 </TitleWrapper>
                 <PanelComponent content={panelContent} />
+                <CloseButton onClick={closePanel}>
+                  <CloseIcon
+                    style={
+                      {
+                        "--title-color": titleColor,
+                      } as CSSProperties
+                    }
+                  />
+                </CloseButton>
               </Content>
             </Overlay>
           )
@@ -162,8 +162,10 @@ const SubTitle = styled.h2`
 `;
 
 const CloseButton = styled.button`
+  position: absolute;
+  top: 30px;
+  right: 30px;
   background: transparent;
-  margin-left: auto;
 `;
 
 const CloseIcon = styled(Close)`
