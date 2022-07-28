@@ -5,7 +5,7 @@ import Discourse from "public/assets/icons/discourse.svg";
 import Twitter from "public/assets/icons/twitter.svg";
 import Github from "public/assets/icons/github.svg";
 import Message from "public/assets/icons/message.svg";
-import Uma from "public/assets/icons/uma.svg";
+import Logo from "public/assets/icons/logo.svg";
 import Link from "next/link";
 
 const links = [
@@ -76,7 +76,7 @@ export function MenuPanel() {
           <PoweredBy>
             <PoweredByText>Powered by</PoweredByText>
             <UmaIconWrapper>
-              <Uma />
+              <Logo />
             </UmaIconWrapper>
           </PoweredBy>
         </PoweredByWrapper>
@@ -95,7 +95,10 @@ const Socials = styled.div``;
 
 const A = styled.a``;
 
-const SocialIconWrapper = styled.div``;
+const SocialIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
 
 const PoweredByWrapper = styled.div``;
 
@@ -103,4 +106,7 @@ const PoweredBy = styled.div``;
 
 const PoweredByText = styled.p``;
 
-const UmaIconWrapper = styled.div``;
+const UmaIconWrapper = styled.div`
+  width: 34px;
+  height: 8.69px;
+`;
