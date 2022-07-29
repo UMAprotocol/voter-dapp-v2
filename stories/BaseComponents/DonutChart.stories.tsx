@@ -8,7 +8,7 @@ export default {
 
 const Template: ComponentStory<typeof DonutChart> = (args) => <DonutChart {...args} />;
 
-const length = 8;
+const length = 3;
 const data = Array.from({ length }).map((_, i) => ({ label: `Segment ${i + 1}`, value: 1 / length }));
 
 export const Default = Template.bind({});

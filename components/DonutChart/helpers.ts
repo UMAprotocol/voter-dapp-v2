@@ -19,9 +19,17 @@ export function computeColors(
     label: string;
   }[]
 ) {
-  const lightest = 85;
+  const lightest = 90;
 
-  return data.map((item, i) => ({ ...item, color: `hsl(0, 100%, ${lightest - i * 8}%)` }));
+  return data.map((item, i) => ({
+    ...item,
+    color: `hsl(0, 100%, ${determineLightness(lightest, i)}%)`,
+  }));
+}
+
+function determineLightness(initialLightness: number, index: number) {
+  const scalingFactor = 18;
+  return initialLightness - index * scalingFactor;
 }
 
 /**
