@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 /* 
   Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
@@ -18,7 +18,6 @@ const angleForArcLength = (arcLength: number, atRadius: number): number => arcLe
 
 type Segment = { value: number; label: string };
 interface Props {
-  colors: string[];
   segments: Segment[];
   /**
    * The viewBox size. Coordinates are computed within this coordinate space
@@ -33,7 +32,7 @@ interface Props {
    */
   gapSize?: number;
 }
-export function DonutChart({ segments, size = 100, hole = 55, gapSize = 1 }: Props) {
+export function DonutChart({ segments, size = 200, hole = 160, gapSize = 1 }: Props) {
   /**
    * The center of the viewBox, center of the chart
    */
@@ -159,16 +158,15 @@ export function DonutChart({ segments, size = 100, hole = 55, gapSize = 1 }: Pro
   const withColors = computeColors(withPercentages);
 
   return segments.length ? (
-    <Wrapper>
-      <Chart>
-        <svg viewBox={`0 0 ${size} ${size}`}>
-          {withColors.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
-        </svg>
-      </Chart>
+    <Wrapper style={{ "--size": size + "px" } as CSSProperties}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {withColors.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
+      </svg>
     </Wrapper>
   ) : null;
 }
 
-const Wrapper = styled.div``;
-
-const Chart = styled.div``;
+const Wrapper = styled.div`
+  width: var(--size);
+  height: var(--size);
+`;
