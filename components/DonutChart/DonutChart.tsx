@@ -1,10 +1,9 @@
 import styled from "styled-components";
-
 /* 
   Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
-const degreesToRadians = (d: number) => d * (Math.PI / 180);
-const radiansToDegrees = (r: number) => r / (Math.PI / 180);
+const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
+const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
 
 /**
  * Find the angle that will produce an arc of a given length at a given radius.
@@ -17,79 +16,70 @@ const radiansToDegrees = (r: number) => r / (Math.PI / 180);
  */
 const angleForArcLength = (arcLength: number, atRadius: number): number => arcLength / atRadius;
 
-/**
- * The viewBox size. Coordinates are computed within this coordinate space
- */
-const size = 100;
-
-/**
- * The center of the viewBox, center of the chart
- */
-const center = size / 2;
-
-/**
- * The diameter of the chart's inner hole in local coordinate space units
- */
-const hole = 55;
-
-/**
- * The thickness of the chart segments for the given size and hole
- */
-const thickness = (size - hole) / 2;
-
-/**
- * The outer radius of the chart
- */
-const radiusOuter = size / 2;
-
-/**
- * The inner radius of the chart
- */
-const radiusInner = radiusOuter - thickness;
-
-/**
- * The size of the gap between chart segments, in local coordinate space units
- */
-const gapSize = 1;
-
-/**
- * Compute the angle offset required to establish the gaps between segments at the inner edge
- */
-const gapAngleOffsetInner = radiansToDegrees(angleForArcLength(gapSize, radiusInner));
-
-/**
- * Compute the angle offset required to establish the gaps between segments at the outer edge
- */
-const gapAngleOffsetOuter = radiansToDegrees(angleForArcLength(gapSize, radiusOuter));
-
-/**
- * The minimum angle that won't be swallowed by the gap offsets at the inner edge.
- * Used to compute the minimum value that won't get swallowed (minimumValue defined below)
- */
-const minimumAngleDeg = radiansToDegrees(angleForArcLength(gapSize * 2, radiusInner));
-
-/**
- * The minimum value that won't get swallowed by the gap offsets at the inner edge
- */
-const minimumValue = minimumAngleDeg / 360;
-
-/**
- * Computes an x/y coordinate for the given angle and radius
- * @param {number} deg - The angle in degrees
- * @param {number} r  - The radius
- * @returns {Array} - An x/y coordinate for the point at the given angle and radius
- */
-const coords = (deg: number, r: number) => {
-  const rad = degreesToRadians(deg);
-
-  return [center - Math.cos(rad) * r, center - Math.sin(rad) * r];
-};
 type Item = { value: number; label: string; color: string };
 interface Props {
   colors: string[];
   items: Item[];
+  /**
+   * The viewBox size. Coordinates are computed within this coordinate space
+   */
+  size?: number;
+  /**
+   * The diameter of the chart's inner hole in local coordinate space units
+   */
+  hole?: number;
+  /**
+   * The size of the gap between chart segments, in local coordinate space units
+   */
+  gapSize?: number;
 }
-export function DonutChart({ colors = [], items }: Props) {
+export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize = 1 }: Props) {
+  /**
+   * The center of the viewBox, center of the chart
+   */
+  const center = size / 2;
+  /**
+   * The thickness of the chart segments for the given size and hole
+   */
+  const thickness = (size - hole) / 2;
+  /**
+   * The outer radius of the chart
+   */
+  const radiusOuter = size / 2;
+  /**
+   * The inner radius of the chart
+   */
+  const radiusInner = radiusOuter - thickness;
+  /**
+   * Compute the angle offset required to establish the gaps between segments at the inner edge
+   */
+  const gapAngleOffsetInner = radiansToDegrees(angleForArcLength(gapSize, radiusInner));
+  /**
+   * Compute the angle offset required to establish the gaps between segments at the outer edge
+   */
+  const gapAngleOffsetOuter = radiansToDegrees(angleForArcLength(gapSize, radiusOuter));
+  /**
+   * The minimum angle that won't be swallowed by the gap offsets at the inner edge.
+   * Used to compute the minimum value that won't get swallowed (minimumValue defined below)
+   */
+  const minimumAngleDeg = radiansToDegrees(angleForArcLength(gapSize * 2, radiusInner));
+
+  /**
+   * The minimum value that won't get swallowed by the gap offsets at the inner edge
+   */
+  const minimumValue = minimumAngleDeg / 360;
+
+  /**
+   * Computes an x/y coordinate for the given angle and radius
+   * @param {number} deg - The angle in degrees
+   * @param {number} r  - The radius
+   * @returns {Array} - An x/y coordinate for the point at the given angle and radius
+   */
+  const coords = (deg: number, r: number) => {
+    const rad = degreesToRadians(deg);
+
+    return [center - Math.cos(rad) * r, center - Math.sin(rad) * r];
+  };
   function makeSegment(
     { paths, subtotal }: { paths: JSX.Element[]; subtotal: number },
     { percent, color }: { percent: number; color: string },
@@ -170,4 +160,5 @@ export function DonutChart({ colors = [], items }: Props) {
 }
 
 const Wrapper = styled.div``;
+
 const Chart = styled.div``;
