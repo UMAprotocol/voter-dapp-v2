@@ -1,4 +1,4 @@
-import { OnboardAPI, WalletState } from "@web3-onboard/core";
+import { OnboardAPI } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
@@ -7,10 +7,11 @@ import { usePanelContext } from "hooks/usePanelContext";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
   const { setProvider } = useWalletProviderContext();
@@ -52,12 +53,6 @@ export function Wallet() {
     }
   }, [setProvider, wallet]);
 
-  function handleDisconnectWallet() {
-    if (!wallet) return;
-    disconnect(wallet);
-    window.localStorage.removeItem("connectedWallets");
-  }
-
   function openMenuPanel() {
     setPanelType("menu");
     setPanelOpen(true);
@@ -65,10 +60,7 @@ export function Wallet() {
 
   if (!onboard) return null;
 
-  const connectedWallet = connectedWallets[0];
-  const account = connectedWallet?.accounts[0];
-  const address = account?.address ?? "";
-  const truncatedAddress = truncateEthAddress(address);
+  const { truncatedAddress } = getAccountDetails(connectedWallets);
 
   return (
     <Wrapper>
