@@ -16,7 +16,7 @@ const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
  */
 const angleForArcLength = (arcLength: number, atRadius: number): number => arcLength / atRadius;
 
-type Segment = { value: number; label: string; color: string };
+type Segment = { value: number; label: string };
 interface Props {
   colors: string[];
   segments: Segment[];
@@ -33,7 +33,7 @@ interface Props {
    */
   gapSize?: number;
 }
-export function DonutChart({ colors = [], segments, size = 100, hole = 55, gapSize = 1 }: Props) {
+export function DonutChart({ segments, size = 100, hole = 55, gapSize = 1 }: Props) {
   /**
    * The center of the viewBox, center of the chart
    */
@@ -143,13 +143,26 @@ export function DonutChart({ colors = [], segments, size = 100, hole = 55, gapSi
     }));
   }
 
-  const itemsWithPercentages = computePercentages(segments);
+  function computeColors(
+    withPercentages: {
+      percent: number;
+      value: number;
+      label: string;
+    }[]
+  ) {
+    const lightest = 85;
+
+    return withPercentages.map((item, i) => ({ ...item, color: `hsl(0, 100%, ${lightest - i * 8}%)` }));
+  }
+
+  const withPercentages = computePercentages(segments);
+  const withColors = computeColors(withPercentages);
 
   return segments.length ? (
     <Wrapper>
       <Chart>
         <svg viewBox={`0 0 ${size} ${size}`}>
-          {itemsWithPercentages.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
+          {withColors.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
         </svg>
       </Chart>
     </Wrapper>
