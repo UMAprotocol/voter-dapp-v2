@@ -16,10 +16,10 @@ const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
  */
 const angleForArcLength = (arcLength: number, atRadius: number): number => arcLength / atRadius;
 
-type Item = { value: number; label: string; color: string };
+type Segment = { value: number; label: string; color: string };
 interface Props {
   colors: string[];
-  items: Item[];
+  segments: Segment[];
   /**
    * The viewBox size. Coordinates are computed within this coordinate space
    */
@@ -33,7 +33,7 @@ interface Props {
    */
   gapSize?: number;
 }
-export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize = 1 }: Props) {
+export function DonutChart({ colors = [], segments, size = 100, hole = 55, gapSize = 1 }: Props) {
   /**
    * The center of the viewBox, center of the chart
    */
@@ -80,7 +80,7 @@ export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize 
 
     return [center - Math.cos(rad) * r, center - Math.sin(rad) * r];
   };
-  function makeSegment(
+  function makeSegmentPath(
     { paths, subtotal }: { paths: JSX.Element[]; subtotal: number },
     { percent, color }: { percent: number; color: string },
     i: number
@@ -124,10 +124,7 @@ export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize 
       `A${radiusInner} ${radiusInner} 0 ${largeArc} ${sweepInner} ${x1} ${y1}`,
     ];
 
-    const fill = color || colors[i % colors.length];
-    const fillProp = fill ? { fill } : {};
-
-    paths.push(<path key={i} {...fillProp} stroke="none" d={commands.join(" ")} />);
+    paths.push(<path key={i} fill={color} stroke="none" d={commands.join(" ")} />);
 
     return {
       paths,
@@ -135,9 +132,9 @@ export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize 
     };
   }
 
-  function computePercentages(series: Item[]) {
+  function computePercentages(segments: Segment[]) {
     // eliminate values of zero or less; protects against division by zero when computing percentages
-    const filtered = (series || []).filter(({ value }) => value > 0);
+    const filtered = segments?.filter(({ value }) => value > 0) ?? [];
     const total = filtered.reduce((t, { value = 0 }) => t + value, 0);
 
     return filtered.map((item) => ({
@@ -146,13 +143,13 @@ export function DonutChart({ colors = [], items, size = 100, hole = 55, gapSize 
     }));
   }
 
-  const itemsWithPercentages = computePercentages(items);
+  const itemsWithPercentages = computePercentages(segments);
 
-  return items.length ? (
+  return segments.length ? (
     <Wrapper>
       <Chart>
         <svg viewBox={`0 0 ${size} ${size}`}>
-          {itemsWithPercentages.reduce(makeSegment, { paths: [], subtotal: 0 }).paths}
+          {itemsWithPercentages.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
         </svg>
       </Chart>
     </Wrapper>
