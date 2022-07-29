@@ -1,24 +1,11 @@
-import styled, { CSSProperties } from "styled-components";
 /* 
-  Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
+Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
-const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
-const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
+import styled, { CSSProperties } from "styled-components";
+import { radiansToDegrees, angleForArcLength, degreesToRadians, computePercentages, computeColors } from "./helpers";
 
-/**
- * Find the angle that will produce an arc of a given length at a given radius.
- * Using this to allow for gaps between the segments. Returns angle in radians
- * arcLength = radius * angleInRadians
- *
- * @param {number} arcLength - the sought arc length in local coordinate space
- * @param {number} atRadius - the radius of the arc
- * @returns {number} - the angle in radians of an arc of the given length at the given radius
- */
-const angleForArcLength = (arcLength: number, atRadius: number): number => arcLength / atRadius;
-
-type Segment = { value: number; label: string };
 interface Props {
-  segments: Segment[];
+  data: { value: number; label: string }[];
   /**
    * The viewBox size. Coordinates are computed within this coordinate space
    */
@@ -32,7 +19,7 @@ interface Props {
    */
   gapSize?: number;
 }
-export function DonutChart({ segments, size = 200, hole = 160, gapSize = 1 }: Props) {
+export function DonutChart({ data, size = 200, hole = 160, gapSize = 1 }: Props) {
   /**
    * The center of the viewBox, center of the chart
    */
@@ -79,6 +66,7 @@ export function DonutChart({ segments, size = 200, hole = 160, gapSize = 1 }: Pr
 
     return [center - Math.cos(rad) * r, center - Math.sin(rad) * r];
   };
+
   function makeSegmentPath(
     { paths, subtotal }: { paths: JSX.Element[]; subtotal: number },
     { percent, color }: { percent: number; color: string },
@@ -131,33 +119,10 @@ export function DonutChart({ segments, size = 200, hole = 160, gapSize = 1 }: Pr
     };
   }
 
-  function computePercentages(segments: Segment[]) {
-    // eliminate values of zero or less; protects against division by zero when computing percentages
-    const filtered = segments?.filter(({ value }) => value > 0) ?? [];
-    const total = filtered.reduce((t, { value = 0 }) => t + value, 0);
-
-    return filtered.map((item) => ({
-      ...item,
-      percent: item.value / total,
-    }));
-  }
-
-  function computeColors(
-    withPercentages: {
-      percent: number;
-      value: number;
-      label: string;
-    }[]
-  ) {
-    const lightest = 85;
-
-    return withPercentages.map((item, i) => ({ ...item, color: `hsl(0, 100%, ${lightest - i * 8}%)` }));
-  }
-
-  const withPercentages = computePercentages(segments);
+  const withPercentages = computePercentages(data);
   const withColors = computeColors(withPercentages);
 
-  return segments.length ? (
+  return data.length ? (
     <Wrapper style={{ "--size": size + "px" } as CSSProperties}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {withColors.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}

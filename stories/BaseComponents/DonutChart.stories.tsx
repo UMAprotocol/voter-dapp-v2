@@ -9,27 +9,27 @@ export default {
 const Template: ComponentStory<typeof DonutChart> = (args) => <DonutChart {...args} />;
 
 const length = 8;
-const segments = Array.from({ length }).map((_, i) => ({ label: `Segment ${i + 1}`, value: 1 / length }));
+const data = Array.from({ length }).map((_, i) => ({ label: `Segment ${i + 1}`, value: 1 / length }));
 
 export const Default = Template.bind({});
 Default.args = {
-  segments,
+  data,
 };
 
 export const CustomSize = Template.bind({});
 CustomSize.args = {
-  segments,
+  data,
   size: 400,
 };
 
 export const CustomHole = Template.bind({});
 CustomHole.args = {
-  segments,
+  data,
   hole: 180,
 };
 
 export const CustomGap = Template.bind({});
 CustomGap.args = {
-  segments,
+  data,
   gapSize: 3,
 };
