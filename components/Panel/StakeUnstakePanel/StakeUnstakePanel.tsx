@@ -2,6 +2,7 @@ import { Tabs } from "components/Tabs";
 import { add } from "date-fns";
 import { useState } from "react";
 import styled from "styled-components";
+import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
@@ -26,34 +27,43 @@ export function StakeUnstakePanel() {
   return (
     <Wrapper>
       <PanelTitle panelType="stake" panelContent={null} />
-      <BalancesWrapper>
-        <Balances>
-          <Balance>
-            <BalanceHeader>Staked balance</BalanceHeader>
-            <BalanceAmount>50.123</BalanceAmount>
-          </Balance>
-          <Balance>
-            <BalanceHeader>Unstaked balance</BalanceHeader>
-            <BalanceAmount>50.123</BalanceAmount>
-          </Balance>
-        </Balances>
-        {showCooldownTimer && (
-          <CooldownTimerWrapper>
-            <CooldownTimer
-              timeRemaining={timeRemaining}
-              amount={claimAmount}
-              canClaim={canClaim}
-              onClaim={() => console.log("TODO implement onClaim")}
-            />
-          </CooldownTimerWrapper>
-        )}
-      </BalancesWrapper>
-      <Tabs tabs={tabs} />
+      <SectionsWrapper>
+        <BalancesWrapper>
+          <Balances>
+            <Balance>
+              <BalanceHeader>Staked balance</BalanceHeader>
+              <BalanceAmount>50.123</BalanceAmount>
+            </Balance>
+            <Balance>
+              <BalanceHeader>Unstaked balance</BalanceHeader>
+              <BalanceAmount>50.123</BalanceAmount>
+            </Balance>
+          </Balances>
+          {showCooldownTimer && (
+            <CooldownTimerWrapper>
+              <CooldownTimer
+                timeRemaining={timeRemaining}
+                amount={claimAmount}
+                canClaim={canClaim}
+                onClaim={() => console.log("TODO implement onClaim")}
+              />
+            </CooldownTimerWrapper>
+          )}
+        </BalancesWrapper>
+        <Tabs tabs={tabs} />
+      </SectionsWrapper>
+      <PanelFooter />
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
+
+const SectionsWrapper = styled.div``;
 
 const BalancesWrapper = styled.div`
   display: grid;

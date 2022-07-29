@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
 import { PanelTitle } from "../PanelTitle";
+import { PanelFooter } from "../PanelFooter";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -27,56 +28,70 @@ export function RemindMePanel() {
   return (
     <Wrapper>
       <PanelTitle panelContent={null} panelType="remind" />
-      {emailSubmitted ? (
-        <SectionWrapper>
-          <SuccessTitle>Success!</SuccessTitle>
-          <SuccessDescription>Your email has been added TODO improve copy</SuccessDescription>
-          <SuccessIconOuterWrapper>
-            <SuccessIconWrapper>
-              <SuccessIcon />
-            </SuccessIconWrapper>
-          </SuccessIconOuterWrapper>
-        </SectionWrapper>
-      ) : (
-        <SectionWrapper>
-          <SectionTitle>Email reminder</SectionTitle>
-          <SectionDescription>
-            We’ll send out an email 24 hours before the voting commit and reveal phases end.
-          </SectionDescription>
-          <EmailForm onSubmit={onSubmit}>
-            <TextInput placeholder="Your email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <CheckboxWrapper>
-              <Checkbox
-                label="I consent to receiving email notifications"
-                checked={disclaimerAccepted}
-                onChange={(e) => setDisclaimerAccepted(e.target.checked)}
-                gap={5}
+      <SectionsWrapper>
+        {emailSubmitted ? (
+          <SectionWrapper>
+            <SuccessTitle>Success!</SuccessTitle>
+            <SuccessDescription>Your email has been added TODO improve copy</SuccessDescription>
+            <SuccessIconOuterWrapper>
+              <SuccessIconWrapper>
+                <SuccessIcon />
+              </SuccessIconWrapper>
+            </SuccessIconOuterWrapper>
+          </SectionWrapper>
+        ) : (
+          <SectionWrapper>
+            <SectionTitle>Email reminder</SectionTitle>
+            <SectionDescription>
+              We’ll send out an email 24 hours before the voting commit and reveal phases end.
+            </SectionDescription>
+            <EmailForm onSubmit={onSubmit}>
+              <TextInput
+                placeholder="Your email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-            </CheckboxWrapper>
-            <SubmitButtonWrapper>
-              <Button variant="primary" type="submit" label="Submit" width="100%" disabled={!disclaimerAccepted} />
-            </SubmitButtonWrapper>
-          </EmailForm>
-        </SectionWrapper>
-      )}
-      <BrowserReminderSectionWrapper>
-        <BrowserReminderTextWrapper>
-          <SectionTitle>Browser reminder</SectionTitle>
-          <SectionDescription>
-            You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
-          </SectionDescription>
-        </BrowserReminderTextWrapper>
-        <Toggle clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
-      </BrowserReminderSectionWrapper>
+              <CheckboxWrapper>
+                <Checkbox
+                  label="I consent to receiving email notifications"
+                  checked={disclaimerAccepted}
+                  onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                  gap={5}
+                />
+              </CheckboxWrapper>
+              <SubmitButtonWrapper>
+                <Button variant="primary" type="submit" label="Submit" width="100%" disabled={!disclaimerAccepted} />
+              </SubmitButtonWrapper>
+            </EmailForm>
+          </SectionWrapper>
+        )}
+        <BrowserReminderSectionWrapper>
+          <BrowserReminderTextWrapper>
+            <SectionTitle>Browser reminder</SectionTitle>
+            <SectionDescription>
+              You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
+            </SectionDescription>
+          </BrowserReminderTextWrapper>
+          <Toggle clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
+        </BrowserReminderSectionWrapper>
+      </SectionsWrapper>
+      <PanelFooter />
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
+
+const SectionsWrapper = styled.div``;
 
 const SectionWrapper = styled.div`
-  padding-block: 20px;
   padding-inline: 20px;
+  padding-block: 20px;
   background: var(--grey-50);
   border-radius: 5px;
   margin-block: 20px;

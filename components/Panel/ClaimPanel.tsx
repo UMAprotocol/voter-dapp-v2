@@ -1,51 +1,61 @@
 import { Button } from "components/Button";
 import styled from "styled-components";
+import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 
 export function ClaimPanel() {
   return (
     <Wrapper>
       <PanelTitle panelType="claim" panelContent={null} />
-      <RewardsWrapper>
-        <RewardsHeader>Claimable Rewards</RewardsHeader>
-        <Rewards>
-          <strong>92.678</strong> UMA
-        </Rewards>
-      </RewardsWrapper>
-      <InnerWrapper>
-        <ClaimAndStakeWrapper>
-          <SectionHeader>Claim and Stake</SectionHeader>
-          <SectionDescription>
-            Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
-          </SectionDescription>
-          <Button
-            variant="primary"
-            width="100%"
-            height={45}
-            label="Claim and Stake"
-            onClick={() => console.log("TODO Claim and Stake")}
-          />
-        </ClaimAndStakeWrapper>
-        <ClaimToWalletWrapper>
-          <SectionHeader>Claim to Wallet</SectionHeader>
-          <SectionDescription>
-            By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
-            text TODO.
-          </SectionDescription>
-          <Button
-            variant="secondary"
-            width="100%"
-            height={45}
-            label="Claim to Wallet"
-            onClick={() => console.log("TODO Claim to Wallet")}
-          />
-        </ClaimToWalletWrapper>
-      </InnerWrapper>
+      <SectionsWrapper>
+        <RewardsWrapper>
+          <RewardsHeader>Claimable Rewards</RewardsHeader>
+          <Rewards>
+            <strong>92.678</strong> UMA
+          </Rewards>
+        </RewardsWrapper>
+        <InnerWrapper>
+          <ClaimAndStakeWrapper>
+            <SectionHeader>Claim and Stake</SectionHeader>
+            <SectionDescription>
+              Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
+            </SectionDescription>
+            <Button
+              variant="primary"
+              width="100%"
+              height={45}
+              label="Claim and Stake"
+              onClick={() => console.log("TODO Claim and Stake")}
+            />
+          </ClaimAndStakeWrapper>
+          <ClaimToWalletWrapper>
+            <SectionHeader>Claim to Wallet</SectionHeader>
+            <SectionDescription>
+              By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
+              text TODO.
+            </SectionDescription>
+            <Button
+              variant="secondary"
+              width="100%"
+              height={45}
+              label="Claim to Wallet"
+              onClick={() => console.log("TODO Claim to Wallet")}
+            />
+          </ClaimToWalletWrapper>
+        </InnerWrapper>
+      </SectionsWrapper>
+      <PanelFooter />
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
+
+const SectionsWrapper = styled.div``;
 
 const InnerWrapper = styled.div`
   padding-inline: 30px;

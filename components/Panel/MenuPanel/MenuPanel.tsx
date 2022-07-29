@@ -62,6 +62,12 @@ export function MenuPanel() {
   );
 }
 
+const Wrapper = styled.div`
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
+
 const AccountWrapper = styled.div`
   min-height: 160px;
   background: var(--grey-100);
@@ -84,10 +90,4 @@ const Address = styled.p`
   font: var(--text-sm);
   margin-top: 12px;
   margin-bottom: 15px;
-`;
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
 `;

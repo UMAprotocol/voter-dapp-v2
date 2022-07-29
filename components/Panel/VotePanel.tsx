@@ -7,6 +7,7 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
 import { PanelTitle } from "./PanelTitle";
+import { PanelFooter } from "./PanelFooter";
 
 interface Props {
   content: PanelContentT;
@@ -70,29 +71,34 @@ export function VotePanel({ content }: Props) {
             ))}
           </LinksList>
         </SectionWrapper>
+        <DiscordLinkWrapper>
+          <Button
+            href={discordLink}
+            variant="primary"
+            width="100%"
+            height={45}
+            fontSize={16}
+            label={
+              <DiscordLinkContent>
+                <IconWrapper>
+                  <ChatIcon />
+                </IconWrapper>{" "}
+                Join the discussion on Discord
+              </DiscordLinkContent>
+            }
+          />
+        </DiscordLinkWrapper>
       </SectionsWrapper>
-      <DiscordLinkWrapper>
-        <Button
-          href={discordLink}
-          variant="primary"
-          width="100%"
-          height={45}
-          fontSize={16}
-          label={
-            <DiscordLinkContent>
-              <IconWrapper>
-                <ChatIcon />
-              </IconWrapper>{" "}
-              Join the discussion on Discord
-            </DiscordLinkContent>
-          }
-        />
-      </DiscordLinkWrapper>
+      <PanelFooter />
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
 
 const SectionsWrapper = styled.div`
   margin-top: 20px;
