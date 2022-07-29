@@ -15,3 +15,21 @@ export const Default = Template.bind({});
 Default.args = {
   segments,
 };
+
+export const CustomSize = Template.bind({});
+CustomSize.args = {
+  segments,
+  size: 400,
+};
+
+export const CustomHole = Template.bind({});
+CustomHole.args = {
+  segments,
+  hole: 180,
+};
+
+export const CustomGap = Template.bind({});
+CustomGap.args = {
+  segments,
+  gapSize: 3,
+};
