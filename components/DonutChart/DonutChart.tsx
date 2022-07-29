@@ -1,3 +1,5 @@
+import styled from "styled-components";
+
 /* 
   Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
@@ -135,7 +137,7 @@ export function DonutChart({ colors = [], items }: Props) {
     const fill = color || colors[i % colors.length];
     const fillProp = fill ? { fill } : {};
 
-    paths.push(<path key={i} className="donut-chart-segment" {...fillProp} stroke="none" d={commands.join(" ")} />);
+    paths.push(<path key={i} {...fillProp} stroke="none" d={commands.join(" ")} />);
 
     return {
       paths,
@@ -156,26 +158,16 @@ export function DonutChart({ colors = [], items }: Props) {
 
   const itemsWithPercentages = computePercentages(items);
 
-  return (
-    <>
-      {items.length ? (
-        <div className="donut-chart-container">
-          <div className="donut-chart">
-            <svg viewBox={`0 0 ${size} ${size}`}>
-              {itemsWithPercentages.reduce(makeSegment, { paths: [], subtotal: 0 }).paths}
-            </svg>
-          </div>
-          <ul className="donut-chart-legend">
-            {itemsWithPercentages.map(({ value, percent, label }) => (
-              <li key={`${value}-${label}`}>
-                <span className="donut-chart-legend-label">{label}</span>
-                {/* <span className={cx('donut-chart-legend-value', legendValue)}>{value}</span> */}
-                <span className="donut-chart-legend-percent">({Math.round(percent * 100)}%)</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </>
-  );
+  return items.length ? (
+    <Wrapper>
+      <Chart>
+        <svg viewBox={`0 0 ${size} ${size}`}>
+          {itemsWithPercentages.reduce(makeSegment, { paths: [], subtotal: 0 }).paths}
+        </svg>
+      </Chart>
+    </Wrapper>
+  ) : null;
 }
+
+const Wrapper = styled.div``;
+const Chart = styled.div``;
