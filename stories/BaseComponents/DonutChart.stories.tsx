@@ -8,18 +8,10 @@ export default {
 
 const Template: ComponentStory<typeof DonutChart> = (args) => <DonutChart {...args} />;
 
+const length = 8;
+const segments = Array.from({ length }).map((_, i) => ({ label: `Segment ${i + 1}`, value: 1 / length }));
+
 export const Default = Template.bind({});
 Default.args = {
-  items: [
-    {
-      value: 0.5,
-      label: "first",
-      color: "red",
-    },
-    {
-      value: 0.5,
-      label: "second",
-      color: "blue",
-    },
-  ],
+  segments,
 };
