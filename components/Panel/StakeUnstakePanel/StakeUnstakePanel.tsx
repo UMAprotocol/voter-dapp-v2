@@ -2,6 +2,7 @@ import { Tabs } from "components/Tabs";
 import { add } from "date-fns";
 import { useState } from "react";
 import styled from "styled-components";
+import { PanelTitle } from "../PanelTitle";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
@@ -24,6 +25,7 @@ export function StakeUnstakePanel() {
   ];
   return (
     <Wrapper>
+      <PanelTitle panelType="stake" panelContent={null} />
       <BalancesWrapper>
         <Balances>
           <Balance>

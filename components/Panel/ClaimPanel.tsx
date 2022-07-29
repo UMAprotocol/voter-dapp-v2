@@ -1,9 +1,11 @@
 import { Button } from "components/Button";
 import styled from "styled-components";
+import { PanelTitle } from "./PanelTitle";
 
 export function ClaimPanel() {
   return (
     <Wrapper>
+      <PanelTitle panelType="claim" panelContent={null} />
       <RewardsWrapper>
         <RewardsHeader>Claimable Rewards</RewardsHeader>
         <Rewards>

@@ -6,6 +6,7 @@ import Commit from "public/assets/icons/commit.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
+import { PanelTitle } from "./PanelTitle";
 
 interface Props {
   content: PanelContentT;
@@ -16,6 +17,7 @@ export function VotePanel({ content }: Props) {
   const { description, options, timestamp, links, discordLink } = content;
   return (
     <Wrapper>
+      <PanelTitle panelContent={content} panelType="vote" />
       <SectionsWrapper>
         <SectionWrapper>
           <Title>
@@ -90,12 +92,12 @@ export function VotePanel({ content }: Props) {
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div``;
+
+const SectionsWrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
 `;
-
-const SectionsWrapper = styled.div``;
 
 const SectionWrapper = styled.div`
   padding-bottom: 20px;

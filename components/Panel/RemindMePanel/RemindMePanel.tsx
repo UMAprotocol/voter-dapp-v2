@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
+import { PanelTitle } from "../PanelTitle";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,7 @@ export function RemindMePanel() {
 
   return (
     <Wrapper>
+      <PanelTitle panelContent={null} panelType="remind" />
       {emailSubmitted ? (
         <SectionWrapper>
           <SuccessTitle>Success!</SuccessTitle>
@@ -70,17 +72,15 @@ export function RemindMePanel() {
   );
 }
 
-const Wrapper = styled.div`
-  margin-top: 20px;
-  padding-inline: 25px;
-`;
+const Wrapper = styled.div``;
 
 const SectionWrapper = styled.div`
   padding-block: 20px;
   padding-inline: 20px;
   background: var(--grey-50);
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-block: 20px;
+  margin-inline: 25px;
 `;
 
 const SectionTitle = styled.h2`

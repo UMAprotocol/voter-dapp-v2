@@ -10,9 +10,6 @@ import { desktopPanelWidth } from "constants/containers";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { VoteHistoryPanel } from "./VoteHistoryPanel";
-import UMA from "public/assets/icons/uma.svg";
-import Polymarket from "public/assets/icons/polymarket.svg";
-import { DisputeOrigins, PanelContentT } from "types/global";
 import { MenuPanel } from "./MenuPanel";
 import { black, white } from "constants/colors";
 
@@ -39,9 +36,7 @@ export function Panel() {
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
   const isMenu = panelType === "menu";
-  const showTitle = !isMenu;
   const closeButtonColor = isMenu ? black : white;
-  const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
 
   function closePanel() {
     setPanelOpen(false);
@@ -56,17 +51,6 @@ export function Panel() {
               style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
-                {showTitle && (
-                  <TitleWrapper>
-                    <TitleIcon origin={panelContent?.origin} />
-                    <Title id="panel-title">
-                      {panelTitle}
-                      <SubTitle>
-                        <SubTitleText panelType={panelType} panelContent={panelContent} />
-                      </SubTitle>
-                    </Title>
-                  </TitleWrapper>
-                )}
                 <PanelComponent content={panelContent} />
                 <CloseButton
                   onClick={closePanel}
@@ -82,37 +66,6 @@ export function Panel() {
             </Overlay>
           )
       )}
-    </>
-  );
-}
-
-function TitleIcon({ origin }: { origin: DisputeOrigins | undefined }) {
-  switch (origin) {
-    case DisputeOrigins.UMA:
-      return (
-        <TitleIconWrapper>
-          <UMAIcon />
-        </TitleIconWrapper>
-      );
-    case DisputeOrigins.Polymarket:
-      return (
-        <TitleIconWrapper>
-          <PolymarketIcon />
-        </TitleIconWrapper>
-      );
-    default:
-      return null;
-  }
-}
-
-function SubTitleText({ panelType, panelContent }: { panelType: string; panelContent: PanelContentT }) {
-  if (panelType !== "vote" || !panelContent) return null;
-
-  const { origin, disputeNumber } = panelContent;
-
-  return (
-    <>
-      {origin} | Dispute number <strong>#{disputeNumber}</strong>
     </>
   );
 }
@@ -137,24 +90,6 @@ const Content = styled(AnimatedContent)`
   background: var(--white);
 `;
 
-const TitleWrapper = styled.div`
-  background: var(--black);
-  color: var(--white);
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  gap: 20px;
-  padding: 25px;
-`;
-
-const Title = styled.h1`
-  font: var(--header-md);
-`;
-
-const SubTitle = styled.h2`
-  font: var(--text-sm);
-`;
-
 const CloseButton = styled.button`
   position: absolute;
   top: 30px;
@@ -166,13 +101,4 @@ const CloseIcon = styled(Close)`
   path {
     fill: var(--fill);
   }
-`;
-
-const UMAIcon = styled(UMA)``;
-
-const PolymarketIcon = styled(Polymarket)``;
-
-const TitleIconWrapper = styled.div`
-  width: 40px;
-  height: 40px;
 `;
