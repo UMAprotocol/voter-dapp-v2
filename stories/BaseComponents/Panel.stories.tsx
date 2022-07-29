@@ -7,7 +7,7 @@ import sub from "date-fns/sub";
 import { DisputeOrigins } from "types/global";
 
 export default {
-  title: "Panel",
+  title: "Base Components/Panel",
   component: Panel,
 } as ComponentMeta<typeof Panel>;
 

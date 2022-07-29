@@ -4,7 +4,7 @@ import { desktopMaxWidth } from "constants/containers";
 import { DisputeOrigins } from "types/global";
 
 export default {
-  title: "VoteBar",
+  title: "Pages/Overview Page/VoteBar",
   component: VoteBar,
   decorators: [
     (Story) => (
@@ -23,6 +23,11 @@ OriginUmaNotCommitted.args = {
     dispute: {
       title: "SuperUMAn DAO KPI Options funding proposal",
       origin: DisputeOrigins.UMA,
+      number: 205,
+      description: "Some description",
+      timestamp: new Date(),
+      txid: "0x1234567890",
+      umipNumber: 20,
     },
     voteOptions: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -50,6 +55,11 @@ OriginPolymarketNotCommitted.args = {
     dispute: {
       title: "George Kambosos Jr. vs. Devin Haney",
       origin: DisputeOrigins.Polymarket,
+      number: 205,
+      description: "Some description",
+      timestamp: new Date(),
+      txid: "0x1234567890",
+      umipNumber: 20,
     },
     voteOptions: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },

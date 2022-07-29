@@ -4,7 +4,7 @@ import { red500 } from "constants/colors";
 import add from "date-fns/add";
 
 export default {
-  title: "CooldownTimer",
+  title: "Base Components/CooldownTimer",
   component: CooldownTimer,
   decorators: [
     (Story) => (

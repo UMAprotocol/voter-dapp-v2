@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Nav } from "components/Nav";
 
 export default {
-  title: "Nav",
+  title: "Base Components/Nav",
   component: Nav,
   decorators: [
     (Story) => (

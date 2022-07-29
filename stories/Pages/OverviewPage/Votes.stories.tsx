@@ -3,10 +3,10 @@ import { Votes } from "components/Votes";
 import { desktopMaxWidth } from "constants/containers";
 import { VoteTimelineT } from "types/global";
 import * as VoteBarStories from "./VoteBar.stories";
-import { CommitPhase } from "./VoteTimeline/VoteTimeline.stories";
+import { CommitPhase } from "./VoteTimeline.stories";
 
 export default {
-  title: "Votes",
+  title: "Pages/Overview Page/Votes",
   component: Votes,
   decorators: [
     (Story) => (
@@ -28,5 +28,4 @@ Default.args = {
     VoteBarStories.OriginPolymarketCommitted.args!.vote!,
   ],
   voteTimeline: CommitPhase.args! as VoteTimelineT,
-  moreDetailsAction: () => console.log("More details clicked"),
 };

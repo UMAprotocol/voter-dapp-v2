@@ -3,7 +3,7 @@ import { Toggle } from "components/Toggle";
 import { useArgs } from "@storybook/client-api";
 
 export default {
-  title: "Toggle",
+  title: "Base Components/Toggle",
   component: Toggle,
   decorators: [
     (Story) => (

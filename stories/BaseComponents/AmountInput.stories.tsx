@@ -3,7 +3,7 @@ import { AmountInput } from "components/Input";
 import { useArgs } from "@storybook/client-api";
 
 export default {
-  title: "AmountInput",
+  title: "Base Components/AmountInput",
   component: AmountInput,
 } as ComponentMeta<typeof AmountInput>;
 

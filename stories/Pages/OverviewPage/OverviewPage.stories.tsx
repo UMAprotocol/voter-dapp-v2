@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import OverviewPage from "pages";
 
 export default {
-  title: "OverviewPage",
+  title: "Pages/Overview Page/OverviewPage",
   component: OverviewPage,
 } as ComponentMeta<typeof OverviewPage>;
 

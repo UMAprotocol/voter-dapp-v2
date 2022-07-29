@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { HowItWorks } from "components/HowItWorks";
 
 export default {
-  title: "HowItWorks",
+  title: "Pages/Overview Page/HowItWorks",
   component: HowItWorks,
 } as ComponentMeta<typeof HowItWorks>;
 

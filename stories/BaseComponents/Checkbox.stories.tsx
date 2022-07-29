@@ -3,7 +3,7 @@ import { Checkbox } from "components/Checkbox";
 import { useArgs } from "@storybook/client-api";
 
 export default {
-  title: "Checkbox",
+  title: "Base Components/Checkbox",
   component: Checkbox,
   decorators: [
     (Story) => (

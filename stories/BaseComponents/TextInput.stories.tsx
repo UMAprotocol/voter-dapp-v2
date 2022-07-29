@@ -3,7 +3,7 @@ import { TextInput } from "components/Input";
 import { useArgs } from "@storybook/client-api";
 
 export default {
-  title: "TextInput",
+  title: "Base Components/TextInput",
   component: TextInput,
 } as ComponentMeta<typeof TextInput>;
 

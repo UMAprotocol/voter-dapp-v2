@@ -57,7 +57,7 @@ const socialLinks = [
 export function MenuPanel() {
   return (
     <Wrapper>
-      <AccountPlaceholder />
+      <AccountWrapper>Account</AccountWrapper>
       <Nav links={links} />
       <FooterWrapper>
         <SocialsWrapper>
@@ -86,7 +86,7 @@ export function MenuPanel() {
   );
 }
 
-const AccountPlaceholder = styled.div`
+const AccountWrapper = styled.div`
   height: 160px;
   background: var(--grey-100);
 `;
