@@ -24,6 +24,7 @@ export function StakeUnstakePanel() {
       content: <Unstake canClaim={canClaim} />,
     },
   ];
+
   return (
     <Wrapper>
       <PanelTitle panelType="stake" panelContent={null} />
