@@ -4,13 +4,13 @@ import Time from "public/assets/icons/time.svg";
 import styled from "styled-components";
 
 interface Props {
-  timeRemaining: Date | null;
-  amount: string;
+  cooldownEnds: Date | null;
+  claimableRewards: number;
   canClaim: boolean;
   onClaim: () => void;
 }
-export function CooldownTimer({ timeRemaining, amount, canClaim, onClaim }: Props) {
-  const formattedTimeRemaining = timeRemaining && formatDistanceToNowStrict(timeRemaining);
+export function CooldownTimer({ cooldownEnds, claimableRewards, canClaim, onClaim }: Props) {
+  const formattedCooldownEnds = cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
   const cooldownDescription = "in cooldown period";
   const claimDescription = "ready to claim";
   const description = canClaim ? claimDescription : cooldownDescription;
@@ -22,7 +22,7 @@ export function CooldownTimer({ timeRemaining, amount, canClaim, onClaim }: Prop
       </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
-          <strong>{amount}</strong> UMA
+          <strong>{claimableRewards}</strong> UMA
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>
@@ -31,7 +31,7 @@ export function CooldownTimer({ timeRemaining, amount, canClaim, onClaim }: Prop
           <Button variant="primary" label="Claim tokens" onClick={onClaim} width={150} height={35} />
         </ClaimButtonWrapper>
       ) : (
-        <TimeRemaining>{formattedTimeRemaining} left</TimeRemaining>
+        <TimeRemaining>{formattedCooldownEnds} left</TimeRemaining>
       )}
     </Wrapper>
   );

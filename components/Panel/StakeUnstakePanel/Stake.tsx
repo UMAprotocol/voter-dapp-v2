@@ -7,7 +7,7 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Stake() {
   const [stakeAmount, setStakeAmount] = useState<string>();
-  const [disclaimerChecked, setDisclaimerChecked] = useState<boolean>(false);
+  const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
   return (
     <Wrapper>

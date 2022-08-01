@@ -11,7 +11,7 @@ interface Props {
   canClaim: boolean;
 }
 export function Unstake({ canClaim }: Props) {
-  const [unstakeAmount, setStakeAmount] = useState<string>();
+  const [unstakeAmount, setUnstakeAmount] = useState<string>();
 
   return (
     <Wrapper>
@@ -37,15 +37,15 @@ export function Unstake({ canClaim }: Props) {
       <AmountInputWrapper>
         <AmountInput
           value={unstakeAmount}
-          onChange={(e) => setStakeAmount(e.target.value)}
-          onMax={() => setStakeAmount("10000")}
+          onChange={(e) => setUnstakeAmount(e.target.value)}
+          onMax={() => setUnstakeAmount("10000")}
           disabled={!canClaim}
         />
       </AmountInputWrapper>
       <Button
         variant="primary"
         label="Unstake"
-        onClick={() => console.log("TODO implement stake")}
+        onClick={() => console.log("TODO implement unstake")}
         width="100%"
         disabled={!canClaim}
       />

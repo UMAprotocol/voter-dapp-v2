@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { PanelContentT, VotePanelContentT } from "types/global";
 import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";

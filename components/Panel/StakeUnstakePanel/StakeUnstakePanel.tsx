@@ -1,7 +1,6 @@
 import { Tabs } from "components/Tabs";
-import { add } from "date-fns";
-import { useState } from "react";
 import styled from "styled-components";
+import { PanelContentT, StakePanelContentT } from "types/global";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";
@@ -9,11 +8,18 @@ import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
 
-export function StakeUnstakePanel() {
-  const [showCooldownTimer, setShowCooldownTimer] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(add(new Date(), { minutes: 1 }));
-  const [claimAmount, setClaimAmount] = useState("100.1234");
-  const [canClaim, setCanClaim] = useState(true);
+interface Props {
+  content: PanelContentT;
+}
+export function StakeUnstakePanel({ content }: Props) {
+  if (!content) return null;
+
+  const { stakedBalance, unstakedBalance, claimableRewards, cooldownEnds } = content as StakePanelContentT;
+
+  const hasCooldownTimeRemaining = cooldownEnds > new Date();
+  const hasClaimableRewards = claimableRewards > 0;
+  const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableRewards;
+  const canClaim = !hasCooldownTimeRemaining && hasClaimableRewards;
 
   const tabs = [
     {
@@ -34,18 +40,18 @@ export function StakeUnstakePanel() {
           <Balances>
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
-              <BalanceAmount>50.123</BalanceAmount>
+              <BalanceAmount>{stakedBalance}</BalanceAmount>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
-              <BalanceAmount>50.123</BalanceAmount>
+              <BalanceAmount>{unstakedBalance}</BalanceAmount>
             </Balance>
           </Balances>
           {showCooldownTimer && (
             <CooldownTimerWrapper>
               <CooldownTimer
-                timeRemaining={timeRemaining}
-                amount={claimAmount}
+                cooldownEnds={cooldownEnds}
+                claimableRewards={claimableRewards}
                 canClaim={canClaim}
                 onClaim={() => console.log("TODO implement onClaim")}
               />
@@ -60,7 +66,6 @@ export function StakeUnstakePanel() {
 }
 
 const SectionsWrapper = styled.div``;
-
 const BalancesWrapper = styled.div`
   display: grid;
   background: var(--red-500);

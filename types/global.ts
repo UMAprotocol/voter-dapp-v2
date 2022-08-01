@@ -50,4 +50,11 @@ export type ClaimPanelContentT = {
   claimableRewards: number;
 };
 
-export type PanelContentT = VotePanelContentT | ClaimPanelContentT | null;
+export type StakePanelContentT = {
+  stakedBalance: number;
+  unstakedBalance: number;
+  cooldownEnds: Date;
+  claimableRewards: number;
+};
+
+export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
