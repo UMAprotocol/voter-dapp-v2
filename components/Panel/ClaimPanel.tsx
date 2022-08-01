@@ -1,10 +1,18 @@
 import { Button } from "components/Button";
 import styled from "styled-components";
+import { ClaimPanelContentT, PanelContentT } from "types/global";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
-export function ClaimPanel() {
+interface Props {
+  content: PanelContentT;
+}
+export function ClaimPanel({ content }: Props) {
+  if (!content) return null;
+
+  const { claimableRewards } = content as ClaimPanelContentT;
+
   return (
     <PanelWrapper>
       <PanelTitle panelType="claim" panelContent={null} />
@@ -12,7 +20,7 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <strong>92.678</strong> UMA
+            <strong>{claimableRewards}</strong> UMA
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

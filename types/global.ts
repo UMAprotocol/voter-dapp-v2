@@ -46,4 +46,8 @@ export type VotePanelContentT = {
   discordLink: string;
 };
 
-export type PanelContentT = VotePanelContentT | null;
+export type ClaimPanelContentT = {
+  claimableRewards: number;
+};
+
+export type PanelContentT = VotePanelContentT | ClaimPanelContentT | null;

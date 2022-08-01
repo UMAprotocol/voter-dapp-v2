@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PanelContentT } from "types/global";
+import { PanelContentT, VotePanelContentT } from "types/global";
 import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";
 import { Tabs } from "components/Tabs";
@@ -13,7 +13,7 @@ interface Props {
 export function VotePanel({ content }: Props) {
   if (!content) return null;
 
-  const { description, options, timestamp, links, discordLink } = content;
+  const { description, options, timestamp, links, discordLink } = content as VotePanelContentT;
 
   const tabs = [
     {

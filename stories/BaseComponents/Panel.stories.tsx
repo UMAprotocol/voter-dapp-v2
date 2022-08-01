@@ -47,8 +47,7 @@ export const ClaimPanel = Template.bind({});
 ClaimPanel.args = {
   panelType: "claim",
   panelContent: {
-    title: "Claim",
-    description: "Claim description",
+    claimableRewards: 123.456,
   },
   panelOpen: true,
 };
