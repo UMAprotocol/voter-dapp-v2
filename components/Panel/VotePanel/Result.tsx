@@ -1,6 +1,8 @@
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
+import { DonutChart } from "components/DonutChart";
+import { computePercentages, computeColors } from "components/DonutChart/helpers";
 
 export function Result() {
   // todo wire up to graph
@@ -10,6 +12,29 @@ export function Result() {
     { label: "Unique Reveal Addresses", value: "97" },
   ];
 
+  // todo wire up to graph
+  const results = [
+    {
+      label: "Devin Haney",
+      value: 1234,
+    },
+    {
+      label: "George Washington",
+      value: 5678,
+    },
+    {
+      label: "Tie",
+      value: 500,
+    },
+    {
+      label: "Early Expiry",
+      value: 199,
+    },
+  ];
+
+  const resultsWithPercentages = computePercentages(results);
+  const resultsWithColors = computeColors(resultsWithPercentages);
+
   return (
     <Wrapper>
       <Title>
@@ -18,7 +43,24 @@ export function Result() {
         </IconWrapper>
         Result
       </Title>
-      <SectionWrapper></SectionWrapper>
+      <SectionWrapper>
+        <ResultSectionWrapper>
+          <Chart>
+            <DonutChart data={results} />
+          </Chart>
+          <Legend>
+            {resultsWithColors.map(({ label, value, percent, color }) => (
+              <LegendItem key={label}>
+                <LegendItemDot style={{ "--color": color } as CSSProperties} />
+                <LegendItemData>
+                  <LegendItemLabel>{label}</LegendItemLabel>
+                  <strong>{percent.toFixed(2)}%</strong> ({value})
+                </LegendItemData>
+              </LegendItem>
+            ))}
+          </Legend>
+        </ResultSectionWrapper>
+      </SectionWrapper>
       <Title>
         <IconWrapper>
           <VotingIcon />
@@ -66,6 +108,42 @@ const SectionWrapper = styled.div`
   border-radius: 5px;
 `;
 
+const ResultSectionWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 60px;
+`;
+
+const Chart = styled.div``;
+
+const Legend = styled.ul`
+  list-style: none;
+`;
+
+const LegendItem = styled.li`
+  display: flex;
+  gap: 11px;
+  &:not(:last-child) {
+    margin-bottom: 15px;
+  }
+`;
+
+const LegendItemDot = styled.div`
+  width: 15px;
+  height: 15px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--color);
+`;
+
+const LegendItemLabel = styled.h3`
+  font-weight: 500;
+`;
+
+const LegendItemData = styled.div`
+  font: var(--text-md);
+`;
+
 const VotingIcon = styled(Voting)`
   fill: var(--red-500);
 `;
@@ -79,6 +157,7 @@ const ParticipationItem = styled.p`
   align-items: center;
   justify-content: space-between;
   font: var(--text-md);
+
   &:not(:last-child) {
     margin-bottom: 20px;
   }
