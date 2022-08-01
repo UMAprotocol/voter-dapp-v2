@@ -3,6 +3,7 @@ import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { useState } from "react";
 import styled from "styled-components";
+import { PanelSectionTitle } from "../styles";
 
 export function Stake() {
   const [stakeAmount, setStakeAmount] = useState<string>();
@@ -10,7 +11,7 @@ export function Stake() {
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
   return (
     <Wrapper>
-      <Title>Stake</Title>
+      <PanelSectionTitle>Stake</PanelSectionTitle>
       <Description>
         Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for 7 days after
         unstaking.
@@ -43,11 +44,6 @@ export function Stake() {
 const Wrapper = styled.div`
   padding-top: 25px;
   padding-inline: 30px;
-`;
-
-const Title = styled.h2`
-  font: var(--header-sm);
-  font-weight: 700;
 `;
 
 const Description = styled.p`

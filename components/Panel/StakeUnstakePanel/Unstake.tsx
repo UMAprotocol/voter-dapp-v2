@@ -5,6 +5,7 @@ import styled from "styled-components";
 import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
+import { PanelSectionTitle } from "../styles";
 
 interface Props {
   canClaim: boolean;
@@ -14,7 +15,7 @@ export function Unstake({ canClaim }: Props) {
 
   return (
     <Wrapper>
-      <Title>Unstake</Title>
+      <PanelSectionTitle>Unstake</PanelSectionTitle>
       <Description>
         When you unstake tokens there is a 7 days cool off period and you wont be able to collect rewards text text
       </Description>
@@ -55,11 +56,6 @@ export function Unstake({ canClaim }: Props) {
 const Wrapper = styled.div`
   padding-top: 25px;
   padding-inline: 30px;
-`;
-
-const Title = styled.h2`
-  font: var(--header-sm);
-  font-weight: 700;
 `;
 
 const Description = styled.p`

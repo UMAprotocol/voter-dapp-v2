@@ -7,7 +7,7 @@ import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
 import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";
-import { PanelWrapper } from "../styles";
+import { PanelSectionTitle, PanelWrapper } from "../styles";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -42,7 +42,7 @@ export function RemindMePanel() {
           </SectionWrapper>
         ) : (
           <SectionWrapper>
-            <SectionTitle>Email reminder</SectionTitle>
+            <PanelSectionTitle>Email reminder</PanelSectionTitle>
             <SectionDescription>
               We’ll send out an email 24 hours before the voting commit and reveal phases end.
             </SectionDescription>
@@ -69,7 +69,7 @@ export function RemindMePanel() {
         )}
         <BrowserReminderSectionWrapper>
           <BrowserReminderTextWrapper>
-            <SectionTitle>Browser reminder</SectionTitle>
+            <PanelSectionTitle>Browser reminder</PanelSectionTitle>
             <SectionDescription>
               You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
             </SectionDescription>
@@ -91,11 +91,6 @@ const SectionWrapper = styled.div`
   border-radius: 5px;
   margin-block: 20px;
   margin-inline: 25px;
-`;
-
-const SectionTitle = styled.h2`
-  font: var(--header-sm);
-  font-weight: 700;
 `;
 
 const SectionDescription = styled.p`

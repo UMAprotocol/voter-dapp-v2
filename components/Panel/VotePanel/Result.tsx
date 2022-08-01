@@ -3,6 +3,7 @@ import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import { DonutChart } from "components/DonutChart";
 import { computePercentages, computeColors } from "components/DonutChart/helpers";
+import { PanelSectionTitle } from "../styles";
 
 export function Result() {
   // todo wire up to graph
@@ -37,12 +38,12 @@ export function Result() {
 
   return (
     <Wrapper>
-      <Title>
+      <PanelSectionTitle>
         <IconWrapper>
           <PortionIcon />
         </IconWrapper>
         Result
-      </Title>
+      </PanelSectionTitle>
       <SectionWrapper>
         <ResultSectionWrapper>
           <Chart>
@@ -61,12 +62,12 @@ export function Result() {
           </Legend>
         </ResultSectionWrapper>
       </SectionWrapper>
-      <Title>
+      <PanelSectionTitle>
         <IconWrapper>
           <VotingIcon />
         </IconWrapper>
         Participation
-      </Title>
+      </PanelSectionTitle>
       <SectionWrapper>
         {participationItems.map(({ label, value }) => (
           <ParticipationItem key={label}>
@@ -82,16 +83,6 @@ export function Result() {
 const Wrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
-`;
-
-const Title = styled.h2`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 10px;
-  margin-bottom: 15px;
-  font: var(--header-sm);
-  font-weight: 700;
 `;
 
 const IconWrapper = styled.div`

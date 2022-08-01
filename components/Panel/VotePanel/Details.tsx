@@ -5,6 +5,7 @@ import Commit from "public/assets/icons/commit.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
+import { PanelSectionTitle } from "../styles";
 
 interface Props {
   description: string;
@@ -18,21 +19,21 @@ export function Details({ description, options, timestamp, links, discordLink }:
   return (
     <Wrapper>
       <SectionWrapper>
-        <Title>
+        <PanelSectionTitle>
           <IconWrapper>
             <DescriptionIcon />
           </IconWrapper>{" "}
           Description
-        </Title>
+        </PanelSectionTitle>
         <Text>{description}</Text>
       </SectionWrapper>
       <SectionWrapper>
-        <Title>
+        <PanelSectionTitle>
           <IconWrapper>
             <VotingIcon />
           </IconWrapper>
           Voting options
-        </Title>
+        </PanelSectionTitle>
         <OptionsList>
           {options.map((option) => (
             <OptionsItem key={option}>{option}</OptionsItem>
@@ -40,12 +41,12 @@ export function Details({ description, options, timestamp, links, discordLink }:
         </OptionsList>
       </SectionWrapper>
       <SectionWrapper>
-        <Title>
+        <PanelSectionTitle>
           <IconWrapper>
             <TimestampIcon />
           </IconWrapper>
           Timestamp
-        </Title>
+        </PanelSectionTitle>
         <Timestamp>
           <span>UTC</span> <span>{timestamp.toUTCString()}</span>
         </Timestamp>
@@ -54,12 +55,12 @@ export function Details({ description, options, timestamp, links, discordLink }:
         </Timestamp>
       </SectionWrapper>
       <SectionWrapper>
-        <Title>
+        <PanelSectionTitle>
           <IconWrapper>
             <LinksIcon />
           </IconWrapper>
           Links
-        </Title>
+        </PanelSectionTitle>
         <LinksList>
           {links.map(({ href, label }) => (
             <LinkItem key={label}>
@@ -100,15 +101,6 @@ const SectionWrapper = styled.div`
   &:not(:last-child) {
     border-bottom: 1px solid var(--black-opacity-25);
   }
-`;
-
-const Title = styled.h3`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  font: var(--header-sm);
-  font-weight: 700;
 `;
 
 const Text = styled.p`
