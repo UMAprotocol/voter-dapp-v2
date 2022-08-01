@@ -3,7 +3,7 @@ import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import { DonutChart } from "components/DonutChart";
 import { computePercentages, computeColors } from "components/DonutChart/helpers";
-import { PanelSectionTitle } from "../styles";
+import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Result() {
   // todo wire up to graph
@@ -143,13 +143,12 @@ const PortionIcon = styled(Portion)`
   fill: var(--red-500);
 `;
 
-const ParticipationItem = styled.p`
+const ParticipationItem = styled(PanelSectionText)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font: var(--text-md);
 
-  &:not(:last-child) {
-    margin-bottom: 20px;
+  &:last-child {
+    margin-bottom: 0;
   }
 `;

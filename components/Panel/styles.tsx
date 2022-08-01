@@ -14,3 +14,8 @@ export const PanelSectionTitle = styled.h2`
   font: var(--header-sm);
   font-weight: 700;
 `;
+
+export const PanelSectionText = styled.p`
+  font: var(--text-sm);
+  margin-bottom: 20px;
+`;

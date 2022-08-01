@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
-import { PanelSectionTitle, PanelWrapper } from "./styles";
+import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   return (
@@ -18,9 +18,9 @@ export function ClaimPanel() {
         <InnerWrapper>
           <ClaimAndStakeWrapper>
             <PanelSectionTitle>Claim and Stake</PanelSectionTitle>
-            <SectionDescription>
+            <PanelSectionText>
               Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
-            </SectionDescription>
+            </PanelSectionText>
             <Button
               variant="primary"
               width="100%"
@@ -31,10 +31,10 @@ export function ClaimPanel() {
           </ClaimAndStakeWrapper>
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
-            <SectionDescription>
+            <PanelSectionText>
               By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
               text TODO.
-            </SectionDescription>
+            </PanelSectionText>
             <Button
               variant="secondary"
               width="100%"
@@ -77,11 +77,6 @@ const Rewards = styled.p`
   strong {
     font-weight: 700;
   }
-`;
-
-const SectionDescription = styled.p`
-  font: var(--text-sm);
-  margin-bottom: 15px;
 `;
 
 const ClaimAndStakeWrapper = styled.div`

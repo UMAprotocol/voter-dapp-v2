@@ -7,7 +7,7 @@ import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
 import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";
-import { PanelSectionTitle, PanelWrapper } from "../styles";
+import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "../styles";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -43,9 +43,9 @@ export function RemindMePanel() {
         ) : (
           <SectionWrapper>
             <PanelSectionTitle>Email reminder</PanelSectionTitle>
-            <SectionDescription>
+            <PanelSectionText>
               We’ll send out an email 24 hours before the voting commit and reveal phases end.
-            </SectionDescription>
+            </PanelSectionText>
             <EmailForm onSubmit={onSubmit}>
               <TextInput
                 placeholder="Your email"
@@ -70,9 +70,9 @@ export function RemindMePanel() {
         <BrowserReminderSectionWrapper>
           <BrowserReminderTextWrapper>
             <PanelSectionTitle>Browser reminder</PanelSectionTitle>
-            <SectionDescription>
+            <PanelSectionText>
               You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
-            </SectionDescription>
+            </PanelSectionText>
           </BrowserReminderTextWrapper>
           <Toggle clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
         </BrowserReminderSectionWrapper>
@@ -91,11 +91,6 @@ const SectionWrapper = styled.div`
   border-radius: 5px;
   margin-block: 20px;
   margin-inline: 25px;
-`;
-
-const SectionDescription = styled.p`
-  font: var(--text-sm);
-  margin-bottom: 20px;
 `;
 
 const SubmitButtonWrapper = styled.div`
@@ -117,7 +112,7 @@ const BrowserReminderSectionWrapper = styled(SectionWrapper)`
 `;
 
 const BrowserReminderTextWrapper = styled.div`
-  > ${SectionDescription} {
+  > ${PanelSectionText} {
     margin-bottom: 0;
   }
 `;
@@ -128,8 +123,7 @@ const SuccessTitle = styled.h2`
   margin-bottom: 6px;
 `;
 
-const SuccessDescription = styled.p`
-  font: var(--text-sm);
+const SuccessDescription = styled(PanelSectionText)`
   text-align: center;
   margin-bottom: 30px;
 `;
