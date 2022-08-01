@@ -2,10 +2,11 @@ import { Button } from "components/Button";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
+import { PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   return (
-    <Wrapper>
+    <PanelWrapper>
       <PanelTitle panelType="claim" panelContent={null} />
       <SectionsWrapper>
         <RewardsWrapper>
@@ -45,15 +46,9 @@ export function ClaimPanel() {
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />
-    </Wrapper>
+    </PanelWrapper>
   );
 }
-
-const Wrapper = styled.div`
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-`;
 
 const SectionsWrapper = styled.div``;
 

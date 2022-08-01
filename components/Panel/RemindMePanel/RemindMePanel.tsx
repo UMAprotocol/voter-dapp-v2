@@ -7,6 +7,7 @@ import { Toggle } from "components/Toggle";
 import Check from "public/assets/icons/check.svg";
 import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";
+import { PanelWrapper } from "../styles";
 
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
@@ -26,7 +27,7 @@ export function RemindMePanel() {
   }
 
   return (
-    <Wrapper>
+    <PanelWrapper>
       <PanelTitle panelContent={null} panelType="remind" />
       <SectionsWrapper>
         {emailSubmitted ? (
@@ -77,15 +78,9 @@ export function RemindMePanel() {
         </BrowserReminderSectionWrapper>
       </SectionsWrapper>
       <PanelFooter />
-    </Wrapper>
+    </PanelWrapper>
   );
 }
-
-const Wrapper = styled.div`
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-`;
 
 const SectionsWrapper = styled.div``;
 

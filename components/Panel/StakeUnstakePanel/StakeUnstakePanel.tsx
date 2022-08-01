@@ -4,6 +4,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
+import { PanelWrapper } from "../styles";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
@@ -26,7 +27,7 @@ export function StakeUnstakePanel() {
   ];
 
   return (
-    <Wrapper>
+    <PanelWrapper>
       <PanelTitle panelType="stake" panelContent={null} />
       <SectionsWrapper>
         <BalancesWrapper>
@@ -54,15 +55,9 @@ export function StakeUnstakePanel() {
         <Tabs tabs={tabs} />
       </SectionsWrapper>
       <PanelFooter />
-    </Wrapper>
+    </PanelWrapper>
   );
 }
-
-const Wrapper = styled.div`
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-`;
 
 const SectionsWrapper = styled.div``;
 

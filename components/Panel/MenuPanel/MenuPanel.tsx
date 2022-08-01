@@ -5,6 +5,7 @@ import { WalletIcon } from "components/Wallet/WalletIcon";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { getAccountDetails, handleDisconnectWallet } from "components/Wallet";
 import { PanelFooter } from "../PanelFooter";
+import { PanelWrapper } from "../styles";
 
 const links = [
   {
@@ -35,7 +36,7 @@ export function MenuPanel() {
   const { address } = getAccountDetails(connectedWallets);
 
   return (
-    <Wrapper>
+    <PanelWrapper>
       <AccountWrapper>
         <Title>Account</Title>
         {connectedWallets.length ? (
@@ -58,15 +59,9 @@ export function MenuPanel() {
       </AccountWrapper>
       <Nav links={links} />
       <PanelFooter />
-    </Wrapper>
+    </PanelWrapper>
   );
 }
-
-const Wrapper = styled.div`
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-`;
 
 const AccountWrapper = styled.div`
   min-height: 160px;

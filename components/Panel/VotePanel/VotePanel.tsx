@@ -5,6 +5,7 @@ import { PanelFooter } from "../PanelFooter";
 import { Tabs } from "components/Tabs";
 import { Details } from "./Details";
 import { Result } from "./Result";
+import { PanelWrapper } from "../styles";
 
 interface Props {
   content: PanelContentT;
@@ -34,16 +35,10 @@ export function VotePanel({ content }: Props) {
   ];
 
   return (
-    <Wrapper>
+    <PanelWrapper>
       <PanelTitle panelContent={content} panelType="vote" />
       <Tabs tabs={tabs} />
       <PanelFooter />
-    </Wrapper>
+    </PanelWrapper>
   );
 }
-
-const Wrapper = styled.div`
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-`;
