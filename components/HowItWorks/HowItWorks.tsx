@@ -5,16 +5,33 @@ import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { usePanelContext } from "hooks/usePanelContext";
 
-export function HowItWorks() {
-  const { setPanelType, setPanelOpen } = usePanelContext();
+interface Props {
+  stakedBalance: number;
+  unstakedBalance: number;
+  claimableRewards: number;
+  cooldownEnds: Date;
+  votesInLastCycles: number;
+  apy: number;
+}
+export function HowItWorks({
+  stakedBalance,
+  unstakedBalance,
+  claimableRewards,
+  cooldownEnds,
+  votesInLastCycles,
+  apy,
+}: Props) {
+  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
+    setPanelContent({ stakedBalance, unstakedBalance, claimableRewards, cooldownEnds });
     setPanelOpen(true);
   }
 
   function openClaimPanel() {
     setPanelType("claim");
+    setPanelContent({ claimableRewards });
     setPanelOpen(true);
   }
 
@@ -31,7 +48,7 @@ export function HowItWorks() {
           }
           content={
             <>
-              You are staking <strong>34.567.890</strong> UMA tokens of 54.321.098
+              You are staking <strong>{stakedBalance}</strong> UMA tokens of {stakedBalance + unstakedBalance}
             </>
           }
           actionLabel="Stake/Unstake"
@@ -46,7 +63,8 @@ export function HowItWorks() {
           }
           content={
             <>
-              You have voted <strong>3 out of 5</strong> latest voting cycles, and are earning <strong>18% APY</strong>
+              You have voted <strong>{votesInLastCycles} out of 5</strong> latest voting cycles, and are earning{" "}
+              <strong>{apy}% APY</strong>
             </>
           }
           actionLabel="Vote history"
@@ -61,7 +79,7 @@ export function HowItWorks() {
           }
           content={
             <>
-              You have <strong>92,726 UMA</strong> in unclaimed rewards
+              You have <strong>{claimableRewards} UMA</strong> in unclaimed rewards
             </>
           }
           actionLabel="Claim"
