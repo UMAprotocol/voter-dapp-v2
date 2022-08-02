@@ -1,9 +1,26 @@
+import { InputDataT } from "types/global";
+
 export const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
 export const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
 
-export function computePercentages(data: { value: number; label: string }[]) {
+export function convertToNumbers(data: InputDataT[]) {
+  return data.map(({ value, label }) => {
+    const numberValue = Number(value);
+    if (Number.isNaN(numberValue)) {
+      throw new Error(`Non-numeric string used as value in input data: ${value}`);
+    }
+    return {
+      value: numberValue,
+      label,
+    };
+  });
+}
+
+export function computePercentages(data: InputDataT[]) {
+  // convert values from strings to numbers if needed
+  const asNumbers = convertToNumbers(data);
   // eliminate values of zero or less; protects against division by zero when computing percentages
-  const filtered = data?.filter(({ value }) => value > 0) ?? [];
+  const filtered = asNumbers?.filter(({ value }) => value > 0) ?? [];
   const total = filtered.reduce((t, { value = 0 }) => t + value, 0);
 
   return filtered.map((item) => ({
