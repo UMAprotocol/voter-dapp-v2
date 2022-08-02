@@ -8,7 +8,10 @@ import Chat from "public/assets/icons/chat.svg";
 import { PanelSectionTitle } from "../styles";
 import { VoteDetailsT } from "types/global";
 
-export function Details({ description, options, timestamp, links, discordLink }: VoteDetailsT) {
+type Props = Pick<VoteDetailsT, "description" | "options" | "timestamp" | "links" | "discordLink">;
+export function Details({ description, options, timestamp, links, discordLink }: Props) {
+  const optionLabels = options.map(({ label }) => label);
+
   return (
     <Wrapper>
       <SectionWrapper>
@@ -28,8 +31,8 @@ export function Details({ description, options, timestamp, links, discordLink }:
           Voting options
         </PanelSectionTitle>
         <OptionsList>
-          {options.map((option) => (
-            <OptionsItem key={option}>{option}</OptionsItem>
+          {optionLabels.map((label) => (
+            <OptionsItem key={label}>{label}</OptionsItem>
           ))}
         </OptionsList>
       </SectionWrapper>

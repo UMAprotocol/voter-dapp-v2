@@ -7,32 +7,7 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 import { VoteResultT } from "types/global";
 
 export function Result({ participation, results }: VoteResultT) {
-  // todo wire up to graph
-  const participation = [
-    { label: "Total Votes", value: 188077355.982231 },
-    { label: "Unique Commit Addresses", value: 100 },
-    { label: "Unique Reveal Addresses", value: 97 },
-  ];
-
-  // todo wire up to graph
-  const results = [
-    {
-      label: "Devin Haney",
-      value: 1234,
-    },
-    {
-      label: "George Washington",
-      value: 5678,
-    },
-    {
-      label: "Tie",
-      value: 500,
-    },
-    {
-      label: "Early Expiry",
-      value: 199,
-    },
-  ];
+  if (!participation || !results) return null;
 
   const resultsWithPercentages = computePercentages(results);
   const resultsWithColors = computeColors(resultsWithPercentages);
