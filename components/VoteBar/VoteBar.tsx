@@ -13,11 +13,11 @@ interface Props {
   moreDetailsAction: () => void;
 }
 export function VoteBar({ vote, moreDetailsAction }: Props) {
-  const { dispute, voteOptions, isCommitted } = vote;
   const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
 
-  const Icon = dispute.origin === DisputeOrigins.UMA ? UMAIcon : PolymarketIcon;
-
+  const { data, isCommitted } = vote;
+  const { title, origin, options } = data;
+  const Icon = origin === DisputeOrigins.UMA ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
   return (
@@ -27,14 +27,14 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
           <Icon />
         </DisputeIconWrapper>
         <DisputeDetailsWrapper>
-          <DisputeTitle>{dispute.title}</DisputeTitle>
-          <DisputeOrigin>{dispute.origin}</DisputeOrigin>
+          <DisputeTitle>{title}</DisputeTitle>
+          <DisputeOrigin>{origin}</DisputeOrigin>
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
         <Dropdown
           label="Choose answer"
-          items={voteOptions}
+          items={options}
           selected={selectedVote}
           onSelect={(vote) => setSelectedVote(vote)}
         />

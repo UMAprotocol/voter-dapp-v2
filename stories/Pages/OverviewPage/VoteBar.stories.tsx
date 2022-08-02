@@ -20,16 +20,16 @@ const Template: ComponentStory<typeof VoteBar> = (args) => <VoteBar {...args} />
 export const OriginUmaNotCommitted = Template.bind({});
 OriginUmaNotCommitted.args = {
   vote: {
-    dispute: {
+    data: {
       title: "SuperUMAn DAO KPI Options funding proposal",
       origin: DisputeOrigins.UMA,
-      number: 205,
+      voteNumber: 205,
       description: "Some description",
       timestamp: new Date(),
       txid: "0x1234567890",
       umipNumber: 20,
     },
-    voteOptions: [
+    options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
       { label: "No", value: "p1", secondaryLabel: "p1" },
       { label: "Unknown", value: "p2", secondaryLabel: "p2" },
@@ -52,16 +52,16 @@ OriginUmaCommitted.args = {
 export const OriginPolymarketNotCommitted = Template.bind({});
 OriginPolymarketNotCommitted.args = {
   vote: {
-    dispute: {
+    data: {
       title: "George Kambosos Jr. vs. Devin Haney",
       origin: DisputeOrigins.Polymarket,
-      number: 205,
+      voteNumber: 205,
       description: "Some description",
       timestamp: new Date(),
       txid: "0x1234567890",
       umipNumber: 20,
     },
-    voteOptions: [
+    options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
       { label: "No", value: "p1", secondaryLabel: "p1" },
       { label: "Unknown", value: "p2", secondaryLabel: "p2" },
