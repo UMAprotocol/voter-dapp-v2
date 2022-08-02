@@ -63,6 +63,7 @@ const Wrapper = styled.div`
 
 const Header = styled.h1`
   font: var(--header-md);
+  margin-right: 30px;
 `;
 
 const SubTitle = styled.h2`
