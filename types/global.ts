@@ -21,7 +21,7 @@ export type VoteDataT = VoteDetailsT & VoteResultT;
 
 export type VoteDetailsT = {
   title: string;
-  origin: DisputeOrigins;
+  origin: DisputeOriginT;
   txid: string;
   voteNumber: number;
   umipNumber: number;
@@ -45,10 +45,7 @@ export type VoteTimelineT = {
   revealPhaseEnd: Date | null;
 };
 
-export enum DisputeOrigins {
-  UMA = "UMA",
-  Polymarket = "Polymarket",
-}
+export type DisputeOriginT = "UMA" | "Polymarket";
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 

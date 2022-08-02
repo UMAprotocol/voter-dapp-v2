@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
 import { desktopMaxWidth } from "constants/containers";
-import { DisputeOrigins } from "types/global";
+import { DisputeOriginT } from "types/global";
 
 export default {
   title: "Pages/Overview Page/VoteBar",
@@ -22,7 +22,7 @@ OriginUmaNotCommitted.args = {
   vote: {
     data: {
       title: "SuperUMAn DAO KPI Options funding proposal",
-      origin: DisputeOrigins.UMA,
+      origin: "UMA",
       voteNumber: 205,
       description: "Some description",
       timestamp: new Date(),
@@ -69,7 +69,7 @@ OriginPolymarketNotCommitted.args = {
   vote: {
     data: {
       title: "George Kambosos Jr. vs. Devin Haney",
-      origin: DisputeOrigins.Polymarket,
+      origin: "Polymarket",
       voteNumber: 205,
       description: "Some description",
       timestamp: new Date(),

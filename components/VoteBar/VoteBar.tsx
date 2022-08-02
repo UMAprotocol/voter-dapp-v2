@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { useState } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { DisputeOrigins, DropdownItemT, VoteT } from "types/global";
+import { DisputeOriginT, DropdownItemT, VoteT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -17,7 +17,7 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
 
   const { data, isCommitted } = vote;
   const { title, origin, options } = data;
-  const Icon = origin === DisputeOrigins.UMA ? UMAIcon : PolymarketIcon;
+  const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
   return (

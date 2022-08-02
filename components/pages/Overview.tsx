@@ -3,14 +3,13 @@ import { HowItWorks } from "components/HowItWorks";
 import { Layout } from "components/Layout";
 import { Votes } from "components/Votes";
 import { add, sub } from "date-fns";
-import { DisputeOrigins } from "types/global";
 
 export function Overview() {
   const mockVotes = [
     {
       data: {
         title: "SuperUMAn DAO KPI Options funding proposal 1",
-        origin: DisputeOrigins.UMA,
+        origin: "UMA" as const,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
           The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
@@ -69,7 +68,7 @@ export function Overview() {
     {
       data: {
         title: "SuperUMAn DAO KPI Options funding proposal 2",
-        origin: DisputeOrigins.UMA,
+        origin: "UMA" as const,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
         The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
@@ -128,7 +127,7 @@ export function Overview() {
     {
       data: {
         title: "George Kambosos Jr. vs. Devin Haney 3",
-        origin: DisputeOrigins.Polymarket,
+        origin: "Polymarket" as const,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
         The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
@@ -187,7 +186,7 @@ export function Overview() {
     {
       data: {
         title: "George Kambosos Jr. vs. Devin Haney 4",
-        origin: DisputeOrigins.Polymarket,
+        origin: "Polymarket" as const,
         description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
       
         The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 

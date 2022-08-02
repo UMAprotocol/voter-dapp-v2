@@ -5,7 +5,7 @@ import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
 import sub from "date-fns/sub";
 import add from "date-fns/add";
-import { DisputeOrigins } from "types/global";
+import { DisputeOriginT } from "types/global";
 
 export default {
   title: "Base Components/Panel",
@@ -62,7 +62,7 @@ VotePanelWithoutResults.args = {
 
     The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
     If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
-    origin: DisputeOrigins.Polymarket,
+    origin: "Polymarket",
     voteNumber: 205,
     options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
     timestamp: sub(new Date(), { days: 1 }),
