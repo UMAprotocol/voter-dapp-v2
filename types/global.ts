@@ -1,5 +1,5 @@
 export type InputDataT = {
-  value: string;
+  value: string | number;
   label: string;
 };
 
@@ -12,25 +12,29 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type DisputeT = {
-  title: string;
-  origin: DisputeOrigins;
-  number: number;
-  description: string;
-  timestamp: Date;
-  txid: string;
-  umipNumber: number;
+export type VoteT = {
+  data: VoteDataT;
+  isCommitted: boolean;
 };
 
-export enum DisputeOrigins {
-  UMA = "UMA",
-  Polymarket = "Polymarket",
-}
+export type VoteDataT = VoteDetailsT & VoteResultT;
 
-export type VoteT = {
-  dispute: DisputeT;
-  voteOptions: DropdownItemT[];
-  isCommitted: boolean;
+export type VoteDetailsT = {
+  title: string;
+  origin: DisputeOrigins;
+  txid: string;
+  voteNumber: number;
+  umipNumber: number;
+  description: string;
+  options: DropdownItemT[];
+  timestamp: Date;
+  links: LinkT[];
+  discordLink: string;
+};
+
+export type VoteResultT = {
+  results?: InputDataT[];
+  participation?: InputDataT[];
 };
 
 export type VoteTimelineT = {
@@ -41,27 +45,14 @@ export type VoteTimelineT = {
   revealPhaseEnd: Date | null;
 };
 
+export enum DisputeOrigins {
+  UMA = "UMA",
+  Polymarket = "Polymarket",
+}
+
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
-export type VoteDetailsT = {
-  description: string;
-  options: string[];
-  timestamp: Date;
-  links: LinkT[];
-  discordLink: string;
-};
-
-export type VoteResultT = {
-  results: InputDataT[];
-  participation: InputDataT[];
-};
-
-export type VotePanelContentT = VoteDetailsT &
-  VoteResultT & {
-    title: string;
-    origin: DisputeOrigins;
-    disputeNumber: number;
-  };
+export type VotePanelContentT = VoteDataT;
 
 export type ClaimPanelContentT = {
   claimableRewards: number;
