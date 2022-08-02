@@ -4,13 +4,14 @@ import Voting from "public/assets/icons/voting.svg";
 import { DonutChart } from "components/DonutChart";
 import { computePercentages, computeColors } from "components/DonutChart/helpers";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+import { VoteResultT } from "types/global";
 
-export function Result() {
+export function Result({ participation, results }: VoteResultT) {
   // todo wire up to graph
-  const participationItems = [
-    { label: "Total Votes", value: "188,077,355.982231" },
-    { label: "Unique Commit Addresses", value: "100" },
-    { label: "Unique Reveal Addresses", value: "97" },
+  const participation = [
+    { label: "Total Votes", value: 188077355.982231 },
+    { label: "Unique Commit Addresses", value: 100 },
+    { label: "Unique Reveal Addresses", value: 97 },
   ];
 
   // todo wire up to graph
@@ -69,7 +70,7 @@ export function Result() {
         Participation
       </PanelSectionTitle>
       <SectionWrapper>
-        {participationItems.map(({ label, value }) => (
+        {participation.map(({ label, value }) => (
           <ParticipationItem key={label}>
             <span>{label}</span>
             <strong>{value}</strong>

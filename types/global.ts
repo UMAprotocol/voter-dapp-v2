@@ -1,6 +1,14 @@
-export type DropdownItemT = {
+export type InputDataT = {
   value: string;
   label: string;
+};
+
+export type LinkT = {
+  href: string;
+  label: string;
+};
+
+export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
@@ -35,16 +43,25 @@ export type VoteTimelineT = {
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
-export type VotePanelContentT = {
-  title: string;
-  origin: DisputeOrigins;
-  disputeNumber: number;
+export type VoteDetailsT = {
   description: string;
   options: string[];
   timestamp: Date;
-  links: { href: string; label: string }[];
+  links: LinkT[];
   discordLink: string;
 };
+
+export type VoteResultT = {
+  results: InputDataT[];
+  participation: InputDataT[];
+};
+
+export type VotePanelContentT = VoteDetailsT &
+  VoteResultT & {
+    title: string;
+    origin: DisputeOrigins;
+    disputeNumber: number;
+  };
 
 export type ClaimPanelContentT = {
   claimableRewards: number;

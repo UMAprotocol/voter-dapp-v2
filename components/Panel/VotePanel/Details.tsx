@@ -6,16 +6,9 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
 import { PanelSectionTitle } from "../styles";
+import { VoteDetailsT } from "types/global";
 
-interface Props {
-  description: string;
-  options: string[];
-  timestamp: Date;
-  links: { href: string; label: string }[];
-  discordLink: string;
-}
-
-export function Details({ description, options, timestamp, links, discordLink }: Props) {
+export function Details({ description, options, timestamp, links, discordLink }: VoteDetailsT) {
   return (
     <Wrapper>
       <SectionWrapper>

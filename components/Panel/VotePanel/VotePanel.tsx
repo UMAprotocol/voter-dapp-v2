@@ -12,12 +12,12 @@ interface Props {
 export function VotePanel({ content }: Props) {
   if (!content) return null;
 
-  const { description, options, timestamp, links, discordLink } = content as VotePanelContentT;
+  const { description, options, timestamp, links, discordLink, participation, results } = content as VotePanelContentT;
 
   const tabs = [
     {
       title: "Result",
-      content: <Result />,
+      content: <Result participation={participation} results={results} />,
     },
     {
       title: "Details",
