@@ -34,7 +34,7 @@ export function StakeUnstakePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle panelType="stake" panelContent={null} />
+      <PanelTitle title="Stake / Unstake" />
       <SectionsWrapper>
         <BalancesWrapper>
           <Balances>

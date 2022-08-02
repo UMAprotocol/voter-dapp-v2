@@ -28,7 +28,7 @@ export function RemindMePanel() {
 
   return (
     <PanelWrapper>
-      <PanelTitle panelContent={null} panelType="remind" />
+      <PanelTitle title="Remind me" />
       <SectionsWrapper>
         {emailSubmitted ? (
           <SectionWrapper>

@@ -15,7 +15,7 @@ export function ClaimPanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle panelType="claim" panelContent={null} />
+      <PanelTitle title="Claim" />
       <SectionsWrapper>
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>

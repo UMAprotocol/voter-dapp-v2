@@ -12,7 +12,8 @@ interface Props {
 export function VotePanel({ content }: Props) {
   if (!content) return null;
 
-  const { description, options, timestamp, links, discordLink, participation, results } = content as VotePanelContentT;
+  const { title, description, origin, voteNumber, options, timestamp, links, discordLink, participation, results } =
+    content as VotePanelContentT;
 
   const tabs = [
     {
@@ -35,7 +36,7 @@ export function VotePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle panelContent={content} panelType="vote" />
+      <PanelTitle title={title} origin={origin} voteNumber={voteNumber} />
       <Tabs tabs={tabs} />
       <PanelFooter />
     </PanelWrapper>
