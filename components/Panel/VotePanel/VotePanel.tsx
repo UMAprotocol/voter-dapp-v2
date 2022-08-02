@@ -15,6 +15,8 @@ export function VotePanel({ content }: Props) {
   const { title, description, origin, voteNumber, options, timestamp, links, discordLink, participation, results } =
     content as VotePanelContentT;
 
+  const hasResults = Boolean(results);
+
   const tabs = [
     {
       title: "Result",
@@ -37,7 +39,17 @@ export function VotePanel({ content }: Props) {
   return (
     <PanelWrapper>
       <PanelTitle title={title} origin={origin} voteNumber={voteNumber} />
-      <Tabs tabs={tabs} />
+      {hasResults ? (
+        <Tabs tabs={tabs} />
+      ) : (
+        <Details
+          description={description}
+          options={options}
+          timestamp={timestamp}
+          links={links}
+          discordLink={discordLink}
+        />
+      )}
       <PanelFooter />
     </PanelWrapper>
   );
