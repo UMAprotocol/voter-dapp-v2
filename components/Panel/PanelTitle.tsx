@@ -1,31 +1,28 @@
 import styled from "styled-components";
-import { DisputeOrigins, PanelContentT, PanelTypeT } from "types/global";
+import { DisputeOrigins } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 
 interface Props {
-  panelContent: PanelContentT;
-  panelType: PanelTypeT;
+  title: string;
+  origin?: DisputeOrigins;
+  voteNumber?: number;
 }
-export function PanelTitle({ panelType, panelContent }: Props) {
-  if (!panelType) return null;
-
-  const panelTitle = panelContent?.title ?? panelType.charAt(0).toUpperCase() + panelType.slice(1);
-
+export function PanelTitle({ title, origin, voteNumber }: Props) {
   return (
     <Wrapper>
-      <TitleIcon origin={panelContent?.origin} />
+      <TitleIcon origin={origin} />
       <Header id="panel-title">
-        {panelTitle}
+        {title}
         <SubTitle>
-          <SubTitleText panelType={panelType} panelContent={panelContent} />
+          <SubTitleText voteNumber={voteNumber} origin={origin} />
         </SubTitle>
       </Header>
     </Wrapper>
   );
 }
 
-function TitleIcon({ origin }: { origin: DisputeOrigins | undefined }) {
+function TitleIcon({ origin }: { origin?: DisputeOrigins }) {
   switch (origin) {
     case DisputeOrigins.UMA:
       return (
@@ -44,14 +41,12 @@ function TitleIcon({ origin }: { origin: DisputeOrigins | undefined }) {
   }
 }
 
-function SubTitleText({ panelType, panelContent }: { panelType: string; panelContent: PanelContentT }) {
-  if (panelType !== "vote" || !panelContent) return null;
-
-  const { origin, disputeNumber } = panelContent;
+function SubTitleText({ voteNumber, origin }: { voteNumber?: number; origin?: DisputeOrigins }) {
+  if (!voteNumber || !origin) return null;
 
   return (
     <>
-      {origin} | Dispute number <strong>#{disputeNumber}</strong>
+      {origin} | Vote number <strong>#{voteNumber}</strong>
     </>
   );
 }
