@@ -2,10 +2,11 @@
 Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
 import styled, { CSSProperties } from "styled-components";
+import { InputDataT } from "types/global";
 import { radiansToDegrees, angleForArcLength, degreesToRadians, computePercentages, computeColors } from "./helpers";
 
 interface Props {
-  data: { value: number; label: string }[];
+  data: InputDataT[];
   /**
    * The viewBox size. Coordinates are computed within this coordinate space
    */
