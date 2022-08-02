@@ -28,16 +28,16 @@ const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer 
 
 export const InCooldown = Template.bind({});
 InCooldown.args = {
-  timeRemaining: add(new Date(), { hours: 1, minutes: 10 }),
-  claimableRewards: "100.123",
+  cooldownEnds: add(new Date(), { hours: 1, minutes: 10 }),
+  claimableRewards: 100.123,
   canClaim: false,
   onClaim: () => alert("Yay rewards!"),
 };
 
 export const ReadyToClaim = Template.bind({});
 ReadyToClaim.args = {
-  timeRemaining: null,
-  claimableRewards: "100.123",
+  cooldownEnds: null,
+  claimableRewards: 100.123,
   canClaim: true,
   onClaim: () => alert("Yay rewards!"),
 };
