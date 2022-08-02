@@ -53,8 +53,8 @@ ClaimPanel.args = {
   panelOpen: true,
 };
 
-export const VotePanel = Template.bind({});
-VotePanel.args = {
+export const VotePanelWithoutResults = Template.bind({});
+VotePanelWithoutResults.args = {
   panelType: "vote",
   panelContent: {
     title: "George Kambosos Jr. vs. Devin Haney",
@@ -83,6 +83,38 @@ VotePanel.args = {
     discordLink: "https://www.todo.com",
   },
   panelOpen: true,
+};
+
+export const VotePanelWithResults = Template.bind({});
+VotePanelWithResults.args = {
+  ...VotePanelWithoutResults.args,
+  panelContent: {
+    // @ts-expect-error - ignore ts error args is of type unknown
+    ...VotePanelWithoutResults.args.panelContent,
+    participation: [
+      { label: "Total Votes", value: 188077355.982231 },
+      { label: "Unique Commit Addresses", value: 100 },
+      { label: "Unique Reveal Addresses", value: 97 },
+    ],
+    results: [
+      {
+        label: "Devin Haney",
+        value: 1234,
+      },
+      {
+        label: "George Washington",
+        value: 5678,
+      },
+      {
+        label: "Tie",
+        value: 500,
+      },
+      {
+        label: "Early Expiry",
+        value: 199,
+      },
+    ],
+  },
 };
 
 export const StakePanel = Template.bind({});
