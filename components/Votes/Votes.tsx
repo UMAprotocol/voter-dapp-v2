@@ -1,9 +1,13 @@
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import { useContractsContext } from "hooks/useContractsContext";
 import { usePanelContext } from "hooks/usePanelContext";
+import { useWalletProviderContext } from "hooks/useWalletProviderContext";
+import { useEffect } from "react";
 import styled from "styled-components";
 import { VoteT, VoteTimelineT } from "types/global";
+import createVotingContractInstance from "web3/createVotingContractInstance";
 
 interface Props {
   votes: VoteT[];
@@ -11,6 +15,15 @@ interface Props {
 }
 export function Votes({ votes, voteTimeline }: Props) {
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+  const { provider } = useWalletProviderContext();
+  const { voting, setVoting } = useContractsContext();
+
+  useEffect(() => {
+    const signer = provider?.getSigner();
+    if (signer) {
+      setVoting(createVotingContractInstance(signer));
+    }
+  }, [provider, setVoting]);
 
   function commitVotes() {
     console.log("TODO Commit votes");
