@@ -2,7 +2,6 @@ import { OnboardAPI } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
-import truncateEthAddress from "helpers/truncateEthAddress";
 import { usePanelContext } from "hooks/usePanelContext";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
