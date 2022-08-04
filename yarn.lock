@@ -4210,10 +4210,10 @@
     "@typescript-eslint/types" "5.32.0"
     eslint-visitor-keys "^3.3.0"
 
-"@uma/contracts-frontend@^0.3.10":
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/@uma/contracts-frontend/-/contracts-frontend-0.3.10.tgz#3cb23d9bc61048c0c4847bd355b3cc7e53c51aff"
-  integrity sha512-IqjGy3xp0XiXTkhLC06OFOuKcSnQjKlllnvfxNYdKkLVz5JVbvptnveSqWkKsY2FUGDSsPNIG1CpYh/PL/AXKQ==
+"@uma/contracts-frontend@^0.3.11":
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-frontend/-/contracts-frontend-0.3.11.tgz#d966be9da9312de2090acdf5860576080b987052"
+  integrity sha512-1ogKI+olhGvcc/MyUtsbMIbwW/2nIqaCbDI/v9zBZrhkTgqp6FKqQeXM+TIx0fbxROAFVZrFd0sJjzyuCmYelg==
 
 "@walletconnect/browser-utils@^1.7.8":
   version "1.7.8"
