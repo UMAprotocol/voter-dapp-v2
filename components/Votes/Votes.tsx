@@ -3,6 +3,7 @@ import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
 import { useContractsContext } from "hooks/useContractsContext";
 import { usePanelContext } from "hooks/usePanelContext";
+import useVotePhase from "hooks/useVotePhase";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect } from "react";
 import styled from "styled-components";
@@ -17,6 +18,7 @@ export function Votes({ votes, voteTimeline }: Props) {
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { provider } = useWalletProviderContext();
   const { voting, setVoting } = useContractsContext();
+  const { votePhase } = useVotePhase(voting);
 
   useEffect(() => {
     const signer = provider?.getSigner();
