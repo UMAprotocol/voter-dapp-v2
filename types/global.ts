@@ -62,3 +62,11 @@ export type StakePanelContentT = {
 };
 
 export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
+
+export type ActiveVote = {
+  timestamp: number;
+  identifier: string;
+  ancillaryData: string;
+  decodedIdentifier: string;
+  decodedAncillaryData: string;
+};
