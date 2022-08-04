@@ -4,6 +4,7 @@ import { VoteTimeline } from "components/VoteTimeline";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
+import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect } from "react";
@@ -21,8 +22,9 @@ export function Votes({ votes, voteTimeline }: Props) {
   const { voting, setVoting } = useContractsContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
+  const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
 
-  console.log({ votePhase, currentRoundId });
+  console.log({ votePhase, currentRoundId, roundEndTime });
 
   useEffect(() => {
     const signer = provider?.getSigner();
