@@ -34,8 +34,10 @@ export type VoteResultT = {
   participation?: InputDataT[];
 };
 
+export type VotePhaseT = "commit" | "reveal" | null;
+
 export type VoteTimelineT = {
-  phase: "commit" | "reveal" | null;
+  phase: VotePhaseT;
   commitPhaseStart: Date | null;
   revealPhaseStart: Date | null;
   commitPhaseEnd: Date | null;
