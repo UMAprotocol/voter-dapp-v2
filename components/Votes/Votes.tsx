@@ -26,7 +26,7 @@ export function Votes({ votes, voteTimeline }: Props) {
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { activeVotes } = useActiveVotes(voting);
 
-  console.log({ votePhase, currentRoundId, roundEndTime, activeVotes });
+  console.log({ activeVotes });
 
   useEffect(() => {
     const signer = provider?.getSigner();

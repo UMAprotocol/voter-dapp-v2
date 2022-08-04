@@ -34,14 +34,11 @@ export type VoteResultT = {
   participation?: InputDataT[];
 };
 
-export type VotePhaseT = "commit" | "reveal" | null;
+export type VotePhaseT = "commit" | "reveal";
 
 export type VoteTimelineT = {
   phase: VotePhaseT;
-  commitPhaseStart: Date | null;
-  revealPhaseStart: Date | null;
-  commitPhaseEnd: Date | null;
-  revealPhaseEnd: Date | null;
+  phaseEnds: Date;
 };
 
 export type DisputeOriginT = "UMA" | "Polymarket";

@@ -4,17 +4,20 @@ import { RevealPhase } from "./RevealPhase";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { VoteTimelineT } from "types/global";
 
-export function VoteTimeline({
-  phase,
-  commitPhaseStart,
-  revealPhaseStart,
-  commitPhaseEnd,
-  revealPhaseEnd,
-}: VoteTimelineT) {
-  const commitPhaseStartsIn = commitPhaseStart && formatDistanceToNowStrict(commitPhaseStart);
-  const revealPhaseStartsIn = revealPhaseStart && formatDistanceToNowStrict(revealPhaseStart);
-  const commitPhaseTimeRemaining = commitPhaseEnd && formatDistanceToNowStrict(commitPhaseEnd);
-  const revealPhaseTimeRemaining = revealPhaseEnd && formatDistanceToNowStrict(revealPhaseEnd);
+export function VoteTimeline({ phase, phaseEnds }: VoteTimelineT) {
+  let commitPhaseStartsIn = null,
+    revealPhaseStartsIn = null,
+    commitPhaseTimeRemaining = null,
+    revealPhaseTimeRemaining = null;
+
+  if (phase === "commit") {
+    commitPhaseTimeRemaining = formatDistanceToNowStrict(phaseEnds);
+    revealPhaseStartsIn = formatDistanceToNowStrict(phaseEnds);
+  }
+
+  if (phase === "reveal") {
+    revealPhaseTimeRemaining = formatDistanceToNowStrict(phaseEnds);
+  }
 
   return (
     <Wrapper>
