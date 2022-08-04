@@ -4,8 +4,14 @@ import { BigNumber } from "ethers";
 import getRoundEndTime from "web3/queries/getRoundEndTime";
 
 export default function useRoundEndTime(votingContract: VotingV2Ethers, roundId: BigNumber | undefined) {
-  const { isLoading, isError, data, error } = useQuery(["roundEndTime"], () =>
-    getRoundEndTime(votingContract, roundId)
+  const { isLoading, isError, data, error } = useQuery(
+    ["roundEndTime"],
+    () => getRoundEndTime(votingContract, roundId),
+    {
+      refetchInterval(data) {
+        return data?.length ? 10000 : 1000;
+      },
+    }
   );
 
   return {

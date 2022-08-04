@@ -1,6 +1,7 @@
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import useActiveVotes from "hooks/useActiveVotes";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
@@ -23,8 +24,9 @@ export function Votes({ votes, voteTimeline }: Props) {
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
+  const { activeVotes } = useActiveVotes(voting);
 
-  console.log({ votePhase, currentRoundId, roundEndTime });
+  console.log({ votePhase, currentRoundId, roundEndTime, activeVotes });
 
   useEffect(() => {
     const signer = provider?.getSigner();
