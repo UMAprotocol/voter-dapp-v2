@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
 import { desktopMaxWidth } from "constants/containers";
-import { DisputeOriginT } from "types/global";
 
 export default {
   title: "Pages/Overview Page/VoteBar",
@@ -20,37 +19,36 @@ const Template: ComponentStory<typeof VoteBar> = (args) => <VoteBar {...args} />
 export const OriginUmaNotCommitted = Template.bind({});
 OriginUmaNotCommitted.args = {
   vote: {
-    data: {
-      title: "SuperUMAn DAO KPI Options funding proposal",
-      origin: "UMA",
-      voteNumber: 205,
-      description: "Some description",
-      timestamp: new Date(),
-      txid: "0x1234567890",
-      umipNumber: 20,
-      options: [
-        { label: "Yes", value: "p0", secondaryLabel: "p0" },
-        { label: "No", value: "p1", secondaryLabel: "p1" },
-        { label: "Unknown", value: "p2", secondaryLabel: "p2" },
-        { label: "Early Request", value: "p3", secondaryLabel: "p3" },
-      ],
-      links: [
-        {
-          label: "UMIP link",
-          href: "https://www.todo.com",
-        },
-        {
-          label: "Dispute txid",
-          href: "https://www.todo.com",
-        },
-        {
-          label: "Optimistic Oracle UI",
-          href: "https://www.todo.com",
-        },
-      ],
-      discordLink: "https://www.todo.com",
-    },
+    title: "SuperUMAn DAO KPI Options funding proposal",
+    origin: "UMA",
+    voteNumber: 205,
+    description: "Some description",
+    timestamp: new Date(),
+    txid: "0x1234567890",
+    umipNumber: 20,
+    options: [
+      { label: "Yes", value: "p0", secondaryLabel: "p0" },
+      { label: "No", value: "p1", secondaryLabel: "p1" },
+      { label: "Unknown", value: "p2", secondaryLabel: "p2" },
+      { label: "Early Request", value: "p3", secondaryLabel: "p3" },
+    ],
+    links: [
+      {
+        label: "UMIP link",
+        href: "https://www.todo.com",
+      },
+      {
+        label: "Dispute txid",
+        href: "https://www.todo.com",
+      },
+      {
+        label: "Optimistic Oracle UI",
+        href: "https://www.todo.com",
+      },
+    ],
+    discordLink: "https://www.todo.com",
     isCommitted: false,
+    isGovernance: false,
   },
   moreDetailsAction: () => console.log("More details clicked"),
 };
@@ -67,37 +65,36 @@ OriginUmaCommitted.args = {
 export const OriginPolymarketNotCommitted = Template.bind({});
 OriginPolymarketNotCommitted.args = {
   vote: {
-    data: {
-      title: "George Kambosos Jr. vs. Devin Haney",
-      origin: "Polymarket",
-      voteNumber: 205,
-      description: "Some description",
-      timestamp: new Date(),
-      txid: "0x1234567890",
-      umipNumber: 20,
-      options: [
-        { label: "Yes", value: "p0", secondaryLabel: "p0" },
-        { label: "No", value: "p1", secondaryLabel: "p1" },
-        { label: "Unknown", value: "p2", secondaryLabel: "p2" },
-        { label: "Early Request", value: "p3", secondaryLabel: "p3" },
-      ],
-      links: [
-        {
-          label: "UMIP link",
-          href: "https://www.todo.com",
-        },
-        {
-          label: "Dispute txid",
-          href: "https://www.todo.com",
-        },
-        {
-          label: "Optimistic Oracle UI",
-          href: "https://www.todo.com",
-        },
-      ],
-      discordLink: "https://www.todo.com",
-    },
+    title: "George Kambosos Jr. vs. Devin Haney",
+    origin: "Polymarket",
+    voteNumber: 205,
+    description: "Some description",
+    timestamp: new Date(),
+    txid: "0x1234567890",
+    umipNumber: 20,
+    options: [
+      { label: "Yes", value: "p0", secondaryLabel: "p0" },
+      { label: "No", value: "p1", secondaryLabel: "p1" },
+      { label: "Unknown", value: "p2", secondaryLabel: "p2" },
+      { label: "Early Request", value: "p3", secondaryLabel: "p3" },
+    ],
+    links: [
+      {
+        label: "UMIP link",
+        href: "https://www.todo.com",
+      },
+      {
+        label: "Dispute txid",
+        href: "https://www.todo.com",
+      },
+      {
+        label: "Optimistic Oracle UI",
+        href: "https://www.todo.com",
+      },
+    ],
+    discordLink: "https://www.todo.com",
     isCommitted: false,
+    isGovernance: false,
   },
   moreDetailsAction: () => console.log("More details clicked"),
 };

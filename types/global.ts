@@ -12,17 +12,14 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type VoteT = {
-  data: VoteDataT;
-  isCommitted: boolean;
-};
-
-export type VoteDataT = VoteDetailsT & VoteResultT;
+export type VoteT = VoteDetailsT & VoteResultT;
 
 export type VoteDetailsT = {
   title: string;
   origin: DisputeOriginT;
   txid: string;
+  isCommitted: boolean;
+  isGovernance: boolean;
   voteNumber: number;
   umipNumber: number;
   description: string;
@@ -49,7 +46,7 @@ export type DisputeOriginT = "UMA" | "Polymarket";
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
-export type VotePanelContentT = VoteDataT;
+export type VotePanelContentT = VoteT;
 
 export type ClaimPanelContentT = {
   claimableRewards: number;

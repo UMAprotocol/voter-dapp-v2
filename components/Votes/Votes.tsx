@@ -47,17 +47,9 @@ export function Votes({ votes, voteTimeline }: Props) {
   }
 
   function openVotePanel(vote: VoteT) {
-    const { title, origin, voteNumber, description, timestamp, txid, umipNumber, options } = vote.data;
     const panelContent = {
-      title,
-      origin,
-      description,
-      timestamp,
-      options,
-      voteNumber,
-      txid,
-      umipNumber,
-      links: makeVoteLinks(txid, umipNumber),
+      ...vote,
+      links: makeVoteLinks(vote.txid, vote.umipNumber),
       discordLink: "https://www.todo.com",
     };
     setPanelType("vote");
@@ -77,7 +69,7 @@ export function Votes({ votes, voteTimeline }: Props) {
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
           {votes.map((vote) => (
-            <VoteBar vote={vote} key={vote.data.title} moreDetailsAction={() => openVotePanel(vote)} />
+            <VoteBar vote={vote} key={vote.title} moreDetailsAction={() => openVotePanel(vote)} />
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>

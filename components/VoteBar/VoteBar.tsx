@@ -15,8 +15,7 @@ interface Props {
 export function VoteBar({ vote, moreDetailsAction }: Props) {
   const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
 
-  const { data, isCommitted } = vote;
-  const { title, origin, options } = data;
+  const { title, origin, options, isCommitted } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
