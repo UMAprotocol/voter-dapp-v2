@@ -1,6 +1,7 @@
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import unixTimestampToDate from "helpers/unixTimestampToDate";
 import useActiveVotes from "hooks/useActiveVotes";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
@@ -10,14 +11,13 @@ import useVotePhase from "hooks/useVotePhase";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { VoteT, VoteTimelineT } from "types/global";
+import { VoteT } from "types/global";
 import createVotingContractInstance from "web3/createVotingContractInstance";
 
 interface Props {
   votes: VoteT[];
-  voteTimeline: VoteTimelineT;
 }
-export function Votes({ votes, voteTimeline }: Props) {
+export function Votes({ votes }: Props) {
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { provider } = useWalletProviderContext();
   const { voting, setVoting } = useContractsContext();
@@ -25,8 +25,6 @@ export function Votes({ votes, voteTimeline }: Props) {
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { activeVotes } = useActiveVotes(voting);
-
-  console.log({ activeVotes });
 
   useEffect(() => {
     const signer = provider?.getSigner();
@@ -71,7 +69,9 @@ export function Votes({ votes, voteTimeline }: Props) {
     <OuterWrapper>
       <InnerWrapper>
         <Title>Vote on active disputes:</Title>
-        <VoteTimeline {...voteTimeline} />
+        {votePhase && roundEndTime ? (
+          <VoteTimeline phase={votePhase} phaseEnds={unixTimestampToDate(roundEndTime)} />
+        ) : null}
         <VotesWrapper>
           <TableHeadingsWrapper>
             <DisputeHeading>Dispute</DisputeHeading>

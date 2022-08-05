@@ -240,11 +240,6 @@ export function Vote() {
     },
   ];
 
-  const mockVoteTimeline = {
-    phase: "commit",
-    phaseEnds: add(new Date(), { hours: 23, minutes: 59 }),
-  } as const;
-
   const mockStakeholderData = {
     stakedBalance: 123.456,
     unstakedBalance: 123.456,
@@ -258,7 +253,7 @@ export function Vote() {
     <Layout>
       <Banner />
       <HowItWorks {...mockStakeholderData} />
-      <Votes votes={mockVotes} voteTimeline={mockVoteTimeline} />
+      <Votes votes={mockVotes} />
     </Layout>
   );
 }
