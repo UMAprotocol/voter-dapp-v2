@@ -13,10 +13,10 @@ import { useWalletContext } from "hooks/useWalletContext";
 interface Props {
   vote: VoteT;
   moreDetailsAction: () => void;
+  selectedVote: string;
+  selectVote: (identifier: string, value: string) => void;
 }
-export function VoteBar({ vote, moreDetailsAction }: Props) {
-  const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
-  const [textVote, setTextVote] = useState("");
+export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
   const { title, origin, options, isCommitted, isGovernance } = vote;
@@ -41,11 +41,15 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
           <Dropdown
             label="Choose answer"
             items={options}
-            selected={selectedVote}
-            onSelect={(vote) => setSelectedVote(vote)}
+            selected={options.find((option) => option.value === selectedVote) ?? null}
+            onSelect={(option) => selectVote(vote.identifier, option.value.toString())}
           />
         ) : (
-          <TextInput value={textVote} onChange={(e) => setTextVote(e.target.value)} disabled={!signer} />
+          <TextInput
+            value={selectedVote ?? undefined}
+            onChange={(e) => selectVote(vote.identifier, e.target.value)}
+            disabled={!signer}
+          />
         )}
       </Vote>
       <Status>

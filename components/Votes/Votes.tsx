@@ -8,26 +8,32 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useWalletContext } from "hooks/useWalletContext";
-import { useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
-import createVotingContractInstance from "web3/createVotingContractInstance";
 
 interface Props {
   votes: VoteT[];
 }
 export function Votes({ votes }: Props) {
+  const initialSelectedVotes: Record<string, string> = {};
+  votes.forEach((vote) => {
+    initialSelectedVotes[vote.identifier] = "";
+  });
+  const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
-  const { provider } = useWalletContext();
-  const { voting, setVoting } = useContractsContext();
+  const { voting } = useContractsContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { activeVotes } = useActiveVotes(voting);
 
+  function selectVote(identifier: string, value: string) {
+    setSelectedVotes((votes) => ({ ...votes, [identifier]: value }));
+  }
+
   function commitVotes() {
-    console.log("TODO Commit votes");
+    console.log({ selectedVotes });
   }
 
   function makeVoteLinks(txid: string, umipNumber: number) {
@@ -72,7 +78,13 @@ export function Votes({ votes }: Props) {
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
           {votes.map((vote) => (
-            <VoteBar vote={vote} key={vote.title} moreDetailsAction={() => openVotePanel(vote)} />
+            <VoteBar
+              vote={vote}
+              selectedVote={selectedVotes[vote.identifier]}
+              selectVote={selectVote}
+              key={vote.title}
+              moreDetailsAction={() => openVotePanel(vote)}
+            />
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>

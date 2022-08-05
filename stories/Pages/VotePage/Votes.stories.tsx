@@ -27,5 +27,6 @@ Default.args = {
     VoteBarStories.OriginUmaCommitted.args!.vote!,
     VoteBarStories.OriginPolymarketCommitted.args!.vote!,
   ],
+  // @ts-expect-error we know that the property does exist
   voteTimeline: CommitPhase.args! as VoteTimelineT,
 };
