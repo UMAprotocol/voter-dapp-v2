@@ -8,7 +8,7 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useWalletProviderContext } from "hooks/useWalletProviderContext";
+import { useWalletContext } from "hooks/useWalletContext";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
@@ -19,7 +19,7 @@ interface Props {
 }
 export function Votes({ votes }: Props) {
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
-  const { provider } = useWalletProviderContext();
+  const { provider } = useWalletContext();
   const { voting, setVoting } = useContractsContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);

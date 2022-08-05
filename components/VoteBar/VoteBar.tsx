@@ -8,7 +8,7 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
 import { TextInput } from "components/Input";
-import { useWalletProviderContext } from "hooks/useWalletProviderContext";
+import { useWalletContext } from "hooks/useWalletContext";
 
 interface Props {
   vote: VoteT;
@@ -17,7 +17,7 @@ interface Props {
 export function VoteBar({ vote, moreDetailsAction }: Props) {
   const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
   const [textVote, setTextVote] = useState("");
-  const { signer } = useWalletProviderContext();
+  const { signer } = useWalletContext();
 
   const { title, origin, options, isCommitted, isGovernance } = vote;
   const isPolymarket = origin === "Polymarket";

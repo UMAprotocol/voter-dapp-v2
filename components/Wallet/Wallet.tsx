@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
 import { useContractsContext } from "hooks/useContractsContext";
 import { usePanelContext } from "hooks/usePanelContext";
-import { useWalletProviderContext } from "hooks/useWalletProviderContext";
+import { useWalletContext } from "hooks/useWalletContext";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import createVotingContractInstance from "web3/createVotingContractInstance";
@@ -15,7 +15,7 @@ export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
-  const { setProvider, setSigner } = useWalletProviderContext();
+  const { setProvider, setSigner } = useWalletContext();
   const { setVoting } = useContractsContext();
   const { setPanelType, setPanelOpen } = usePanelContext();
 
