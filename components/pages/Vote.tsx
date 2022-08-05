@@ -4,7 +4,7 @@ import { Layout } from "components/Layout";
 import { Votes } from "components/Votes";
 import { add, sub } from "date-fns";
 
-export function Overview() {
+export function Vote() {
   const mockVotes = [
     {
       title: "SuperUMAn DAO KPI Options funding proposal 1",

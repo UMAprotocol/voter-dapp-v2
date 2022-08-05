@@ -3,7 +3,7 @@ import { HowItWorks } from "components/HowItWorks";
 import add from "date-fns/add";
 
 export default {
-  title: "Pages/Overview Page/HowItWorks",
+  title: "Pages/Vote Page/HowItWorks",
   component: HowItWorks,
 } as ComponentMeta<typeof HowItWorks>;
 

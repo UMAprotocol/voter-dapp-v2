@@ -3,7 +3,7 @@ import { VoteTimeline } from "components/VoteTimeline";
 import add from "date-fns/add";
 
 export default {
-  title: "Pages/Overview Page/VoteTimeline",
+  title: "Pages/Vote Page/VoteTimeline",
   component: VoteTimeline,
 } as ComponentMeta<typeof VoteTimeline>;
 

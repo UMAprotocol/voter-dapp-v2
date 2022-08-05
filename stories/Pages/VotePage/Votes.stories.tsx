@@ -6,7 +6,7 @@ import * as VoteBarStories from "./VoteBar.stories";
 import { CommitPhase } from "./VoteTimeline.stories";
 
 export default {
-  title: "Pages/Overview Page/Votes",
+  title: "Pages/Vote Page/Votes",
   component: Votes,
   decorators: [
     (Story) => (

@@ -3,7 +3,7 @@ import { VoteBar } from "components/VoteBar";
 import { desktopMaxWidth } from "constants/containers";
 
 export default {
-  title: "Pages/Overview Page/VoteBar",
+  title: "Pages/Vote Page/VoteBar",
   component: VoteBar,
   decorators: [
     (Story) => (

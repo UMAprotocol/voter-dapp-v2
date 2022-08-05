@@ -2,7 +2,7 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Banner } from "components/Banner";
 
 export default {
-  title: "Pages/Overview Page/Banner",
+  title: "Pages/Vote Page/Banner",
   component: Banner,
 } as ComponentMeta<typeof Banner>;
 

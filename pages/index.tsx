@@ -1,13 +1,13 @@
-import { Overview } from "components/pages";
+import { Vote } from "components/pages";
 import useMounted from "hooks/useMounted";
 import type { NextPage } from "next";
 
-const OverviewPage: NextPage = () => {
+const VotePage: NextPage = () => {
   const mounted = useMounted();
   if (!mounted) {
     return null;
   }
-  return <Overview />;
+  return <Vote />;
 };
 
-export default OverviewPage;
+export default VotePage;

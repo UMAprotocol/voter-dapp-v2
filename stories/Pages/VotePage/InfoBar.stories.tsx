@@ -4,7 +4,7 @@ import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 
 export default {
-  title: "Pages/Overview Page/InfoBar",
+  title: "Pages/Vote Page/InfoBar",
   component: InfoBar,
 } as ComponentMeta<typeof InfoBar>;
 

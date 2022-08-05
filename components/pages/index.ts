@@ -1,1 +1,1 @@
-export { Overview } from "./Overview";
+export { Vote } from "./Vote";
