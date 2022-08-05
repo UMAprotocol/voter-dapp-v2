@@ -7,6 +7,7 @@ import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
+import { TextInput } from "components/Input";
 
 interface Props {
   vote: VoteT;
@@ -14,8 +15,11 @@ interface Props {
 }
 export function VoteBar({ vote, moreDetailsAction }: Props) {
   const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
+  const [textVote, setTextVote] = useState("");
 
-  const { title, origin, options, isCommitted } = vote;
+  const { title, origin, options, isCommitted, isGovernance } = vote;
+  const isPolymarket = origin === "Polymarket";
+  const isDropdown = isPolymarket || isGovernance;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
@@ -31,12 +35,16 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
-        <Dropdown
-          label="Choose answer"
-          items={options}
-          selected={selectedVote}
-          onSelect={(vote) => setSelectedVote(vote)}
-        />
+        {isDropdown ? (
+          <Dropdown
+            label="Choose answer"
+            items={options}
+            selected={selectedVote}
+            onSelect={(vote) => setSelectedVote(vote)}
+          />
+        ) : (
+          <TextInput value={textVote} onChange={(e) => setTextVote(e.target.value)} />
+        )}
       </Vote>
       <Status>
         <DotIcon
