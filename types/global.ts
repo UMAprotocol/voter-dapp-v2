@@ -12,9 +12,21 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type VoteT = VoteDetailsT & VoteResultT;
+export type PriceRequest = {
+  // raw values
+  time: number;
+  identifier: string;
+  ancillaryData: string;
+  // decoded values
+  timeMilliseconds: number;
+  decodedIdentifier: string;
+  decodedAncillaryData: string;
+};
+
+export type VoteT = PriceRequest & VoteDetailsT & VoteResultT;
 
 export type VoteDetailsT = {
+  identifier: string;
   title: string;
   origin: DisputeOriginT;
   txid: string;
@@ -34,7 +46,7 @@ export type VoteResultT = {
   participation?: InputDataT[];
 };
 
-export type VotePhaseT = "commit" | "reveal";
+export type VotePhaseT = "commit" | "reveal" | null;
 
 export type VoteTimelineT = {
   phase: VotePhaseT;
@@ -59,11 +71,3 @@ export type StakePanelContentT = {
 };
 
 export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
-
-export type ActiveVote = {
-  timestamp: number;
-  identifier: string;
-  ancillaryData: string;
-  decodedIdentifier: string;
-  decodedAncillaryData: string;
-};
