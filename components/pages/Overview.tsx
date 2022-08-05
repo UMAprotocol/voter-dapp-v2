@@ -242,10 +242,7 @@ export function Overview() {
 
   const mockVoteTimeline = {
     phase: "commit",
-    commitPhaseStart: null,
-    commitPhaseEnd: add(new Date(), { hours: 23, minutes: 59 }),
-    revealPhaseStart: add(new Date(), { hours: 47, minutes: 59 }),
-    revealPhaseEnd: null,
+    phaseEnds: add(new Date(), { hours: 23, minutes: 59 }),
   } as const;
 
   const mockStakeholderData = {
