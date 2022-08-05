@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { useState } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { DisputeOriginT, DropdownItemT, VoteT } from "types/global";
+import { DropdownItemT, VoteT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";

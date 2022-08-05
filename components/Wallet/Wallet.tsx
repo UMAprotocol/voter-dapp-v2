@@ -2,10 +2,12 @@ import { OnboardAPI } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { initOnboard } from "helpers/initOnboard";
+import { useContractsContext } from "hooks/useContractsContext";
 import { usePanelContext } from "hooks/usePanelContext";
 import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import createVotingContractInstance from "web3/createVotingContractInstance";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 
@@ -13,7 +15,8 @@ export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
-  const { setProvider } = useWalletProviderContext();
+  const { setProvider, setSigner } = useWalletProviderContext();
+  const { setVoting } = useContractsContext();
   const { setPanelType, setPanelOpen } = usePanelContext();
 
   useEffect(() => {
@@ -48,9 +51,14 @@ export function Wallet() {
       setProvider(null);
     } else {
       // After this is set you can use the provider to sign or transact
-      setProvider(new ethers.providers.Web3Provider(wallet.provider));
+      const provider = new ethers.providers.Web3Provider(wallet.provider);
+      setProvider(provider);
+      const signer = provider.getSigner();
+      setSigner(signer);
+      // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
+      setVoting(createVotingContractInstance(signer));
     }
-  }, [setProvider, wallet]);
+  }, [setProvider, setSigner, setVoting, wallet]);
 
   function openMenuPanel() {
     setPanelType("menu");

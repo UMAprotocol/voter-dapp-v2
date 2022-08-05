@@ -26,13 +26,6 @@ export function Votes({ votes }: Props) {
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { activeVotes } = useActiveVotes(voting);
 
-  useEffect(() => {
-    const signer = provider?.getSigner();
-    if (signer) {
-      setVoting(createVotingContractInstance(signer));
-    }
-  }, [provider, setVoting]);
-
   function commitVotes() {
     console.log("TODO Commit votes");
   }
