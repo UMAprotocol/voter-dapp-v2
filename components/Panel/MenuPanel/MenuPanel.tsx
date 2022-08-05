@@ -6,6 +6,7 @@ import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { getAccountDetails, handleDisconnectWallet } from "components/Wallet";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
+import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 
 const links = [
   {
@@ -32,6 +33,7 @@ const links = [
 
 export function MenuPanel() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const { setSigner, setProvider } = useWalletProviderContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
 
@@ -50,7 +52,7 @@ export function MenuPanel() {
               label="Disconnect"
               width={150}
               height={40}
-              onClick={() => handleDisconnectWallet(wallet, disconnect)}
+              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner)}
             />
           </>
         ) : (

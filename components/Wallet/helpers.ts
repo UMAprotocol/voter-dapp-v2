@@ -1,12 +1,17 @@
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
+import { ethers } from "ethers";
 import truncateEthAddress from "helpers/truncateEthAddress";
 
 export function handleDisconnectWallet(
   wallet: WalletState | null,
-  disconnect?: (wallet: DisconnectOptions) => Promise<void>
+  disconnect: (wallet: DisconnectOptions) => Promise<void>,
+  setProvider: (provider: ethers.providers.Web3Provider | null) => void,
+  setSigner: (signer: ethers.Signer | null) => void
 ) {
   if (!wallet || !disconnect) return;
   disconnect(wallet);
+  setProvider(null);
+  setSigner(null);
   window.localStorage.removeItem("connectedWallets");
 }
 

@@ -8,6 +8,7 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
 import { TextInput } from "components/Input";
+import { useWalletProviderContext } from "hooks/useWalletProviderContext";
 
 interface Props {
   vote: VoteT;
@@ -16,6 +17,7 @@ interface Props {
 export function VoteBar({ vote, moreDetailsAction }: Props) {
   const [selectedVote, setSelectedVote] = useState<DropdownItemT | null>(null);
   const [textVote, setTextVote] = useState("");
+  const { signer } = useWalletProviderContext();
 
   const { title, origin, options, isCommitted, isGovernance } = vote;
   const isPolymarket = origin === "Polymarket";
@@ -43,7 +45,7 @@ export function VoteBar({ vote, moreDetailsAction }: Props) {
             onSelect={(vote) => setSelectedVote(vote)}
           />
         ) : (
-          <TextInput value={textVote} onChange={(e) => setTextVote(e.target.value)} />
+          <TextInput value={textVote} onChange={(e) => setTextVote(e.target.value)} disabled={!signer} />
         )}
       </Vote>
       <Status>
