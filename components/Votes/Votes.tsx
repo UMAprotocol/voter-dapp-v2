@@ -3,7 +3,7 @@ import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import unixTimestampToDate from "helpers/unixTimestampToDate";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
@@ -15,6 +15,7 @@ import styled from "styled-components";
 import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
+import { useWalletContext } from "hooks/useWalletContext";
 
 interface Props {
   votes: VoteT[];
@@ -28,6 +29,7 @@ export function Votes({ votes }: Props) {
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { voting } = useContractsContext();
+  const { signingKeys } = useWalletContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
@@ -55,18 +57,23 @@ export function Votes({ votes }: Props) {
     );
   }
 
-  function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
+  async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
     const { address } = getAccountDetails(connectedWallets);
-    return votes
-      .map((vote) => {
+
+    const formattedVotes = await Promise.all(
+      votes.map(async (vote) => {
         const selectedVote = selectedVotes[makeUniqueKeyForVote(vote)];
+        if (!selectedVote) return null;
         const { identifier, decodedIdentifier, ancillaryData, time } = vote;
         const salt = getRandomSignedInt().toString();
-        const identifierPrecision = getPrecisionForIdentifier(decodedIdentifier);
+        const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+        console.log({ selectedVote, identifierPrecision });
         const price = parseFixed(selectedVote, identifierPrecision).toString();
         const roundId = currentRoundId!.toNumber();
         const account = address;
         const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
+        const signingPublicKey = signingKeys[address].publicKey;
+        const encryptedVote = await encryptMessage(signingPublicKey, JSON.stringify({ price, salt }));
         return {
           price,
           salt,
@@ -76,13 +83,18 @@ export function Votes({ votes }: Props) {
           roundId,
           identifier,
           hash,
+          encryptedVote,
         };
       })
-      .filter((vote) => vote.price !== "");
+    );
+
+    return formattedVotes.filter(Boolean).filter((vote) => vote?.price !== "");
   }
 
-  function commitVotes() {
+  async function commitVotes() {
     console.log({ selectedVotes });
+    const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
+    console.log({ formattedVotes });
   }
 
   function makeVoteLinks(txid: string, umipNumber: number) {
