@@ -13,7 +13,8 @@ import useVotePhase from "hooks/useVotePhase";
 import { useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
-import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier, parseFixed } from "@uma/common";
+import { parseFixed } from "@ethersproject/bignumber";
+import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 
 interface Props {
   votes: VoteT[];
