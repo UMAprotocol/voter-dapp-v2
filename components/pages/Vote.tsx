@@ -3,7 +3,6 @@ import { HowItWorks } from "components/HowItWorks";
 import { Layout } from "components/Layout";
 import { Votes } from "components/Votes";
 import { add, sub } from "date-fns";
-import { ethers } from "ethers";
 import useActiveVotes from "hooks/useActiveVotes";
 import { useContractsContext } from "hooks/useContractsContext";
 

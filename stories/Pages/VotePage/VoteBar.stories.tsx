@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
 import { desktopMaxWidth } from "constants/containers";
+import { sub } from "date-fns";
 
 export default {
   title: "Pages/Vote Page/VoteBar",
@@ -23,8 +24,14 @@ OriginUmaNotCommitted.args = {
     origin: "UMA",
     voteNumber: 205,
     description: "Some description",
-    timestamp: new Date(),
     txid: "0x1234567890",
+    timestamp: sub(new Date(), { days: 1 }),
+    time: sub(new Date(), { days: 1 }).getTime() / 1000,
+    timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),
+    identifier: "0x1234567890",
+    ancillaryData: "0x1234567890",
+    decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
+    decodedAncillaryData: "Test test test",
     umipNumber: 20,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -69,8 +76,14 @@ OriginPolymarketNotCommitted.args = {
     origin: "Polymarket",
     voteNumber: 205,
     description: "Some description",
-    timestamp: new Date(),
     txid: "0x1234567890",
+    timestamp: sub(new Date(), { days: 1 }),
+    time: sub(new Date(), { days: 1 }).getTime() / 1000,
+    timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),
+    identifier: "0x1234567890",
+    ancillaryData: "0x1234567890",
+    decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
+    decodedAncillaryData: "Test test test",
     umipNumber: 20,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
