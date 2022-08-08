@@ -59,21 +59,31 @@ export function Votes({ votes }: Props) {
 
   async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
     const { address } = getAccountDetails(connectedWallets);
+    // the user's address is called `account` for legacy reasons
+    const account = address;
+    // we just need a random number to make the hash
+    const salt = getRandomSignedInt().toString();
+    const roundId = currentRoundId!.toNumber();
+    // we created this key when the user signed the message when first connecting their wallet
+    const signingPublicKey = signingKeys[address].publicKey;
 
     const formattedVotes = await Promise.all(
       votes.map(async (vote) => {
+        // see if the user provided an answer for this vote
         const selectedVote = selectedVotes[makeUniqueKeyForVote(vote)];
+        // if not, exclude this vote from the final array
         if (!selectedVote) return null;
+
         const { identifier, decodedIdentifier, ancillaryData, time } = vote;
-        const salt = getRandomSignedInt().toString();
+        // check the precision to use from our table of precisions
         const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
-        console.log({ selectedVote, identifierPrecision });
+        // the selected option for a vote is called `price` for legacy reasons
         const price = parseFixed(selectedVote, identifierPrecision).toString();
-        const roundId = currentRoundId!.toNumber();
-        const account = address;
+        // the hash must be created with exactly these values in exactly this order
         const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
-        const signingPublicKey = signingKeys[address].publicKey;
+        // encrypt the hash with the signed message we created when the user first connected their wallet
         const encryptedVote = await encryptMessage(signingPublicKey, JSON.stringify({ price, salt }));
+
         return {
           price,
           salt,
@@ -88,13 +98,23 @@ export function Votes({ votes }: Props) {
       })
     );
 
-    return formattedVotes.filter(Boolean).filter((vote) => vote?.price !== "");
+    return formattedVotes.filter((vote) => vote && vote.price !== "");
   }
 
   async function commitVotes() {
-    console.log({ selectedVotes });
     const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
-    console.log({ formattedVotes });
+    const commitVoteFunctionFragment = voting.interface.getFunction("commitVote(bytes32,uint256,bytes,bytes32)");
+    const calldata = formattedVotes.map((vote) => {
+      // @ts-expect-error todo figure out why it thinks this doesn't exist
+      return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
+        vote!.identifier,
+        vote!.time,
+        vote!.ancillaryData,
+        vote!.hash,
+      ]);
+    });
+    const tx = await voting.functions.multicall(calldata);
+    console.log({ tx });
   }
 
   function makeVoteLinks(txid: string, umipNumber: number) {
