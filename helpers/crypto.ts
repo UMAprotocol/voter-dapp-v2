@@ -4,8 +4,7 @@ import { BigNumber, ethers } from "ethers";
 // Encrypts a message using an ethereum public key. To decrypt messages that are encrypted with this method, use
 // decryptMessage().
 export async function encryptMessage(publicKey: string, message: string): Promise<string> {
-  // substr(2) removes the web3 friendly "0x" from the public key.
-  const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(publicKey.substring(2), message);
+  const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(publicKey, message);
   return "0x" + EthCrypto.cipher.stringify(encryptedMessageObject);
 }
 
