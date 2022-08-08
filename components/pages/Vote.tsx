@@ -44,10 +44,10 @@ export function Vote() {
         ],
         discordLink: "https://www.todo.com",
         options: [
-          { label: "Yes", value: "p0", secondaryLabel: "p0" },
-          { label: "No", value: "p1", secondaryLabel: "p1" },
-          { label: "Unknown", value: "p2", secondaryLabel: "p2" },
-          { label: "Early Request", value: "p3", secondaryLabel: "p3" },
+          { label: "Yes", value: "0", secondaryLabel: "p0" },
+          { label: "No", value: "1", secondaryLabel: "p1" },
+          { label: "Unknown", value: "2", secondaryLabel: "p2" },
+          { label: "Early Request", value: "3", secondaryLabel: "p3" },
         ],
         participation: [
           { label: "Total Votes", value: 188077355.982231 },
