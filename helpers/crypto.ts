@@ -54,13 +54,11 @@ export function getRandomUnsignedInt(): BigNumber {
 }
 
 export function derivePrivateKey(signature: string) {
-  const pk = ethers.utils.solidityKeccak256(["bytes32"], signature);
+  const pk = ethers.utils.solidityKeccak256(["string"], [signature]);
   if (pk) return pk;
   return "";
 }
 
 export function recoverPublicKey(privateKey: string) {
-  // The "0x" is added to make the public key web3 friendly.
-  // return "0x" + EthCrypto.publicKeyByPrivateKey(privateKey);
   return EthCrypto.publicKeyByPrivateKey(privateKey);
 }

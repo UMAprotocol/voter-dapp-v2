@@ -71,3 +71,13 @@ export type StakePanelContentT = {
 };
 
 export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
+
+export type SigningKey = {
+  publicKey: string;
+  privateKey: string;
+  signedMessage: string;
+}
+
+export type SigningKeys = {
+  [address: string]: SigningKey;
+}

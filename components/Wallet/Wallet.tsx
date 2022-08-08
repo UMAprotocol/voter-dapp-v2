@@ -10,14 +10,18 @@ import styled from "styled-components";
 import createVotingContractInstance from "web3/createVotingContractInstance";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
+import message from "constants/signingMessage";
+import { SigningKey, SigningKeys } from "types/global";
+import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
   const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
-  const { setProvider, setSigner } = useWalletContext();
+  const { setProvider, setSigner, setSigningKeys } = useWalletContext();
   const { setVoting } = useContractsContext();
   const { setPanelType, setPanelOpen } = usePanelContext();
+  const { address, truncatedAddress } = getAccountDetails(connectedWallets);
 
   useEffect(() => {
     setOnboard(initOnboard);
@@ -57,8 +61,39 @@ export function Wallet() {
       setSigner(signer);
       // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
       setVoting(createVotingContractInstance(signer));
+      (async () => {
+        const savedSigningKeys = getSavedSigningKeys();
+        if (savedSigningKeys[address]) {
+          setSigningKeys(savedSigningKeys);
+        } else {
+          const newSigningKey = await makeSigningKey(signer, message);
+          const newSigningKeys = { ...savedSigningKeys, [address]: newSigningKey };
+          setSigningKeys(newSigningKeys);
+          saveSigningKeys(newSigningKeys);
+        }
+      })();
     }
   }, [setProvider, setSigner, setVoting, wallet]);
+
+  async function makeSigningKey(signer: ethers.Signer, message: string) {
+    const signedMessage = await signer.signMessage(message);
+    const privateKey = derivePrivateKey(signedMessage);
+    const publicKey = recoverPublicKey(privateKey);
+    return {
+      privateKey,
+      publicKey,
+      signedMessage,
+    } as SigningKey;
+  }
+
+  function saveSigningKeys(newSigningKeys: SigningKeys) {
+    localStorage.setItem("signingKeys", JSON.stringify(newSigningKeys));
+  }
+
+  function getSavedSigningKeys() {
+    const savedSigningKeys = localStorage.getItem("signingKeys");
+    return savedSigningKeys ? (JSON.parse(savedSigningKeys) as SigningKeys) : {};
+  }
 
   function openMenuPanel() {
     setPanelType("menu");
@@ -66,8 +101,6 @@ export function Wallet() {
   }
 
   if (!onboard) return null;
-
-  const { truncatedAddress } = getAccountDetails(connectedWallets);
 
   return (
     <Wrapper>
