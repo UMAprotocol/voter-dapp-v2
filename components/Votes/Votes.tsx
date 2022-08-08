@@ -1,8 +1,10 @@
+import { useWallets } from "@web3-onboard/react";
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import { getAccountDetails } from "components/Wallet";
+import { ethers } from "ethers";
 import unixTimestampToDate from "helpers/unixTimestampToDate";
-import useActiveVotes from "hooks/useActiveVotes";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
@@ -11,6 +13,7 @@ import useVotePhase from "hooks/useVotePhase";
 import { useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
+import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier, parseFixed } from "@uma/common";
 
 interface Props {
   votes: VoteT[];
@@ -18,18 +21,63 @@ interface Props {
 export function Votes({ votes }: Props) {
   const initialSelectedVotes: Record<string, string> = {};
   votes.forEach((vote) => {
-    initialSelectedVotes[vote.identifier] = "";
+    initialSelectedVotes[makeUniqueKeyForVote(vote)] = "";
   });
+  const connectedWallets = useWallets();
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { voting } = useContractsContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { activeVotes } = useActiveVotes(voting);
 
-  function selectVote(identifier: string, value: string) {
-    setSelectedVotes((votes) => ({ ...votes, [identifier]: value }));
+  function selectVote(vote: VoteT, value: string) {
+    setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
+  }
+
+  function makeUniqueKeyForVote(vote: VoteT) {
+    return `${vote.identifier}-${vote.time}-${vote.ancillaryData}`;
+  }
+
+  function makeVoteHash(
+    price: string,
+    salt: string,
+    account: string,
+    time: number,
+    ancillaryData: string,
+    roundId: number,
+    identifier: string
+  ) {
+    return ethers.utils.solidityKeccak256(
+      ["uint256", "uint256", "address", "uint256", "bytes", "uint256", "bytes32"],
+      [price, salt, account, time, ancillaryData, roundId, identifier]
+    );
+  }
+
+  function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
+    const { address } = getAccountDetails(connectedWallets);
+    return votes
+      .map((vote) => {
+        const selectedVote = selectedVotes[makeUniqueKeyForVote(vote)];
+        const { identifier, decodedIdentifier, ancillaryData, time } = vote;
+        const salt = getRandomSignedInt().toString();
+        const identifierPrecision = getPrecisionForIdentifier(decodedIdentifier);
+        const price = parseFixed(selectedVote, identifierPrecision).toString();
+        const roundId = currentRoundId!.toNumber();
+        const account = address;
+        const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
+        return {
+          price,
+          salt,
+          account,
+          time,
+          ancillaryData,
+          roundId,
+          identifier,
+          hash,
+        };
+      })
+      .filter((vote) => vote.price !== "");
   }
 
   function commitVotes() {
@@ -80,9 +128,9 @@ export function Votes({ votes }: Props) {
           {votes.map((vote) => (
             <VoteBar
               vote={vote}
-              selectedVote={selectedVotes[vote.identifier]}
+              selectedVote={selectedVotes[makeUniqueKeyForVote(vote)]}
               selectVote={selectVote}
-              key={vote.title}
+              key={makeUniqueKeyForVote(vote)}
               moreDetailsAction={() => openVotePanel(vote)}
             />
           ))}
