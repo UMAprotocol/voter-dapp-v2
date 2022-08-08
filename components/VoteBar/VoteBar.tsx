@@ -14,7 +14,7 @@ interface Props {
   vote: VoteT;
   moreDetailsAction: () => void;
   selectedVote: string;
-  selectVote: (identifier: string, value: string) => void;
+  selectVote: (vote: VoteT, value: string) => void;
 }
 export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
@@ -42,12 +42,12 @@ export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: P
             label="Choose answer"
             items={options}
             selected={options.find((option) => option.value === selectedVote) ?? null}
-            onSelect={(option) => selectVote(vote.identifier, option.value.toString())}
+            onSelect={(option) => selectVote(vote, option.value.toString())}
           />
         ) : (
           <TextInput
             value={selectedVote ?? undefined}
-            onChange={(e) => selectVote(vote.identifier, e.target.value)}
+            onChange={(e) => selectVote(vote, e.target.value)}
             disabled={!signer}
           />
         )}
