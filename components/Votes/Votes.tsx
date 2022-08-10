@@ -169,7 +169,7 @@ export function Votes({ votes }: Props) {
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
-          <Button variant="primary" label="Commit votes" onClick={commitVotes} />
+          <Button variant="primary" label={`${votePhase} Votes`} onClick={commitVotes} />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
     </OuterWrapper>
@@ -224,4 +224,8 @@ const CommitVotesButtonWrapper = styled.div`
   align-items: center;
   justify-content: end;
   margin-top: 30px;
+
+  button {
+    text-transform: capitalize;
+  }
 `;
