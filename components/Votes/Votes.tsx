@@ -16,6 +16,7 @@ import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
+import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
 
 interface Props {
   votes: VoteT[];
@@ -26,6 +27,7 @@ export function Votes({ votes }: Props) {
     initialSelectedVotes[makeUniqueKeyForVote(vote)] = "";
   });
   const connectedWallets = useWallets();
+  const { address } = getAccountDetails(connectedWallets);
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { voting } = useContractsContext();
@@ -33,6 +35,9 @@ export function Votes({ votes }: Props) {
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
+  const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId);
+
+  console.log({ encryptedVotesForUser });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
@@ -58,7 +63,6 @@ export function Votes({ votes }: Props) {
   }
 
   async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
-    const { address } = getAccountDetails(connectedWallets);
     // the user's address is called `account` for legacy reasons
     const account = address;
     // we just need a random number to make the hash
@@ -103,7 +107,7 @@ export function Votes({ votes }: Props) {
 
   async function commitVotes() {
     const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
-    const commitVoteFunctionFragment = voting.interface.getFunction("commitVote(bytes32,uint256,bytes,bytes32)");
+    const commitVoteFunctionFragment = voting.interface.getFunction("commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)");
     const calldata = formattedVotes.map((vote) => {
       // @ts-expect-error todo figure out why it thinks this doesn't exist
       return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
@@ -111,6 +115,7 @@ export function Votes({ votes }: Props) {
         vote!.time,
         vote!.ancillaryData,
         vote!.hash,
+        vote!.encryptedVote,
       ]);
     });
     const tx = await voting.functions.multicall(calldata);
