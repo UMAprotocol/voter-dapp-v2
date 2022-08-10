@@ -10,18 +10,15 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
 import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
-import useActiveVotes from "hooks/useActiveVotes";
-import { sub } from "date-fns";
 
-export function Votes() {
-  const votes = makeMockVotes();
+export function Votes({ votes }: { votes: VoteT[] }) {
   const initialSelectedVotes: Record<string, string> = {};
   votes?.forEach((vote) => {
     initialSelectedVotes[makeUniqueKeyForVote(vote)] = "";
@@ -29,6 +26,7 @@ export function Votes() {
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
+  const [votesUserVotedOn, setVotesUserVotedOn] = useState<VoteT[]>([]);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { voting } = useContractsContext();
   const { signingKeys } = useWalletContext();
@@ -36,77 +34,22 @@ export function Votes() {
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId);
-  const { activeVotes } = useActiveVotes(voting);
 
-  console.log({ encryptedVotesForUser });
-
-  function makeMockVotes() {
-    if (!activeVotes) return null;
-    return activeVotes.map(
-      ({ identifier, decodedIdentifier, ancillaryData, decodedAncillaryData, time, timeMilliseconds }, i) => ({
-        identifier,
-        ancillaryData,
-        decodedIdentifier,
-        decodedAncillaryData,
-        time,
-        timeMilliseconds,
-        title: decodedIdentifier,
-        origin: i % 2 === 0 ? ("UMA" as const) : ("Polymarket" as const),
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        voteNumber: 100 + i,
-        timestamp: sub(new Date(), { days: 1 }),
-        txid: "0x12345667890987655" + i,
-        umipNumber: 200 + i,
-        links: [
-          {
-            label: "UMIP link",
-            href: "https://www.todo.com",
-          },
-          {
-            label: "Dispute txid",
-            href: "https://www.todo.com",
-          },
-          {
-            label: "Optimistic Oracle UI",
-            href: "https://www.todo.com",
-          },
-        ],
-        discordLink: "https://www.todo.com",
-        options: [
-          { label: "Yes", value: "0", secondaryLabel: "p0" },
-          { label: "No", value: "1", secondaryLabel: "p1" },
-          { label: "Unknown", value: "2", secondaryLabel: "p2" },
-          { label: "Early Request", value: "3", secondaryLabel: "p3" },
-        ],
-        participation: [
-          { label: "Total Votes", value: 188077355.982231 },
-          { label: "Unique Commit Addresses", value: 100 },
-          { label: "Unique Reveal Addresses", value: 97 },
-        ],
-        results: [
-          {
-            label: "Devin Haney",
-            value: 1234,
-          },
-          {
-            label: "George Washington",
-            value: 5678,
-          },
-          {
-            label: "Tie",
-            value: 500,
-          },
-          {
-            label: "Early Expiry",
-            value: 199,
-          },
-        ],
-        isCommitted: i % 2 === 0,
-        isGovernance: i % 2 === 0,
+  useEffect(() => {
+    setVotesUserVotedOn(
+      votes?.filter((vote) => {
+        return Boolean(
+          encryptedVotesForUser.find(({ identifier, ancillaryData, time }) => {
+            return (
+              vote.identifier === identifier && vote.ancillaryData === ancillaryData && vote.time === time.toNumber()
+            );
+          })
+        );
       })
     );
-  }
+  }, [encryptedVotesForUser, votes]);
+
+  console.log({ votes, encryptedVotesForUser, votesUserVotedOn });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
@@ -175,6 +118,8 @@ export function Votes() {
   }
 
   async function commitVotes() {
+    if (!votes) return;
+
     const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
     const commitVoteFunctionFragment = voting.interface.getFunction(
       "commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)"
@@ -236,11 +181,12 @@ export function Votes() {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {votes?.map((vote) => (
+          {(votePhase === "commit" ? votes : votesUserVotedOn)?.map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[makeUniqueKeyForVote(vote)]}
               selectVote={selectVote}
+              phase={votePhase}
               key={makeUniqueKeyForVote(vote)}
               moreDetailsAction={() => openVotePanel(vote)}
             />
