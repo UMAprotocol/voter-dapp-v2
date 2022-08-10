@@ -82,6 +82,7 @@ export function Vote() {
           },
         ],
         isCommitted: i % 2 === 0,
+        isRevealed: i % 2 === 0,
         isGovernance: i % 2 === 0,
       })
     );

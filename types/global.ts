@@ -31,6 +31,7 @@ export type VoteDetailsT = {
   origin: DisputeOriginT;
   txid: string;
   isCommitted: boolean;
+  isRevealed: boolean;
   isGovernance: boolean;
   voteNumber: number;
   umipNumber: number;
@@ -76,8 +77,8 @@ export type SigningKey = {
   publicKey: string;
   privateKey: string;
   signedMessage: string;
-}
+};
 
 export type SigningKeys = {
   [address: string]: SigningKey;
-}
+};
