@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { TypedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/commons";
 import { BigNumber } from "ethers";
 import getEncryptedVotesForUser from "web3/queries/getEncryptedVotesForUser";
 
@@ -16,7 +17,7 @@ export default function useEncryptedVotesForUser(
     }
   );
 
-  const encryptedVotesForUser = roundId ? data : [];
+  const encryptedVotesForUser = makeEncryptedVotesForUser(data, address);
 
   return {
     encryptedVotesForUser,
@@ -24,4 +25,33 @@ export default function useEncryptedVotesForUser(
     encryptedVotesForUserIsError: isError,
     encryptedVotesForUserError: error,
   };
+}
+
+function makeEncryptedVotesForUser(
+  encryptedVoteEvents:
+    | TypedEvent<
+        [string, BigNumber, string, BigNumber, string, string] & {
+          caller: string;
+          roundId: BigNumber;
+          identifier: string;
+          time: BigNumber;
+          ancillaryData: string;
+          encryptedVote: string;
+        }
+      >[]
+    | undefined,
+  address: string
+) {
+  if (!encryptedVoteEvents) return [];
+
+  const args = encryptedVoteEvents.map(({ args }) => args);
+
+  return args.map(({ roundId, caller, identifier, time, ancillaryData, encryptedVote }) => ({
+    roundId,
+    caller,
+    identifier,
+    time,
+    ancillaryData,
+    encryptedVote,
+  }))
 }
