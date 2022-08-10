@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import styled, { CSSProperties } from "styled-components";
-import { VoteT } from "types/global";
+import { VotePhaseT, VoteT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -14,11 +14,12 @@ interface Props {
   moreDetailsAction: () => void;
   selectedVote: string;
   selectVote: (vote: VoteT, value: string) => void;
+  phase: VotePhaseT;
 }
-export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: Props) {
+export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isGovernance } = vote;
+  const { title, origin, options, isCommitted, isRevealed, isGovernance } = vote;
   const isPolymarket = origin === "Polymarket";
   const isDropdown = isPolymarket || isGovernance;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
@@ -59,7 +60,7 @@ export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: P
             } as CSSProperties
           }
         />{" "}
-        {isCommitted ? "Committed" : "Not committed"}
+        {phase === "commit" ? (isCommitted ? "Committed" : "Not committed") : isRevealed ? "Revealed" : "Not revealed"}
       </Status>
       <MoreDetails>
         <Button label="More details" onClick={moreDetailsAction} />
