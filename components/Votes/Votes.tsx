@@ -17,13 +17,13 @@ import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
 import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
+import useActiveVotes from "hooks/useActiveVotes";
+import { sub } from "date-fns";
 
-interface Props {
-  votes: VoteT[];
-}
-export function Votes({ votes }: Props) {
+export function Votes() {
+  const votes = makeMockVotes();
   const initialSelectedVotes: Record<string, string> = {};
-  votes.forEach((vote) => {
+  votes?.forEach((vote) => {
     initialSelectedVotes[makeUniqueKeyForVote(vote)] = "";
   });
   const connectedWallets = useWallets();
@@ -36,8 +36,77 @@ export function Votes({ votes }: Props) {
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId);
+  const { activeVotes } = useActiveVotes(voting);
 
   console.log({ encryptedVotesForUser });
+
+  function makeMockVotes() {
+    if (!activeVotes) return null;
+    return activeVotes.map(
+      ({ identifier, decodedIdentifier, ancillaryData, decodedAncillaryData, time, timeMilliseconds }, i) => ({
+        identifier,
+        ancillaryData,
+        decodedIdentifier,
+        decodedAncillaryData,
+        time,
+        timeMilliseconds,
+        title: decodedIdentifier,
+        origin: i % 2 === 0 ? ("UMA" as const) : ("Polymarket" as const),
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        voteNumber: 100 + i,
+        timestamp: sub(new Date(), { days: 1 }),
+        txid: "0x12345667890987655" + i,
+        umipNumber: 200 + i,
+        links: [
+          {
+            label: "UMIP link",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Dispute txid",
+            href: "https://www.todo.com",
+          },
+          {
+            label: "Optimistic Oracle UI",
+            href: "https://www.todo.com",
+          },
+        ],
+        discordLink: "https://www.todo.com",
+        options: [
+          { label: "Yes", value: "0", secondaryLabel: "p0" },
+          { label: "No", value: "1", secondaryLabel: "p1" },
+          { label: "Unknown", value: "2", secondaryLabel: "p2" },
+          { label: "Early Request", value: "3", secondaryLabel: "p3" },
+        ],
+        participation: [
+          { label: "Total Votes", value: 188077355.982231 },
+          { label: "Unique Commit Addresses", value: 100 },
+          { label: "Unique Reveal Addresses", value: 97 },
+        ],
+        results: [
+          {
+            label: "Devin Haney",
+            value: 1234,
+          },
+          {
+            label: "George Washington",
+            value: 5678,
+          },
+          {
+            label: "Tie",
+            value: 500,
+          },
+          {
+            label: "Early Expiry",
+            value: 199,
+          },
+        ],
+        isCommitted: i % 2 === 0,
+        isGovernance: i % 2 === 0,
+      })
+    );
+  }
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
@@ -107,7 +176,9 @@ export function Votes({ votes }: Props) {
 
   async function commitVotes() {
     const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
-    const commitVoteFunctionFragment = voting.interface.getFunction("commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)");
+    const commitVoteFunctionFragment = voting.interface.getFunction(
+      "commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)"
+    );
     const calldata = formattedVotes.map((vote) => {
       // @ts-expect-error todo figure out why it thinks this doesn't exist
       return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
@@ -121,6 +192,8 @@ export function Votes({ votes }: Props) {
     const tx = await voting.functions.multicall(calldata);
     console.log({ tx });
   }
+
+  async function revealVotes() {}
 
   function makeVoteLinks(txid: string, umipNumber: number) {
     return [
@@ -163,7 +236,7 @@ export function Votes({ votes }: Props) {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {votes.map((vote) => (
+          {votes?.map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[makeUniqueKeyForVote(vote)]}
@@ -174,7 +247,11 @@ export function Votes({ votes }: Props) {
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
-          <Button variant="primary" label={`${votePhase} Votes`} onClick={commitVotes} />
+          <Button
+            variant="primary"
+            label={`${votePhase} Votes`}
+            onClick={votePhase === "commit" ? commitVotes : revealVotes}
+          />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
     </OuterWrapper>
