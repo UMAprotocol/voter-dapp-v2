@@ -6,7 +6,7 @@ interface Props {
   onClick: () => void;
 }
 export function Toggle({ clicked, onClick }: Props) {
-  const background = clicked ? green : blackOpacity25;
+  const background = clicked ? red500 : blackOpacity25;
   const translateX = clicked ? "calc(100% - 5px)" : "2px";
 
   return (
