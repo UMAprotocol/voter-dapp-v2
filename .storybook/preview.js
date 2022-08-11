@@ -4,6 +4,9 @@ import { WalletProvider } from "contexts/WalletContext";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PanelProvider } from "contexts/PanelContext";
 import "styles/fonts.css";
+import { Buffer } from "buffer";
+
+window.Buffer = Buffer;
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
