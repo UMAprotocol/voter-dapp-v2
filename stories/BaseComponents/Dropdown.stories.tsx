@@ -46,3 +46,8 @@ export const WithBorderColor = Template.bind({});
 WithBorderColor.args = {
   borderColor: blackOpacity25,
 };
+
+export const WithDisabled = Template.bind({});
+WithDisabled.args = {
+  disabled: true,
+};
