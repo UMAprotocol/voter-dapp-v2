@@ -33,10 +33,8 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { encryptedVotesForUser, votesUserVotedOn } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
+  const { votesUserVotedOn } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
   const { votesRevealedByUser } = useVotesRevealedByUser(voting, address);
-
-  console.log({ votes, encryptedVotesForUser, votesUserVotedOn, votesRevealedByUser });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
