@@ -10,13 +10,14 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
 import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
+import useVotesRevealedByUser from "hooks/useVotesRevealedByUser";
 
 export function Votes({ votes }: { votes: VoteT[] }) {
   const initialSelectedVotes: Record<string, string> = {};
@@ -26,30 +27,16 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
-  const [votesUserVotedOn, setVotesUserVotedOn] = useState<VoteT[]>([]);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { voting } = useContractsContext();
   const { signingKeys } = useWalletContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId);
+  const { encryptedVotesForUser, votesUserVotedOn } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
+  const { votesRevealedByUser } = useVotesRevealedByUser(voting, address);
 
-  useEffect(() => {
-    setVotesUserVotedOn(
-      votes?.filter((vote) => {
-        return Boolean(
-          encryptedVotesForUser.find(({ identifier, ancillaryData, time }) => {
-            return (
-              vote.identifier === identifier && vote.ancillaryData === ancillaryData && vote.time === time.toNumber()
-            );
-          })
-        );
-      })
-    );
-  }, [encryptedVotesForUser, votes]);
-
-  console.log({ votes, encryptedVotesForUser, votesUserVotedOn });
+  console.log({ votes, encryptedVotesForUser, votesUserVotedOn, votesRevealedByUser });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
