@@ -9,6 +9,7 @@ export default function useRoundEndTime(votingContract: VotingV2Ethers, roundId:
     () => getRoundEndTime(votingContract, roundId),
     {
       refetchInterval: 1000,
+      enabled: !!roundId,
     }
   );
 
