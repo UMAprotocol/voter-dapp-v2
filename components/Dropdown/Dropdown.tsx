@@ -12,15 +12,19 @@ interface Props {
   label: ReactNode;
   selected: DropdownItemT | null;
   onSelect: (item: DropdownItemT) => void;
+  disabled?: boolean;
   borderColor?: string;
 }
-export function Dropdown({ items, label, selected, onSelect, borderColor = black }: Props) {
+export function Dropdown({ items, label, selected, onSelect, disabled, borderColor = black }: Props) {
   const toggleTextColor = selected ? black : blackOpacity50;
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (
         <>
-          <ToggleButton style={{ "--color": toggleTextColor, "--border-color": borderColor } as CSSProperties}>
+          <ToggleButton
+            style={{ "--color": toggleTextColor, "--border-color": borderColor } as CSSProperties}
+            aria-disabled={disabled}
+          >
             {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
@@ -67,6 +71,11 @@ const ToggleButton = styled(MenuButton)`
   background-color: var(--white);
   border: 1.18px solid var(--border-color);
   border-radius: 5px;
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    border: 1.18px solid var(--black-opacity-50);
+    pointer-events: none;
+  }
 `;
 
 const DropdownList = styled(MenuPopover)`
