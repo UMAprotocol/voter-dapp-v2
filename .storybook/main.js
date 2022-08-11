@@ -27,9 +27,15 @@ module.exports = {
       use: ['@svgr/webpack']
     })
 
+    config.module.rules.push({
+      test: /\.js/,
+      resolve: {
+        fullySpecified: false
+      }
+    })
+
     // polyfill needed for web3onboard
     config.resolve.fallback.stream = require.resolve('stream-browserify')
-    config.resolve.fallback.buffer = require.resolve('buffer')
 
     return config
   }
