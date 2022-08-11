@@ -5,7 +5,12 @@ import { BigNumber, ethers } from "ethers";
 // decryptMessage().
 export async function encryptMessage(publicKey: string, message: string): Promise<string> {
   const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(publicKey, message);
-  return "0x" + EthCrypto.cipher.stringify(encryptedMessageObject);
+  return EthCrypto.cipher.stringify(encryptedMessageObject);
+}
+
+export async function decryptMessage(privKey: string, encryptedMessage: string): Promise<string> {
+  const encryptedMessageObject = EthCrypto.cipher.parse(encryptedMessage.slice(2));
+  return await EthCrypto.decryptWithPrivateKey(privKey, encryptedMessageObject);
 }
 
 // Blacklisted price identifiers that will not automatically display on voter clients.
