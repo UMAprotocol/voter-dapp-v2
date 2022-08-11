@@ -56,6 +56,7 @@ OriginUmaNotCommitted.args = {
     discordLink: "https://www.todo.com",
     isCommitted: false,
     isGovernance: false,
+    isRevealed: false,
   },
   moreDetailsAction: () => console.log("More details clicked"),
 };
@@ -108,6 +109,7 @@ OriginPolymarketNotCommitted.args = {
     discordLink: "https://www.todo.com",
     isCommitted: false,
     isGovernance: false,
+    isRevealed: false,
   },
   moreDetailsAction: () => console.log("More details clicked"),
 };
