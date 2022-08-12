@@ -37,7 +37,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
-        {isDropdown ? (
+        {isDropdown && options ? (
           <Dropdown
             label="Choose answer"
             items={options}
