@@ -28,19 +28,20 @@ export default function useEncryptedVotesForUser(
       time,
       ancillaryData,
       encryptedVote,
-    }));
-
-  const votesUserVotedOn = votes?.filter((vote) => {
-    return Boolean(
-      encryptedVotesForUser?.find(({ identifier, ancillaryData, time }) => {
-        return vote.identifier === identifier && vote.ancillaryData === ancillaryData && vote.time === time.toNumber();
-      })
-    );
-  });
+    }))
+    ?.map(({ identifier, ancillaryData, time, encryptedVote }) => {
+      const vote = votes.find(
+        (vote) =>
+          vote.identifier === identifier && vote.ancillaryData === ancillaryData && vote.time === time.toNumber()
+      );
+      return {
+        ...vote,
+        encryptedVote,
+      };
+    }) as VoteT[];
 
   return {
     encryptedVotesForUser,
-    votesUserVotedOn,
     encryptedVotesForUserIsLoading: isLoading,
     encryptedVotesForUserIsError: isError,
     encryptedVotesForUserError: error,
