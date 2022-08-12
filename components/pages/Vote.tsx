@@ -22,13 +22,17 @@ export function Vote() {
   function makeMockVotes() {
     if (!activeVotes) return null;
     return activeVotes.map(
-      ({ identifier, decodedIdentifier, ancillaryData, decodedAncillaryData, time, timeMilliseconds }, i) => ({
+      (
+        { identifier, decodedIdentifier, ancillaryData, decodedAncillaryData, time, timeMilliseconds, uniqueKey },
+        i
+      ) => ({
         identifier,
         ancillaryData,
         decodedIdentifier,
         decodedAncillaryData,
         time,
         timeMilliseconds,
+        uniqueKey,
         title: decodedIdentifier,
         origin: i % 2 === 0 ? ("UMA" as const) : ("Polymarket" as const),
         description:

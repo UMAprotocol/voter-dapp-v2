@@ -17,10 +17,11 @@ export type PriceRequest = {
   time: number;
   identifier: string;
   ancillaryData: string;
-  // decoded values
+  // computed values
   timeMilliseconds: number;
   decodedIdentifier: string;
   decodedAncillaryData: string;
+  uniqueKey: string;
 };
 
 export type VoteT = PriceRequest & VoteDetailsT & VoteResultT;

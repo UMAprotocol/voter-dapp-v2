@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { decodeHexString } from "helpers/decodeHexString";
+import { makeUniqueKeyForVote } from "helpers/votes";
 import { PriceRequest } from "types/global";
 import getPendingRequests from "web3/queries/getPendingRequests";
 
@@ -20,6 +21,7 @@ export default function useActiveVotes(votingContract: VotingV2Ethers) {
     timeMilliseconds: time.toNumber() * 1000,
     decodedIdentifier: decodeHexString(identifier),
     decodedAncillaryData: decodeHexString(ancillaryData),
+    uniqueKey: makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData),
   }));
 
   return {
