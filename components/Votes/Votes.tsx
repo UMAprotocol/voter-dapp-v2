@@ -35,10 +35,10 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
-  const { votesRevealedByUser } = useVotesRevealedByUser(voting, address);
+  const { votesRevealedByUser, votesRevealedByUserInCurrentRound } = useVotesRevealedByUser(voting, address);
   const decryptedVotesForUser = useDecryptedVotesForUser(encryptedVotesForUser, address, signingKeys);
 
-  console.log({ decryptedVotesForUser });
+  console.log({ votesRevealedByUser, votesRevealedByUserInCurrentRound });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
@@ -110,24 +110,69 @@ export function Votes({ votes }: { votes: VoteT[] }) {
     if (!votes) return;
 
     const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
+    if (!formattedVotes.length) return;
+
     const commitVoteFunctionFragment = voting.interface.getFunction(
       "commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)"
     );
-    const calldata = formattedVotes.map((vote) => {
-      // @ts-expect-error todo figure out why it thinks this doesn't exist
-      return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
-        vote!.identifier,
-        vote!.time,
-        vote!.ancillaryData,
-        vote!.hash,
-        vote!.encryptedVote,
-      ]);
-    });
-    const tx = await voting.functions.multicall(calldata);
-    console.log({ tx });
+    const calldata = formattedVotes
+      .map((vote) => {
+        if (!vote) return null;
+        const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
+        // @ts-expect-error todo figure out why it thinks this doesn't exist
+        return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
+          identifier,
+          time,
+          ancillaryData,
+          hash,
+          encryptedVote,
+        ]);
+      })
+      .filter((encoded): encoded is string => Boolean(encoded));
+
+    await voting.functions.multicall(calldata);
   }
 
-  async function revealVotes() {}
+  async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
+    return decryptedVotesForUser.map((vote) => {
+      if (!vote.decryptedVote) return null;
+
+      const { identifier, decryptedVote, ancillaryData, time } = vote;
+      const { price, salt } = decryptedVote;
+
+      return {
+        identifier,
+        time,
+        price,
+        ancillaryData,
+        salt,
+      };
+    });
+  }
+
+  async function revealVotes() {
+    const formattedVotes = await formatVotesToReveal(decryptedVotesForUser);
+    if (!formattedVotes.length) return;
+
+    const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");
+
+    const calldata = formattedVotes
+      .map((vote) => {
+        if (!vote) return null;
+        const { identifier, time, price, ancillaryData, salt } = vote;
+        // @ts-expect-error todo figure out why it thinks this doesn't exist
+        return voting.interface.encodeFunctionData(revealVoteFunctionFragment, [
+          identifier,
+          time,
+          price,
+          ancillaryData,
+          salt,
+        ]);
+      })
+      .filter((encoded): encoded is string => Boolean(encoded));
+
+    await voting.functions.multicall(calldata);
+  }
 
   function makeVoteLinks(txid: string, umipNumber: number) {
     return [
