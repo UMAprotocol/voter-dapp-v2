@@ -12,8 +12,19 @@ interface Props {
 export function VotePanel({ content }: Props) {
   if (!content) return null;
 
-  const { title, description, origin, voteNumber, options, timestamp, links, discordLink, participation, results } =
-    content as VotePanelContentT;
+  const {
+    title,
+    decodedIdentifier,
+    description,
+    origin,
+    voteNumber,
+    options,
+    timestamp,
+    links,
+    discordLink,
+    participation,
+    results,
+  } = content as VotePanelContentT;
 
   const hasResults = Boolean(results);
 
@@ -38,7 +49,7 @@ export function VotePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle title={title} origin={origin} voteNumber={voteNumber} />
+      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={voteNumber} />
       {hasResults ? (
         <Tabs tabs={tabs} />
       ) : (
