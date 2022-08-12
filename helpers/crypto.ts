@@ -5,7 +5,7 @@ import { BigNumber, ethers } from "ethers";
 // decryptMessage().
 export async function encryptMessage(publicKey: string, message: string): Promise<string> {
   const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(publicKey, message);
-  return EthCrypto.cipher.stringify(encryptedMessageObject);
+  return "0x" + EthCrypto.cipher.stringify(encryptedMessageObject);
 }
 
 export async function decryptMessage(privKey: string, encryptedMessage: string): Promise<string> {
