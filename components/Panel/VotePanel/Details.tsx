@@ -10,7 +10,7 @@ import { VoteDetailsT } from "types/global";
 
 type Props = Pick<VoteDetailsT, "description" | "options" | "timestamp" | "links" | "discordLink">;
 export function Details({ description, options, timestamp, links, discordLink }: Props) {
-  const optionLabels = options.map(({ label }) => label);
+  const optionLabels = options?.map(({ label }) => label);
 
   return (
     <Wrapper>
@@ -31,7 +31,7 @@ export function Details({ description, options, timestamp, links, discordLink }:
           Voting options
         </PanelSectionTitle>
         <OptionsList>
-          {optionLabels.map((label) => (
+          {optionLabels?.map((label) => (
             <OptionsItem key={label}>{label}</OptionsItem>
           ))}
         </OptionsList>
