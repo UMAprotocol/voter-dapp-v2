@@ -27,16 +27,18 @@ export type VoteT = PriceRequest & VoteDetailsT & VoteResultT;
 
 export type VoteDetailsT = {
   identifier: string;
-  title: string;
-  origin: DisputeOriginT;
+  title?: string;
+  origin?: DisputeOriginT;
+  encryptedVote?: string;
+  decryptedVote?: string;
   txid: string;
   isCommitted: boolean;
   isRevealed: boolean;
   isGovernance: boolean;
   voteNumber: number;
   umipNumber: number;
-  description: string;
-  options: DropdownItemT[];
+  description?: string;
+  options?: DropdownItemT[];
   timestamp: Date;
   links: LinkT[];
   discordLink: string;
