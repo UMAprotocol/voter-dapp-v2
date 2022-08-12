@@ -25,12 +25,14 @@ export type PriceRequest = {
 
 export type VoteT = PriceRequest & VoteDetailsT & VoteResultT;
 
+export type DecryptedVoteT = { price: string; salt: string };
+
 export type VoteDetailsT = {
   identifier: string;
   title?: string;
   origin?: DisputeOriginT;
   encryptedVote?: string;
-  decryptedVote?: string;
+  decryptedVote?: DecryptedVoteT;
   txid: string;
   isCommitted: boolean;
   isRevealed: boolean;
