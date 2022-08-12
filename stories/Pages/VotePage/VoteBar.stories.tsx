@@ -32,6 +32,7 @@ OriginUmaNotCommitted.args = {
     ancillaryData: "0x1234567890",
     decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
     decodedAncillaryData: "Test test test",
+    uniqueKey: "0x1234567890",
     umipNumber: 20,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
@@ -85,6 +86,7 @@ OriginPolymarketNotCommitted.args = {
     ancillaryData: "0x1234567890",
     decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
     decodedAncillaryData: "Test test test",
+    uniqueKey: "0x1234567890",
     umipNumber: 20,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
