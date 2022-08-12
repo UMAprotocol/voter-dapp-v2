@@ -1,6 +1,6 @@
 import { decryptMessage } from "helpers/crypto";
 import { useState, useEffect } from "react";
-import { SigningKeys, VoteT } from "types/global";
+import { DecryptedVoteT, SigningKeys, VoteT } from "types/global";
 
 export default function useDecryptedVotesForUser(
   encryptedVotesForUser: VoteT[],
@@ -11,7 +11,11 @@ export default function useDecryptedVotesForUser(
 
   useEffect(() => {
     (async () => {
-      if (!encryptedVotesForUser) return;
+      if (!encryptedVotesForUser?.length) return;
+
+      const privateKey = signingKeys[address].privateKey;
+      const decryptedVotes = await decryptVotesForUser(privateKey, encryptedVotesForUser);
+      setDecryptedVotesForUser(decryptedVotes);
 
       async function decryptVotesForUser(privateKey: string, encryptedVotesForUser: VoteT[]) {
         return await Promise.all(
@@ -21,7 +25,7 @@ export default function useDecryptedVotesForUser(
             if (!encryptedVote) return vote;
 
             const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
-            const decryptedVote = JSON.parse(decryptedVoteString);
+            const decryptedVote: DecryptedVoteT = JSON.parse(decryptedVoteString);
 
             return {
               ...vote,
@@ -30,10 +34,6 @@ export default function useDecryptedVotesForUser(
           })
         );
       }
-
-      const privateKey = signingKeys[address].privateKey;
-      const decryptedVotes = await decryptVotesForUser(privateKey, encryptedVotesForUser);
-      setDecryptedVotesForUser(decryptedVotes);
     })();
   }, [address, encryptedVotesForUser, signingKeys]);
 
