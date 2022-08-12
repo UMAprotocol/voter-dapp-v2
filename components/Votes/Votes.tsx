@@ -18,6 +18,7 @@ import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "h
 import { useWalletContext } from "hooks/useWalletContext";
 import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
 import useVotesRevealedByUser from "hooks/useVotesRevealedByUser";
+import useDecryptedVotesForUser from "hooks/useDecryptedVotesForUser";
 
 export function Votes({ votes }: { votes: VoteT[] }) {
   const initialSelectedVotes: Record<string, string> = {};
@@ -33,8 +34,11 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { votesUserVotedOn } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
+  const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
   const { votesRevealedByUser } = useVotesRevealedByUser(voting, address);
+  const decryptedVotesForUser = useDecryptedVotesForUser(encryptedVotesForUser, address, signingKeys);
+
+  console.log({ decryptedVotesForUser });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
@@ -166,7 +170,7 @@ export function Votes({ votes }: { votes: VoteT[] }) {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {(votePhase === "commit" ? votes : votesUserVotedOn)?.map((vote) => (
+          {votes?.map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[makeUniqueKeyForVote(vote)]}
