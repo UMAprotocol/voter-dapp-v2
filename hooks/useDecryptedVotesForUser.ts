@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { DecryptedVoteT, SigningKeys, VoteT } from "types/global";
 
 export default function useDecryptedVotesForUser(
-  encryptedVotesForUser: VoteT[],
+  encryptedVotesForUser: VoteT[] | undefined,
   address: string,
   signingKeys: SigningKeys
 ) {
