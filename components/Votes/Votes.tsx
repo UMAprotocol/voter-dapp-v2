@@ -24,7 +24,7 @@ import useVotesCommittedByUser from "hooks/useVotesCommittedByUser";
 export function Votes({ votes }: { votes: VoteT[] }) {
   const initialSelectedVotes: Record<string, string> = {};
   votes?.forEach((vote) => {
-    initialSelectedVotes[makeUniqueKeyForVote(vote)] = "";
+    initialSelectedVotes[vote.uniqueKey] = "";
   });
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
@@ -48,11 +48,7 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   });
 
   function selectVote(vote: VoteT, value: string) {
-    setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
-  }
-
-  function makeUniqueKeyForVote(vote: VoteT) {
-    return `${vote.identifier}-${vote.time}-${vote.ancillaryData}`;
+    setSelectedVotes((votes) => ({ ...votes, [vote.uniqueKey]: value }));
   }
 
   function makeVoteHash(
@@ -82,7 +78,7 @@ export function Votes({ votes }: { votes: VoteT[] }) {
     const formattedVotes = await Promise.all(
       votes.map(async (vote) => {
         // see if the user provided an answer for this vote
-        const selectedVote = selectedVotes[makeUniqueKeyForVote(vote)];
+        const selectedVote = selectedVotes[vote.uniqueKey];
         // if not, exclude this vote from the final array
         if (!selectedVote) return null;
 
@@ -225,10 +221,10 @@ export function Votes({ votes }: { votes: VoteT[] }) {
           {votes?.map((vote) => (
             <VoteBar
               vote={vote}
-              selectedVote={selectedVotes[makeUniqueKeyForVote(vote)]}
+              selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={selectVote}
               phase={votePhase}
-              key={makeUniqueKeyForVote(vote)}
+              key={vote.uniqueKey}
               moreDetailsAction={() => openVotePanel(vote)}
             />
           ))}
