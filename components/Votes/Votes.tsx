@@ -19,6 +19,7 @@ import { useWalletContext } from "hooks/useWalletContext";
 import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
 import useVotesRevealedByUser from "hooks/useVotesRevealedByUser";
 import useDecryptedVotesForUser from "hooks/useDecryptedVotesForUser";
+import useVotesCommittedByUser from "hooks/useVotesCommittedByUser";
 
 export function Votes({ votes }: { votes: VoteT[] }) {
   const initialSelectedVotes: Record<string, string> = {};
@@ -36,9 +37,15 @@ export function Votes({ votes }: { votes: VoteT[] }) {
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
   const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
   const { votesRevealedByUser, votesRevealedByUserInCurrentRound } = useVotesRevealedByUser(voting, address);
+  const { votesCommittedByUser, votesCommittedByUserInCurrentRound } = useVotesCommittedByUser(voting, address);
   const decryptedVotesForUser = useDecryptedVotesForUser(encryptedVotesForUser, address, signingKeys);
 
-  console.log({ votesRevealedByUser, votesRevealedByUserInCurrentRound });
+  console.log({
+    votesRevealedByUser,
+    votesRevealedByUserInCurrentRound,
+    votesCommittedByUser,
+    votesCommittedByUserInCurrentRound,
+  });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((votes) => ({ ...votes, [makeUniqueKeyForVote(vote)]: value }));
