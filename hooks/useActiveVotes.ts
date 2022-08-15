@@ -14,15 +14,17 @@ export default function useActiveVotes(votingContract: VotingV2Ethers) {
 
   const pendingRequests = data?.[0];
 
-  const activeVotes: PriceRequest[] | undefined = pendingRequests?.map(({ time, identifier, ancillaryData }) => ({
-    time: time.toNumber(),
-    identifier,
-    ancillaryData,
-    timeMilliseconds: time.toNumber() * 1000,
-    decodedIdentifier: decodeHexString(identifier),
-    decodedAncillaryData: decodeHexString(ancillaryData),
-    uniqueKey: makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData),
-  }));
+  const activeVotes: PriceRequest[] | undefined =
+    pendingRequests?.map(({ time, identifier, ancillaryData }) => ({
+      time: time.toNumber(),
+      identifier,
+      ancillaryData,
+      timeMilliseconds: time.toNumber() * 1000,
+      timeAsDate: new Date(time.toNumber() * 1000),
+      decodedIdentifier: decodeHexString(identifier),
+      decodedAncillaryData: decodeHexString(ancillaryData),
+      uniqueKey: makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData),
+    })) ?? [];
 
   return {
     activeVotes,
