@@ -10,123 +10,31 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
-import useWithEncryptedVotes from "hooks/useWithEncryptedVotes";
-import useWithIsRevealed from "hooks/useWithIsRevealed";
-import useWithDecryptedVotes from "hooks/useWithDecryptedVotes";
-import useWithIsCommitted from "hooks/useWithIsCommitted";
-import { sub } from "date-fns";
-import useActiveVotes from "hooks/useActiveVotes";
 import signingMessage from "constants/signingMessage";
+import useVotes from "hooks/useVotes";
 
 export function Votes() {
-  const { voting } = useContractsContext();
-  const { activeVotes } = useActiveVotes(voting);
-  const votes = makeMockVotes();
-  const initialSelectedVotes: Record<string, string> = {};
-  votes?.forEach((vote) => {
-    initialSelectedVotes[vote.uniqueKey] = "";
-  });
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
-  const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
+  const { voting } = useContractsContext();
+  const { votes } = useVotes(address);
+  const [selectedVotes, setSelectedVotes] = useState<Record<string, string>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { withIsRevealed } = useWithIsRevealed(voting, address, votes);
-  const { withIsCommitted } = useWithIsCommitted(voting, address, votes);
-  const { withEncryptedVotes } = useWithEncryptedVotes(voting, address, currentRoundId, votes);
-  const withDecryptedVotes = useWithDecryptedVotes(withEncryptedVotes, address, signingKeys);
 
-  console.log({
-    withIsCommitted,
-    withIsRevealed,
-    withEncryptedVotes,
-    withDecryptedVotes,
-  });
-
-  function makeMockVotes() {
-    if (!activeVotes) return null;
-    return activeVotes.map(
-      (
-        { identifier, decodedIdentifier, ancillaryData, decodedAncillaryData, time, timeMilliseconds, uniqueKey },
-        i
-      ) => ({
-        identifier,
-        ancillaryData,
-        decodedIdentifier,
-        decodedAncillaryData,
-        time,
-        timeMilliseconds,
-        uniqueKey,
-        title: decodedIdentifier,
-        origin: i % 2 === 0 ? ("UMA" as const) : ("Polymarket" as const),
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        voteNumber: 100 + i,
-        timestamp: sub(new Date(), { days: 1 }),
-        txid: "0x12345667890987655" + i,
-        umipNumber: 200 + i,
-        links: [
-          {
-            label: "UMIP link",
-            href: "https://www.todo.com",
-          },
-          {
-            label: "Dispute txid",
-            href: "https://www.todo.com",
-          },
-          {
-            label: "Optimistic Oracle UI",
-            href: "https://www.todo.com",
-          },
-        ],
-        discordLink: "https://www.todo.com",
-        options: [
-          { label: "Yes", value: "0", secondaryLabel: "p0" },
-          { label: "No", value: "1", secondaryLabel: "p1" },
-          { label: "Unknown", value: "2", secondaryLabel: "p2" },
-          { label: "Early Request", value: "3", secondaryLabel: "p3" },
-        ],
-        participation: [
-          { label: "Total Votes", value: 188077355.982231 },
-          { label: "Unique Commit Addresses", value: 100 },
-          { label: "Unique Reveal Addresses", value: 97 },
-        ],
-        results: [
-          {
-            label: "Devin Haney",
-            value: 1234,
-          },
-          {
-            label: "George Washington",
-            value: 5678,
-          },
-          {
-            label: "Tie",
-            value: 500,
-          },
-          {
-            label: "Early Expiry",
-            value: 199,
-          },
-        ],
-        isCommitted: i % 2 === 0,
-        isRevealed: i % 2 === 0,
-        isGovernance: i % 2 === 0,
-      })
-    );
-  }
+  console.log({ selectedVotes });
 
   function selectVote(vote: VoteT, value: string) {
-    setSelectedVotes((votes) => ({ ...votes, [vote.uniqueKey]: value }));
+    setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
 
   function makeVoteHash(
@@ -239,7 +147,7 @@ export function Votes() {
   }
 
   async function revealVotes() {
-    const formattedVotes = await formatVotesToReveal(withDecryptedVotes);
+    const formattedVotes = await formatVotesToReveal(votes);
     if (!formattedVotes.length) return;
 
     const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");
@@ -262,28 +170,9 @@ export function Votes() {
     await voting.functions.multicall(calldata);
   }
 
-  function makeVoteLinks(txid: string, umipNumber: number) {
-    return [
-      {
-        label: `UMIP ${umipNumber}`,
-        href: `https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-${umipNumber}.md`,
-      },
-      {
-        label: "Dispute transaction",
-        href: `https://etherscan.io/tx/${txid}`,
-      },
-      {
-        label: "Optimistic Oracle UI",
-        href: `https://oracle.umaproject.org/request?requester=${txid}`,
-      },
-    ];
-  }
-
   function openVotePanel(vote: VoteT) {
     const panelContent = {
       ...vote,
-      links: makeVoteLinks(vote.txid, vote.umipNumber),
-      discordLink: "https://www.todo.com",
     };
     setPanelType("vote");
     setPanelContent(panelContent);
