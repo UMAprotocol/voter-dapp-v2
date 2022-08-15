@@ -22,6 +22,7 @@ import useWithDecryptedVotes from "hooks/useWithDecryptedVotes";
 import useWithIsCommitted from "hooks/useWithIsCommitted";
 import { sub } from "date-fns";
 import useActiveVotes from "hooks/useActiveVotes";
+import signingMessage from "constants/signingMessage";
 
 export function Votes() {
   const { voting } = useContractsContext();
@@ -35,7 +36,7 @@ export function Votes() {
   const { address } = getAccountDetails(connectedWallets);
   const [selectedVotes, setSelectedVotes] = useState(initialSelectedVotes);
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
-  const { signingKeys } = useWalletContext();
+  const { signer, signingKeys } = useWalletContext();
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
@@ -151,6 +152,13 @@ export function Votes() {
     const roundId = currentRoundId!.toNumber();
     // we created this key when the user signed the message when first connecting their wallet
     const signingPublicKey = signingKeys[address].publicKey;
+
+    const newSignedMessage = await signer?.signMessage(signingMessage);
+    const oldSignedMessage = signingKeys[address].signedMessage;
+
+    if (newSignedMessage !== oldSignedMessage) {
+      throw new Error("Signed messages do not match. Please disconnect and re-sign");
+    }
 
     const formattedVotes = await Promise.all(
       votes.map(async (vote) => {
