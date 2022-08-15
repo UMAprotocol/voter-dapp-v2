@@ -19,30 +19,46 @@ export type PriceRequest = {
   ancillaryData: string;
   // computed values
   timeMilliseconds: number;
+  timeAsDate: Date;
   decodedIdentifier: string;
   decodedAncillaryData: string;
   uniqueKey: string;
 };
 
-export type VoteT = PriceRequest & VoteDetailsT & VoteResultT;
+export type PriceRequestWithIsCommitted = PriceRequest & {
+  isCommitted: boolean;
+};
+
+export type PriceRequestWithIsRevealed = PriceRequest & {
+  isRevealed: boolean;
+};
+
+export type PriceRequestWithEncryptedVote = PriceRequest & {
+  encryptedVote: string | undefined;
+};
+
+export type PriceRequestWithDecryptedVote = PriceRequestWithEncryptedVote & {
+  decryptedVote: DecryptedVoteT | undefined;
+};
+
+export type PriceRequestWithVoteDetails = PriceRequest & VoteDetailsT;
+
+export type VoteT = PriceRequestWithIsCommitted &
+  PriceRequestWithIsRevealed &
+  PriceRequestWithDecryptedVote &
+  PriceRequestWithVoteDetails &
+  VoteResultT;
 
 export type DecryptedVoteT = { price: string; salt: string };
 
 export type VoteDetailsT = {
-  identifier: string;
-  title?: string;
-  origin?: DisputeOriginT;
-  encryptedVote?: string;
-  decryptedVote?: DecryptedVoteT;
+  title: string;
+  origin: DisputeOriginT;
   txid: string;
-  isCommitted: boolean;
-  isRevealed: boolean;
   isGovernance: boolean;
-  voteNumber: number;
   umipNumber: number;
-  description?: string;
-  options?: DropdownItemT[];
-  timestamp: Date;
+  description: string;
+  options: DropdownItemT[];
   links: LinkT[];
   discordLink: string;
 };

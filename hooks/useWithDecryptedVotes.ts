@@ -1,31 +1,38 @@
 import { decryptMessage } from "helpers/crypto";
 import { useState, useEffect } from "react";
-import { DecryptedVoteT, SigningKeys, VoteT } from "types/global";
+import {
+  DecryptedVoteT,
+  PriceRequestWithDecryptedVote,
+  PriceRequestWithEncryptedVote,
+  SigningKeys,
+} from "types/global";
 
 export default function useWithDecryptedVotes(
-  withEncryptedVotes: VoteT[] | undefined,
-  address: string,
+  withEncryptedVotes: PriceRequestWithEncryptedVote[],
+  address: string | undefined,
   signingKeys: SigningKeys
 ) {
-  const [withDecryptedVotes, setWithDecryptedVotes] = useState<VoteT[]>([]);
+  const [withDecryptedVotes, setWithDecryptedVotes] = useState<PriceRequestWithDecryptedVote[]>([]);
 
   useEffect(() => {
     (async () => {
-      if (!withEncryptedVotes?.length) return;
+      if (!withEncryptedVotes?.length || !address) return;
 
       const privateKey = signingKeys[address].privateKey;
-      const decryptedVotes = await decryptVotes(privateKey, withEncryptedVotes);
+      const decryptedVotes: PriceRequestWithDecryptedVote[] = await decryptVotes(privateKey, withEncryptedVotes);
       setWithDecryptedVotes(decryptedVotes);
 
-      async function decryptVotes(privateKey: string, withEncryptedVotes: VoteT[]) {
+      async function decryptVotes(privateKey: string, withEncryptedVotes: PriceRequestWithEncryptedVote[]) {
         return await Promise.all(
           withEncryptedVotes.map(async (vote) => {
             const { encryptedVote } = vote;
 
-            if (!encryptedVote) return vote;
+            let decryptedVote: DecryptedVoteT | undefined;
 
-            const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
-            const decryptedVote: DecryptedVoteT = JSON.parse(decryptedVoteString);
+            if (encryptedVote) {
+              const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
+              decryptedVote = JSON.parse(decryptedVoteString);
+            }
 
             return {
               ...vote,
@@ -35,7 +42,7 @@ export default function useWithDecryptedVotes(
         );
       }
     })();
-  }, [address, withEncryptedVotes, signingKeys]);
+  }, [address, JSON.stringify(withEncryptedVotes), signingKeys]);
 
   return withDecryptedVotes;
 }

@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 
 export default function getEncryptedVotesForUser(
   votingContract: VotingV2Ethers,
-  address: string,
+  address: string | undefined,
   roundId: BigNumber | undefined
 ) {
   const filter = votingContract.filters.EncryptedVote(address, roundId?.toNumber() ?? null, null, null, null, null);
