@@ -16,9 +16,9 @@ import { VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
-import useEncryptedVotesForUser from "hooks/useEncryptedVotesForUser";
+import useWithEncryptedVotes from "hooks/useWithEncryptedVotes";
 import useWithIsRevealed from "hooks/useWithIsRevealed";
-import useDecryptedVotesForUser from "hooks/useDecryptedVotesForUser";
+import useWithDecryptedVotes from "hooks/useWithDecryptedVotes";
 import useWithIsCommitted from "hooks/useWithIsCommitted";
 import { sub } from "date-fns";
 import useActiveVotes from "hooks/useActiveVotes";
@@ -39,16 +39,16 @@ export function Votes() {
   const { votePhase } = useVotePhase(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
-  const { encryptedVotesForUser } = useEncryptedVotesForUser(voting, address, currentRoundId, votes);
   const { withIsRevealed } = useWithIsRevealed(voting, address, votes);
   const { withIsCommitted } = useWithIsCommitted(voting, address, votes);
-  const decryptedVotesForUser = useDecryptedVotesForUser(encryptedVotesForUser, address, signingKeys);
+  const { withEncryptedVotes } = useWithEncryptedVotes(voting, address, currentRoundId, votes);
+  const withDecryptedVotes = useWithDecryptedVotes(withEncryptedVotes, address, signingKeys);
 
   console.log({
     withIsCommitted,
     withIsRevealed,
-    encryptedVotesForUser,
-    decryptedVotesForUser,
+    withEncryptedVotes,
+    withDecryptedVotes,
   });
 
   function makeMockVotes() {
@@ -231,7 +231,7 @@ export function Votes() {
   }
 
   async function revealVotes() {
-    const formattedVotes = await formatVotesToReveal(decryptedVotesForUser);
+    const formattedVotes = await formatVotesToReveal(withDecryptedVotes);
     if (!formattedVotes.length) return;
 
     const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");

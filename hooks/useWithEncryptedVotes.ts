@@ -5,14 +5,14 @@ import { makeUniqueKeyForVote } from "helpers/votes";
 import { VoteT } from "types/global";
 import getEncryptedVotesForUser from "web3/queries/getEncryptedVotesForUser";
 
-export default function useEncryptedVotesForUser(
+export default function useWithEncryptedVotes(
   votingContract: VotingV2Ethers,
   address: string,
   roundId: BigNumber | undefined,
   votes: VoteT[] | null
 ) {
   const { isLoading, isError, data, error } = useQuery(
-    ["encryptedVotesForUser"],
+    ["withEncryptedVotes"],
     () => getEncryptedVotesForUser(votingContract, address, roundId),
     {
       refetchInterval: (data) => (data ? 10000 : 1000),
@@ -25,7 +25,7 @@ export default function useEncryptedVotesForUser(
     encryptedVote,
     uniqueKey: makeUniqueKeyForVote(identifier, time, ancillaryData),
   }));
-  const encryptedVotesForUser = votes
+  const withEncryptedVotes = votes
     ?.map((vote) => {
       const encryptedVote = encryptedVotesFromEvents?.find(({ uniqueKey }) => uniqueKey === vote.uniqueKey);
       return {
@@ -36,9 +36,9 @@ export default function useEncryptedVotesForUser(
     .filter(({ encryptedVote }) => !!encryptedVote);
 
   return {
-    encryptedVotesForUser,
-    encryptedVotesForUserIsLoading: isLoading,
-    encryptedVotesForUserIsError: isError,
-    encryptedVotesForUserError: error,
+    withEncryptedVotes,
+    withEncryptedVotesIsLoading: isLoading,
+    withEncryptedVotesIsError: isError,
+    withEncryptedVotesError: error,
   };
 }
