@@ -41,7 +41,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
           <Dropdown
             label="Choose answer"
             items={options}
-            selected={options.find((option) => option.value === selectedVote) ?? null}
+            selected={options.find((option) => option.value.toString() === selectedVote) ?? null}
             onSelect={(option) => selectVote(vote, option.value.toString())}
           />
         ) : (
