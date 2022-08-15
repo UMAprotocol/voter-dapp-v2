@@ -19,7 +19,7 @@ interface Props {
 export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, isGovernance } = vote;
+  const { title, origin, options, isCommitted, isRevealed, isGovernance, decryptedVote } = vote;
   const isPolymarket = origin === "Polymarket";
   const isDropdown = isPolymarket || isGovernance;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
@@ -37,19 +37,23 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
-        {isDropdown && options ? (
-          <Dropdown
-            label="Choose answer"
-            items={options}
-            selected={options.find((option) => option.value.toString() === selectedVote) ?? null}
-            onSelect={(option) => selectVote(vote, option.value.toString())}
-          />
+        {phase === "commit" ? (
+          isDropdown && options ? (
+            <Dropdown
+              label="Choose answer"
+              items={options}
+              selected={options.find((option) => option.value.toString() === selectedVote) ?? null}
+              onSelect={(option) => selectVote(vote, option.value.toString())}
+            />
+          ) : (
+            <TextInput
+              value={selectedVote ?? undefined}
+              onChange={(e) => selectVote(vote, e.target.value)}
+              disabled={!signer}
+            />
+          )
         ) : (
-          <TextInput
-            value={selectedVote ?? undefined}
-            onChange={(e) => selectVote(vote, e.target.value)}
-            disabled={!signer}
-          />
+          <YourVote>{decryptedVote?.price}</YourVote>
         )}
       </Vote>
       <Status>
@@ -105,6 +109,10 @@ const DisputeOrigin = styled.h4`
 
 const Vote = styled.div`
   width: 240px;
+`;
+
+const YourVote = styled.p`
+  font: var(--text-md);
 `;
 
 const Status = styled.div`

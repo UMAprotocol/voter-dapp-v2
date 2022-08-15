@@ -10,9 +10,9 @@ import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
 import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { VoteT } from "types/global";
+import { VotePhaseT, VoteT } from "types/global";
 import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/useWalletContext";
@@ -23,7 +23,7 @@ export function Votes() {
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
   const { voting } = useContractsContext();
-  const { votes } = useVotes(address);
+  const votes = useVotes(address);
   const [selectedVotes, setSelectedVotes] = useState<Record<string, string>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
@@ -31,7 +31,7 @@ export function Votes() {
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
 
-  console.log({ selectedVotes });
+  console.log({ votes });
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
@@ -131,7 +131,7 @@ export function Votes() {
 
   async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
     return decryptedVotesForUser.map((vote) => {
-      if (!vote.decryptedVote) return null;
+      if (vote.isRevealed || !vote.decryptedVote) return null;
 
       const { identifier, decryptedVote, ancillaryData, time } = vote;
       const { price, salt } = decryptedVote;
@@ -179,6 +179,11 @@ export function Votes() {
     setPanelOpen(true);
   }
 
+  function determineVotesToShow(votes: VoteT[], phase: VotePhaseT) {
+    if (phase === "commit") return votes;
+    return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -192,7 +197,7 @@ export function Votes() {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {votes?.map((vote) => (
+          {determineVotesToShow(votes, votePhase).map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}

@@ -22,9 +22,7 @@ export default function useVotes(address: string | undefined) {
 
   const votes = addVoteDetails(withDecryptedVotes) as VoteT[];
 
-  return {
-    votes,
-  };
+  return votes;
 }
 
 function addVoteDetails(votes: PriceRequest[]) {
@@ -47,8 +45,8 @@ function addOptions(votes: PriceRequest[]) {
     let options;
     if (vote.decodedIdentifier.includes("Admin") || vote.decodedIdentifier === "YES_OR_NO_QUERY") {
       options = [
-        { label: "Yes", value: 0 },
-        { label: "No", value: 1 },
+        { label: "Yes", value: "0" },
+        { label: "No", value: "1" },
       ];
     }
     return {
