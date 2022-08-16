@@ -27,7 +27,7 @@ export function Votes() {
   const [selectedVotes, setSelectedVotes] = useState<Record<string, string>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
-  const { votePhase } = useVotePhase(voting);
+  const votePhase = useVotePhase();
   const { currentRoundId } = useCurrentRoundId(voting);
   const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
 

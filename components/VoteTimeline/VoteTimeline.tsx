@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { VoteTimelineT } from "types/global";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
 import useVotePhaseEnds from "hooks/useVotePhaseEnds";

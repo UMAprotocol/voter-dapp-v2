@@ -1,31 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
-import getVotePhase from "web3/queries/getVotePhase";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { useEffect, useState } from "react";
 import { VotePhaseT } from "types/global";
 
-export default function useVotePhase(votingContract: VotingV2Ethers) {
-  const { isLoading, isError, data, error } = useQuery(["votePhase"], () => getVotePhase(votingContract), {
-    refetchInterval(data) {
-      return data ? false : 1000;
-    },
-  });
+export default function useVotePhase() {
+  const [votePhase, setVotePhase] = useState<VotePhaseT | null>(null);
 
-  let votePhase: VotePhaseT = null;
+  useEffect(() => {
+    const phaseLength = 10 * 60;
+    const numPhases = 2;
 
-  if (data?.length) {
-    const phase = data[0];
-    if (phase === 0) {
-      votePhase = "commit";
-    }
-    if (phase === 1) {
-      votePhase = "reveal";
-    }
-  }
+    const interval = setInterval(() => {
+      const currentTimeUnix = Date.now() / 1000;
+      const phase = Math.floor((currentTimeUnix / phaseLength) % numPhases);
 
-  return {
-    votePhase,
-    votePhaseIsLoading: isLoading,
-    votePhaseIsError: isError,
-    votePhaseError: error,
-  };
+      if (phase === 0) {
+        setVotePhase("commit");
+      }
+      if (phase === 1) {
+        setVotePhase("reveal");
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return votePhase;
 }
