@@ -8,7 +8,7 @@ import getPendingRequests from "web3/queries/getPendingRequests";
 export default function useActiveVotes(votingContract: VotingV2Ethers) {
   const { isLoading, isError, data, error } = useQuery(["activeVotes"], () => getPendingRequests(votingContract), {
     refetchInterval(data) {
-      return data?.length ? 10000 : 1000;
+      return data?.length ? false : 1000;
     },
   });
 

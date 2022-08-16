@@ -13,7 +13,7 @@ export default function useWithIsCommitted(
     ["withIsCommitted"],
     () => getVotesCommittedByUser(votingContract, address),
     {
-      refetchInterval: 1000,
+      refetchInterval: (data) => (data ? false : 1000),
       enabled: !!votes?.length && !!address,
     }
   );

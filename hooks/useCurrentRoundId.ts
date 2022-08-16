@@ -5,7 +5,7 @@ import getCurrentRoundId from "web3/queries/getCurrentRoundId";
 export default function useCurrentRoundId(votingContract: VotingV2Ethers) {
   const { isLoading, isError, data, error } = useQuery(["currentRoundId"], () => getCurrentRoundId(votingContract), {
     refetchInterval(data) {
-      return data?.length ? 10000 : 1000;
+      return data ? false : 1000;
     },
   });
 

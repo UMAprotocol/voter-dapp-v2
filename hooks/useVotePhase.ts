@@ -6,7 +6,7 @@ import { VotePhaseT } from "types/global";
 export default function useVotePhase(votingContract: VotingV2Ethers) {
   const { isLoading, isError, data, error } = useQuery(["votePhase"], () => getVotePhase(votingContract), {
     refetchInterval(data) {
-      return data?.length ? 10000 : 1000;
+      return data ? false : 1000;
     },
   });
 
