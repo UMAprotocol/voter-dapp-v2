@@ -3,21 +3,45 @@ import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { VoteTimelineT } from "types/global";
+import useCurrentRoundId from "hooks/useCurrentRoundId";
+import useVotePhaseEnds from "hooks/useVotePhaseEnds";
+import { useContractsContext } from "hooks/useContractsContext";
+import { useEffect, useState } from "react";
+import { formatDuration, intervalToDuration } from "date-fns";
 
-export function VoteTimeline({ phase, phaseEnds }: VoteTimelineT) {
-  let commitPhaseStartsIn = null,
-    revealPhaseStartsIn = null,
-    commitPhaseTimeRemaining = null,
-    revealPhaseTimeRemaining = null;
+export function VoteTimeline({ phase }: VoteTimelineT) {
+  const { voting } = useContractsContext();
+  const { currentRoundId } = useCurrentRoundId(voting);
+  const phaseEndsMilliseconds = useVotePhaseEnds(currentRoundId);
+  const [commitPhaseStartsIn, setCommitPhaseStartsIn] = useState("");
+  const [revealPhaseStartsIn, setRevealPhaseStartsIn] = useState("");
+  const [commitPhaseTimeRemaining, setCommitPhaseTimeRemaining] = useState("");
+  const [revealPhaseTimeRemaining, setRevealPhaseTimeRemaining] = useState("");
 
-  if (phase === "commit") {
-    commitPhaseTimeRemaining = formatDistanceToNowStrict(phaseEnds);
-    revealPhaseStartsIn = formatDistanceToNowStrict(phaseEnds);
-  }
+  useEffect(() => {
+    if (!phaseEndsMilliseconds) return;
 
-  if (phase === "reveal") {
-    revealPhaseTimeRemaining = formatDistanceToNowStrict(phaseEnds);
-  }
+    const interval = setInterval(() => {
+      const duration = intervalToDuration({
+        start: new Date(),
+        end: new Date(phaseEndsMilliseconds),
+      });
+
+      const { hours, minutes, seconds } = duration;
+      const formattedDuration = formatDuration({ hours, minutes, seconds });
+
+      if (phase === "commit" && phaseEndsMilliseconds) {
+        setCommitPhaseTimeRemaining(formattedDuration);
+        setRevealPhaseStartsIn(formattedDuration);
+      }
+
+      if (phase === "reveal" && phaseEndsMilliseconds) {
+        setRevealPhaseTimeRemaining(formattedDuration);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [phase, phaseEndsMilliseconds]);
 
   return (
     <Wrapper>
