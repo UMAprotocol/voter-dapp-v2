@@ -21,10 +21,12 @@ export function VoteTimeline({ phase }: VoteTimelineT) {
     if (!phaseEndsMilliseconds) return;
 
     const interval = setInterval(() => {
-      const duration = intervalToDuration({
-        start: new Date(),
-        end: new Date(phaseEndsMilliseconds),
-      });
+      const start = new Date();
+      const end = new Date(phaseEndsMilliseconds);
+      if (start > end) {
+        return;
+      }
+      const duration = intervalToDuration({ start, end });
 
       const { hours, minutes, seconds } = duration;
       const formattedDuration = formatDuration({ hours, minutes, seconds });
