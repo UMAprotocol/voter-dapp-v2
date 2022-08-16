@@ -12,12 +12,10 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
   return (
     <Wrapper>
       <TitleIcon origin={origin} />
-      <Header id="panel-title">
-        {title}
-        <SubTitle>
-          <SubTitleText voteNumber={voteNumber} origin={origin} />
-        </SubTitle>
-      </Header>
+      <Header id="panel-title">{title}</Header>
+      <SubTitle>
+        <SubTitleText voteNumber={voteNumber} origin={origin} />
+      </SubTitle>
     </Wrapper>
   );
 }
