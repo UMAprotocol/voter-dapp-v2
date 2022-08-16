@@ -1,4 +1,9 @@
+import { useWallets } from "@web3-onboard/react";
 import { Tabs } from "components/Tabs";
+import { getAccountDetails } from "components/Wallet";
+import { useContractsContext } from "hooks/useContractsContext";
+import useStakedBalance from "hooks/useStakedBalance";
+import useUnstakedBalance from "hooks/useUnstakedBalance";
 import styled from "styled-components";
 import { PanelContentT, StakePanelContentT } from "types/global";
 import { PanelFooter } from "../PanelFooter";
@@ -12,9 +17,15 @@ interface Props {
   content: PanelContentT;
 }
 export function StakeUnstakePanel({ content }: Props) {
+  const { voting, votingToken } = useContractsContext();
+  const connectedWallets = useWallets();
+  const { address } = getAccountDetails(connectedWallets);
+  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
+  const { stakedBalance } = useStakedBalance(voting, address);
+  console.log({ unstakedBalance, stakedBalance });
   if (!content) return null;
 
-  const { stakedBalance, unstakedBalance, claimableRewards, cooldownEnds } = content as StakePanelContentT;
+  const { claimableRewards, cooldownEnds } = content as StakePanelContentT;
 
   const hasCooldownTimeRemaining = cooldownEnds > new Date();
   const hasClaimableRewards = claimableRewards > 0;
