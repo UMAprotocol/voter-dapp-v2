@@ -10,23 +10,23 @@ import styled from "styled-components";
 const socialLinks = [
   {
     Icon: Discord,
-    href: "https://todo.com",
+    href: "https://tododiscord.com",
   },
   {
     Icon: Twitter,
-    href: "https://todo.com",
+    href: "https://todotwitter.com",
   },
   {
     Icon: Github,
-    href: "https://todo.com",
+    href: "https://todogithub.com",
   },
   {
     Icon: Discourse,
-    href: "https://todo.com",
+    href: "https://tododiscourse.com",
   },
   {
     Icon: Message,
-    href: "https://todo.com",
+    href: "https://todomessage.com",
   },
 ];
 
@@ -96,7 +96,8 @@ const PoweredBy = styled.p`
   font: var(--text-xs);
 `;
 
-const UmaIconWrapper = styled.div`
+const UmaIconWrapper = styled.span`
+  display: inline-block;
   width: 34px;
   height: 8.69px;
 `;
