@@ -25,8 +25,8 @@ export function Tabs({ tabs }: Props) {
         ))}
       </TabList>
       <TabPanels>
-        {tabs.map(({ content }) => (
-          <TabPanel key={content?.toString()}>{content}</TabPanel>
+        {tabs.map(({ content, title }) => (
+          <TabPanel key={title}>{content}</TabPanel>
         ))}
       </TabPanels>
     </TabsWrapper>
