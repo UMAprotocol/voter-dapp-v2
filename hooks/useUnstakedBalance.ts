@@ -15,7 +15,7 @@ export default function useUnstakedBalance(votingTokenContract: VotingTokenEther
   );
 
   return {
-    unstakedBalance: ethers.utils.formatEther(data?.[0] ?? 0),
+    unstakedBalance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
     unstakedBalanceIsLoading: isLoading,
     unstakedBalanceIsError: isError,
     unstakedBalanceError: error,

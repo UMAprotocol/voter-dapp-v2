@@ -15,7 +15,7 @@ export default function useStakedBalance(votingContract: VotingV2Ethers, address
   );
 
   return {
-    stakedBalance: ethers.utils.formatEther(data?.[0] ?? 0),
+    stakedBalance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
     stakedBalanceIsLoading: isLoading,
     stakedBalanceIsError: isError,
     stakedBalanceError: error,

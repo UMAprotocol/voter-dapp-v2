@@ -15,7 +15,7 @@ export default function useTokenAllowance(votingTokenContract: VotingTokenEthers
   );
 
   return {
-    tokenAllowance: ethers.utils.formatEther(data?.[0] ?? 0),
+    tokenAllowance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
     tokenAllowanceIsLoading: isLoading,
     tokenAllowanceIsError: isError,
     tokenAllowanceError: error,
