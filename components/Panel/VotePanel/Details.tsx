@@ -6,10 +6,10 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
 import { PanelSectionTitle } from "../styles";
-import { VoteDetailsT } from "types/global";
+import { VoteT } from "types/global";
 
-type Props = Pick<VoteDetailsT, "description" | "options" | "timestamp" | "links" | "discordLink">;
-export function Details({ description, options, timestamp, links, discordLink }: Props) {
+type Props = Pick<VoteT, "description" | "options" | "timeAsDate" | "links" | "discordLink">;
+export function Details({ description, options, timeAsDate, links, discordLink }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
   return (
@@ -44,10 +44,10 @@ export function Details({ description, options, timestamp, links, discordLink }:
           Timestamp
         </PanelSectionTitle>
         <Timestamp>
-          <span>UTC</span> <span>{timestamp.toUTCString()}</span>
+          <span>UTC</span> <span>{timeAsDate.toUTCString()}</span>
         </Timestamp>
         <Timestamp>
-          <span>UNIX</span> <span>{timestamp.getTime()}</span>
+          <span>UNIX</span> <span>{timeAsDate.getTime()}</span>
         </Timestamp>
       </SectionWrapper>
       <SectionWrapper>
