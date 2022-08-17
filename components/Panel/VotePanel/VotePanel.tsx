@@ -17,9 +17,8 @@ export function VotePanel({ content }: Props) {
     decodedIdentifier,
     description,
     origin,
-    voteNumber,
     options,
-    timestamp,
+    timeAsDate,
     links,
     discordLink,
     participation,
@@ -39,7 +38,7 @@ export function VotePanel({ content }: Props) {
         <Details
           description={description}
           options={options}
-          timestamp={timestamp}
+          timeAsDate={timeAsDate}
           links={links}
           discordLink={discordLink}
         />
@@ -49,14 +48,15 @@ export function VotePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={voteNumber} />
+      {/* todo add vote number implementation */}
+      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={123} />
       {hasResults ? (
         <Tabs tabs={tabs} />
       ) : (
         <Details
           description={description}
           options={options}
-          timestamp={timestamp}
+          timeAsDate={timeAsDate}
           links={links}
           discordLink={discordLink}
         />
