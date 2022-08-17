@@ -17,7 +17,7 @@ export default {
   ],
 } as ComponentMeta<typeof Votes>;
 
-const Template: ComponentStory<typeof Votes> = (args) => <Votes {...args} />;
+const Template: ComponentStory<typeof Votes> = () => <Votes />;
 
 export const Default = Template.bind({});
 Default.args = {
@@ -27,6 +27,5 @@ Default.args = {
     VoteBarStories.OriginUmaCommitted.args!.vote!,
     VoteBarStories.OriginPolymarketCommitted.args!.vote!,
   ],
-  // @ts-expect-error we know that the property does exist
   voteTimeline: CommitPhase.args! as VoteTimelineT,
 };
