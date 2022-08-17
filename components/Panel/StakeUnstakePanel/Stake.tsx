@@ -10,17 +10,17 @@ import { useContractsContext } from "hooks/useContractsContext";
 import { ethers } from "ethers";
 import { votingAddress } from "constants/addresses";
 import useTokenAllowance from "hooks/useTokenAllowance";
-import { useQueryClient } from "@tanstack/react-query";
 import useStake from "hooks/useStake";
+import useApprove from "hooks/useApprove";
 
 export function Stake() {
-  const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const { voting, votingToken } = useContractsContext();
   const { unstakedBalance } = useUnstakedBalance(votingToken, address);
   const { tokenAllowance } = useTokenAllowance(votingToken, address);
   const [stakeAmount, setStakeAmount] = useState("");
   const stakeMutation = useStake();
+  const approveMutation = useApprove();
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
 
@@ -29,9 +29,7 @@ export function Stake() {
   }
 
   async function approve() {
-    const tx = await votingToken.functions.approve(votingAddress, ethers.utils.parseEther(stakeAmount));
-    await tx.wait(1);
-    queryClient.invalidateQueries(["tokenAllowance"]);
+    approveMutation({ votingToken, approveAmount: stakeAmount });
   }
 
   return (
