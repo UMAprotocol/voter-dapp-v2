@@ -75,7 +75,7 @@ export function Wallet() {
         }
       })();
     }
-  }, [address, setProvider, setSigner, setSigningKeys, setVoting, wallet]);
+  }, [address, setProvider, setSigner, setSigningKeys, setVoting, setVotingToken, wallet]);
 
   async function makeSigningKey(signer: ethers.Signer, message: string) {
     const signedMessage = await signer.signMessage(message);
