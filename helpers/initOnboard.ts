@@ -36,6 +36,7 @@ export const initOnboard = init({
   },
   apiKey: blocknativeDappId,
   notify: {
+    position: "topLeft",
     enabled: true,
     transactionHandler: (transaction) => {
       console.log({ transaction });
