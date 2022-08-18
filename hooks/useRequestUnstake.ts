@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BigNumber, ethers } from "ethers";
+import { UnstakeDetailsT } from "types/global";
 import requestUnstake from "web3/mutations/requestUnstake";
 
 export default function useRequestUnstake() {
@@ -15,11 +16,15 @@ export default function useRequestUnstake() {
         return [newUnstakedBalance];
       });
 
-      queryClient.setQueryData<[BigNumber]>(["pendingUnstakeBalance"], (oldPendingUnstakedBalance) => {
-        if (!oldPendingUnstakedBalance) return undefined;
+      queryClient.setQueryData<UnstakeDetailsT>(["unstakeDetails"], (oldUnstakeDetails) => {
+        if (!oldUnstakeDetails) return undefined;
 
-        const newUnstakedBalance = oldPendingUnstakedBalance[0].sub(parsedUnstakeAmount);
-        return [newUnstakedBalance];
+        return {
+          ...oldUnstakeDetails,
+          activeStake: oldUnstakeDetails.activeStake.sub(parsedUnstakeAmount),
+          pendingUnstake: BigNumber.from(parsedUnstakeAmount),
+          unstakeRequestTime: BigNumber.from(Date.now() / 1000),
+        };
       });
     },
   });

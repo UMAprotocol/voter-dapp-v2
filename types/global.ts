@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export type InputDataT = {
   value: string | number;
   label: string;
@@ -102,4 +104,16 @@ export type SigningKey = {
 
 export type SigningKeys = {
   [address: string]: SigningKey;
+};
+
+export type UnstakeDetailsT = {
+  activeStake: BigNumber;
+  pendingUnstake: BigNumber;
+  pendingStake: BigNumber;
+  rewardsPaidPerToken: BigNumber;
+  outstandingRewards: BigNumber;
+  unappliedSlash: BigNumber;
+  lastRequestIndexConsidered: BigNumber;
+  unstakeRequestTime: BigNumber;
+  delegate: string;
 };
