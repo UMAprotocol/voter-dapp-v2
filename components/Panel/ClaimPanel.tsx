@@ -2,6 +2,7 @@ import { Button } from "components/Button";
 import useAccountDetails from "hooks/useAccountDetails";
 import { useContractsContext } from "hooks/useContractsContext";
 import useStakerDetails from "hooks/useStakerDetails";
+import useWithdrawAndRestake from "hooks/useWithdrawAndRestake";
 import useWithdrawRewards from "hooks/useWithdrawRewards";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
@@ -12,12 +13,17 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const withdrawRewardsMutation = useWithdrawRewards();
+  const withdrawAndRestakeMutation = useWithdrawAndRestake();
   const {
     stakerDetails: { outstandingRewards },
   } = useStakerDetails(voting, address);
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
+  }
+
+  function withdrawAndRestake() {
+    withdrawAndRestakeMutation({ voting });
   }
 
   return (
@@ -36,13 +42,7 @@ export function ClaimPanel() {
             <PanelSectionText>
               Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
             </PanelSectionText>
-            <Button
-              variant="primary"
-              width="100%"
-              height={45}
-              label="Claim and Stake"
-              onClick={() => console.log("TODO Claim and Stake")}
-            />
+            <Button variant="primary" width="100%" height={45} label="Claim and Stake" onClick={withdrawAndRestake} />
           </ClaimAndStakeWrapper>
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
