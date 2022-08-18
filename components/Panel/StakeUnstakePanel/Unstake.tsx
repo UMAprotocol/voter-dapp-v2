@@ -62,7 +62,7 @@ export function Unstake() {
               value={unstakeAmount}
               onChange={(e) => setUnstakeAmount(e.target.value)}
               onMax={() => setUnstakeAmount(stakedBalance.toString())}
-              disabled={canUnstake(stakedBalance, pendingUnstake)}
+              disabled={!canUnstake(stakedBalance, pendingUnstake)}
             />
           </AmountInputWrapper>
           <Button
@@ -70,7 +70,7 @@ export function Unstake() {
             label="Unstake"
             onClick={requestUnstake}
             width="100%"
-            disabled={canUnstake(stakedBalance, pendingUnstake)}
+            disabled={!canUnstake(stakedBalance, pendingUnstake)}
           />
         </>
       )}
