@@ -16,12 +16,12 @@ export default function useRequestUnstake() {
         return [newUnstakedBalance];
       });
 
-      queryClient.setQueryData<StakerDetailsT>(["stakerDetails"], (oldUnstakeDetails) => {
-        if (!oldUnstakeDetails) return undefined;
+      queryClient.setQueryData<StakerDetailsT>(["stakerDetails"], (oldStakerDetails) => {
+        if (!oldStakerDetails) return undefined;
 
         return {
-          ...oldUnstakeDetails,
-          activeStake: oldUnstakeDetails.activeStake.sub(parsedUnstakeAmount),
+          ...oldStakerDetails,
+          activeStake: oldStakerDetails.activeStake.sub(parsedUnstakeAmount),
           pendingUnstake: BigNumber.from(parsedUnstakeAmount),
           unstakeRequestTime: BigNumber.from(Date.now() / 1000),
         };
