@@ -4,34 +4,33 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { usePanelContext } from "hooks/usePanelContext";
+import useUnstakedBalance from "hooks/useUnstakedBalance";
+import { useContractsContext } from "hooks/useContractsContext";
+import useAccountDetails from "hooks/useAccountDetails";
+import useStakerDetails from "hooks/useStakerDetails";
+import useStakedBalance from "hooks/useStakedBalance";
 
 interface Props {
-  stakedBalance: number;
-  unstakedBalance: number;
-  claimableRewards: number;
-  cooldownEnds: Date;
   votesInLastCycles: number;
   apy: number;
 }
-export function HowItWorks({
-  stakedBalance,
-  unstakedBalance,
-  claimableRewards,
-  cooldownEnds,
-  votesInLastCycles,
-  apy,
-}: Props) {
-  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+export function HowItWorks({ votesInLastCycles, apy }: Props) {
+  const { setPanelType, setPanelOpen } = usePanelContext();
+  const { voting, votingToken } = useContractsContext();
+  const { address } = useAccountDetails();
+  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
+  const { stakedBalance } = useStakedBalance(voting, address);
+  const {
+    stakerDetails: { outstandingRewards },
+  } = useStakerDetails(voting, address);
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
-    setPanelContent({ stakedBalance, unstakedBalance, claimableRewards, cooldownEnds });
     setPanelOpen(true);
   }
 
   function openClaimPanel() {
     setPanelType("claim");
-    setPanelContent({ claimableRewards });
     setPanelOpen(true);
   }
 
@@ -79,7 +78,7 @@ export function HowItWorks({
           }
           content={
             <>
-              You have <strong>{claimableRewards} UMA</strong> in unclaimed rewards
+              You have <strong>{outstandingRewards} UMA</strong> in unclaimed rewards
             </>
           }
           actionLabel="Claim"
