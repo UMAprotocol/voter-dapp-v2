@@ -4,8 +4,6 @@ import { Button } from "components/Button";
 import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
 import sub from "date-fns/sub";
-import add from "date-fns/add";
-import { DisputeOriginT } from "types/global";
 
 export default {
   title: "Base Components/Panel",
@@ -47,9 +45,6 @@ MenuPanel.args = {
 export const ClaimPanel = Template.bind({});
 ClaimPanel.args = {
   panelType: "claim",
-  panelContent: {
-    claimableRewards: 123.456,
-  },
   panelOpen: true,
 };
 
@@ -121,12 +116,6 @@ export const StakePanel = Template.bind({});
 StakePanel.args = {
   panelType: "stake",
   panelOpen: true,
-  panelContent: {
-    stakedBalance: 123.456,
-    unstakedBalance: 123.456,
-    claimableRewards: 123.456,
-    cooldownEnds: add(new Date(), { days: 1 }),
-  },
 };
 
 export const RemindPanel = Template.bind({});
