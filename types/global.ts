@@ -83,18 +83,7 @@ export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remi
 
 export type VotePanelContentT = VoteT;
 
-export type ClaimPanelContentT = {
-  claimableRewards: number;
-};
-
-export type StakePanelContentT = {
-  stakedBalance: number;
-  unstakedBalance: number;
-  cooldownEnds: Date;
-  claimableRewards: number;
-};
-
-export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
+export type PanelContentT = VotePanelContentT | null;
 
 export type SigningKey = {
   publicKey: string;
