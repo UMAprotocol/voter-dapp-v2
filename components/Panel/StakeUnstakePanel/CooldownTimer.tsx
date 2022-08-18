@@ -5,11 +5,11 @@ import styled from "styled-components";
 
 interface Props {
   cooldownEnds: Date | null;
-  claimableRewards: number;
+  pendingUnstake: number;
   canClaim: boolean;
   onClaim: () => void;
 }
-export function CooldownTimer({ cooldownEnds, claimableRewards, canClaim, onClaim }: Props) {
+export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim }: Props) {
   const formattedCooldownEnds = cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
   const cooldownDescription = "in cooldown period";
   const claimDescription = "ready to claim";
@@ -22,7 +22,7 @@ export function CooldownTimer({ cooldownEnds, claimableRewards, canClaim, onClai
       </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
-          <strong>{claimableRewards}</strong> UMA
+          <strong>{pendingUnstake}</strong> UMA
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>

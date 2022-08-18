@@ -29,7 +29,7 @@ const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer 
 export const InCooldown = Template.bind({});
 InCooldown.args = {
   cooldownEnds: add(new Date(), { hours: 1, minutes: 10 }),
-  claimableRewards: 100.123,
+  pendingUnstake: 100.123,
   canClaim: false,
   onClaim: () => alert("Yay rewards!"),
 };
@@ -37,7 +37,7 @@ InCooldown.args = {
 export const ReadyToClaim = Template.bind({});
 ReadyToClaim.args = {
   cooldownEnds: null,
-  claimableRewards: 100.123,
+  pendingUnstake: 100.123,
   canClaim: true,
   onClaim: () => alert("Yay rewards!"),
 };
