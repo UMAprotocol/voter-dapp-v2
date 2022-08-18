@@ -12,6 +12,7 @@ import { PanelWrapper } from "../styles";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
+import useExecuteUnstake from "hooks/useExecuteUnstake";
 
 export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
@@ -22,6 +23,7 @@ export function StakeUnstakePanel() {
   const {
     stakerDetails: { pendingUnstake, canUnstakeTime },
   } = useStakerDetails(voting, address);
+  const executeUnstakeMutation = useExecuteUnstake();
 
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = cooldownEnds > new Date();
@@ -39,6 +41,10 @@ export function StakeUnstakePanel() {
       content: <Unstake />,
     },
   ];
+
+  function executeUnstake() {
+    executeUnstakeMutation({ voting });
+  }
 
   return (
     <PanelWrapper>
@@ -61,7 +67,7 @@ export function StakeUnstakePanel() {
                 cooldownEnds={cooldownEnds}
                 pendingUnstake={pendingUnstake}
                 canClaim={canClaim}
-                onClaim={() => console.log("TODO implement onClaim")}
+                onClaim={executeUnstake}
               />
             </CooldownTimerWrapper>
           )}
