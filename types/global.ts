@@ -106,7 +106,7 @@ export type SigningKeys = {
   [address: string]: SigningKey;
 };
 
-export type UnstakeDetailsT = {
+export type StakerDetailsT = {
   activeStake: BigNumber;
   pendingUnstake: BigNumber;
   pendingStake: BigNumber;

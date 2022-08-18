@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BigNumber, ethers } from "ethers";
-import { UnstakeDetailsT } from "types/global";
+import { StakerDetailsT } from "types/global";
 import requestUnstake from "web3/mutations/requestUnstake";
 
 export default function useRequestUnstake() {
@@ -16,7 +16,7 @@ export default function useRequestUnstake() {
         return [newUnstakedBalance];
       });
 
-      queryClient.setQueryData<UnstakeDetailsT>(["unstakeDetails"], (oldUnstakeDetails) => {
+      queryClient.setQueryData<StakerDetailsT>(["stakerDetails"], (oldUnstakeDetails) => {
         if (!oldUnstakeDetails) return undefined;
 
         return {
