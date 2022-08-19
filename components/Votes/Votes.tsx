@@ -169,17 +169,15 @@ export function Votes() {
   }
 
   function openVotePanel(vote: VoteT) {
-    const panelContent = {
-      ...vote,
-    };
     setPanelType("vote");
-    setPanelContent(panelContent);
+    setPanelContent(vote);
     setPanelOpen(true);
   }
 
   function determineVotesToShow(votes: VoteT[], phase: VotePhaseT) {
-    if (phase === "commit") return votes;
-    return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
+    // if (phase === "commit") return votes;
+    // return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
+    return votes;
   }
 
   return (
