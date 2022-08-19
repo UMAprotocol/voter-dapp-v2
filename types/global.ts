@@ -103,3 +103,13 @@ export type SigningKey = {
 export type SigningKeys = {
   [address: string]: SigningKey;
 };
+
+export type UmipDataFromContentfulT = {
+  description: string;
+  discourseLink?: string;
+  status?: string;
+  authors?: string;
+  title: string;
+  number: number;
+  umipLink?: string;
+};
