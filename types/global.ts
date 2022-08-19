@@ -12,11 +12,12 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type PriceRequest = {
+export type PriceRequestT = {
   // raw values
   time: number;
   identifier: string;
   ancillaryData: string;
+  transactionHash: string;
   // computed values
   timeMilliseconds: number;
   timeAsDate: Date;
@@ -25,15 +26,15 @@ export type PriceRequest = {
   uniqueKey: string;
 };
 
-export type PriceRequestWithIsCommitted = PriceRequest & {
+export type PriceRequestWithIsCommitted = PriceRequestT & {
   isCommitted: boolean;
 };
 
-export type PriceRequestWithIsRevealed = PriceRequest & {
+export type PriceRequestWithIsRevealed = PriceRequestT & {
   isRevealed: boolean;
 };
 
-export type PriceRequestWithEncryptedVote = PriceRequest & {
+export type PriceRequestWithEncryptedVote = PriceRequestT & {
   encryptedVote: string | undefined;
 };
 
@@ -41,26 +42,26 @@ export type PriceRequestWithDecryptedVote = PriceRequestWithEncryptedVote & {
   decryptedVote: DecryptedVoteT | undefined;
 };
 
-export type PriceRequestWithVoteDetails = PriceRequest & VoteDetailsT;
+export type PriceRequestWithVoteMetaData = PriceRequestT & VoteMetaDataT;
 
 export type VoteT = PriceRequestWithIsCommitted &
   PriceRequestWithIsRevealed &
   PriceRequestWithDecryptedVote &
-  PriceRequestWithVoteDetails &
+  PriceRequestWithVoteMetaData &
   VoteResultT;
 
 export type DecryptedVoteT = { price: string; salt: string };
 
-export type VoteDetailsT = {
+export type VoteMetaDataT = {
   title: string;
-  origin: DisputeOriginT;
-  txid: string;
-  isGovernance: boolean;
-  umipNumber: number;
   description: string;
-  options: DropdownItemT[];
-  links: LinkT[];
+  umipUrl: string | undefined;
+  umipNumber: number | undefined;
+  origin: VoteOriginT;
+  isGovernance: boolean;
   discordLink: string;
+  links: LinkT[];
+  options: DropdownItemT[] | undefined;
 };
 
 export type VoteResultT = {
@@ -75,7 +76,7 @@ export type VoteTimelineT = {
   phaseEnds: Date;
 };
 
-export type DisputeOriginT = "UMA" | "Polymarket";
+export type VoteOriginT = "UMA" | "Polymarket";
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
