@@ -5,7 +5,6 @@ import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
 import sub from "date-fns/sub";
 import add from "date-fns/add";
-import { VoteOriginT } from "types/global";
 
 export default {
   title: "Base Components/Panel",
@@ -64,8 +63,12 @@ VotePanelWithoutResults.args = {
     If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
     origin: "Polymarket",
     voteNumber: 205,
-    options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
-    timestamp: sub(new Date(), { days: 1 }),
+    options: [
+      { label: "Devin Haney", value: 0 },
+      { label: "George Kambosos Jr.", value: 1 },
+      { label: "Tie", value: 3 },
+    ],
+    timeAsDate: sub(new Date(), { days: 1 }),
     links: [
       {
         label: "UMIP link",
