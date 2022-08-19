@@ -120,6 +120,16 @@ VotePanelWithResults.args = {
   },
 };
 
+export const VotePanelWithLongTitle = Template.bind({});
+VotePanelWithLongTitle.args = {
+  ...VotePanelWithoutResults.args,
+  panelContent: {
+    // @ts-expect-error - ignore ts error args is of type unknown
+    ...VotePanelWithoutResults.args.panelContent,
+    title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
+  },
+};
+
 export const StakePanel = Template.bind({});
 StakePanel.args = {
   panelType: "stake",
