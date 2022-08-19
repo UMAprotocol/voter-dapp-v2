@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { makeUniqueKeyForVote } from "helpers/votes";
-import { PriceRequest, PriceRequestWithEncryptedVote } from "types/global";
+import { PriceRequestT, PriceRequestWithEncryptedVote } from "types/global";
 import getEncryptedVotesForUser from "web3/queries/getEncryptedVotesForUser";
 
 export default function useWithEncryptedVotes(
   votingContract: VotingV2Ethers,
   address: string | undefined,
   roundId: BigNumber | undefined,
-  votes: PriceRequest[]
+  votes: PriceRequestT[]
 ) {
   const { isLoading, isError, data, error } = useQuery(
     ["withEncryptedVotes"],
