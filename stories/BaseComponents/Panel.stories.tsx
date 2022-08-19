@@ -5,7 +5,7 @@ import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
 import sub from "date-fns/sub";
 import add from "date-fns/add";
-import { DisputeOriginT } from "types/global";
+import { VoteOriginT } from "types/global";
 
 export default {
   title: "Base Components/Panel",
