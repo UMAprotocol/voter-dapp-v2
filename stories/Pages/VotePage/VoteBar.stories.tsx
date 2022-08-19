@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
-import { desktopMaxWidth } from "constants/containers";
 import { sub } from "date-fns";
 
 export default {
@@ -8,7 +7,7 @@ export default {
   component: VoteBar,
   decorators: [
     (Story) => (
-      <div style={{ width: desktopMaxWidth }}>
+      <div style={{ width: 1100 }}>
         <Story />
       </div>
     ),
@@ -19,6 +18,7 @@ const Template: ComponentStory<typeof VoteBar> = (args) => <VoteBar {...args} />
 
 export const OriginUmaNotCommitted = Template.bind({});
 OriginUmaNotCommitted.args = {
+  phase: "commit",
   vote: {
     title: "SuperUMAn DAO KPI Options funding proposal",
     origin: "UMA",
@@ -75,6 +75,7 @@ OriginUmaCommitted.args = {
 
 export const OriginPolymarketNotCommitted = Template.bind({});
 OriginPolymarketNotCommitted.args = {
+  phase: "commit",
   vote: {
     title: "George Kambosos Jr. vs. Devin Haney",
     origin: "Polymarket",
@@ -126,5 +127,14 @@ OriginPolymarketCommitted.args = {
   vote: {
     ...OriginPolymarketNotCommitted.args!.vote!,
     isCommitted: true,
+  },
+};
+
+export const WithLongTitle = Template.bind({});
+WithLongTitle.args = {
+  ...OriginPolymarketNotCommitted.args,
+  vote: {
+    ...OriginPolymarketNotCommitted.args!.vote!,
+    title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
   },
 };
