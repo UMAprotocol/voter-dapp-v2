@@ -25,6 +25,11 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
+  function formatTitle(title: string) {
+    if (title.length <= 45) return title;
+    return title.substring(0, 45) + "...";
+  }
+
   return (
     <Wrapper>
       <Dispute>
@@ -32,7 +37,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
           <Icon />
         </DisputeIconWrapper>
         <DisputeDetailsWrapper>
-          <DisputeTitle>{title}</DisputeTitle>
+          <DisputeTitle>{formatTitle(title)}</DisputeTitle>
           <DisputeOrigin>{origin}</DisputeOrigin>
         </DisputeDetailsWrapper>
       </Dispute>
