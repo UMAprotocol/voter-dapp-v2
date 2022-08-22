@@ -13,7 +13,7 @@ import { ethers } from "ethers";
 interface Props {
   vote: VoteT;
   moreDetailsAction: () => void;
-  selectedVote: string;
+  selectedVote: string | undefined;
   selectVote: (vote: VoteT, value: string) => void;
   phase: VotePhaseT;
 }
@@ -54,8 +54,17 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
                 options.find((option) => {
                   const existingVote = getDecryptedVoteAsNumber();
                   const valueAsNumber = Number(option.value);
-                  const selectedVoteAsNumber = Number(selectedVote);
-                  return valueAsNumber === selectedVoteAsNumber || valueAsNumber === existingVote;
+
+                  if (selectedVote !== undefined) {
+                    const selectedVoteAsNumber = Number(selectedVote);
+                    return valueAsNumber === selectedVoteAsNumber;
+                  }
+
+                  if (existingVote !== undefined) {
+                    return valueAsNumber === existingVote;
+                  }
+
+                  return false;
                 }) ?? null
               }
               onSelect={(option) => selectVote(vote, option.value.toString())}

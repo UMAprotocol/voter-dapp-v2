@@ -24,7 +24,7 @@ export function Votes() {
   const { address } = getAccountDetails(connectedWallets);
   const { voting } = useContractsContext();
   const votes = useVotes(address);
-  const [selectedVotes, setSelectedVotes] = useState<Record<string, string>>({});
+  const [selectedVotes, setSelectedVotes] = useState<Record<string, string | undefined>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
   const votePhase = useVotePhase();
@@ -50,7 +50,7 @@ export function Votes() {
     );
   }
 
-  async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string>) {
+  async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string | undefined>) {
     // the user's address is called `account` for legacy reasons
     const account = address;
     // we just need a random number to make the hash
