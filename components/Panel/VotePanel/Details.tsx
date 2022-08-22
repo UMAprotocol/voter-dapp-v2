@@ -27,19 +27,21 @@ export function Details({ description, options, timeAsDate, links, discordLink }
           <Text key={paragraph + i}>{paragraph}</Text>
         ))}
       </SectionWrapper>
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <VotingIcon />
-          </IconWrapper>
-          Voting options
-        </PanelSectionTitle>
-        <OptionsList>
-          {optionLabels?.map((label) => (
-            <OptionsItem key={label}>{label}</OptionsItem>
-          ))}
-        </OptionsList>
-      </SectionWrapper>
+      {optionLabels && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <VotingIcon />
+            </IconWrapper>
+            Voting options
+          </PanelSectionTitle>
+          <OptionsList>
+            {optionLabels?.map((label) => (
+              <OptionsItem key={label}>{label}</OptionsItem>
+            ))}
+          </OptionsList>
+        </SectionWrapper>
+      )}
       <SectionWrapper>
         <PanelSectionTitle>
           <IconWrapper>
