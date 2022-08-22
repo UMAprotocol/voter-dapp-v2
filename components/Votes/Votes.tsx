@@ -175,9 +175,8 @@ export function Votes() {
   }
 
   function determineVotesToShow(votes: VoteT[], phase: VotePhaseT) {
-    // if (phase === "commit") return votes;
-    // return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
-    return votes;
+    if (phase === "commit") return votes;
+    return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
   }
 
   return (
