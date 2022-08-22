@@ -23,7 +23,7 @@ export default function getVoteMetaData(
     const umipUrl = umip?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
-    const options = makeVoteOptions();
+    const options = makeVoteOptions({ isUmip });
     return {
       title,
       description,
@@ -72,11 +72,13 @@ export default function getVoteMetaData(
   const title = ancillaryDataTitle ?? decodedIdentifier;
   const description = ancillaryDataDescription ?? "No description was found for this request.";
   const links = makeVoteLinks(transactionHash);
+  const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+  const options = makeVoteOptions({ isYesNoQuery });
   return {
     title,
     description,
     links,
-    options: undefined,
+    options,
     umipUrl: undefined,
     umipNumber: undefined,
     origin: "Polymarket",
@@ -130,12 +132,25 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
   return asNumber;
 }
 
-function makeVoteOptions() {
-  // todo add polymarket options
-  return [
-    { label: "Yes", value: "0" },
-    { label: "No", value: "1" },
-  ];
+function makeVoteOptions({ isUmip = false, isYesNoQuery = false }: { isUmip?: boolean; isYesNoQuery?: boolean } = {}) {
+  if (isUmip) {
+    return [
+      { label: "Yes", value: "0" },
+      { label: "No", value: "1" },
+    ];
+  }
+
+  const earlyRequestMagicNumber = "-57896044618658097711785492504343953926634992332820282019728.792003956564819968";
+  if (isYesNoQuery) {
+    return [
+      { label: "Yes", value: "0" },
+      { label: "No", value: "1" },
+      { label: "Unknown", value: "0.5" },
+      { label: "Early request", value: earlyRequestMagicNumber },
+    ];
+  }
+
+  return undefined;
 }
 
 function makeVoteLinks(transactionHash: string, umipNumber?: number) {
