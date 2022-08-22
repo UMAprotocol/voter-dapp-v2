@@ -143,10 +143,10 @@ function makeVoteOptions({ isUmip = false, isYesNoQuery = false }: { isUmip?: bo
   const earlyRequestMagicNumber = "-57896044618658097711785492504343953926634992332820282019728.792003956564819968";
   if (isYesNoQuery) {
     return [
-      { label: "Yes", value: "0" },
-      { label: "No", value: "1" },
-      { label: "Unknown", value: "0.5" },
-      { label: "Early request", value: earlyRequestMagicNumber },
+      { label: "Yes", value: "0", secondaryLabel: "p1" },
+      { label: "No", value: "1", secondaryLabel: "p2" },
+      { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
+      { label: "Early request", value: earlyRequestMagicNumber, secondaryLabel: "p4" },
     ];
   }
 
