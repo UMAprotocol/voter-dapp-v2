@@ -8,6 +8,7 @@ import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
 import { TextInput } from "components/Input";
 import { useWalletContext } from "hooks/useWalletContext";
+import { ethers } from "ethers";
 
 interface Props {
   vote: VoteT;
@@ -28,6 +29,10 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
     return title.substring(0, 45) + "...";
   }
 
+  function getDecryptedVoteAsNumber() {
+    return decryptedVote?.price ? Number(ethers.utils.formatEther(decryptedVote.price)) : undefined;
+  }
+
   return (
     <Wrapper>
       <Dispute>
@@ -45,7 +50,14 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
             <Dropdown
               label="Choose answer"
               items={options}
-              selected={options.find((option) => option.value.toString() === selectedVote) ?? null}
+              selected={
+                options.find((option) => {
+                  const existingVote = getDecryptedVoteAsNumber();
+                  const valueAsNumber = Number(option.value);
+                  const selectedVoteAsNumber = Number(selectedVote);
+                  return valueAsNumber === selectedVoteAsNumber || valueAsNumber === existingVote;
+                }) ?? null
+              }
               onSelect={(option) => selectVote(vote, option.value.toString())}
             />
           ) : (
@@ -56,7 +68,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
             />
           )
         ) : (
-          <YourVote>{decryptedVote?.price}</YourVote>
+          <YourVote>{getDecryptedVoteAsNumber()}</YourVote>
         )}
       </Vote>
       <Status>
