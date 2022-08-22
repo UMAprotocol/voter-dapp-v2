@@ -68,7 +68,13 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
             />
           )
         ) : (
-          <YourVote>{getDecryptedVoteAsNumber()}</YourVote>
+          <YourVote>
+            {options?.find((option) => {
+              const decryptedVote = getDecryptedVoteAsNumber();
+              const valueAsNumber = Number(option.value);
+              return valueAsNumber === decryptedVote;
+            })?.label ?? null}
+          </YourVote>
         )}
       </Vote>
       <Status>
