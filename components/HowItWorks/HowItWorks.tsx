@@ -47,7 +47,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You are staking <strong>{stakedBalance}</strong> UMA tokens of {stakedBalance + unstakedBalance}
+              You are staking <Strong>{stakedBalance}</Strong> UMA tokens of {stakedBalance + unstakedBalance}
             </>
           }
           actionLabel="Stake/Unstake"
@@ -62,8 +62,8 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You have voted <strong>{votesInLastCycles} out of 5</strong> latest voting cycles, and are earning{" "}
-              <strong>{apy}% APY</strong>
+              You have voted <Strong>{votesInLastCycles} out of 5</Strong> latest voting cycles, and are earning{" "}
+              <Strong>{apy}% APY</Strong>
             </>
           }
           actionLabel="Vote history"
@@ -78,7 +78,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You have <strong>{outstandingRewards} UMA</strong> in unclaimed rewards
+              You have <Strong>{outstandingRewards} UMA</Strong> in unclaimed rewards
             </>
           }
           actionLabel="Claim"
@@ -105,4 +105,8 @@ const InnerWrapper = styled.div`
 const Title = styled.h1`
   font: var(--header-md);
   margin-bottom: 20px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;

@@ -22,7 +22,7 @@ export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim 
       </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
-          <strong>{pendingUnstake}</strong> UMA
+          <Strong>{pendingUnstake}</Strong> UMA
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>
@@ -73,4 +73,8 @@ const TimeIcon = styled(Time)``;
 
 const ClaimButtonWrapper = styled.div`
   margin-left: auto;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;

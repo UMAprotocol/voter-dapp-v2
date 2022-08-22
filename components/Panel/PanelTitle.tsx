@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { DisputeOriginT } from "types/global";
+import { VoteOriginT } from "types/global";
 import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 
 interface Props {
   title: string;
-  origin?: DisputeOriginT;
+  origin?: VoteOriginT;
   voteNumber?: number;
 }
 export function PanelTitle({ title, origin, voteNumber }: Props) {
@@ -20,7 +20,7 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
   );
 }
 
-function TitleIcon({ origin }: { origin?: DisputeOriginT }) {
+function TitleIcon({ origin }: { origin?: VoteOriginT }) {
   switch (origin) {
     case "UMA":
       return (
@@ -39,12 +39,12 @@ function TitleIcon({ origin }: { origin?: DisputeOriginT }) {
   }
 }
 
-function SubTitleText({ voteNumber, origin }: { voteNumber?: number; origin?: DisputeOriginT }) {
+function SubTitleText({ voteNumber, origin }: { voteNumber?: number; origin?: VoteOriginT }) {
   if (!voteNumber || !origin) return null;
 
   return (
     <>
-      {origin} | Vote number <strong>#{voteNumber}</strong>
+      {origin} | Vote number <Strong>#{voteNumber}</Strong>
     </>
   );
 }
@@ -75,4 +75,8 @@ const PolymarketIcon = styled(Polymarket)``;
 const TitleIconWrapper = styled.div`
   width: 40px;
   height: 40px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;

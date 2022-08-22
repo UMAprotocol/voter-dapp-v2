@@ -32,11 +32,11 @@ export function RevealPhase({ phase, startsIn, timeRemaining }: Props) {
       />
       {startsIn ? (
         <Message>
-          Reveal phase starts in <strong>{startsIn}</strong>
+          Reveal phase starts in <Strong>{startsIn}</Strong>
         </Message>
       ) : timeRemaining ? (
         <Message>
-          Time remaining to reveal votes: <strong>{timeRemaining}</strong>
+          Time remaining to reveal votes: <Strong>{timeRemaining}</Strong>
         </Message>
       ) : (
         <Message>Reveal phase over</Message>
@@ -64,4 +64,8 @@ const RevealIcon = styled(Reveal)`
     stroke: var(--stroke-color);
     fill: var(--fill-color);
   }
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;

@@ -33,7 +33,7 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <strong>{outstandingRewards}</strong> UMA
+            <Strong>{outstandingRewards}</Strong> UMA
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>
@@ -95,3 +95,7 @@ const ClaimAndStakeWrapper = styled.div`
 `;
 
 const ClaimToWalletWrapper = styled.div``;
+
+const Strong = styled.strong`
+  font-weight: 700;
+`;

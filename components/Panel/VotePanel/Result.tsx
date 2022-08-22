@@ -31,7 +31,7 @@ export function Result({ participation, results }: VoteResultT) {
                 <LegendItemDot style={{ "--color": color } as CSSProperties} />
                 <LegendItemData>
                   <LegendItemLabel>{label}</LegendItemLabel>
-                  <strong>{percent.toFixed(2)}%</strong> ({value})
+                  <Strong>{percent.toFixed(2)}%</Strong> ({value})
                 </LegendItemData>
               </LegendItem>
             ))}
@@ -48,7 +48,7 @@ export function Result({ participation, results }: VoteResultT) {
         {participation.map(({ label, value }) => (
           <ParticipationItem key={label}>
             <span>{label}</span>
-            <strong>{value}</strong>
+            <Strong>{value}</Strong>
           </ParticipationItem>
         ))}
       </SectionWrapper>
@@ -127,4 +127,8 @@ const ParticipationItem = styled(PanelSectionText)`
   &:last-child {
     margin-bottom: 0;
   }
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;
