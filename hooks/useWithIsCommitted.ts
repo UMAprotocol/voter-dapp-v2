@@ -20,6 +20,7 @@ export default function useWithIsCommitted(
 
   const eventData = data?.map(({ args }) => args);
   const keys = makeUniqueKeysForVotes(eventData);
+
   const withIsCommitted: PriceRequestWithIsCommitted[] =
     votes?.map((vote) => ({ ...vote, isCommitted: keys.includes(vote.uniqueKey) })) ?? votes;
 
