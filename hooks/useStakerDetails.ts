@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { addDays } from "date-fns";
 import { ethers } from "ethers";
+import getCanUnstakeTime from "helpers/getCanUnstakeTime";
 import getStakerDetails from "web3/queries/getStakerDetails";
 
 export default function useStakerDetails(votingContract: VotingV2Ethers, address: string | undefined) {
@@ -17,7 +18,7 @@ export default function useStakerDetails(votingContract: VotingV2Ethers, address
   const { outstandingRewards, pendingUnstake, rewardsPaidPerToken, unstakeRequestTime } = data ?? {};
 
   const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime?.toNumber() ?? 0) * 1000);
-  const canUnstakeTime = addDays(unstakeRequestTimeAsDate, 7);
+  const canUnstakeTime = getCanUnstakeTime(unstakeRequestTimeAsDate);
 
   const stakerDetails = {
     outstandingRewards: Number(ethers.utils.formatEther(outstandingRewards ?? 0)),
