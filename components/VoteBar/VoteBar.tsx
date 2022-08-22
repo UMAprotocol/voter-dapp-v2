@@ -19,9 +19,7 @@ interface Props {
 export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, isGovernance, decryptedVote } = vote;
-  const isPolymarket = origin === "Polymarket";
-  const isDropdown = isPolymarket || isGovernance;
+  const { title, origin, options, isCommitted, isRevealed, decryptedVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
   const dotColor = isCommitted ? green : red500;
 
@@ -43,7 +41,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
       </Dispute>
       <Vote>
         {phase === "commit" ? (
-          isDropdown && options ? (
+          options ? (
             <Dropdown
               label="Choose answer"
               items={options}
