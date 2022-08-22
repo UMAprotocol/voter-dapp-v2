@@ -21,7 +21,7 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
 
   const { title, origin, options, isCommitted, isRevealed, decryptedVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
-  const dotColor = isCommitted ? green : red500;
+  const dotColor = (phase === "commit" && isCommitted) || (phase === "reveal" && isRevealed) ? green : red500;
 
   function formatTitle(title: string) {
     if (title.length <= 45) return title;
