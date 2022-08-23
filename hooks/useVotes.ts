@@ -1,8 +1,9 @@
 import getVoteMetaData from "helpers/getVoteMetaData";
-import { PriceRequestT, VoteT } from "types/global";
+import { VoteT, PriceRequestT, WithIsGovernanceT, WithUmipDataFromContentfulT, WithMetaDataT } from "types/global";
 import useActiveVotes from "./useActiveVotes";
 import { useContractsContext } from "./useContractsContext";
 import useCurrentRoundId from "./useCurrentRoundId";
+import useWithUmipDataFromContentful from "./useWithUmipDataFromContentful";
 import { useWalletContext } from "./useWalletContext";
 import useWithDecryptedVotes from "./useWithDecryptedVotes";
 import useWithEncryptedVotes from "./useWithEncryptedVotes";
@@ -15,24 +16,43 @@ export default function useVotes(address: string | undefined) {
   const { activeVotes } = useActiveVotes(voting);
   const { currentRoundId } = useCurrentRoundId(voting);
 
-  const { withIsCommitted } = useWithIsCommitted(voting, address, activeVotes);
+  const withIsGovernance = addIsGovernance(activeVotes);
+
+  const { withIsCommitted } = useWithIsCommitted(voting, address, withIsGovernance);
   const { withIsRevealed } = useWithIsRevealed(voting, address, withIsCommitted);
 
   const { withEncryptedVotes } = useWithEncryptedVotes(voting, address, currentRoundId, withIsRevealed);
   const withDecryptedVotes = useWithDecryptedVotes(withEncryptedVotes, address, signingKeys);
 
-  const withMetaData = addMetaData(withDecryptedVotes) as VoteT[];
+  const { withUmipDataFromContentful } = useWithUmipDataFromContentful(withDecryptedVotes);
 
-  return withMetaData;
+  const withMetaData = addMetaData(withUmipDataFromContentful);
+
+  return withMetaData as VoteT[];
 }
 
-function addMetaData(votes: PriceRequestT[]) {
+function addIsGovernance(votes: PriceRequestT[]): WithIsGovernanceT[] {
   return votes.map((vote) => {
-    const { decodedIdentifier, decodedAncillaryData, transactionHash } = vote;
-    const voteMetaData = getVoteMetaData(decodedIdentifier, decodedAncillaryData, transactionHash);
+    const isGovernance = vote.decodedIdentifier.includes("Admin");
+    return {
+      ...vote,
+      isGovernance,
+    };
+  });
+}
+
+function addMetaData(votes: WithUmipDataFromContentfulT[]) {
+  return votes.map((vote) => {
+    const { decodedIdentifier, decodedAncillaryData, transactionHash, umipDataFromContentful } = vote;
+    const voteMetaData = getVoteMetaData(
+      decodedIdentifier,
+      decodedAncillaryData,
+      transactionHash,
+      umipDataFromContentful
+    );
     return {
       ...vote,
       ...voteMetaData,
     };
-  });
+  }) as WithMetaDataT[];
 }

@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { makeUniqueKeysForVotes } from "helpers/votes";
-import { PriceRequestT, PriceRequestWithIsCommitted } from "types/global";
+import { WithIsCommittedT, WithIsGovernanceT } from "types/global";
 import getVotesCommittedByUser from "web3/queries/getVotesCommittedByUser";
 
 export default function useWithIsCommitted(
   votingContract: VotingV2Ethers,
   address: string | undefined,
-  votes: PriceRequestT[]
+  votes: WithIsGovernanceT[]
 ) {
   const { isLoading, isError, data, error } = useQuery(
     ["withIsCommitted"],
@@ -21,7 +21,7 @@ export default function useWithIsCommitted(
   const eventData = data?.map(({ args }) => args);
   const keys = makeUniqueKeysForVotes(eventData);
 
-  const withIsCommitted: PriceRequestWithIsCommitted[] =
+  const withIsCommitted: WithIsCommittedT[] =
     votes?.map((vote) => ({ ...vote, isCommitted: keys.includes(vote.uniqueKey) })) ?? votes;
 
   return {

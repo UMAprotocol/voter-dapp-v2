@@ -26,29 +26,33 @@ export type PriceRequestT = {
   uniqueKey: string;
 };
 
-export type PriceRequestWithIsCommitted = PriceRequestT & {
+export type WithIsGovernanceT = PriceRequestT & {
+  isGovernance: boolean;
+};
+
+export type WithIsCommittedT = WithIsGovernanceT & {
   isCommitted: boolean;
 };
 
-export type PriceRequestWithIsRevealed = PriceRequestT & {
+export type WithIsRevealedT = WithIsCommittedT & {
   isRevealed: boolean;
 };
 
-export type PriceRequestWithEncryptedVote = PriceRequestT & {
+export type WithEncryptedVoteT = WithIsRevealedT & {
   encryptedVote: string | undefined;
 };
 
-export type PriceRequestWithDecryptedVote = PriceRequestWithEncryptedVote & {
+export type WithDecryptedVoteT = WithEncryptedVoteT & {
   decryptedVote: DecryptedVoteT | undefined;
 };
 
-export type PriceRequestWithVoteMetaData = PriceRequestT & VoteMetaDataT;
+export type WithUmipDataFromContentfulT = WithDecryptedVoteT & {
+  umipDataFromContentful: UmipDataFromContentfulT | undefined;
+};
 
-export type VoteT = PriceRequestWithIsCommitted &
-  PriceRequestWithIsRevealed &
-  PriceRequestWithDecryptedVote &
-  PriceRequestWithVoteMetaData &
-  VoteResultT;
+export type WithMetaDataT = WithUmipDataFromContentfulT & VoteMetaDataT;
+
+export type VoteT = WithIsCommittedT & WithIsRevealedT & WithDecryptedVoteT & WithMetaDataT & VoteResultT;
 
 export type DecryptedVoteT = { price: string; salt: string };
 
