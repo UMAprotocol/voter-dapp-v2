@@ -61,7 +61,7 @@ export default function getVoteMetaData(
       options: undefined,
       origin: "UMA",
       isGovernance: false,
-      discordLink: "https://discord.com/invite/jsb9XQJ",
+      discordLink,
     };
   }
 
@@ -84,7 +84,7 @@ export default function getVoteMetaData(
     umipNumber: undefined,
     origin: "Polymarket",
     isGovernance: false,
-    discordLink: "https://discord.com/invite/jsb9XQJ",
+    discordLink,
   };
 }
 
