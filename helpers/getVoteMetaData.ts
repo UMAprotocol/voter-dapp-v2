@@ -13,14 +13,14 @@ export default function getVoteMetaData(
   decodedIdentifier: string,
   decodedAncillaryData: string,
   transactionHash: string,
-  umip?: UmipDataFromContentfulT
+  umipDataFromContentful: UmipDataFromContentfulT | undefined
 ): VoteMetaDataT {
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
   if (isUmip) {
-    const title = umip?.title ?? decodedIdentifier;
-    const description = umip?.description ?? "No description was found for this UMIP.";
-    const umipUrl = umip?.umipLink;
+    const title = umipDataFromContentful?.title ?? decodedIdentifier;
+    const description = umipDataFromContentful?.description ?? "No description was found for this UMIP.";
+    const umipUrl = umipDataFromContentful?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
     const options = makeVoteOptions({ isUmip });
