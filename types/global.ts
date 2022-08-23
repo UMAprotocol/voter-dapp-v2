@@ -55,7 +55,7 @@ export type DecryptedVoteT = { price: string; salt: string };
 
 export type VoteDetailsT = {
   title: string;
-  origin: DisputeOriginT;
+  origin: VoteOriginT;
   txid: string;
   isGovernance: boolean;
   umipNumber: number;
@@ -77,7 +77,7 @@ export type VoteTimelineT = {
   phaseEnds: Date;
 };
 
-export type DisputeOriginT = "UMA" | "Polymarket";
+export type VoteOriginT = "UMA" | "Polymarket";
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
