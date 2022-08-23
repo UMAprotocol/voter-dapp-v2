@@ -123,9 +123,9 @@ function getDescriptionFromAncillaryData(decodedAncillaryData: string, descripti
 }
 
 function getUmipNumber(umipOrAdmin: string | undefined) {
-  if (!umipOrAdmin?.includes("-")) return undefined;
+  if (!umipOrAdmin) return undefined;
 
-  const [, numberAsString] = umipOrAdmin.split("-");
+  const [, numberAsString] = umipOrAdmin.split(" ");
 
   const asNumber = Number(numberAsString);
   if (isNaN(asNumber)) return undefined;
