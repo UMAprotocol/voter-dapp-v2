@@ -135,8 +135,8 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
 function makeVoteOptions({ isUmip = false, isYesNoQuery = false }: { isUmip?: boolean; isYesNoQuery?: boolean } = {}) {
   if (isUmip) {
     return [
-      { label: "Yes", value: "0" },
-      { label: "No", value: "1" },
+      { label: "Yes", value: "1" },
+      { label: "No", value: "0" },
     ];
   }
 
