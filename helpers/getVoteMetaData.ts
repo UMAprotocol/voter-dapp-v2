@@ -1,5 +1,6 @@
 import { UmipDataFromContentfulT, VoteMetaDataT } from "types/global";
 import approvedIdentifiers from "data/approvedIdentifiersTable.json";
+import { discordLink } from "constants/discordLink";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -33,7 +34,7 @@ export default function getVoteMetaData(
       options,
       origin: "UMA",
       isGovernance: true,
-      discordLink: "https://discord.com/invite/jsb9XQJ",
+      discordLink,
     };
   }
 
