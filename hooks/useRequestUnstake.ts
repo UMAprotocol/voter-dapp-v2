@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { stakedBalanceKey, stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber, ethers } from "ethers";
 import { StakerDetailsT } from "types/global";
 import requestUnstake from "web3/mutations/requestUnstake";
@@ -9,14 +10,14 @@ export default function useRequestUnstake() {
     onSuccess: (_data, { unstakeAmount }) => {
       const parsedUnstakeAmount = ethers.utils.parseEther(unstakeAmount);
 
-      queryClient.setQueryData<[BigNumber]>(["stakedBalance"], (oldStakedBalance) => {
+      queryClient.setQueryData<[BigNumber]>([stakedBalanceKey], (oldStakedBalance) => {
         if (!oldStakedBalance) return undefined;
 
         const newUnstakedBalance = oldStakedBalance[0].sub(parsedUnstakeAmount);
         return [newUnstakedBalance];
       });
 
-      queryClient.setQueryData<StakerDetailsT>(["stakerDetails"], (oldStakerDetails) => {
+      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], (oldStakerDetails) => {
         if (!oldStakerDetails) return undefined;
 
         return {

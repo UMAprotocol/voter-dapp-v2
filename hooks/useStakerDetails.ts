@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { addDays } from "date-fns";
+import { stakerDetailsKey } from "constants/queryKeys";
 import { ethers } from "ethers";
 import getCanUnstakeTime from "helpers/getCanUnstakeTime";
 import getStakerDetails from "web3/queries/getStakerDetails";
 
 export default function useStakerDetails(votingContract: VotingV2Ethers, address: string | undefined) {
   const { isLoading, isError, data, error } = useQuery(
-    ["stakerDetails"],
+    [stakerDetailsKey],
     () => getStakerDetails(votingContract, address),
     {
       refetchInterval: (data) => (data ? false : 1000),
