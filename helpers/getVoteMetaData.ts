@@ -1,6 +1,7 @@
 import { UmipDataFromContentfulT, VoteMetaDataT } from "types/global";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { discordLink } from "constants/discordLink";
+import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -134,7 +135,6 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
 }
 
 function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
-  const earlyRequestMagicNumber = "-57896044618658097711785492504343953926634992332820282019728.792003956564819968";
   const yesNoQueryVoteOptions = [
     { label: "Yes", value: "0", secondaryLabel: "p1" },
     { label: "No", value: "1", secondaryLabel: "p2" },
