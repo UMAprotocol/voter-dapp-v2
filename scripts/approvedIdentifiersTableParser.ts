@@ -37,13 +37,13 @@ function parseLine(line: string) {
     }
   }
 
-  const title = line.substring(dividerIndices[0] + 1, dividerIndices[1]);
+  const identifier = line.substring(dividerIndices[0] + 1, dividerIndices[1]);
   const summary = line.substring(dividerIndices[1] + 2, dividerIndices[2]);
   const markdownUmipLink = line.substring(dividerIndices[2] + 2, line.length);
   const umipLink = parseMarkdownUmipLink(markdownUmipLink);
 
   return {
-    title,
+    identifier,
     summary,
     umipLink,
   };

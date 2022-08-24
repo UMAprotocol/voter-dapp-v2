@@ -39,15 +39,15 @@ export default function getVoteMetaData(
   }
 
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
-  // we know we are dealing with a request for an approved price identifier if the decodedIdentifier matches an approved identifier's title
-  const identifierDetails = approvedIdentifiers.find((id) => decodedIdentifier === id.title);
+  // we know we are dealing with a request for an approved price identifier if the decodedIdentifier matches an approved identifier
+  const identifierDetails = approvedIdentifiers.find((id) => decodedIdentifier === id.identifier);
   const isApprovedIdentifier =
     Boolean(identifierDetails) &&
     // `YES_OR_NO_QUERY` is a special case, because it is the only approved identifier that Polymarket uses
     // we should therefore treat it as a Polymarket request instead
     decodedIdentifier !== "YES_OR_NO_QUERY";
   if (isApprovedIdentifier) {
-    const title = identifierDetails?.title ?? decodedIdentifier;
+    const title = identifierDetails?.identifier ?? decodedIdentifier;
     const description = identifierDetails?.summary ?? "No description was found for this request.";
     const umipUrl = identifierDetails?.umipLink.url;
     const umipNumber = getUmipNumber(identifierDetails?.umipLink.number);
