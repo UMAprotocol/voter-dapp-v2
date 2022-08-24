@@ -1,4 +1,4 @@
-import { VotingV2Ethers__factory, VotingV2Ethers } from "@uma/contracts-frontend";
+import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { votingAddress } from "constants/addresses";
 import { ethers } from "ethers";
 
