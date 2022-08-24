@@ -9,5 +9,5 @@ export default async function requestUnstake({
   unstakeAmount: string;
 }) {
   const tx = await voting.functions.requestUnstake(ethers.utils.parseEther(unstakeAmount));
-  return await tx.wait(1);
+  return await tx.wait();
 }

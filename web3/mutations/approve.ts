@@ -10,5 +10,5 @@ export default async function approve({
   approveAmount: string;
 }) {
   const tx = await votingToken.functions.approve(votingAddress, ethers.utils.parseEther(approveAmount));
-  return await tx.wait(1);
+  return await tx.wait();
 }
