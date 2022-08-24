@@ -118,3 +118,14 @@ export type UmipDataFromContentfulT = {
   number: number;
   umipLink?: string;
 };
+
+export type UmipLinkT = {
+  number: string;
+  url: string;
+};
+
+export type IdentifierDetailsT = {
+  identifier: string;
+  summary: string;
+  umipLink: UmipLinkT;
+};
