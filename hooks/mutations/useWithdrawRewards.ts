@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import { StakerDetailsT } from "types/global";
-import withdrawRewards from "web3/mutations/withdrawRewards";
+import { withdrawRewards } from "web3/mutations";
 
 export default function useWithdrawRewards() {
   const queryClient = useQueryClient();

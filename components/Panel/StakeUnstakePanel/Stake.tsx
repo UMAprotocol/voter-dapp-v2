@@ -1,15 +1,12 @@
-import { AmountInput } from "components/Input";
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
+import { AmountInput } from "components/Input";
+import { useContractsContext } from "hooks/contexts";
+import { useApprove, useStake } from "hooks/mutations";
+import { useAccountDetails, useTokenAllowance, useUnstakedBalance } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
-import { useUnstakedBalance } from "hooks/queries";
-import { useAccountDetails } from "hooks/queries";
-import { useContractsContext } from "hooks/contexts";
-import { useTokenAllowance } from "hooks/queries";
-import { useStake } from "hooks/mutations";
-import { useApprove } from "hooks/mutations";
 
 export function Stake() {
   const { address } = useAccountDetails();

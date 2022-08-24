@@ -1,14 +1,10 @@
-import styled from "styled-components";
 import { InfoBar } from "components/InfoBar";
+import { useContractsContext, usePanelContext } from "hooks/contexts";
+import { useAccountDetails, useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
-import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
-import { usePanelContext } from "hooks/contexts";
-import { useContractsContext } from "hooks/contexts";
-import { useUnstakedBalance } from "hooks/queries";
-import { useAccountDetails } from "hooks/queries";
-import { useStakerDetails } from "hooks/queries";
-import { useStakedBalance } from "hooks/queries";
+import Two from "public/assets/icons/two.svg";
+import styled from "styled-components";
 
 interface Props {
   votesInLastCycles: number;

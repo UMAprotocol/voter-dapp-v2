@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { StakerDetailsT } from "types/global";
-import executeUnstake from "web3/mutations/executeUnstake";
+import { executeUnstake } from "web3/mutations";
 
 export default function useExecuteUnstake() {
   const queryClient = useQueryClient();

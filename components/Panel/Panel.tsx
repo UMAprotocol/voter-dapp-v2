@@ -1,17 +1,17 @@
+import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { DialogOverlay, DialogContent } from "@reach/dialog";
+import { black, white } from "constants/colors";
+import { desktopPanelWidth } from "constants/containers";
 import { usePanelContext } from "hooks/contexts";
-import styled, { CSSProperties } from "styled-components";
-import { ClaimPanel } from "./ClaimPanel";
-import { VotePanel } from "./VotePanel";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
-import { desktopPanelWidth } from "constants/containers";
-import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
-import { RemindMePanel } from "./RemindMePanel";
-import { VoteHistoryPanel } from "./VoteHistoryPanel";
+import styled, { CSSProperties } from "styled-components";
+import { ClaimPanel } from "./ClaimPanel";
 import { MenuPanel } from "./MenuPanel";
-import { black, white } from "constants/colors";
+import { RemindMePanel } from "./RemindMePanel";
+import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
+import { VoteHistoryPanel } from "./VoteHistoryPanel";
+import { VotePanel } from "./VotePanel";
 
 const panelTypeToPanelComponent = {
   menu: MenuPanel,

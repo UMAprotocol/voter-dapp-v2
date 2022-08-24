@@ -1,18 +1,14 @@
-import { AmountInput } from "components/Input";
 import { Button } from "components/Button";
+import { AmountInput } from "components/Input";
+import { useContractsContext } from "hooks/contexts";
+import { useRequestUnstake } from "hooks/mutations";
+import { useAccountDetails, useActiveVotes, useStakedBalance, useStakerDetails, useVotePhase } from "hooks/queries";
+import One from "public/assets/icons/one.svg";
+import Three from "public/assets/icons/three.svg";
+import Two from "public/assets/icons/two.svg";
 import { useState } from "react";
 import styled from "styled-components";
-import One from "public/assets/icons/one.svg";
-import Two from "public/assets/icons/two.svg";
-import Three from "public/assets/icons/three.svg";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
-import { useVotePhase } from "hooks/queries";
-import { useActiveVotes } from "hooks/queries";
-import { useContractsContext } from "hooks/contexts";
-import { useStakedBalance } from "hooks/queries";
-import { useAccountDetails } from "hooks/queries";
-import { useRequestUnstake } from "hooks/mutations";
-import { useStakerDetails } from "hooks/queries";
 
 export function Unstake() {
   const votePhase = useVotePhase();

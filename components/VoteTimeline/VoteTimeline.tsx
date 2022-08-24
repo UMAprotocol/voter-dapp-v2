@@ -1,12 +1,11 @@
+import { formatDuration, intervalToDuration } from "date-fns";
+import { useContractsContext } from "hooks/contexts";
+import { useCurrentRoundId, useVotePhaseEnds } from "hooks/queries";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { VoteTimelineT } from "types/global";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
-import { VoteTimelineT } from "types/global";
-import { useCurrentRoundId } from "hooks/queries";
-import { useVotePhaseEnds } from "hooks/queries";
-import { useContractsContext } from "hooks/contexts";
-import { useEffect, useState } from "react";
-import { formatDuration, intervalToDuration } from "date-fns";
 
 export function VoteTimeline({ phase }: VoteTimelineT) {
   const { voting } = useContractsContext();

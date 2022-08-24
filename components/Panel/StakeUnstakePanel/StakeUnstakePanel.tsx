@@ -2,9 +2,8 @@ import { useWallets } from "@web3-onboard/react";
 import { Tabs } from "components/Tabs";
 import { getAccountDetails } from "components/Wallet";
 import { useContractsContext } from "hooks/contexts";
-import { useStakedBalance } from "hooks/queries";
-import { useUnstakedBalance } from "hooks/queries";
-import { useStakerDetails } from "hooks/queries";
+import { useExecuteUnstake } from "hooks/mutations";
+import { useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -12,7 +11,6 @@ import { PanelWrapper } from "../styles";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
-import { useExecuteUnstake } from "hooks/mutations";
 
 export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();

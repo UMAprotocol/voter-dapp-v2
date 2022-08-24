@@ -3,7 +3,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withIsCommittedKey } from "constants/queryKeys";
 import { makeUniqueKeysForVotes } from "helpers/votes";
 import { PriceRequestT } from "types/global";
-import getVotesCommittedByUser from "web3/queries/getVotesCommittedByUser";
+import { getVotesCommittedByUser } from "web3/queries";
 
 export default function useWithIsCommitted(
   votingContract: VotingV2Ethers,
