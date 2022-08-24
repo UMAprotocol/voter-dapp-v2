@@ -8,22 +8,30 @@ import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
 import { TextInput } from "components/Input";
 import { useWalletContext } from "hooks/useWalletContext";
+import { ethers } from "ethers";
 
 interface Props {
   vote: VoteT;
   moreDetailsAction: () => void;
-  selectedVote: string;
+  selectedVote: string | undefined;
   selectVote: (vote: VoteT, value: string) => void;
   phase: VotePhaseT;
 }
 export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, isGovernance, decryptedVote } = vote;
-  const isPolymarket = origin === "Polymarket";
-  const isDropdown = isPolymarket || isGovernance;
+  const { title, origin, options, isCommitted, isRevealed, decryptedVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
-  const dotColor = isCommitted ? green : red500;
+  const dotColor = (phase === "commit" && isCommitted) || (phase === "reveal" && isRevealed) ? green : red500;
+
+  function formatTitle(title: string) {
+    if (title.length <= 45) return title;
+    return title.substring(0, 45) + "...";
+  }
+
+  function getDecryptedVoteAsNumber() {
+    return decryptedVote?.price ? Number(ethers.utils.formatEther(decryptedVote.price)) : undefined;
+  }
 
   return (
     <Wrapper>
@@ -32,17 +40,33 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
           <Icon />
         </DisputeIconWrapper>
         <DisputeDetailsWrapper>
-          <DisputeTitle>{title}</DisputeTitle>
+          <DisputeTitle>{formatTitle(title)}</DisputeTitle>
           <DisputeOrigin>{origin}</DisputeOrigin>
         </DisputeDetailsWrapper>
       </Dispute>
       <Vote>
         {phase === "commit" ? (
-          isDropdown && options ? (
+          options ? (
             <Dropdown
               label="Choose answer"
               items={options}
-              selected={options.find((option) => option.value.toString() === selectedVote) ?? null}
+              selected={
+                options.find((option) => {
+                  const existingVote = getDecryptedVoteAsNumber();
+                  const valueAsNumber = Number(option.value);
+
+                  if (selectedVote !== undefined) {
+                    const selectedVoteAsNumber = Number(selectedVote);
+                    return valueAsNumber === selectedVoteAsNumber;
+                  }
+
+                  if (existingVote !== undefined) {
+                    return valueAsNumber === existingVote;
+                  }
+
+                  return false;
+                }) ?? null
+              }
               onSelect={(option) => selectVote(vote, option.value.toString())}
             />
           ) : (
@@ -53,7 +77,13 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
             />
           )
         ) : (
-          <YourVote>{decryptedVote?.price}</YourVote>
+          <YourVote>
+            {options?.find((option) => {
+              const decryptedVote = getDecryptedVoteAsNumber();
+              const valueAsNumber = Number(option.value);
+              return valueAsNumber === decryptedVote;
+            })?.label ?? null}
+          </YourVote>
         )}
       </Vote>
       <Status>

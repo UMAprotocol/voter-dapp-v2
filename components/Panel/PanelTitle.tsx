@@ -12,10 +12,12 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
   return (
     <Wrapper>
       <TitleIcon origin={origin} />
-      <Header id="panel-title">{title}</Header>
-      <SubTitle>
-        <SubTitleText voteNumber={voteNumber} origin={origin} />
-      </SubTitle>
+      <Header id="panel-title">
+        {title}
+        <SubTitle>
+          <SubTitleText voteNumber={voteNumber} origin={origin} />
+        </SubTitle>
+      </Header>
     </Wrapper>
   );
 }
@@ -62,9 +64,10 @@ const Wrapper = styled.div`
 const Header = styled.h1`
   font: var(--header-md);
   margin-right: 30px;
+  max-width: 80%;
 `;
 
-const SubTitle = styled.h2`
+const SubTitle = styled.div`
   font: var(--text-sm);
 `;
 

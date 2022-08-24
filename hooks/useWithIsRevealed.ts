@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withIsRevealedKey } from "constants/queryKeys";
 import { makeUniqueKeysForVotes } from "helpers/votes";
-import { PriceRequest, PriceRequestWithIsRevealed } from "types/global";
+import { PriceRequestT } from "types/global";
 import getVotesRevealedByUser from "web3/queries/getVotesRevealedByUser";
 
 export default function useWithIsRevealed(
   votingContract: VotingV2Ethers,
   address: string | undefined,
-  votes: PriceRequest[]
+  votes: PriceRequestT[]
 ) {
   const { isLoading, isError, data, error } = useQuery(
     [withIsRevealedKey],
@@ -21,7 +21,7 @@ export default function useWithIsRevealed(
 
   const eventData = data?.map(({ args }) => args);
   const keys = makeUniqueKeysForVotes(eventData);
-  const withIsRevealed: PriceRequestWithIsRevealed[] = votes?.map((vote) => ({
+  const withIsRevealed = votes?.map((vote) => ({
     ...vote,
     isRevealed: keys.includes(vote.uniqueKey),
   }));

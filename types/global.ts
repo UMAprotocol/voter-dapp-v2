@@ -14,11 +14,12 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type PriceRequest = {
+export type PriceRequestT = {
   // raw values
   time: number;
   identifier: string;
   ancillaryData: string;
+  transactionHash: string;
   // computed values
   timeMilliseconds: number;
   timeAsDate: Date;
@@ -27,42 +28,54 @@ export type PriceRequest = {
   uniqueKey: string;
 };
 
-export type PriceRequestWithIsCommitted = PriceRequest & {
+export type WithIsGovernanceT<T extends PriceRequestT> = T & {
+  isGovernance: boolean;
+};
+
+export type WithIsCommittedT<T extends PriceRequestT> = T & {
   isCommitted: boolean;
 };
 
-export type PriceRequestWithIsRevealed = PriceRequest & {
+export type WithIsRevealedT<T extends PriceRequestT> = T & {
   isRevealed: boolean;
 };
 
-export type PriceRequestWithEncryptedVote = PriceRequest & {
+export type WithEncryptedVoteT<T extends WithIsCommittedT<PriceRequestT>> = T & {
   encryptedVote: string | undefined;
 };
 
-export type PriceRequestWithDecryptedVote = PriceRequestWithEncryptedVote & {
+export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> = T & {
   decryptedVote: DecryptedVoteT | undefined;
 };
 
-export type PriceRequestWithVoteDetails = PriceRequest & VoteDetailsT;
+export type WithUmipDataFromContentfulT<T extends PriceRequestT> = T & {
+  umipDataFromContentful: UmipDataFromContentfulT | undefined;
+};
 
-export type VoteT = PriceRequestWithIsCommitted &
-  PriceRequestWithIsRevealed &
-  PriceRequestWithDecryptedVote &
-  PriceRequestWithVoteDetails &
-  VoteResultT;
+export type WithMetaDataT<T extends WithUmipDataFromContentfulT<PriceRequestT>> = T & VoteMetaDataT;
+
+export type WithAllDataT = WithIsGovernanceT<PriceRequestT> &
+  WithIsCommittedT<PriceRequestT> &
+  WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>> &
+  WithDecryptedVoteT<WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> &
+  WithIsRevealedT<PriceRequestT> &
+  WithUmipDataFromContentfulT<PriceRequestT> &
+  WithMetaDataT<WithUmipDataFromContentfulT<PriceRequestT>>;
+
+export type VoteT = WithAllDataT & VoteResultT;
 
 export type DecryptedVoteT = { price: string; salt: string };
 
-export type VoteDetailsT = {
+export type VoteMetaDataT = {
   title: string;
-  origin: VoteOriginT;
-  txid: string;
-  isGovernance: boolean;
-  umipNumber: number;
   description: string;
-  options: DropdownItemT[];
-  links: LinkT[];
+  umipUrl: string | undefined;
+  umipNumber: number | undefined;
+  origin: VoteOriginT;
+  isGovernance: boolean;
   discordLink: string;
+  links: LinkT[];
+  options: DropdownItemT[] | undefined;
 };
 
 export type VoteResultT = {
@@ -93,6 +106,27 @@ export type SigningKey = {
 
 export type SigningKeys = {
   [address: string]: SigningKey;
+};
+
+export type UmipDataFromContentfulT = {
+  description: string;
+  discourseLink?: string;
+  status?: string;
+  authors?: string;
+  title: string;
+  number: number;
+  umipLink?: string;
+};
+
+export type UmipLinkT = {
+  number: string;
+  url: string;
+};
+
+export type IdentifierDetailsT = {
+  identifier: string;
+  summary: string;
+  umipLink: UmipLinkT;
 };
 
 export type StakerDetailsT = {

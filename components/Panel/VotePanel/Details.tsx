@@ -12,6 +12,8 @@ type Props = Pick<VoteT, "description" | "options" | "timeAsDate" | "links" | "d
 export function Details({ description, options, timeAsDate, links, discordLink }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
+  const descriptionParagraphs = description?.split("\n");
+
   return (
     <Wrapper>
       <SectionWrapper>
@@ -21,21 +23,25 @@ export function Details({ description, options, timeAsDate, links, discordLink }
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
-        <Text>{description}</Text>
+        {descriptionParagraphs.map((paragraph, i) => (
+          <Text key={paragraph + i}>{paragraph}</Text>
+        ))}
       </SectionWrapper>
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <VotingIcon />
-          </IconWrapper>
-          Voting options
-        </PanelSectionTitle>
-        <OptionsList>
-          {optionLabels?.map((label) => (
-            <OptionsItem key={label}>{label}</OptionsItem>
-          ))}
-        </OptionsList>
-      </SectionWrapper>
+      {optionLabels && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <VotingIcon />
+            </IconWrapper>
+            Voting options
+          </PanelSectionTitle>
+          <OptionsList>
+            {optionLabels?.map((label) => (
+              <OptionsItem key={label}>{label}</OptionsItem>
+            ))}
+          </OptionsList>
+        </SectionWrapper>
+      )}
       <SectionWrapper>
         <PanelSectionTitle>
           <IconWrapper>
@@ -87,8 +93,10 @@ export function Details({ description, options, timeAsDate, links, discordLink }
 }
 
 const Wrapper = styled.div`
+  --scrollbar-width: 15px;
   margin-top: 20px;
   padding-inline: 30px;
+  max-width: calc(var(--desktop-panel-width) - var(--scrollbar-width));
 `;
 
 const SectionWrapper = styled.div`
@@ -101,6 +109,9 @@ const SectionWrapper = styled.div`
 
 const Text = styled.p`
   font: var(--text-md);
+  &:not(:last-child) {
+    margin-bottom: 15px;
+  }
 `;
 
 const Timestamp = styled(Text)`

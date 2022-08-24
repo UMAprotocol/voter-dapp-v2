@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { VoteBar } from "components/VoteBar";
-import { desktopMaxWidth } from "constants/containers";
 import { sub } from "date-fns";
 
 export default {
@@ -8,7 +7,7 @@ export default {
   component: VoteBar,
   decorators: [
     (Story) => (
-      <div style={{ width: desktopMaxWidth }}>
+      <div style={{ width: 1100 }}>
         <Story />
       </div>
     ),
@@ -19,11 +18,13 @@ const Template: ComponentStory<typeof VoteBar> = (args) => <VoteBar {...args} />
 
 export const OriginUmaNotCommitted = Template.bind({});
 OriginUmaNotCommitted.args = {
+  phase: "commit",
   vote: {
     title: "SuperUMAn DAO KPI Options funding proposal",
     origin: "UMA",
     description: "Some description",
-    txid: "0x1234567890",
+    transactionHash: "0x1234567890",
+    umipUrl: "https://uma.io",
     timeAsDate: sub(new Date(), { days: 1 }),
     time: sub(new Date(), { days: 1 }).getTime() / 1000,
     timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),
@@ -35,6 +36,7 @@ OriginUmaNotCommitted.args = {
     umipNumber: 20,
     encryptedVote: undefined,
     decryptedVote: undefined,
+    umipDataFromContentful: undefined,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
       { label: "No", value: "p1", secondaryLabel: "p1" },
@@ -74,13 +76,16 @@ OriginUmaCommitted.args = {
 
 export const OriginPolymarketNotCommitted = Template.bind({});
 OriginPolymarketNotCommitted.args = {
+  phase: "commit",
   vote: {
     title: "George Kambosos Jr. vs. Devin Haney",
     origin: "Polymarket",
     encryptedVote: undefined,
     decryptedVote: undefined,
+    umipDataFromContentful: undefined,
     description: "Some description",
-    txid: "0x1234567890",
+    transactionHash: "0x1234567890",
+    umipUrl: "https://uma.io",
     timeAsDate: sub(new Date(), { days: 1 }),
     time: sub(new Date(), { days: 1 }).getTime() / 1000,
     timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),
@@ -124,5 +129,14 @@ OriginPolymarketCommitted.args = {
   vote: {
     ...OriginPolymarketNotCommitted.args!.vote!,
     isCommitted: true,
+  },
+};
+
+export const WithLongTitle = Template.bind({});
+WithLongTitle.args = {
+  ...OriginPolymarketNotCommitted.args,
+  vote: {
+    ...OriginPolymarketNotCommitted.args!.vote!,
+    title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
   },
 };

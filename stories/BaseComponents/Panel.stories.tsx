@@ -4,6 +4,7 @@ import { Button } from "components/Button";
 import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
 import sub from "date-fns/sub";
+import add from "date-fns/add";
 
 export default {
   title: "Base Components/Panel",
@@ -53,14 +54,25 @@ VotePanelWithoutResults.args = {
   panelType: "vote",
   panelContent: {
     title: "George Kambosos Jr. vs. Devin Haney",
-    description: `George Kambosos Jr. vs. Devin Haney is an upcoming professional boxing match between undefeated WBA, IBF, WBO lightweight champion George Kambosos Jr., and undefeated WBC lightweight champion Devin Haney. 
+    description: ` 'Elvis' is a 2022 biographical musical drama film directed by Baz Luhrmann chronicling the life and career of singer and actor Elvis Presley, from his early days as a child to becoming a rock and roll star and movie star, as well as his complex relationship with his manager Colonel Tom Parker. It premiered at several festivals and is scheduled to be theatrically released by Warner Bros. Pictures in the United States on June 24, 2022. 
 
-    The fight will take place on June 5, 2022 at Marvel Stadium in Melbourne, Australia. If George Kambosos Jr. wins this fight, this market will resolve to "Kambosos". If Devin Haney wins this fight, this market will resolve to "Haney". 
-    If this fight ends in a tie, is not officially designated as a win for either George Kambosos Jr. or Devin Haney, or otherwise is not decided by June 12, 2022, 11:59:59 PM ET, this market will resolve to 50-50`,
+    This is a market on how much 'Elvis' will gross domestically on its opening weekend. The “Domestic Weekend” tab on https://www.boxofficemojo.com/title/tt3704428/ will be used to resolve this market once the values for the opening weekend (June 24-26) are final (i.e. not studio estimates).
+    
+    This market will resolve to "Yes" if 'Elvis' grosses more than $45,000,000 on its opening weekend. Otherwise, this market will resolve to "No".
+    
+    Opening weekend is defined as the first Friday, Saturday, and Sunday of this film's release. Please note, this market will resolve according to the Box Office Mojo number under Domestic Weekend for the 3-day weekend.
+    
+    If there is no final data available by July 3, 2022, 11:59:59 PM ET, another credible resolution source will be chosen.
+     res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968.
+        Where p1 corresponds to No, p2 to a Yes, p3 to unknown, and p4 to an early request,ooRequester:cb1822859cef82cd2eb4e6276c7916e692995130,childRequester:bb1a8db2d4350976a11cdfa60a1d43f97710da49,childChainId:137`,
     origin: "Polymarket",
     voteNumber: 205,
-    options: [" Devin Haney", "George Kambosos Jr.", "Tie"],
-    timestamp: sub(new Date(), { days: 1 }),
+    options: [
+      { label: "Devin Haney", value: 0 },
+      { label: "George Kambosos Jr.", value: 1 },
+      { label: "Tie", value: 3 },
+    ],
+    timeAsDate: sub(new Date(), { days: 1 }),
     links: [
       {
         label: "UMIP link",
@@ -109,6 +121,16 @@ VotePanelWithResults.args = {
         value: 199,
       },
     ],
+  },
+};
+
+export const VotePanelWithLongTitle = Template.bind({});
+VotePanelWithLongTitle.args = {
+  ...VotePanelWithoutResults.args,
+  panelContent: {
+    // @ts-expect-error - ignore ts error args is of type unknown
+    ...VotePanelWithoutResults.args.panelContent,
+    title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
   },
 };
 

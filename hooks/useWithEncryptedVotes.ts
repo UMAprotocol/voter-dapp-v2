@@ -3,14 +3,14 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withEncryptedVotesKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { makeUniqueKeyForVote } from "helpers/votes";
-import { PriceRequest, PriceRequestWithEncryptedVote } from "types/global";
+import { PriceRequestT, WithIsCommittedT } from "types/global";
 import getEncryptedVotesForUser from "web3/queries/getEncryptedVotesForUser";
 
 export default function useWithEncryptedVotes(
   votingContract: VotingV2Ethers,
   address: string | undefined,
   roundId: BigNumber | undefined,
-  votes: PriceRequest[]
+  votes: WithIsCommittedT<PriceRequestT>[]
 ) {
   const { isLoading, isError, data, error } = useQuery(
     [withEncryptedVotesKey],
@@ -26,7 +26,7 @@ export default function useWithEncryptedVotes(
     encryptedVote,
     uniqueKey: makeUniqueKeyForVote(identifier, time, ancillaryData),
   }));
-  const withEncryptedVotes: PriceRequestWithEncryptedVote[] = votes?.map((vote) => {
+  const withEncryptedVotes = votes?.map((vote) => {
     const encryptedVoteEvent = encryptedVotesFromEvents?.find(({ uniqueKey }) => uniqueKey === vote.uniqueKey);
     return {
       ...vote,
