@@ -7,13 +7,13 @@ import { usePanelContext } from "hooks/contexts";
 import { useWalletContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import createVotingContractInstance from "web3/createVotingContractInstance";
+import createVotingContractInstance from "web3/contracts/createVotingContractInstance";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 import message from "constants/signingMessage";
 import { SigningKey, SigningKeys } from "types/global";
 import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
-import createVotingTokenContractInstance from "web3/createVotingTokenContractInstance";
+import createVotingTokenContractInstance from "web3/contracts/createVotingTokenContractInstance";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();

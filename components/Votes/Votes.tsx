@@ -4,12 +4,11 @@ import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
 import { BigNumber, ethers } from "ethers";
-import unixTimestampToDate from "helpers/unixTimestampToDate";
 import { useContractsContext } from "hooks/contexts";
-import useCurrentRoundId from "hooks/queries/useCurrentRoundId";
+import { useCurrentRoundId } from "hooks/queries";
 import { usePanelContext } from "hooks/contexts";
-import useVotePhase from "hooks/queries/useVotePhase";
-import useVotePhaseEnds from "hooks/queries/useVotePhaseEnds";
+import { useVotePhase } from "hooks/queries";
+import { useVotePhaseEnds } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
@@ -17,7 +16,7 @@ import { parseFixed } from "@ethersproject/bignumber";
 import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
 import { useWalletContext } from "hooks/contexts";
 import signingMessage from "constants/signingMessage";
-import useVotes from "hooks/queries/useVotes";
+import { useVotes } from "hooks/queries";
 
 export function Votes() {
   const connectedWallets = useWallets();

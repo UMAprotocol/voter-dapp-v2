@@ -6,13 +6,13 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
-import useVotePhase from "hooks/queries/useVotePhase";
-import useActiveVotes from "hooks/queries/useActiveVotes";
+import { useVotePhase } from "hooks/queries";
+import { useActiveVotes } from "hooks/queries";
 import { useContractsContext } from "hooks/contexts";
-import useStakedBalance from "hooks/queries/useStakedBalance";
-import useAccountDetails from "hooks/queries/useAccountDetails";
-import useRequestUnstake from "hooks/mutations/useRequestUnstake";
-import useStakerDetails from "hooks/queries/useStakerDetails";
+import { useStakedBalance } from "hooks/queries";
+import { useAccountDetails } from "hooks/queries";
+import { useRequestUnstake } from "hooks/mutations";
+import { useStakerDetails } from "hooks/queries";
 
 export function Unstake() {
   const votePhase = useVotePhase();

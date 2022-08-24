@@ -4,11 +4,11 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { usePanelContext } from "hooks/contexts";
-import useUnstakedBalance from "hooks/queries/useUnstakedBalance";
 import { useContractsContext } from "hooks/contexts";
-import useAccountDetails from "hooks/queries/useAccountDetails";
-import useStakerDetails from "hooks/queries/useStakerDetails";
-import useStakedBalance from "hooks/queries/useStakedBalance";
+import { useUnstakedBalance } from "hooks/queries";
+import { useAccountDetails } from "hooks/queries";
+import { useStakerDetails } from "hooks/queries";
+import { useStakedBalance } from "hooks/queries";
 
 interface Props {
   votesInLastCycles: number;
