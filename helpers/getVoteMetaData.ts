@@ -134,6 +134,10 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
 }
 
 function makeVoteOptions({ isUmip = false, isYesNoQuery = false }: { isUmip?: boolean; isYesNoQuery?: boolean } = {}) {
+  if (isUmip && isYesNoQuery) {
+    throw new Error("Cannot be both an UMIP and a YES_OR_NO_QUERY request");
+  }
+
   if (isUmip) {
     return [
       { label: "Yes", value: "1" },
