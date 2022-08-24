@@ -4,34 +4,33 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { usePanelContext } from "hooks/usePanelContext";
+import useUnstakedBalance from "hooks/useUnstakedBalance";
+import { useContractsContext } from "hooks/useContractsContext";
+import useAccountDetails from "hooks/useAccountDetails";
+import useStakerDetails from "hooks/useStakerDetails";
+import useStakedBalance from "hooks/useStakedBalance";
 
 interface Props {
-  stakedBalance: number;
-  unstakedBalance: number;
-  claimableRewards: number;
-  cooldownEnds: Date;
   votesInLastCycles: number;
   apy: number;
 }
-export function HowItWorks({
-  stakedBalance,
-  unstakedBalance,
-  claimableRewards,
-  cooldownEnds,
-  votesInLastCycles,
-  apy,
-}: Props) {
-  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+export function HowItWorks({ votesInLastCycles, apy }: Props) {
+  const { setPanelType, setPanelOpen } = usePanelContext();
+  const { voting, votingToken } = useContractsContext();
+  const { address } = useAccountDetails();
+  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
+  const { stakedBalance } = useStakedBalance(voting, address);
+  const {
+    stakerDetails: { outstandingRewards },
+  } = useStakerDetails(voting, address);
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
-    setPanelContent({ stakedBalance, unstakedBalance, claimableRewards, cooldownEnds });
     setPanelOpen(true);
   }
 
   function openClaimPanel() {
     setPanelType("claim");
-    setPanelContent({ claimableRewards });
     setPanelOpen(true);
   }
 
@@ -48,7 +47,7 @@ export function HowItWorks({
           }
           content={
             <>
-              You are staking <strong>{stakedBalance}</strong> UMA tokens of {stakedBalance + unstakedBalance}
+              You are staking <Strong>{stakedBalance}</Strong> UMA tokens of {stakedBalance + unstakedBalance}
             </>
           }
           actionLabel="Stake/Unstake"
@@ -63,8 +62,8 @@ export function HowItWorks({
           }
           content={
             <>
-              You have voted <strong>{votesInLastCycles} out of 5</strong> latest voting cycles, and are earning{" "}
-              <strong>{apy}% APY</strong>
+              You have voted <Strong>{votesInLastCycles} out of 5</Strong> latest voting cycles, and are earning{" "}
+              <Strong>{apy}% APY</Strong>
             </>
           }
           actionLabel="Vote history"
@@ -79,7 +78,7 @@ export function HowItWorks({
           }
           content={
             <>
-              You have <strong>{claimableRewards} UMA</strong> in unclaimed rewards
+              You have <Strong>{outstandingRewards} UMA</Strong> in unclaimed rewards
             </>
           }
           actionLabel="Claim"
@@ -106,4 +105,8 @@ const InnerWrapper = styled.div`
 const Title = styled.h1`
   font: var(--header-md);
   margin-bottom: 20px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;

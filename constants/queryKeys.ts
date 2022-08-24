@@ -1,0 +1,9 @@
+export const activeVotesKey = "activeVotesKey";
+export const currentRoundIdKey = "currentRoundIdKey";
+export const stakedBalanceKey = "stakedBalanceKey";
+export const unstakedBalanceKey = "unstakedBalanceKey";
+export const stakerDetailsKey = "stakerDetailsKey";
+export const tokenAllowanceKey = "tokenAllowanceKey";
+export const withEncryptedVotesKey = "withEncryptedVotesKey";
+export const withIsCommittedKey = "withIsCommittedKey";
+export const withIsRevealedKey = "withIsRevealedKey";

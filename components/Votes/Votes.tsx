@@ -8,8 +8,8 @@ import unixTimestampToDate from "helpers/unixTimestampToDate";
 import { useContractsContext } from "hooks/useContractsContext";
 import useCurrentRoundId from "hooks/useCurrentRoundId";
 import { usePanelContext } from "hooks/usePanelContext";
-import useRoundEndTime from "hooks/useRoundEndTime";
 import useVotePhase from "hooks/useVotePhase";
+import useVotePhaseEnds from "hooks/useVotePhaseEnds";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
@@ -29,7 +29,7 @@ export function Votes() {
   const { signer, signingKeys } = useWalletContext();
   const votePhase = useVotePhase();
   const { currentRoundId } = useCurrentRoundId(voting);
-  const { roundEndTime } = useRoundEndTime(voting, currentRoundId);
+  const votePhaseEnds = useVotePhaseEnds(currentRoundId);
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
@@ -183,9 +183,7 @@ export function Votes() {
     <OuterWrapper>
       <InnerWrapper>
         <Title>Vote on active disputes:</Title>
-        {votePhase && roundEndTime ? (
-          <VoteTimeline phase={votePhase} phaseEnds={unixTimestampToDate(roundEndTime)} />
-        ) : null}
+        {votePhase && votePhaseEnds ? <VoteTimeline phase={votePhase} phaseEnds={new Date(votePhaseEnds)} /> : null}
         <VotesWrapper>
           <TableHeadingsWrapper>
             <DisputeHeading>Dispute</DisputeHeading>

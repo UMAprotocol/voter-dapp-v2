@@ -46,9 +46,6 @@ MenuPanel.args = {
 export const ClaimPanel = Template.bind({});
 ClaimPanel.args = {
   panelType: "claim",
-  panelContent: {
-    claimableRewards: 123.456,
-  },
   panelOpen: true,
 };
 
@@ -141,12 +138,6 @@ export const StakePanel = Template.bind({});
 StakePanel.args = {
   panelType: "stake",
   panelOpen: true,
-  panelContent: {
-    stakedBalance: 123.456,
-    unstakedBalance: 123.456,
-    claimableRewards: 123.456,
-    cooldownEnds: add(new Date(), { days: 1 }),
-  },
 };
 
 export const RemindPanel = Template.bind({});

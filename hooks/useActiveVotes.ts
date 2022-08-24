@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { activeVotesKey } from "constants/queryKeys";
 import { decodeHexString } from "helpers/decodeHexString";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { PriceRequestT } from "types/global";
 import getPendingRequests from "web3/queries/getPendingRequests";
 
 export default function useActiveVotes(votingContract: VotingV2Ethers) {
-  const { isLoading, isError, data, error } = useQuery(["activeVotes"], () => getPendingRequests(votingContract), {
+  const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(votingContract), {
     refetchInterval(data) {
       return data?.length ? false : 1000;
     },

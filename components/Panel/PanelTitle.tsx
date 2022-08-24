@@ -46,7 +46,7 @@ function SubTitleText({ voteNumber, origin }: { voteNumber?: number; origin?: Vo
 
   return (
     <>
-      {origin} | Vote number <strong>#{voteNumber}</strong>
+      {origin} | Vote number <Strong>#{voteNumber}</Strong>
     </>
   );
 }
@@ -78,4 +78,8 @@ const PolymarketIcon = styled(Polymarket)``;
 const TitleIconWrapper = styled.div`
   width: 40px;
   height: 40px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;
