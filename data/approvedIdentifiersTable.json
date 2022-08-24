@@ -1,6 +1,6 @@
 [
   {
-    "title": "ALCXUSD",
+    "identifier": "ALCXUSD",
     "summary": "The price of ALCX in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "title": "ALTDOM",
+    "identifier": "ALTDOM",
     "summary": "An altcoin dominance index price.",
     "umipLink": {
       "number": "UMIP-21",
@@ -16,7 +16,7 @@
     }
   },
   {
-    "title": "AMPLUSD",
+    "identifier": "AMPLUSD",
     "summary": "The price of AMPL in USD.",
     "umipLink": {
       "number": "UMIP-33",
@@ -24,7 +24,7 @@
     }
   },
   {
-    "title": "AMPLUSD_18DEC",
+    "identifier": "AMPLUSD_18DEC",
     "summary": "Replacement for deprecated [AMPLUSD](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-33.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -32,7 +32,7 @@
     }
   },
   {
-    "title": "AUDUSD",
+    "identifier": "AUDUSD",
     "summary": "The price of AUD in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -40,7 +40,7 @@
     }
   },
   {
-    "title": "ARSUSD",
+    "identifier": "ARSUSD",
     "summary": "The price of the Argentine peso in USD.",
     "umipLink": {
       "number": "UMIP-19",
@@ -48,7 +48,7 @@
     }
   },
   {
-    "title": "APT",
+    "identifier": "APT",
     "summary": "APT reflects the price of an Athlete Performance Token (APT).",
     "umipLink": {
       "number": "UMIP-154",
@@ -56,7 +56,7 @@
     }
   },
   {
-    "title": "APWUSD",
+    "identifier": "APWUSD",
     "summary": "The price of APW in USD.",
     "umipLink": {
       "number": "UMIP-110",
@@ -64,7 +64,7 @@
     }
   },
   {
-    "title": "BADGERUSD",
+    "identifier": "BADGERUSD",
     "summary": "The price of BADGER in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -72,7 +72,7 @@
     }
   },
   {
-    "title": "BALUSD",
+    "identifier": "BALUSD",
     "summary": "The price of BAL in USD.",
     "umipLink": {
       "number": "UMIP-73",
@@ -80,7 +80,7 @@
     }
   },
   {
-    "title": "BANDUSD",
+    "identifier": "BANDUSD",
     "summary": "The price of BAND in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -88,7 +88,7 @@
     }
   },
   {
-    "title": "BANKUSD",
+    "identifier": "BANKUSD",
     "summary": "The price of BANK in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -96,7 +96,7 @@
     }
   },
   {
-    "title": "BASKUSD",
+    "identifier": "BASKUSD",
     "summary": "The price of BASK in USD.",
     "umipLink": {
       "number": "UMIP-110",
@@ -104,7 +104,7 @@
     }
   },
   {
-    "title": "bBadgerUSD",
+    "identifier": "bBadgerUSD",
     "summary": "The price of bBadger in USD.",
     "umipLink": {
       "number": "UMIP-76",
@@ -112,7 +112,7 @@
     }
   },
   {
-    "title": "BCHDOM",
+    "identifier": "BCHDOM",
     "summary": "A Bitcoin-cash dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "title": "BCHNBTC",
+    "identifier": "BCHNBTC",
     "summary": "A BCHNBTC price identifier to enable the creation of a Bitcoin Cash N, backed by BTC.",
     "umipLink": {
       "number": "UMIP-23",
@@ -128,7 +128,7 @@
     }
   },
   {
-    "title": "BCHNBTC_18DEC",
+    "identifier": "BCHNBTC_18DEC",
     "summary": "Replacement for deprecated [BCHNBTC](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-23.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -136,7 +136,7 @@
     }
   },
   {
-    "title": "bDiggUSD",
+    "identifier": "bDiggUSD",
     "summary": "The price of bDigg in USD.",
     "umipLink": {
       "number": "UMIP-76",
@@ -144,7 +144,7 @@
     }
   },
   {
-    "title": "BNBDOM",
+    "identifier": "BNBDOM",
     "summary": "A Binance dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -152,7 +152,7 @@
     }
   },
   {
-    "title": "BONDUSD",
+    "identifier": "BONDUSD",
     "summary": "The price of BOND in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -160,7 +160,7 @@
     }
   },
   {
-    "title": "BRLUSD",
+    "identifier": "BRLUSD",
     "summary": "The price of BRL in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -168,7 +168,7 @@
     }
   },
   {
-    "title": "BSVDOM",
+    "identifier": "BSVDOM",
     "summary": "A Bitcoin-SV dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -176,7 +176,7 @@
     }
   },
   {
-    "title": "BTC-BASIS-3M/USDC",
+    "identifier": "BTC-BASIS-3M/USDC",
     "summary": "A price identifier that tracks the basis (difference between 3 month futures and spot) of BTC's price.",
     "umipLink": {
       "number": "UMIP-40",
@@ -184,7 +184,7 @@
     }
   },
   {
-    "title": "BTC-BASIS-6M/USDC",
+    "identifier": "BTC-BASIS-6M/USDC",
     "summary": "A price identifier that tracks the basis (difference between 6 month futures and spot) of BTC's price.",
     "umipLink": {
       "number": "UMIP-40",
@@ -192,7 +192,7 @@
     }
   },
   {
-    "title": "BTCDOM",
+    "identifier": "BTCDOM",
     "summary": "A Bitcoin dominance index price.",
     "umipLink": {
       "number": "UMIP-21",
@@ -200,7 +200,7 @@
     }
   },
   {
-    "title": "BTC/ibBTC",
+    "identifier": "BTC/ibBTC",
     "summary": "Badger DAO and DefiDollar partnered to create a collateralized interest bearing Bitcoin token (ibBTC) providing holders exposure to Badger's Bitcoin collateralized non-native vaults composed of strategies to generate yield on Bitcoin. ",
     "umipLink": {
       "number": "UMIP-119",
@@ -208,7 +208,7 @@
     }
   },
   {
-    "title": "BTCUSD",
+    "identifier": "BTCUSD",
     "summary": "The price of BTC in USD.",
     "umipLink": {
       "number": "UMIP-7",
@@ -216,7 +216,7 @@
     }
   },
   {
-    "title": "[bwBTC/ETH SLP]/USD",
+    "identifier": "[bwBTC/ETH SLP]/USD",
     "summary": "The price of [bwBTC/ETH SLP] in USD.",
     "umipLink": {
       "number": "UMIP-76",
@@ -224,7 +224,7 @@
     }
   },
   {
-    "title": "CADUMA",
+    "identifier": "CADUMA",
     "summary": "The price of Canadian Dollars in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -232,7 +232,7 @@
     }
   },
   {
-    "title": "CADUSD",
+    "identifier": "CADUSD",
     "summary": "The price of Canadian Dollars in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -240,7 +240,7 @@
     }
   },
   {
-    "title": "CHAINUSD",
+    "identifier": "CHAINUSD",
     "summary": "The price of CHAIN in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -248,7 +248,7 @@
     }
   },
   {
-    "title": "CHFUMA",
+    "identifier": "CHFUMA",
     "summary": "The price of Swiss franc in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -256,7 +256,7 @@
     }
   },
   {
-    "title": "CHFUSD",
+    "identifier": "CHFUSD",
     "summary": "The price of the Swiss franc in USD.",
     "umipLink": {
       "number": "UMIP-29",
@@ -264,7 +264,7 @@
     }
   },
   {
-    "title": "CNYUSD",
+    "identifier": "CNYUSD",
     "summary": "The price of CNY in USD.",
     "umipLink": {
       "number": "UMIP-32",
@@ -272,7 +272,7 @@
     }
   },
   {
-    "title": "COMPUSD",
+    "identifier": "COMPUSD",
     "summary": "The price of COMP in USD.",
     "umipLink": {
       "number": "UMIP-5",
@@ -280,7 +280,7 @@
     }
   },
   {
-    "title": "COMPUSD",
+    "identifier": "COMPUSD",
     "summary": "The price of COMP in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -288,7 +288,7 @@
     }
   },
   {
-    "title": "COMPUSDC-APR-FEB28",
+    "identifier": "COMPUSDC-APR-FEB28",
     "summary": "Aggregatory USDC borrow interest rate APRs from Compound.",
     "umipLink": {
       "number": "UMIP-38",
@@ -296,7 +296,7 @@
     }
   },
   {
-    "title": "COMPUSDC-APR-MAR28",
+    "identifier": "COMPUSDC-APR-MAR28",
     "summary": "Aggregatory USDC borrow interest rate APRs from Compound.",
     "umipLink": {
       "number": "UMIP-38",
@@ -304,7 +304,7 @@
     }
   },
   {
-    "title": "CONSTANT",
+    "identifier": "CONSTANT",
     "summary": "A price identifier which will always return the value, that is specified in the ancillary data passed along with the price request, or default to a value of \"1\" if no ancillary data is used.",
     "umipLink": {
       "number": "UMIP-83",
@@ -312,7 +312,7 @@
     }
   },
   {
-    "title": "COPUSD",
+    "identifier": "COPUSD",
     "summary": "The price of COP in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -320,7 +320,7 @@
     }
   },
   {
-    "title": "CREAMUSD",
+    "identifier": "CREAMUSD",
     "summary": "The price of CREAM in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -328,7 +328,7 @@
     }
   },
   {
-    "title": "CRVUSD",
+    "identifier": "CRVUSD",
     "summary": "The price of CRV in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -336,7 +336,7 @@
     }
   },
   {
-    "title": "CVXUSD",
+    "identifier": "CVXUSD",
     "summary": "The price of CVX in USD.",
     "umipLink": {
       "number": "UMIP-141",
@@ -344,7 +344,7 @@
     }
   },
   {
-    "title": "CZKUSD",
+    "identifier": "CZKUSD",
     "summary": "The price of CZK in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -352,7 +352,7 @@
     }
   },
   {
-    "title": "DAIPHP",
+    "identifier": "DAIPHP",
     "summary": "The price of DAI in PHP.",
     "umipLink": {
       "number": "UMIP-49",
@@ -360,7 +360,7 @@
     }
   },
   {
-    "title": "DEFI_PULSE_TOTAL_TVL",
+    "identifier": "DEFI_PULSE_TOTAL_TVL",
     "summary": "The TVL of projects on DeFi Pulse",
     "umipLink": {
       "number": "UMIP-24",
@@ -368,7 +368,7 @@
     }
   },
   {
-    "title": "DEXTFUSD",
+    "identifier": "DEXTFUSD",
     "summary": "The price of DEXTF in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -376,7 +376,7 @@
     }
   },
   {
-    "title": "DIGGBTC",
+    "identifier": "DIGGBTC",
     "summary": "The price of DIGG in BTC.",
     "umipLink": {
       "number": "UMIP-61",
@@ -384,7 +384,7 @@
     }
   },
   {
-    "title": "DIGGETH",
+    "identifier": "DIGGETH",
     "summary": "The price of DIGG in ETH.",
     "umipLink": {
       "number": "UMIP-61",
@@ -392,7 +392,7 @@
     }
   },
   {
-    "title": "DIGG_Positive_Rebases",
+    "identifier": "DIGG_Positive_Rebases",
     "summary": "A price that tacks the total DIGG_Positive_Rebases for 30 days after the launch of the options.",
     "umipLink": {
       "number": "UMIP-87",
@@ -400,7 +400,7 @@
     }
   },
   {
-    "title": "DIGGUSD",
+    "identifier": "DIGGUSD",
     "summary": "The price of DIGG in USD.",
     "umipLink": {
       "number": "UMIP-61",
@@ -408,7 +408,7 @@
     }
   },
   {
-    "title": "DOTDOM",
+    "identifier": "DOTDOM",
     "summary": "A Polkadot dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -416,7 +416,7 @@
     }
   },
   {
-    "title": "DPI/ETH",
+    "identifier": "DPI/ETH",
     "summary": "The price of DPI in ETH.",
     "umipLink": {
       "number": "UMIP-64",
@@ -424,7 +424,7 @@
     }
   },
   {
-    "title": "DPI/USD",
+    "identifier": "DPI/USD",
     "summary": "The price of DPI in USD.",
     "umipLink": {
       "number": "UMIP-64",
@@ -432,7 +432,7 @@
     }
   },
   {
-    "title": "DSDUSD",
+    "identifier": "DSDUSD",
     "summary": "The price of DSD in USD.",
     "umipLink": {
       "number": "UMIP-37",
@@ -440,7 +440,7 @@
     }
   },
   {
-    "title": "ELASTIC_STABLESPREAD/USDC",
+    "identifier": "ELASTIC_STABLESPREAD/USDC",
     "summary": "A price that tracks the spread between how well ethereum versus non-ethereum elastic stablecoin baskets maintain their peg to $1.",
     "umipLink": {
       "number": "UMIP-30",
@@ -448,7 +448,7 @@
     }
   },
   {
-    "title": "ELASTIC_STABLESPREAD/USDC_18DEC",
+    "identifier": "ELASTIC_STABLESPREAD/USDC_18DEC",
     "summary": "Replacement for deprecated [ELASTIC_STABLESPREAD/USDC](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-30.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -456,7 +456,7 @@
     }
   },
   {
-    "title": "ETHBTC_FR",
+    "identifier": "ETHBTC_FR",
     "summary": "A price that tracks the funding rate of the ETH/BTC UMA perpetual.",
     "umipLink": {
       "number": "UMIP-62",
@@ -464,7 +464,7 @@
     }
   },
   {
-    "title": "ETHDOM",
+    "identifier": "ETHDOM",
     "summary": "An Ethereum dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -472,7 +472,7 @@
     }
   },
   {
-    "title": "ETH-BASIS-3M/USDC",
+    "identifier": "ETH-BASIS-3M/USDC",
     "summary": "A price identifier that tracks the basis (difference between 3 month futures and spot) of ETH's price.",
     "umipLink": {
       "number": "UMIP-40",
@@ -480,7 +480,7 @@
     }
   },
   {
-    "title": "ETH-BASIS-6M/USDC",
+    "identifier": "ETH-BASIS-6M/USDC",
     "summary": "A price identifier that tracks the basis (difference between 6 month futures and spot) of ETH's price.",
     "umipLink": {
       "number": "UMIP-40",
@@ -488,7 +488,7 @@
     }
   },
   {
-    "title": "ETH/BTC",
+    "identifier": "ETH/BTC",
     "summary": "An ETHBTC price index. If ETH outperforms BTC the token value will go up; if ETH underperforms, the token value will decrease.",
     "umipLink": {
       "number": "UMIP-2",
@@ -496,7 +496,7 @@
     }
   },
   {
-    "title": "ETH/DPI",
+    "identifier": "ETH/DPI",
     "summary": "The price of ETH in DPI.",
     "umipLink": {
       "number": "UMIP-64",
@@ -504,7 +504,7 @@
     }
   },
   {
-    "title": "ETH/INDEX",
+    "identifier": "ETH/INDEX",
     "summary": "The price of ETH in INDEX.",
     "umipLink": {
       "number": "UMIP-64",
@@ -512,7 +512,7 @@
     }
   },
   {
-    "title": "ETHUSD",
+    "identifier": "ETHUSD",
     "summary": "The price of ETH in USD.",
     "umipLink": {
       "number": "UMIP-6",
@@ -520,7 +520,7 @@
     }
   },
   {
-    "title": "ETHVIX",
+    "identifier": "ETHVIX",
     "summary": "EthVIX is a real-time index representing the expected volatility for ETH over the coming 14 days.",
     "umipLink": {
       "number": "UMIP-74",
@@ -528,7 +528,7 @@
     }
   },
   {
-    "title": "ETHXIO",
+    "identifier": "ETHXIO",
     "summary": "The price of ETH in XIO.",
     "umipLink": {
       "number": "UMIP-71",
@@ -536,7 +536,7 @@
     }
   },
   {
-    "title": "ETHYAM",
+    "identifier": "ETHYAM",
     "summary": "The price of ETH in YAM.",
     "umipLink": {
       "number": "UMIP-50",
@@ -544,7 +544,7 @@
     }
   },
   {
-    "title": "EURUMA",
+    "identifier": "EURUMA",
     "summary": "The price of Euro in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -552,7 +552,7 @@
     }
   },
   {
-    "title": "EURUSD",
+    "identifier": "EURUSD",
     "summary": "The price of the Euro in USD.",
     "umipLink": {
       "number": "UMIP-29",
@@ -560,7 +560,7 @@
     }
   },
   {
-    "title": "ERNUSD",
+    "identifier": "ERNUSD",
     "summary": "The price of ERN in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -568,7 +568,7 @@
     }
   },
   {
-    "title": "FEIUSD",
+    "identifier": "FEIUSD",
     "summary": "The price fo FEI in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -576,7 +576,7 @@
     }
   },
   {
-    "title": "FOXUSD",
+    "identifier": "FOXUSD",
     "summary": "The price of FOX in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -584,7 +584,7 @@
     }
   },
   {
-    "title": "GASETH-LSP",
+    "identifier": "GASETH-LSP",
     "summary": "This Price is focused on updating the existing `uGAS` price identifiers to be used in the Long/Short Pair contracts and will reference a synthetic token to be created with this price identifier. This token will be referred to as 'uGAS' and will represent a weighted median gas price on Ethereum. The timeframe of this median value will depend on the value in the ancillary data field of the contract.",
     "umipLink": {
       "number": "UMIP-147",
@@ -592,7 +592,7 @@
     }
   },
   {
-    "title": "GASETH-1HR-1M; GASETH-4HR-1M; GASETH-1D-1M; GASETH-1W-1M; GASETH-1M-1M",
+    "identifier": "GASETH-1HR-1M; GASETH-4HR-1M; GASETH-1D-1M; GASETH-1W-1M; GASETH-1M-1M",
     "summary": "Aggregatory gas prices on the Ethereum blockchain in multiples of a million. This will reflect the price of a million units of gas.",
     "umipLink": {
       "number": "UMIP-20",
@@ -600,7 +600,7 @@
     }
   },
   {
-    "title": "GASETH-1HR; GASETH-4HR; GASETH-1D; GASETH-1W; GASETH-1M",
+    "identifier": "GASETH-1HR; GASETH-4HR; GASETH-1D; GASETH-1W; GASETH-1M",
     "summary": "Aggregatory gas prices of finalized blocks on the Ethereum blockchain.",
     "umipLink": {
       "number": "UMIP-16",
@@ -608,7 +608,7 @@
     }
   },
   {
-    "title": "GASETH-TWAP-1Mx1M",
+    "identifier": "GASETH-TWAP-1Mx1M",
     "summary": " A price that resolves to the median monthly Ethereum gas price or a 2-hour Time-Weighted Average Price (TWAP) on the highest volume Uniswap ETH/uGAS pool based on the timestamp of the price request.",
     "umipLink": {
       "number": "UMIP-22",
@@ -616,7 +616,7 @@
     }
   },
   {
-    "title": "GASETH-FEB21, GASETH-MAR21",
+    "identifier": "GASETH-FEB21, GASETH-MAR21",
     "summary": "A price that resolves to the median monthly Ethereum gas price or a 2-hour Time-Weighted Average Price (TWAP) on the highest volume Uniswap ETH/uGAS pool based on the timestamp of the price request in relation to the end of February or the end of March",
     "umipLink": {
       "number": "UMIP-25",
@@ -624,7 +624,7 @@
     }
   },
   {
-    "title": "GASETH-JUN21",
+    "identifier": "GASETH-JUN21",
     "summary": "A price that resolves to either the median monthly Ethereum gas price or a 2-hour Time-Weighted Average Price (TWAP) on the highest volume Uniswap ETH/uGAS pool. The price resolution method to use will depend on the the timestamp the price request was made at.",
     "umipLink": {
       "number": "UMIP-48",
@@ -632,7 +632,7 @@
     }
   },
   {
-    "title": "GASETH-0921",
+    "identifier": "GASETH-0921",
     "summary": "A price that resolves to either the median monthly Ethereum gas price or a 2-hour Time-Weighted Average Price (TWAP) on the highest volume Uniswap ETH/uGAS pool. The price resolution method to use will depend on the the timestamp the price request was made at.",
     "umipLink": {
       "number": "UMIP-108",
@@ -640,7 +640,7 @@
     }
   },
   {
-    "title": "GASETH-1221",
+    "identifier": "GASETH-1221",
     "summary": "The DVM should support requests for a price that resolves to either the median monthly Ethereum gas price or a 2-hour Time-Weighted Average Price (TWAP) on the highest volume Sushiswap ETH/uGAS-1221 pool. The price resolution method to use will depend on the the timestamp the price request was made at.",
     "umipLink": {
       "number": "UMIP-129",
@@ -648,7 +648,7 @@
     }
   },
   {
-    "title": "GBPUSD",
+    "identifier": "GBPUSD",
     "summary": "The price of the pound sterling in USD.",
     "umipLink": {
       "number": "UMIP-29",
@@ -656,7 +656,7 @@
     }
   },
   {
-    "title": "General_KPI",
+    "identifier": "General_KPI",
     "summary": "General_KPI price identifier will allow any team to use the KPI identifier to track any verifiable key performance metric a team would want to create KPI options for. Ancillary data will guide voters to reach the KPI result correctly.",
     "umipLink": {
       "number": "UMIP-117",
@@ -664,7 +664,7 @@
     }
   },
   {
-    "title": "GNOUSD",
+    "identifier": "GNOUSD",
     "summary": "The price of GNO in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -672,7 +672,7 @@
     }
   },
   {
-    "title": "ibBTC/BTC",
+    "identifier": "ibBTC/BTC",
     "summary": "Badger DAO and DefiDollar partnered to create a collateralized interest bearing Bitcoin token (ibBTC) providing holders exposure to Badger's Bitcoin collateralized non-native vaults composed of strategies to generate yield on Bitcoin. ",
     "umipLink": {
       "number": "UMIP-119",
@@ -680,7 +680,7 @@
     }
   },
   {
-    "title": "ibBTC/USD",
+    "identifier": "ibBTC/USD",
     "summary": "Badger DAO and DefiDollar partnered to create a collateralized interest bearing Bitcoin token (ibBTC) providing holders exposure to Badger's Bitcoin collateralized non-native vaults composed of strategies to generate yield on Bitcoin. ",
     "umipLink": {
       "number": "UMIP-119",
@@ -688,7 +688,7 @@
     }
   },
   {
-    "title": "IDLEUSD",
+    "identifier": "IDLEUSD",
     "summary": "The price of IDLE in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -696,7 +696,7 @@
     }
   },
   {
-    "title": "iETHVIX",
+    "identifier": "iETHVIX",
     "summary": "The Inverse of EthVIX.",
     "umipLink": {
       "number": "UMIP-74",
@@ -704,7 +704,7 @@
     }
   },
   {
-    "title": "iFARMUSD",
+    "identifier": "iFARMUSD",
     "summary": "The price of iFARM in USD.",
     "umipLink": {
       "number": "UMIP-89",
@@ -712,7 +712,7 @@
     }
   },
   {
-    "title": "INDEX/ETH",
+    "identifier": "INDEX/ETH",
     "summary": "The price of INDEX in ETH.",
     "umipLink": {
       "number": "UMIP-64",
@@ -720,7 +720,7 @@
     }
   },
   {
-    "title": "INDEX/USD",
+    "identifier": "INDEX/USD",
     "summary": "The price of INDEX in USD.",
     "umipLink": {
       "number": "UMIP-64",
@@ -728,7 +728,7 @@
     }
   },
   {
-    "title": "IS_RELAY_VALID",
+    "identifier": "IS_RELAY_VALID",
     "summary": "IS_RELAY_VALID will allow the DVM to validate relay requests coming from Optimism or Arbitrum using the bridge contracts [here](https://github.com/UMAprotocol/protocol/tree/master/packages/core/contracts/insured-bridge).",
     "umipLink": {
       "number": "UMIP-136",
@@ -736,7 +736,7 @@
     }
   },
   {
-    "title": "JPYUMA",
+    "identifier": "JPYUMA",
     "summary": "The price of Japanese YEN in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -744,7 +744,7 @@
     }
   },
   {
-    "title": "JPYUSD",
+    "identifier": "JPYUSD",
     "summary": "The price of Japenese YEN in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -752,7 +752,7 @@
     }
   },
   {
-    "title": "KP3RUSD",
+    "identifier": "KP3RUSD",
     "summary": "The price of KP3R in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -760,7 +760,7 @@
     }
   },
   {
-    "title": "KRWUMA",
+    "identifier": "KRWUMA",
     "summary": "The price of Korean WON in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -768,7 +768,7 @@
     }
   },
   {
-    "title": "KRWUSD",
+    "identifier": "KRWUSD",
     "summary": "The price of Korean WON in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -776,7 +776,7 @@
     }
   },
   {
-    "title": "LINKDOM",
+    "identifier": "LINKDOM",
     "summary": "A Chainlink dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -784,7 +784,7 @@
     }
   },
   {
-    "title": "LONUSD",
+    "identifier": "LONUSD",
     "summary": "The price of LON in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -792,7 +792,7 @@
     }
   },
   {
-    "title": "LINKUSD",
+    "identifier": "LINKUSD",
     "summary": "The price of LINK in USD.",
     "umipLink": {
       "number": "UMIP-57",
@@ -800,7 +800,7 @@
     }
   },
   {
-    "title": "LTCDOM",
+    "identifier": "LTCDOM",
     "summary": "A Litecoin dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -808,7 +808,7 @@
     }
   },
   {
-    "title": "MASKUSD",
+    "identifier": "MASKUSD",
     "summary": "The price of MASK in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -816,7 +816,7 @@
     }
   },
   {
-    "title": "MKRUSD",
+    "identifier": "MKRUSD",
     "summary": "The price of MKR in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -824,7 +824,7 @@
     }
   },
   {
-    "title": "MXNUSD",
+    "identifier": "MXNUSD",
     "summary": "The price of MXN in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -832,7 +832,7 @@
     }
   },
   {
-    "title": "NFTXUSD",
+    "identifier": "NFTXUSD",
     "summary": "The price of NFRX in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -840,7 +840,7 @@
     }
   },
   {
-    "title": "NGNUMA",
+    "identifier": "NGNUMA",
     "summary": "The price of Nigerian Naira in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -848,7 +848,7 @@
     }
   },
   {
-    "title": "NGNUSD",
+    "identifier": "NGNUSD",
     "summary": "The price of Nigerian Naira in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -856,7 +856,7 @@
     }
   },
   {
-    "title": "OCEANUSD",
+    "identifier": "OCEANUSD",
     "summary": "The price of OCEAN in USD.",
     "umipLink": {
       "number": "UMIP-46",
@@ -864,7 +864,7 @@
     }
   },
   {
-    "title": "OHMUSD",
+    "identifier": "OHMUSD",
     "summary": "The price of OHM in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -872,7 +872,7 @@
     }
   },
   {
-    "title": "OPENUSD",
+    "identifier": "OPENUSD",
     "summary": "The price of OPEN in USD.",
     "umipLink": {
       "number": "UMIP-103",
@@ -880,7 +880,7 @@
     }
   },
   {
-    "title": "ORNUSD",
+    "identifier": "ORNUSD",
     "summary": "The price of ORN in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -888,7 +888,7 @@
     }
   },
   {
-    "title": "PERLUSD",
+    "identifier": "PERLUSD",
     "summary": "The price of PERL in USD.",
     "umipLink": {
       "number": "UMIP-13",
@@ -896,7 +896,7 @@
     }
   },
   {
-    "title": "PERPUSD",
+    "identifier": "PERPUSD",
     "summary": "The price of PERP in USD.",
     "umipLink": {
       "number": "UMIP-143",
@@ -904,7 +904,7 @@
     }
   },
   {
-    "title": "PHPDAI",
+    "identifier": "PHPDAI",
     "summary": "The price of Philippine Peso in DAI.",
     "umipLink": {
       "number": "UMIP-49",
@@ -912,7 +912,7 @@
     }
   },
   {
-    "title": "PHPUMA",
+    "identifier": "PHPUMA",
     "summary": "The price of Philippine Peso in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -920,7 +920,7 @@
     }
   },
   {
-    "title": "PHPUSD",
+    "identifier": "PHPUSD",
     "summary": "The price of Philippine Peso in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -928,7 +928,7 @@
     }
   },
   {
-    "title": "PLNUSD",
+    "identifier": "PLNUSD",
     "summary": "The price of PLN in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -936,7 +936,7 @@
     }
   },
   {
-    "title": "POOLUSD",
+    "identifier": "POOLUSD",
     "summary": "The price of POOL in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -944,7 +944,7 @@
     }
   },
   {
-    "title": "PUNKETH-LSP",
+    "identifier": "PUNKETH-LSP",
     "summary": "This price re-uses the logic of the previous `PUNKETH` price identifier from [UMIP 84](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-84.md) and uses the expiry timestamp per contract deployment to allow the creation of multiple overlapping uPUNK contracts. The `PUNKETH_TWAP` price identifier is ignored as the LSP is un-liquidatable and this logic is not necessary.",
     "umipLink": {
       "number": "UMIP-146",
@@ -952,7 +952,7 @@
     }
   },
   {
-    "title": "PUNK-BASICUSD",
+    "identifier": "PUNK-BASICUSD",
     "summary": "The price of PUNK-BASIC in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -960,7 +960,7 @@
     }
   },
   {
-    "title": "PUNKETH",
+    "identifier": "PUNKETH",
     "summary": "A price that will be used to measure the fair market value at expiration of uPUNK and is computed by taking the median most recent purchase price (in ETH) of each unique CryptoPunk traded in the last 30 days.",
     "umipLink": {
       "number": "UMIP-84",
@@ -968,7 +968,7 @@
     }
   },
   {
-    "title": "PUNKETH_TWAP",
+    "identifier": "PUNKETH_TWAP",
     "summary": "A price that will be used to measure the current value of uPUNK and is a \"self-referential\" price. It is computed from the 2-hour TWAP on the highest volume Uniswap ETH/uPUNK pool (for a specified iteration of uPUNK, i.e. uPUNK-JUNE21).",
     "umipLink": {
       "number": "UMIP-84",
@@ -976,7 +976,7 @@
     }
   },
   {
-    "title": "PUNKETH-1221",
+    "identifier": "PUNKETH-1221",
     "summary": "The DVM should support requests for a price that resolves to either the median most recent purchase price (in ETH) of each unique CryptoPunk traded in the last 30 days, or a 2-hour Time-Weighted Average Price (TWAP) of the highest volume Uniswap or sushiswap ETH/uPUNK pool (for a specified iteration of uPUNK, i.e. uPUNK-1221). The price resolution method to use will depend on the the timestamp the price request was made at.",
     "umipLink": {
       "number": "UMIP-130",
@@ -984,7 +984,7 @@
     }
   },
   {
-    "title": "RAIUSD",
+    "identifier": "RAIUSD",
     "summary": "The price of RAI in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -992,7 +992,7 @@
     }
   },
   {
-    "title": "RENUSD",
+    "identifier": "RENUSD",
     "summary": "The price of REN in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1000,7 +1000,7 @@
     }
   },
   {
-    "title": "RGTUSD",
+    "identifier": "RGTUSD",
     "summary": "The price of RGT in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1008,7 +1008,7 @@
     }
   },
   {
-    "title": "R3_10H_TWAP",
+    "identifier": "R3_10H_TWAP",
     "summary": "A price that tracks the 10-hr TWAP of RAI redemption rate coefficient APR.",
     "umipLink": {
       "number": "UMIP-85",
@@ -1016,7 +1016,7 @@
     }
   },
   {
-    "title": "R3_30D_GM",
+    "identifier": "R3_30D_GM",
     "summary": "A price that tracks the 30 day geometric mean of RAI redemption rate coefficient APR.",
     "umipLink": {
       "number": "UMIP-85",
@@ -1024,7 +1024,7 @@
     }
   },
   {
-    "title": "SDTUSD",
+    "identifier": "SDTUSD",
     "summary": "The price of SDT in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1032,7 +1032,7 @@
     }
   },
   {
-    "title": "SEKUSD",
+    "identifier": "SEKUSD",
     "summary": "The price of SEK in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -1040,7 +1040,7 @@
     }
   },
   {
-    "title": "SFIUSD",
+    "identifier": "SFIUSD",
     "summary": "The price of SFI in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1048,7 +1048,7 @@
     }
   },
   {
-    "title": "SGDUSD",
+    "identifier": "SGDUSD",
     "summary": "The price of SGD in USD.",
     "umipLink": {
       "number": "UMIP-127",
@@ -1056,7 +1056,7 @@
     }
   },
   {
-    "title": "SHERLOCK_CLAIM",
+    "identifier": "SHERLOCK_CLAIM",
     "summary": "The SHERLOCK_CLAIM price identifier is intended to allow users of Sherlock to request the DVM for arbitration in the case of a disagreement about an smart contract exploit insurance claim.",
     "umipLink": {
       "number": "UMIP-132",
@@ -1064,7 +1064,7 @@
     }
   },
   {
-    "title": "SNOWUSD",
+    "identifier": "SNOWUSD",
     "summary": "The price of SNOW in USD.",
     "umipLink": {
       "number": "UMIP-110",
@@ -1072,7 +1072,7 @@
     }
   },
   {
-    "title": "SNXUSD",
+    "identifier": "SNXUSD",
     "summary": "The price of SNX in USD.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1080,7 +1080,7 @@
     }
   },
   {
-    "title": "SPACEXLAUNCH",
+    "identifier": "SPACEXLAUNCH",
     "summary": "The purpose of the SPACEXLAUNCH price identifier is to be a generalized way to evaluate the success rate of the rocket launches made by SpaceX before request date considering launches provided in ancillary data.",
     "umipLink": {
       "number": "UMIP-97",
@@ -1088,7 +1088,7 @@
     }
   },
   {
-    "title": "STABLESPREAD",
+    "identifier": "STABLESPREAD",
     "summary": "A price that tracks the spread between how well ethereum versus non-ethereum stablecoin baskets maintain their peg to $1",
     "umipLink": {
       "number": "UMIP-28",
@@ -1096,7 +1096,7 @@
     }
   },
   {
-    "title": "STABLESPREAD/BTC",
+    "identifier": "STABLESPREAD/BTC",
     "summary": "Tracks the spread between how well ethereum versus non-ethereum stablecoin baskets maintain their peg to $1 (quoted in BTC).",
     "umipLink": {
       "number": "UMIP-31",
@@ -1104,7 +1104,7 @@
     }
   },
   {
-    "title": "STABLESPREAD/BTC_18DEC",
+    "identifier": "STABLESPREAD/BTC_18DEC",
     "summary": "Replacement for deprecated [STABLESPREAD/BTC](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-31.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -1112,7 +1112,7 @@
     }
   },
   {
-    "title": "STABLESPREAD/USDC",
+    "identifier": "STABLESPREAD/USDC",
     "summary": "A price that tracks the spread between how well ethereum versus non-ethereum stablecoin baskets maintain their peg to $1 (quoted in USDC).",
     "umipLink": {
       "number": "UMIP-31",
@@ -1120,7 +1120,7 @@
     }
   },
   {
-    "title": "STABLESPREAD/USDC_18DEC",
+    "identifier": "STABLESPREAD/USDC_18DEC",
     "summary": "Replacement for deprecated [STABLESPREAD/USDC](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-31.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -1128,7 +1128,7 @@
     }
   },
   {
-    "title": "SUSHIUNI_TVL",
+    "identifier": "SUSHIUNI_TVL",
     "summary": "The TVL ratio between Uniswap and Sushiswap",
     "umipLink": {
       "number": "UMIP-24",
@@ -1136,7 +1136,7 @@
     }
   },
   {
-    "title": "SUSHIUSD",
+    "identifier": "SUSHIUSD",
     "summary": "The price of SUSHI in USD.",
     "umipLink": {
       "number": "UMIP-68",
@@ -1144,7 +1144,7 @@
     }
   },
   {
-    "title": "uCRSPTMT_SEP21",
+    "identifier": "uCRSPTMT_SEP21",
     "summary": "A price that tracks the CRSP US Total Market TR Index (CRSPTMT), a highly diversified index that aims to track the US stock market as a whole.",
     "umipLink": {
       "number": "UMIP-92",
@@ -1152,7 +1152,7 @@
     }
   },
   {
-    "title": "TOKEN_PRICE",
+    "identifier": "TOKEN_PRICE",
     "summary": "The TOKEN_PRICE identifier returns a price of any fungible token expressed in units of another fungible token, cryptocurrency or fiat currency. Ancillary data will guide voters in identifying which token should be priced, what should be its quote currency, which markets should be queried and any other processing instructions for resolving a particular price request.",
     "umipLink": {
       "number": "UMIP-121",
@@ -1160,7 +1160,7 @@
     }
   },
   {
-    "title": "TRIBEUSD",
+    "identifier": "TRIBEUSD",
     "summary": "The price of TRIBE in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1168,7 +1168,7 @@
     }
   },
   {
-    "title": "TRYUSD",
+    "identifier": "TRYUSD",
     "summary": "The price of TRY in USD.",
     "umipLink": {
       "number": "UMIP-139",
@@ -1176,7 +1176,7 @@
     }
   },
   {
-    "title": "UMAUSD",
+    "identifier": "UMAUSD",
     "summary": "The price of UMA in USD.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1184,7 +1184,7 @@
     }
   },
   {
-    "title": "UNIUSD",
+    "identifier": "UNIUSD",
     "summary": "The price of UNI in USD.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1192,7 +1192,7 @@
     }
   },
   {
-    "title": "USDAAVE",
+    "identifier": "USDAAVE",
     "summary": "The price of USD in AAVE.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1200,7 +1200,7 @@
     }
   },
   {
-    "title": "USDALCX",
+    "identifier": "USDALCX",
     "summary": "The price of USD in ALCX.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1208,7 +1208,7 @@
     }
   },
   {
-    "title": "USDAMPL",
+    "identifier": "USDAMPL",
     "summary": "The price of USD in AMPL.",
     "umipLink": {
       "number": "UMIP-33",
@@ -1216,7 +1216,7 @@
     }
   },
   {
-    "title": "USDAPW",
+    "identifier": "USDAPW",
     "summary": "The price of USD in APW.",
     "umipLink": {
       "number": "UMIP-110",
@@ -1224,7 +1224,7 @@
     }
   },
   {
-    "title": "USDBADGER",
+    "identifier": "USDBADGER",
     "summary": "The price of USD in BADGER.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1232,7 +1232,7 @@
     }
   },
   {
-    "title": "USDBAL",
+    "identifier": "USDBAL",
     "summary": "The price of USD in BAL.",
     "umipLink": {
       "number": "UMIP-73",
@@ -1240,7 +1240,7 @@
     }
   },
   {
-    "title": "USDBAND",
+    "identifier": "USDBAND",
     "summary": "The price of USD in BAND.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1248,7 +1248,7 @@
     }
   },
   {
-    "title": "USDBANK",
+    "identifier": "USDBANK",
     "summary": "The price of USD in BANK.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1256,7 +1256,7 @@
     }
   },
   {
-    "title": "USDBOND",
+    "identifier": "USDBOND",
     "summary": "The price of USD in BOND.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1264,7 +1264,7 @@
     }
   },
   {
-    "title": "USD/bBadger",
+    "identifier": "USD/bBadger",
     "summary": "The price of USD in bBadger.",
     "umipLink": {
       "number": "UMIP-39",
@@ -1272,7 +1272,7 @@
     }
   },
   {
-    "title": "USDbDigg",
+    "identifier": "USDbDigg",
     "summary": "The price of USD in bDigg.",
     "umipLink": {
       "number": "UMIP-76",
@@ -1280,7 +1280,7 @@
     }
   },
   {
-    "title": "USD-[bWBTC/ETH SLP]",
+    "identifier": "USD-[bWBTC/ETH SLP]",
     "summary": "The price of USD in bwBTC/ETH SLP.",
     "umipLink": {
       "number": "UMIP-39",
@@ -1288,7 +1288,7 @@
     }
   },
   {
-    "title": "USDCHAIN",
+    "identifier": "USDCHAIN",
     "summary": "The price of CHAIN in USD.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1296,7 +1296,7 @@
     }
   },
   {
-    "title": "USDCOMP",
+    "identifier": "USDCOMP",
     "summary": "The price of USD in COMP.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1304,7 +1304,7 @@
     }
   },
   {
-    "title": "USDCREAM",
+    "identifier": "USDCREAM",
     "summary": "The price of USD in CREAM.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1312,7 +1312,7 @@
     }
   },
   {
-    "title": "USDCRV",
+    "identifier": "USDCRV",
     "summary": "The price of USD in CRV.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1320,7 +1320,7 @@
     }
   },
   {
-    "title": "USDDEXTF",
+    "identifier": "USDDEXTF",
     "summary": "The price of USD in DEXTF.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1328,7 +1328,7 @@
     }
   },
   {
-    "title": "USDDSD",
+    "identifier": "USDDSD",
     "summary": "The price of USD in DSD.",
     "umipLink": {
       "number": "UMIP-37",
@@ -1336,7 +1336,7 @@
     }
   },
   {
-    "title": "USD/DPI",
+    "identifier": "USD/DPI",
     "summary": "The price of USD in DPI.",
     "umipLink": {
       "number": "UMIP-64",
@@ -1344,7 +1344,7 @@
     }
   },
   {
-    "title": "USDERN",
+    "identifier": "USDERN",
     "summary": "The price of USD in ERN.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1352,7 +1352,7 @@
     }
   },
   {
-    "title": "USDETH",
+    "identifier": "USDETH",
     "summary": "The price of USD in ETH.",
     "umipLink": {
       "number": "UMIP-6",
@@ -1360,7 +1360,7 @@
     }
   },
   {
-    "title": "USDFEI",
+    "identifier": "USDFEI",
     "summary": "The price of USD in FEI.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1368,7 +1368,7 @@
     }
   },
   {
-    "title": "USDFOX",
+    "identifier": "USDFOX",
     "summary": "The price of USD in FOX.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1376,7 +1376,7 @@
     }
   },
   {
-    "title": "USDGNO",
+    "identifier": "USDGNO",
     "summary": "The price of GNO in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1384,7 +1384,7 @@
     }
   },
   {
-    "title": "USD/ibBTC",
+    "identifier": "USD/ibBTC",
     "summary": "Badger DAO and DefiDollar partnered to create a collateralized interest bearing Bitcoin token (ibBTC) providing holders exposure to Badger's Bitcoin collateralized non-native vaults composed of strategies to generate yield on Bitcoin. ",
     "umipLink": {
       "number": "UMIP-119",
@@ -1392,7 +1392,7 @@
     }
   },
   {
-    "title": "USDIDLE",
+    "identifier": "USDIDLE",
     "summary": "The price oof IDLE in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1400,7 +1400,7 @@
     }
   },
   {
-    "title": "USD/INDEX",
+    "identifier": "USD/INDEX",
     "summary": "The price of USD in INDEX.",
     "umipLink": {
       "number": "UMIP-64",
@@ -1408,7 +1408,7 @@
     }
   },
   {
-    "title": "USDiFARM",
+    "identifier": "USDiFARM",
     "summary": "The price of USD in iFARM.",
     "umipLink": {
       "number": "UMIP-89",
@@ -1416,7 +1416,7 @@
     }
   },
   {
-    "title": "USDKP3R",
+    "identifier": "USDKP3R",
     "summary": "The price of USD in KP3R.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1424,7 +1424,7 @@
     }
   },
   {
-    "title": "USDLINK",
+    "identifier": "USDLINK",
     "summary": "The price of USD in LINK.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1432,7 +1432,7 @@
     }
   },
   {
-    "title": "USDLON",
+    "identifier": "USDLON",
     "summary": "The price of USD in LON.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1440,7 +1440,7 @@
     }
   },
   {
-    "title": "USDMASK",
+    "identifier": "USDMASK",
     "summary": "The price of USD in MASK.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1448,7 +1448,7 @@
     }
   },
   {
-    "title": "USDOCEAN",
+    "identifier": "USDOCEAN",
     "summary": "The price of USD in OCEAN. ",
     "umipLink": {
       "number": "UMIP-46",
@@ -1456,7 +1456,7 @@
     }
   },
   {
-    "title": "USDOPEN",
+    "identifier": "USDOPEN",
     "summary": "The price of USD in OPEN.",
     "umipLink": {
       "number": "UMIP-103",
@@ -1464,7 +1464,7 @@
     }
   },
   {
-    "title": "USDORN",
+    "identifier": "USDORN",
     "summary": "The price of USD in ORN.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1472,7 +1472,7 @@
     }
   },
   {
-    "title": "USDPERL",
+    "identifier": "USDPERL",
     "summary": "The price of USD in PERL.",
     "umipLink": {
       "number": "UMIP-13",
@@ -1480,7 +1480,7 @@
     }
   },
   {
-    "title": "USDPOOL",
+    "identifier": "USDPOOL",
     "summary": "The price of USD in POOL.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1488,7 +1488,7 @@
     }
   },
   {
-    "title": "USDSFI",
+    "identifier": "USDSFI",
     "summary": "The price of USD in SFI.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1496,7 +1496,7 @@
     }
   },
   {
-    "title": "USDSNX",
+    "identifier": "USDSNX",
     "summary": "The price of USD in SNX.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1504,7 +1504,7 @@
     }
   },
   {
-    "title": "USDSUSHI",
+    "identifier": "USDSUSHI",
     "summary": "The price of USD in SUSHI.",
     "umipLink": {
       "number": "UMIP-68",
@@ -1512,7 +1512,7 @@
     }
   },
   {
-    "title": "USDTDOM",
+    "identifier": "USDTDOM",
     "summary": "A Tether dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -1520,7 +1520,7 @@
     }
   },
   {
-    "title": "USDTRIBE",
+    "identifier": "USDTRIBE",
     "summary": "The price of TRIBE in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1528,7 +1528,7 @@
     }
   },
   {
-    "title": "USDBASK",
+    "identifier": "USDBASK",
     "summary": "The price of USD in BASK.",
     "umipLink": {
       "number": "UMIP-110",
@@ -1536,7 +1536,7 @@
     }
   },
   {
-    "title": "USDBTC",
+    "identifier": "USDBTC",
     "summary": "The price of USD in BTC.",
     "umipLink": {
       "number": "UMIP-7",
@@ -1544,7 +1544,7 @@
     }
   },
   {
-    "title": "USDBTC_18DEC",
+    "identifier": "USDBTC_18DEC",
     "summary": "Replacement for deprecated [USDBTC](https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-7.md) price identifier.",
     "umipLink": {
       "number": "UMIP-66",
@@ -1552,7 +1552,7 @@
     }
   },
   {
-    "title": "USDCVX",
+    "identifier": "USDCVX",
     "summary": "The price of USD in CVX.",
     "umipLink": {
       "number": "UMIP-141",
@@ -1560,7 +1560,7 @@
     }
   },
   {
-    "title": "USDMKR",
+    "identifier": "USDMKR",
     "summary": "The price of USD in MKR.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1568,7 +1568,7 @@
     }
   },
   {
-    "title": "USDNFTX",
+    "identifier": "USDNFTX",
     "summary": "The price of USD in NFTX.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1576,7 +1576,7 @@
     }
   },
   {
-    "title": "USDOHM",
+    "identifier": "USDOHM",
     "summary": "The price of OHM in USD.",
     "umipLink": {
       "number": "UMIP-118",
@@ -1584,7 +1584,7 @@
     }
   },
   {
-    "title": "USDPERP",
+    "identifier": "USDPERP",
     "summary": "The price of PERP in USD.",
     "umipLink": {
       "number": "UMIP-143",
@@ -1592,7 +1592,7 @@
     }
   },
   {
-    "title": "USDPUNK-BASIC",
+    "identifier": "USDPUNK-BASIC",
     "summary": "The price of USD in PUNK-BASIC.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1600,7 +1600,7 @@
     }
   },
   {
-    "title": "USDUMA",
+    "identifier": "USDUMA",
     "summary": "The price of USD in UMA.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1608,7 +1608,7 @@
     }
   },
   {
-    "title": "USDUNI",
+    "identifier": "USDUNI",
     "summary": "The price of USD in UNI.",
     "umipLink": {
       "number": "UMIP-57",
@@ -1616,7 +1616,7 @@
     }
   },
   {
-    "title": "USD/UNI_V2_UMA_ETH_LP",
+    "identifier": "USD/UNI_V2_UMA_ETH_LP",
     "summary": "A price that tracks the Uniswap LP token of the UMA-ETH pool.",
     "umipLink": {
       "number": "UMIP-59",
@@ -1624,7 +1624,7 @@
     }
   },
   {
-    "title": "USD/UNI_V2_UNI_ETH_LP",
+    "identifier": "USD/UNI_V2_UNI_ETH_LP",
     "summary": "A price that tracks the Uniswap LP token of the UNI-ETH pool.",
     "umipLink": {
       "number": "UMIP-59",
@@ -1632,7 +1632,7 @@
     }
   },
   {
-    "title": "USD/UNI_V2_USDC_ETH_LP",
+    "identifier": "USD/UNI_V2_USDC_ETH_LP",
     "summary": "A price that tracks the Uniswap LP token of the USDC-ETH pool.",
     "umipLink": {
       "number": "UMIP-59",
@@ -1640,7 +1640,7 @@
     }
   },
   {
-    "title": "USD/UNI_V2_WBTC_ETH_LP",
+    "identifier": "USD/UNI_V2_WBTC_ETH_LP",
     "summary": "A price that tracks the Uniswap LP token of the WBTC-ETH pool.",
     "umipLink": {
       "number": "UMIP-59",
@@ -1648,7 +1648,7 @@
     }
   },
   {
-    "title": "USDRAI",
+    "identifier": "USDRAI",
     "summary": "The price of USD in RAI.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1656,7 +1656,7 @@
     }
   },
   {
-    "title": "USDREN",
+    "identifier": "USDREN",
     "summary": "The price of USD in REN.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1664,7 +1664,7 @@
     }
   },
   {
-    "title": "USDRGT",
+    "identifier": "USDRGT",
     "summary": "The price of USD in RGT.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1672,7 +1672,7 @@
     }
   },
   {
-    "title": "USDSDT",
+    "identifier": "USDSDT",
     "summary": "The price of USD in SDT.",
     "umipLink": {
       "number": "UMIP-106",
@@ -1680,7 +1680,7 @@
     }
   },
   {
-    "title": "USDSNOW",
+    "identifier": "USDSNOW",
     "summary": "The price of USD in SNOW.",
     "umipLink": {
       "number": "UMIP-110",
@@ -1688,7 +1688,7 @@
     }
   },
   {
-    "title": "USDVSP",
+    "identifier": "USDVSP",
     "summary": "The price of USD in VSP.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1696,7 +1696,7 @@
     }
   },
   {
-    "title": "USDXIO",
+    "identifier": "USDXIO",
     "summary": "The price of USD in XIO.",
     "umipLink": {
       "number": "UMIP-71",
@@ -1704,7 +1704,7 @@
     }
   },
   {
-    "title": "USDXSUSHI",
+    "identifier": "USDXSUSHI",
     "summary": "The price of USD in XSUSHI.",
     "umipLink": {
       "number": "UMIP-68",
@@ -1712,7 +1712,7 @@
     }
   },
   {
-    "title": "USDYAM",
+    "identifier": "USDYAM",
     "summary": "The price of USD in YAM.",
     "umipLink": {
       "number": "UMIP-50",
@@ -1720,7 +1720,7 @@
     }
   },
   {
-    "title": "USDYFI",
+    "identifier": "USDYFI",
     "summary": "The price of USD in YFI.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1728,7 +1728,7 @@
     }
   },
   {
-    "title": "USDyUSD",
+    "identifier": "USDyUSD",
     "summary": "The price of USD in yUSD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1736,7 +1736,7 @@
     }
   },
   {
-    "title": "uDAO_KPI_UMA",
+    "identifier": "uDAO_KPI_UMA",
     "summary": "A price identifier that tracks the number of integrations of UMA.",
     "umipLink": {
       "number": "UMIP-112",
@@ -1744,7 +1744,7 @@
     }
   },
   {
-    "title": "uSTONKS_APR21",
+    "identifier": "uSTONKS_APR21",
     "summary": "A basket of stocks that represents the following markets, NYSE: GME, AMC, NOK, BB, NASDAQ: TSLA, PLTR, SNDL, AAPL, SPCE NYSE Arca: SLV.",
     "umipLink": {
       "number": "UMIP-47",
@@ -1752,7 +1752,7 @@
     }
   },
   {
-    "title": "uSPAC10",
+    "identifier": "uSPAC10",
     "summary": "The purpose of these price identifier is to create synthetic token, price of which is linked to the value of index of 10 most active SPACs (Special Purpose Acquisition Companies) shares.",
     "umipLink": {
       "number": "UMIP-140",
@@ -1760,7 +1760,7 @@
     }
   },
   {
-    "title": "uSTONKS_JUN21",
+    "identifier": "uSTONKS_JUN21",
     "summary": "A basket of stocks that represents the following markets, NYSE: GME, SQ, RBLX NASDAQ: TSLA, PLTR, AAPL, COIN, RIOT, MVIS, MARA.",
     "umipLink": {
       "number": "UMIP-79",
@@ -1768,7 +1768,7 @@
     }
   },
   {
-    "title": "uSTONKS_0921",
+    "identifier": "uSTONKS_0921",
     "summary": "NYSE: GME, BB, AMC, CLNE, CLF, UWMC NYSE AMERICAN: SENS NYSE ARCA: SPY NASDAQ: CLOV, WKHS.",
     "umipLink": {
       "number": "UMIP-109",
@@ -1776,7 +1776,7 @@
     }
   },
   {
-    "title": "uTVL_KPI_UMA",
+    "identifier": "uTVL_KPI_UMA",
     "summary": "A price identifier that tracks the total value of locked collateral in UMA.",
     "umipLink": {
       "number": "UMIP-65",
@@ -1784,7 +1784,7 @@
     }
   },
   {
-    "title": "uVOL-BTC-APR21",
+    "identifier": "uVOL-BTC-APR21",
     "summary": "A price identifier that tracks the 30-day daily volatility of BTC/USD.",
     "umipLink": {
       "number": "UMIP-41",
@@ -1792,7 +1792,7 @@
     }
   },
   {
-    "title": "vBNTBNT",
+    "identifier": "vBNTBNT",
     "summary": "The use of this price identifier will primarily be for call options. This UMIP will also outline how to calculate the price of vBNT in BNT using a custom script that will be used for the call option price calculation.",
     "umipLink": {
       "number": "UMIP-98",
@@ -1800,7 +1800,7 @@
     }
   },
   {
-    "title": "VolatilityDAOracle",
+    "identifier": "VolatilityDAOracle",
     "summary": "The Volatility DAOracle is a collection of methodologies and implementations for indices and benchmarks. Each index can be verified by decentralized users through its data endpoint, open-source code, and methodology paper.",
     "umipLink": {
       "number": "UMIP-151",
@@ -1808,7 +1808,7 @@
     }
   },
   {
-    "title": "V2migration_KPI_Aragon",
+    "identifier": "V2migration_KPI_Aragon",
     "summary": "Price Identifier for Aragon KPI options.",
     "umipLink": {
       "number": "UMIP-81",
@@ -1816,7 +1816,7 @@
     }
   },
   {
-    "title": "VSPUSD",
+    "identifier": "VSPUSD",
     "summary": "The price of VSP in USD.",
     "umipLink": {
       "number": "UMIP-91",
@@ -1824,7 +1824,7 @@
     }
   },
   {
-    "title": "XAUPERL",
+    "identifier": "XAUPERL",
     "summary": "A troy ounce of gold returned in PERL.",
     "umipLink": {
       "number": "UMIP-26",
@@ -1832,7 +1832,7 @@
     }
   },
   {
-    "title": "XAUUSD",
+    "identifier": "XAUUSD",
     "summary": "A troy ounce of gold returned in USD.",
     "umipLink": {
       "number": "UMIP-26",
@@ -1840,7 +1840,7 @@
     }
   },
   {
-    "title": "XIOETH",
+    "identifier": "XIOETH",
     "summary": "The price of XIO in ETH.",
     "umipLink": {
       "number": "UMIP-71",
@@ -1848,7 +1848,7 @@
     }
   },
   {
-    "title": "XIOUSD",
+    "identifier": "XIOUSD",
     "summary": "The price of XIO in USD.",
     "umipLink": {
       "number": "UMIP-71",
@@ -1856,7 +1856,7 @@
     }
   },
   {
-    "title": "XRPDOM",
+    "identifier": "XRPDOM",
     "summary": "A Ripple dominance index price.",
     "umipLink": {
       "number": "UMIP-69",
@@ -1864,7 +1864,7 @@
     }
   },
   {
-    "title": "XSUSHI_APY",
+    "identifier": "XSUSHI_APY",
     "summary": "A price identifier that tracks the xSushi APY derived from an arbitrary number of days of sushi yield data.",
     "umipLink": {
       "number": "UMIP-123",
@@ -1872,7 +1872,7 @@
     }
   },
   {
-    "title": "XSUSHIUSD",
+    "identifier": "XSUSHIUSD",
     "summary": "The price of XSUSHI in USD.",
     "umipLink": {
       "number": "UMIP-68",
@@ -1880,7 +1880,7 @@
     }
   },
   {
-    "title": "YAMETH",
+    "identifier": "YAMETH",
     "summary": "The price of YAM in ETH.",
     "umipLink": {
       "number": "UMIP-50",
@@ -1888,7 +1888,7 @@
     }
   },
   {
-    "title": "YAMUSD",
+    "identifier": "YAMUSD",
     "summary": "The price of YAM in USD.",
     "umipLink": {
       "number": "UMIP-50",
@@ -1896,7 +1896,7 @@
     }
   },
   {
-    "title": "YES_OR_NO_QUERY",
+    "identifier": "YES_OR_NO_QUERY",
     "summary": "YES_OR_NO_QUERY is intended to be used with ancillary data to allow anyone to request an answer to a \"yes or no\" question from UMA governance.",
     "umipLink": {
       "number": "UMIP-107",
@@ -1904,7 +1904,7 @@
     }
   },
   {
-    "title": "YFIUSD",
+    "identifier": "YFIUSD",
     "summary": "The price of YFI in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1912,7 +1912,7 @@
     }
   },
   {
-    "title": "yUSDUSD",
+    "identifier": "yUSDUSD",
     "summary": "The price of yUSD in USD.",
     "umipLink": {
       "number": "UMIP-78",
@@ -1920,7 +1920,7 @@
     }
   },
   {
-    "title": "ZARUMA",
+    "identifier": "ZARUMA",
     "summary": "The price of South African RAND in UMA.",
     "umipLink": {
       "number": "UMIP-95",
@@ -1928,7 +1928,7 @@
     }
   },
   {
-    "title": "ZARUSD",
+    "identifier": "ZARUSD",
     "summary": "The price of South African RAND in USD.",
     "umipLink": {
       "number": "UMIP-90",
@@ -1936,7 +1936,7 @@
     }
   },
   {
-    "title": "ZODIAC",
+    "identifier": "ZODIAC",
     "summary": "The ZODIAC identifier is intended to be used with a [Zodiac module](https://gnosis.github.io/zodiac/docs/intro) that allows you to control a [Gnosis Safe](https://gnosis-safe.io/) according to a set of rules defined off-chain and enforced with UMA's Optimistic Oracle. Unless the module contract has extra restrictions, any address can propose transactions that follow the rules and any address can dispute a proposal to UMA's [Optimistic Oracle](https://umaproject.org/products/optimistic-oracle) within a challenge window.",
     "umipLink": {
       "number": "UMIP-152",
@@ -1944,7 +1944,7 @@
     }
   },
   {
-    "title": "Total",
+    "identifier": "Total",
     "summary": "No of Approved Price Identifiers.",
     "umipLink": {
       "number": "244",
@@ -1952,7 +1952,7 @@
     }
   },
   {
-    "title": "",
+    "identifier": "",
     "summary": "",
     "umipLink": {
       "number": "",
