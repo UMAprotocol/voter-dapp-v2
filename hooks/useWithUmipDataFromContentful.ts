@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import * as contentful from "contentful";
-import { UmipDataFromContentfulT, WithDecryptedVoteT, WithUmipDataFromContentfulT } from "types/global";
+import { PriceRequestT, UmipDataFromContentfulT } from "types/global";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";
@@ -34,7 +34,7 @@ async function getUmipDataFromContentful(adminProposalNumbers: number[]) {
   }
 }
 
-export default function useWithUmipDataFromContentful(votes: WithDecryptedVoteT[]) {
+export default function useWithUmipDataFromContentful(votes: PriceRequestT[]) {
   const adminProposalNumbers = votes
     .map(({ decodedIdentifier }) => getAdminProposalNumber(decodedIdentifier))
     .filter((number): number is number => Boolean(number));
@@ -54,7 +54,7 @@ export default function useWithUmipDataFromContentful(votes: WithDecryptedVoteT[
       ...vote,
       umipDataFromContentful,
     };
-  }) as WithUmipDataFromContentfulT[];
+  });
 
   return {
     withUmipDataFromContentful,

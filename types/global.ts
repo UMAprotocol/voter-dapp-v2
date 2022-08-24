@@ -26,33 +26,41 @@ export type PriceRequestT = {
   uniqueKey: string;
 };
 
-export type WithIsGovernanceT = PriceRequestT & {
+export type WithIsGovernanceT<T extends PriceRequestT> = T & {
   isGovernance: boolean;
 };
 
-export type WithIsCommittedT = WithIsGovernanceT & {
+export type WithIsCommittedT<T extends PriceRequestT> = T & {
   isCommitted: boolean;
 };
 
-export type WithIsRevealedT = WithIsCommittedT & {
+export type WithIsRevealedT<T extends PriceRequestT> = T & {
   isRevealed: boolean;
 };
 
-export type WithEncryptedVoteT = WithIsRevealedT & {
+export type WithEncryptedVoteT<T extends WithIsCommittedT<PriceRequestT>> = T & {
   encryptedVote: string | undefined;
 };
 
-export type WithDecryptedVoteT = WithEncryptedVoteT & {
+export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> = T & {
   decryptedVote: DecryptedVoteT | undefined;
 };
 
-export type WithUmipDataFromContentfulT = WithDecryptedVoteT & {
+export type WithUmipDataFromContentfulT<T extends PriceRequestT> = T & {
   umipDataFromContentful: UmipDataFromContentfulT | undefined;
 };
 
-export type WithMetaDataT = WithUmipDataFromContentfulT & VoteMetaDataT;
+export type WithMetaDataT<T extends WithUmipDataFromContentfulT<PriceRequestT>> = T & VoteMetaDataT;
 
-export type VoteT = WithIsCommittedT & WithIsRevealedT & WithDecryptedVoteT & WithMetaDataT & VoteResultT;
+export type WithAllDataT = WithIsGovernanceT<PriceRequestT> &
+  WithIsCommittedT<PriceRequestT> &
+  WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>> &
+  WithDecryptedVoteT<WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> &
+  WithIsRevealedT<PriceRequestT> &
+  WithUmipDataFromContentfulT<PriceRequestT> &
+  WithMetaDataT<WithUmipDataFromContentfulT<PriceRequestT>>;
+
+export type VoteT = WithAllDataT & VoteResultT;
 
 export type DecryptedVoteT = { price: string; salt: string };
 

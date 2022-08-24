@@ -1,25 +1,33 @@
 import { decryptMessage } from "helpers/crypto";
-import { useState, useEffect } from "react";
-import { DecryptedVoteT, WithDecryptedVoteT, WithEncryptedVoteT, SigningKeys } from "types/global";
+import { useEffect, useState } from "react";
+import {
+  DecryptedVoteT,
+  PriceRequestT,
+  SigningKeys,
+  WithDecryptedVoteT,
+  WithEncryptedVoteT,
+  WithIsCommittedT,
+} from "types/global";
 
 export default function useWithDecryptedVotes(
-  withEncryptedVotes: WithEncryptedVoteT[],
+  withEncryptedVotes: WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>[],
   address: string | undefined,
   signingKeys: SigningKeys
 ) {
-  const [withDecryptedVotes, setWithDecryptedVotes] = useState<WithDecryptedVoteT[]>([]);
+  type T = typeof withEncryptedVotes[number];
+  const [withDecryptedVotes, setWithDecryptedVotes] = useState<WithDecryptedVoteT<T>[]>([]);
 
   useEffect(() => {
     (async () => {
       if (!withEncryptedVotes?.length || !address) return;
 
       const privateKey = signingKeys[address].privateKey;
-      const decryptedVotes: WithDecryptedVoteT[] = await decryptVotes(privateKey, withEncryptedVotes);
+      const decryptedVotes = await decryptVotes(privateKey, withEncryptedVotes);
       setWithDecryptedVotes(decryptedVotes);
 
-      async function decryptVotes(privateKey: string, withEncryptedVotes: WithEncryptedVoteT[]) {
+      async function decryptVotes(privateKey: string, encryptedVotes: typeof withEncryptedVotes) {
         return await Promise.all(
-          withEncryptedVotes.map(async (vote) => {
+          encryptedVotes.map(async (vote) => {
             const { encryptedVote } = vote;
 
             let decryptedVote: DecryptedVoteT | undefined;
@@ -37,6 +45,7 @@ export default function useWithDecryptedVotes(
         );
       }
     })();
+    // we are choosing to ignore the `withEncryptedVotes` dependency in favor of the stringified version of it to achieve referential equality
   }, [address, JSON.stringify(withEncryptedVotes), signingKeys]);
 
   return withDecryptedVotes;
