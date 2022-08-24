@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import https from "https";
+import { IdentifierDetailsT, UmipLinkT } from "types/global";
 
 main();
 
@@ -19,16 +20,25 @@ async function main() {
     .split("\n")
     // ignore the first 8 lines (headmatter and table headers)
     .slice(8);
-  const parsedLines = JSON.stringify(lines.map(parseLine), null, 2);
+  const parsedLines = lines.map(parseLine);
 
-  // write the parsed lines to a json file
-  fs.writeFile(jsonPath, parsedLines, (err) => console.error(err));
+  const table: Record<string, IdentifierDetailsT> = {};
+
+  // add each line to the table
+  for (const line of parsedLines) {
+    table[line.identifier] = line;
+  }
+
+  const parsedTable = JSON.stringify(table, null, 2);
+
+  // write the parsed table to a json file
+  fs.writeFile(jsonPath, parsedTable, (err) => console.error(err));
 
   // remove the markdown file
   fs.unlinkSync(markdownPath);
 }
 
-function parseLine(line: string) {
+function parseLine(line: string): IdentifierDetailsT {
   const dividerIndices: number[] = [];
 
   for (let i = 0; i < line.length; i++) {
@@ -49,7 +59,7 @@ function parseLine(line: string) {
   };
 }
 
-function parseMarkdownUmipLink(umipLink: string) {
+function parseMarkdownUmipLink(umipLink: string): UmipLinkT {
   const number = umipLink.substring(umipLink.indexOf("[") + 1, umipLink.indexOf("]"));
   const url = umipLink.substring(umipLink.indexOf("(") + 1, umipLink.indexOf(")"));
 
