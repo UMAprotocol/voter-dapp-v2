@@ -6,12 +6,33 @@ import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+import useVotePhase from "hooks/useVotePhase";
+import useActiveVotes from "hooks/useActiveVotes";
+import { useContractsContext } from "hooks/useContractsContext";
+import useStakedBalance from "hooks/useStakedBalance";
+import useAccountDetails from "hooks/useAccountDetails";
+import useRequestUnstake from "hooks/useRequestUnstake";
+import useStakerDetails from "hooks/useStakerDetails";
 
-interface Props {
-  canClaim: boolean;
-}
-export function Unstake({ canClaim }: Props) {
-  const [unstakeAmount, setUnstakeAmount] = useState<string>();
+export function Unstake() {
+  const votePhase = useVotePhase();
+  const { address } = useAccountDetails();
+  const { voting } = useContractsContext();
+  const { activeVotes } = useActiveVotes(voting);
+  const { stakedBalance } = useStakedBalance(voting, address);
+  const {
+    stakerDetails: { pendingUnstake },
+  } = useStakerDetails(voting, address);
+  const requestUnstakeMutation = useRequestUnstake();
+  const [unstakeAmount, setUnstakeAmount] = useState("");
+
+  function requestUnstake() {
+    requestUnstakeMutation({ voting, unstakeAmount });
+  }
+
+  function canUnstake(stakedBalance: number, pendingUnstake: number) {
+    return stakedBalance > 0 && pendingUnstake === 0;
+  }
 
   return (
     <Wrapper>
@@ -34,21 +55,26 @@ export function Unstake({ canClaim }: Props) {
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
-      <AmountInputWrapper>
-        <AmountInput
-          value={unstakeAmount}
-          onChange={(e) => setUnstakeAmount(e.target.value)}
-          onMax={() => setUnstakeAmount("10000")}
-          disabled={!canClaim}
-        />
-      </AmountInputWrapper>
-      <Button
-        variant="primary"
-        label="Unstake"
-        onClick={() => console.log("TODO implement unstake")}
-        width="100%"
-        disabled={!canClaim}
-      />
+      {(votePhase === "commit" || activeVotes.length === 0) && (
+        <>
+          <AmountInputWrapper>
+            <AmountInput
+              value={unstakeAmount}
+              onChange={(e) => setUnstakeAmount(e.target.value)}
+              onMax={() => setUnstakeAmount(stakedBalance.toString())}
+              disabled={!canUnstake(stakedBalance, pendingUnstake)}
+            />
+          </AmountInputWrapper>
+          <Button
+            variant="primary"
+            label="Unstake"
+            onClick={requestUnstake}
+            width="100%"
+            disabled={!canUnstake(stakedBalance, pendingUnstake)}
+          />
+        </>
+      )}
+      {votePhase === "reveal" && activeVotes.length > 0 && <p>Cannot request unstake in active reveal phase</p>}
     </Wrapper>
   );
 }

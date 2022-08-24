@@ -4,33 +4,32 @@ import { getAccountDetails } from "components/Wallet";
 import { useContractsContext } from "hooks/useContractsContext";
 import useStakedBalance from "hooks/useStakedBalance";
 import useUnstakedBalance from "hooks/useUnstakedBalance";
+import useStakerDetails from "hooks/useStakerDetails";
 import styled from "styled-components";
-import { PanelContentT, StakePanelContentT } from "types/global";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";
 import { CooldownTimer } from "./CooldownTimer";
 import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
+import useExecuteUnstake from "hooks/useExecuteUnstake";
 
-interface Props {
-  content: PanelContentT;
-}
-export function StakeUnstakePanel({ content }: Props) {
+export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
   const { unstakedBalance } = useUnstakedBalance(votingToken, address);
   const { stakedBalance } = useStakedBalance(voting, address);
-  console.log({ unstakedBalance, stakedBalance });
-  if (!content) return null;
+  const {
+    stakerDetails: { pendingUnstake, canUnstakeTime },
+  } = useStakerDetails(voting, address);
+  const executeUnstakeMutation = useExecuteUnstake();
 
-  const { claimableRewards, cooldownEnds } = content as StakePanelContentT;
-
+  const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = cooldownEnds > new Date();
-  const hasClaimableRewards = claimableRewards > 0;
-  const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableRewards;
-  const canClaim = !hasCooldownTimeRemaining && hasClaimableRewards;
+  const hasClaimableTokens = pendingUnstake > 0;
+  const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableTokens;
+  const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
 
   const tabs = [
     {
@@ -39,9 +38,13 @@ export function StakeUnstakePanel({ content }: Props) {
     },
     {
       title: "Unstake",
-      content: <Unstake canClaim={canClaim} />,
+      content: <Unstake />,
     },
   ];
+
+  function executeUnstake() {
+    executeUnstakeMutation({ voting });
+  }
 
   return (
     <PanelWrapper>
@@ -62,9 +65,9 @@ export function StakeUnstakePanel({ content }: Props) {
             <CooldownTimerWrapper>
               <CooldownTimer
                 cooldownEnds={cooldownEnds}
-                claimableRewards={claimableRewards}
+                pendingUnstake={pendingUnstake}
                 canClaim={canClaim}
-                onClaim={() => console.log("TODO implement onClaim")}
+                onClaim={executeUnstake}
               />
             </CooldownTimerWrapper>
           )}

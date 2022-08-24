@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { withIsCommittedKey } from "constants/queryKeys";
 import { makeUniqueKeysForVotes } from "helpers/votes";
 import { PriceRequest, PriceRequestWithIsCommitted } from "types/global";
 import getVotesCommittedByUser from "web3/queries/getVotesCommittedByUser";
@@ -10,7 +11,7 @@ export default function useWithIsCommitted(
   votes: PriceRequest[]
 ) {
   const { isLoading, isError, data, error } = useQuery(
-    ["withIsCommitted"],
+    [withIsCommittedKey],
     () => getVotesCommittedByUser(votingContract, address),
     {
       refetchInterval: (data) => (data ? false : 1000),

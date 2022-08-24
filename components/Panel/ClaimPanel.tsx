@@ -1,17 +1,30 @@
 import { Button } from "components/Button";
+import useAccountDetails from "hooks/useAccountDetails";
+import { useContractsContext } from "hooks/useContractsContext";
+import useStakerDetails from "hooks/useStakerDetails";
+import useWithdrawAndRestake from "hooks/useWithdrawAndRestake";
+import useWithdrawRewards from "hooks/useWithdrawRewards";
 import styled from "styled-components";
-import { ClaimPanelContentT, PanelContentT } from "types/global";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
-interface Props {
-  content: PanelContentT;
-}
-export function ClaimPanel({ content }: Props) {
-  if (!content) return null;
+export function ClaimPanel() {
+  const { voting } = useContractsContext();
+  const { address } = useAccountDetails();
+  const withdrawRewardsMutation = useWithdrawRewards();
+  const withdrawAndRestakeMutation = useWithdrawAndRestake();
+  const {
+    stakerDetails: { outstandingRewards },
+  } = useStakerDetails(voting, address);
 
-  const { claimableRewards } = content as ClaimPanelContentT;
+  function withdrawRewards() {
+    withdrawRewardsMutation({ voting });
+  }
+
+  function withdrawAndRestake() {
+    withdrawAndRestakeMutation({ voting });
+  }
 
   return (
     <PanelWrapper>
@@ -20,7 +33,7 @@ export function ClaimPanel({ content }: Props) {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <strong>{claimableRewards}</strong> UMA
+            <Strong>{outstandingRewards}</Strong> UMA
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>
@@ -29,13 +42,7 @@ export function ClaimPanel({ content }: Props) {
             <PanelSectionText>
               Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
             </PanelSectionText>
-            <Button
-              variant="primary"
-              width="100%"
-              height={45}
-              label="Claim and Stake"
-              onClick={() => console.log("TODO Claim and Stake")}
-            />
+            <Button variant="primary" width="100%" height={45} label="Claim and Stake" onClick={withdrawAndRestake} />
           </ClaimAndStakeWrapper>
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
@@ -43,13 +50,7 @@ export function ClaimPanel({ content }: Props) {
               By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
               text TODO.
             </PanelSectionText>
-            <Button
-              variant="secondary"
-              width="100%"
-              height={45}
-              label="Claim to Wallet"
-              onClick={() => console.log("TODO Claim to Wallet")}
-            />
+            <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
           </ClaimToWalletWrapper>
         </InnerWrapper>
       </SectionsWrapper>
@@ -94,3 +95,7 @@ const ClaimAndStakeWrapper = styled.div`
 `;
 
 const ClaimToWalletWrapper = styled.div``;
+
+const Strong = styled.strong`
+  font-weight: 700;
+`;

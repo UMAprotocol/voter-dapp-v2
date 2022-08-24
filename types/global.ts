@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export type InputDataT = {
   value: string | number;
   label: string;
@@ -53,7 +55,7 @@ export type DecryptedVoteT = { price: string; salt: string };
 
 export type VoteDetailsT = {
   title: string;
-  origin: DisputeOriginT;
+  origin: VoteOriginT;
   txid: string;
   isGovernance: boolean;
   umipNumber: number;
@@ -75,24 +77,13 @@ export type VoteTimelineT = {
   phaseEnds: Date;
 };
 
-export type DisputeOriginT = "UMA" | "Polymarket";
+export type VoteOriginT = "UMA" | "Polymarket";
 
 export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
 
 export type VotePanelContentT = VoteT;
 
-export type ClaimPanelContentT = {
-  claimableRewards: number;
-};
-
-export type StakePanelContentT = {
-  stakedBalance: number;
-  unstakedBalance: number;
-  cooldownEnds: Date;
-  claimableRewards: number;
-};
-
-export type PanelContentT = VotePanelContentT | ClaimPanelContentT | StakePanelContentT | null;
+export type PanelContentT = VotePanelContentT | null;
 
 export type SigningKey = {
   publicKey: string;
@@ -102,4 +93,16 @@ export type SigningKey = {
 
 export type SigningKeys = {
   [address: string]: SigningKey;
+};
+
+export type StakerDetailsT = {
+  activeStake: BigNumber;
+  pendingUnstake: BigNumber;
+  pendingStake: BigNumber;
+  rewardsPaidPerToken: BigNumber;
+  outstandingRewards: BigNumber;
+  unappliedSlash: BigNumber;
+  lastRequestIndexConsidered: BigNumber;
+  unstakeRequestTime: BigNumber;
+  delegate: string;
 };

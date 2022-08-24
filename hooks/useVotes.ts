@@ -1,4 +1,4 @@
-import { DisputeOriginT, PriceRequest, PriceRequestWithVoteDetails, VoteT } from "types/global";
+import { VoteOriginT, PriceRequest, PriceRequestWithVoteDetails, VoteT } from "types/global";
 import useActiveVotes from "./useActiveVotes";
 import { useContractsContext } from "./useContractsContext";
 import useCurrentRoundId from "./useCurrentRoundId";
@@ -91,7 +91,7 @@ function addOrigin(votes: PriceRequest[]) {
   return votes.map((vote) => ({
     ...vote,
     // todo wire up to ancillary data
-    origin: vote.decodedIdentifier.includes("Admin") ? "UMA" : ("Polymarket" as DisputeOriginT),
+    origin: vote.decodedIdentifier.includes("Admin") ? "UMA" : ("Polymarket" as VoteOriginT),
   }));
 }
 

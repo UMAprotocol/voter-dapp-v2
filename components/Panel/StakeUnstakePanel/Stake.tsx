@@ -4,11 +4,34 @@ import { Checkbox } from "components/Checkbox";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+import useUnstakedBalance from "hooks/useUnstakedBalance";
+import useAccountDetails from "hooks/useAccountDetails";
+import { useContractsContext } from "hooks/useContractsContext";
+import { ethers } from "ethers";
+import { votingAddress } from "constants/addresses";
+import useTokenAllowance from "hooks/useTokenAllowance";
+import useStake from "hooks/useStake";
+import useApprove from "hooks/useApprove";
 
 export function Stake() {
+  const { address } = useAccountDetails();
+  const { voting, votingToken } = useContractsContext();
+  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
+  const { tokenAllowance } = useTokenAllowance(votingToken, address);
   const [stakeAmount, setStakeAmount] = useState("");
+  const stakeMutation = useStake();
+  const approveMutation = useApprove();
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
+
+  function stake() {
+    stakeMutation({ voting, stakeAmount });
+  }
+
+  async function approve() {
+    approveMutation({ votingToken, approveAmount: stakeAmount });
+  }
+
   return (
     <Wrapper>
       <PanelSectionTitle>Stake</PanelSectionTitle>
@@ -20,7 +43,7 @@ export function Stake() {
         <AmountInput
           value={stakeAmount}
           onChange={(e) => setStakeAmount(e.target.value)}
-          onMax={() => setStakeAmount("10000")}
+          onMax={() => setStakeAmount(tokenAllowance > 0 ? tokenAllowance.toString() : unstakedBalance.toString())}
         />
       </AmountInputWrapper>
       <CheckboxWrapper>
@@ -32,10 +55,10 @@ export function Stake() {
       </CheckboxWrapper>
       <Button
         variant="primary"
-        label="Stake"
-        onClick={() => console.log("TODO implement stake")}
+        label={tokenAllowance > 0 ? "Stake" : "Approve"}
+        onClick={tokenAllowance > 0 ? stake : approve}
         width="100%"
-        disabled={!disclaimerChecked}
+        disabled={!disclaimerChecked || stakeAmount === ""}
       />
     </Wrapper>
   );

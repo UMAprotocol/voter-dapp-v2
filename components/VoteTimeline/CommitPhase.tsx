@@ -36,11 +36,11 @@ export function CommitPhase({ phase, startsIn, timeRemaining }: Props) {
         </CommitIconWrapper>
         {startsIn ? (
           <Message>
-            Commit phase starts in <strong>{startsIn}</strong>
+            Commit phase starts in <Strong>{startsIn}</Strong>
           </Message>
         ) : timeRemaining ? (
           <Message>
-            Time remaining to commit votes: <strong>{timeRemaining}</strong>
+            Time remaining to commit votes: <Strong>{timeRemaining}</Strong>
           </Message>
         ) : (
           <Message>Commit phase over</Message>
@@ -91,4 +91,8 @@ const ArrowBorder = styled.div`
   background-color: var(--black);
   top: 0;
   left: 2px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
 `;
