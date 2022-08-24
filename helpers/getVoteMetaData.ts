@@ -1,5 +1,5 @@
 import { UmipDataFromContentfulT, VoteMetaDataT } from "types/global";
-import approvedIdentifiers from "data/approvedIdentifiersTable.json";
+import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { discordLink } from "constants/discordLink";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -40,7 +40,7 @@ export default function getVoteMetaData(
 
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
   // we know we are dealing with a request for an approved price identifier if the decodedIdentifier matches an approved identifier
-  const identifierDetails = approvedIdentifiers.find((id) => decodedIdentifier === id.identifier);
+  const identifierDetails = approvedIdentifiers[decodedIdentifier];
   const isApprovedIdentifier =
     Boolean(identifierDetails) &&
     // `YES_OR_NO_QUERY` is a special case, because it is the only approved identifier that Polymarket uses
