@@ -3,12 +3,12 @@ import { InfoBar } from "components/InfoBar";
 import One from "public/assets/icons/one.svg";
 import Two from "public/assets/icons/two.svg";
 import Three from "public/assets/icons/three.svg";
-import { usePanelContext } from "hooks/usePanelContext";
-import useUnstakedBalance from "hooks/useUnstakedBalance";
-import { useContractsContext } from "hooks/useContractsContext";
-import useAccountDetails from "hooks/useAccountDetails";
-import useStakerDetails from "hooks/useStakerDetails";
-import useStakedBalance from "hooks/useStakedBalance";
+import { usePanelContext } from "hooks/contexts";
+import useUnstakedBalance from "hooks/queries/useUnstakedBalance";
+import { useContractsContext } from "hooks/contexts";
+import useAccountDetails from "hooks/queries/useAccountDetails";
+import useStakerDetails from "hooks/queries/useStakerDetails";
+import useStakedBalance from "hooks/queries/useStakedBalance";
 
 interface Props {
   votesInLastCycles: number;

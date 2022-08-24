@@ -1,6 +1,6 @@
 import "@reach/dialog/styles.css";
 import { DialogOverlay, DialogContent } from "@reach/dialog";
-import { usePanelContext } from "hooks/usePanelContext";
+import { usePanelContext } from "hooks/contexts";
 import styled, { CSSProperties } from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
 import { VotePanel } from "./VotePanel";

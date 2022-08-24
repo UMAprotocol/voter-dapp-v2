@@ -2,9 +2,9 @@ import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
 import { VoteTimelineT } from "types/global";
-import useCurrentRoundId from "hooks/useCurrentRoundId";
-import useVotePhaseEnds from "hooks/useVotePhaseEnds";
-import { useContractsContext } from "hooks/useContractsContext";
+import useCurrentRoundId from "hooks/queries/useCurrentRoundId";
+import useVotePhaseEnds from "hooks/queries/useVotePhaseEnds";
+import { useContractsContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
 import { formatDuration, intervalToDuration } from "date-fns";
 

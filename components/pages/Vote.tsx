@@ -2,9 +2,8 @@ import { Banner } from "components/Banner";
 import { HowItWorks } from "components/HowItWorks";
 import { Layout } from "components/Layout";
 import { Votes } from "components/Votes";
-import { add, sub } from "date-fns";
-import useActiveVotes from "hooks/useActiveVotes";
-import { useContractsContext } from "hooks/useContractsContext";
+import { add } from "date-fns";
+import { useContractsContext } from "hooks/contexts";
 
 export function Vote() {
   const mockStakeholderData = {

@@ -1,5 +1,5 @@
 import { Vote } from "components/pages";
-import useMounted from "hooks/useMounted";
+import useMounted from "hooks/helpers/useMounted";
 import type { NextPage } from "next";
 
 const VotePage: NextPage = () => {

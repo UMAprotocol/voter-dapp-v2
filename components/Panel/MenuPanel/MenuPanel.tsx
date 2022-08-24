@@ -6,7 +6,7 @@ import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { getAccountDetails, handleDisconnectWallet } from "components/Wallet";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
-import { useWalletContext } from "hooks/useWalletContext";
+import { useWalletContext } from "hooks/contexts";
 
 const links = [
   {

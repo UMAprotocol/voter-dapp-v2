@@ -4,14 +4,14 @@ import { Checkbox } from "components/Checkbox";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
-import useUnstakedBalance from "hooks/useUnstakedBalance";
-import useAccountDetails from "hooks/useAccountDetails";
-import { useContractsContext } from "hooks/useContractsContext";
+import useUnstakedBalance from "hooks/queries/useUnstakedBalance";
+import useAccountDetails from "hooks/queries/useAccountDetails";
+import { useContractsContext } from "hooks/contexts";
 import { ethers } from "ethers";
 import { votingAddress } from "constants/addresses";
-import useTokenAllowance from "hooks/useTokenAllowance";
-import useStake from "hooks/useStake";
-import useApprove from "hooks/useApprove";
+import useTokenAllowance from "hooks/queries/useTokenAllowance";
+import useStake from "hooks/mutations/useStake";
+import useApprove from "hooks/mutations/useApprove";
 
 export function Stake() {
   const { address } = useAccountDetails();

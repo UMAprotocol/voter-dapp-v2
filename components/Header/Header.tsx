@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Logo from "public/assets/logo.svg";
 import Menu from "/public/assets/icons/menu.svg";
 import { Wallet } from "components/Wallet";
-import { usePanelContext } from "hooks/usePanelContext";
+import { usePanelContext } from "hooks/contexts";
 
 export function Header() {
   const { setPanelType, setPanelOpen } = usePanelContext();

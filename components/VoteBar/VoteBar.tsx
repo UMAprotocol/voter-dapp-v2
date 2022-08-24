@@ -7,7 +7,7 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import Dot from "public/assets/icons/dot.svg";
 import { green, red500 } from "constants/colors";
 import { TextInput } from "components/Input";
-import { useWalletContext } from "hooks/useWalletContext";
+import { useWalletContext } from "hooks/contexts";
 import { ethers } from "ethers";
 
 interface Props {
