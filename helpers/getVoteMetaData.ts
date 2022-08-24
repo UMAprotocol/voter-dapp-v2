@@ -24,7 +24,7 @@ export default function getVoteMetaData(
     const umipUrl = umipDataFromContentful?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
-    const options = makeVoteOptions({ isUmip });
+    const options = makeVoteOptions("umip");
     return {
       title,
       description,
@@ -74,7 +74,7 @@ export default function getVoteMetaData(
   const description = ancillaryDataDescription ?? "No description was found for this request.";
   const links = makeVoteLinks(transactionHash);
   const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
-  const options = makeVoteOptions({ isYesNoQuery });
+  const options = isYesNoQuery ? makeVoteOptions("yesNoQuery") : undefined;
   return {
     title,
     description,
@@ -133,29 +133,25 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
   return asNumber;
 }
 
-function makeVoteOptions({ isUmip = false, isYesNoQuery = false }: { isUmip?: boolean; isYesNoQuery?: boolean } = {}) {
-  if (isUmip && isYesNoQuery) {
-    throw new Error("Cannot be both an UMIP and a YES_OR_NO_QUERY request");
-  }
-
-  if (isUmip) {
-    return [
-      { label: "Yes", value: "1" },
-      { label: "No", value: "0" },
-    ];
-  }
-
+function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
   const earlyRequestMagicNumber = "-57896044618658097711785492504343953926634992332820282019728.792003956564819968";
-  if (isYesNoQuery) {
-    return [
-      { label: "Yes", value: "0", secondaryLabel: "p1" },
-      { label: "No", value: "1", secondaryLabel: "p2" },
-      { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
-      { label: "Early request", value: earlyRequestMagicNumber, secondaryLabel: "p4" },
-    ];
-  }
+  const yesNoQueryVoteOptions = [
+    { label: "Yes", value: "0", secondaryLabel: "p1" },
+    { label: "No", value: "1", secondaryLabel: "p2" },
+    { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
+    { label: "Early request", value: earlyRequestMagicNumber, secondaryLabel: "p4" },
+  ];
+  const umipVoteOptions = [
+    { label: "Yes", value: "1" },
+    { label: "No", value: "0" },
+  ];
 
-  return undefined;
+  switch (voteType) {
+    case "umip":
+      return umipVoteOptions;
+    case "yesNoQuery":
+      return yesNoQueryVoteOptions;
+  }
 }
 
 function makeVoteLinks(transactionHash: string, umipNumber?: number) {
