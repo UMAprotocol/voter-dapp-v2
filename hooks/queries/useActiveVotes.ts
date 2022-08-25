@@ -4,7 +4,7 @@ import { activeVotesKey } from "constants/queryKeys";
 import { decodeHexString } from "helpers/decodeHexString";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { PriceRequestT } from "types/global";
-import getPendingRequests from "web3/queries/getPendingRequests";
+import { getPendingRequests } from "web3/queries";
 
 export default function useActiveVotes(votingContract: VotingV2Ethers) {
   const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(votingContract), {

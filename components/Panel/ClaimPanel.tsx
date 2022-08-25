@@ -1,9 +1,7 @@
 import { Button } from "components/Button";
-import useAccountDetails from "hooks/useAccountDetails";
-import { useContractsContext } from "hooks/useContractsContext";
-import useStakerDetails from "hooks/useStakerDetails";
-import useWithdrawAndRestake from "hooks/useWithdrawAndRestake";
-import useWithdrawRewards from "hooks/useWithdrawRewards";
+import { useContractsContext } from "hooks/contexts";
+import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
+import { useAccountDetails, useStakerDetails } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";

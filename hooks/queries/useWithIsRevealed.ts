@@ -3,7 +3,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withIsRevealedKey } from "constants/queryKeys";
 import { makeUniqueKeysForVotes } from "helpers/votes";
 import { PriceRequestT } from "types/global";
-import getVotesRevealedByUser from "web3/queries/getVotesRevealedByUser";
+import { getVotesRevealedByUser } from "web3/queries";
 
 export default function useWithIsRevealed(
   votingContract: VotingV2Ethers,

@@ -1,19 +1,16 @@
 import { OnboardAPI } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
+import message from "constants/signingMessage";
 import { ethers } from "ethers";
+import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
 import { initOnboard } from "helpers/initOnboard";
-import { useContractsContext } from "hooks/useContractsContext";
-import { usePanelContext } from "hooks/usePanelContext";
-import { useWalletContext } from "hooks/useWalletContext";
+import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import createVotingContractInstance from "web3/createVotingContractInstance";
+import { SigningKey, SigningKeys } from "types/global";
+import { createVotingContractInstance, createVotingTokenContractInstance } from "web3/contracts";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
-import message from "constants/signingMessage";
-import { SigningKey, SigningKeys } from "types/global";
-import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
-import createVotingTokenContractInstance from "web3/createVotingTokenContractInstance";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();

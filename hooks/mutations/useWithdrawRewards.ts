@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import { StakerDetailsT } from "types/global";
-import withdrawAndRestake from "web3/mutations/withdrawAndRestake";
+import { withdrawRewards } from "web3/mutations";
 
-export default function useWithdrawAndRestake() {
+export default function useWithdrawRewards() {
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(withdrawAndRestake, {
+  const { mutate } = useMutation(withdrawRewards, {
     onSuccess: () => {
-      queryClient.setQueryData<[BigNumber]>(["stakedBalance"], (oldStakedBalance) => {
+      queryClient.setQueryData<[BigNumber]>(["unstakedBalance"], (oldUnstakedBalance) => {
         const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>(["stakerDetails"]);
 
-        if (!oldStakerDetails || !oldStakedBalance) return undefined;
+        if (!oldStakerDetails || !oldUnstakedBalance) return undefined;
 
-        const newStakedBalance = oldStakedBalance[0].add(oldStakerDetails.outstandingRewards);
+        const newUnstakedBalance = oldUnstakedBalance[0].add(oldStakerDetails.outstandingRewards);
 
-        return [newStakedBalance];
+        return [newUnstakedBalance];
       });
 
       queryClient.setQueryData<StakerDetailsT>(["stakerDetails"], (oldStakerDetails) => {

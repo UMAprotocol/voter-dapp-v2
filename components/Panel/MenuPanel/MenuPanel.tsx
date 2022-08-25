@@ -1,12 +1,12 @@
-import { Nav } from "components/Nav";
-import styled from "styled-components";
-import { Button } from "components/Button";
-import { WalletIcon } from "components/Wallet/WalletIcon";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
+import { Button } from "components/Button";
+import { Nav } from "components/Nav";
 import { getAccountDetails, handleDisconnectWallet } from "components/Wallet";
+import { WalletIcon } from "components/Wallet/WalletIcon";
+import { useWalletContext } from "hooks/contexts";
+import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
-import { useWalletContext } from "hooks/useWalletContext";
 
 const links = [
   {

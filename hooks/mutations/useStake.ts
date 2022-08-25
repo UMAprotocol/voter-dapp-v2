@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakedBalanceKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber, ethers } from "ethers";
-import stake from "web3/mutations/stake";
+import { stake } from "web3/mutations";
 
 export default function useStake() {
   const queryClient = useQueryClient();

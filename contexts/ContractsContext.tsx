@@ -1,7 +1,6 @@
-import { VotingV2Ethers, VotingTokenEthers } from "@uma/contracts-frontend";
+import { VotingTokenEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { createContext, ReactNode, useState } from "react";
-import createVotingContractInstance from "web3/createVotingContractInstance";
-import createVotingTokenContractInstance from "web3/createVotingTokenContractInstance";
+import { createVotingContractInstance, createVotingTokenContractInstance } from "web3/contracts";
 
 interface ContractsContextState {
   voting: VotingV2Ethers;

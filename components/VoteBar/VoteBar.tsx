@@ -1,14 +1,14 @@
 import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
+import { TextInput } from "components/Input";
+import { green, red500 } from "constants/colors";
+import { ethers } from "ethers";
+import { useWalletContext } from "hooks/contexts";
+import Dot from "public/assets/icons/dot.svg";
+import Polymarket from "public/assets/icons/polymarket.svg";
+import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
-import UMA from "public/assets/icons/uma.svg";
-import Polymarket from "public/assets/icons/polymarket.svg";
-import Dot from "public/assets/icons/dot.svg";
-import { green, red500 } from "constants/colors";
-import { TextInput } from "components/Input";
-import { useWalletContext } from "hooks/useWalletContext";
-import { ethers } from "ethers";
 
 interface Props {
   vote: VoteT;

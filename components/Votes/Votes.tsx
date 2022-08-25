@@ -1,23 +1,17 @@
+import { parseFixed } from "@ethersproject/bignumber";
 import { useWallets } from "@web3-onboard/react";
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
+import signingMessage from "constants/signingMessage";
 import { BigNumber, ethers } from "ethers";
-import unixTimestampToDate from "helpers/unixTimestampToDate";
-import { useContractsContext } from "hooks/useContractsContext";
-import useCurrentRoundId from "hooks/useCurrentRoundId";
-import { usePanelContext } from "hooks/usePanelContext";
-import useVotePhase from "hooks/useVotePhase";
-import useVotePhaseEnds from "hooks/useVotePhaseEnds";
+import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "helpers/crypto";
+import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
+import { useCurrentRoundId, useVotePhase, useVotePhaseEnds, useVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
-import { parseFixed } from "@ethersproject/bignumber";
-import { encryptMessage, getRandomSignedInt, getPrecisionForIdentifier } from "helpers/crypto";
-import { useWalletContext } from "hooks/useWalletContext";
-import signingMessage from "constants/signingMessage";
-import useVotes from "hooks/useVotes";
 
 export function Votes() {
   const connectedWallets = useWallets();

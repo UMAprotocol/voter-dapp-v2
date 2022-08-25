@@ -1,9 +1,9 @@
-import Link from "next/link";
-import styled from "styled-components";
-import Logo from "public/assets/logo.svg";
-import Menu from "/public/assets/icons/menu.svg";
 import { Wallet } from "components/Wallet";
-import { usePanelContext } from "hooks/usePanelContext";
+import { usePanelContext } from "hooks/contexts";
+import Link from "next/link";
+import Logo from "public/assets/logo.svg";
+import styled from "styled-components";
+import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { setPanelType, setPanelOpen } = usePanelContext();

@@ -1,14 +1,15 @@
 import getVoteMetaData from "helpers/getVoteMetaData";
+import { useContractsContext, useWalletContext } from "hooks/contexts";
+import {
+  useActiveVotes,
+  useCurrentRoundId,
+  useWithDecryptedVotes,
+  useWithEncryptedVotes,
+  useWithIsCommitted,
+  useWithIsRevealed,
+  useWithUmipDataFromContentful,
+} from "hooks/queries";
 import { PriceRequestT, VoteT, WithUmipDataFromContentfulT } from "types/global";
-import useActiveVotes from "./useActiveVotes";
-import { useContractsContext } from "./useContractsContext";
-import useCurrentRoundId from "./useCurrentRoundId";
-import { useWalletContext } from "./useWalletContext";
-import useWithDecryptedVotes from "./useWithDecryptedVotes";
-import useWithEncryptedVotes from "./useWithEncryptedVotes";
-import useWithIsCommitted from "./useWithIsCommitted";
-import useWithIsRevealed from "./useWithIsRevealed";
-import useWithUmipDataFromContentful from "./useWithUmipDataFromContentful";
 
 export default function useVotes(address: string | undefined) {
   const { voting } = useContractsContext();

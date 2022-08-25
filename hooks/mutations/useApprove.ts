@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber, ethers } from "ethers";
-import approve from "web3/mutations/approve";
+import { approve } from "web3/mutations";
 
 export default function useApprove() {
   const queryClient = useQueryClient();

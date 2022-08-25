@@ -3,7 +3,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { ethers } from "ethers";
 import getCanUnstakeTime from "helpers/getCanUnstakeTime";
-import getStakerDetails from "web3/queries/getStakerDetails";
+import { getStakerDetails } from "web3/queries";
 
 export default function useStakerDetails(votingContract: VotingV2Ethers, address: string | undefined) {
   const { isLoading, isError, data, error } = useQuery(

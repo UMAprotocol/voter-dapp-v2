@@ -4,7 +4,7 @@ import { withEncryptedVotesKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { PriceRequestT, WithIsCommittedT } from "types/global";
-import getEncryptedVotesForUser from "web3/queries/getEncryptedVotesForUser";
+import { getEncryptedVotesForUser } from "web3/queries";
 
 export default function useWithEncryptedVotes(
   votingContract: VotingV2Ethers,
