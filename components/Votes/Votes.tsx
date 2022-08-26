@@ -5,7 +5,7 @@ import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
 import { formatVotesToCommit, formatVotesToReveal } from "helpers/votes";
 import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhase, useVotePhaseEnds, useVotes } from "hooks/queries";
+import { useCurrentRoundId, useVotePhase, useRoundEndTime, useVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
@@ -20,7 +20,7 @@ export function Votes() {
   const { signer, signingKeys } = useWalletContext();
   const votePhase = useVotePhase();
   const { currentRoundId } = useCurrentRoundId(voting);
-  const votePhaseEnds = useVotePhaseEnds(currentRoundId);
+  const votePhaseEnds = useRoundEndTime(currentRoundId);
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));

@@ -1,5 +1,5 @@
 import { useContractsContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhase, useVotePhaseEnds } from "hooks/queries";
+import { useCurrentRoundId, useVotePhase, useRoundEndTime } from "hooks/queries";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT } from "types/global";
@@ -10,21 +10,10 @@ export function VoteTimeline() {
   const { voting } = useContractsContext();
   const { currentRoundId } = useCurrentRoundId(voting);
   const phase = useVotePhase();
-  const roundEndsMilliseconds = useVotePhaseEnds(currentRoundId);
+  const roundEndsMilliseconds = useRoundEndTime(currentRoundId);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const timerRef = useRef<number>();
   const phaseRef = useRef<VotePhaseT>();
-
-  function getPhaseEnds(phase: VotePhaseT, roundEndsMilliseconds: number) {
-    switch (phase) {
-      case "commit":
-        return roundEndsMilliseconds - 10 * 60 * 1000;
-      case "reveal":
-        return roundEndsMilliseconds;
-      default:
-        return 0;
-    }
-  }
 
   useEffect(() => {
     if (!phase || !roundEndsMilliseconds) return;
@@ -63,6 +52,17 @@ export function VoteTimeline() {
       clearInterval(timerRef.current);
     };
   }, [phase, roundEndsMilliseconds]);
+
+  function getPhaseEnds(phase: VotePhaseT, roundEndsMilliseconds: number) {
+    switch (phase) {
+      case "commit":
+        return roundEndsMilliseconds - 10 * 60 * 1000;
+      case "reveal":
+        return roundEndsMilliseconds;
+      default:
+        return 0;
+    }
+  }
 
   if (!phase) return null;
 

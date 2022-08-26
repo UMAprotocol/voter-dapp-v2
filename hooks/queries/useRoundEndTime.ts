@@ -2,9 +2,9 @@ import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import useVotePhase from "./useVotePhase";
 
-export default function useVotePhaseEnds(roundId: BigNumber | undefined) {
+export default function useRoundEndTime(roundId: BigNumber | undefined) {
   const votePhase = useVotePhase();
-  const [phaseEndsMilliseconds, setPhaseEndsMilliseconds] = useState<number | undefined>(undefined);
+  const [roundEndTimeMilliseconds, setRoundEndTimeMilliseconds] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (!roundId) return;
@@ -14,8 +14,8 @@ export default function useVotePhaseEnds(roundId: BigNumber | undefined) {
     const roundLength = phaseLengthUnix * numPhases;
     const roundEndTime = roundLength * (roundId.toNumber() + 1);
     const roundEndTimeMilliseconds = roundEndTime * 1000;
-    setPhaseEndsMilliseconds(roundEndTimeMilliseconds);
+    setRoundEndTimeMilliseconds(roundEndTimeMilliseconds);
   }, [roundId, votePhase]);
 
-  return phaseEndsMilliseconds;
+  return roundEndTimeMilliseconds;
 }
