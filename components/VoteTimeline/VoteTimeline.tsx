@@ -1,52 +1,75 @@
-import { formatDuration, intervalToDuration } from "date-fns";
 import { useContractsContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhaseEnds } from "hooks/queries";
-import { useEffect, useState } from "react";
+import { useCurrentRoundId, useVotePhase, useVotePhaseEnds } from "hooks/queries";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { VoteTimelineT } from "types/global";
+import { VotePhaseT } from "types/global";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
 
-export function VoteTimeline({ phase }: VoteTimelineT) {
+export function VoteTimeline() {
   const { voting } = useContractsContext();
   const { currentRoundId } = useCurrentRoundId(voting);
-  const phaseEndsMilliseconds = useVotePhaseEnds(currentRoundId);
-  const [commitPhaseStartsIn, setCommitPhaseStartsIn] = useState("");
-  const [revealPhaseStartsIn, setRevealPhaseStartsIn] = useState("");
-  const [commitPhaseTimeRemaining, setCommitPhaseTimeRemaining] = useState("");
-  const [revealPhaseTimeRemaining, setRevealPhaseTimeRemaining] = useState("");
+  const phase = useVotePhase();
+  const roundEndsMilliseconds = useVotePhaseEnds(currentRoundId);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const timerRef = useRef<number>();
+  const phaseRef = useRef<VotePhaseT>();
+
+  function getPhaseEnds(phase: VotePhaseT, roundEndsMilliseconds: number) {
+    switch (phase) {
+      case "commit":
+        return roundEndsMilliseconds - 10 * 60 * 1000;
+      case "reveal":
+        return roundEndsMilliseconds;
+      default:
+        return 0;
+    }
+  }
 
   useEffect(() => {
-    if (!phaseEndsMilliseconds) return;
+    if (!phase || !roundEndsMilliseconds) return;
 
-    const interval = setInterval(() => {
-      const start = new Date();
-      const end = new Date(phaseEndsMilliseconds);
-      if (start > end) {
-        return;
-      }
-      const duration = intervalToDuration({ start, end });
+    if (!phaseRef.current) {
+      phaseRef.current = phase;
+    }
 
-      const { hours, minutes, seconds } = duration;
-      const formattedDuration = formatDuration({ hours, minutes, seconds });
+    if (!timerRef.current) {
+      timerRef.current = makeTimer();
+      window.addEventListener("focus", () => makeTimer(true));
+      return;
+    }
 
-      if (phase === "commit" && phaseEndsMilliseconds) {
-        setCommitPhaseTimeRemaining(formattedDuration);
-        setRevealPhaseStartsIn(formattedDuration);
-      }
+    if (phase !== phaseRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = makeTimer(true);
+      return;
+    }
 
-      if (phase === "reveal" && phaseEndsMilliseconds) {
-        setRevealPhaseTimeRemaining(formattedDuration);
-      }
-    }, 1000);
+    function makeTimer(isRefresh = false) {
+      if (!roundEndsMilliseconds) return;
+      const timer = window.setInterval(() => {
+        setTimeRemaining((timeRemaining) => {
+          if (!timeRemaining || isRefresh) {
+            return getPhaseEnds(phase, roundEndsMilliseconds) - Date.now();
+          }
+          return timeRemaining - 1000;
+        });
+      }, 1000);
+      return timer;
+    }
 
-    return () => clearInterval(interval);
-  }, [phase, phaseEndsMilliseconds]);
+    return () => {
+      window.removeEventListener("focus", () => makeTimer(true));
+      clearInterval(timerRef.current);
+    };
+  }, [phase, roundEndsMilliseconds]);
+
+  if (!phase) return null;
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} startsIn={commitPhaseStartsIn} timeRemaining={commitPhaseTimeRemaining} />
-      <RevealPhase phase={phase} startsIn={revealPhaseStartsIn} timeRemaining={revealPhaseTimeRemaining} />
+      <CommitPhase phase={phase} timeRemaining={timeRemaining} />
+      <RevealPhase phase={phase} timeRemaining={timeRemaining} />
     </Wrapper>
   );
 }
