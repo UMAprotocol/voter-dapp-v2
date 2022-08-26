@@ -11,7 +11,7 @@ export function VoteTimeline() {
   const { currentRoundId } = useCurrentRoundId(voting);
   const phase = useVotePhase();
   const roundEndsMilliseconds = useRoundEndTime(currentRoundId);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const timerRef = useRef<number>();
   const phaseRef = useRef<VotePhaseT>();
 
@@ -64,7 +64,7 @@ export function VoteTimeline() {
     }
   }
 
-  if (!phase) return null;
+  if (!phase || !timeRemaining) return null;
 
   return (
     <Wrapper>
