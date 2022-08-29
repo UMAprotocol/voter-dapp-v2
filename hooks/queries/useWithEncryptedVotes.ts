@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withEncryptedVotesKey } from "constants/queryKeys";
-import { BigNumber } from "ethers";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { PriceRequestT, WithIsCommittedT } from "types/global";
 import { getEncryptedVotesForUser } from "web3/queries";
@@ -9,7 +8,7 @@ import { getEncryptedVotesForUser } from "web3/queries";
 export default function useWithEncryptedVotes(
   votingContract: VotingV2Ethers,
   address: string | undefined,
-  roundId: BigNumber | undefined,
+  roundId: number | undefined,
   votes: WithIsCommittedT<PriceRequestT>[]
 ) {
   const { isLoading, isError, data, error } = useQuery(

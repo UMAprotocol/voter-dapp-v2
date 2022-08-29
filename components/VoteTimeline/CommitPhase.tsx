@@ -1,5 +1,5 @@
 import { black, red500, white } from "constants/colors";
-import { formatDistanceToNowStrict, formatDuration } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
 

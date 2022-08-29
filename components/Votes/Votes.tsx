@@ -5,7 +5,9 @@ import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
 import { formatVotesToCommit, formatVotesToReveal } from "helpers/votes";
 import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhase, useRoundEndTime, useVotes } from "hooks/queries";
+import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
+import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
+import { useVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
@@ -18,22 +20,22 @@ export function Votes() {
   const [selectedVotes, setSelectedVotes] = useState<Record<string, string | undefined>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
-  const votePhase = useVotePhase();
-  const { currentRoundId } = useCurrentRoundId(voting);
-  const votePhaseEnds = useRoundEndTime(currentRoundId);
+  const { phase, roundId } = useVoteTimingContext();
+
+  useInitializeVoteTiming();
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
 
   async function commitVotes() {
-    if (!votes || !currentRoundId || !signer) return;
+    if (!votes || !roundId || !signer) return;
 
     const formattedVotes = await formatVotesToCommit({
       votes,
       selectedVotes,
       address,
-      roundId: currentRoundId.toNumber(),
+      roundId,
       signer,
       signingKeys,
     });
@@ -106,23 +108,19 @@ export function Votes() {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {determineVotesToShow(votes, votePhase).map((vote) => (
+          {determineVotesToShow(votes, phase).map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={selectVote}
-              phase={votePhase}
+              phase={phase}
               key={vote.uniqueKey}
               moreDetailsAction={() => openVotePanel(vote)}
             />
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
-          <Button
-            variant="primary"
-            label={`${votePhase} Votes`}
-            onClick={votePhase === "commit" ? commitVotes : revealVotes}
-          />
+          <Button variant="primary" label={`${phase} Votes`} onClick={phase === "commit" ? commitVotes : revealVotes} />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
     </OuterWrapper>

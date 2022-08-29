@@ -1,8 +1,8 @@
 import getVoteMetaData from "helpers/getVoteMetaData";
 import { useContractsContext, useWalletContext } from "hooks/contexts";
+import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import {
   useActiveVotes,
-  useCurrentRoundId,
   useWithDecryptedVotes,
   useWithEncryptedVotes,
   useWithIsCommitted,
@@ -15,11 +15,11 @@ export default function useVotes(address: string | undefined) {
   const { voting } = useContractsContext();
   const { signingKeys } = useWalletContext();
   const { activeVotes } = useActiveVotes(voting);
-  const { currentRoundId } = useCurrentRoundId(voting);
+  const { roundId } = useVoteTimingContext();
 
   const { withIsRevealed } = useWithIsRevealed(voting, address, activeVotes);
   const { withIsCommitted } = useWithIsCommitted(voting, address, withIsRevealed);
-  const { withEncryptedVotes } = useWithEncryptedVotes(voting, address, currentRoundId, withIsCommitted);
+  const { withEncryptedVotes } = useWithEncryptedVotes(voting, address, roundId, withIsCommitted);
   const withDecryptedVotes = useWithDecryptedVotes(withEncryptedVotes, address, signingKeys);
 
   const { withUmipDataFromContentful } = useWithUmipDataFromContentful(withDecryptedVotes);
