@@ -1,33 +1,12 @@
-import useAccountDetails from "./useAccountDetails";
-import useActiveVotes from "./useActiveVotes";
-import useCurrentRoundId from "./useCurrentRoundId";
-import useRoundEndTime from "./useRoundEndTime";
-import useStakedBalance from "./useStakedBalance";
-import useStakerDetails from "./useStakerDetails";
-import useTokenAllowance from "./useTokenAllowance";
-import useUnstakedBalance from "./useUnstakedBalance";
-import useVotePhase from "./useVotePhase";
-import useVotes from "./useVotes";
-import useWithDecryptedVotes from "./useWithDecryptedVotes";
-import useWithEncryptedVotes from "./useWithEncryptedVotes";
-import useWithIsCommitted from "./useWithIsCommitted";
-import useWithIsRevealed from "./useWithIsRevealed";
-import useWithUmipDataFromContentful from "./useWithUmipDataFromContentful";
-
-export {
-  useAccountDetails,
-  useActiveVotes,
-  useCurrentRoundId,
-  useStakedBalance,
-  useStakerDetails,
-  useTokenAllowance,
-  useUnstakedBalance,
-  useVotePhase,
-  useRoundEndTime,
-  useVotes,
-  useWithDecryptedVotes,
-  useWithEncryptedVotes,
-  useWithIsCommitted,
-  useWithIsRevealed,
-  useWithUmipDataFromContentful,
-};
+export { default as useAccountDetails } from "./useAccountDetails";
+export { default as useActiveVotes } from "./useActiveVotes";
+export { default as useStakedBalance } from "./useStakedBalance";
+export { default as useStakerDetails } from "./useStakerDetails";
+export { default as useTokenAllowance } from "./useTokenAllowance";
+export { default as useUnstakedBalance } from "./useUnstakedBalance";
+export { default as useVotes } from "./useVotes";
+export { default as useWithDecryptedVotes } from "./useWithDecryptedVotes";
+export { default as useWithEncryptedVotes } from "./useWithEncryptedVotes";
+export { default as useWithIsCommitted } from "./useWithIsCommitted";
+export { default as useWithIsRevealed } from "./useWithIsRevealed";
+export { default as useWithUmipDataFromContentful } from "./useWithUmipDataFromContentful";
