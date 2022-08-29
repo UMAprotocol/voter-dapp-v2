@@ -1,10 +1,10 @@
 import { useIsomorphicLayoutEffect } from "hooks/helpers";
 import { useEffect, useRef } from "react";
 
-/* 
-  https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-*/
-
+/** Allows declarative use of `setInterval` in React hooks
+ *
+ * See https://usehooks-ts.com/react-hook/use-interval and https://overreacted.io/making-setinterval-declarative-with-react-hooks/ for more details.
+ */
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
 
