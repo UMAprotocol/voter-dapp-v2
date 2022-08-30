@@ -1,7 +1,7 @@
 import { parseFixed } from "@ethersproject/bignumber";
 import signingMessage from "constants/signingMessage";
 import { BigNumber, ethers } from "ethers";
-import { FormatVotesToCommit, VoteT } from "types/global";
+import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
 
 function makeVoteHash(
@@ -59,20 +59,14 @@ export async function formatVotesToCommit({
       const encryptedVote = await encryptMessage(signingPublicKey, JSON.stringify({ price, salt }));
 
       return {
-        price,
-        salt,
-        account,
-        time,
-        ancillaryData,
-        roundId,
-        identifier,
+        ...vote,
         hash,
         encryptedVote,
       };
     })
   );
 
-  return formattedVotes.filter((vote) => vote && vote.price !== "");
+  return formattedVotes.filter((vote): vote is VoteFormattedToCommitT => Boolean(vote));
 }
 export async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   return decryptedVotesForUser.flatMap((vote) => {
