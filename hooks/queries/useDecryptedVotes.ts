@@ -11,7 +11,7 @@ export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) 
 
   useEffect(() => {
     (async () => {
-      if (!encryptedVotes?.length || !address) return;
+      if (!Object.keys(encryptedVotes).length || !address) return;
 
       const privateKey = signingKeys[address].privateKey;
       const decryptedVotes = await decryptVotes(privateKey, encryptedVotes);
