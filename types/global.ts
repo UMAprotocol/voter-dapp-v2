@@ -1,5 +1,13 @@
 import { BigNumber } from "ethers";
 
+export type UniqueKeyT = string;
+export type EncryptedVoteT = string;
+export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
+export type ActiveVotesByKeyT = Record<UniqueKeyT, PriceRequestT>;
+export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
+export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined>;
+export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT | undefined>;
+
 export type InputDataT = {
   value: string | number;
   label: string;
@@ -25,7 +33,7 @@ export type PriceRequestT = {
   timeAsDate: Date;
   decodedIdentifier: string;
   decodedAncillaryData: string;
-  uniqueKey: string;
+  uniqueKey: UniqueKeyT;
 };
 
 export type WithIsGovernanceT<T extends PriceRequestT> = T & {
@@ -41,7 +49,7 @@ export type WithIsRevealedT<T extends PriceRequestT> = T & {
 };
 
 export type WithEncryptedVoteT<T extends WithIsCommittedT<PriceRequestT>> = T & {
-  encryptedVote: string | undefined;
+  encryptedVote: EncryptedVoteT | undefined;
 };
 
 export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> = T & {
@@ -140,11 +148,3 @@ export type StakerDetailsT = {
   unstakeRequestTime: BigNumber;
   delegate: string;
 };
-
-export type UniqueKeyT = string;
-export type EncryptedVoteT = string;
-export type VoteExistsByKeyT = Record<UniqueKeyT, boolean>;
-export type ActiveVotesByKeyT = Record<UniqueKeyT, PriceRequestT>;
-export type UserEncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT>;
-export type UserDecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT>;
-export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT>;

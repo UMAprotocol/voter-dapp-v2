@@ -1,13 +1,13 @@
 import { decryptMessage } from "helpers/crypto";
 import { useWalletContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
-import { DecryptedVoteT, UserDecryptedVotesByKeyT, UserEncryptedVotesByKeyT } from "types/global";
+import { DecryptedVotesByKeyT, DecryptedVoteT, EncryptedVotesByKeyT } from "types/global";
 import useAccountDetails from "./useAccountDetails";
 
-export default function useDecryptedVotes(encryptedVotes: UserEncryptedVotesByKeyT) {
+export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const [decryptedVotes, setDecryptedVotes] = useState<UserDecryptedVotesByKeyT>({});
+  const [decryptedVotes, setDecryptedVotes] = useState<DecryptedVotesByKeyT>({});
 
   useEffect(() => {
     (async () => {
@@ -17,8 +17,8 @@ export default function useDecryptedVotes(encryptedVotes: UserEncryptedVotesByKe
       const decryptedVotes = await decryptVotes(privateKey, encryptedVotes);
       setDecryptedVotes(decryptedVotes);
 
-      async function decryptVotes(privateKey: string, encryptedVotes: UserEncryptedVotesByKeyT) {
-        const decryptedVotes: UserDecryptedVotesByKeyT = {};
+      async function decryptVotes(privateKey: string, encryptedVotes: EncryptedVotesByKeyT) {
+        const decryptedVotes: DecryptedVotesByKeyT = {};
 
         for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
           let decryptedVote: DecryptedVoteT;

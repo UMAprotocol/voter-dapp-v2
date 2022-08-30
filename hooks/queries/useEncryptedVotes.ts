@@ -3,7 +3,7 @@ import { encryptedVotesKey } from "constants/queryKeys";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import { UserEncryptedVotesByKeyT } from "types/global";
+import { EncryptedVotesByKeyT } from "types/global";
 import { getEncryptedVotesForUser } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
@@ -22,7 +22,7 @@ export default function useEncryptedVotes() {
   );
 
   const eventData = data?.map(({ args }) => args);
-  const encryptedVotes: UserEncryptedVotesByKeyT = {};
+  const encryptedVotes: EncryptedVotesByKeyT = {};
   eventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
     encryptedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = encryptedVote;
   });

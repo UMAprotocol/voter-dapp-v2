@@ -18,7 +18,6 @@ export function Votes() {
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
   const { voting } = useContractsContext();
-  // const votes = useVotes(address);
   const { getActiveVotes } = useVotesContext();
   const votes = getActiveVotes();
   const [selectedVotes, setSelectedVotes] = useState<Record<string, string | undefined>>({});

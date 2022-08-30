@@ -2,37 +2,37 @@ import getVoteMetaData from "helpers/getVoteMetaData";
 import {
   useActiveVotes,
   useCommittedVotes,
+  useContentfulData,
   useDecryptedVotes,
   useEncryptedVotes,
   useRevealedVotes,
-  useContentfulData,
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
   ActiveVotesByKeyT,
   ContentfulDataByProposalNumberT,
-  UserDecryptedVotesByKeyT,
-  UserEncryptedVotesByKeyT,
+  DecryptedVotesByKeyT,
+  EncryptedVotesByKeyT,
   VoteExistsByKeyT,
   VoteT,
 } from "types/global";
 
 interface VotesContextState {
   activeVotes: ActiveVotesByKeyT;
-  votesCommittedByUser: VoteExistsByKeyT;
-  votesRevealedByUser: VoteExistsByKeyT;
-  encryptedVotesByUser: UserEncryptedVotesByKeyT;
-  decryptedVotesByUser: UserDecryptedVotesByKeyT;
+  committedVotes: VoteExistsByKeyT;
+  revealedVotes: VoteExistsByKeyT;
+  encryptedVotes: EncryptedVotesByKeyT;
+  decryptedVotes: DecryptedVotesByKeyT;
   contentfulData: ContentfulDataByProposalNumberT;
   getActiveVotes: () => VoteT[];
 }
 
 export const defaultVotesContextState: VotesContextState = {
   activeVotes: {},
-  votesCommittedByUser: {},
-  votesRevealedByUser: {},
-  encryptedVotesByUser: {},
-  decryptedVotesByUser: {},
+  committedVotes: {},
+  revealedVotes: {},
+  encryptedVotes: {},
+  decryptedVotes: {},
   contentfulData: {},
   getActiveVotes: () => [],
 };
@@ -47,16 +47,16 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { encryptedVotes } = useEncryptedVotes();
   const decryptedVotes = useDecryptedVotes(encryptedVotes);
 
-  function getActiveVotes() {
+  function getActiveVotes(): VoteT[] {
     return Object.entries(activeVotes).map(([uniqueKey, vote]) => {
       return {
         ...vote,
         uniqueKey,
-        isCommitted: committedVotes[uniqueKey],
-        isRevealed: revealedVotes[uniqueKey],
+        isCommitted: committedVotes[uniqueKey] ?? false,
+        isRevealed: revealedVotes[uniqueKey] ?? false,
         encryptedVote: encryptedVotes[uniqueKey],
-        decryptedVote: decryptedVotes?.[uniqueKey],
-        contentfulData: contentfulData?.[uniqueKey],
+        decryptedVote: decryptedVotes[uniqueKey],
+        contentfulData: contentfulData[uniqueKey],
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
@@ -71,10 +71,10 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     <VotesContext.Provider
       value={{
         activeVotes,
-        votesCommittedByUser: committedVotes,
-        votesRevealedByUser: revealedVotes,
-        encryptedVotesByUser: encryptedVotes,
-        decryptedVotesByUser: decryptedVotes,
+        committedVotes,
+        revealedVotes,
+        encryptedVotes,
+        decryptedVotes,
         contentfulData,
         getActiveVotes,
       }}
