@@ -1,6 +1,7 @@
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
+import { formatVotesToCommit } from "helpers/formatVotes";
 import {
   useContractsContext,
   usePanelContext,
@@ -25,37 +26,48 @@ export function Votes() {
   const revealVotesMutation = useRevealVotes();
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const [contractInteractionInProgress, setContractInteractionInProgress] = useState(false);
   const votes = getActiveVotes();
 
   useInitializeVoteTiming();
 
-  function commitVotes() {
+  async function commitVotes() {
     if (!signer) return;
 
-    commitVotesMutation({
-      voting,
-      votes,
-      selectedVotes,
-      roundId,
-      address,
-      signingKeys,
-      signer,
-    });
+    const formattedVotes = await formatVotesToCommit({ votes, selectedVotes, roundId, address, signingKeys, signer });
+
+    setContractInteractionInProgress(true);
+
+    commitVotesMutation(
+      {
+        voting,
+        formattedVotes,
+      },
+      {
+        onSettled: () => {
+          setSelectedVotes({});
+          setContractInteractionInProgress(false);
+        },
+      }
+    );
   }
 
   function revealVotes() {
-    revealVotesMutation({
-      voting,
-      votesToReveal: getVotesToReveal(),
-    });
+    revealVotesMutation(
+      {
+        voting,
+        votesToReveal: getVotesToReveal(),
+      },
+      {
+        onSettled: () => {
+          setContractInteractionInProgress(false);
+        },
+      }
+    );
   }
 
   function getVotesToReveal() {
-    return votes.filter(({ isCommitted, decryptedVote, isRevealed }) => isCommitted && decryptedVote && !isRevealed);
-  }
-
-  function canCommit() {
-    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length;
+    return votes.filter((vote) => vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false);
   }
 
   function selectVote(vote: VoteT, value: string) {
@@ -68,9 +80,17 @@ export function Votes() {
     setPanelOpen(true);
   }
 
-  function determineVotesToShow(votes: VoteT[], phase: VotePhaseT) {
+  function determineVotesToShow(phase: VotePhaseT) {
     if (phase === "commit") return votes;
-    return votes.filter((vote) => !!vote.decryptedVote && vote.isCommitted === true);
+    return getVotesToReveal();
+  }
+
+  function canCommit() {
+    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length && !contractInteractionInProgress;
+  }
+
+  function canReveal() {
+    return phase === "reveal" && getVotesToReveal().length && !contractInteractionInProgress;
   }
 
   return (
@@ -84,7 +104,7 @@ export function Votes() {
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {determineVotesToShow(votes, phase).map((vote) => (
+          {determineVotesToShow(phase).map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
@@ -100,7 +120,7 @@ export function Votes() {
             variant="primary"
             label={`${phase} Votes`}
             onClick={phase === "commit" ? commitVotes : revealVotes}
-            disabled={!canCommit()}
+            disabled={!(canCommit() || canReveal())}
           />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
