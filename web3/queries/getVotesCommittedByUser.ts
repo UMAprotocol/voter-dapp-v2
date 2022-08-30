@@ -1,6 +1,14 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { makeUniqueKeyForVote } from "helpers/votes";
+import { VoteExistsByKeyT } from "types/global";
 
-export default function getVotesCommittedByUser(votingContract: VotingV2Ethers, address: string | undefined) {
+export default async function getVotesCommittedByUser(votingContract: VotingV2Ethers, address: string) {
   const filter = votingContract.filters.VoteCommitted(address, null, null, null, null, null);
-  return votingContract.queryFilter(filter);
+  const result = await votingContract.queryFilter(filter);
+  const eventData = result?.map(({ args }) => args);
+  const committedVotes: VoteExistsByKeyT = {};
+  eventData?.forEach(({ identifier, time, ancillaryData }) => {
+    committedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = true;
+  });
+  return committedVotes;
 }
