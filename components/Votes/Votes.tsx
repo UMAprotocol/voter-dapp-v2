@@ -1,12 +1,9 @@
-import { parseFixed } from "@ethersproject/bignumber";
 import { useWallets } from "@web3-onboard/react";
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
 import { getAccountDetails } from "components/Wallet";
-import signingMessage from "constants/signingMessage";
-import { BigNumber, ethers } from "ethers";
-import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "helpers/crypto";
+import { formatVotesToCommit, formatVotesToReveal } from "helpers/formatVotes";
 import { useContractsContext, usePanelContext, useVotesContext, useWalletContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
@@ -31,74 +28,10 @@ export function Votes() {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
 
-  function makeVoteHash(
-    price: string,
-    salt: string,
-    account: string,
-    time: number,
-    ancillaryData: string,
-    roundId: number,
-    identifier: string
-  ) {
-    return ethers.utils.solidityKeccak256(
-      ["uint256", "uint256", "address", "uint256", "bytes", "uint256", "bytes32"],
-      [price, salt, account, time, ancillaryData, roundId, identifier]
-    );
-  }
-
-  async function formatVotesToCommit(votes: VoteT[], selectedVotes: Record<string, string | undefined>) {
-    // the user's address is called `account` for legacy reasons
-    const account = address;
-    // we just need a random number to make the hash
-    const salt = getRandomSignedInt().toString();
-    // we created this key when the user signed the message when first connecting their wallet
-    const signingPublicKey = signingKeys[address].publicKey;
-
-    const newSignedMessage = await signer?.signMessage(signingMessage);
-    const oldSignedMessage = signingKeys[address].signedMessage;
-
-    if (newSignedMessage !== oldSignedMessage) {
-      throw new Error("Signed messages do not match. Please disconnect and re-sign");
-    }
-
-    const formattedVotes = await Promise.all(
-      votes.map(async (vote) => {
-        // see if the user provided an answer for this vote
-        const selectedVote = selectedVotes[vote.uniqueKey];
-        // if not, exclude this vote from the final array
-        if (!selectedVote) return null;
-
-        const { identifier, decodedIdentifier, ancillaryData, time } = vote;
-        // check the precision to use from our table of precisions
-        const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
-        // the selected option for a vote is called `price` for legacy reasons
-        const price = parseFixed(selectedVote, identifierPrecision).toString();
-        // the hash must be created with exactly these values in exactly this order
-        const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
-        // encrypt the hash with the signed message we created when the user first connected their wallet
-        const encryptedVote = await encryptMessage(signingPublicKey, JSON.stringify({ price, salt }));
-
-        return {
-          price,
-          salt,
-          account,
-          time,
-          ancillaryData,
-          roundId,
-          identifier,
-          hash,
-          encryptedVote,
-        };
-      })
-    );
-
-    return formattedVotes.filter((vote) => vote && vote.price !== "");
-  }
-
   async function commitVotes() {
-    if (!votes) return;
+    if (!votes || !signer) return;
 
-    const formattedVotes = await formatVotesToCommit(votes, selectedVotes);
+    const formattedVotes = await formatVotesToCommit({ votes, selectedVotes, roundId, address, signingKeys, signer });
     if (!formattedVotes.length) return;
 
     const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -119,23 +52,6 @@ export function Votes() {
       })
       .filter((encoded): encoded is string => Boolean(encoded));
     await voting.functions.multicall(calldata);
-  }
-
-  async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
-    return decryptedVotesForUser.map((vote) => {
-      if (vote.isRevealed || !vote.decryptedVote) return null;
-
-      const { identifier, decryptedVote, ancillaryData, time } = vote;
-      const { price, salt } = decryptedVote;
-
-      return {
-        identifier,
-        time,
-        price,
-        ancillaryData,
-        salt,
-      };
-    });
   }
 
   async function revealVotes() {

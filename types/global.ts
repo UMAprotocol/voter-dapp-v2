@@ -82,6 +82,8 @@ export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined
 
 export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
 
+export type SelectedVotesByKeyT = Record<UniqueKeyT, string | undefined>;
+
 export type VotePhaseT = "commit" | "reveal" | null;
 
 export type VoteTimelineT = {
