@@ -140,3 +140,11 @@ export type StakerDetailsT = {
   unstakeRequestTime: BigNumber;
   delegate: string;
 };
+
+export type UniqueKeyT = string;
+export type EncryptedVoteT = string;
+export type VoteExistsByKeyT = Record<UniqueKeyT, boolean>;
+export type ActiveVotesByKeyT = Record<UniqueKeyT, PriceRequestT>;
+export type UserEncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT>;
+export type UserDecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT>;
+export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, UmipDataFromContentfulT>;
