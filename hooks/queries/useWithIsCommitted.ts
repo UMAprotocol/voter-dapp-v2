@@ -1,28 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withIsCommittedKey } from "constants/queryKeys";
-import { makeUniqueKeysForVotes } from "helpers/votes";
-import { PriceRequestT } from "types/global";
+import { makeUniqueKeyForVote } from "helpers/votes";
+import { useContractsContext } from "hooks/contexts";
+import { VoteExistsByKeyT } from "types/global";
 import { getVotesCommittedByUser } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useWithIsCommitted(
-  votingContract: VotingV2Ethers,
-  address: string | undefined,
-  votes: PriceRequestT[]
-) {
+export default function useWithIsCommitted() {
+  const { voting } = useContractsContext();
+  const { address } = useAccountDetails();
+
   const { isLoading, isError, data, error } = useQuery(
     [withIsCommittedKey],
-    () => getVotesCommittedByUser(votingContract, address),
+    () => getVotesCommittedByUser(voting, address),
     {
       refetchInterval: (data) => (data ? false : 1000),
-      enabled: !!votes?.length && !!address,
+      enabled: !!address,
     }
   );
 
   const eventData = data?.map(({ args }) => args);
-  const keys = makeUniqueKeysForVotes(eventData);
-
-  const withIsCommitted = votes?.map((vote) => ({ ...vote, isCommitted: keys.includes(vote.uniqueKey) })) ?? votes;
+  const withIsCommitted: VoteExistsByKeyT = {};
+  eventData?.forEach(({ identifier, time, ancillaryData }) => {
+    withIsCommitted[makeUniqueKeyForVote(identifier, time, ancillaryData)] = true;
+  });
 
   return {
     withIsCommitted,

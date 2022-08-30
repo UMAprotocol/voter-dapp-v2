@@ -5,7 +5,6 @@ export { default as useStakerDetails } from "./useStakerDetails";
 export { default as useTokenAllowance } from "./useTokenAllowance";
 export { default as useUmipDataFromContentful } from "./useUmipDataFromContentful";
 export { default as useUnstakedBalance } from "./useUnstakedBalance";
-export { default as useVotes } from "./useVotes";
 export { default as useWithDecryptedVotes } from "./useWithDecryptedVotes";
 export { default as useWithEncryptedVotes } from "./useWithEncryptedVotes";
 export { default as useWithIsCommitted } from "./useWithIsCommitted";

@@ -1,22 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { activeVotesKey } from "constants/queryKeys";
 import { decodeHexString } from "helpers/decodeHexString";
 import { makeUniqueKeyForVote } from "helpers/votes";
-import { PriceRequestT } from "types/global";
+import { useContractsContext } from "hooks/contexts";
+import { ActiveVotesByKeyT } from "types/global";
 import { getPendingRequests } from "web3/queries";
 
-export default function useActiveVotes(votingContract: VotingV2Ethers) {
-  const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(votingContract), {
+export default function useActiveVotes() {
+  const { voting } = useContractsContext();
+
+  const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(voting), {
     refetchInterval(data) {
       return data?.length ? false : 1000;
     },
   });
 
   const pendingRequests = data?.[0];
+  const activeVotes: ActiveVotesByKeyT = {};
 
-  const activeVotes: PriceRequestT[] | undefined =
-    pendingRequests?.map(({ time, identifier, ancillaryData }) => ({
+  pendingRequests?.forEach(({ time, identifier, ancillaryData }) => {
+    activeVotes[makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData)] = {
       time: time.toNumber(),
       identifier,
       ancillaryData,
@@ -27,7 +30,8 @@ export default function useActiveVotes(votingContract: VotingV2Ethers) {
       decodedIdentifier: decodeHexString(identifier),
       decodedAncillaryData: decodeHexString(ancillaryData),
       uniqueKey: makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData),
-    })) ?? [];
+    };
+  });
 
   return {
     activeVotes,

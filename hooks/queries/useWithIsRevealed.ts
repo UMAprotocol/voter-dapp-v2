@@ -1,30 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { withIsRevealedKey } from "constants/queryKeys";
-import { makeUniqueKeysForVotes } from "helpers/votes";
-import { PriceRequestT } from "types/global";
+import { makeUniqueKeyForVote } from "helpers/votes";
+import { useContractsContext } from "hooks/contexts";
+import { VoteExistsByKeyT } from "types/global";
 import { getVotesRevealedByUser } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useWithIsRevealed(
-  votingContract: VotingV2Ethers,
-  address: string | undefined,
-  votes: PriceRequestT[]
-) {
+export default function useWithIsRevealed() {
+  const { voting } = useContractsContext();
+  const { address } = useAccountDetails();
+
   const { isLoading, isError, data, error } = useQuery(
     [withIsRevealedKey],
-    () => getVotesRevealedByUser(votingContract, address),
+    () => getVotesRevealedByUser(voting, address),
     {
       refetchInterval: (data) => (data ? false : 1000),
-      enabled: !!votes?.length && !!address,
+      enabled: !!address,
     }
   );
 
   const eventData = data?.map(({ args }) => args);
-  const keys = makeUniqueKeysForVotes(eventData);
-  const withIsRevealed = votes?.map((vote) => ({
-    ...vote,
-    isRevealed: keys.includes(vote.uniqueKey),
-  }));
+  const withIsRevealed: VoteExistsByKeyT = {};
+
+  eventData?.forEach(({ identifier, time, ancillaryData }) => {
+    withIsRevealed[makeUniqueKeyForVote(identifier, time, ancillaryData)] = true;
+  });
 
   return {
     withIsRevealed,

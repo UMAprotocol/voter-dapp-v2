@@ -1,21 +1,13 @@
 import { decryptMessage } from "helpers/crypto";
+import { useWalletContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
-import {
-  DecryptedVoteT,
-  PriceRequestT,
-  SigningKeys,
-  WithDecryptedVoteT,
-  WithEncryptedVoteT,
-  WithIsCommittedT,
-} from "types/global";
+import { DecryptedVoteT, UserDecryptedVotesByKeyT, UserEncryptedVotesByKeyT } from "types/global";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useWithDecryptedVotes(
-  withEncryptedVotes: WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>[],
-  address: string | undefined,
-  signingKeys: SigningKeys
-) {
-  type T = typeof withEncryptedVotes[number];
-  const [withDecryptedVotes, setWithDecryptedVotes] = useState<WithDecryptedVoteT<T>[]>([]);
+export default function useWithDecryptedVotes(withEncryptedVotes: UserEncryptedVotesByKeyT) {
+  const { address } = useAccountDetails();
+  const { signingKeys } = useWalletContext();
+  const [withDecryptedVotes, setWithDecryptedVotes] = useState<UserDecryptedVotesByKeyT>({});
 
   useEffect(() => {
     (async () => {
@@ -26,23 +18,22 @@ export default function useWithDecryptedVotes(
       setWithDecryptedVotes(decryptedVotes);
 
       async function decryptVotes(privateKey: string, encryptedVotes: typeof withEncryptedVotes) {
-        return await Promise.all(
-          encryptedVotes.map(async (vote) => {
-            const { encryptedVote } = vote;
+        const decryptedVotes: UserDecryptedVotesByKeyT = {};
 
-            let decryptedVote: DecryptedVoteT | undefined;
+        for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
+          let decryptedVote: DecryptedVoteT;
 
-            if (encryptedVote) {
-              const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
-              decryptedVote = JSON.parse(decryptedVoteString);
+          if (encryptedVote) {
+            const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
+            decryptedVote = JSON.parse(decryptedVoteString);
+
+            if (decryptedVote) {
+              decryptedVotes[uniqueKey] = decryptedVote;
             }
+          }
+        }
 
-            return {
-              ...vote,
-              decryptedVote,
-            };
-          })
-        );
+        return decryptedVotes;
       }
     })();
     // we are choosing to ignore the `withEncryptedVotes` dependency in favor of the stringified version of it to achieve referential equality
