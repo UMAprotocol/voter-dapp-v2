@@ -1,28 +1,58 @@
-import { useWallets } from "@web3-onboard/react";
 import { Button } from "components/Button";
 import { VoteBar } from "components/VoteBar";
 import { VoteTimeline } from "components/VoteTimeline";
-import { getAccountDetails } from "components/Wallet";
-import { formatVotesToCommit, formatVotesToReveal } from "helpers/formatVotes";
-import { useContractsContext, usePanelContext, useVotesContext, useWalletContext } from "hooks/contexts";
-import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
+import {
+  useContractsContext,
+  usePanelContext,
+  useVotesContext,
+  useVoteTimingContext,
+  useWalletContext,
+} from "hooks/contexts";
+import { useInitializeVoteTiming } from "hooks/helpers";
+import { useCommitVotes, useRevealVotes } from "hooks/mutations";
+import { useAccountDetails } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VotePhaseT, VoteT } from "types/global";
 
 export function Votes() {
-  const connectedWallets = useWallets();
-  const { address } = getAccountDetails(connectedWallets);
-  const { voting } = useContractsContext();
   const { getActiveVotes } = useVotesContext();
-  const votes = getActiveVotes();
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
-  const { signer, signingKeys } = useWalletContext();
   const { phase, roundId } = useVoteTimingContext();
+  const { address } = useAccountDetails();
+  const { signer, signingKeys } = useWalletContext();
+  const { voting } = useContractsContext();
+  const commitVotesMutation = useCommitVotes();
+  const revealVotesMutation = useRevealVotes();
+  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const votes = getActiveVotes();
 
   useInitializeVoteTiming();
+
+  function commitVotes() {
+    if (!signer) return;
+
+    commitVotesMutation({
+      voting,
+      votes,
+      selectedVotes,
+      roundId,
+      address,
+      signingKeys,
+      signer,
+    });
+  }
+
+  function revealVotes() {
+    revealVotesMutation({
+      voting,
+      votesToReveal: getVotesToReveal(),
+    });
+  }
+
+  function getVotesToReveal() {
+    return votes.filter(({ isCommitted, decryptedVote, isRevealed }) => isCommitted && decryptedVote && !isRevealed);
+  }
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));

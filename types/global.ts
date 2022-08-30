@@ -147,6 +147,6 @@ export type CommitVotes = FormatVotesToCommit & {
 };
 
 export type RevealVotes = {
-  votes: VoteT[];
   voting: VotingV2Ethers;
+  votesToReveal: VoteT[];
 };
