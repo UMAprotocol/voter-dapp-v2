@@ -54,6 +54,10 @@ export function Votes() {
     return votes.filter(({ isCommitted, decryptedVote, isRevealed }) => isCommitted && decryptedVote && !isRevealed);
   }
 
+  function canCommit() {
+    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length;
+  }
+
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
@@ -92,7 +96,12 @@ export function Votes() {
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
-          <Button variant="primary" label={`${phase} Votes`} onClick={phase === "commit" ? commitVotes : revealVotes} />
+          <Button
+            variant="primary"
+            label={`${phase} Votes`}
+            onClick={phase === "commit" ? commitVotes : revealVotes}
+            disabled={!canCommit()}
+          />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
     </OuterWrapper>
