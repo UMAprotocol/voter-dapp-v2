@@ -1,5 +1,5 @@
-import useContractsContext from "./useContractsContext";
-import usePanelContext from "./usePanelContext";
-import useWalletContext from "./useWalletContext";
-
-export { useContractsContext, usePanelContext, useWalletContext };
+export { default as useContractsContext } from "./useContractsContext";
+export { default as usePanelContext } from "./usePanelContext";
+export { default as useVotesContext } from "./useVotesContext";
+export { default as useVoteTimingContext } from "./useVoteTimingContext";
+export { default as useWalletContext } from "./useWalletContext";
