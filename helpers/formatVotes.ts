@@ -1,8 +1,8 @@
+import { parseFixed } from "@ethersproject/bignumber";
 import signingMessage from "constants/signingMessage";
 import { BigNumber, ethers } from "ethers";
-import { SelectedVotesByKeyT, SigningKeys, VoteT } from "types/global";
+import { FormatVotesToCommit, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
-import { parseFixed } from "@ethersproject/bignumber";
 
 function makeVoteHash(
   price: string,
@@ -19,14 +19,6 @@ function makeVoteHash(
   );
 }
 
-interface FormatVotesToCommit {
-  votes: VoteT[];
-  selectedVotes: SelectedVotesByKeyT;
-  roundId: number;
-  address: string;
-  signingKeys: SigningKeys;
-  signer: ethers.Signer;
-}
 export async function formatVotesToCommit({
   votes,
   selectedVotes,

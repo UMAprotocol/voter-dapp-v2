@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { BigNumber, ethers } from "ethers";
 
 export type InputDataT = {
   value: string | number;
@@ -130,4 +131,17 @@ export type StakerDetailsT = {
   lastRequestIndexConsidered: BigNumber;
   unstakeRequestTime: BigNumber;
   delegate: string;
+};
+
+export type FormatVotesToCommit = {
+  votes: VoteT[];
+  selectedVotes: SelectedVotesByKeyT;
+  roundId: number;
+  address: string;
+  signingKeys: SigningKeys;
+  signer: ethers.Signer;
+};
+
+export type CommitVotes = FormatVotesToCommit & {
+  voting: VotingV2Ethers;
 };

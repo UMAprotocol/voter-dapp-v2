@@ -28,32 +28,6 @@ export function Votes() {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
 
-  async function commitVotes() {
-    if (!votes || !signer) return;
-
-    const formattedVotes = await formatVotesToCommit({ votes, selectedVotes, roundId, address, signingKeys, signer });
-    if (!formattedVotes.length) return;
-
-    const commitVoteFunctionFragment = voting.interface.getFunction(
-      "commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)"
-    );
-    const calldata = formattedVotes
-      .map((vote) => {
-        if (!vote) return null;
-        const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
-        // @ts-expect-error todo figure out why it thinks this doesn't exist
-        return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
-          identifier,
-          time,
-          ancillaryData,
-          hash,
-          encryptedVote,
-        ]);
-      })
-      .filter((encoded): encoded is string => Boolean(encoded));
-    await voting.functions.multicall(calldata);
-  }
-
   async function revealVotes() {
     const formattedVotes = await formatVotesToReveal(votes);
     if (!formattedVotes.length) return;
