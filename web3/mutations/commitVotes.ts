@@ -29,5 +29,6 @@ export default async function commitVotes({
       encryptedVote,
     ]);
   });
-  await voting.functions.multicall(calldata);
+  const tx = await voting.functions.multicall(calldata);
+  return tx.wait();
 }
