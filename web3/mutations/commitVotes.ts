@@ -10,8 +10,6 @@ export default async function commitVotes({
   signingKeys,
   signer,
 }: CommitVotes) {
-  if (!votes || !signer) return;
-
   const formattedVotes = await formatVotesToCommit({ votes, selectedVotes, roundId, address, signingKeys, signer });
   if (!formattedVotes.length) return;
 
@@ -20,6 +18,7 @@ export default async function commitVotes({
   );
   const calldata = formattedVotes.flatMap((vote) => {
     if (!vote) return [];
+
     const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
     // @ts-expect-error todo figure out why it thinks this doesn't exist
     return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [

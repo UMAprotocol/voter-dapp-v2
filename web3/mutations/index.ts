@@ -1,8 +1,8 @@
-import approve from "./approve";
-import executeUnstake from "./executeUnstake";
-import requestUnstake from "./requestUnstake";
-import stake from "./stake";
-import withdrawAndRestake from "./withdrawAndRestake";
-import withdrawRewards from "./withdrawRewards";
-
-export { approve, executeUnstake, requestUnstake, stake, withdrawAndRestake, withdrawRewards };
+export { default as approve } from "./approve";
+export { default as commitVotes } from "./commitVotes";
+export { default as executeUnstake } from "./executeUnstake";
+export { default as requestUnstake } from "./requestUnstake";
+export { default as revealVotes } from "./revealVotes";
+export { default as stake } from "./stake";
+export { default as withdrawAndRestake } from "./withdrawAndRestake";
+export { default as withdrawRewards } from "./withdrawRewards";

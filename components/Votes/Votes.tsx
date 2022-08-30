@@ -9,7 +9,7 @@ import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
 import { useState } from "react";
 import styled from "styled-components";
-import { VotePhaseT, VoteT } from "types/global";
+import { SelectedVotesByKeyT, VotePhaseT, VoteT } from "types/global";
 
 export function Votes() {
   const connectedWallets = useWallets();
@@ -17,7 +17,7 @@ export function Votes() {
   const { voting } = useContractsContext();
   const { getActiveVotes } = useVotesContext();
   const votes = getActiveVotes();
-  const [selectedVotes, setSelectedVotes] = useState<Record<string, string | undefined>>({});
+  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
   const { phase, roundId } = useVoteTimingContext();
@@ -26,30 +26,6 @@ export function Votes() {
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
-  }
-
-  async function revealVotes() {
-    const formattedVotes = await formatVotesToReveal(votes);
-    if (!formattedVotes.length) return;
-
-    const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");
-
-    const calldata = formattedVotes
-      .map((vote) => {
-        if (!vote) return null;
-        const { identifier, time, price, ancillaryData, salt } = vote;
-        // @ts-expect-error todo figure out why it thinks this doesn't exist
-        return voting.interface.encodeFunctionData(revealVoteFunctionFragment, [
-          identifier,
-          time,
-          price,
-          ancillaryData,
-          salt,
-        ]);
-      })
-      .filter((encoded): encoded is string => Boolean(encoded));
-
-    await voting.functions.multicall(calldata);
   }
 
   function openVotePanel(vote: VoteT) {
