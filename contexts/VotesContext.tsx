@@ -9,16 +9,16 @@ import {
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
-  ActiveVotesByKeyT,
   ContentfulDataByProposalNumberT,
   DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
+  PriceRequestByKeyT,
   VoteExistsByKeyT,
   VoteT,
 } from "types/global";
 
 interface VotesContextState {
-  activeVotes: ActiveVotesByKeyT;
+  activeVotes: PriceRequestByKeyT;
   committedVotes: VoteExistsByKeyT;
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;

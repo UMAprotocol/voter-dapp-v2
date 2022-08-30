@@ -1,13 +1,5 @@
 import { BigNumber } from "ethers";
 
-export type UniqueKeyT = string;
-export type EncryptedVoteT = string;
-export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
-export type ActiveVotesByKeyT = Record<UniqueKeyT, PriceRequestT>;
-export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
-export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined>;
-export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT | undefined>;
-
 export type InputDataT = {
   value: string | number;
   label: string;
@@ -21,6 +13,8 @@ export type LinkT = {
 export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
+
+export type VoteT = PriceRequestT & UserVoteDataT & VoteMetaDataT & VoteContentfulDataT & VoteResultT;
 
 export type PriceRequestT = {
   // raw values
@@ -36,43 +30,14 @@ export type PriceRequestT = {
   uniqueKey: UniqueKeyT;
 };
 
-export type WithIsGovernanceT<T extends PriceRequestT> = T & {
-  isGovernance: boolean;
-};
+export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
 
-export type WithIsCommittedT<T extends PriceRequestT> = T & {
+export type UserVoteDataT = {
   isCommitted: boolean;
-};
-
-export type WithIsRevealedT<T extends PriceRequestT> = T & {
   isRevealed: boolean;
-};
-
-export type WithEncryptedVoteT<T extends WithIsCommittedT<PriceRequestT>> = T & {
   encryptedVote: EncryptedVoteT | undefined;
-};
-
-export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> = T & {
   decryptedVote: DecryptedVoteT | undefined;
 };
-
-export type WithContentfulData<T extends PriceRequestT> = T & {
-  contentfulData: ContentfulDataT | undefined;
-};
-
-export type WithMetaDataT<T extends WithContentfulData<PriceRequestT>> = T & VoteMetaDataT;
-
-export type WithAllDataT = WithIsGovernanceT<PriceRequestT> &
-  WithIsCommittedT<PriceRequestT> &
-  WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>> &
-  WithDecryptedVoteT<WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> &
-  WithIsRevealedT<PriceRequestT> &
-  WithContentfulData<PriceRequestT> &
-  WithMetaDataT<WithContentfulData<PriceRequestT>>;
-
-export type VoteT = WithAllDataT & VoteResultT;
-
-export type DecryptedVoteT = { price: string; salt: string };
 
 export type VoteMetaDataT = {
   title: string;
@@ -90,6 +55,32 @@ export type VoteResultT = {
   results?: InputDataT[];
   participation?: InputDataT[];
 };
+
+export type VoteContentfulDataT = {
+  contentfulData: ContentfulDataT | undefined;
+};
+
+export type ContentfulDataT = {
+  description: string;
+  discourseLink?: string;
+  status?: string;
+  authors?: string;
+  title: string;
+  number: number;
+  umipLink?: string;
+};
+
+export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT | undefined>;
+
+export type UniqueKeyT = string;
+
+export type EncryptedVoteT = string;
+export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
+
+export type DecryptedVoteT = { price: string; salt: string };
+export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined>;
+
+export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
 
 export type VotePhaseT = "commit" | "reveal" | null;
 
@@ -114,16 +105,6 @@ export type SigningKey = {
 
 export type SigningKeys = {
   [address: string]: SigningKey;
-};
-
-export type ContentfulDataT = {
-  description: string;
-  discourseLink?: string;
-  status?: string;
-  authors?: string;
-  title: string;
-  number: number;
-  umipLink?: string;
 };
 
 export type UmipLinkT = {

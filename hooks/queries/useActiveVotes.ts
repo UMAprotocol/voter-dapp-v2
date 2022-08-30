@@ -3,7 +3,7 @@ import { activeVotesKey } from "constants/queryKeys";
 import { decodeHexString } from "helpers/decodeHexString";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { useContractsContext } from "hooks/contexts";
-import { ActiveVotesByKeyT } from "types/global";
+import { PriceRequestByKeyT } from "types/global";
 import { getPendingRequests } from "web3/queries";
 
 export default function useActiveVotes() {
@@ -16,7 +16,7 @@ export default function useActiveVotes() {
   });
 
   const pendingRequests = data?.[0];
-  const activeVotes: ActiveVotesByKeyT = {};
+  const activeVotes: PriceRequestByKeyT = {};
 
   pendingRequests?.forEach(({ time, identifier, ancillaryData }) => {
     activeVotes[makeUniqueKeyForVote(identifier, time.toNumber(), ancillaryData)] = {
