@@ -48,19 +48,19 @@ export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<Pri
   decryptedVote: DecryptedVoteT | undefined;
 };
 
-export type WithUmipDataFromContentfulT<T extends PriceRequestT> = T & {
-  umipDataFromContentful: UmipDataFromContentfulT | undefined;
+export type WithContentfulData<T extends PriceRequestT> = T & {
+  contentfulData: ContentfulDataT | undefined;
 };
 
-export type WithMetaDataT<T extends WithUmipDataFromContentfulT<PriceRequestT>> = T & VoteMetaDataT;
+export type WithMetaDataT<T extends WithContentfulData<PriceRequestT>> = T & VoteMetaDataT;
 
 export type WithAllDataT = WithIsGovernanceT<PriceRequestT> &
   WithIsCommittedT<PriceRequestT> &
   WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>> &
   WithDecryptedVoteT<WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> &
   WithIsRevealedT<PriceRequestT> &
-  WithUmipDataFromContentfulT<PriceRequestT> &
-  WithMetaDataT<WithUmipDataFromContentfulT<PriceRequestT>>;
+  WithContentfulData<PriceRequestT> &
+  WithMetaDataT<WithContentfulData<PriceRequestT>>;
 
 export type VoteT = WithAllDataT & VoteResultT;
 
@@ -108,7 +108,7 @@ export type SigningKeys = {
   [address: string]: SigningKey;
 };
 
-export type UmipDataFromContentfulT = {
+export type ContentfulDataT = {
   description: string;
   discourseLink?: string;
   status?: string;
@@ -147,4 +147,4 @@ export type VoteExistsByKeyT = Record<UniqueKeyT, boolean>;
 export type ActiveVotesByKeyT = Record<UniqueKeyT, PriceRequestT>;
 export type UserEncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT>;
 export type UserDecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT>;
-export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, UmipDataFromContentfulT>;
+export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT>;

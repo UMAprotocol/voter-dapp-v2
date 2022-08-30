@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import { DecryptedVoteT, UserDecryptedVotesByKeyT, UserEncryptedVotesByKeyT } from "types/global";
 import useAccountDetails from "./useAccountDetails";
 
-export default function useWithDecryptedVotes(withEncryptedVotes: UserEncryptedVotesByKeyT) {
+export default function useDecryptedVotes(encryptedVotes: UserEncryptedVotesByKeyT) {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const [withDecryptedVotes, setWithDecryptedVotes] = useState<UserDecryptedVotesByKeyT>({});
+  const [decryptedVotes, setDecryptedVotes] = useState<UserDecryptedVotesByKeyT>({});
 
   useEffect(() => {
     (async () => {
-      if (!withEncryptedVotes?.length || !address) return;
+      if (!encryptedVotes?.length || !address) return;
 
       const privateKey = signingKeys[address].privateKey;
-      const decryptedVotes = await decryptVotes(privateKey, withEncryptedVotes);
-      setWithDecryptedVotes(decryptedVotes);
+      const decryptedVotes = await decryptVotes(privateKey, encryptedVotes);
+      setDecryptedVotes(decryptedVotes);
 
-      async function decryptVotes(privateKey: string, encryptedVotes: typeof withEncryptedVotes) {
+      async function decryptVotes(privateKey: string, encryptedVotes: UserEncryptedVotesByKeyT) {
         const decryptedVotes: UserDecryptedVotesByKeyT = {};
 
         for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
@@ -37,7 +37,7 @@ export default function useWithDecryptedVotes(withEncryptedVotes: UserEncryptedV
       }
     })();
     // we are choosing to ignore the `withEncryptedVotes` dependency in favor of the stringified version of it to achieve referential equality
-  }, [address, JSON.stringify(withEncryptedVotes), signingKeys]);
+  }, [address, JSON.stringify(encryptedVotes), signingKeys]);
 
-  return withDecryptedVotes;
+  return decryptedVotes;
 }

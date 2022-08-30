@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import * as contentful from "contentful";
-import { ContentfulDataByProposalNumberT, PriceRequestT, UmipDataFromContentfulT } from "types/global";
+import { ContentfulDataByProposalNumberT, ContentfulDataT, PriceRequestT } from "types/global";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";
@@ -10,18 +10,18 @@ const contentfulClient = contentful.createClient({
   accessToken,
 });
 
-async function getUmipDataFromContentful(adminProposalNumbers: number[]) {
+async function getContentfulData(adminProposalNumbers: number[]) {
   if (adminProposalNumbers.length === 0) return {};
 
   const numberFieldsString = adminProposalNumbers.join(",");
 
-  const entries = await contentfulClient.getEntries<UmipDataFromContentfulT>({
+  const entries = await contentfulClient.getEntries<ContentfulDataT>({
     content_type: "umip",
     "fields.number[in]": numberFieldsString,
   });
 
   const fields = entries.items.map(({ fields }) => fields);
-  const fieldsToNumbers: Record<string, UmipDataFromContentfulT> = {};
+  const fieldsToNumbers: Record<string, ContentfulDataT> = {};
 
   fields.forEach((field) => {
     fieldsToNumbers[field.number] = field;
@@ -30,27 +30,27 @@ async function getUmipDataFromContentful(adminProposalNumbers: number[]) {
   return fieldsToNumbers;
 }
 
-export default function useUmipDataFromContentful(votes: PriceRequestT[]) {
+export default function useContentfulData(votes: PriceRequestT[]) {
   const adminProposalNumbers =
     votes
       ?.map(({ decodedIdentifier }) => getAdminProposalNumber(decodedIdentifier))
       ?.filter((number): number is number => Boolean(number)) ?? [];
 
   const { isLoading, isError, data, error } = useQuery(
-    ["umipDataFromContentful"],
-    () => getUmipDataFromContentful(adminProposalNumbers),
+    ["contentfulData"],
+    () => getContentfulData(adminProposalNumbers),
     {
       enabled: adminProposalNumbers?.length > 0,
     }
   );
 
-  const umipDataFromContentful: ContentfulDataByProposalNumberT = data ?? {};
+  const contentfulData: ContentfulDataByProposalNumberT = data ?? {};
 
   return {
-    umipDataFromContentful,
-    umipDataFromContentfulIsLoading: isLoading,
-    umipDataFromContentfulIsError: isError,
-    umipDataFromContentfulError: error,
+    contentfulData,
+    contentfulDataIsLoading: isLoading,
+    contentfulDataIsError: isError,
+    contentfulDataError: error,
   };
 }
 

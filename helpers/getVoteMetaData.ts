@@ -1,7 +1,7 @@
-import { UmipDataFromContentfulT, VoteMetaDataT } from "types/global";
-import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { discordLink } from "constants/discordLink";
 import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
+import approvedIdentifiers from "data/approvedIdentifiersTable";
+import { ContentfulDataT, VoteMetaDataT } from "types/global";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -15,7 +15,7 @@ export default function getVoteMetaData(
   decodedIdentifier: string,
   decodedAncillaryData: string,
   transactionHash: string,
-  umipDataFromContentful: UmipDataFromContentfulT | undefined
+  umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");

@@ -1,11 +1,11 @@
 export { default as useAccountDetails } from "./useAccountDetails";
 export { default as useActiveVotes } from "./useActiveVotes";
+export { default as useCommittedVotes } from "./useCommittedVotes";
+export { default as useContentfulData } from "./useContentfulData";
+export { default as useDecryptedVotes } from "./useDecryptedVotes";
+export { default as useEncryptedVotes } from "./useEncryptedVotes";
+export { default as useRevealedVotes } from "./useRevealedVotes";
 export { default as useStakedBalance } from "./useStakedBalance";
 export { default as useStakerDetails } from "./useStakerDetails";
 export { default as useTokenAllowance } from "./useTokenAllowance";
-export { default as useUmipDataFromContentful } from "./useUmipDataFromContentful";
 export { default as useUnstakedBalance } from "./useUnstakedBalance";
-export { default as useWithDecryptedVotes } from "./useWithDecryptedVotes";
-export { default as useWithEncryptedVotes } from "./useWithEncryptedVotes";
-export { default as useWithIsCommitted } from "./useWithIsCommitted";
-export { default as useWithIsRevealed } from "./useWithIsRevealed";

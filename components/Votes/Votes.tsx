@@ -10,7 +10,6 @@ import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "h
 import { useContractsContext, usePanelContext, useVotesContext, useWalletContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
-import { useVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";

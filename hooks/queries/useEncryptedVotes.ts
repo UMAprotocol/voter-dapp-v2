@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { withEncryptedVotesKey } from "constants/queryKeys";
+import { encryptedVotesKey } from "constants/queryKeys";
 import { makeUniqueKeyForVote } from "helpers/votes";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
@@ -7,13 +7,13 @@ import { UserEncryptedVotesByKeyT } from "types/global";
 import { getEncryptedVotesForUser } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
-export default function useWithEncryptedVotes() {
+export default function useEncryptedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
 
   const { isLoading, isError, data, error } = useQuery(
-    [withEncryptedVotesKey],
+    [encryptedVotesKey],
     () => getEncryptedVotesForUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 1000),
@@ -22,15 +22,15 @@ export default function useWithEncryptedVotes() {
   );
 
   const eventData = data?.map(({ args }) => args);
-  const withEncryptedVotes: UserEncryptedVotesByKeyT = {};
+  const encryptedVotes: UserEncryptedVotesByKeyT = {};
   eventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
-    withEncryptedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = encryptedVote;
+    encryptedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = encryptedVote;
   });
 
   return {
-    withEncryptedVotes,
-    withEncryptedVotesIsLoading: isLoading,
-    withEncryptedVotesIsError: isError,
-    withEncryptedVotesError: error,
+    encryptedVotes,
+    encryptedVotesIsLoading: isLoading,
+    encryptedVotesIsError: isError,
+    encryptedVotesError: error,
   };
 }
