@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { encryptedVotesKey } from "constants/queryKeys";
-import { makeUniqueKeyForVote } from "helpers/votes";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import { EncryptedVotesByKeyT } from "types/global";
 import { getEncryptedVotesForUser } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
@@ -21,14 +19,8 @@ export default function useEncryptedVotes() {
     }
   );
 
-  const eventData = data?.map(({ args }) => args);
-  const encryptedVotes: EncryptedVotesByKeyT = {};
-  eventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
-    encryptedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = encryptedVote;
-  });
-
   return {
-    encryptedVotes,
+    encryptedVotes: data ?? {},
     encryptedVotesIsLoading: isLoading,
     encryptedVotesIsError: isError,
     encryptedVotesError: error,
