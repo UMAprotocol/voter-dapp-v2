@@ -142,8 +142,14 @@ export type FormatVotesToCommit = {
   signer: ethers.Signer;
 };
 
-export type CommitVotes = FormatVotesToCommit & {
+export type VoteFormattedToCommitT = VoteT & {
+  encryptedVote: EncryptedVoteT;
+  hash: string;
+};
+
+export type CommitVotes = {
   voting: VotingV2Ethers;
+  formattedVotes: VoteFormattedToCommitT[];
 };
 
 export type RevealVotes = {
