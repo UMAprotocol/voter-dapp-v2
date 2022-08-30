@@ -75,8 +75,8 @@ export async function formatVotesToCommit({
   return formattedVotes.filter((vote) => vote && vote.price !== "");
 }
 export async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
-  return decryptedVotesForUser.map((vote) => {
-    if (vote.isRevealed || !vote.decryptedVote) return null;
+  return decryptedVotesForUser.flatMap((vote) => {
+    if (vote.isRevealed || !vote.isCommitted || !vote.decryptedVote) return [];
 
     const { identifier, decryptedVote, ancillaryData, time } = vote;
     const { price, salt } = decryptedVote;
