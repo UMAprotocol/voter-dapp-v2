@@ -1,11 +1,9 @@
-import { OnboardAPI } from "@web3-onboard/core";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import message from "constants/signingMessage";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
-import { initOnboard } from "helpers/initOnboard";
 import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types/global";
 import { createVotingContractInstance, createVotingTokenContractInstance } from "web3/contracts";
@@ -15,15 +13,10 @@ import { WalletIcon } from "./WalletIcon";
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
-  const [onboard, setOnboard] = useState<OnboardAPI | null>(null);
   const { setProvider, setSigner, setSigningKeys } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
   const { setPanelType, setPanelOpen } = usePanelContext();
   const { address, truncatedAddress } = getAccountDetails(connectedWallets);
-
-  useEffect(() => {
-    setOnboard(initOnboard);
-  }, []);
 
   useEffect(() => {
     if (!connectedWallets.length) return;
@@ -34,6 +27,8 @@ export function Wallet() {
   }, [connectedWallets, wallet]);
 
   useEffect(() => {
+    if (!connect) return;
+
     const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]");
 
     if (previousConnectedWallets?.length) {
@@ -46,7 +41,7 @@ export function Wallet() {
         });
       })();
     }
-  }, [onboard, connect]);
+  }, [connect]);
 
   useEffect(() => {
     if (!wallet?.provider) {
@@ -98,8 +93,6 @@ export function Wallet() {
     setPanelType("menu");
     setPanelOpen(true);
   }
-
-  if (!onboard) return null;
 
   return (
     <Wrapper>
