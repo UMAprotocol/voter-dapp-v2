@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import * as contentful from "contentful";
-import { ContentfulDataByProposalNumberT, ContentfulDataT, PriceRequestT } from "types/global";
+import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types/global";
+import useActiveVotes from "./useActiveVotes";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";
@@ -10,7 +11,8 @@ const contentfulClient = contentful.createClient({
   accessToken,
 });
 
-async function getContentfulData(adminProposalNumbers: number[]) {
+async function getContentfulData(adminProposalNumbersByKey: Record<UniqueKeyT, number>) {
+  const adminProposalNumbers = Object.values(adminProposalNumbersByKey);
   if (adminProposalNumbers.length === 0) return {};
 
   const numberFieldsString = adminProposalNumbers.join(",");
@@ -21,30 +23,41 @@ async function getContentfulData(adminProposalNumbers: number[]) {
   });
 
   const fields = entries.items.map(({ fields }) => fields);
-  const fieldsToNumbers: Record<string, ContentfulDataT> = {};
+  const contentfulDataByKey: ContentfulDataByKeyT = {};
 
   fields.forEach((field) => {
-    fieldsToNumbers[field.number] = field;
+    const voteKeyForNumber = Object.keys(adminProposalNumbersByKey).find(
+      (key) => adminProposalNumbersByKey[key] === field.number
+    );
+    if (voteKeyForNumber) {
+      contentfulDataByKey[voteKeyForNumber] = field;
+    }
   });
 
-  return fieldsToNumbers;
+  return contentfulDataByKey;
 }
 
-export default function useContentfulData(votes: PriceRequestT[]) {
-  const adminProposalNumbers =
-    votes
-      ?.map(({ decodedIdentifier }) => getAdminProposalNumber(decodedIdentifier))
-      ?.filter((number): number is number => Boolean(number)) ?? [];
+export default function useContentfulData() {
+  const { activeVotes } = useActiveVotes();
+
+  const adminProposalNumbersByKey: Record<UniqueKeyT, number> = {};
+
+  for (const [uniqueKey, { decodedIdentifier }] of Object.entries(activeVotes)) {
+    const adminProposalNumber = getAdminProposalNumber(decodedIdentifier);
+    if (adminProposalNumber) {
+      adminProposalNumbersByKey[uniqueKey] = adminProposalNumber;
+    }
+  }
 
   const { isLoading, isError, data, error } = useQuery(
     ["contentfulData"],
-    () => getContentfulData(adminProposalNumbers),
+    () => getContentfulData(adminProposalNumbersByKey),
     {
-      enabled: adminProposalNumbers?.length > 0,
+      enabled: Object.values(adminProposalNumbersByKey).length > 0,
     }
   );
 
-  const contentfulData: ContentfulDataByProposalNumberT = data ?? {};
+  const contentfulData: ContentfulDataByKeyT = data ?? {};
 
   return {
     contentfulData,
