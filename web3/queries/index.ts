@@ -4,5 +4,6 @@ export { default as getStakedBalance } from "./getStakedBalance";
 export { default as getStakerDetails } from "./getStakerDetails";
 export { default as getTokenAllowance } from "./getTokenAllowance";
 export { default as getUnstakedBalance } from "./getUnstakedBalance";
+export { default as getUpcomingVotes } from "./getUpcomingVotes";
 export { default as getVotesCommittedByUser } from "./getVotesCommittedByUser";
 export { default as getVotesRevealedByUser } from "./getVotesRevealedByUser";
