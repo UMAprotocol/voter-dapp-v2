@@ -8,7 +8,9 @@ import signingMessage from "constants/signingMessage";
 import { BigNumber, ethers } from "ethers";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "helpers/crypto";
 import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhase, useVotePhaseEnds, useVotes } from "hooks/queries";
+import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
+import useInitializeVoteTiming from "hooks/helpers/useInitializeVoteTiming";
+import { useVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { VotePhaseT, VoteT } from "types/global";
@@ -21,9 +23,9 @@ export function Votes() {
   const [selectedVotes, setSelectedVotes] = useState<Record<string, string | undefined>>({});
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const { signer, signingKeys } = useWalletContext();
-  const votePhase = useVotePhase();
-  const { currentRoundId } = useCurrentRoundId(voting);
-  const votePhaseEnds = useVotePhaseEnds(currentRoundId);
+  const { phase, roundId } = useVoteTimingContext();
+
+  useInitializeVoteTiming();
 
   function selectVote(vote: VoteT, value: string) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
@@ -49,7 +51,6 @@ export function Votes() {
     const account = address;
     // we just need a random number to make the hash
     const salt = getRandomSignedInt().toString();
-    const roundId = currentRoundId!.toNumber();
     // we created this key when the user signed the message when first connecting their wallet
     const signingPublicKey = signingKeys[address].publicKey;
 
@@ -117,7 +118,6 @@ export function Votes() {
         ]);
       })
       .filter((encoded): encoded is string => Boolean(encoded));
-
     await voting.functions.multicall(calldata);
   }
 
@@ -177,30 +177,26 @@ export function Votes() {
     <OuterWrapper>
       <InnerWrapper>
         <Title>Vote on active disputes:</Title>
-        {votePhase && votePhaseEnds ? <VoteTimeline phase={votePhase} phaseEnds={new Date(votePhaseEnds)} /> : null}
+        <VoteTimeline />
         <VotesWrapper>
           <TableHeadingsWrapper>
             <DisputeHeading>Dispute</DisputeHeading>
             <YourVoteHeading>Your vote</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {determineVotesToShow(votes, votePhase).map((vote) => (
+          {determineVotesToShow(votes, phase).map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={selectVote}
-              phase={votePhase}
+              phase={phase}
               key={vote.uniqueKey}
               moreDetailsAction={() => openVotePanel(vote)}
             />
           ))}
         </VotesWrapper>
         <CommitVotesButtonWrapper>
-          <Button
-            variant="primary"
-            label={`${votePhase} Votes`}
-            onClick={votePhase === "commit" ? commitVotes : revealVotes}
-          />
+          <Button variant="primary" label={`${phase} Votes`} onClick={phase === "commit" ? commitVotes : revealVotes} />
         </CommitVotesButtonWrapper>
       </InnerWrapper>
     </OuterWrapper>

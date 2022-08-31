@@ -1,8 +1,9 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
 import { useContractsContext } from "hooks/contexts";
+import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
-import { useAccountDetails, useActiveVotes, useStakedBalance, useStakerDetails, useVotePhase } from "hooks/queries";
+import { useAccountDetails, useActiveVotes, useStakedBalance, useStakerDetails } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -11,7 +12,7 @@ import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Unstake() {
-  const votePhase = useVotePhase();
+  const { phase } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { voting } = useContractsContext();
   const { activeVotes } = useActiveVotes(voting);
@@ -51,7 +52,7 @@ export function Unstake() {
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
-      {(votePhase === "commit" || activeVotes.length === 0) && (
+      {(phase === "commit" || activeVotes.length === 0) && (
         <>
           <AmountInputWrapper>
             <AmountInput
@@ -70,7 +71,7 @@ export function Unstake() {
           />
         </>
       )}
-      {votePhase === "reveal" && activeVotes.length > 0 && <p>Cannot request unstake in active reveal phase</p>}
+      {phase === "reveal" && activeVotes.length > 0 && <p>Cannot request unstake in active reveal phase</p>}
     </Wrapper>
   );
 }

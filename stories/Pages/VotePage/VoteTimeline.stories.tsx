@@ -7,7 +7,7 @@ export default {
   component: VoteTimeline,
 } as ComponentMeta<typeof VoteTimeline>;
 
-const Template: ComponentStory<typeof VoteTimeline> = (args) => <VoteTimeline {...args} />;
+const Template: ComponentStory<typeof VoteTimeline> = () => <VoteTimeline />;
 
 export const CommitPhase = Template.bind({});
 CommitPhase.args = {

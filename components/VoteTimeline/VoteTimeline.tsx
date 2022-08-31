@@ -1,52 +1,17 @@
-import { formatDuration, intervalToDuration } from "date-fns";
-import { useContractsContext } from "hooks/contexts";
-import { useCurrentRoundId, useVotePhaseEnds } from "hooks/queries";
-import { useEffect, useState } from "react";
+import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import styled from "styled-components";
-import { VoteTimelineT } from "types/global";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";
 
-export function VoteTimeline({ phase }: VoteTimelineT) {
-  const { voting } = useContractsContext();
-  const { currentRoundId } = useCurrentRoundId(voting);
-  const phaseEndsMilliseconds = useVotePhaseEnds(currentRoundId);
-  const [commitPhaseStartsIn, setCommitPhaseStartsIn] = useState("");
-  const [revealPhaseStartsIn, setRevealPhaseStartsIn] = useState("");
-  const [commitPhaseTimeRemaining, setCommitPhaseTimeRemaining] = useState("");
-  const [revealPhaseTimeRemaining, setRevealPhaseTimeRemaining] = useState("");
+export function VoteTimeline() {
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
 
-  useEffect(() => {
-    if (!phaseEndsMilliseconds) return;
-
-    const interval = setInterval(() => {
-      const start = new Date();
-      const end = new Date(phaseEndsMilliseconds);
-      if (start > end) {
-        return;
-      }
-      const duration = intervalToDuration({ start, end });
-
-      const { hours, minutes, seconds } = duration;
-      const formattedDuration = formatDuration({ hours, minutes, seconds });
-
-      if (phase === "commit" && phaseEndsMilliseconds) {
-        setCommitPhaseTimeRemaining(formattedDuration);
-        setRevealPhaseStartsIn(formattedDuration);
-      }
-
-      if (phase === "reveal" && phaseEndsMilliseconds) {
-        setRevealPhaseTimeRemaining(formattedDuration);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [phase, phaseEndsMilliseconds]);
+  if (!phase || !millisecondsUntilPhaseEnds) return null;
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} startsIn={commitPhaseStartsIn} timeRemaining={commitPhaseTimeRemaining} />
-      <RevealPhase phase={phase} startsIn={revealPhaseStartsIn} timeRemaining={revealPhaseTimeRemaining} />
+      <CommitPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
+      <RevealPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
     </Wrapper>
   );
 }

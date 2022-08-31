@@ -1,18 +1,19 @@
 import { black, red500, white } from "constants/colors";
+import { formatDistanceToNowStrict } from "date-fns";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
-  phase: "commit" | "reveal" | null;
-  startsIn: string | null;
-  timeRemaining: string | null;
+  phase: "commit" | "reveal";
+  timeRemaining: number;
 }
-export function CommitPhase({ phase, startsIn, timeRemaining }: Props) {
+export function CommitPhase({ phase, timeRemaining }: Props) {
   const active = phase === "commit";
   const textColor = active ? white : black;
   const backgroundColor = active ? red500 : white;
   const iconStrokeColor = active ? red500 : white;
   const iconFillColor = active ? white : black;
+  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
   return (
     <OuterWrapper>
       {!phase && <ArrowBorder />}
@@ -34,16 +35,14 @@ export function CommitPhase({ phase, startsIn, timeRemaining }: Props) {
             }
           />
         </CommitIconWrapper>
-        {startsIn ? (
+        {active ? (
           <Message>
-            Commit phase starts in <Strong>{startsIn}</Strong>
-          </Message>
-        ) : timeRemaining ? (
-          <Message>
-            Time remaining to commit votes: <Strong>{timeRemaining}</Strong>
+            Time remaining to commit votes: <Strong>{formattedTimeRemaining}</Strong>
           </Message>
         ) : (
-          <Message>Commit phase over</Message>
+          <Message>
+            Commit phase starts in <Strong>{formattedTimeRemaining}</Strong>
+          </Message>
         )}
       </InnerWrapper>
     </OuterWrapper>
