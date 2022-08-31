@@ -77,7 +77,7 @@ export type ContentfulDataT = {
   umipLink?: string;
 };
 
-export type ContentfulDataByProposalNumberT = Record<UniqueKeyT, ContentfulDataT | undefined>;
+export type ContentfulDataByKeyT = Record<UniqueKeyT, ContentfulDataT | undefined>;
 
 export type UniqueKeyT = string;
 

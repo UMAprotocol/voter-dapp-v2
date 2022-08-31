@@ -10,7 +10,7 @@ import {
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
-  ContentfulDataByProposalNumberT,
+  ContentfulDataByKeyT,
   DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
   PriceRequestByKeyT,
@@ -25,7 +25,7 @@ interface VotesContextState {
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
   decryptedVotes: DecryptedVotesByKeyT;
-  contentfulData: ContentfulDataByProposalNumberT;
+  contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
 }
 
@@ -45,11 +45,11 @@ export const VotesContext = createContext<VotesContextState>(defaultVotesContext
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { activeVotes } = useActiveVotes();
   const { upcomingVotes } = useUpcomingVotes();
-  const { contentfulData } = useContentfulData(Object.values(activeVotes));
+  const { contentfulData } = useContentfulData();
   const { committedVotes } = useCommittedVotes();
   const { revealedVotes } = useRevealedVotes();
   const { encryptedVotes } = useEncryptedVotes();
-  const decryptedVotes = useDecryptedVotes(encryptedVotes);
+  const decryptedVotes = useDecryptedVotes();
 
   function getActiveVotes(): VoteT[] {
     return Object.entries(activeVotes).map(([uniqueKey, vote]) => {
@@ -65,7 +65,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
           vote.transactionHash,
-          contentfulData?.[uniqueKey]
+          contentfulData[uniqueKey]
         ),
       };
     });
