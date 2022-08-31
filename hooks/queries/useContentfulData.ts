@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { contentfulDataKey } from "constants/queryKeys";
 import * as contentful from "contentful";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types/global";
 import useActiveVotes from "./useActiveVotes";
+import useUpcomingVotes from "./useUpcomingVotes";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";
@@ -39,10 +41,13 @@ async function getContentfulData(adminProposalNumbersByKey: Record<UniqueKeyT, n
 
 export default function useContentfulData() {
   const { activeVotes } = useActiveVotes();
+  const { upcomingVotes } = useUpcomingVotes();
+
+  const allVotes = { ...activeVotes, ...upcomingVotes };
 
   const adminProposalNumbersByKey: Record<UniqueKeyT, number> = {};
 
-  for (const [uniqueKey, { decodedIdentifier }] of Object.entries(activeVotes)) {
+  for (const [uniqueKey, { decodedIdentifier }] of Object.entries(allVotes)) {
     const adminProposalNumber = getAdminProposalNumber(decodedIdentifier);
     if (adminProposalNumber) {
       adminProposalNumbersByKey[uniqueKey] = adminProposalNumber;
@@ -50,7 +55,7 @@ export default function useContentfulData() {
   }
 
   const { isLoading, isError, data, error } = useQuery(
-    ["contentfulData"],
+    [contentfulDataKey],
     () => getContentfulData(adminProposalNumbersByKey),
     {
       enabled: Object.values(adminProposalNumbersByKey).length > 0,
