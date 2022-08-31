@@ -5,6 +5,7 @@ import {
   useContentfulData,
   useDecryptedVotes,
   useEncryptedVotes,
+  useHasActiveVotes,
   useRevealedVotes,
   useUpcomingVotes,
 } from "hooks/queries";
@@ -19,6 +20,7 @@ import {
 } from "types/global";
 
 interface VotesContextState {
+  hasActiveVotes: boolean | undefined;
   activeVotes: PriceRequestByKeyT;
   upcomingVotes: PriceRequestByKeyT;
   committedVotes: VoteExistsByKeyT;
@@ -27,9 +29,11 @@ interface VotesContextState {
   decryptedVotes: DecryptedVotesByKeyT;
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
+  getUpcomingVotes: () => VoteT[];
 }
 
 export const defaultVotesContextState: VotesContextState = {
+  hasActiveVotes: undefined,
   activeVotes: {},
   upcomingVotes: {},
   committedVotes: {},
@@ -38,11 +42,13 @@ export const defaultVotesContextState: VotesContextState = {
   decryptedVotes: {},
   contentfulData: {},
   getActiveVotes: () => [],
+  getUpcomingVotes: () => [],
 };
 
 export const VotesContext = createContext<VotesContextState>(defaultVotesContextState);
 
 export function VotesProvider({ children }: { children: ReactNode }) {
+  const { hasActiveVotes } = useHasActiveVotes();
   const { activeVotes } = useActiveVotes();
   const { upcomingVotes } = useUpcomingVotes();
   const { contentfulData } = useContentfulData();
@@ -51,8 +57,16 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { encryptedVotes } = useEncryptedVotes();
   const decryptedVotes = useDecryptedVotes();
 
-  function getActiveVotes(): VoteT[] {
-    return Object.entries(activeVotes).map(([uniqueKey, vote]) => {
+  function getActiveVotes() {
+    return getVotesWithData(activeVotes);
+  }
+
+  function getUpcomingVotes() {
+    return getVotesWithData(upcomingVotes);
+  }
+
+  function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
+    return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       return {
         ...vote,
         uniqueKey,
@@ -74,6 +88,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   return (
     <VotesContext.Provider
       value={{
+        hasActiveVotes,
         activeVotes,
         upcomingVotes,
         committedVotes,
@@ -82,6 +97,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         decryptedVotes,
         contentfulData,
         getActiveVotes,
+        getUpcomingVotes,
       }}
     >
       {children}

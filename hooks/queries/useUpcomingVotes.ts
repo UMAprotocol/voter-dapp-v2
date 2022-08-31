@@ -14,7 +14,7 @@ export default function useUpcomingVotes() {
     refetchInterval(data) {
       return data?.length ? false : 1000;
     },
-    enabled: hasActiveVotes !== undefined && hasActiveVotes,
+    enabled: hasActiveVotes !== undefined && !hasActiveVotes,
   });
 
   const eventData = data?.map(({ args }) => args);
