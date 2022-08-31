@@ -6,6 +6,7 @@ import {
   useDecryptedVotes,
   useEncryptedVotes,
   useRevealedVotes,
+  useUpcomingVotes,
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
@@ -19,6 +20,7 @@ import {
 
 interface VotesContextState {
   activeVotes: PriceRequestByKeyT;
+  upcomingVotes: PriceRequestByKeyT;
   committedVotes: VoteExistsByKeyT;
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
@@ -29,6 +31,7 @@ interface VotesContextState {
 
 export const defaultVotesContextState: VotesContextState = {
   activeVotes: {},
+  upcomingVotes: {},
   committedVotes: {},
   revealedVotes: {},
   encryptedVotes: {},
@@ -41,6 +44,7 @@ export const VotesContext = createContext<VotesContextState>(defaultVotesContext
 
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { activeVotes } = useActiveVotes();
+  const { upcomingVotes } = useUpcomingVotes();
   const { contentfulData } = useContentfulData(Object.values(activeVotes));
   const { committedVotes } = useCommittedVotes();
   const { revealedVotes } = useRevealedVotes();
@@ -71,6 +75,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     <VotesContext.Provider
       value={{
         activeVotes,
+        upcomingVotes,
         committedVotes,
         revealedVotes,
         encryptedVotes,

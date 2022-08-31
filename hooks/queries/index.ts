@@ -9,3 +9,4 @@ export { default as useStakedBalance } from "./useStakedBalance";
 export { default as useStakerDetails } from "./useStakerDetails";
 export { default as useTokenAllowance } from "./useTokenAllowance";
 export { default as useUnstakedBalance } from "./useUnstakedBalance";
+export { default as useUpcomingVotes } from "./useUpcomingVotes";
