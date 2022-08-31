@@ -44,8 +44,10 @@ export function Votes() {
         formattedVotes,
       },
       {
-        onSettled: () => {
+        onSuccess: () => {
           setSelectedVotes({});
+        },
+        onSettled: () => {
           setContractInteractionInProgress(false);
         },
       }
