@@ -9,3 +9,4 @@ export const encryptedVotesKey = "encryptedVotesKey";
 export const committedVotesKey = "committedVotesKey";
 export const revealedVotesKey = "revealedVotesKey";
 export const hasActiveVotesKey = "hasActiveVotesKey";
+export const contentfulDataKey = "contentfulDataKey";
