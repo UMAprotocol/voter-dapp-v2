@@ -11,13 +11,13 @@ import {
 } from "hooks/contexts";
 import { useInitializeVoteTiming } from "hooks/helpers";
 import { useCommitVotes, useRevealVotes } from "hooks/mutations";
-import { useAccountDetails } from "hooks/queries";
+import { useAccountDetails, usePastVotes } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { hasActiveVotes, getActiveVotes, getUpcomingVotes } = useVotesContext();
+  const { hasActiveVotes, getActiveVotes, getUpcomingVotes, getPastVotes } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -93,7 +93,9 @@ export function Votes() {
       if (phase === "commit") return getActiveVotes();
       return getVotesToReveal();
     }
-    return getUpcomingVotes();
+    const upcomingVotes = getUpcomingVotes();
+    if (upcomingVotes.length) return upcomingVotes;
+    return getPastVotes();
   }
 
   function canCommit() {
