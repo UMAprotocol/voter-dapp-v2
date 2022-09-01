@@ -32,9 +32,33 @@ export type PriceRequestT = {
 };
 
 export type RawPriceRequestDataT = {
-  time: BigNumber;
+  time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
+};
+
+export type FormattedPriceRequestT = {
+  time: number;
+  identifier: string;
+  ancillaryData: string;
+  transactionHash: string;
+  timeMilliseconds: number;
+  timeAsDate: Date;
+  decodedIdentifier: string;
+  decodedAncillaryData: string;
+  uniqueKey: string;
+};
+
+export type PastVotesQuery = {
+  priceRequests: {
+    id: string;
+    identifier: {
+      id: string;
+    };
+    time: string;
+    price: string;
+    ancillaryData: string;
+  }[];
 };
 
 export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;

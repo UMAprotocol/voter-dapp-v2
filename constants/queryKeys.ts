@@ -1,5 +1,6 @@
 export const activeVotesKey = "activeVotesKey";
 export const upcomingVotesKey = "upcomingVotesKey";
+export const pastVotesKey = "pastVotesKey";
 export const currentRoundIdKey = "currentRoundIdKey";
 export const stakedBalanceKey = "stakedBalanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
