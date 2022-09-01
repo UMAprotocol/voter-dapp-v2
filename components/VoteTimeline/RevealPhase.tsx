@@ -16,16 +16,7 @@ export function RevealPhase({ phase, timeRemaining, isUpcoming }: Props) {
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
   const iconFillColor = isActive ? white : black;
-  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + determineTimeRemaining());
-
-  function determineTimeRemaining() {
-    // if the vote is upcoming and we are in the reveal phase, we need to add the time remaining for the current reveal phase, the commit phase, and the next reveal phase
-    if (isUpcoming && isRevealPhase) return timeRemaining + phaseLength * 1000 * 3;
-    // if the vote is upcoming and we are in the commit phase, we need to add the time remaining for the commit phase and the reveal phase
-    if (isUpcoming && !isRevealPhase) return timeRemaining + phaseLength * 1000 * 2;
-    // if the vote is not upcoming, we just need to add the time remaining
-    return timeRemaining;
-  }
+  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
 
   return (
     <Wrapper
