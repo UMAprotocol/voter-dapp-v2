@@ -1,4 +1,5 @@
 import { black, red500, white } from "constants/colors";
+import { phaseLength } from "constants/voteTiming";
 import { formatDistanceToNowStrict } from "date-fns";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
@@ -6,17 +7,29 @@ import styled, { CSSProperties } from "styled-components";
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
+  isUpcoming: boolean;
 }
-export function CommitPhase({ phase, timeRemaining }: Props) {
-  const active = phase === "commit";
-  const textColor = active ? white : black;
-  const backgroundColor = active ? red500 : white;
-  const iconStrokeColor = active ? red500 : white;
-  const iconFillColor = active ? white : black;
-  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
+export function CommitPhase({ phase, timeRemaining, isUpcoming }: Props) {
+  const isCommitPhase = phase === "commit";
+  const isActive = isCommitPhase && !isUpcoming;
+  const textColor = isActive ? white : black;
+  const backgroundColor = isActive ? red500 : white;
+  const iconStrokeColor = isActive ? red500 : white;
+  const iconFillColor = isActive ? white : black;
+  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + determineTimeRemaining());
+
+  function determineTimeRemaining() {
+    // if the vote is upcoming and we are in the commit phase, we need to add the time remaining for the commit phase and the reveal phase
+    if (isUpcoming && isCommitPhase) return timeRemaining + phaseLength * 1000 * 2;
+    // if the vote is upcoming and we are in the reveal phase, we need to add the time remaining for the reveal phase
+    if (isUpcoming && !isCommitPhase) return timeRemaining + phaseLength * 1000;
+    // if the vote is not upcoming, we just need to add the time remaining
+    return timeRemaining;
+  }
+
   return (
     <OuterWrapper>
-      {!phase && <ArrowBorder />}
+      {!isActive && <ArrowBorder />}
       <InnerWrapper
         style={
           {
@@ -35,7 +48,7 @@ export function CommitPhase({ phase, timeRemaining }: Props) {
             }
           />
         </CommitIconWrapper>
-        {active ? (
+        {isActive ? (
           <Message>
             Time remaining to commit votes: <Strong>{formattedTimeRemaining}</Strong>
           </Message>

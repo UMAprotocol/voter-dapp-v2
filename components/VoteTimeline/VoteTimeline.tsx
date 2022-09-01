@@ -1,3 +1,4 @@
+import { useVotesContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
@@ -5,13 +6,14 @@ import { RevealPhase } from "./RevealPhase";
 
 export function VoteTimeline() {
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
+  const { hasActiveVotes } = useVotesContext();
 
   if (!phase || !millisecondsUntilPhaseEnds) return null;
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
-      <RevealPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
+      <CommitPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} isUpcoming={!hasActiveVotes} />
+      <RevealPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} isUpcoming={!hasActiveVotes} />
     </Wrapper>
   );
 }
