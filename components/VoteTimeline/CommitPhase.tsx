@@ -29,7 +29,7 @@ export function CommitPhase({ phase, timeRemaining, isUpcoming }: Props) {
 
   return (
     <OuterWrapper>
-      {!isActive && <ArrowBorder />}
+      {isUpcoming && <ArrowBorder />}
       <InnerWrapper
         style={
           {
