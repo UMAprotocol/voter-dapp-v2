@@ -1,5 +1,4 @@
 import { black, red500, white } from "constants/colors";
-import { phaseLength } from "constants/voteTiming";
 import { formatDistanceToNowStrict } from "date-fns";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";

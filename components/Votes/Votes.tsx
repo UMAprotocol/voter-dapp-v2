@@ -110,11 +110,15 @@ export function Votes() {
     return "Past disputes:";
   }
 
+  function hasActiveOrUpcomingVotes() {
+    return hasActiveVotes || getUpcomingVotes().length > 0;
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper>
         <Title>{determineTitle()}</Title>
-        <VoteTimeline />
+        {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
         <VotesWrapper>
           <TableHeadingsWrapper>
             <DisputeHeading>Dispute</DisputeHeading>
