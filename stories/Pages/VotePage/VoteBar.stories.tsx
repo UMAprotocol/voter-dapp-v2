@@ -36,7 +36,7 @@ OriginUmaNotCommitted.args = {
     umipNumber: 20,
     encryptedVote: undefined,
     decryptedVote: undefined,
-    umipDataFromContentful: undefined,
+    contentfulData: undefined,
     options: [
       { label: "Yes", value: "p0", secondaryLabel: "p0" },
       { label: "No", value: "p1", secondaryLabel: "p1" },
@@ -82,7 +82,7 @@ OriginPolymarketNotCommitted.args = {
     origin: "Polymarket",
     encryptedVote: undefined,
     decryptedVote: undefined,
-    umipDataFromContentful: undefined,
+    contentfulData: undefined,
     description: "Some description",
     transactionHash: "0x1234567890",
     umipUrl: "https://uma.io",

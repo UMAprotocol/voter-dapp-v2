@@ -15,7 +15,7 @@ export function Unstake() {
   const { phase } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { voting } = useContractsContext();
-  const { activeVotes } = useActiveVotes(voting);
+  const { activeVotes } = useActiveVotes();
   const { stakedBalance } = useStakedBalance(voting, address);
   const {
     stakerDetails: { pendingUnstake },
@@ -30,6 +30,8 @@ export function Unstake() {
   function canUnstake(stakedBalance: number, pendingUnstake: number) {
     return stakedBalance > 0 && pendingUnstake === 0;
   }
+
+  const hasActiveVotes = Object.values(activeVotes).length > 0;
 
   return (
     <Wrapper>
@@ -52,7 +54,7 @@ export function Unstake() {
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
-      {(phase === "commit" || activeVotes.length === 0) && (
+      {(phase === "commit" || !hasActiveVotes) && (
         <>
           <AmountInputWrapper>
             <AmountInput
@@ -71,7 +73,7 @@ export function Unstake() {
           />
         </>
       )}
-      {phase === "reveal" && activeVotes.length > 0 && <p>Cannot request unstake in active reveal phase</p>}
+      {phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
     </Wrapper>
   );
 }

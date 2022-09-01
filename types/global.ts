@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { BigNumber, ethers } from "ethers";
 
 export type InputDataT = {
   value: string | number;
@@ -14,6 +15,8 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
+export type VoteT = PriceRequestT & UserVoteDataT & VoteMetaDataT & VoteContentfulDataT & VoteResultT;
+
 export type PriceRequestT = {
   // raw values
   time: number;
@@ -25,46 +28,17 @@ export type PriceRequestT = {
   timeAsDate: Date;
   decodedIdentifier: string;
   decodedAncillaryData: string;
-  uniqueKey: string;
+  uniqueKey: UniqueKeyT;
 };
 
-export type WithIsGovernanceT<T extends PriceRequestT> = T & {
-  isGovernance: boolean;
-};
+export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
 
-export type WithIsCommittedT<T extends PriceRequestT> = T & {
+export type UserVoteDataT = {
   isCommitted: boolean;
-};
-
-export type WithIsRevealedT<T extends PriceRequestT> = T & {
   isRevealed: boolean;
-};
-
-export type WithEncryptedVoteT<T extends WithIsCommittedT<PriceRequestT>> = T & {
-  encryptedVote: string | undefined;
-};
-
-export type WithDecryptedVoteT<T extends WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> = T & {
+  encryptedVote: EncryptedVoteT | undefined;
   decryptedVote: DecryptedVoteT | undefined;
 };
-
-export type WithUmipDataFromContentfulT<T extends PriceRequestT> = T & {
-  umipDataFromContentful: UmipDataFromContentfulT | undefined;
-};
-
-export type WithMetaDataT<T extends WithUmipDataFromContentfulT<PriceRequestT>> = T & VoteMetaDataT;
-
-export type WithAllDataT = WithIsGovernanceT<PriceRequestT> &
-  WithIsCommittedT<PriceRequestT> &
-  WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>> &
-  WithDecryptedVoteT<WithEncryptedVoteT<WithIsCommittedT<PriceRequestT>>> &
-  WithIsRevealedT<PriceRequestT> &
-  WithUmipDataFromContentfulT<PriceRequestT> &
-  WithMetaDataT<WithUmipDataFromContentfulT<PriceRequestT>>;
-
-export type VoteT = WithAllDataT & VoteResultT;
-
-export type DecryptedVoteT = { price: string; salt: string };
 
 export type VoteMetaDataT = {
   title: string;
@@ -82,6 +56,34 @@ export type VoteResultT = {
   results?: InputDataT[];
   participation?: InputDataT[];
 };
+
+export type VoteContentfulDataT = {
+  contentfulData: ContentfulDataT | undefined;
+};
+
+export type ContentfulDataT = {
+  description: string;
+  discourseLink?: string;
+  status?: string;
+  authors?: string;
+  title: string;
+  number: number;
+  umipLink?: string;
+};
+
+export type ContentfulDataByKeyT = Record<UniqueKeyT, ContentfulDataT | undefined>;
+
+export type UniqueKeyT = string;
+
+export type EncryptedVoteT = string;
+export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
+
+export type DecryptedVoteT = { price: string; salt: string };
+export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined>;
+
+export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
+
+export type SelectedVotesByKeyT = Record<UniqueKeyT, string | undefined>;
 
 export type VotePhaseT = "commit" | "reveal" | null;
 
@@ -108,16 +110,6 @@ export type SigningKeys = {
   [address: string]: SigningKey;
 };
 
-export type UmipDataFromContentfulT = {
-  description: string;
-  discourseLink?: string;
-  status?: string;
-  authors?: string;
-  title: string;
-  number: number;
-  umipLink?: string;
-};
-
 export type UmipLinkT = {
   number: string;
   url: string;
@@ -139,4 +131,28 @@ export type StakerDetailsT = {
   lastRequestIndexConsidered: BigNumber;
   unstakeRequestTime: BigNumber;
   delegate: string;
+};
+
+export type FormatVotesToCommit = {
+  votes: VoteT[];
+  selectedVotes: SelectedVotesByKeyT;
+  roundId: number;
+  address: string;
+  signingKeys: SigningKeys;
+  signer: ethers.Signer;
+};
+
+export type VoteFormattedToCommitT = VoteT & {
+  encryptedVote: EncryptedVoteT;
+  hash: string;
+};
+
+export type CommitVotes = {
+  voting: VotingV2Ethers;
+  formattedVotes: VoteFormattedToCommitT[];
+};
+
+export type RevealVotes = {
+  voting: VotingV2Ethers;
+  votesToReveal: VoteT[];
 };

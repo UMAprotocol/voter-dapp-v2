@@ -1,7 +1,7 @@
-import { init } from "@web3-onboard/react";
-import injectedModule from "@web3-onboard/injected-wallets";
-import walletConnectModule from "@web3-onboard/walletconnect";
 import gnosisModule from "@web3-onboard/gnosis";
+import injectedModule from "@web3-onboard/injected-wallets";
+import { init } from "@web3-onboard/react";
+import walletConnectModule from "@web3-onboard/walletconnect";
 import { logo } from "public/assets/logo";
 
 const injected = injectedModule();

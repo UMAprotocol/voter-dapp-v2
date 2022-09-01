@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GlobalStyle } from "components/GlobalStyle";
 import { ContractsProvider } from "contexts/ContractsContext";
 import { PanelProvider } from "contexts/PanelContext";
+import { VotesProvider } from "contexts/VotesContext";
 import { VoteTimingProvider } from "contexts/VoteTimingContext";
 import { WalletProvider } from "contexts/WalletContext";
 import type { AppProps } from "next/app";
@@ -16,10 +17,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       <WalletProvider>
         <QueryClientProvider client={queryClient}>
           <ContractsProvider>
-            <PanelProvider>
-              <GlobalStyle />
-              <Component {...pageProps} />
-            </PanelProvider>
+            <VotesProvider>
+              <PanelProvider>
+                <GlobalStyle />
+                <Component {...pageProps} />
+              </PanelProvider>
+            </VotesProvider>
           </ContractsProvider>
           <ReactQueryDevtools />
         </QueryClientProvider>
