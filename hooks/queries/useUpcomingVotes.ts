@@ -12,7 +12,7 @@ export default function useUpcomingVotes() {
 
   const { isLoading, isError, data, error } = useQuery([upcomingVotesKey], () => getUpcomingVotes(voting), {
     refetchInterval(data) {
-      return data?.length ? false : 1000;
+      return data ? false : 1000;
     },
     enabled: hasActiveVotes !== undefined && !hasActiveVotes,
   });
