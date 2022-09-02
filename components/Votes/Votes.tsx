@@ -107,9 +107,9 @@ export function Votes() {
   }
 
   function determineTitle() {
-    if (hasActiveVotes) return "Vote on active disputes:";
-    if (getUpcomingVotes().length) return "Vote on upcoming disputes:";
-    return "Past disputes:";
+    if (hasActiveVotes) return "Active votes:";
+    if (getUpcomingVotes().length) return "Upcoming votes:";
+    return "Past votes:";
   }
 
   function hasActiveOrUpcomingVotes() {
