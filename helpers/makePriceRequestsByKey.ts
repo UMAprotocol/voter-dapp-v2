@@ -1,4 +1,4 @@
-import { FormattedPriceRequestT, PriceRequestByKeyT, RawPriceRequestDataT } from "types/global";
+import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types/global";
 import { decodeHexString } from "./decodeHexString";
 import { makeUniqueKeyForVote } from "./votes";
 
@@ -16,9 +16,7 @@ export default function makePriceRequestsByKey(priceRequests: RawPriceRequestDat
 }
 
 function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
-  return priceRequests
-    .map(formatPriceRequest)
-    .filter((priceRequest): priceRequest is FormattedPriceRequestT => !!priceRequest);
+  return priceRequests.map(formatPriceRequest).filter((priceRequest): priceRequest is PriceRequestT => !!priceRequest);
 }
 
 function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
@@ -30,6 +28,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const ancillaryData = priceRequest.ancillaryData;
   const decodedIdentifier = decodeHexString(identifier);
   const decodedAncillaryData = decodeHexString(ancillaryData);
+  const correctVote = priceRequest.correctVote;
   const uniqueKey = makeUniqueKeyForVote(identifier, time, ancillaryData);
 
   return {
@@ -41,6 +40,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     timeAsDate,
     decodedIdentifier,
     decodedAncillaryData,
+    correctVote,
     uniqueKey,
-  } as FormattedPriceRequestT;
+  } as PriceRequestT;
 }
