@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { upcomingVotesKey } from "constants/queryKeys";
+import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { getUpcomingVotes } from "web3/queries";
 import useHasActiveVotes from "./useHasActiveVotes";
-import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 
 export default function useUpcomingVotes() {
   const { voting } = useContractsContext();
@@ -12,7 +12,7 @@ export default function useUpcomingVotes() {
 
   const { isLoading, isError, data, error } = useQuery([upcomingVotesKey], () => getUpcomingVotes(voting), {
     refetchInterval(data) {
-      return data?.length ? false : 1000;
+      return data ? false : 1000;
     },
     enabled: hasActiveVotes !== undefined && !hasActiveVotes,
   });

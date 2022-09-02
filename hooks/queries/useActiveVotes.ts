@@ -11,7 +11,7 @@ export default function useActiveVotes() {
 
   const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(voting), {
     refetchInterval(data) {
-      return data?.length ? false : 1000;
+      return data ? false : 1000;
     },
     enabled: hasActiveVotes !== undefined && hasActiveVotes,
   });
