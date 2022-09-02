@@ -23,6 +23,7 @@ export type PriceRequestT = {
   identifier: string;
   ancillaryData: string;
   transactionHash: string;
+  correctVote?: number;
   // computed values
   timeMilliseconds: number;
   timeAsDate: Date;
@@ -35,18 +36,7 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-};
-
-export type FormattedPriceRequestT = {
-  time: number;
-  identifier: string;
-  ancillaryData: string;
-  transactionHash: string;
-  timeMilliseconds: number;
-  timeAsDate: Date;
-  decodedIdentifier: string;
-  decodedAncillaryData: string;
-  uniqueKey: string;
+  correctVote?: number;
 };
 
 export type PastVotesQuery = {
