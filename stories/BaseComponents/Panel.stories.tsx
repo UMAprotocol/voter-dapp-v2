@@ -1,10 +1,9 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Panel } from "components/Panel";
-import { Button } from "components/Button";
-import { PanelContext } from "contexts/PanelContext";
 import { useArgs } from "@storybook/client-api";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Button } from "components/Button";
+import { Panel } from "components/Panel";
+import { PanelContext } from "contexts/PanelContext";
 import sub from "date-fns/sub";
-import add from "date-fns/add";
 
 export default {
   title: "Base Components/Panel",
@@ -143,5 +142,12 @@ StakePanel.args = {
 export const RemindPanel = Template.bind({});
 RemindPanel.args = {
   panelType: "remind",
+  panelOpen: true,
+};
+
+export const HistoryPanel = Template.bind({});
+
+HistoryPanel.args = {
+  panelType: "history",
   panelOpen: true,
 };
