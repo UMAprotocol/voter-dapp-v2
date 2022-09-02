@@ -3,26 +3,26 @@ import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { green, red500 } from "constants/colors";
 import { ethers } from "ethers";
-import { useWalletContext } from "hooks/contexts";
+import { useVotesContext, useVoteTimingContext, useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
-import { VotePhaseT, VoteT } from "types/global";
+import { VoteT } from "types/global";
 
 interface Props {
   vote: VoteT;
   moreDetailsAction: () => void;
   selectedVote: string | undefined;
   selectVote: (vote: VoteT, value: string) => void;
-  phase: VotePhaseT;
 }
-export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsAction }: Props) {
+export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: Props) {
+  const { hasActiveVotes } = useVotesContext();
+  const { phase } = useVoteTimingContext();
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, decryptedVote } = vote;
+  const { title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
-  const dotColor = (phase === "commit" && isCommitted) || (phase === "reveal" && isRevealed) ? green : red500;
 
   function formatTitle(title: string) {
     if (title.length <= 45) return title;
@@ -33,40 +33,96 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
     return decryptedVote?.price ? Number(ethers.utils.formatEther(decryptedVote.price)) : undefined;
   }
 
+  function showVoteInput() {
+    return hasActiveVotes && phase === "commit";
+  }
+
+  function showYourVote() {
+    return phase === "reveal" || !hasActiveVotes;
+  }
+
+  function showCorrectVote() {
+    return !hasActiveVotes && correctVote !== undefined;
+  }
+
+  function showVoteStatus() {
+    return hasActiveVotes;
+  }
+
+  function getExistingOrSelectedVote() {
+    return (
+      options?.find((option) => {
+        const existingVote = getDecryptedVoteAsNumber();
+        const valueAsNumber = Number(option.value);
+
+        // prefer showing the selected vote if it exists
+        if (selectedVote !== undefined) {
+          const selectedVoteAsNumber = Number(selectedVote);
+          return valueAsNumber === selectedVoteAsNumber;
+        }
+
+        if (existingVote !== undefined) {
+          return valueAsNumber === existingVote;
+        }
+
+        return false;
+      }) ?? null
+    );
+  }
+
+  function getYourVote() {
+    return findVoteInOptions(getDecryptedVoteAsNumber())?.label ?? decryptedVote?.price?.toString();
+  }
+
+  function getCorrectVote() {
+    return findVoteInOptions(correctVote)?.label ?? correctVote?.toString();
+  }
+
+  function findVoteInOptions(valueAsNumber: number | undefined) {
+    if (!valueAsNumber) return undefined;
+
+    return options?.find((option) => {
+      const optionValueAsNumber = Number(option.value);
+      return optionValueAsNumber === valueAsNumber;
+    });
+  }
+
+  function getCommittedOrRevealed() {
+    if (phase === "commit") {
+      return isCommitted ? "Committed" : "Not committed";
+    } else {
+      return isRevealed ? "Revealed" : "Not revealed";
+    }
+  }
+
+  function getDotColor() {
+    if (phase === "commit") {
+      return isCommitted ? green : red500;
+    } else {
+      return isRevealed ? green : red500;
+    }
+  }
+
+  if (hasActiveVotes === undefined) return null;
+
   return (
     <Wrapper>
-      <Dispute>
-        <DisputeIconWrapper>
-          <Icon />
-        </DisputeIconWrapper>
-        <DisputeDetailsWrapper>
-          <DisputeTitle>{formatTitle(title)}</DisputeTitle>
-          <DisputeOrigin>{origin}</DisputeOrigin>
-        </DisputeDetailsWrapper>
-      </Dispute>
       <Vote>
-        {phase === "commit" ? (
+        <VoteIconWrapper>
+          <Icon />
+        </VoteIconWrapper>
+        <VoteDetailsWrapper>
+          <VoteTitle>{formatTitle(title)}</VoteTitle>
+          <VoteOrigin>{origin}</VoteOrigin>
+        </VoteDetailsWrapper>
+      </Vote>
+      <VoteInput>
+        {showVoteInput() ? (
           options ? (
             <Dropdown
               label="Choose answer"
               items={options}
-              selected={
-                options.find((option) => {
-                  const existingVote = getDecryptedVoteAsNumber();
-                  const valueAsNumber = Number(option.value);
-
-                  if (selectedVote !== undefined) {
-                    const selectedVoteAsNumber = Number(selectedVote);
-                    return valueAsNumber === selectedVoteAsNumber;
-                  }
-
-                  if (existingVote !== undefined) {
-                    return valueAsNumber === existingVote;
-                  }
-
-                  return false;
-                }) ?? null
-              }
+              selected={getExistingOrSelectedVote()}
               onSelect={(option) => selectVote(vote, option.value.toString())}
             />
           ) : (
@@ -76,26 +132,22 @@ export function VoteBar({ vote, selectedVote, selectVote, phase, moreDetailsActi
               disabled={!signer}
             />
           )
-        ) : (
-          <YourVote>
-            {options?.find((option) => {
-              const decryptedVote = getDecryptedVoteAsNumber();
-              const valueAsNumber = Number(option.value);
-              return valueAsNumber === decryptedVote;
-            })?.label ?? null}
-          </YourVote>
-        )}
-      </Vote>
-      <Status>
-        <DotIcon
-          style={
-            {
-              "--dot-color": dotColor,
-            } as CSSProperties
-          }
-        />{" "}
-        {phase === "commit" ? (isCommitted ? "Committed" : "Not committed") : isRevealed ? "Revealed" : "Not revealed"}
-      </Status>
+        ) : null}
+      </VoteInput>
+      {showYourVote() ? <VoteText>{getYourVote()}</VoteText> : null}
+      {showCorrectVote() ? <VoteText>{getCorrectVote()}</VoteText> : null}
+      {showVoteStatus() ? (
+        <Status>
+          <DotIcon
+            style={
+              {
+                "--dot-color": getDotColor(),
+              } as CSSProperties
+            }
+          />{" "}
+          {getCommittedOrRevealed()}
+        </Status>
+      ) : null}
       <MoreDetails>
         <Button label="More details" onClick={moreDetailsAction} />
       </MoreDetails>
@@ -113,7 +165,7 @@ const Wrapper = styled.div`
   background: var(--white);
 `;
 
-const Dispute = styled.div`
+const Vote = styled.div`
   justify-self: start;
   display: flex;
   align-items: center;
@@ -121,27 +173,27 @@ const Dispute = styled.div`
   margin-left: 30px;
 `;
 
-const DisputeDetailsWrapper = styled.div``;
+const VoteDetailsWrapper = styled.div``;
 
-const DisputeIconWrapper = styled.div`
+const VoteIconWrapper = styled.div`
   width: 40px;
   height: 40px;
 `;
 
-const DisputeTitle = styled.h3`
+const VoteTitle = styled.h3`
   font: var(--header-sm);
 `;
 
-const DisputeOrigin = styled.h4`
+const VoteOrigin = styled.h4`
   font: var(--text-xs);
   color: var(--black-opacity-50);
 `;
 
-const Vote = styled.div`
+const VoteInput = styled.div`
   width: 240px;
 `;
 
-const YourVote = styled.p`
+const VoteText = styled.p`
   font: var(--text-md);
 `;
 
