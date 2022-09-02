@@ -1,1 +1,1 @@
-export const goerli = 7333080;
+export const goerliDeployBlock = 7333080;
