@@ -11,7 +11,7 @@ import {
 } from "hooks/contexts";
 import { useInitializeVoteTiming } from "hooks/helpers";
 import { useCommitVotes, useRevealVotes } from "hooks/mutations";
-import { useAccountDetails, usePastVotes } from "hooks/queries";
+import { useAccountDetails } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
@@ -123,16 +123,15 @@ export function Votes() {
         {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
         <VotesWrapper>
           <TableHeadingsWrapper>
-            <DisputeHeading>Dispute</DisputeHeading>
+            <VoteHeading>Vote</VoteHeading>
             <YourVoteHeading>{hasActiveVotes ? "Your vote" : ""}</YourVoteHeading>
-            <VoteStatusHeading>Vote status</VoteStatusHeading>
+            <VoteStatusHeading>{hasActiveVotes ? "Vote status" : ""}</VoteStatusHeading>
           </TableHeadingsWrapper>
           {determineVotesToShow().map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={selectVote}
-              phase={phase}
               key={vote.uniqueKey}
               moreDetailsAction={() => openVotePanel(vote)}
             />
@@ -183,7 +182,7 @@ const TableHeadingsWrapper = styled.div`
   margin-top: 40px;
 `;
 
-const DisputeHeading = styled.h2`
+const VoteHeading = styled.h2`
   font: var(--text-sm);
 `;
 
