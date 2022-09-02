@@ -14,7 +14,7 @@ export default function usePastVotes() {
 
   const parsedData = data?.priceRequests?.map(({ id, time, price, ancillaryData }) => {
     const identifier = getIdentifierFromPriceRequestId(id);
-    const correctVote = price;
+    const correctVote = Number(ethers.utils.formatEther(price));
 
     return {
       identifier,
