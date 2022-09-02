@@ -7,10 +7,10 @@ import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
 import styled, { CSSProperties } from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
+import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
-import { VoteHistoryPanel } from "./VoteHistoryPanel";
 import { VotePanel } from "./VotePanel";
 
 const panelTypeToPanelComponent = {
@@ -19,7 +19,7 @@ const panelTypeToPanelComponent = {
   vote: VotePanel,
   stake: StakeUnstakePanel,
   remind: RemindMePanel,
-  history: VoteHistoryPanel,
+  history: HistoryPanel,
 };
 
 export function Panel() {
