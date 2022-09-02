@@ -61,7 +61,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { committedVotes } = useCommittedVotes();
   const { revealedVotes } = useRevealedVotes();
   const { encryptedVotes } = useEncryptedVotes();
-  const decryptedVotes = useDecryptedVotes();
+  const decryptedVotes = useDecryptedVotes(encryptedVotes);
 
   function getActiveVotes() {
     return getVotesWithData(activeVotes);

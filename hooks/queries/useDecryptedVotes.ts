@@ -1,13 +1,12 @@
 import { decryptMessage } from "helpers/crypto";
-import { useVotesContext, useWalletContext } from "hooks/contexts";
+import { useWalletContext } from "hooks/contexts";
 import { useEffect, useState } from "react";
 import { DecryptedVotesByKeyT, DecryptedVoteT, EncryptedVotesByKeyT } from "types/global";
 import useAccountDetails from "./useAccountDetails";
 
-export default function useDecryptedVotes() {
+export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const { encryptedVotes } = useVotesContext();
   const [decryptedVotes, setDecryptedVotes] = useState<DecryptedVotesByKeyT>({});
 
   useEffect(() => {
