@@ -3,21 +3,21 @@ import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { green, red500 } from "constants/colors";
 import { ethers } from "ethers";
-import { useVotesContext, useVoteTimingContext, useWalletContext } from "hooks/contexts";
+import { useVoteTimingContext, useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
-import { VoteT } from "types/global";
+import { ActivityStatusT, VoteT } from "types/global";
 
-interface Props {
+export interface Props {
   vote: VoteT;
-  moreDetailsAction: () => void;
   selectedVote: string | undefined;
   selectVote: (vote: VoteT, value: string) => void;
+  activityStatus: ActivityStatusT;
+  moreDetailsAction: () => void;
 }
-export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: Props) {
-  const { hasActiveVotes } = useVotesContext();
+export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
   const { phase } = useVoteTimingContext();
   const { signer } = useWalletContext();
 
@@ -34,19 +34,19 @@ export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: P
   }
 
   function showVoteInput() {
-    return hasActiveVotes && phase === "commit";
+    return activityStatus === "active" && phase === "commit";
   }
 
   function showYourVote() {
-    return phase === "reveal" || !hasActiveVotes;
+    return phase === "reveal" || activityStatus === "past";
   }
 
   function showCorrectVote() {
-    return !hasActiveVotes && correctVote !== undefined;
+    return activityStatus === "past" && correctVote !== undefined;
   }
 
   function showVoteStatus() {
-    return hasActiveVotes;
+    return activityStatus === "active";
   }
 
   function getExistingOrSelectedVote() {
@@ -103,7 +103,7 @@ export function VoteBar({ vote, selectedVote, selectVote, moreDetailsAction }: P
     }
   }
 
-  if (hasActiveVotes === undefined) return null;
+  if (activityStatus === undefined) return null;
 
   return (
     <Wrapper>

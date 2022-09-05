@@ -17,7 +17,7 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { hasActiveVotes, getActiveVotes, getUpcomingVotes, getPastVotes } = useVotesContext();
+  const { hasActiveVotes, getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -132,8 +132,9 @@ export function Votes() {
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={selectVote}
-              key={vote.uniqueKey}
+              activityStatus={getActivityStatus()}
               moreDetailsAction={() => openVotePanel(vote)}
+              key={vote.uniqueKey}
             />
           ))}
         </VotesWrapper>
