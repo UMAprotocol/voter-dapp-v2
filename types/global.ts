@@ -176,3 +176,5 @@ export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
 };
+
+export type ActivityStatusT = "active" | "upcoming" | "past";
