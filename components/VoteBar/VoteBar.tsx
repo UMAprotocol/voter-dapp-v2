@@ -21,6 +21,8 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
   const { phase } = useVoteTimingContext();
   const { signer } = useWalletContext();
 
+  const gridTemplateColumns = activityStatus === "upcoming" ? "45% auto" : "45% auto auto auto";
+
   const { title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
@@ -71,6 +73,7 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
   }
 
   function getYourVote() {
+    if (!decryptedVote) return "Did not vote";
     return findVoteInOptions(getDecryptedVoteAsNumber())?.label ?? decryptedVote?.price?.toString();
   }
 
@@ -79,8 +82,6 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
   }
 
   function findVoteInOptions(valueAsNumber: number | undefined) {
-    if (!valueAsNumber) return undefined;
-
     return options?.find((option) => {
       const optionValueAsNumber = Number(option.value);
       return optionValueAsNumber === valueAsNumber;
@@ -106,8 +107,8 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
   if (activityStatus === undefined) return null;
 
   return (
-    <Wrapper>
-      <Vote>
+    <Wrapper style={{ "--grid-template-columns": gridTemplateColumns } as CSSProperties}>
+      <VoteTitleWrapper>
         <VoteIconWrapper>
           <Icon />
         </VoteIconWrapper>
@@ -115,10 +116,10 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
           <VoteTitle>{formatTitle(title)}</VoteTitle>
           <VoteOrigin>{origin}</VoteOrigin>
         </VoteDetailsWrapper>
-      </Vote>
-      <VoteInput>
-        {showVoteInput() ? (
-          options ? (
+      </VoteTitleWrapper>
+      {showVoteInput() ? (
+        <VoteInput>
+          {options ? (
             <Dropdown
               label="Choose answer"
               items={options}
@@ -131,13 +132,13 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
               onChange={(e) => selectVote(vote, e.target.value)}
               disabled={!signer}
             />
-          )
-        ) : null}
-      </VoteInput>
-      {showYourVote() ? <VoteText>{getYourVote()}</VoteText> : null}
-      {showCorrectVote() ? <VoteText>{getCorrectVote()}</VoteText> : null}
+          )}
+        </VoteInput>
+      ) : null}
+      {showYourVote() ? <VoteOutputText>{getYourVote()}</VoteOutputText> : null}
+      {showCorrectVote() ? <VoteOutputText>{getCorrectVote()}</VoteOutputText> : null}
       {showVoteStatus() ? (
-        <Status>
+        <VoteStatus>
           <DotIcon
             style={
               {
@@ -146,7 +147,7 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
             }
           />{" "}
           {getCommittedOrRevealed()}
-        </Status>
+        </VoteStatus>
       ) : null}
       <MoreDetails>
         <Button label="More details" onClick={moreDetailsAction} />
@@ -158,14 +159,14 @@ export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDe
 const Wrapper = styled.div`
   height: 80px;
   display: grid;
-  grid-template-columns: 45% auto auto auto;
+  grid-template-columns: var(--grid-template-columns);
   align-items: center;
   justify-items: center;
   padding-right: 30px;
   background: var(--white);
 `;
 
-const Vote = styled.div`
+const VoteTitleWrapper = styled.div`
   justify-self: start;
   display: flex;
   align-items: center;
@@ -193,11 +194,12 @@ const VoteInput = styled.div`
   width: 240px;
 `;
 
-const VoteText = styled.p`
+const VoteOutputText = styled.p`
   font: var(--text-md);
+  width: 240px;
 `;
 
-const Status = styled.div`
+const VoteStatus = styled.div`
   width: 144px;
   display: flex;
   align-items: center;
@@ -206,7 +208,9 @@ const Status = styled.div`
 `;
 
 const MoreDetails = styled.div`
-  justify-self: end;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 const UMAIcon = styled(UMA)``;
