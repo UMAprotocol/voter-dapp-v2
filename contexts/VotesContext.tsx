@@ -12,6 +12,7 @@ import {
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
+  ActivityStatusT,
   ContentfulDataByKeyT,
   DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
@@ -23,6 +24,7 @@ import {
 interface VotesContextState {
   hasActiveVotes: boolean | undefined;
   activeVotes: PriceRequestByKeyT;
+  hasUpcomingVotes: boolean | undefined;
   upcomingVotes: PriceRequestByKeyT;
   pastVotes: PriceRequestByKeyT;
   committedVotes: VoteExistsByKeyT;
@@ -33,11 +35,13 @@ interface VotesContextState {
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
   getPastVotes: () => VoteT[];
+  getActivityStatus: () => ActivityStatusT;
 }
 
 export const defaultVotesContextState: VotesContextState = {
   hasActiveVotes: undefined,
   activeVotes: {},
+  hasUpcomingVotes: undefined,
   upcomingVotes: {},
   pastVotes: {},
   committedVotes: {},
@@ -48,6 +52,7 @@ export const defaultVotesContextState: VotesContextState = {
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
   getPastVotes: () => [],
+  getActivityStatus: () => "past",
 };
 
 export const VotesContext = createContext<VotesContextState>(defaultVotesContextState);
@@ -55,7 +60,7 @@ export const VotesContext = createContext<VotesContextState>(defaultVotesContext
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { hasActiveVotes } = useHasActiveVotes();
   const { activeVotes } = useActiveVotes();
-  const { upcomingVotes } = useUpcomingVotes();
+  const { upcomingVotes, hasUpcomingVotes } = useUpcomingVotes();
   const { pastVotes } = usePastVotes();
   const { contentfulData } = useContentfulData();
   const { committedVotes } = useCommittedVotes();
@@ -73,6 +78,12 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   function getPastVotes() {
     return getVotesWithData(pastVotes);
+  }
+
+  function getActivityStatus() {
+    if (hasActiveVotes) return "active";
+    if (hasUpcomingVotes) return "upcoming";
+    return "past";
   }
 
   function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
@@ -100,6 +111,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       value={{
         hasActiveVotes,
         activeVotes,
+        hasUpcomingVotes,
         upcomingVotes,
         pastVotes,
         committedVotes,
@@ -110,6 +122,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         getActiveVotes,
         getUpcomingVotes,
         getPastVotes,
+        getActivityStatus,
       }}
     >
       {children}
