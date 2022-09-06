@@ -1,6 +1,5 @@
 import { Meta, Story } from "@storybook/react";
 import { Props, VotesTableRow } from "components/VotesTable";
-import { defaultVoteTimingContextState, VoteTimingContext } from "contexts/VoteTimingContext";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,
@@ -27,14 +26,7 @@ export default {
   ],
 } as Meta<StoryProps>;
 
-const Template: Story<StoryProps> = (args) => {
-  const mockVoteTimingContextState = { ...defaultVoteTimingContextState, phase: args.phase ?? "commit" };
-  return (
-    <VoteTimingContext.Provider value={mockVoteTimingContextState}>
-      <VotesTableRow {...args} />
-    </VoteTimingContext.Provider>
-  );
-};
+const Template: Story<StoryProps> = (args) => <VotesTableRow {...args} />;
 
 const mockMoreDetailsAction = () => alert("More details clicked");
 

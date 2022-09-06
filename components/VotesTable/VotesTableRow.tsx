@@ -8,17 +8,17 @@ import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT, VoteT } from "types/global";
+import { ActivityStatusT, VotePhaseT, VoteT } from "types/global";
 
 export interface Props {
   vote: VoteT;
+  phase: VotePhaseT;
   selectedVote: string | undefined;
   selectVote: (vote: VoteT, value: string) => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
 }
 export function VotesTableRow({ vote, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
-  const { phase } = useVoteTimingContext();
   const { signer } = useWalletContext();
 
   const gridTemplateColumns = activityStatus === "upcoming" ? "45% auto" : "45% auto auto auto";
