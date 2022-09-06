@@ -13,11 +13,11 @@ import { useInitializeVoteTiming } from "hooks/helpers";
 import { useCommitVotes, useRevealVotes } from "hooks/mutations";
 import { useAccountDetails } from "hooks/queries";
 import { useState } from "react";
-import styled from "styled-components";
-import { SelectedVotesByKeyT, VoteT } from "types/global";
+import styled, { CSSProperties } from "styled-components";
+import { ActivityStatusT, SelectedVotesByKeyT, VotePhaseT, VoteT } from "types/global";
 
 export function Votes() {
-  const { hasActiveVotes, getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
+  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -89,12 +89,14 @@ export function Votes() {
   }
 
   function determineVotesToShow() {
-    if (hasActiveVotes) {
+    const status = getActivityStatus();
+    if (status === "active") {
       if (phase === "commit") return getActiveVotes();
       return getVotesToReveal();
     }
-    const upcomingVotes = getUpcomingVotes();
-    if (upcomingVotes.length) return upcomingVotes;
+    if (status === "upcoming") {
+      return getUpcomingVotes();
+    }
     return getPastVotes();
   }
 
@@ -107,13 +109,20 @@ export function Votes() {
   }
 
   function determineTitle() {
-    if (hasActiveVotes) return "Active votes:";
-    if (getUpcomingVotes().length) return "Upcoming votes:";
-    return "Past votes:";
+    const status = getActivityStatus();
+    switch (status) {
+      case "active":
+        return "Active votes:";
+      case "upcoming":
+        return "Upcoming votes:";
+      default:
+        return "Past votes:";
+    }
   }
 
   function hasActiveOrUpcomingVotes() {
-    return hasActiveVotes || getUpcomingVotes().length > 0;
+    const status = getActivityStatus();
+    return status === "active" || status === "upcoming";
   }
 
   return (
@@ -122,11 +131,7 @@ export function Votes() {
         <Title>{determineTitle()}</Title>
         {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
         <VotesWrapper>
-          <TableHeadingsWrapper>
-            <VoteHeading>Vote</VoteHeading>
-            <YourVoteHeading>{hasActiveVotes ? "Your vote" : ""}</YourVoteHeading>
-            <VoteStatusHeading>{hasActiveVotes ? "Vote status" : ""}</VoteStatusHeading>
-          </TableHeadingsWrapper>
+          <TableHeadings activityStatus={getActivityStatus()} phase={phase} />
           {determineVotesToShow().map((vote) => (
             <VoteBar
               vote={vote}
@@ -138,7 +143,7 @@ export function Votes() {
             />
           ))}
         </VotesWrapper>
-        {hasActiveVotes ? (
+        {getActivityStatus() === "active" ? (
           <CommitVotesButtonWrapper>
             <Button
               variant="primary"
@@ -152,6 +157,31 @@ export function Votes() {
     </OuterWrapper>
   );
 }
+
+function TableHeadings({ activityStatus, phase }: { activityStatus: ActivityStatusT; phase: VotePhaseT }) {
+  const gridTemplateColumns = activityStatus === "upcoming" ? "45% auto" : "45% auto auto auto";
+
+  return (
+    <TableHeadingsWrapper style={{ "--grid-template-columns": gridTemplateColumns } as CSSProperties}>
+      <VoteHeading>Vote</VoteHeading>
+      {activityStatus === "active" ? <ActiveVotesTableHeadings phase={phase} /> : null}
+    </TableHeadingsWrapper>
+  );
+}
+
+function ActiveVotesTableHeadings({ phase }: { phase: VotePhaseT }) {
+  return (
+    <>
+      <VoteHeading style={{ width: 120 }}>Your vote</VoteHeading>
+      <VoteHeading style={{ width: 145 }}>Vote status</VoteHeading>
+      <VoteHeading style={{ width: "100%" }}>More details</VoteHeading>
+    </>
+  );
+}
+
+function UpcomingVotesTableHeadings() {}
+
+function PastVotesTableHeadings() {}
 
 const OuterWrapper = styled.div`
   background: var(--grey-100);
@@ -177,22 +207,14 @@ const VotesWrapper = styled.div`
 
 const TableHeadingsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 45% 240px 1fr;
+  grid-template-columns: var(--grid-template-columns);
+  gap: 10px;
   justify-items: start;
   margin-bottom: 5px;
   margin-top: 40px;
 `;
 
 const VoteHeading = styled.h2`
-  font: var(--text-sm);
-`;
-
-const YourVoteHeading = styled.h2`
-  font: var(--text-sm);
-`;
-
-const VoteStatusHeading = styled.h2`
-  margin-left: 45px;
   font: var(--text-sm);
 `;
 
