@@ -1,5 +1,7 @@
 import { Button } from "components/Button";
-import { VoteBar } from "components/VoteBar";
+import { VotesTableRow } from "components/VotesTable";
+import VotesTable from "components/VotesTable/VotesTable";
+import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
 import { VoteTimeline } from "components/VoteTimeline";
 import { formatVotesToCommit } from "helpers/formatVotes";
 import {
@@ -13,8 +15,8 @@ import { useInitializeVoteTiming } from "hooks/helpers";
 import { useCommitVotes, useRevealVotes } from "hooks/mutations";
 import { useAccountDetails } from "hooks/queries";
 import { useState } from "react";
-import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT, SelectedVotesByKeyT, VotePhaseT, VoteT } from "types/global";
+import styled from "styled-components";
+import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
   const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
@@ -130,19 +132,22 @@ export function Votes() {
       <InnerWrapper>
         <Title>{determineTitle()}</Title>
         {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
-        <VotesWrapper>
-          <TableHeadings activityStatus={getActivityStatus()} phase={phase} />
-          {determineVotesToShow().map((vote) => (
-            <VoteBar
-              vote={vote}
-              selectedVote={selectedVotes[vote.uniqueKey]}
-              selectVote={selectVote}
-              activityStatus={getActivityStatus()}
-              moreDetailsAction={() => openVotePanel(vote)}
-              key={vote.uniqueKey}
-            />
-          ))}
-        </VotesWrapper>
+        <VotesTableWrapper>
+          <VotesTable
+            headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
+            rows={determineVotesToShow().map((vote) => (
+              <VotesTableRow
+                vote={vote}
+                phase={phase}
+                selectedVote={selectedVotes[vote.uniqueKey]}
+                selectVote={selectVote}
+                activityStatus={getActivityStatus()}
+                moreDetailsAction={() => openVotePanel(vote)}
+                key={vote.uniqueKey}
+              />
+            ))}
+          />
+        </VotesTableWrapper>
         {getActivityStatus() === "active" ? (
           <CommitVotesButtonWrapper>
             <Button
@@ -158,31 +163,6 @@ export function Votes() {
   );
 }
 
-function TableHeadings({ activityStatus, phase }: { activityStatus: ActivityStatusT; phase: VotePhaseT }) {
-  const gridTemplateColumns = activityStatus === "upcoming" ? "45% auto" : "45% auto auto auto";
-
-  return (
-    <TableHeadingsWrapper style={{ "--grid-template-columns": gridTemplateColumns } as CSSProperties}>
-      <VoteHeading>Vote</VoteHeading>
-      {activityStatus === "active" ? <ActiveVotesTableHeadings phase={phase} /> : null}
-    </TableHeadingsWrapper>
-  );
-}
-
-function ActiveVotesTableHeadings({ phase }: { phase: VotePhaseT }) {
-  return (
-    <>
-      <VoteHeading style={{ width: 120 }}>Your vote</VoteHeading>
-      <VoteHeading style={{ width: 145 }}>Vote status</VoteHeading>
-      <VoteHeading style={{ width: "100%" }}>More details</VoteHeading>
-    </>
-  );
-}
-
-function UpcomingVotesTableHeadings() {}
-
-function PastVotesTableHeadings() {}
-
 const OuterWrapper = styled.div`
   background: var(--grey-100);
 `;
@@ -194,28 +174,13 @@ const InnerWrapper = styled.div`
   padding-block: 45px;
 `;
 
+const VotesTableWrapper = styled.div`
+  margin-top: 35px;
+`;
+
 const Title = styled.h1`
   font: var(--header-md);
   margin-bottom: 20px;
-`;
-
-const VotesWrapper = styled.div`
-  > :not(:last-child) {
-    margin-bottom: 5px;
-  }
-`;
-
-const TableHeadingsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: var(--grid-template-columns);
-  gap: 10px;
-  justify-items: start;
-  margin-bottom: 5px;
-  margin-top: 40px;
-`;
-
-const VoteHeading = styled.h2`
-  font: var(--text-sm);
 `;
 
 const CommitVotesButtonWrapper = styled.div`
