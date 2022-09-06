@@ -3,7 +3,7 @@ import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { green, red500 } from "constants/colors";
 import { ethers } from "ethers";
-import { useVoteTimingContext, useWalletContext } from "hooks/contexts";
+import { useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
@@ -18,10 +18,8 @@ export interface Props {
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
 }
-export function VotesTableRow({ vote, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
+export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
-
-  const gridTemplateColumns = activityStatus === "upcoming" ? "45% auto" : "45% auto auto auto";
 
   const { title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
@@ -107,16 +105,18 @@ export function VotesTableRow({ vote, selectedVote, selectVote, activityStatus, 
   if (activityStatus === undefined) return null;
 
   return (
-    <Wrapper style={{ "--grid-template-columns": gridTemplateColumns } as CSSProperties}>
-      <VoteTitleWrapper>
-        <VoteIconWrapper>
-          <Icon />
-        </VoteIconWrapper>
-        <VoteDetailsWrapper>
-          <VoteTitle>{formatTitle(title)}</VoteTitle>
-          <VoteOrigin>{origin}</VoteOrigin>
-        </VoteDetailsWrapper>
-      </VoteTitleWrapper>
+    <Wrapper>
+      <VoteTitleOuterWrapper>
+        <VoteTitleWrapper>
+          <VoteIconWrapper>
+            <Icon />
+          </VoteIconWrapper>
+          <VoteDetailsWrapper>
+            <VoteTitle>{formatTitle(title)}</VoteTitle>
+            <VoteOrigin>{origin}</VoteOrigin>
+          </VoteDetailsWrapper>
+        </VoteTitleWrapper>
+      </VoteTitleOuterWrapper>
       {showVoteInput() ? (
         <VoteInput>
           {options ? (
@@ -138,40 +138,39 @@ export function VotesTableRow({ vote, selectedVote, selectVote, activityStatus, 
       {showYourVote() ? <VoteOutputText>{getYourVote()}</VoteOutputText> : null}
       {showCorrectVote() ? <VoteOutputText>{getCorrectVote()}</VoteOutputText> : null}
       {showVoteStatus() ? (
-        <VoteStatus>
-          <DotIcon
-            style={
-              {
-                "--dot-color": getDotColor(),
-              } as CSSProperties
-            }
-          />{" "}
-          {getCommittedOrRevealed()}
-        </VoteStatus>
+        <VoteStatusWrapper>
+          <VoteStatus>
+            <DotIcon
+              style={
+                {
+                  "--dot-color": getDotColor(),
+                } as CSSProperties
+              }
+            />{" "}
+            {getCommittedOrRevealed()}
+          </VoteStatus>
+        </VoteStatusWrapper>
       ) : null}
-      <MoreDetails>
-        <Button label="More details" onClick={moreDetailsAction} />
-      </MoreDetails>
+      <MoreDetailsWrapper>
+        <MoreDetails>
+          <Button label="More details" onClick={moreDetailsAction} />
+        </MoreDetails>
+      </MoreDetailsWrapper>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div`
-  height: 80px;
-  display: grid;
-  grid-template-columns: var(--grid-template-columns);
-  align-items: center;
-  justify-items: center;
-  padding-right: 30px;
+const Wrapper = styled.tr`
   background: var(--white);
+  height: 80px;
 `;
 
+const VoteTitleOuterWrapper = styled.td``;
+
 const VoteTitleWrapper = styled.div`
-  justify-self: start;
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-left: 30px;
 `;
 
 const VoteDetailsWrapper = styled.div``;
@@ -190,27 +189,27 @@ const VoteOrigin = styled.h4`
   color: var(--black-opacity-50);
 `;
 
-const VoteInput = styled.div`
-  width: 240px;
+const VoteInput = styled.td``;
+
+const VoteOutputText = styled.td`
+  font: var(--text-md);
 `;
 
-const VoteOutputText = styled.p`
-  font: var(--text-md);
-  width: 240px;
-`;
+const VoteStatusWrapper = styled.td``;
 
 const VoteStatus = styled.div`
-  width: 144px;
   display: flex;
   align-items: center;
   gap: 10px;
   font: var(--text-md);
 `;
 
+const MoreDetailsWrapper = styled.td``;
+
 const MoreDetails = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: 30px;
 `;
 
 const UMAIcon = styled(UMA)``;

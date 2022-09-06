@@ -1,5 +1,5 @@
-import { Meta, Story } from "@storybook/react";
-import { Props, VotesTableRow } from "components/VotesTable";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { VotesTableRow } from "components/VotesTable";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,
@@ -8,11 +8,6 @@ import {
   voteWithCorrectVoteWithUserVote,
   voteWithoutUserVote,
 } from "stories/mocks/votes";
-import { VotePhaseT } from "types/global";
-
-interface StoryProps extends Props {
-  phase: VotePhaseT;
-}
 
 export default {
   title: "Pages/Vote Page/VotesTableRow",
@@ -24,9 +19,9 @@ export default {
       </div>
     ),
   ],
-} as Meta<StoryProps>;
+} as ComponentMeta<typeof VotesTableRow>;
 
-const Template: Story<StoryProps> = (args) => <VotesTableRow {...args} />;
+const Template: ComponentStory<typeof VotesTableRow> = (args) => <VotesTableRow {...args} />;
 
 const mockMoreDetailsAction = () => alert("More details clicked");
 
