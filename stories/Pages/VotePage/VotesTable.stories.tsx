@@ -3,16 +3,13 @@ import VotesTable from "components/VotesTable/VotesTable";
 import {
   Active as ActiveHeading,
   Past as PastHeading,
-  Upcoming as UpcomingHeading,
+  Upcoming as UpcomingHeading
 } from "stories/Pages/VotePage/VotesTableHeadings.stories";
 import {
   ActiveCommitted,
   ActiveNotCommitted,
   ActiveNotRevealed,
-  ActiveRevealed,
-  PastVoteDidVote,
-  PastVoteDidNotVote,
-  UpcomingVote,
+  ActiveRevealed, PastVoteDidNotVote, PastVoteDidVote, UpcomingVote
 } from "./VoteTableRow.stories";
 
 interface StoryProps {
@@ -22,6 +19,13 @@ interface StoryProps {
 export default {
   title: "Pages/Vote Page/VotesTable",
   component: VotesTable,
+  decorators: [
+    (Story) => (
+      <div style={{ backgroundColor: "grey" }}>
+        <Story />
+      </div>
+    ),
+  ],
 } as Meta<StoryProps>;
 
 const Template: Story<StoryProps> = (args) => {
