@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import { Props, VoteBar } from "components/VoteBar";
+import { Props, VotesTableRow } from "components/VotesTable";
 import { defaultVoteTimingContextState, VoteTimingContext } from "contexts/VoteTimingContext";
 import {
   voteCommitted,
@@ -16,8 +16,8 @@ interface StoryProps extends Props {
 }
 
 export default {
-  title: "Pages/Vote Page/VoteBar",
-  component: VoteBar,
+  title: "Pages/Vote Page/VotesTableRow",
+  component: VotesTableRow,
   decorators: [
     (Story) => (
       <div style={{ width: 1100 }}>
@@ -31,7 +31,7 @@ const Template: Story<StoryProps> = (args) => {
   const mockVoteTimingContextState = { ...defaultVoteTimingContextState, phase: args.phase ?? "commit" };
   return (
     <VoteTimingContext.Provider value={mockVoteTimingContextState}>
-      <VoteBar {...args} />
+      <VotesTableRow {...args} />
     </VoteTimingContext.Provider>
   );
 };

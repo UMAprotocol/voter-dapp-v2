@@ -17,7 +17,7 @@ export interface Props {
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
 }
-export function VoteBar({ vote, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
+export function VotesTableRow({ vote, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
   const { phase } = useVoteTimingContext();
   const { signer } = useWalletContext();
 
