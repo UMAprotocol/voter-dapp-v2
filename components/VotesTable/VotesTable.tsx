@@ -16,7 +16,7 @@ export default function VotesTable({ headings, rows }: Props) {
 const Table = styled.table`
   table-layout: fixed;
   width: 100%;
-  border-spacing: 30px 5px;
+  border-spacing: 0 5px;
 `;
 
 const Thead = styled.thead``;
