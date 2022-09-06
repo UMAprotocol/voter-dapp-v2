@@ -135,8 +135,8 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
           )}
         </VoteInput>
       ) : null}
-      {showYourVote() ? <VoteOutputText>{getYourVote()}</VoteOutputText> : null}
-      {showCorrectVote() ? <VoteOutputText>{getCorrectVote()}</VoteOutputText> : null}
+      {showYourVote() ? <YourVote>{getYourVote()}</YourVote> : null}
+      {showCorrectVote() ? <CorrectVote>{getCorrectVote()}</CorrectVote> : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper>
           <VoteStatus>
@@ -171,6 +171,7 @@ const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+  margin-left: 30px;
 `;
 
 const VoteDetailsWrapper = styled.div``;
@@ -195,12 +196,19 @@ const VoteOutputText = styled.td`
   font: var(--text-md);
 `;
 
+const YourVote = styled(VoteOutputText)``;
+
+const CorrectVote = styled(VoteOutputText)`
+  padding-left: 30px;
+`;
+
 const VoteStatusWrapper = styled.td``;
 
 const VoteStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: 30px;
   font: var(--text-md);
 `;
 
