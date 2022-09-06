@@ -31,6 +31,12 @@ export type PriceRequestT = {
   uniqueKey: UniqueKeyT;
 };
 
+export type RawPriceRequestDataT = {
+  time: BigNumber;
+  identifier: string;
+  ancillaryData: string;
+};
+
 export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
 
 export type UserVoteDataT = {

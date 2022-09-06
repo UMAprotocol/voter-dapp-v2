@@ -14,10 +14,10 @@ import { useCommitVotes, useRevealVotes } from "hooks/mutations";
 import { useAccountDetails } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
-import { SelectedVotesByKeyT, VotePhaseT, VoteT } from "types/global";
+import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { getActiveVotes } = useVotesContext();
+  const { hasActiveVotes, getActiveVotes, getUpcomingVotes } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -27,14 +27,20 @@ export function Votes() {
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [contractInteractionInProgress, setContractInteractionInProgress] = useState(false);
-  const votes = getActiveVotes();
 
   useInitializeVoteTiming();
 
   async function commitVotes() {
     if (!signer) return;
 
-    const formattedVotes = await formatVotesToCommit({ votes, selectedVotes, roundId, address, signingKeys, signer });
+    const formattedVotes = await formatVotesToCommit({
+      votes: getActiveVotes(),
+      selectedVotes,
+      roundId,
+      address,
+      signingKeys,
+      signer,
+    });
 
     setContractInteractionInProgress(true);
 
@@ -69,7 +75,7 @@ export function Votes() {
   }
 
   function getVotesToReveal() {
-    return votes.filter((vote) => vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false);
+    return getActiveVotes().filter((vote) => vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false);
   }
 
   function selectVote(vote: VoteT, value: string) {
@@ -82,9 +88,12 @@ export function Votes() {
     setPanelOpen(true);
   }
 
-  function determineVotesToShow(phase: VotePhaseT) {
-    if (phase === "commit") return votes;
-    return getVotesToReveal();
+  function determineVotesToShow() {
+    if (hasActiveVotes) {
+      if (phase === "commit") return getActiveVotes();
+      return getVotesToReveal();
+    }
+    return getUpcomingVotes();
   }
 
   function canCommit() {
@@ -95,18 +104,28 @@ export function Votes() {
     return phase === "reveal" && getVotesToReveal().length && !contractInteractionInProgress;
   }
 
+  function determineTitle() {
+    if (hasActiveVotes) return "Active votes:";
+    if (getUpcomingVotes().length) return "Upcoming votes:";
+    return "Past votes:";
+  }
+
+  function hasActiveOrUpcomingVotes() {
+    return hasActiveVotes || getUpcomingVotes().length > 0;
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper>
-        <Title>Vote on active disputes:</Title>
-        <VoteTimeline />
+        <Title>{determineTitle()}</Title>
+        {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
         <VotesWrapper>
           <TableHeadingsWrapper>
             <DisputeHeading>Dispute</DisputeHeading>
-            <YourVoteHeading>Your vote</YourVoteHeading>
+            <YourVoteHeading>{hasActiveVotes ? "Your vote" : ""}</YourVoteHeading>
             <VoteStatusHeading>Vote status</VoteStatusHeading>
           </TableHeadingsWrapper>
-          {determineVotesToShow(phase).map((vote) => (
+          {determineVotesToShow().map((vote) => (
             <VoteBar
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
@@ -117,14 +136,16 @@ export function Votes() {
             />
           ))}
         </VotesWrapper>
-        <CommitVotesButtonWrapper>
-          <Button
-            variant="primary"
-            label={`${phase} Votes`}
-            onClick={phase === "commit" ? commitVotes : revealVotes}
-            disabled={!(canCommit() || canReveal())}
-          />
-        </CommitVotesButtonWrapper>
+        {hasActiveVotes ? (
+          <CommitVotesButtonWrapper>
+            <Button
+              variant="primary"
+              label={`${phase} Votes`}
+              onClick={phase === "commit" ? commitVotes : revealVotes}
+              disabled={!(canCommit() || canReveal())}
+            />
+          </CommitVotesButtonWrapper>
+        ) : null}
       </InnerWrapper>
     </OuterWrapper>
   );

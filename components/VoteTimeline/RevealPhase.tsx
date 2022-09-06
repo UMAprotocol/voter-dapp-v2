@@ -6,13 +6,15 @@ import styled, { CSSProperties } from "styled-components";
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
+  isUpcoming: boolean;
 }
-export function RevealPhase({ phase, timeRemaining }: Props) {
-  const active = phase === "reveal";
-  const textColor = active ? white : black;
-  const backgroundColor = active ? red500 : white;
-  const iconStrokeColor = active ? red500 : white;
-  const iconFillColor = active ? white : black;
+export function RevealPhase({ phase, timeRemaining, isUpcoming }: Props) {
+  const isRevealPhase = phase === "reveal";
+  const isActive = isRevealPhase && !isUpcoming;
+  const textColor = isActive ? white : black;
+  const backgroundColor = isActive ? red500 : white;
+  const iconStrokeColor = isActive ? red500 : white;
+  const iconFillColor = isActive ? white : black;
   const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
 
   return (
@@ -32,7 +34,7 @@ export function RevealPhase({ phase, timeRemaining }: Props) {
           } as CSSProperties
         }
       />
-      {active ? (
+      {isActive ? (
         <Message>
           Time remaining to reveal votes: <Strong>{formattedTimeRemaining}</Strong>
         </Message>

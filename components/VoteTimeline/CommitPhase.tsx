@@ -6,17 +6,20 @@ import styled, { CSSProperties } from "styled-components";
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
+  isUpcoming: boolean;
 }
-export function CommitPhase({ phase, timeRemaining }: Props) {
-  const active = phase === "commit";
-  const textColor = active ? white : black;
-  const backgroundColor = active ? red500 : white;
-  const iconStrokeColor = active ? red500 : white;
-  const iconFillColor = active ? white : black;
+export function CommitPhase({ phase, timeRemaining, isUpcoming }: Props) {
+  const isCommitPhase = phase === "commit";
+  const isActive = isCommitPhase && !isUpcoming;
+  const textColor = isActive ? white : black;
+  const backgroundColor = isActive ? red500 : white;
+  const iconStrokeColor = isActive ? red500 : white;
+  const iconFillColor = isActive ? white : black;
   const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
+
   return (
     <OuterWrapper>
-      {!phase && <ArrowBorder />}
+      {isUpcoming && <ArrowBorder />}
       <InnerWrapper
         style={
           {
@@ -35,7 +38,7 @@ export function CommitPhase({ phase, timeRemaining }: Props) {
             }
           />
         </CommitIconWrapper>
-        {active ? (
+        {isActive ? (
           <Message>
             Time remaining to commit votes: <Strong>{formattedTimeRemaining}</Strong>
           </Message>
