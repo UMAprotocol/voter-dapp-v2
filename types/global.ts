@@ -23,6 +23,7 @@ export type PriceRequestT = {
   identifier: string;
   ancillaryData: string;
   transactionHash: string;
+  correctVote?: number;
   // computed values
   timeMilliseconds: number;
   timeAsDate: Date;
@@ -32,9 +33,22 @@ export type PriceRequestT = {
 };
 
 export type RawPriceRequestDataT = {
-  time: BigNumber;
+  time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
+  correctVote?: number;
+};
+
+export type PastVotesQuery = {
+  priceRequests: {
+    id: string;
+    identifier: {
+      id: string;
+    };
+    time: string;
+    price: string;
+    ancillaryData: string;
+  }[];
 };
 
 export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
@@ -162,3 +176,5 @@ export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
 };
+
+export type ActivityStatusT = "active" | "upcoming" | "past";

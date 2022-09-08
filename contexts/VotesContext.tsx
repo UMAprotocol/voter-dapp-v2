@@ -6,11 +6,13 @@ import {
   useDecryptedVotes,
   useEncryptedVotes,
   useHasActiveVotes,
+  usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
 } from "hooks/queries";
 import { createContext, ReactNode } from "react";
 import {
+  ActivityStatusT,
   ContentfulDataByKeyT,
   DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
@@ -22,7 +24,9 @@ import {
 interface VotesContextState {
   hasActiveVotes: boolean | undefined;
   activeVotes: PriceRequestByKeyT;
+  hasUpcomingVotes: boolean | undefined;
   upcomingVotes: PriceRequestByKeyT;
+  pastVotes: PriceRequestByKeyT;
   committedVotes: VoteExistsByKeyT;
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
@@ -30,12 +34,16 @@ interface VotesContextState {
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
+  getPastVotes: () => VoteT[];
+  getActivityStatus: () => ActivityStatusT;
 }
 
 export const defaultVotesContextState: VotesContextState = {
   hasActiveVotes: undefined,
   activeVotes: {},
+  hasUpcomingVotes: undefined,
   upcomingVotes: {},
+  pastVotes: {},
   committedVotes: {},
   revealedVotes: {},
   encryptedVotes: {},
@@ -43,6 +51,8 @@ export const defaultVotesContextState: VotesContextState = {
   contentfulData: {},
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
+  getPastVotes: () => [],
+  getActivityStatus: () => "past",
 };
 
 export const VotesContext = createContext<VotesContextState>(defaultVotesContextState);
@@ -50,12 +60,13 @@ export const VotesContext = createContext<VotesContextState>(defaultVotesContext
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { hasActiveVotes } = useHasActiveVotes();
   const { activeVotes } = useActiveVotes();
-  const { upcomingVotes } = useUpcomingVotes();
+  const { upcomingVotes, hasUpcomingVotes } = useUpcomingVotes();
+  const { pastVotes } = usePastVotes();
   const { contentfulData } = useContentfulData();
   const { committedVotes } = useCommittedVotes();
   const { revealedVotes } = useRevealedVotes();
   const { encryptedVotes } = useEncryptedVotes();
-  const decryptedVotes = useDecryptedVotes();
+  const decryptedVotes = useDecryptedVotes(encryptedVotes);
 
   function getActiveVotes() {
     return getVotesWithData(activeVotes);
@@ -63,6 +74,16 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   function getUpcomingVotes() {
     return getVotesWithData(upcomingVotes);
+  }
+
+  function getPastVotes() {
+    return getVotesWithData(pastVotes);
+  }
+
+  function getActivityStatus() {
+    if (hasActiveVotes) return "active";
+    if (hasUpcomingVotes) return "upcoming";
+    return "past";
   }
 
   function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
@@ -90,7 +111,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       value={{
         hasActiveVotes,
         activeVotes,
+        hasUpcomingVotes,
         upcomingVotes,
+        pastVotes,
         committedVotes,
         revealedVotes,
         encryptedVotes,
@@ -98,6 +121,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         contentfulData,
         getActiveVotes,
         getUpcomingVotes,
+        getPastVotes,
+        getActivityStatus,
       }}
     >
       {children}

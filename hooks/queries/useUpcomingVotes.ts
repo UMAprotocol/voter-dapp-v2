@@ -20,8 +20,9 @@ export default function useUpcomingVotes() {
   const eventData = data?.map(({ args }) => args);
   const onlyUpcoming = eventData?.filter((event) => event.roundId.toNumber() > roundId);
   const upcomingVotes = makePriceRequestsByKey(onlyUpcoming);
-
+  const hasUpcomingVotes = isLoading ? undefined : Object.keys(upcomingVotes).length > 0;
   return {
+    hasUpcomingVotes,
     upcomingVotes,
     upcomingVotesIsLoading: isLoading,
     upcomingVotesIsError: isError,

@@ -7,7 +7,7 @@ import { RevealPhase } from "./RevealPhase";
 
 export function VoteTimeline() {
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { hasActiveVotes } = useVotesContext();
+  const { getActivityStatus } = useVotesContext();
   const { commitTimeRemaining, revealTimeRemaining } = determineTimeRemaining();
 
   if (!phase || !millisecondsUntilPhaseEnds) return null;
@@ -17,7 +17,7 @@ export function VoteTimeline() {
     let revealTimeRemaining = 0;
 
     // if we are in an active vote, the next phase begins when the current one ends
-    if (hasActiveVotes) {
+    if (getActivityStatus() === "active") {
       commitTimeRemaining = millisecondsUntilPhaseEnds;
       revealTimeRemaining = millisecondsUntilPhaseEnds;
       // this component is hidden when there are no active or upcoming votes
@@ -50,8 +50,8 @@ export function VoteTimeline() {
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} timeRemaining={commitTimeRemaining} isUpcoming={!hasActiveVotes} />
-      <RevealPhase phase={phase} timeRemaining={revealTimeRemaining} isUpcoming={!hasActiveVotes} />
+      <CommitPhase phase={phase} timeRemaining={commitTimeRemaining} isUpcoming={getActivityStatus() === "upcoming"} />
+      <RevealPhase phase={phase} timeRemaining={revealTimeRemaining} isUpcoming={getActivityStatus() === "upcoming"} />
     </Wrapper>
   );
 }

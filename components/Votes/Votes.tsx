@@ -1,5 +1,7 @@
 import { Button } from "components/Button";
-import { VoteBar } from "components/VoteBar";
+import { VotesTableRow } from "components/VotesTable";
+import VotesTable from "components/VotesTable/VotesTable";
+import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
 import { VoteTimeline } from "components/VoteTimeline";
 import { formatVotesToCommit } from "helpers/formatVotes";
 import {
@@ -17,7 +19,7 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { hasActiveVotes, getActiveVotes, getUpcomingVotes } = useVotesContext();
+  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -89,11 +91,15 @@ export function Votes() {
   }
 
   function determineVotesToShow() {
-    if (hasActiveVotes) {
+    const status = getActivityStatus();
+    if (status === "active") {
       if (phase === "commit") return getActiveVotes();
       return getVotesToReveal();
     }
-    return getUpcomingVotes();
+    if (status === "upcoming") {
+      return getUpcomingVotes();
+    }
+    return getPastVotes();
   }
 
   function canCommit() {
@@ -105,13 +111,20 @@ export function Votes() {
   }
 
   function determineTitle() {
-    if (hasActiveVotes) return "Active votes:";
-    if (getUpcomingVotes().length) return "Upcoming votes:";
-    return "Past votes:";
+    const status = getActivityStatus();
+    switch (status) {
+      case "active":
+        return "Active votes:";
+      case "upcoming":
+        return "Upcoming votes:";
+      default:
+        return "Past votes:";
+    }
   }
 
   function hasActiveOrUpcomingVotes() {
-    return hasActiveVotes || getUpcomingVotes().length > 0;
+    const status = getActivityStatus();
+    return status === "active" || status === "upcoming";
   }
 
   return (
@@ -119,24 +132,23 @@ export function Votes() {
       <InnerWrapper>
         <Title>{determineTitle()}</Title>
         {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
-        <VotesWrapper>
-          <TableHeadingsWrapper>
-            <DisputeHeading>Dispute</DisputeHeading>
-            <YourVoteHeading>{hasActiveVotes ? "Your vote" : ""}</YourVoteHeading>
-            <VoteStatusHeading>Vote status</VoteStatusHeading>
-          </TableHeadingsWrapper>
-          {determineVotesToShow().map((vote) => (
-            <VoteBar
-              vote={vote}
-              selectedVote={selectedVotes[vote.uniqueKey]}
-              selectVote={selectVote}
-              phase={phase}
-              key={vote.uniqueKey}
-              moreDetailsAction={() => openVotePanel(vote)}
-            />
-          ))}
-        </VotesWrapper>
-        {hasActiveVotes ? (
+        <VotesTableWrapper>
+          <VotesTable
+            headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
+            rows={determineVotesToShow().map((vote) => (
+              <VotesTableRow
+                vote={vote}
+                phase={phase}
+                selectedVote={selectedVotes[vote.uniqueKey]}
+                selectVote={selectVote}
+                activityStatus={getActivityStatus()}
+                moreDetailsAction={() => openVotePanel(vote)}
+                key={vote.uniqueKey}
+              />
+            ))}
+          />
+        </VotesTableWrapper>
+        {getActivityStatus() === "active" ? (
           <CommitVotesButtonWrapper>
             <Button
               variant="primary"
@@ -162,36 +174,13 @@ const InnerWrapper = styled.div`
   padding-block: 45px;
 `;
 
+const VotesTableWrapper = styled.div`
+  margin-top: 35px;
+`;
+
 const Title = styled.h1`
   font: var(--header-md);
   margin-bottom: 20px;
-`;
-
-const VotesWrapper = styled.div`
-  > :not(:last-child) {
-    margin-bottom: 5px;
-  }
-`;
-
-const TableHeadingsWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 45% 240px 1fr;
-  justify-items: start;
-  margin-bottom: 5px;
-  margin-top: 40px;
-`;
-
-const DisputeHeading = styled.h2`
-  font: var(--text-sm);
-`;
-
-const YourVoteHeading = styled.h2`
-  font: var(--text-sm);
-`;
-
-const VoteStatusHeading = styled.h2`
-  margin-left: 45px;
-  font: var(--text-sm);
 `;
 
 const CommitVotesButtonWrapper = styled.div`
