@@ -29,6 +29,10 @@ export function Wallet() {
   const { address, truncatedAddress } = getAccountDetails(connectedWallets);
   const queryClient = useQueryClient();
 
+  const walletPropertyChangeString = connectedWallets
+    ?.flatMap(({ accounts, provider, chains, label }) => `${accounts}-${provider}-${chains}-${label}`)
+    .join("");
+
   useEffect(() => {
     if (!connectedWallets.length) return;
 
@@ -88,7 +92,7 @@ export function Wallet() {
         }
       })();
     }
-  }, [connectedWallets, setProvider, setSigner, setSigningKeys, setVoting, setVotingToken, wallet]);
+  }, [walletPropertyChangeString, wallet?.provider]);
 
   async function makeSigningKey(signer: ethers.Signer, message: string) {
     const signedMessage = await signer.signMessage(message);
