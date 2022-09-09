@@ -11,9 +11,9 @@ export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) 
 
   useEffect(() => {
     (async () => {
-      if (!Object.keys(encryptedVotes).length || !address) return;
+      const privateKey = signingKeys[address]?.privateKey;
+      if (!Object.keys(encryptedVotes).length || !address || !privateKey) return;
 
-      const privateKey = signingKeys[address].privateKey;
       const decryptedVotes = await decryptVotes(privateKey, encryptedVotes);
       setDecryptedVotes(decryptedVotes);
 
@@ -37,7 +37,7 @@ export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) 
       }
     })();
     // we are choosing to ignore the `withEncryptedVotes` dependency in favor of the stringified version of it to achieve referential equality
-  }, [address, JSON.stringify(encryptedVotes), signingKeys]);
+  }, [JSON.stringify(encryptedVotes)]);
 
   return decryptedVotes;
 }
