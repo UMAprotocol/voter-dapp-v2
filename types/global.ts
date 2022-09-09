@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 
 export type InputDataT = {
   value: string | number;
@@ -159,7 +159,6 @@ export type FormatVotesToCommit = {
   roundId: number;
   address: string;
   signingKeys: SigningKeys;
-  signer: ethers.Signer;
 };
 
 export type VoteFormattedToCommitT = VoteT & {
