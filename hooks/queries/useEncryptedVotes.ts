@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { encryptedVotesKey } from "constants/queryKeys";
-import { useContractsContext } from "hooks/contexts";
+import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { getEncryptedVotesForUser } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
 export default function useEncryptedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
+  const { roundId } = useVoteTimingContext();
 
   const { isLoading, isError, data, error } = useQuery(
     [encryptedVotesKey],
-    () => getEncryptedVotesForUser(voting, address),
+    () => getEncryptedVotesForUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
     }
