@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { Button } from "components/Button";
 import { Nav } from "components/Nav";
@@ -36,6 +37,7 @@ export function MenuPanel() {
   const { setSigner, setProvider } = useWalletContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
+  const queryClient = useQueryClient();
 
   return (
     <PanelWrapper>
@@ -52,7 +54,7 @@ export function MenuPanel() {
               label="Disconnect"
               width={150}
               height={40}
-              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner)}
+              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner, queryClient)}
             />
           </>
         ) : (
