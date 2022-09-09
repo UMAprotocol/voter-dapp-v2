@@ -12,8 +12,7 @@ export default function useCommittedVotes() {
     [committedVotesKey],
     () => getVotesCommittedByUser(voting, address),
     {
-      refetchInterval: (data) => (data ? false : 1000),
-      enabled: !!address,
+      refetchInterval: (data) => (data ? false : 100),
     }
   );
 

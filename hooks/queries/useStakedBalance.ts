@@ -10,7 +10,7 @@ export default function useStakedBalance(votingContract: VotingV2Ethers, address
     () => getStakedBalance(votingContract, address),
     {
       refetchInterval(data) {
-        return data ? false : 1000;
+        return data ? false : 100;
       },
     }
   );

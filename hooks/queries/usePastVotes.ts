@@ -8,7 +8,7 @@ import { PastVotesQuery } from "types/global";
 export default function usePastVotes() {
   const { isLoading, isError, data, error } = useQuery<PastVotesQuery>([pastVotesKey], () => getPastVotes(), {
     refetchInterval(data) {
-      return data ? false : 1000;
+      return data ? false : 100;
     },
   });
 

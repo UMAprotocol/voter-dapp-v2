@@ -8,7 +8,7 @@ export default function useHasActiveVotes() {
 
   const { isLoading, isError, data, error } = useQuery([hasActiveVotesKey], () => getHasActiveVotes(voting), {
     refetchInterval(data) {
-      return data ? false : 1000;
+      return data ? false : 100;
     },
   });
 

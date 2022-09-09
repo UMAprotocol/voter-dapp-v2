@@ -10,8 +10,7 @@ export default function useStakerDetails(votingContract: VotingV2Ethers, address
     [stakerDetailsKey],
     () => getStakerDetails(votingContract, address),
     {
-      refetchInterval: (data) => (data ? false : 1000),
-      enabled: !!address,
+      refetchInterval: (data) => (data ? false : 100),
     }
   );
 
