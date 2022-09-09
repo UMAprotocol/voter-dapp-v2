@@ -1,3 +1,14 @@
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  activeVotesKey,
+  committedVotesKey,
+  contentfulDataKey,
+  encryptedVotesKey,
+  hasActiveVotesKey,
+  pastVotesKey,
+  revealedVotesKey,
+  upcomingVotesKey,
+} from "constants/queryKeys";
 import {
   computeMillisecondsUntilPhaseEnds,
   computePhaseEndTimeMilliseconds,
@@ -14,12 +25,32 @@ import { useInterval } from "hooks/helpers";
  * This hook only needs to be called once on initialization of the dapp.
  */
 export default function useInitializeVoteTiming() {
-  const { setRoundId, setPhase, setPhaseEndTimeMilliseconds, setPhaseEndTimeAsDate, setMillisecondsUntilPhaseEnds } =
-    useVoteTimingContext();
+  const {
+    roundId,
+    setRoundId,
+    setPhase,
+    setPhaseEndTimeMilliseconds,
+    setPhaseEndTimeAsDate,
+    setMillisecondsUntilPhaseEnds,
+  } = useVoteTimingContext();
+  const queryClient = useQueryClient();
 
   useInterval(() => {
+    const newRoundId = computeRoundId();
+    if (newRoundId !== roundId) {
+      setRoundId(newRoundId);
+      queryClient.invalidateQueries([
+        hasActiveVotesKey,
+        activeVotesKey,
+        upcomingVotesKey,
+        pastVotesKey,
+        contentfulDataKey,
+        committedVotesKey,
+        revealedVotesKey,
+        encryptedVotesKey,
+      ]);
+    }
     setMillisecondsUntilPhaseEnds(computeMillisecondsUntilPhaseEnds());
-    setRoundId(computeRoundId());
     setPhase(getPhase());
     setPhaseEndTimeMilliseconds(computePhaseEndTimeMilliseconds());
     setPhaseEndTimeAsDate(new Date(computePhaseEndTimeMilliseconds()));
