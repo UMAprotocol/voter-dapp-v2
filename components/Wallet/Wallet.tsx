@@ -21,7 +21,13 @@ export function Wallet() {
   const queryClient = useQueryClient();
 
   const walletPropertyChangeString = connectedWallets
-    ?.map(({ accounts, chains, label }) => [accounts, chains, label].map(makePropertyChangeStringFromKeys))
+    // get the properties we need to watch for changes and put them in an array
+    ?.map(({ accounts, chains, label }) =>
+      [accounts, chains, label]
+        // make strings from the object properties
+        .map(makePropertyChangeStringFromKeys)
+    )
+    // convert the array of arrays into a single string
     .join("-");
 
   function makePropertyChangeStringFromKeys(objectOrString: Object | string): string {
