@@ -1,14 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import {
-  committedVotesKey,
-  encryptedVotesKey,
-  revealedVotesKey,
-  stakedBalanceKey,
-  stakerDetailsKey,
-  tokenAllowanceKey,
-  unstakedBalanceKey,
-} from "constants/queryKeys";
 import message from "constants/signingMessage";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
@@ -71,15 +62,7 @@ export function Wallet() {
       setVoting(createVotingContractInstance(signer));
       setVotingToken(createVotingTokenContractInstance(signer));
       // re-fetch data that is dependant on the wallet address
-      queryClient.invalidateQueries([
-        committedVotesKey,
-        revealedVotesKey,
-        encryptedVotesKey,
-        stakedBalanceKey,
-        unstakedBalanceKey,
-        stakerDetailsKey,
-        tokenAllowanceKey,
-      ]);
+      queryClient.clear();
       (async () => {
         const savedSigningKeys = getSavedSigningKeys();
         if (savedSigningKeys[address]) {
