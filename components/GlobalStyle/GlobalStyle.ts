@@ -4,27 +4,28 @@ import {
   blackOpacity50,
   blackOpacity60,
   blackOpacity75,
+  green,
   grey100,
   grey50,
-  green,
-  red500,
-  white,
   grey500,
   red100,
+  red500,
+  red500Opacity5,
   red600,
+  white,
 } from "constants/colors";
 import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
 import {
-  headerXl,
   headerLg,
   headerMd,
   headerSm,
+  headerXl,
   headerXs,
+  textFine,
   textLg,
   textMd,
   textSm,
   textXs,
-  textFine,
 } from "constants/fonts";
 import { shadow1, shadow2 } from "constants/shadows";
 import { createGlobalStyle } from "styled-components";
@@ -207,6 +208,7 @@ a:not([class]) {
     --black-opacity-75: ${blackOpacity75};
     --red-100: ${red100};
     --red-500: ${red500};
+    --red-500-opacity-5: ${red500Opacity5};
     --red-600: ${red600};
     --green: ${green};
     --grey-50: ${grey50};
