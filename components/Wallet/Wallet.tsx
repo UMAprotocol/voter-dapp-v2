@@ -20,28 +20,6 @@ export function Wallet() {
   const { address, truncatedAddress } = getAccountDetails(connectedWallets);
   const queryClient = useQueryClient();
 
-  const walletPropertyChangeString = connectedWallets
-    // get the properties we need to watch for changes and put them in an array
-    ?.map(({ accounts, chains, label }) =>
-      [accounts, chains, label]
-        // make strings from the object properties
-        .map(makePropertyChangeStringFromKeys)
-    )
-    // convert the array of arrays into a single string
-    .join("-");
-
-  function makePropertyChangeStringFromKeys(objectOrString: Object | string): string {
-    if (!objectOrString) return "";
-
-    if (typeof objectOrString === "string") {
-      return objectOrString;
-    }
-
-    return Object.values(objectOrString)
-      .flatMap((obj) => makePropertyChangeStringFromKeys(obj))
-      .join("-");
-  }
-
   useEffect(() => {
     if (!connectedWallets.length) return;
 
@@ -93,7 +71,7 @@ export function Wallet() {
         }
       })();
     }
-  }, [walletPropertyChangeString, wallet?.provider]);
+  }, [wallet]);
 
   async function makeSigningKey(signer: ethers.Signer, message: string) {
     const signedMessage = await signer.signMessage(message);
