@@ -30,7 +30,7 @@ interface VotesContextState {
   committedVotes: VoteExistsByKeyT;
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
-  decryptedVotes: DecryptedVotesByKeyT;
+  decryptedVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
@@ -66,7 +66,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { committedVotes } = useCommittedVotes();
   const { revealedVotes } = useRevealedVotes();
   const { encryptedVotes } = useEncryptedVotes();
-  const decryptedVotes = useDecryptedVotes(encryptedVotes);
+  const { decryptedVotes } = useDecryptedVotes();
 
   function getActiveVotes() {
     return getVotesWithData(activeVotes);
@@ -94,7 +94,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         isCommitted: committedVotes[uniqueKey] ?? false,
         isRevealed: revealedVotes[uniqueKey] ?? false,
         encryptedVote: encryptedVotes[uniqueKey],
-        decryptedVote: decryptedVotes[uniqueKey],
+        decryptedVote: decryptedVotes?.[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
         ...getVoteMetaData(
           vote.decodedIdentifier,

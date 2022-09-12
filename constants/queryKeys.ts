@@ -7,6 +7,7 @@ export const unstakedBalanceKey = "unstakedBalanceKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const encryptedVotesKey = "encryptedVotesKey";
+export const decryptedVotesKey = "decryptedVotesKey";
 export const committedVotesKey = "committedVotesKey";
 export const revealedVotesKey = "revealedVotesKey";
 export const hasActiveVotesKey = "hasActiveVotesKey";
