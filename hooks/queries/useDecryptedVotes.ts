@@ -13,7 +13,7 @@ export default function useDecryptedVotes() {
 
   const { isLoading, isError, data, error } = useQuery(
     [decryptedVotesKey],
-    () => decryptVotes(address, signingKeys[address]?.publicKey, encryptedVotes),
+    () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
       refetchInterval: (data) => (data ? false : 100),
     }
@@ -27,19 +27,14 @@ export default function useDecryptedVotes() {
   };
 }
 
-async function decryptVotes(
-  address: string | undefined,
-  privateKey: string | undefined,
-  encryptedVotes: EncryptedVotesByKeyT
-) {
-  if (!Object.keys(encryptedVotes).length || !address || !privateKey) return undefined;
-
+async function decryptVotes(privateKey: string | undefined, encryptedVotes: EncryptedVotesByKeyT) {
   const decryptedVotes: DecryptedVotesByKeyT = {};
+  if (!privateKey || Object.keys(encryptedVotes).length === 0) return undefined;
 
   for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
     let decryptedVote: DecryptedVoteT;
 
-    if (encryptedVote) {
+    if (encryptedVote && privateKey) {
       const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
       decryptedVote = JSON.parse(decryptedVoteString);
 
