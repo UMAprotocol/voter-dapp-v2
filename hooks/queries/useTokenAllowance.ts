@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { tokenAllowanceKey } from "constants/queryKeys";
-import { ethers } from "ethers";
 import { getTokenAllowance } from "web3/queries";
 
 export default function useTokenAllowance(votingTokenContract: VotingTokenEthers, address: string) {
@@ -16,7 +15,7 @@ export default function useTokenAllowance(votingTokenContract: VotingTokenEthers
   );
 
   return {
-    tokenAllowance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
+    tokenAllowance: data,
     tokenAllowanceIsLoading: isLoading,
     tokenAllowanceIsError: isError,
     tokenAllowanceError: error,

@@ -1,5 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { ethers } from "ethers";
 
-export default function getStakedBalance(votingContract: VotingV2Ethers, address: string) {
-  return votingContract.functions.getVoterStake(address);
+export default async function getStakedBalance(votingContract: VotingV2Ethers, address: string) {
+  const result = await votingContract.functions.getVoterStake(address);
+  return Number(ethers.utils.formatEther(result?.[0]));
 }
