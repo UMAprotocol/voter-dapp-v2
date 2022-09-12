@@ -20,7 +20,7 @@ function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
 }
 
 function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
-  const time = typeof priceRequest.time === "number" ? priceRequest.time : priceRequest.time.toNumber();
+  const time = Number(priceRequest.time);
   const timeMilliseconds = time * 1000;
   const timeAsDate = new Date(timeMilliseconds);
   const transactionHash = "0x5b80ae07dfec789436ce29ff8169907e6ad4dcf765244314fb3748d8c7042925";

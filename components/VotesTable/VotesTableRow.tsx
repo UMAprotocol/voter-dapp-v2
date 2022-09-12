@@ -26,7 +26,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
 
   function formatTitle(title: string) {
     if (title.length <= 45) return title;
-    return title.substring(0, 45) + "...";
+    return `${title.substring(0, 45)}...`;
   }
 
   function getDecryptedVoteAsNumber() {
