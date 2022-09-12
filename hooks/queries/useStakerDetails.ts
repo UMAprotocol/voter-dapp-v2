@@ -15,13 +15,15 @@ export default function useStakerDetails(votingContract: VotingV2Ethers, address
     }
   );
 
-  const { pendingUnstake, unstakeRequestTime } = data ?? {};
+  const { outstandingRewards, pendingUnstake, rewardsPaidPerToken, unstakeRequestTime } = data ?? {};
 
-  const unstakeRequestTimeAsDate = unstakeRequestTime ? new Date(Number(unstakeRequestTime.mul(1000))) : undefined;
-  const canUnstakeTime = unstakeRequestTimeAsDate ? getCanUnstakeTime(unstakeRequestTimeAsDate) : undefined;
+  const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime?.toNumber() ?? 0) * 1000);
+  const canUnstakeTime = getCanUnstakeTime(unstakeRequestTimeAsDate);
 
   const stakerDetails = {
-    pendingUnstake: pendingUnstake ? Number(ethers.utils.formatEther(pendingUnstake)) : undefined,
+    outstandingRewards: Number(ethers.utils.formatEther(outstandingRewards ?? 0)),
+    pendingUnstake: Number(ethers.utils.formatEther(pendingUnstake ?? 0)),
+    rewardsPaidPerToken: Number(ethers.utils.formatEther(rewardsPaidPerToken ?? 0)),
     unstakeRequestTime: unstakeRequestTimeAsDate,
     canUnstakeTime,
   };
