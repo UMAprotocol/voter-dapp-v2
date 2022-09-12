@@ -21,8 +21,20 @@ export function Wallet() {
   const queryClient = useQueryClient();
 
   const walletPropertyChangeString = connectedWallets
-    ?.flatMap(({ accounts, provider, chains, label }) => `${accounts}-${provider}-${chains}-${label}`)
-    .join("");
+    ?.map(({ accounts, chains, label }) => [accounts, chains, label].map(makePropertyChangeStringFromKeys))
+    .join("-");
+
+  function makePropertyChangeStringFromKeys(objectOrString: Object | string): string {
+    if (!objectOrString) return "";
+
+    if (typeof objectOrString === "string") {
+      return objectOrString;
+    }
+
+    return Object.values(objectOrString)
+      .flatMap((obj) => makePropertyChangeStringFromKeys(obj))
+      .join("-");
+  }
 
   useEffect(() => {
     if (!connectedWallets.length) return;
