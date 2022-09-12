@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { useContractsContext } from "hooks/contexts";
 import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
-import { useAccountDetails, useStakerDetails } from "hooks/queries";
+import { useOutstandingRewards } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -9,12 +9,9 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
-  const { address } = useAccountDetails();
   const withdrawRewardsMutation = useWithdrawRewards();
   const withdrawAndRestakeMutation = useWithdrawAndRestake();
-  const {
-    stakerDetails: { outstandingRewards },
-  } = useStakerDetails(voting, address);
+  const { outstandingRewards } = useOutstandingRewards();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });

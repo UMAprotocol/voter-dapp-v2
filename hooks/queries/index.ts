@@ -5,6 +5,7 @@ export { default as useContentfulData } from "./useContentfulData";
 export { default as useDecryptedVotes } from "./useDecryptedVotes";
 export { default as useEncryptedVotes } from "./useEncryptedVotes";
 export { default as useHasActiveVotes } from "./useHasActiveVotes";
+export { useOutstandingRewards } from "./useOutstandingRewards";
 export { default as usePastVotes } from "./usePastVotes";
 export { default as useRevealedVotes } from "./useRevealedVotes";
 export { default as useStakedBalance } from "./useStakedBalance";

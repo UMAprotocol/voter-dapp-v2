@@ -1,6 +1,7 @@
 import { InfoBar } from "components/InfoBar";
 import { useContractsContext, usePanelContext } from "hooks/contexts";
-import { useAccountDetails, useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
+import { useAccountDetails, useStakedBalance, useUnstakedBalance } from "hooks/queries";
+import { useOutstandingRewards } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -16,9 +17,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
   const { address } = useAccountDetails();
   const { unstakedBalance } = useUnstakedBalance(votingToken, address);
   const { stakedBalance } = useStakedBalance(voting, address);
-  const {
-    stakerDetails: { outstandingRewards },
-  } = useStakerDetails(voting, address);
+  const { outstandingRewards } = useOutstandingRewards();
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
@@ -43,7 +42,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You are staking <Strong>{stakedBalance}</Strong> UMA tokens of {stakedBalance + unstakedBalance}
+              You are staking <Strong>{stakedBalance}</Strong> UMA tokens of {stakedBalance! + unstakedBalance!}
             </>
           }
           actionLabel="Stake/Unstake"
