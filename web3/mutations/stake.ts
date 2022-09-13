@@ -1,7 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 
-export default async function stake({ voting, stakeAmount }: { voting: VotingV2Ethers; stakeAmount: string }) {
-  const tx = await voting.functions.stake(ethers.utils.parseEther(stakeAmount));
+export default async function stake({ voting, stakeAmount }: { voting: VotingV2Ethers; stakeAmount: BigNumber }) {
+  const tx = await voting.functions.stake(stakeAmount);
   return await tx.wait();
 }
