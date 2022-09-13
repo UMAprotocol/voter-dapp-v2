@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { tokenAllowanceKey } from "constants/queryKeys";
-import { ethers } from "ethers";
+import { useContractsContext } from "hooks/contexts";
 import { getTokenAllowance } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useTokenAllowance(votingTokenContract: VotingTokenEthers, address: string) {
+export default function useTokenAllowance() {
+  const { votingToken } = useContractsContext();
+  const { address } = useAccountDetails();
+
   const { isLoading, isError, data, error } = useQuery(
     [tokenAllowanceKey],
-    () => getTokenAllowance(votingTokenContract, address),
+    () => getTokenAllowance(votingToken, address),
     {
       refetchInterval(data) {
         return data ? false : 100;
@@ -16,7 +19,7 @@ export default function useTokenAllowance(votingTokenContract: VotingTokenEthers
   );
 
   return {
-    tokenAllowance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
+    tokenAllowance: data,
     tokenAllowanceIsLoading: isLoading,
     tokenAllowanceIsError: isError,
     tokenAllowanceError: error,
