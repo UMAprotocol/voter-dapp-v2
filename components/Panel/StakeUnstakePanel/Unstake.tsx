@@ -1,6 +1,7 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
@@ -22,7 +23,7 @@ export function Unstake() {
   const [unstakeAmount, setUnstakeAmount] = useState("");
 
   function requestUnstake() {
-    requestUnstakeMutation({ voting, unstakeAmount: ethers.utils.parseEther(unstakeAmount) });
+    requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
   }
 
   function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
@@ -59,7 +60,7 @@ export function Unstake() {
             <AmountInput
               value={unstakeAmount}
               onChange={(e) => setUnstakeAmount(e.target.value)}
-              onMax={() => setUnstakeAmount(ethers.utils.formatEther(stakedBalance ?? 0))}
+              onMax={() => setUnstakeAmount(formatEther(stakedBalance ?? 0))}
               disabled={!canUnstake(stakedBalance, pendingUnstake)}
             />
           </AmountInputWrapper>
