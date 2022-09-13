@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { committedVotesKey } from "constants/queryKeys";
-import { useContractsContext } from "hooks/contexts";
+import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { getVotesCommittedByUser } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
 export default function useCommittedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
+  const { roundId } = useVoteTimingContext();
 
   const { isLoading, isError, data, error } = useQuery(
     [committedVotesKey],
-    () => getVotesCommittedByUser(voting, address),
+    () => getVotesCommittedByUser(voting, address, roundId),
     {
-      refetchInterval: (data) => (data ? false : 1000),
-      enabled: !!address,
+      refetchInterval: (data) => (data ? false : 100),
     }
   );
 

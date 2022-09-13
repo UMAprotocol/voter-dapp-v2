@@ -58,7 +58,7 @@ export default function useContentfulData() {
     [contentfulDataKey],
     () => getContentfulData(adminProposalNumbersByKey),
     {
-      enabled: Object.values(adminProposalNumbersByKey).length > 0,
+      refetchInterval: (data) => (data ? false : 100),
     }
   );
 

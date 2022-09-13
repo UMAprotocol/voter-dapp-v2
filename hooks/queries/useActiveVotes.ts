@@ -3,17 +3,14 @@ import { activeVotesKey } from "constants/queryKeys";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { useContractsContext } from "hooks/contexts";
 import { getPendingRequests } from "web3/queries";
-import useHasActiveVotes from "./useHasActiveVotes";
 
 export default function useActiveVotes() {
   const { voting } = useContractsContext();
-  const { hasActiveVotes } = useHasActiveVotes();
 
   const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(voting), {
     refetchInterval(data) {
-      return data ? false : 1000;
+      return data ? false : 100;
     },
-    enabled: hasActiveVotes !== undefined && hasActiveVotes,
   });
 
   const pendingRequests = data?.[0];

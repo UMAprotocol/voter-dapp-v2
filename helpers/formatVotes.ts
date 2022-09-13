@@ -1,5 +1,4 @@
 import { parseFixed } from "@ethersproject/bignumber";
-import signingMessage from "constants/signingMessage";
 import { BigNumber, ethers } from "ethers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
@@ -25,7 +24,6 @@ export async function formatVotesToCommit({
   roundId,
   address,
   signingKeys,
-  signer,
 }: FormatVotesToCommit) {
   // the user's address is called `account` for legacy reasons
   const account = address;
@@ -33,12 +31,10 @@ export async function formatVotesToCommit({
   const salt = getRandomSignedInt().toString();
   // we created this key when the user signed the message when first connecting their wallet
   const signingPublicKey = signingKeys[address].publicKey;
-
-  const newSignedMessage = await signer?.signMessage(signingMessage);
-  const oldSignedMessage = signingKeys[address].signedMessage;
-
-  if (newSignedMessage !== oldSignedMessage) {
-    throw new Error("Signed messages do not match. Please disconnect and re-sign");
+  // this should have been saved in local storage when the user connected their wallet
+  const hasSignedMessage = Boolean(signingKeys[address].signedMessage);
+  if (!hasSignedMessage) {
+    throw new Error("You must sign the message to commit votes. Please re-connect your wallet and try again.");
   }
 
   const formattedVotes = await Promise.all(

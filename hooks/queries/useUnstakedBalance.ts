@@ -10,7 +10,7 @@ export default function useUnstakedBalance(votingTokenContract: VotingTokenEther
     () => getUnstakedBalance(votingTokenContract, address),
     {
       refetchInterval(data) {
-        return data ? false : 1000;
+        return data ? false : 100;
       },
     }
   );

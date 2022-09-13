@@ -38,7 +38,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
   }
 
   function showYourVote() {
-    return phase === "reveal" || activityStatus === "past";
+    return (activityStatus === "active" && phase === "reveal") || activityStatus === "past";
   }
 
   function showCorrectVote() {

@@ -10,7 +10,7 @@ export default function useTokenAllowance(votingTokenContract: VotingTokenEthers
     () => getTokenAllowance(votingTokenContract, address),
     {
       refetchInterval(data) {
-        return data ? false : 1000;
+        return data ? false : 100;
       },
     }
   );
