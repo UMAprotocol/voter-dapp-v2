@@ -1,11 +1,13 @@
 import { Button } from "components/Button";
 import { formatDistanceToNowStrict } from "date-fns";
+import { BigNumber } from "ethers";
+import { formatNumberForDisplay } from "helpers/formatNumber";
 import Time from "public/assets/icons/time.svg";
 import styled from "styled-components";
 
 interface Props {
   cooldownEnds: Date | null;
-  pendingUnstake: number;
+  pendingUnstake: BigNumber | undefined;
   canClaim: boolean;
   onClaim: () => void;
 }
@@ -22,7 +24,7 @@ export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim 
       </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
-          <Strong>{pendingUnstake}</Strong> UMA
+          <Strong>{formatNumberForDisplay(pendingUnstake)}</Strong> UMA
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>

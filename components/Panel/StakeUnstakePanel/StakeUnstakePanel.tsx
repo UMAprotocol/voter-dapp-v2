@@ -1,6 +1,5 @@
-import { useWallets } from "@web3-onboard/react";
 import { Tabs } from "components/Tabs";
-import { getAccountDetails } from "components/Wallet";
+import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useContractsContext } from "hooks/contexts";
 import { useExecuteUnstake } from "hooks/mutations";
 import { useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
@@ -13,19 +12,15 @@ import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
-  const { voting, votingToken } = useContractsContext();
-  const connectedWallets = useWallets();
-  const { address } = getAccountDetails(connectedWallets);
-  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
-  const { stakedBalance } = useStakedBalance(voting, address);
-  const {
-    stakerDetails: { pendingUnstake, canUnstakeTime },
-  } = useStakerDetails(voting, address);
+  const { voting } = useContractsContext();
+  const { unstakedBalance } = useUnstakedBalance();
+  const { stakedBalance } = useStakedBalance();
+  const { pendingUnstake, canUnstakeTime } = useStakerDetails();
   const executeUnstakeMutation = useExecuteUnstake();
 
   const cooldownEnds = canUnstakeTime;
-  const hasCooldownTimeRemaining = cooldownEnds > new Date();
-  const hasClaimableTokens = pendingUnstake > 0;
+  const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
+  const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableTokens;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
 
@@ -52,11 +47,11 @@ export function StakeUnstakePanel() {
           <Balances>
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
-              <BalanceAmount>{stakedBalance}</BalanceAmount>
+              <BalanceAmount>{formatNumberForDisplay(stakedBalance)}</BalanceAmount>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
-              <BalanceAmount>{unstakedBalance}</BalanceAmount>
+              <BalanceAmount>{formatNumberForDisplay(unstakedBalance)}</BalanceAmount>
             </Balance>
           </Balances>
           {showCooldownTimer && (
@@ -79,7 +74,6 @@ export function StakeUnstakePanel() {
 
 const SectionsWrapper = styled.div``;
 const BalancesWrapper = styled.div`
-  display: grid;
   background: var(--red-500);
   color: var(--white);
   padding-top: 25px;

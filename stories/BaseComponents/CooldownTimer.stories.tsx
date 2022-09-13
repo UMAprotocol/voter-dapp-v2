@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { CooldownTimer } from "components/Panel/StakeUnstakePanel";
 import { red500 } from "constants/colors";
 import add from "date-fns/add";
+import { BigNumber } from "ethers";
 
 export default {
   title: "Base Components/CooldownTimer",
@@ -29,7 +30,7 @@ const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer 
 export const InCooldown = Template.bind({});
 InCooldown.args = {
   cooldownEnds: add(new Date(), { hours: 1, minutes: 10 }),
-  pendingUnstake: 100.123,
+  pendingUnstake: BigNumber.from(100.123),
   canClaim: false,
   onClaim: () => alert("Yay rewards!"),
 };
@@ -37,7 +38,7 @@ InCooldown.args = {
 export const ReadyToClaim = Template.bind({});
 ReadyToClaim.args = {
   cooldownEnds: null,
-  pendingUnstake: 100.123,
+  pendingUnstake: BigNumber.from(100.123),
   canClaim: true,
   onClaim: () => alert("Yay rewards!"),
 };
