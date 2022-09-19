@@ -14,9 +14,9 @@ export default {
   component: VotesTableRow,
   decorators: [
     (Story) => (
-      <div style={{ width: 1100 }}>
+      <table style={{ width: 1100 }}>
         <Story />
-      </div>
+      </table>
     ),
   ],
 } as ComponentMeta<typeof VotesTableRow>;
@@ -77,6 +77,7 @@ ActiveRevealButDidNotVote.args = {
   phase: "reveal",
   vote: voteWithoutUserVote,
 };
+
 // upcoming votes
 
 export const UpcomingVote = Template.bind({});
