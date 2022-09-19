@@ -1,34 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { stakerDetailsKey } from "constants/queryKeys";
-import { ethers } from "ethers";
-import getCanUnstakeTime from "helpers/getCanUnstakeTime";
+import { useContractsContext } from "hooks/contexts";
 import { getStakerDetails } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useStakerDetails(votingContract: VotingV2Ethers, address: string | undefined) {
-  const { isLoading, isError, data, error } = useQuery(
-    [stakerDetailsKey],
-    () => getStakerDetails(votingContract, address),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-    }
-  );
+export default function useStakerDetails() {
+  const { voting } = useContractsContext();
+  const { address } = useAccountDetails();
 
-  const { outstandingRewards, pendingUnstake, rewardsPaidPerToken, unstakeRequestTime } = data ?? {};
+  const { isLoading, isError, data, error } = useQuery([stakerDetailsKey], () => getStakerDetails(voting, address), {
+    refetchInterval: (data) => (data ? false : 100),
+  });
 
-  const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime?.toNumber() ?? 0) * 1000);
-  const canUnstakeTime = getCanUnstakeTime(unstakeRequestTimeAsDate);
-
-  const stakerDetails = {
-    outstandingRewards: Number(ethers.utils.formatEther(outstandingRewards ?? 0)),
-    pendingUnstake: Number(ethers.utils.formatEther(pendingUnstake ?? 0)),
-    rewardsPaidPerToken: Number(ethers.utils.formatEther(rewardsPaidPerToken ?? 0)),
-    unstakeRequestTime: unstakeRequestTimeAsDate,
-    canUnstakeTime,
-  };
+  const { pendingUnstake, unstakeRequestTime, canUnstakeTime } = data ?? {};
 
   return {
-    stakerDetails,
+    pendingUnstake,
+    unstakeRequestTime,
+    canUnstakeTime,
     stakerDetailsIsLoading: isLoading,
     stakerDetailsIsError: isError,
     stakerDetailsError: error,

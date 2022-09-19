@@ -4,6 +4,7 @@ export const pastVotesKey = "pastVotesKey";
 export const currentRoundIdKey = "currentRoundIdKey";
 export const stakedBalanceKey = "stakedBalanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
+export const outstandingRewardsKey = "outstandingRewardsKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const encryptedVotesKey = "encryptedVotesKey";

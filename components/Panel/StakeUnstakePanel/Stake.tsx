@@ -1,18 +1,18 @@
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { AmountInput } from "components/Input";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { useContractsContext } from "hooks/contexts";
 import { useApprove, useStake } from "hooks/mutations";
-import { useAccountDetails, useTokenAllowance, useUnstakedBalance } from "hooks/queries";
+import { useTokenAllowance, useUnstakedBalance } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Stake() {
-  const { address } = useAccountDetails();
   const { voting, votingToken } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
-  const { tokenAllowance } = useTokenAllowance(votingToken, address);
+  const { unstakedBalance } = useUnstakedBalance();
+  const { tokenAllowance } = useTokenAllowance();
   const [stakeAmount, setStakeAmount] = useState("");
   const stakeMutation = useStake();
   const approveMutation = useApprove();
@@ -20,11 +20,35 @@ export function Stake() {
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
 
   function stake() {
-    stakeMutation({ voting, stakeAmount });
+    stakeMutation(
+      { voting, stakeAmount: parseEther(stakeAmount) },
+      {
+        onSuccess: () => {
+          setStakeAmount("");
+        },
+      }
+    );
   }
 
   async function approve() {
-    approveMutation({ votingToken, approveAmount: stakeAmount });
+    approveMutation({ votingToken, approveAmount: parseEther(stakeAmount) });
+  }
+
+  function getMax() {
+    if (tokenAllowance === undefined || unstakedBalance === undefined) return "0";
+    if (tokenAllowance.gt(unstakedBalance)) return formatEther(unstakedBalance);
+    return formatEther(tokenAllowance);
+  }
+
+  function isApprove() {
+    if (tokenAllowance === undefined || stakeAmount === "") return true;
+    const parsedStakeAmount = parseEther(stakeAmount);
+    if (parsedStakeAmount.eq(0)) return true;
+    return parsedStakeAmount.gt(tokenAllowance);
+  }
+
+  function isButtonDisabled() {
+    return !disclaimerChecked || stakeAmount === "" || parseEther(stakeAmount).eq(0);
   }
 
   return (
@@ -38,7 +62,7 @@ export function Stake() {
         <AmountInput
           value={stakeAmount}
           onChange={(e) => setStakeAmount(e.target.value)}
-          onMax={() => setStakeAmount(tokenAllowance > 0 ? tokenAllowance.toString() : unstakedBalance.toString())}
+          onMax={() => setStakeAmount(getMax())}
         />
       </AmountInputWrapper>
       <CheckboxWrapper>
@@ -50,10 +74,10 @@ export function Stake() {
       </CheckboxWrapper>
       <Button
         variant="primary"
-        label={tokenAllowance > 0 ? "Stake" : "Approve"}
-        onClick={tokenAllowance > 0 ? stake : approve}
+        label={isApprove() ? "Approve" : "Stake"}
+        onClick={isApprove() ? approve : stake}
         width="100%"
-        disabled={!disclaimerChecked || stakeAmount === ""}
+        disabled={isButtonDisabled()}
       />
     </Wrapper>
   );

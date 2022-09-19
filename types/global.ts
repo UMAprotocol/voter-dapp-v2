@@ -142,15 +142,9 @@ export type IdentifierDetailsT = {
 };
 
 export type StakerDetailsT = {
-  activeStake: BigNumber;
   pendingUnstake: BigNumber;
-  pendingStake: BigNumber;
-  rewardsPaidPerToken: BigNumber;
-  outstandingRewards: BigNumber;
-  unappliedSlash: BigNumber;
-  lastRequestIndexConsidered: BigNumber;
-  unstakeRequestTime: BigNumber;
-  delegate: string;
+  canUnstakeTime: Date | undefined;
+  unstakeRequestTime: Date | undefined;
 };
 
 export type FormatVotesToCommit = {

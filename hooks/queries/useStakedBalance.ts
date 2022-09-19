@@ -1,22 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { stakedBalanceKey } from "constants/queryKeys";
-import { ethers } from "ethers";
+import { useContractsContext } from "hooks/contexts";
 import { getStakedBalance } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useStakedBalance(votingContract: VotingV2Ethers, address: string) {
-  const { isLoading, isError, data, error } = useQuery(
-    [stakedBalanceKey],
-    () => getStakedBalance(votingContract, address),
-    {
-      refetchInterval(data) {
-        return data ? false : 100;
-      },
-    }
-  );
+export default function useStakedBalance() {
+  const { voting } = useContractsContext();
+  const { address } = useAccountDetails();
+  const { isLoading, isError, data, error } = useQuery([stakedBalanceKey], () => getStakedBalance(voting, address), {
+    refetchInterval(data) {
+      return data ? false : 100;
+    },
+  });
 
   return {
-    stakedBalance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
+    stakedBalance: data,
     stakedBalanceIsLoading: isLoading,
     stakedBalanceIsError: isError,
     stakedBalanceError: error,

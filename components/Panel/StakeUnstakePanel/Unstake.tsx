@@ -1,9 +1,11 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
+import { BigNumber } from "ethers";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
-import { useAccountDetails, useActiveVotes, useStakedBalance, useStakerDetails } from "hooks/queries";
+import { useActiveVotes, useStakedBalance, useStakerDetails } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -13,22 +15,20 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Unstake() {
   const { phase } = useVoteTimingContext();
-  const { address } = useAccountDetails();
   const { voting } = useContractsContext();
   const { activeVotes } = useActiveVotes();
-  const { stakedBalance } = useStakedBalance(voting, address);
-  const {
-    stakerDetails: { pendingUnstake },
-  } = useStakerDetails(voting, address);
+  const { stakedBalance } = useStakedBalance();
+  const { pendingUnstake } = useStakerDetails();
   const requestUnstakeMutation = useRequestUnstake();
   const [unstakeAmount, setUnstakeAmount] = useState("");
 
   function requestUnstake() {
-    requestUnstakeMutation({ voting, unstakeAmount });
+    requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
   }
 
-  function canUnstake(stakedBalance: number, pendingUnstake: number) {
-    return stakedBalance > 0 && pendingUnstake === 0;
+  function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
+    if (stakedBalance === undefined || pendingUnstake === undefined) return false;
+    return stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
 
   const hasActiveVotes = Object.values(activeVotes).length > 0;
@@ -60,7 +60,7 @@ export function Unstake() {
             <AmountInput
               value={unstakeAmount}
               onChange={(e) => setUnstakeAmount(e.target.value)}
-              onMax={() => setUnstakeAmount(stakedBalance.toString())}
+              onMax={() => setUnstakeAmount(formatEther(stakedBalance ?? 0))}
               disabled={!canUnstake(stakedBalance, pendingUnstake)}
             />
           </AmountInputWrapper>

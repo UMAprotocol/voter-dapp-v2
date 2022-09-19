@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { unstakedBalanceKey } from "constants/queryKeys";
-import { ethers } from "ethers";
+import { useContractsContext } from "hooks/contexts";
 import { getUnstakedBalance } from "web3/queries";
+import useAccountDetails from "./useAccountDetails";
 
-export default function useUnstakedBalance(votingTokenContract: VotingTokenEthers, address: string) {
+export default function useUnstakedBalance() {
+  const { votingToken } = useContractsContext();
+  const { address } = useAccountDetails();
+
   const { isLoading, isError, data, error } = useQuery(
     [unstakedBalanceKey],
-    () => getUnstakedBalance(votingTokenContract, address),
+    () => getUnstakedBalance(votingToken, address),
     {
       refetchInterval(data) {
         return data ? false : 100;
@@ -16,7 +19,7 @@ export default function useUnstakedBalance(votingTokenContract: VotingTokenEther
   );
 
   return {
-    unstakedBalance: Number(ethers.utils.formatEther(data?.[0] ?? 0)),
+    unstakedBalance: data,
     unstakedBalanceIsLoading: isLoading,
     unstakedBalanceIsError: isError,
     unstakedBalanceError: error,
