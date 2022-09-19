@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 
 export type InputDataT = {
   value: string | number;
@@ -142,15 +142,9 @@ export type IdentifierDetailsT = {
 };
 
 export type StakerDetailsT = {
-  activeStake: BigNumber;
   pendingUnstake: BigNumber;
-  pendingStake: BigNumber;
-  rewardsPaidPerToken: BigNumber;
-  outstandingRewards: BigNumber;
-  unappliedSlash: BigNumber;
-  lastRequestIndexConsidered: BigNumber;
-  unstakeRequestTime: BigNumber;
-  delegate: string;
+  canUnstakeTime: Date | undefined;
+  unstakeRequestTime: Date | undefined;
 };
 
 export type FormatVotesToCommit = {
@@ -159,7 +153,6 @@ export type FormatVotesToCommit = {
   roundId: number;
   address: string;
   signingKeys: SigningKeys;
-  signer: ethers.Signer;
 };
 
 export type VoteFormattedToCommitT = VoteT & {

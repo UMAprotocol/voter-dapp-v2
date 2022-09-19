@@ -1,7 +1,8 @@
 import { Button } from "components/Button";
+import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useContractsContext } from "hooks/contexts";
 import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
-import { useAccountDetails, useStakerDetails } from "hooks/queries";
+import { useOutstandingRewards } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -9,12 +10,9 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
-  const { address } = useAccountDetails();
   const withdrawRewardsMutation = useWithdrawRewards();
   const withdrawAndRestakeMutation = useWithdrawAndRestake();
-  const {
-    stakerDetails: { outstandingRewards },
-  } = useStakerDetails(voting, address);
+  const { outstandingRewards } = useOutstandingRewards();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
@@ -31,7 +29,7 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <Strong>{outstandingRewards}</Strong> UMA
+            <Strong>{formatNumberForDisplay(outstandingRewards)}</Strong> UMA
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

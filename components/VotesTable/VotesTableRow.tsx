@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { green, red500 } from "constants/colors";
-import { ethers } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 import { useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -30,7 +30,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
   }
 
   function getDecryptedVoteAsNumber() {
-    return decryptedVote?.price ? Number(ethers.utils.formatEther(decryptedVote.price)) : undefined;
+    return decryptedVote?.price ? Number(formatEther(decryptedVote.price)) : undefined;
   }
 
   function showVoteInput() {
@@ -38,7 +38,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
   }
 
   function showYourVote() {
-    return phase === "reveal" || activityStatus === "past";
+    return (activityStatus === "active" && phase === "reveal") || activityStatus === "past";
   }
 
   function showCorrectVote() {

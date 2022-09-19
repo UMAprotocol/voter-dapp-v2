@@ -1,13 +1,13 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 
 export default async function requestUnstake({
   voting,
   unstakeAmount,
 }: {
   voting: VotingV2Ethers;
-  unstakeAmount: string;
+  unstakeAmount: BigNumber;
 }) {
-  const tx = await voting.functions.requestUnstake(ethers.utils.parseEther(unstakeAmount));
+  const tx = await voting.functions.requestUnstake(unstakeAmount);
   return await tx.wait();
 }

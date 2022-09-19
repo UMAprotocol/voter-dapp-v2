@@ -3,18 +3,15 @@ import { upcomingVotesKey } from "constants/queryKeys";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { getUpcomingVotes } from "web3/queries";
-import useHasActiveVotes from "./useHasActiveVotes";
 
 export default function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
-  const { hasActiveVotes } = useHasActiveVotes();
 
   const { isLoading, isError, data, error } = useQuery([upcomingVotesKey], () => getUpcomingVotes(voting), {
     refetchInterval(data) {
-      return data ? false : 1000;
+      return data ? false : 100;
     },
-    enabled: hasActiveVotes !== undefined && !hasActiveVotes,
   });
 
   const eventData = data?.map(({ args }) => args);

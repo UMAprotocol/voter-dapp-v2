@@ -1,14 +1,14 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { votingAddress } from "constants/addresses";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 
 export default async function approve({
   votingToken,
   approveAmount,
 }: {
   votingToken: VotingTokenEthers;
-  approveAmount: string;
+  approveAmount: BigNumber;
 }) {
-  const tx = await votingToken.functions.approve(votingAddress, ethers.utils.parseEther(approveAmount));
+  const tx = await votingToken.functions.approve(votingAddress, approveAmount);
   return await tx.wait();
 }

@@ -1,43 +1,48 @@
+import { useQuery } from "@tanstack/react-query";
+import { decryptedVotesKey } from "constants/queryKeys";
 import { decryptMessage } from "helpers/crypto";
 import { useWalletContext } from "hooks/contexts";
-import { useEffect, useState } from "react";
 import { DecryptedVotesByKeyT, DecryptedVoteT, EncryptedVotesByKeyT } from "types/global";
 import useAccountDetails from "./useAccountDetails";
+import useEncryptedVotes from "./useEncryptedVotes";
 
-export default function useDecryptedVotes(encryptedVotes: EncryptedVotesByKeyT) {
+export default function useDecryptedVotes() {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const [decryptedVotes, setDecryptedVotes] = useState<DecryptedVotesByKeyT>({});
+  const { encryptedVotes } = useEncryptedVotes();
 
-  useEffect(() => {
-    (async () => {
-      if (!Object.keys(encryptedVotes).length || !address) return;
+  const { isLoading, isError, data, error } = useQuery(
+    [decryptedVotesKey],
+    () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+    }
+  );
 
-      const privateKey = signingKeys[address].privateKey;
-      const decryptedVotes = await decryptVotes(privateKey, encryptedVotes);
-      setDecryptedVotes(decryptedVotes);
+  return {
+    decryptedVotes: data,
+    decryptedVotesIsLoading: isLoading,
+    decryptedVotesIsError: isError,
+    decryptedVotesError: error,
+  };
+}
 
-      async function decryptVotes(privateKey: string, encryptedVotes: EncryptedVotesByKeyT) {
-        const decryptedVotes: DecryptedVotesByKeyT = {};
+async function decryptVotes(privateKey: string | undefined, encryptedVotes: EncryptedVotesByKeyT) {
+  const decryptedVotes: DecryptedVotesByKeyT = {};
+  if (!privateKey || Object.keys(encryptedVotes).length === 0) return undefined;
 
-        for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
-          let decryptedVote: DecryptedVoteT;
+  for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
+    let decryptedVote: DecryptedVoteT;
 
-          if (encryptedVote) {
-            const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
-            decryptedVote = JSON.parse(decryptedVoteString);
+    if (encryptedVote && privateKey) {
+      const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
+      decryptedVote = JSON.parse(decryptedVoteString);
 
-            if (decryptedVote) {
-              decryptedVotes[uniqueKey] = decryptedVote;
-            }
-          }
-        }
-
-        return decryptedVotes;
+      if (decryptedVote) {
+        decryptedVotes[uniqueKey] = decryptedVote;
       }
-    })();
-    // we are choosing to ignore the `withEncryptedVotes` dependency in favor of the stringified version of it to achieve referential equality
-  }, [address, JSON.stringify(encryptedVotes), signingKeys]);
+    }
+  }
 
   return decryptedVotes;
 }

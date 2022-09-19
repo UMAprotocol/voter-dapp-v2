@@ -872,7 +872,8 @@ const temporaryVotingV2Abi = [
 export default function createVotingContractInstance(signer?: ethers.Signer) {
   const address = votingAddress;
   if (!signer) {
-    signer = new ethers.VoidSigner(address);
+    const provider = new ethers.providers.InfuraProvider("goerli", process.env.NEXT_PUBLIC_INFURA_ID);
+    signer = new ethers.VoidSigner(address, provider);
   }
   return new ethers.Contract(votingAddress, temporaryVotingV2Abi, signer) as VotingV2Ethers;
 }

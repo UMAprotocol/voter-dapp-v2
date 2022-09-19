@@ -1,6 +1,7 @@
 import { InfoBar } from "components/InfoBar";
-import { useContractsContext, usePanelContext } from "hooks/contexts";
-import { useAccountDetails, useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
+import { formatNumberForDisplay } from "helpers/formatNumber";
+import { usePanelContext } from "hooks/contexts";
+import { useOutstandingRewards, useStakedBalance, useUnstakedBalance } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -12,13 +13,9 @@ interface Props {
 }
 export function HowItWorks({ votesInLastCycles, apy }: Props) {
   const { setPanelType, setPanelOpen } = usePanelContext();
-  const { voting, votingToken } = useContractsContext();
-  const { address } = useAccountDetails();
-  const { unstakedBalance } = useUnstakedBalance(votingToken, address);
-  const { stakedBalance } = useStakedBalance(voting, address);
-  const {
-    stakerDetails: { outstandingRewards },
-  } = useStakerDetails(voting, address);
+  const { unstakedBalance } = useUnstakedBalance();
+  const { stakedBalance } = useStakedBalance();
+  const { outstandingRewards } = useOutstandingRewards();
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
@@ -28,6 +25,14 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
   function openClaimPanel() {
     setPanelType("claim");
     setPanelOpen(true);
+  }
+
+  function totalTokens() {
+    // todo replace this with loading spinner logic
+    if (unstakedBalance === undefined || stakedBalance === undefined) {
+      return undefined;
+    }
+    return unstakedBalance.add(stakedBalance);
   }
 
   return (
@@ -43,7 +48,8 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You are staking <Strong>{stakedBalance}</Strong> UMA tokens of {stakedBalance + unstakedBalance}
+              You are staking <Strong>{formatNumberForDisplay(stakedBalance)}</Strong> UMA tokens of{" "}
+              {formatNumberForDisplay(totalTokens())} total tokens.
             </>
           }
           actionLabel="Stake/Unstake"
@@ -74,7 +80,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           }
           content={
             <>
-              You have <Strong>{outstandingRewards} UMA</Strong> in unclaimed rewards
+              You have <Strong>{formatNumberForDisplay(outstandingRewards)} UMA</Strong> in unclaimed rewards
             </>
           }
           actionLabel="Claim"

@@ -8,11 +8,14 @@ import {
   grey100,
   grey50,
   grey500,
+  loadingSkeletonOpacity10,
+  loadingSkeletonOpacity100,
   red100,
   red500,
   red500Opacity5,
   red600,
   white,
+  whiteOpacity10,
 } from "constants/colors";
 import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
 import {
@@ -201,6 +204,7 @@ a:not([class]) {
   html {
     /* Colors */
     --white: ${white};
+    --white-opacity-10: ${whiteOpacity10};
     --black: ${black};
     --black-opacity-25: ${blackOpacity25};
     --black-opacity-50: ${blackOpacity50};
@@ -214,6 +218,8 @@ a:not([class]) {
     --grey-50: ${grey50};
     --grey-100: ${grey100};
     --grey-500: ${grey500};
+    --loading-skeleton-opacity-100: ${loadingSkeletonOpacity100};
+    --loading-skeleton-opacity-10: ${loadingSkeletonOpacity10};
     /* Fonts */
     --header-xl: ${headerXl};
     --header-lg: ${headerLg};

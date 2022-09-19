@@ -8,26 +8,23 @@ export default function useExecuteUnstake() {
   const queryClient = useQueryClient();
   const { mutate } = useMutation(executeUnstake, {
     onSuccess: () => {
-      queryClient.setQueryData<[BigNumber]>([unstakedBalanceKey], (oldUnstakedBalance) => {
+      queryClient.setQueryData<BigNumber>([unstakedBalanceKey], (oldUnstakedBalance) => {
         const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>([stakerDetailsKey]);
 
-        if (!oldStakerDetails || !oldUnstakedBalance) return undefined;
+        if (oldStakerDetails === undefined || oldUnstakedBalance === undefined) return;
 
-        const newUnstakedBalance = oldUnstakedBalance[0].add(oldStakerDetails.pendingUnstake);
+        const newUnstakedBalance = oldUnstakedBalance.add(oldStakerDetails.pendingUnstake);
 
-        return [newUnstakedBalance];
+        return newUnstakedBalance;
       });
 
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], (oldStakerDetails) => {
-        if (!oldStakerDetails) return undefined;
-
-        return {
-          ...oldStakerDetails,
-          pendingUnstake: BigNumber.from(0),
-          unstakeExecuteTime: BigNumber.from(0),
-        };
-      });
+      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], () => ({
+        pendingUnstake: BigNumber.from(0),
+        canUnstakeTime: undefined,
+        unstakeRequestTime: undefined,
+      }));
     },
   });
+
   return mutate;
 }
