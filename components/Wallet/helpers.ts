@@ -5,7 +5,7 @@ import truncateEthAddress from "helpers/truncateEthAddress";
 
 export function handleDisconnectWallet(
   wallet: WalletState | null,
-  disconnect: (wallet: DisconnectOptions) => Promise<void>,
+  disconnect: (wallet: DisconnectOptions) => Promise<WalletState[]>,
   setProvider: (provider: ethers.providers.Web3Provider | null) => void,
   setSigner: (signer: ethers.Signer | null) => void,
   queryClient: QueryClient
