@@ -10,8 +10,6 @@ export function VoteTimeline() {
   const { getActivityStatus } = useVotesContext();
   const { commitTimeRemaining, revealTimeRemaining } = determineTimeRemaining();
 
-  if (!phase || !millisecondsUntilPhaseEnds) return null;
-
   function determineTimeRemaining() {
     let commitTimeRemaining = 0;
     let revealTimeRemaining = 0;
