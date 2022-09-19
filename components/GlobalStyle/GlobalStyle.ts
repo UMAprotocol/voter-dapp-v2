@@ -4,27 +4,30 @@ import {
   blackOpacity50,
   blackOpacity60,
   blackOpacity75,
+  green,
   grey100,
   grey50,
-  green,
-  red500,
-  white,
   grey500,
+  loadingSkeletonOpacity10,
+  loadingSkeletonOpacity100,
   red100,
+  red500,
   red600,
+  white,
+  whiteOpacity10,
 } from "constants/colors";
 import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
 import {
-  headerXl,
   headerLg,
   headerMd,
   headerSm,
+  headerXl,
   headerXs,
+  textFine,
   textLg,
   textMd,
   textSm,
   textXs,
-  textFine,
 } from "constants/fonts";
 import { shadow1, shadow2 } from "constants/shadows";
 import { createGlobalStyle } from "styled-components";
@@ -200,6 +203,7 @@ a:not([class]) {
   html {
     /* Colors */
     --white: ${white};
+    --white-opacity-10: ${whiteOpacity10};
     --black: ${black};
     --black-opacity-25: ${blackOpacity25};
     --black-opacity-50: ${blackOpacity50};
@@ -212,6 +216,8 @@ a:not([class]) {
     --grey-50: ${grey50};
     --grey-100: ${grey100};
     --grey-500: ${grey500};
+    --loading-skeleton-opacity-100: ${loadingSkeletonOpacity100};
+    --loading-skeleton-opacity-10: ${loadingSkeletonOpacity10};
     /* Fonts */
     --header-xl: ${headerXl};
     --header-lg: ${headerLg};
