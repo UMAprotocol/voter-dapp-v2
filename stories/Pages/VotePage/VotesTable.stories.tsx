@@ -3,13 +3,17 @@ import VotesTable from "components/VotesTable/VotesTable";
 import {
   Active as ActiveHeading,
   Past as PastHeading,
-  Upcoming as UpcomingHeading
+  Upcoming as UpcomingHeading,
 } from "stories/Pages/VotePage/VotesTableHeadings.stories";
 import {
   ActiveCommitted,
   ActiveNotCommitted,
   ActiveNotRevealed,
-  ActiveRevealed, PastVoteDidNotVote, PastVoteDidVote, UpcomingVote
+  ActiveRevealButDidNotVote,
+  ActiveRevealed,
+  PastVoteDidNotVote,
+  PastVoteDidVote,
+  UpcomingVote,
 } from "./VoteTableRow.stories";
 
 interface StoryProps {
@@ -56,11 +60,13 @@ ActiveReveal.args = {
     // @ts-expect-error - Storybook makes all args optional, but we know they're not.
     <ActiveNotRevealed {...ActiveNotRevealed.args} key={1} />,
     // @ts-expect-error - Storybook makes all args optional, but we know they're not.
-    <ActiveRevealed {...ActiveRevealed.args} key={2} />,
+    <ActiveRevealButDidNotVote {...ActiveRevealButDidNotVote.args} key={2} />,
     // @ts-expect-error - Storybook makes all args optional, but we know they're not.
-    <ActiveNotRevealed {...ActiveNotRevealed.args} key={3} />,
+    <ActiveRevealed {...ActiveRevealed.args} key={3} />,
     // @ts-expect-error - Storybook makes all args optional, but we know they're not.
-    <ActiveRevealed {...ActiveRevealed.args} key={4} />,
+    <ActiveNotRevealed {...ActiveNotRevealed.args} key={4} />,
+    // @ts-expect-error - Storybook makes all args optional, but we know they're not.
+    <ActiveRevealed {...ActiveRevealed.args} key={5} />,
   ],
 };
 
