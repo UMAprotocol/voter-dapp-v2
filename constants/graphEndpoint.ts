@@ -1,3 +1,3 @@
-const graphEndpoint = "https://api.thegraph.com/subgraphs/name/md0x/votingv2-version-21";
+const graphEndpoint = process.env.NEXT_PUBLIC_GRAPH_ENDPOINT ?? "";
 
 export default graphEndpoint;
