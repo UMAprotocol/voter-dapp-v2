@@ -12,6 +12,7 @@ import {
   loadingSkeletonOpacity100,
   red100,
   red500,
+  red500Opacity5,
   red600,
   white,
   whiteOpacity10,
@@ -211,6 +212,7 @@ a:not([class]) {
     --black-opacity-75: ${blackOpacity75};
     --red-100: ${red100};
     --red-500: ${red500};
+    --red-500-opacity-5: ${red500Opacity5};
     --red-600: ${red600};
     --green: ${green};
     --grey-50: ${grey50};
