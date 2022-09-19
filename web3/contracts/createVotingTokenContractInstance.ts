@@ -1,9 +1,9 @@
 import { VotingTokenEthers__factory } from "@uma/contracts-frontend";
-import { votingTokenAddress } from "constants/addresses";
+import { votingTokenContractAddress } from "constants/addresses";
 import { ethers } from "ethers";
 
 export default function createVotingTokenContractInstance(signer?: ethers.Signer) {
-  const address = votingTokenAddress;
+  const address = votingTokenContractAddress;
   if (!signer) {
     signer = new ethers.VoidSigner(address);
   }

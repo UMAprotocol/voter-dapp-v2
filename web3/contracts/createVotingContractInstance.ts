@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { votingAddress } from "constants/addresses";
+import { votingContractAddress } from "constants/addresses";
 import { ethers } from "ethers";
 
 const temporaryVotingV2Abi = [
@@ -870,10 +870,9 @@ const temporaryVotingV2Abi = [
 ];
 
 export default function createVotingContractInstance(signer?: ethers.Signer) {
-  const address = votingAddress;
   if (!signer) {
     const provider = new ethers.providers.InfuraProvider("goerli", process.env.NEXT_PUBLIC_INFURA_ID);
-    signer = new ethers.VoidSigner(address, provider);
+    signer = new ethers.VoidSigner(votingContractAddress, provider);
   }
-  return new ethers.Contract(votingAddress, temporaryVotingV2Abi, signer) as VotingV2Ethers;
+  return new ethers.Contract(votingContractAddress, temporaryVotingV2Abi, signer) as VotingV2Ethers;
 }

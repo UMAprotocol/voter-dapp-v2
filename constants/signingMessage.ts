@@ -1,3 +1,3 @@
-const signingMessage = process.env.NEXT_PUBLIC_SIGNING_MESSAGE;
+const signingMessage = process.env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp";
 
 export default signingMessage;
