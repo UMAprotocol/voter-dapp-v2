@@ -1,1 +1,1 @@
-export const goerliDeployBlock = 7333080;
+export const goerliDeployBlock = process.env.NEXT_PUBLIC_GOERLI_DEPLOY_BLOCK;
