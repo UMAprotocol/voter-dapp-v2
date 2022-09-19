@@ -18,10 +18,24 @@ const Template: ComponentStory<typeof LoadingSkeleton> = (args) => <LoadingSkele
 
 export const Default = Template.bind({});
 
-export const CustomDimensions = Template.bind({});
-CustomDimensions.args = {
+export const CustomDimensionsNumberInputs = Template.bind({});
+CustomDimensionsNumberInputs.argTypes = {
+  width: { control: "number" },
+  height: { control: "number" },
+};
+CustomDimensionsNumberInputs.args = {
   width: 100,
   height: 20,
+};
+
+export const CustomDimensionsStringInputs = Template.bind({});
+CustomDimensionsStringInputs.argTypes = {
+  width: { control: "text" },
+  height: { control: "text" },
+};
+CustomDimensionsStringInputs.args = {
+  width: "80%",
+  height: "5vh",
 };
 
 export const WhiteVariant = Template.bind({});
