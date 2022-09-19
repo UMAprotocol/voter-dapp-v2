@@ -85,7 +85,7 @@ CommitPhaseUpcoming.args = {
 export const CommitPhasePast = Template.bind({});
 CommitPhasePast.args = {
   ...commitPhaseDefaultArgs,
-  phase: "commit",
+  activityStatus: "past",
 };
 
 export const RevealPhaseActive = Template.bind({});
