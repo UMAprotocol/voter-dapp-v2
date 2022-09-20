@@ -46,10 +46,8 @@ export async function formatVotesToCommit({
       if (!selectedVote) return null;
 
       const { identifier, decodedIdentifier, ancillaryData, time } = vote;
-      // check the precision to use from our table of precisions
-      const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
       // the selected option for a vote is called `price` for legacy reasons
-      const price = parseFixed(selectedVote, identifierPrecision).toString();
+      const price = parseVoteStringWithPrecision(selectedVote, decodedIdentifier);
       // the hash must be created with exactly these values in exactly this order
       const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
       // encrypt the hash with the signed message we created when the user first connected their wallet
@@ -80,4 +78,10 @@ export async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
       salt,
     };
   });
+}
+
+export function parseVoteStringWithPrecision(vote: string, decodedIdentifier: string) {
+  // check the precision to use from our table of precisions
+  const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+  return parseFixed(vote, identifierPrecision).toString();
 }
