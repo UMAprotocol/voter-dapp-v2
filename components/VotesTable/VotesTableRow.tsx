@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { green, red500 } from "constants/colors";
-import { formatEther } from "ethers/lib/utils";
+import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import { useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -21,7 +21,7 @@ export interface Props {
 export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
+  const { decodedIdentifier, title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
   function formatTitle(title: string) {
@@ -30,7 +30,9 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
   }
 
   function getDecryptedVoteAsNumber() {
-    return decryptedVote?.price ? Number(formatEther(decryptedVote.price)) : undefined;
+    return decryptedVote?.price
+      ? Number(formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier))
+      : undefined;
   }
 
   function showVoteInput() {
