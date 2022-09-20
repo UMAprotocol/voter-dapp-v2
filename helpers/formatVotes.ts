@@ -1,5 +1,6 @@
 import { parseFixed } from "@ethersproject/bignumber";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
+import { solidityKeccak256 } from "ethers/lib/utils";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
 
@@ -12,7 +13,7 @@ function makeVoteHash(
   roundId: number,
   identifier: string
 ) {
-  return ethers.utils.solidityKeccak256(
+  return solidityKeccak256(
     ["uint256", "uint256", "address", "uint256", "bytes", "uint256", "bytes32"],
     [price, salt, account, time, ancillaryData, roundId, identifier]
   );

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { pastVotesKey } from "constants/queryKeys";
-import { ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { formatBytes32String, formatEther } from "ethers/lib/utils";
 import { getPastVotes } from "graph/queries";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { PastVotesQuery } from "types/global";
@@ -36,5 +35,5 @@ export default function usePastVotes() {
 }
 
 function getIdentifierFromPriceRequestId(priceRequestId: string) {
-  return ethers.utils.formatBytes32String(priceRequestId.split("-")[0]);
+  return formatBytes32String(priceRequestId.split("-")[0]);
 }
