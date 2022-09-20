@@ -3,6 +3,9 @@ import styled from "styled-components";
 
 export function ErrorBanner() {
   const { errorMessages } = useErrorContext();
+
+  if (!errorMessages.length) return null;
+
   return (
     <Wrapper>
       {errorMessages.map((message) => (
