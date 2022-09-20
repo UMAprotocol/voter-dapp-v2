@@ -89,14 +89,14 @@ export function Votes() {
 
   function determineVotesToShow() {
     const status = getActivityStatus();
-    if (status === "active") {
-      if (phase === "commit") return getActiveVotes();
-      return getVotesToReveal();
+    switch (status) {
+      case "active":
+        return getActiveVotes();
+      case "upcoming":
+        return getUpcomingVotes();
+      case "past":
+        return getPastVotes();
     }
-    if (status === "upcoming") {
-      return getUpcomingVotes();
-    }
-    return getPastVotes();
   }
 
   function canCommit() {

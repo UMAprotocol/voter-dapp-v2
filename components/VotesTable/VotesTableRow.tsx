@@ -90,6 +90,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
     if (phase === "commit") {
       return isCommitted ? "Committed" : "Not committed";
     } else {
+      if (!decryptedVote) return "Not committed";
       return isRevealed ? "Revealed" : "Not revealed";
     }
   }
