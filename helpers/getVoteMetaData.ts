@@ -175,3 +175,15 @@ function makeVoteLinks(transactionHash: string, umipNumber?: number) {
 
   return links;
 }
+
+function isPolymarket(decodedIdentifier: string, decodedAncillaryData: string) {
+  const queryTitleString = "q: title:";
+  const resultDataString =
+    "res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968";
+  const isPolymarket =
+    decodedIdentifier === "YES_OR_NO_QUERY" &&
+    decodedAncillaryData.includes(queryTitleString) &&
+    decodedAncillaryData.includes(resultDataString);
+
+  return isPolymarket;
+}
