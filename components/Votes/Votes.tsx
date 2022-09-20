@@ -119,16 +119,11 @@ export function Votes() {
     }
   }
 
-  function hasActiveOrUpcomingVotes() {
-    const status = getActivityStatus();
-    return status === "active" || status === "upcoming";
-  }
-
   return (
     <OuterWrapper>
       <InnerWrapper>
         <Title>{determineTitle()}</Title>
-        {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
+        <VoteTimeline />
         <VotesTableWrapper>
           <VotesTable
             headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}

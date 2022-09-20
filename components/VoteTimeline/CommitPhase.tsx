@@ -2,15 +2,16 @@ import { black, red500, white } from "constants/colors";
 import { formatDistanceToNowStrict } from "date-fns";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
+import { ActivityStatusT } from "types/global";
 
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
-  isUpcoming: boolean;
+  status: ActivityStatusT;
 }
-export function CommitPhase({ phase, timeRemaining, isUpcoming }: Props) {
+export function CommitPhase({ phase, timeRemaining, status }: Props) {
   const isCommitPhase = phase === "commit";
-  const isActive = isCommitPhase && !isUpcoming;
+  const isActive = isCommitPhase && status === "active";
   const textColor = isActive ? white : black;
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
@@ -19,7 +20,7 @@ export function CommitPhase({ phase, timeRemaining, isUpcoming }: Props) {
 
   return (
     <OuterWrapper>
-      {isUpcoming && <ArrowBorder />}
+      {status !== "active" && <ArrowBorder />}
       <InnerWrapper
         style={
           {
