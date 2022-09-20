@@ -29,7 +29,7 @@ export default function useDecryptedVotes() {
 
 async function decryptVotes(privateKey: string | undefined, encryptedVotes: EncryptedVotesByKeyT) {
   const decryptedVotes: DecryptedVotesByKeyT = {};
-  if (!privateKey || Object.keys(encryptedVotes).length === 0) return undefined;
+  if (!privateKey || Object.keys(encryptedVotes).length === 0) return {};
 
   for await (const [uniqueKey, encryptedVote] of Object.entries(encryptedVotes)) {
     let decryptedVote: DecryptedVoteT;
