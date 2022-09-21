@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { votingQueryKeys } from "constants/queryKeys";
 import {
   computeMillisecondsUntilPhaseEnds,
   computePhaseEndTimeMilliseconds,
@@ -29,8 +30,8 @@ export default function useInitializeVoteTiming() {
     const newRoundId = computeRoundId();
     if (newRoundId !== roundId) {
       setRoundId(newRoundId);
-      // reset the queries for each new round
-      queryClient.clear();
+      // invalidate the voting queries for each new round
+      queryClient.invalidateQueries(votingQueryKeys);
     }
     setMillisecondsUntilPhaseEnds(computeMillisecondsUntilPhaseEnds());
     setPhase(getPhase());

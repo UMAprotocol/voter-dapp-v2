@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
+import { balancesQueryKeys, votingUserDependentQueryKeys } from "constants/queryKeys";
 import { ethers } from "ethers";
 import truncateEthAddress from "helpers/truncateEthAddress";
 
@@ -15,7 +16,7 @@ export function handleDisconnectWallet(
   setProvider(null);
   setSigner(null);
   window.localStorage.removeItem("connectedWallets");
-  queryClient.clear();
+  queryClient.invalidateQueries([votingUserDependentQueryKeys, balancesQueryKeys]);
 }
 
 export function getAccountDetails(connectedWallets?: WalletState[]) {
