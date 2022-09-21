@@ -8,18 +8,10 @@ export default function useOutstandingRewards() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [outstandingRewardsKey],
-    () => getOutstandingRewards(voting, address),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-    }
-  );
+  const queryResult = useQuery([outstandingRewardsKey], () => getOutstandingRewards(voting, address), {
+    refetchInterval: (data) => (data ? false : 100),
+    enabled: !!address,
+  });
 
-  return {
-    outstandingRewards: data,
-    outstandingRewardIsLoading: isLoading,
-    outstandingRewardIsError: isError,
-    outstandingRewardError: error,
-  };
+  return queryResult;
 }

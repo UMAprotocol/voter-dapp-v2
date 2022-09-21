@@ -10,6 +10,7 @@ export default function useStakerDetails() {
 
   const { isLoading, isError, data, error } = useQuery([stakerDetailsKey], () => getStakerDetails(voting, address), {
     refetchInterval: (data) => (data ? false : 100),
+    enabled: !!address,
   });
 
   const { pendingUnstake, unstakeRequestTime, canUnstakeTime } = data ?? {};

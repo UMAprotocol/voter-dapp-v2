@@ -14,9 +14,9 @@ interface Props {
 }
 export function HowItWorks({ votesInLastCycles, apy }: Props) {
   const { setPanelType, setPanelOpen } = usePanelContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { stakedBalance } = useStakedBalance();
-  const { outstandingRewards } = useOutstandingRewards();
+  const { data: unstakedBalance, isFetching: unstakedBalanceIsFetching } = useUnstakedBalance();
+  const { data: stakedBalance, isFetching: stakedBalanceIsFetching } = useStakedBalance();
+  const { data: outstandingRewards, isFetching: outstandingRewardIsFetching } = useOutstandingRewards();
 
   function openStakeUnstakePanel() {
     setPanelType("stake");
@@ -34,9 +34,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
   }
 
   function isLoading() {
-    return [unstakedBalance, stakedBalance, outstandingRewards, apy, votesInLastCycles].some(
-      (value) => value === undefined
-    );
+    return stakedBalanceIsFetching || unstakedBalanceIsFetching || outstandingRewardIsFetching;
   }
 
   return (
