@@ -1,6 +1,6 @@
-import { parseFixed, formatFixed } from "@ethersproject/bignumber";
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { BigNumber } from "ethers";
-import { solidityKeccak256 } from "ethers/lib/utils";
+import { solidityKeccak256 } from "helpers/ethers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
 

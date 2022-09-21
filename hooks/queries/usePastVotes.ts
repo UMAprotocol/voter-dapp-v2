@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { pastVotesKey } from "constants/queryKeys";
-import { formatBytes32String } from "ethers/lib/utils";
 import { getPastVotes } from "graph/queries";
+import { formatBytes32String } from "helpers/ethers";
 import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { PastVotesQuery } from "types/global";
