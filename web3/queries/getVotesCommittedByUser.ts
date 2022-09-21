@@ -7,7 +7,6 @@ export default async function getVotesCommittedByUser(
   address: string,
   roundId: number
 ) {
-  if (!address) return {};
   const filter = votingContract.filters.VoteCommitted(address, null, null, null, null, null);
   const result = await votingContract.queryFilter(filter);
   const eventData = result?.map(({ args }) => args).filter((args) => args.roundId.toNumber() === roundId);

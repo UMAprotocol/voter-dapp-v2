@@ -7,9 +7,7 @@ export default function useHasActiveVotes() {
   const { voting } = useContractsContext();
 
   const { isLoading, isError, data, error } = useQuery([hasActiveVotesKey], () => getHasActiveVotes(voting), {
-    refetchInterval(data) {
-      return data ? false : 100;
-    },
+    refetchInterval: (data) => (data ? false : 100),
   });
 
   const hasActiveVotes = data?.[0];

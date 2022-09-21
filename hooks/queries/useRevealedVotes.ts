@@ -14,6 +14,7 @@ export default function useRevealedVotes() {
     () => getVotesRevealedByUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
     }
   );
 

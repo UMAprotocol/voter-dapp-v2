@@ -14,6 +14,7 @@ export default function useEncryptedVotes() {
     () => getEncryptedVotesForUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
     }
   );
 

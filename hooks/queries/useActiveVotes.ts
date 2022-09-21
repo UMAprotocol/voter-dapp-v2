@@ -8,9 +8,7 @@ export default function useActiveVotes() {
   const { voting } = useContractsContext();
 
   const { isLoading, isError, data, error } = useQuery([activeVotesKey], () => getPendingRequests(voting), {
-    refetchInterval(data) {
-      return data ? false : 100;
-    },
+    refetchInterval: (data) => (data ? false : 100),
   });
 
   const pendingRequests = data?.[0];

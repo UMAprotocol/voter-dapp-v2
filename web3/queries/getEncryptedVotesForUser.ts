@@ -7,8 +7,6 @@ export default async function getEncryptedVotesForUser(
   address: string,
   roundId: number
 ) {
-  if (!address) return {};
-
   const filter = votingContract.filters.EncryptedVote(address, roundId, null, null, null, null);
   const result = await votingContract.queryFilter(filter);
 

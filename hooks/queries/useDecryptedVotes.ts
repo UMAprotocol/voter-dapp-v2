@@ -16,6 +16,7 @@ export default function useDecryptedVotes() {
     () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
       refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
     }
   );
 
