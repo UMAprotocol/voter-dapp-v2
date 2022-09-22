@@ -1,5 +1,9 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 
-export default function getPendingRequests(votingContract: VotingV2Ethers) {
-  return votingContract.functions.getPendingRequests();
+export default async function getPendingRequests(votingContract: VotingV2Ethers) {
+  const result = await votingContract.functions.getPendingRequests();
+  const pendingRequests = result?.[0];
+  const activeVotes = makePriceRequestsByKey(pendingRequests);
+  return activeVotes;
 }

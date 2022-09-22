@@ -11,8 +11,8 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Stake() {
   const { voting, votingToken } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { tokenAllowance } = useTokenAllowance();
+  const { data: unstakedBalance } = useUnstakedBalance();
+  const { data: tokenAllowance } = useTokenAllowance();
   const [stakeAmount, setStakeAmount] = useState("");
   const stakeMutation = useStake();
   const approveMutation = useApprove();

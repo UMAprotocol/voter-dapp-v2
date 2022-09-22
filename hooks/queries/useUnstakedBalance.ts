@@ -8,20 +8,10 @@ export default function useUnstakedBalance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [unstakedBalanceKey],
-    () => getUnstakedBalance(votingToken, address),
-    {
-      refetchInterval(data) {
-        return data ? false : 100;
-      },
-    }
-  );
+  const queryResult = useQuery([unstakedBalanceKey, address], () => getUnstakedBalance(votingToken, address), {
+    refetchInterval: (data) => (data ? false : 100),
+    enabled: !!address,
+  });
 
-  return {
-    unstakedBalance: data,
-    unstakedBalanceIsLoading: isLoading,
-    unstakedBalanceIsError: isError,
-    unstakedBalanceError: error,
-  };
+  return queryResult;
 }

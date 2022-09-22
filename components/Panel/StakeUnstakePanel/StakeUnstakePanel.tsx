@@ -1,3 +1,4 @@
+import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { Tabs } from "components/Tabs";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useContractsContext } from "hooks/contexts";
@@ -13,9 +14,11 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { stakedBalance } = useStakedBalance();
-  const { pendingUnstake, canUnstakeTime } = useStakerDetails();
+  const { data: unstakedBalance } = useUnstakedBalance();
+  const { data: stakedBalance } = useStakedBalance();
+  const {
+    data: { pendingUnstake, canUnstakeTime },
+  } = useStakerDetails();
   const executeUnstakeMutation = useExecuteUnstake();
 
   const cooldownEnds = canUnstakeTime;
@@ -39,6 +42,10 @@ export function StakeUnstakePanel() {
     executeUnstakeMutation({ voting });
   }
 
+  function isLoading() {
+    return stakedBalance === undefined || unstakedBalance === undefined;
+  }
+
   return (
     <PanelWrapper>
       <PanelTitle title="Stake / Unstake" />
@@ -47,11 +54,23 @@ export function StakeUnstakePanel() {
           <Balances>
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
-              <BalanceAmount>{formatNumberForDisplay(stakedBalance)}</BalanceAmount>
+              <BalanceAmount>
+                {isLoading() ? (
+                  <LoadingSkeleton variant="white" width={200} height={45} />
+                ) : (
+                  formatNumberForDisplay(stakedBalance)
+                )}
+              </BalanceAmount>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
-              <BalanceAmount>{formatNumberForDisplay(unstakedBalance)}</BalanceAmount>
+              <BalanceAmount>
+                {isLoading() ? (
+                  <LoadingSkeleton variant="white" width={200} height={45} />
+                ) : (
+                  formatNumberForDisplay(unstakedBalance)
+                )}
+              </BalanceAmount>
             </Balance>
           </Balances>
           {showCooldownTimer && (

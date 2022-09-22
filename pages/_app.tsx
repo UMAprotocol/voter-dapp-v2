@@ -8,11 +8,11 @@ import { VotesProvider } from "contexts/VotesContext";
 import { VoteTimingProvider } from "contexts/VoteTimingContext";
 import { WalletProvider } from "contexts/WalletContext";
 import type { AppProps } from "next/app";
-import { useState } from "react";
 import "styles/fonts.css";
 
+const queryClient = new QueryClient();
+
 function MyApp({ Component, pageProps }: AppProps) {
-  const [queryClient] = useState(() => new QueryClient());
   return (
     <ErrorProvider>
       <VoteTimingProvider>

@@ -9,18 +9,15 @@ export default function useRevealedVotes() {
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [revealedVotesKey],
+  const queryResult = useQuery(
+    [revealedVotesKey, address, roundId],
     () => getVotesRevealedByUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+      initialData: {},
     }
   );
 
-  return {
-    revealedVotes: data ?? {},
-    revealedVotesIsLoading: isLoading,
-    revealedVotesIsError: isError,
-    revealedVotesError: error,
-  };
+  return queryResult;
 }
