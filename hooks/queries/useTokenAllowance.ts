@@ -10,7 +10,7 @@ export default function useTokenAllowance() {
   const { address } = useAccountDetails();
 
   const { isLoading, isError, data, error } = useQuery(
-    [tokenAllowanceKey],
+    [tokenAllowanceKey, address],
     () => getTokenAllowance(votingToken, address),
     {
       refetchInterval: (data) => (data ? false : 100),

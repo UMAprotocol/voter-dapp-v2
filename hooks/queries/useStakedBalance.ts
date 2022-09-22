@@ -8,7 +8,7 @@ import useAccountDetails from "./useAccountDetails";
 export default function useStakedBalance() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
-  const queryResult = useQuery([stakedBalanceKey], () => getStakedBalance(voting, address), {
+  const queryResult = useQuery([stakedBalanceKey, address], () => getStakedBalance(voting, address), {
     refetchInterval: (data) => (data ? false : 100),
     enabled: !!address,
     initialData: BigNumber.from(0),
