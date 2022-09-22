@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { AmountInput } from "components/Input";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "helpers/ethers";
 import { useContractsContext } from "hooks/contexts";
 import { useApprove, useStake } from "hooks/mutations";
 import { useTokenAllowance, useUnstakedBalance } from "hooks/queries";

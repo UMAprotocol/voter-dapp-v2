@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { pastVotesKey } from "constants/queryKeys";
-import { ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils";
 import { getPastVotes } from "graph/queries";
+import { formatBytes32String } from "helpers/ethers";
+import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { PastVotesQuery } from "types/global";
 
@@ -13,7 +13,7 @@ export default function usePastVotes() {
 
   const parsedData = data?.priceRequests?.map(({ id, time, price, ancillaryData }) => {
     const identifier = getIdentifierFromPriceRequestId(id);
-    const correctVote = Number(formatEther(price));
+    const correctVote = Number(formatVoteStringWithPrecision(price, identifier));
 
     return {
       identifier,
@@ -34,5 +34,5 @@ export default function usePastVotes() {
 }
 
 function getIdentifierFromPriceRequestId(priceRequestId: string) {
-  return ethers.utils.formatBytes32String(priceRequestId.split("-")[0]);
+  return formatBytes32String(priceRequestId.split("-")[0]);
 }
