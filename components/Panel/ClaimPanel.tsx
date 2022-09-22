@@ -13,7 +13,7 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const withdrawRewardsMutation = useWithdrawRewards();
   const withdrawAndRestakeMutation = useWithdrawAndRestake();
-  const { outstandingRewards } = useOutstandingRewards();
+  const { data: outstandingRewards } = useOutstandingRewards();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });

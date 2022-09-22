@@ -14,9 +14,11 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { stakedBalance } = useStakedBalance();
-  const { pendingUnstake, canUnstakeTime } = useStakerDetails();
+  const { data: unstakedBalance } = useUnstakedBalance();
+  const { data: stakedBalance } = useStakedBalance();
+  const {
+    data: { pendingUnstake, canUnstakeTime },
+  } = useStakerDetails();
   const executeUnstakeMutation = useExecuteUnstake();
 
   const cooldownEnds = canUnstakeTime;
