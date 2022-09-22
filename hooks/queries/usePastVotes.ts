@@ -8,6 +8,7 @@ export default function usePastVotes() {
 
   const queryResult = useQuery([pastVotesKey, roundId], () => getPastVotes(), {
     refetchInterval: (data) => (data ? false : 100),
+    initialData: {},
   });
 
   return queryResult;

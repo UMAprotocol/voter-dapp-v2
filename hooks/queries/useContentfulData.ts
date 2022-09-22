@@ -40,8 +40,10 @@ async function getContentfulData(adminProposalNumbersByKey: Record<UniqueKeyT, n
 }
 
 export default function useContentfulData() {
-  const { activeVotes } = useActiveVotes();
-  const { upcomingVotes } = useUpcomingVotes();
+  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { upcomingVotes },
+  } = useUpcomingVotes();
 
   const allVotes = { ...activeVotes, ...upcomingVotes };
 
@@ -56,6 +58,7 @@ export default function useContentfulData() {
 
   const queryResult = useQuery([contentfulDataKey, allVotes], () => getContentfulData(adminProposalNumbersByKey), {
     refetchInterval: (data) => (data ? false : 100),
+    initialData: {},
   });
 
   return queryResult;

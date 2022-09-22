@@ -11,6 +11,10 @@ export default function useUpcomingVotes() {
     refetchInterval(data) {
       return data ? false : 100;
     },
+    initialData: {
+      upcomingVotes: {},
+      hasUpcomingVotes: false,
+    },
   });
 
   return queryResult;

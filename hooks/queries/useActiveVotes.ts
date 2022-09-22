@@ -9,6 +9,7 @@ export default function useActiveVotes() {
 
   const queryResult = useQuery([activeVotesKey, roundId], () => getPendingRequests(voting), {
     refetchInterval: (data) => (data ? false : 100),
+    initialData: {},
   });
 
   return queryResult;

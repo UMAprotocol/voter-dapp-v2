@@ -9,7 +9,7 @@ import useEncryptedVotes from "./useEncryptedVotes";
 export default function useDecryptedVotes() {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const { encryptedVotes } = useEncryptedVotes();
+  const { data: encryptedVotes } = useEncryptedVotes();
 
   const queryResult = useQuery(
     [decryptedVotesKey, encryptedVotes, address],
