@@ -1,10 +1,10 @@
-import { PanelContentT, VotePanelContentT } from "types/global";
-import { PanelTitle } from "../PanelTitle";
-import { PanelFooter } from "../PanelFooter";
 import { Tabs } from "components/Tabs";
+import { PanelContentT, VotePanelContentT } from "types/global";
+import { PanelFooter } from "../PanelFooter";
+import { PanelTitle } from "../PanelTitle";
+import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Result } from "./Result";
-import { PanelWrapper } from "../styles";
 
 interface Props {
   content: PanelContentT;
@@ -15,6 +15,7 @@ export function VotePanel({ content }: Props) {
   const {
     title,
     decodedIdentifier,
+    decodedAncillaryData,
     description,
     origin,
     options,
@@ -37,6 +38,7 @@ export function VotePanel({ content }: Props) {
       content: (
         <Details
           description={description}
+          decodedAncillaryData={decodedAncillaryData}
           options={options}
           timeAsDate={timeAsDate}
           links={links}
@@ -55,6 +57,7 @@ export function VotePanel({ content }: Props) {
       ) : (
         <Details
           description={description}
+          decodedAncillaryData={decodedAncillaryData}
           options={options}
           timeAsDate={timeAsDate}
           links={links}
