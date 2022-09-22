@@ -11,7 +11,7 @@ export default function useDecryptedVotes() {
   const { signingKeys } = useWalletContext();
   const { encryptedVotes } = useEncryptedVotes();
 
-  const { isLoading, isError, data, error } = useQuery(
+  const queryResult = useQuery(
     [decryptedVotesKey, encryptedVotes, address],
     () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
@@ -21,12 +21,7 @@ export default function useDecryptedVotes() {
     }
   );
 
-  return {
-    decryptedVotes: data,
-    decryptedVotesIsLoading: isLoading,
-    decryptedVotesIsError: isError,
-    decryptedVotesError: error,
-  };
+  return queryResult;
 }
 
 async function decryptVotes(privateKey: string | undefined, encryptedVotes: EncryptedVotesByKeyT) {

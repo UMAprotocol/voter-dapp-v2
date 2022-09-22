@@ -9,20 +9,11 @@ export default function useTokenAllowance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [tokenAllowanceKey, address],
-    () => getTokenAllowance(votingToken, address),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-      enabled: !!address,
-      initialData: BigNumber.from(0),
-    }
-  );
+  const queryResult = useQuery([tokenAllowanceKey, address], () => getTokenAllowance(votingToken, address), {
+    refetchInterval: (data) => (data ? false : 100),
+    enabled: !!address,
+    initialData: BigNumber.from(0),
+  });
 
-  return {
-    tokenAllowance: data,
-    tokenAllowanceIsLoading: isLoading,
-    tokenAllowanceIsError: isError,
-    tokenAllowanceError: error,
-  };
+  return queryResult;
 }

@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { activeVotesKey } from "constants/queryKeys";
-import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
 import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { getPendingRequests } from "web3/queries";
 
@@ -8,17 +7,9 @@ export default function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
 
-  const { isLoading, isError, data, error } = useQuery([activeVotesKey, roundId], () => getPendingRequests(voting), {
+  const queryResult = useQuery([activeVotesKey, roundId], () => getPendingRequests(voting), {
     refetchInterval: (data) => (data ? false : 100),
   });
 
-  const pendingRequests = data?.[0];
-  const activeVotes = makePriceRequestsByKey(pendingRequests);
-
-  return {
-    activeVotes,
-    activeVotesIsLoading: isLoading,
-    activeVotesIsError: isError,
-    activeVotesError: error,
-  };
+  return queryResult;
 }

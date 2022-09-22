@@ -54,22 +54,11 @@ export default function useContentfulData() {
     }
   }
 
-  const { isLoading, isError, data, error } = useQuery(
-    [contentfulDataKey, allVotes],
-    () => getContentfulData(adminProposalNumbersByKey),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-    }
-  );
+  const queryResult = useQuery([contentfulDataKey, allVotes], () => getContentfulData(adminProposalNumbersByKey), {
+    refetchInterval: (data) => (data ? false : 100),
+  });
 
-  const contentfulData: ContentfulDataByKeyT = data ?? {};
-
-  return {
-    contentfulData,
-    contentfulDataIsLoading: isLoading,
-    contentfulDataIsError: isError,
-    contentfulDataError: error,
-  };
+  return queryResult;
 }
 
 function getAdminProposalNumber(decodedIdentifier: string) {

@@ -9,7 +9,7 @@ export default function useEncryptedVotes() {
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
 
-  const { isLoading, isError, data, error } = useQuery(
+  const queryResult = useQuery(
     [encryptedVotesKey, address, roundId],
     () => getEncryptedVotesForUser(voting, address, roundId),
     {
@@ -19,10 +19,5 @@ export default function useEncryptedVotes() {
     }
   );
 
-  return {
-    encryptedVotes: data ?? {},
-    encryptedVotesIsLoading: isLoading,
-    encryptedVotesIsError: isError,
-    encryptedVotesError: error,
-  };
+  return queryResult;
 }
