@@ -1,5 +1,6 @@
 import EthCrypto from "eth-crypto";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
+import { randomBytes, solidityKeccak256 } from "helpers/ethers";
 
 // Encrypts a message using an ethereum public key. To decrypt messages that are encrypted with this method, use
 // decryptMessage().
@@ -54,11 +55,11 @@ export function getRandomSignedInt(): BigNumber {
 
 // Generate a random unsigned 256 bit int.
 export function getRandomUnsignedInt(): BigNumber {
-  return BigNumber.from(ethers.utils.randomBytes(32));
+  return BigNumber.from(randomBytes(32));
 }
 
 export function derivePrivateKey(signature: string) {
-  const pk = ethers.utils.solidityKeccak256(["string"], [signature]);
+  const pk = solidityKeccak256(["string"], [signature]);
   if (pk) return pk;
   return "";
 }

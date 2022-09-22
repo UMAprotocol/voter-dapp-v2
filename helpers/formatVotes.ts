@@ -1,5 +1,6 @@
-import { parseFixed } from "@ethersproject/bignumber";
-import { BigNumber, ethers } from "ethers";
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { BigNumber } from "ethers";
+import { solidityKeccak256 } from "helpers/ethers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
 
@@ -12,7 +13,7 @@ function makeVoteHash(
   roundId: number,
   identifier: string
 ) {
-  return ethers.utils.solidityKeccak256(
+  return solidityKeccak256(
     ["uint256", "uint256", "address", "uint256", "bytes", "uint256", "bytes32"],
     [price, salt, account, time, ancillaryData, roundId, identifier]
   );
@@ -45,10 +46,8 @@ export async function formatVotesToCommit({
       if (!selectedVote) return null;
 
       const { identifier, decodedIdentifier, ancillaryData, time } = vote;
-      // check the precision to use from our table of precisions
-      const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
       // the selected option for a vote is called `price` for legacy reasons
-      const price = parseFixed(selectedVote, identifierPrecision).toString();
+      const price = parseVoteStringWithPrecision(selectedVote, decodedIdentifier);
       // the hash must be created with exactly these values in exactly this order
       const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
       // encrypt the hash with the signed message we created when the user first connected their wallet
@@ -79,4 +78,16 @@ export async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
       salt,
     };
   });
+}
+
+export function parseVoteStringWithPrecision(vote: string, decodedIdentifier: string) {
+  // check the precision to use from our table of precisions
+  const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+  return parseFixed(vote, identifierPrecision).toString();
+}
+
+export function formatVoteStringWithPrecision(vote: string, decodedIdentifier: string) {
+  // check the precision to use from our table of precisions
+  const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+  return formatFixed(vote, identifierPrecision).toString();
 }
