@@ -20,7 +20,14 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getIsLoading } = useVotesContext();
+  const {
+    getActiveVotes,
+    getUpcomingVotes,
+    getPastVotes,
+    getActivityStatus,
+    getUserIndependentIsLoading,
+    getUserDependentIsFetching,
+  } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -122,7 +129,7 @@ export function Votes() {
 
   return (
     <OuterWrapper>
-      {getIsLoading() ? (
+      {getUserIndependentIsLoading() ? (
         <LoadingSpinner size={300} variant="black" />
       ) : (
         <InnerWrapper>
@@ -140,6 +147,7 @@ export function Votes() {
                   activityStatus={getActivityStatus()}
                   moreDetailsAction={() => openVotePanel(vote)}
                   key={vote.uniqueKey}
+                  isFetching={getUserDependentIsFetching()}
                 />
               ))}
             />
@@ -162,7 +170,7 @@ export function Votes() {
 
 const OuterWrapper = styled.div`
   background: var(--grey-100);
-  min-height: 50vh;
+  min-height: max(50vh, 500px);
   display: grid;
   place-items: center;
 `;
