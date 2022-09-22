@@ -10,11 +10,12 @@ export default function useCommittedVotes() {
   const { roundId } = useVoteTimingContext();
 
   const { isLoading, isError, data, error } = useQuery(
-    [committedVotesKey],
+    [committedVotesKey, address, roundId],
     () => getVotesCommittedByUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
+      initialData: {},
     }
   );
 

@@ -4,10 +4,13 @@ import { getPastVotes } from "graph/queries";
 import { formatBytes32String } from "helpers/ethers";
 import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import makePriceRequestsByKey from "helpers/makePriceRequestsByKey";
+import { useVoteTimingContext } from "hooks/contexts";
 import { PastVotesQuery } from "types/global";
 
 export default function usePastVotes() {
-  const { isLoading, isError, data, error } = useQuery<PastVotesQuery>([pastVotesKey], () => getPastVotes(), {
+  const { roundId } = useVoteTimingContext();
+
+  const { isLoading, isError, data, error } = useQuery<PastVotesQuery>([pastVotesKey, roundId], () => getPastVotes(), {
     refetchInterval: (data) => (data ? false : 100),
   });
 

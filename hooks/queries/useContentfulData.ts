@@ -55,7 +55,7 @@ export default function useContentfulData() {
   }
 
   const { isLoading, isError, data, error } = useQuery(
-    [contentfulDataKey],
+    [contentfulDataKey, allVotes],
     () => getContentfulData(adminProposalNumbersByKey),
     {
       refetchInterval: (data) => (data ? false : 100),

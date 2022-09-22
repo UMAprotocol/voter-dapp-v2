@@ -10,11 +10,12 @@ export default function useEncryptedVotes() {
   const { roundId } = useVoteTimingContext();
 
   const { isLoading, isError, data, error } = useQuery(
-    [encryptedVotesKey],
+    [encryptedVotesKey, address, roundId],
     () => getEncryptedVotesForUser(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
+      initialData: {},
     }
   );
 

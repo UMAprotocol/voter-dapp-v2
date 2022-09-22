@@ -12,11 +12,12 @@ export default function useDecryptedVotes() {
   const { encryptedVotes } = useEncryptedVotes();
 
   const { isLoading, isError, data, error } = useQuery(
-    [decryptedVotesKey],
+    [decryptedVotesKey, encryptedVotes, address],
     () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
       refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
+      initialData: {},
     }
   );
 

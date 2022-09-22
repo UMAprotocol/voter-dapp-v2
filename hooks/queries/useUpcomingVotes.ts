@@ -8,7 +8,7 @@ export default function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
 
-  const { isLoading, isError, data, error } = useQuery([upcomingVotesKey], () => getUpcomingVotes(voting), {
+  const { isLoading, isError, data, error } = useQuery([upcomingVotesKey, roundId], () => getUpcomingVotes(voting), {
     refetchInterval(data) {
       return data ? false : 100;
     },
