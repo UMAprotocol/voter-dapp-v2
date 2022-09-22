@@ -2,6 +2,7 @@ import { discordLink } from "constants/discordLink";
 import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { ContentfulDataT, VoteMetaDataT } from "types/global";
+import checkIfIsPolymarket from "./checkIfIsPolymarket";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -39,19 +40,37 @@ export default function getVoteMetaData(
     };
   }
 
+  const isPolymarket = checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData);
+  if (isPolymarket) {
+    const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
+    const ancillaryDataDescription = getDescriptionFromAncillaryData(decodedAncillaryData);
+    const title = ancillaryDataTitle ?? decodedIdentifier;
+    const description = ancillaryDataDescription ?? "No description was found for this request.";
+    const links = makeVoteLinks(transactionHash);
+    const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    const options = isYesNoQuery ? makeVoteOptions("yesNoQuery") : undefined;
+    return {
+      title,
+      description,
+      links,
+      options,
+      umipUrl: undefined,
+      umipNumber: undefined,
+      origin: "Polymarket",
+      isGovernance: false,
+      discordLink,
+    };
+  }
+
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
   // we know we are dealing with a request for an approved price identifier if the decodedIdentifier matches an approved identifier
   const identifierDetails = approvedIdentifiers[decodedIdentifier];
-  const isApprovedIdentifier =
-    Boolean(identifierDetails) &&
-    // `YES_OR_NO_QUERY` is a special case, because it is the only approved identifier that Polymarket uses
-    // we should therefore treat it as a Polymarket request instead
-    decodedIdentifier !== "YES_OR_NO_QUERY";
+  const isApprovedIdentifier = Boolean(identifierDetails);
   if (isApprovedIdentifier) {
-    const title = identifierDetails?.identifier ?? decodedIdentifier;
-    const description = identifierDetails?.summary ?? "No description was found for this request.";
-    const umipUrl = identifierDetails?.umipLink.url;
-    const umipNumber = getUmipNumber(identifierDetails?.umipLink.number);
+    const title = identifierDetails.identifier;
+    const description = identifierDetails.summary;
+    const umipUrl = identifierDetails.umipLink.url;
+    const umipNumber = getUmipNumber(identifierDetails.umipLink.number);
     const links = makeVoteLinks(transactionHash, umipNumber);
     return {
       title,
@@ -66,24 +85,15 @@ export default function getVoteMetaData(
     };
   }
 
-  // if the previous checks fail, we assume we are dealing with a Polymarket request
-  // note that `umipUrl` is undefined in this case, as there is no UMIP to link to for this type of request
-
-  const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
-  const ancillaryDataDescription = getDescriptionFromAncillaryData(decodedAncillaryData);
-  const title = ancillaryDataTitle ?? decodedIdentifier;
-  const description = ancillaryDataDescription ?? "No description was found for this request.";
-  const links = makeVoteLinks(transactionHash);
-  const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
-  const options = isYesNoQuery ? makeVoteOptions("yesNoQuery") : undefined;
+  // if all checks fail, return with generic values generated from the data we have
   return {
-    title,
-    description,
-    links,
-    options,
+    title: decodedIdentifier,
+    description: "No description found for this request.",
     umipUrl: undefined,
     umipNumber: undefined,
-    origin: "Polymarket",
+    links: makeVoteLinks(transactionHash),
+    options: undefined,
+    origin: "UMA",
     isGovernance: false,
     discordLink,
   };
@@ -94,14 +104,11 @@ function getTitleFromAncillaryData(
   titleIdentifier = "title:",
   descriptionIdentifier = "description:"
 ) {
-  if (!decodedAncillaryData) {
-    return null;
-  }
   const start = decodedAncillaryData.indexOf(titleIdentifier);
   const end = decodedAncillaryData.indexOf(descriptionIdentifier) ?? decodedAncillaryData.length;
 
   if (start === -1) {
-    return null;
+    return undefined;
   }
 
   const title = decodedAncillaryData.substring(start + titleIdentifier.length, end).trim();
@@ -111,13 +118,13 @@ function getTitleFromAncillaryData(
 
 function getDescriptionFromAncillaryData(decodedAncillaryData: string, descriptionIdentifier = "description:") {
   if (!decodedAncillaryData) {
-    return null;
+    return undefined;
   }
   const start = decodedAncillaryData.indexOf(descriptionIdentifier);
   const end = decodedAncillaryData.length;
 
   if (start === -1) {
-    return null;
+    return undefined;
   }
 
   return decodedAncillaryData.substring(start + descriptionIdentifier.length, end);
@@ -174,16 +181,4 @@ function makeVoteLinks(transactionHash: string, umipNumber?: number) {
   }
 
   return links;
-}
-
-function isPolymarket(decodedIdentifier: string, decodedAncillaryData: string) {
-  const queryTitleString = "q: title:";
-  const resultDataString =
-    "res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968";
-  const isPolymarket =
-    decodedIdentifier === "YES_OR_NO_QUERY" &&
-    decodedAncillaryData.includes(queryTitleString) &&
-    decodedAncillaryData.includes(resultDataString);
-
-  return isPolymarket;
 }
