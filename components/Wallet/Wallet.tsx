@@ -58,8 +58,6 @@ export function Wallet() {
       // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
       setVoting(createVotingContractInstance(signer));
       setVotingToken(createVotingTokenContractInstance(signer));
-      // re-fetch data that is dependant on the wallet address
-      queryClient.invalidateQueries([votingUserDependentQueryKeys, balancesQueryKeys]);
       (async () => {
         const savedSigningKeys = getSavedSigningKeys();
         if (savedSigningKeys[address]) {

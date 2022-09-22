@@ -1,6 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
-import { balancesQueryKeys, votingUserDependentQueryKeys } from "constants/queryKeys";
 import { ethers } from "ethers";
 import truncateEthAddress from "helpers/truncateEthAddress";
 
@@ -8,15 +6,13 @@ export function handleDisconnectWallet(
   wallet: WalletState | null,
   disconnect: (wallet: DisconnectOptions) => Promise<WalletState[]>,
   setProvider: (provider: ethers.providers.Web3Provider | null) => void,
-  setSigner: (signer: ethers.Signer | null) => void,
-  queryClient: QueryClient
+  setSigner: (signer: ethers.Signer | null) => void
 ) {
   if (!wallet || !disconnect) return;
   disconnect(wallet);
   setProvider(null);
   setSigner(null);
   window.localStorage.removeItem("connectedWallets");
-  queryClient.invalidateQueries([votingUserDependentQueryKeys, balancesQueryKeys]);
 }
 
 export function getAccountDetails(connectedWallets?: WalletState[]) {
