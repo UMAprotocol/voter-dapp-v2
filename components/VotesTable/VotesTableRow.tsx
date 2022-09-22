@@ -1,8 +1,9 @@
 import { Button } from "components/Button";
 import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
+import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { green, red500 } from "constants/colors";
-import { formatEther } from "ethers/lib/utils";
+import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import { useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -17,11 +18,20 @@ export interface Props {
   selectVote: (vote: VoteT, value: string) => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
+  isFetching: boolean;
 }
-export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityStatus, moreDetailsAction }: Props) {
+export function VotesTableRow({
+  vote,
+  phase,
+  selectedVote,
+  selectVote,
+  activityStatus,
+  moreDetailsAction,
+  isFetching,
+}: Props) {
   const { signer } = useWalletContext();
 
-  const { title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
+  const { decodedIdentifier, title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
   function formatTitle(title: string) {
@@ -30,7 +40,9 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
   }
 
   function getDecryptedVoteAsNumber() {
-    return decryptedVote?.price ? Number(formatEther(decryptedVote.price)) : undefined;
+    return decryptedVote?.price
+      ? Number(formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier))
+      : undefined;
   }
 
   function showVoteInput() {
@@ -90,6 +102,7 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
     if (phase === "commit") {
       return isCommitted ? "Committed" : "Not committed";
     } else {
+      if (!decryptedVote) return "Not committed";
       return isRevealed ? "Revealed" : "Not revealed";
     }
   }
@@ -101,8 +114,6 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
       return isRevealed ? green : red500;
     }
   }
-
-  if (activityStatus === undefined) return null;
 
   return (
     <Wrapper>
@@ -135,19 +146,29 @@ export function VotesTableRow({ vote, phase, selectedVote, selectVote, activityS
           )}
         </VoteInput>
       ) : null}
-      {showYourVote() ? <YourVote>{getYourVote()}</YourVote> : null}
-      {showCorrectVote() ? <CorrectVote>{getCorrectVote()}</CorrectVote> : null}
+      {showYourVote() ? (
+        <YourVote>{isFetching ? <LoadingSkeleton width={100} height={22} /> : getYourVote()}</YourVote>
+      ) : null}
+      {showCorrectVote() ? (
+        <CorrectVote>{isFetching ? <LoadingSkeleton width={100} height={22} /> : getCorrectVote()}</CorrectVote>
+      ) : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper>
           <VoteStatus>
-            <DotIcon
-              style={
-                {
-                  "--dot-color": getDotColor(),
-                } as CSSProperties
-              }
-            />{" "}
-            {getCommittedOrRevealed()}
+            {isFetching ? (
+              <LoadingSkeleton width={100} height={22} />
+            ) : (
+              <>
+                <DotIcon
+                  style={
+                    {
+                      "--dot-color": getDotColor(),
+                    } as CSSProperties
+                  }
+                />{" "}
+                {getCommittedOrRevealed()}
+              </>
+            )}
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}

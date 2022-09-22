@@ -2,15 +2,16 @@ import { black, red500, white } from "constants/colors";
 import { formatDistanceToNowStrict } from "date-fns";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
+import { ActivityStatusT } from "types/global";
 
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
-  isUpcoming: boolean;
+  status: ActivityStatusT;
 }
-export function RevealPhase({ phase, timeRemaining, isUpcoming }: Props) {
+export function RevealPhase({ phase, timeRemaining, status }: Props) {
   const isRevealPhase = phase === "reveal";
-  const isActive = isRevealPhase && !isUpcoming;
+  const isActive = isRevealPhase && status === "active";
   const textColor = isActive ? white : black;
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;

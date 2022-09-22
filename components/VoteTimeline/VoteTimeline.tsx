@@ -10,18 +10,16 @@ export function VoteTimeline() {
   const { getActivityStatus } = useVotesContext();
   const { commitTimeRemaining, revealTimeRemaining } = determineTimeRemaining();
 
-  if (!phase || !millisecondsUntilPhaseEnds) return null;
-
   function determineTimeRemaining() {
     let commitTimeRemaining = 0;
     let revealTimeRemaining = 0;
+    const status = getActivityStatus();
 
-    // if we are in an active vote, the next phase begins when the current one ends
-    if (getActivityStatus() === "active") {
+    // if we are in an active or past vote, the next phase begins when the current one ends
+    if (status === "active" || status === "past") {
       commitTimeRemaining = millisecondsUntilPhaseEnds;
       revealTimeRemaining = millisecondsUntilPhaseEnds;
-      // this component is hidden when there are no active or upcoming votes
-      // so we can assume that if there are no active votes, there are upcoming votes
+      // if status is not active or past, we are in an upcoming vote
     } else {
       if (phase === "commit") {
         // the commit phase starts when:
@@ -50,8 +48,8 @@ export function VoteTimeline() {
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} timeRemaining={commitTimeRemaining} isUpcoming={getActivityStatus() === "upcoming"} />
-      <RevealPhase phase={phase} timeRemaining={revealTimeRemaining} isUpcoming={getActivityStatus() === "upcoming"} />
+      <CommitPhase phase={phase} timeRemaining={commitTimeRemaining} status={getActivityStatus()} />
+      <RevealPhase phase={phase} timeRemaining={revealTimeRemaining} status={getActivityStatus()} />
     </Wrapper>
   );
 }

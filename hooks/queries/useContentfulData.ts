@@ -40,8 +40,10 @@ async function getContentfulData(adminProposalNumbersByKey: Record<UniqueKeyT, n
 }
 
 export default function useContentfulData() {
-  const { activeVotes } = useActiveVotes();
-  const { upcomingVotes } = useUpcomingVotes();
+  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { upcomingVotes },
+  } = useUpcomingVotes();
 
   const allVotes = { ...activeVotes, ...upcomingVotes };
 
@@ -54,22 +56,12 @@ export default function useContentfulData() {
     }
   }
 
-  const { isLoading, isError, data, error } = useQuery(
-    [contentfulDataKey],
-    () => getContentfulData(adminProposalNumbersByKey),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-    }
-  );
+  const queryResult = useQuery([contentfulDataKey, allVotes], () => getContentfulData(adminProposalNumbersByKey), {
+    refetchInterval: (data) => (data ? false : 100),
+    initialData: {},
+  });
 
-  const contentfulData: ContentfulDataByKeyT = data ?? {};
-
-  return {
-    contentfulData,
-    contentfulDataIsLoading: isLoading,
-    contentfulDataIsError: isError,
-    contentfulDataError: error,
-  };
+  return queryResult;
 }
 
 function getAdminProposalNumber(decodedIdentifier: string) {

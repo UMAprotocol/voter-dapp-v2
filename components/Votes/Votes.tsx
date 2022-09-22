@@ -1,4 +1,5 @@
 import { Button } from "components/Button";
+import { LoadingSpinner } from "components/LoadingSpinner";
 import { VotesTableRow } from "components/VotesTable";
 import VotesTable from "components/VotesTable/VotesTable";
 import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
@@ -19,7 +20,14 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus } = useVotesContext();
+  const {
+    getActiveVotes,
+    getUpcomingVotes,
+    getPastVotes,
+    getActivityStatus,
+    getUserIndependentIsLoading,
+    getUserDependentIsFetching,
+  } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -89,14 +97,14 @@ export function Votes() {
 
   function determineVotesToShow() {
     const status = getActivityStatus();
-    if (status === "active") {
-      if (phase === "commit") return getActiveVotes();
-      return getVotesToReveal();
+    switch (status) {
+      case "active":
+        return getActiveVotes();
+      case "upcoming":
+        return getUpcomingVotes();
+      case "past":
+        return getPastVotes();
     }
-    if (status === "upcoming") {
-      return getUpcomingVotes();
-    }
-    return getPastVotes();
   }
 
   function canCommit() {
@@ -119,49 +127,52 @@ export function Votes() {
     }
   }
 
-  function hasActiveOrUpcomingVotes() {
-    const status = getActivityStatus();
-    return status === "active" || status === "upcoming";
-  }
-
   return (
     <OuterWrapper>
-      <InnerWrapper>
-        <Title>{determineTitle()}</Title>
-        {hasActiveOrUpcomingVotes() ? <VoteTimeline /> : null}
-        <VotesTableWrapper>
-          <VotesTable
-            headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
-            rows={determineVotesToShow().map((vote) => (
-              <VotesTableRow
-                vote={vote}
-                phase={phase}
-                selectedVote={selectedVotes[vote.uniqueKey]}
-                selectVote={selectVote}
-                activityStatus={getActivityStatus()}
-                moreDetailsAction={() => openVotePanel(vote)}
-                key={vote.uniqueKey}
-              />
-            ))}
-          />
-        </VotesTableWrapper>
-        {getActivityStatus() === "active" ? (
-          <CommitVotesButtonWrapper>
-            <Button
-              variant="primary"
-              label={`${phase} Votes`}
-              onClick={phase === "commit" ? commitVotes : revealVotes}
-              disabled={!(canCommit() || canReveal())}
+      {getUserIndependentIsLoading() ? (
+        <LoadingSpinner size={300} variant="black" />
+      ) : (
+        <InnerWrapper>
+          <Title>{determineTitle()}</Title>
+          <VoteTimeline />
+          <VotesTableWrapper>
+            <VotesTable
+              headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
+              rows={determineVotesToShow().map((vote) => (
+                <VotesTableRow
+                  vote={vote}
+                  phase={phase}
+                  selectedVote={selectedVotes[vote.uniqueKey]}
+                  selectVote={selectVote}
+                  activityStatus={getActivityStatus()}
+                  moreDetailsAction={() => openVotePanel(vote)}
+                  key={vote.uniqueKey}
+                  isFetching={getUserDependentIsFetching()}
+                />
+              ))}
             />
-          </CommitVotesButtonWrapper>
-        ) : null}
-      </InnerWrapper>
+          </VotesTableWrapper>
+          {getActivityStatus() === "active" ? (
+            <CommitVotesButtonWrapper>
+              <Button
+                variant="primary"
+                label={`${phase} Votes`}
+                onClick={phase === "commit" ? commitVotes : revealVotes}
+                disabled={!(canCommit() || canReveal())}
+              />
+            </CommitVotesButtonWrapper>
+          ) : null}
+        </InnerWrapper>
+      )}
     </OuterWrapper>
   );
 }
 
 const OuterWrapper = styled.div`
   background: var(--grey-100);
+  min-height: max(50vh, 500px);
+  display: grid;
+  place-items: center;
 `;
 
 const InnerWrapper = styled.div`

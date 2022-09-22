@@ -1,4 +1,5 @@
 import { Button } from "components/Button";
+import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useContractsContext } from "hooks/contexts";
 import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
@@ -12,7 +13,7 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const withdrawRewardsMutation = useWithdrawRewards();
   const withdrawAndRestakeMutation = useWithdrawAndRestake();
-  const { outstandingRewards } = useOutstandingRewards();
+  const { data: outstandingRewards } = useOutstandingRewards();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
@@ -29,7 +30,14 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <Strong>{formatNumberForDisplay(outstandingRewards)}</Strong> UMA
+            <Strong>
+              {outstandingRewards === undefined ? (
+                <LoadingSkeleton variant="white" width={150} height={32} />
+              ) : (
+                formatNumberForDisplay(outstandingRewards)
+              )}
+            </Strong>{" "}
+            UMA
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { outstandingRewardsKey } from "constants/queryKeys";
+import { BigNumber } from "ethers";
 import { useContractsContext } from "hooks/contexts";
 import getOutstandingRewards from "web3/queries/getOutstandingRewards";
 import useAccountDetails from "./useAccountDetails";
@@ -8,18 +9,11 @@ export default function useOutstandingRewards() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [outstandingRewardsKey],
-    () => getOutstandingRewards(voting, address),
-    {
-      refetchInterval: (data) => (data ? false : 100),
-    }
-  );
+  const queryResult = useQuery([outstandingRewardsKey, address], () => getOutstandingRewards(voting, address), {
+    refetchInterval: (data) => (data ? false : 100),
+    enabled: !!address,
+    initialData: BigNumber.from(0),
+  });
 
-  return {
-    outstandingRewards: data,
-    outstandingRewardIsLoading: isLoading,
-    outstandingRewardIsError: isError,
-    outstandingRewardError: error,
-  };
+  return queryResult;
 }

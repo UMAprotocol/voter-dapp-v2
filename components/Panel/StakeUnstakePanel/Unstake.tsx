@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "helpers/ethers";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
@@ -16,9 +16,11 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 export function Unstake() {
   const { phase } = useVoteTimingContext();
   const { voting } = useContractsContext();
-  const { activeVotes } = useActiveVotes();
-  const { stakedBalance } = useStakedBalance();
-  const { pendingUnstake } = useStakerDetails();
+  const { data: activeVotes } = useActiveVotes();
+  const { data: stakedBalance } = useStakedBalance();
+  const {
+    data: { pendingUnstake },
+  } = useStakerDetails();
   const requestUnstakeMutation = useRequestUnstake();
   const [unstakeAmount, setUnstakeAmount] = useState("");
 
@@ -31,7 +33,7 @@ export function Unstake() {
     return stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
 
-  const hasActiveVotes = Object.values(activeVotes).length > 0;
+  const hasActiveVotes = activeVotes && Object.values(activeVotes).length > 0;
 
   return (
     <Wrapper>
