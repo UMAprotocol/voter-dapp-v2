@@ -1,5 +1,6 @@
 import getVoteMetaData from "helpers/getVoteMetaData";
 import {
+  useAccountDetails,
   useActiveVotes,
   useCommittedVotes,
   useContentfulData,
@@ -36,7 +37,7 @@ interface VotesContextState {
   getUpcomingVotes: () => VoteT[];
   getPastVotes: () => VoteT[];
   getActivityStatus: () => ActivityStatusT;
-  getAreVotesLoading: () => boolean;
+  getIsLoading: () => boolean;
 }
 
 export const defaultVotesContextState: VotesContextState = {
@@ -54,34 +55,40 @@ export const defaultVotesContextState: VotesContextState = {
   getUpcomingVotes: () => [],
   getPastVotes: () => [],
   getActivityStatus: () => "past",
-  getAreVotesLoading: () => true,
+  getIsLoading: () => true,
 };
 
 export const VotesContext = createContext<VotesContextState>(defaultVotesContextState);
 
 export function VotesProvider({ children }: { children: ReactNode }) {
-  const { hasActiveVotes, hasActiveVotesIsLoading } = useHasActiveVotes();
-  const { activeVotes, activeVotesIsLoading } = useActiveVotes();
-  const { upcomingVotes, hasUpcomingVotes, upcomingVotesIsLoading } = useUpcomingVotes();
-  const { pastVotes, pastVotesIsLoading } = usePastVotes();
-  const { contentfulData, contentfulDataIsLoading } = useContentfulData();
-  const { committedVotes, committedVotesIsLoading } = useCommittedVotes();
-  const { revealedVotes, revealedVotesIsLoading } = useRevealedVotes();
-  const { encryptedVotes, encryptedVotesIsLoading } = useEncryptedVotes();
-  const { decryptedVotes, decryptedVotesIsLoading } = useDecryptedVotes();
+  const { data: hasActiveVotes, isLoading: hasActiveVotesIsLoading } = useHasActiveVotes();
+  const { data: activeVotes, isLoading: activeVotesIsLoading } = useActiveVotes();
+  const {
+    data: { upcomingVotes, hasUpcomingVotes },
+    isLoading: upcomingVotesIsLoading,
+  } = useUpcomingVotes();
+  const { data: pastVotes, isLoading: pastVotesIsLoading } = usePastVotes();
+  const { data: contentfulData, isLoading: contentfulDataIsLoading } = useContentfulData();
+  const { data: committedVotes, isLoading: committedVotesIsLoading } = useCommittedVotes();
+  const { data: revealedVotes, isLoading: revealedVotesIsLoading } = useRevealedVotes();
+  const { data: encryptedVotes, isLoading: encryptedVotesIsLoading } = useEncryptedVotes();
+  const { data: decryptedVotes, isLoading: decryptedVotesIsLoading } = useDecryptedVotes();
+  const { address } = useAccountDetails();
 
-  function getAreVotesLoading() {
-    return (
-      hasActiveVotesIsLoading ||
-      activeVotesIsLoading ||
-      upcomingVotesIsLoading ||
-      pastVotesIsLoading ||
+  function getIsLoading() {
+    const isLoadingUserDependent =
       contentfulDataIsLoading ||
       committedVotesIsLoading ||
       revealedVotesIsLoading ||
       encryptedVotesIsLoading ||
-      decryptedVotesIsLoading
-    );
+      decryptedVotesIsLoading;
+
+    const isLoadingUserIndependent =
+      hasActiveVotesIsLoading || activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
+
+    if (address) return isLoadingUserDependent || isLoadingUserIndependent;
+
+    return isLoadingUserIndependent;
   }
 
   function getActiveVotes() {
@@ -110,7 +117,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         isCommitted: committedVotes[uniqueKey] ?? false,
         isRevealed: revealedVotes[uniqueKey] ?? false,
         encryptedVote: encryptedVotes[uniqueKey],
-        decryptedVote: decryptedVotes?.[uniqueKey],
+        decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
         ...getVoteMetaData(
           vote.decodedIdentifier,
@@ -139,7 +146,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         getUpcomingVotes,
         getPastVotes,
         getActivityStatus,
-        getAreVotesLoading,
+        getIsLoading,
       }}
     >
       {children}

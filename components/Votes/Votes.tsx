@@ -20,7 +20,7 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";
 
 export function Votes() {
-  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getAreVotesLoading } = useVotesContext();
+  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getIsLoading } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -122,7 +122,7 @@ export function Votes() {
 
   return (
     <OuterWrapper>
-      {getAreVotesLoading() ? (
+      {getIsLoading() ? (
         <LoadingSpinner size={300} variant="black" />
       ) : (
         <InnerWrapper>
