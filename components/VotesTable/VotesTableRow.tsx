@@ -3,8 +3,6 @@ import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { green, red500 } from "constants/colors";
-import { BigNumber } from "ethers";
-import { formatNumberForDisplay } from "helpers/formatNumber";
 import { formatVoteStringWithPrecision } from "helpers/formatVotes";
 import { useWalletContext } from "hooks/contexts";
 import Dot from "public/assets/icons/dot.svg";
@@ -88,12 +86,16 @@ export function VotesTableRow({
     if (!decryptedVote) return "Did not vote";
     return (
       findVoteInOptions(getDecryptedVoteAsNumber())?.label ??
-      formatNumberForDisplay(BigNumber.from(decryptedVote?.price?.toString()))
+      formatVoteStringWithPrecision(decryptedVote?.price?.toString(), decodedIdentifier)
     );
   }
 
   function getCorrectVote() {
-    return findVoteInOptions(correctVote)?.label ?? formatNumberForDisplay(BigNumber.from(correctVote?.toString()));
+    if (!correctVote) return;
+
+    return (
+      findVoteInOptions(correctVote)?.label ?? formatVoteStringWithPrecision(correctVote?.toString(), decodedIdentifier)
+    );
   }
 
   function findVoteInOptions(valueAsNumber: number | undefined) {
