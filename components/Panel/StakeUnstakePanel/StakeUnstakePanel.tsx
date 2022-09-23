@@ -3,7 +3,7 @@ import { Tabs } from "components/Tabs";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useContractsContext } from "hooks/contexts";
 import { useExecuteUnstake } from "hooks/mutations";
-import { useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
+import { useStakerDetails, useUnstakedBalance } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -15,9 +15,8 @@ import { Unstake } from "./Unstake";
 export function StakeUnstakePanel() {
   const { voting } = useContractsContext();
   const { data: unstakedBalance } = useUnstakedBalance();
-  const { data: stakedBalance } = useStakedBalance();
   const {
-    data: { pendingUnstake, canUnstakeTime },
+    data: { stakedBalance, pendingUnstake, canUnstakeTime },
   } = useStakerDetails();
   const executeUnstakeMutation = useExecuteUnstake();
 

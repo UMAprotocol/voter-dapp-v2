@@ -5,7 +5,7 @@ import { formatEther, parseEther } from "helpers/ethers";
 import { useContractsContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
-import { useActiveVotes, useStakedBalance, useStakerDetails } from "hooks/queries";
+import { useActiveVotes, useStakerDetails } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -17,9 +17,8 @@ export function Unstake() {
   const { phase } = useVoteTimingContext();
   const { voting } = useContractsContext();
   const { data: activeVotes } = useActiveVotes();
-  const { data: stakedBalance } = useStakedBalance();
   const {
-    data: { pendingUnstake },
+    data: { stakedBalance, pendingUnstake },
   } = useStakerDetails();
   const requestUnstakeMutation = useRequestUnstake();
   const [unstakeAmount, setUnstakeAmount] = useState("");

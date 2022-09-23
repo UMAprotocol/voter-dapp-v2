@@ -2,7 +2,7 @@ import { InfoBar } from "components/InfoBar";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { usePanelContext } from "hooks/contexts";
-import { useOutstandingRewards, useStakedBalance, useUnstakedBalance } from "hooks/queries";
+import { useOutstandingRewards, useStakerDetails, useUnstakedBalance } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -15,7 +15,10 @@ interface Props {
 export function HowItWorks({ votesInLastCycles, apy }: Props) {
   const { setPanelType, setPanelOpen } = usePanelContext();
   const { data: unstakedBalance, isFetching: unstakedBalanceIsFetching } = useUnstakedBalance();
-  const { data: stakedBalance, isFetching: stakedBalanceIsFetching } = useStakedBalance();
+  const {
+    data: { stakedBalance },
+    isFetching: stakedBalanceIsFetching,
+  } = useStakerDetails();
   const { data: outstandingRewards, isFetching: outstandingRewardIsFetching } = useOutstandingRewards();
 
   function openStakeUnstakePanel() {

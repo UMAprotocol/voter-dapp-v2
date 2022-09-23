@@ -18,11 +18,17 @@ export default function useExecuteUnstake() {
         return newUnstakedBalance;
       });
 
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], () => ({
-        pendingUnstake: BigNumber.from(0),
-        canUnstakeTime: undefined,
-        unstakeRequestTime: undefined,
-      }));
+      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], (oldStakerDetails) => {
+        if (!oldStakerDetails) return;
+
+        const newStakedBalance = oldStakerDetails.stakedBalance.sub(oldStakerDetails.pendingUnstake);
+        return {
+          stakedBalance: newStakedBalance,
+          pendingUnstake: BigNumber.from(0),
+          canUnstakeTime: undefined,
+          unstakeRequestTime: undefined,
+        };
+      });
     },
   });
 
