@@ -1,18 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakedBalanceKey, unstakedBalanceKey } from "constants/queryKeys";
+import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
+import { StakerDetailsT } from "types/global";
 import { stake } from "web3/mutations";
 
 export default function useStake() {
   const queryClient = useQueryClient();
   const { mutate } = useMutation(stake, {
     onSuccess: (_data, { stakeAmount }) => {
-      queryClient.setQueryData<BigNumber>([stakedBalanceKey], (oldStakedBalance) => {
-        if (oldStakedBalance === undefined) return;
+      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], (oldStakerDetails) => {
+        if (oldStakerDetails === undefined) return;
 
-        const newStakedBalance = oldStakedBalance.add(stakeAmount);
+        const newStakedBalance = oldStakerDetails.stakedBalance.add(stakeAmount);
 
-        return newStakedBalance;
+        return {
+          ...oldStakerDetails,
+          stakedBalance: newStakedBalance,
+        };
       });
 
       queryClient.setQueryData<BigNumber>([unstakedBalanceKey], (oldUnstakedBalance) => {

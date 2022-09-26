@@ -2,7 +2,6 @@ export { default as getEncryptedVotesForUser } from "./getEncryptedVotesForUser"
 export { default as getHasActiveVotes } from "./getHasActiveVotes";
 export { default as getOutstandingRewards } from "./getOutstandingRewards";
 export { default as getPendingRequests } from "./getPendingRequests";
-export { default as getStakedBalance } from "./getStakedBalance";
 export { default as getStakerDetails } from "./getStakerDetails";
 export { default as getTokenAllowance } from "./getTokenAllowance";
 export { default as getUnstakedBalance } from "./getUnstakedBalance";

@@ -1,11 +1,10 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { useContractsContext } from "hooks/contexts";
+import { formatEther, parseEther } from "helpers/ethers";
+import { useBalancesContext, useContractsContext, useVotesContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
 import { useRequestUnstake } from "hooks/mutations";
-import { useActiveVotes, useStakedBalance, useStakerDetails } from "hooks/queries";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -16,9 +15,8 @@ import { PanelSectionText, PanelSectionTitle } from "../styles";
 export function Unstake() {
   const { phase } = useVoteTimingContext();
   const { voting } = useContractsContext();
-  const { activeVotes } = useActiveVotes();
-  const { stakedBalance } = useStakedBalance();
-  const { pendingUnstake } = useStakerDetails();
+  const { hasActiveVotes } = useVotesContext();
+  const { stakedBalance, pendingUnstake } = useBalancesContext();
   const requestUnstakeMutation = useRequestUnstake();
   const [unstakeAmount, setUnstakeAmount] = useState("");
 
@@ -30,8 +28,6 @@ export function Unstake() {
     if (stakedBalance === undefined || pendingUnstake === undefined) return false;
     return stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
-
-  const hasActiveVotes = Object.values(activeVotes).length > 0;
 
   return (
     <Wrapper>

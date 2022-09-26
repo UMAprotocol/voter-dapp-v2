@@ -54,7 +54,7 @@ export function MenuPanel() {
               label="Disconnect"
               width={150}
               height={40}
-              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner, queryClient)}
+              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner)}
             />
           </>
         ) : (

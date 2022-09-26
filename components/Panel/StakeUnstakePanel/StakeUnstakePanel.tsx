@@ -1,9 +1,8 @@
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { Tabs } from "components/Tabs";
 import { formatNumberForDisplay } from "helpers/formatNumber";
-import { useContractsContext } from "hooks/contexts";
+import { useBalancesContext, useContractsContext } from "hooks/contexts";
 import { useExecuteUnstake } from "hooks/mutations";
-import { useStakedBalance, useStakerDetails, useUnstakedBalance } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -14,9 +13,7 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { stakedBalance } = useStakedBalance();
-  const { pendingUnstake, canUnstakeTime } = useStakerDetails();
+  const { stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } = useBalancesContext();
   const executeUnstakeMutation = useExecuteUnstake();
 
   const cooldownEnds = canUnstakeTime;
@@ -40,10 +37,6 @@ export function StakeUnstakePanel() {
     executeUnstakeMutation({ voting });
   }
 
-  function isLoading() {
-    return stakedBalance === undefined || unstakedBalance === undefined;
-  }
-
   return (
     <PanelWrapper>
       <PanelTitle title="Stake / Unstake" />
@@ -53,7 +46,7 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
-                {isLoading() ? (
+                {getBalancesFetching() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
                   formatNumberForDisplay(stakedBalance)
@@ -63,7 +56,7 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
               <BalanceAmount>
-                {isLoading() ? (
+                {getBalancesFetching() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
                   formatNumberForDisplay(unstakedBalance)

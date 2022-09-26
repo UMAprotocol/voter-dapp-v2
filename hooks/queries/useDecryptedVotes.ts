@@ -9,22 +9,19 @@ import useEncryptedVotes from "./useEncryptedVotes";
 export default function useDecryptedVotes() {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
-  const { encryptedVotes } = useEncryptedVotes();
+  const { data: encryptedVotes } = useEncryptedVotes();
 
-  const { isLoading, isError, data, error } = useQuery(
-    [decryptedVotesKey],
+  const queryResult = useQuery(
+    [decryptedVotesKey, encryptedVotes, address],
     () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
       refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+      initialData: {},
     }
   );
 
-  return {
-    decryptedVotes: data,
-    decryptedVotesIsLoading: isLoading,
-    decryptedVotesIsError: isError,
-    decryptedVotesError: error,
-  };
+  return queryResult;
 }
 
 async function decryptVotes(privateKey: string | undefined, encryptedVotes: EncryptedVotesByKeyT) {

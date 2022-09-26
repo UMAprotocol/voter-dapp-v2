@@ -1,18 +1,16 @@
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { AmountInput } from "components/Input";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { useContractsContext } from "hooks/contexts";
+import { formatEther, parseEther } from "helpers/ethers";
+import { useBalancesContext, useContractsContext } from "hooks/contexts";
 import { useApprove, useStake } from "hooks/mutations";
-import { useTokenAllowance, useUnstakedBalance } from "hooks/queries";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Stake() {
   const { voting, votingToken } = useContractsContext();
-  const { unstakedBalance } = useUnstakedBalance();
-  const { tokenAllowance } = useTokenAllowance();
+  const { unstakedBalance, tokenAllowance } = useBalancesContext();
   const [stakeAmount, setStakeAmount] = useState("");
   const stakeMutation = useStake();
   const approveMutation = useApprove();

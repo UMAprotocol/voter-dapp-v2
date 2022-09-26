@@ -1,15 +1,16 @@
 import { Button } from "components/Button";
-import styled from "styled-components";
-import Doc from "public/assets/icons/doc.svg";
-import Commit from "public/assets/icons/commit.svg";
-import Time from "public/assets/icons/time-with-inner-circle.svg";
-import Link from "public/assets/icons/link.svg";
 import Chat from "public/assets/icons/chat.svg";
-import { PanelSectionTitle } from "../styles";
+import Commit from "public/assets/icons/commit.svg";
+import Doc from "public/assets/icons/doc.svg";
+import Link from "public/assets/icons/link.svg";
+import Time from "public/assets/icons/time-with-inner-circle.svg";
+import Vote from "public/assets/icons/voting.svg";
+import styled from "styled-components";
 import { VoteT } from "types/global";
+import { PanelSectionTitle } from "../styles";
 
-type Props = Pick<VoteT, "description" | "options" | "timeAsDate" | "links" | "discordLink">;
-export function Details({ description, options, timeAsDate, links, discordLink }: Props) {
+type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;
+export function Details({ description, decodedAncillaryData, options, timeAsDate, links, discordLink }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
   const descriptionParagraphs = description?.split("\n");
@@ -26,6 +27,15 @@ export function Details({ description, options, timeAsDate, links, discordLink }
         {descriptionParagraphs.map((paragraph, i) => (
           <Text key={paragraph + i}>{paragraph}</Text>
         ))}
+      </SectionWrapper>
+      <SectionWrapper>
+        <PanelSectionTitle>
+          <IconWrapper>
+            <VoteIcon />
+          </IconWrapper>{" "}
+          Decoded ancillary data
+        </PanelSectionTitle>
+        <Text>{decodedAncillaryData}</Text>
       </SectionWrapper>
       {optionLabels && (
         <SectionWrapper>
@@ -144,6 +154,12 @@ const IconWrapper = styled.div`
 
 const DescriptionIcon = styled(Doc)`
   circle {
+    fill: var(--red-500);
+  }
+`;
+
+const VoteIcon = styled(Vote)`
+  path {
     fill: var(--red-500);
   }
 `;

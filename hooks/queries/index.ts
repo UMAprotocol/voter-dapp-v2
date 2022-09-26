@@ -8,7 +8,6 @@ export { default as useHasActiveVotes } from "./useHasActiveVotes";
 export { default as useOutstandingRewards } from "./useOutstandingRewards";
 export { default as usePastVotes } from "./usePastVotes";
 export { default as useRevealedVotes } from "./useRevealedVotes";
-export { default as useStakedBalance } from "./useStakedBalance";
 export { default as useStakerDetails } from "./useStakerDetails";
 export { default as useTokenAllowance } from "./useTokenAllowance";
 export { default as useUnstakedBalance } from "./useUnstakedBalance";

@@ -64,6 +64,7 @@ VotePanelWithoutResults.args = {
     If there is no final data available by July 3, 2022, 11:59:59 PM ET, another credible resolution source will be chosen.
      res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968.
         Where p1 corresponds to No, p2 to a Yes, p3 to unknown, and p4 to an early request,ooRequester:cb1822859cef82cd2eb4e6276c7916e692995130,childRequester:bb1a8db2d4350976a11cdfa60a1d43f97710da49,childChainId:137`,
+    decodedAncillaryData: "test test test test",
     origin: "Polymarket",
     voteNumber: 205,
     options: [
