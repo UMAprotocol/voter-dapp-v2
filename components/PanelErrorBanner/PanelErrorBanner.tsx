@@ -5,6 +5,8 @@ import styled from "styled-components";
 export function PanelErrorBanner() {
   const { errorMessages } = useErrorContext();
 
+  if (errorMessages.length === 0) return null;
+
   return (
     <OuterWrapper>
       <IconWrapper>
@@ -20,6 +22,7 @@ export function PanelErrorBanner() {
 }
 
 const OuterWrapper = styled.div`
+  margin-top: 30px;
   background: var(--red-500-opacity-5);
   border: 1px solid var(--red-500);
   border-radius: 2px;

@@ -1,6 +1,7 @@
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { AmountInput } from "components/Input";
+import { PanelErrorBanner } from "components/PanelErrorBanner";
 import { BigNumber } from "ethers";
 import { formatEther, parseEther } from "helpers/ethers";
 import { useState } from "react";
@@ -71,6 +72,7 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
         width="100%"
         disabled={isButtonDisabled()}
       />
+      <PanelErrorBanner />
     </Wrapper>
   );
 }

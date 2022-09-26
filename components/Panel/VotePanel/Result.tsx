@@ -1,10 +1,11 @@
-import styled, { CSSProperties } from "styled-components";
+import { DonutChart } from "components/DonutChart";
+import { computeColors, computePercentages } from "components/DonutChart/helpers";
+import { PanelErrorBanner } from "components/PanelErrorBanner";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
-import { DonutChart } from "components/DonutChart";
-import { computePercentages, computeColors } from "components/DonutChart/helpers";
-import { PanelSectionText, PanelSectionTitle } from "../styles";
+import styled, { CSSProperties } from "styled-components";
 import { VoteResultT } from "types/global";
+import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 export function Result({ participation, results }: VoteResultT) {
   if (!participation || !results) return null;
@@ -52,6 +53,7 @@ export function Result({ participation, results }: VoteResultT) {
           </ParticipationItem>
         ))}
       </SectionWrapper>
+      <PanelErrorBanner />
     </Wrapper>
   );
 }

@@ -1,5 +1,6 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
+import { PanelErrorBanner } from "components/PanelErrorBanner";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers/ethers";
 import { useVotesContext } from "hooks/contexts";
@@ -66,6 +67,7 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props
           />
         </>
       )}
+      <PanelErrorBanner />
       {phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
     </Wrapper>
   );

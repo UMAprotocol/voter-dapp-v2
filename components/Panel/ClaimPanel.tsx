@@ -1,5 +1,6 @@
 import { Button } from "components/Button";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { PanelErrorBanner } from "components/PanelErrorBanner";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useBalancesContext, useContractsContext } from "hooks/contexts";
 import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
@@ -59,6 +60,7 @@ export function ClaimPanel() {
             </PanelSectionText>
             <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
           </ClaimToWalletWrapper>
+          <PanelErrorBanner />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />
