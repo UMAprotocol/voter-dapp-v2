@@ -1,3 +1,4 @@
+export { default as useBalancesContext } from "./useBalancesContext";
 export { default as useContractsContext } from "./useContractsContext";
 export { default as useErrorContext } from "./useErrorContext";
 export { default as usePanelContext } from "./usePanelContext";

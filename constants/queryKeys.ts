@@ -12,7 +12,6 @@ export const contentfulDataKey = "contentfulDataKey";
 // balances
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
-export const stakedBalanceKey = "stakedBalanceKey";
 export const outstandingRewardsKey = "outstandingRewardsKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 
@@ -28,10 +27,4 @@ export const votingUserDependentQueryKeys = [
 
 export const votingQueryKeys = [...votingNotUserDependentQueryKeys, ...votingUserDependentQueryKeys];
 
-export const balancesQueryKeys = [
-  tokenAllowanceKey,
-  unstakedBalanceKey,
-  stakedBalanceKey,
-  outstandingRewardsKey,
-  stakerDetailsKey,
-];
+export const balancesQueryKeys = [tokenAllowanceKey, unstakedBalanceKey, outstandingRewardsKey, stakerDetailsKey];

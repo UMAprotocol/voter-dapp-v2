@@ -1,9 +1,8 @@
 import { Button } from "components/Button";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { formatNumberForDisplay } from "helpers/formatNumber";
-import { useContractsContext } from "hooks/contexts";
+import { useBalancesContext, useContractsContext } from "hooks/contexts";
 import { useWithdrawAndRestake, useWithdrawRewards } from "hooks/mutations";
-import { useOutstandingRewards } from "hooks/queries";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -13,7 +12,7 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const withdrawRewardsMutation = useWithdrawRewards();
   const withdrawAndRestakeMutation = useWithdrawAndRestake();
-  const { data: outstandingRewards } = useOutstandingRewards();
+  const { outstandingRewards, getBalancesFetching } = useBalancesContext();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
@@ -31,7 +30,7 @@ export function ClaimPanel() {
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
             <Strong>
-              {outstandingRewards === undefined ? (
+              {getBalancesFetching() ? (
                 <LoadingSkeleton variant="white" width={150} height={32} />
               ) : (
                 formatNumberForDisplay(outstandingRewards)

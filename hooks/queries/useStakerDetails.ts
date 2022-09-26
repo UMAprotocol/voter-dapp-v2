@@ -13,6 +13,7 @@ export default function useStakerDetails() {
     refetchInterval: (data) => (data ? false : 100),
     enabled: !!address,
     initialData: {
+      stakedBalance: BigNumber.from(0),
       pendingUnstake: BigNumber.from(0),
       unstakeRequestTime: new Date(0),
       canUnstakeTime: new Date(0),
