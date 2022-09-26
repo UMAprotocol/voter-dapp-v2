@@ -84,11 +84,18 @@ export function VotesTableRow({
 
   function getYourVote() {
     if (!decryptedVote) return "Did not vote";
-    return findVoteInOptions(getDecryptedVoteAsNumber())?.label ?? decryptedVote?.price?.toString();
+    return (
+      findVoteInOptions(getDecryptedVoteAsNumber())?.label ??
+      formatVoteStringWithPrecision(decryptedVote?.price?.toString(), decodedIdentifier)
+    );
   }
 
   function getCorrectVote() {
-    return findVoteInOptions(correctVote)?.label ?? correctVote?.toString();
+    if (!correctVote) return;
+
+    return (
+      findVoteInOptions(correctVote)?.label ?? formatVoteStringWithPrecision(correctVote?.toString(), decodedIdentifier)
+    );
   }
 
   function findVoteInOptions(valueAsNumber: number | undefined) {
