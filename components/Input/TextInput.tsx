@@ -3,7 +3,7 @@ import { ChangeEvent } from "react";
 import { Wrapper, Input } from "./Input";
 
 interface Props {
-  value: string | undefined;
+  value: string | number;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   placeholder?: string;
@@ -13,7 +13,7 @@ export function TextInput({ value, onChange, disabled, placeholder, type = "text
   return (
     <_Wrapper aria-disabled={disabled}>
       <_Input
-        value={value}
+        value={value ?? undefined}
         onChange={onChange}
         disabled={disabled}
         type={type}
