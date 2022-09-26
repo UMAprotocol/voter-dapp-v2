@@ -1,14 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import getCanUnstakeTime from "helpers/getCanUnstakeTime";
+import { useAccountDetails } from "hooks/queries";
 import { StakerDetailsT } from "types/global";
 import { requestUnstake } from "web3/mutations";
 
 export default function useRequestUnstake() {
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(requestUnstake, {
+  const { address } = useAccountDetails();
+
+  const { mutate, isLoading } = useMutation(requestUnstake, {
     onSuccess: (_data, { unstakeAmount }) => {
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey], (oldStakerDetails) => {
+      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
         if (oldStakerDetails === undefined) return;
 
         const newUnstakedBalance = oldStakerDetails.stakedBalance.sub(unstakeAmount);
@@ -22,5 +25,8 @@ export default function useRequestUnstake() {
       });
     },
   });
-  return mutate;
+  return {
+    requestUnstakeMutation: mutate,
+    isRequestingUnstake: isLoading,
+  };
 }
