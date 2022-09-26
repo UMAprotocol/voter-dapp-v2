@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
+import useHandleError from "hooks/helpers/useHandleError";
 import { useAccountDetails } from "hooks/queries";
 import { StakerDetailsT } from "types/global";
 import { executeUnstake } from "web3/mutations";
@@ -8,6 +9,7 @@ import { executeUnstake } from "web3/mutations";
 export default function useExecuteUnstake() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
+  const onError = useHandleError();
 
   const { mutate, isLoading } = useMutation(executeUnstake, {
     onSuccess: () => {
@@ -33,6 +35,7 @@ export default function useExecuteUnstake() {
         };
       });
     },
+    onError,
   });
 
   return {
