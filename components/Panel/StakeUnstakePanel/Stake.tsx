@@ -1,36 +1,22 @@
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
 import { AmountInput } from "components/Input";
+import { BigNumber } from "ethers";
 import { formatEther, parseEther } from "helpers/ethers";
-import { useBalancesContext, useContractsContext } from "hooks/contexts";
-import { useApprove, useStake } from "hooks/mutations";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
-export function Stake() {
-  const { voting, votingToken } = useContractsContext();
-  const { unstakedBalance, tokenAllowance } = useBalancesContext();
+interface Props {
+  tokenAllowance: BigNumber | undefined;
+  unstakedBalance: BigNumber | undefined;
+  approve: (approveAmount: string) => void;
+  stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
+}
+export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props) {
   const [stakeAmount, setStakeAmount] = useState("");
-  const stakeMutation = useStake();
-  const approveMutation = useApprove();
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
-
-  function stake() {
-    stakeMutation(
-      { voting, stakeAmount: parseEther(stakeAmount) },
-      {
-        onSuccess: () => {
-          setStakeAmount("");
-        },
-      }
-    );
-  }
-
-  async function approve() {
-    approveMutation({ votingToken, approveAmount: parseEther(stakeAmount) });
-  }
 
   function getMax() {
     if (tokenAllowance === undefined || unstakedBalance === undefined) return "0";
@@ -47,6 +33,14 @@ export function Stake() {
 
   function isButtonDisabled() {
     return !disclaimerChecked || stakeAmount === "" || parseEther(stakeAmount).eq(0);
+  }
+
+  function onApprove() {
+    approve(stakeAmount);
+  }
+
+  function onStake() {
+    stake(stakeAmount, () => setStakeAmount(""));
   }
 
   return (
@@ -73,7 +67,7 @@ export function Stake() {
       <Button
         variant="primary"
         label={isApprove() ? "Approve" : "Stake"}
-        onClick={isApprove() ? approve : stake}
+        onClick={isApprove() ? onApprove : onStake}
         width="100%"
         disabled={isButtonDisabled()}
       />

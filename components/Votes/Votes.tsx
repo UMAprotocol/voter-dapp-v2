@@ -32,11 +32,10 @@ export function Votes() {
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
   const { voting } = useContractsContext();
-  const commitVotesMutation = useCommitVotes();
-  const revealVotesMutation = useRevealVotes();
+  const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
+  const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-  const [contractInteractionInProgress, setContractInteractionInProgress] = useState(false);
 
   useInitializeVoteTiming();
 
@@ -49,8 +48,6 @@ export function Votes() {
       signingKeys,
     });
 
-    setContractInteractionInProgress(true);
-
     commitVotesMutation(
       {
         voting,
@@ -60,25 +57,15 @@ export function Votes() {
         onSuccess: () => {
           setSelectedVotes({});
         },
-        onSettled: () => {
-          setContractInteractionInProgress(false);
-        },
       }
     );
   }
 
   function revealVotes() {
-    revealVotesMutation(
-      {
-        voting,
-        votesToReveal: getVotesToReveal(),
-      },
-      {
-        onSettled: () => {
-          setContractInteractionInProgress(false);
-        },
-      }
-    );
+    revealVotesMutation({
+      voting,
+      votesToReveal: getVotesToReveal(),
+    });
   }
 
   function getVotesToReveal() {
@@ -108,11 +95,11 @@ export function Votes() {
   }
 
   function canCommit() {
-    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length && !contractInteractionInProgress;
+    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length && !isCommittingVotes;
   }
 
   function canReveal() {
-    return phase === "reveal" && getVotesToReveal().length && !contractInteractionInProgress;
+    return phase === "reveal" && getVotesToReveal().length && !isRevealingVotes;
   }
 
   function determineTitle() {
@@ -147,7 +134,7 @@ export function Votes() {
                   activityStatus={getActivityStatus()}
                   moreDetailsAction={() => openVotePanel(vote)}
                   key={vote.uniqueKey}
-                  isFetching={getUserDependentIsFetching()}
+                  isFetching={getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes}
                 />
               ))}
             />

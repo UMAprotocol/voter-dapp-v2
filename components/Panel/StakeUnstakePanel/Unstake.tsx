@@ -1,10 +1,9 @@
 import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "helpers/ethers";
-import { useBalancesContext, useContractsContext, useVotesContext } from "hooks/contexts";
+import { formatEther } from "helpers/ethers";
+import { useVotesContext } from "hooks/contexts";
 import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import { useRequestUnstake } from "hooks/mutations";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -12,17 +11,15 @@ import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
-export function Unstake() {
+interface Props {
+  stakedBalance: BigNumber | undefined;
+  pendingUnstake: BigNumber | undefined;
+  requestUnstake: (unstakeAmount: string) => void;
+}
+export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props) {
   const { phase } = useVoteTimingContext();
-  const { voting } = useContractsContext();
   const { hasActiveVotes } = useVotesContext();
-  const { stakedBalance, pendingUnstake } = useBalancesContext();
-  const requestUnstakeMutation = useRequestUnstake();
   const [unstakeAmount, setUnstakeAmount] = useState("");
-
-  function requestUnstake() {
-    requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
-  }
 
   function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
     if (stakedBalance === undefined || pendingUnstake === undefined) return false;
@@ -63,7 +60,7 @@ export function Unstake() {
           <Button
             variant="primary"
             label="Unstake"
-            onClick={requestUnstake}
+            onClick={() => requestUnstake(unstakeAmount)}
             width="100%"
             disabled={!canUnstake(stakedBalance, pendingUnstake)}
           />

@@ -10,8 +10,8 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
-  const withdrawRewardsMutation = useWithdrawRewards();
-  const withdrawAndRestakeMutation = useWithdrawAndRestake();
+  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards();
+  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake();
   const { outstandingRewards, getBalancesFetching } = useBalancesContext();
 
   function withdrawRewards() {
@@ -22,6 +22,10 @@ export function ClaimPanel() {
     withdrawAndRestakeMutation({ voting });
   }
 
+  function isLoading() {
+    return getBalancesFetching() || isWithdrawingAndRestaking || isWithdrawingRewards;
+  }
+
   return (
     <PanelWrapper>
       <PanelTitle title="Claim" />
@@ -30,7 +34,7 @@ export function ClaimPanel() {
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
             <Strong>
-              {getBalancesFetching() ? (
+              {isLoading() ? (
                 <LoadingSkeleton variant="white" width={150} height={32} />
               ) : (
                 formatNumberForDisplay(outstandingRewards)

@@ -1,8 +1,9 @@
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { Tabs } from "components/Tabs";
+import { parseEther } from "ethers/lib/utils";
 import { formatNumberForDisplay } from "helpers/formatNumber";
 import { useBalancesContext, useContractsContext } from "hooks/contexts";
-import { useExecuteUnstake } from "hooks/mutations";
+import { useApprove, useExecuteUnstake, useRequestUnstake, useStake } from "hooks/mutations";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -12,30 +13,58 @@ import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
-  const { voting } = useContractsContext();
-  const { stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } = useBalancesContext();
-  const executeUnstakeMutation = useExecuteUnstake();
-
+  const { voting, votingToken } = useContractsContext();
+  const { tokenAllowance, stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } =
+    useBalancesContext();
+  const { approveMutation } = useApprove();
+  const { stakeMutation, isStaking } = useStake();
+  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake();
+  const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake();
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableTokens;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
 
-  const tabs = [
-    {
-      title: "Stake",
-      content: <Stake />,
-    },
-    {
-      title: "Unstake",
-      content: <Unstake />,
-    },
-  ];
+  function isLoading() {
+    return getBalancesFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
+  }
+
+  function approve(approveAmount: string) {
+    approveMutation({ votingToken, approveAmount: parseEther(approveAmount) });
+  }
+
+  function stake(stakeAmount: string, resetStakeAmount: () => void) {
+    stakeMutation(
+      { voting, stakeAmount: parseEther(stakeAmount) },
+      {
+        onSuccess: () => resetStakeAmount(),
+      }
+    );
+  }
+
+  function requestUnstake(unstakeAmount: string) {
+    requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
+  }
 
   function executeUnstake() {
     executeUnstakeMutation({ voting });
   }
+
+  const tabs = [
+    {
+      title: "Stake",
+      content: (
+        <Stake tokenAllowance={tokenAllowance} unstakedBalance={unstakedBalance} approve={approve} stake={stake} />
+      ),
+    },
+    {
+      title: "Unstake",
+      content: (
+        <Unstake stakedBalance={stakedBalance} pendingUnstake={pendingUnstake} requestUnstake={requestUnstake} />
+      ),
+    },
+  ];
 
   return (
     <PanelWrapper>
@@ -46,7 +75,7 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
-                {getBalancesFetching() ? (
+                {isLoading() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
                   formatNumberForDisplay(stakedBalance)
@@ -56,7 +85,7 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
               <BalanceAmount>
-                {getBalancesFetching() ? (
+                {isLoading() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
                   formatNumberForDisplay(unstakedBalance)
