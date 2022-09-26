@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { outstandingRewardsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import useHandleError from "hooks/helpers/useHandleError";
+import { useHandleError } from "hooks/helpers";
 import { useAccountDetails } from "hooks/queries";
 import { withdrawRewards } from "web3/mutations";
 

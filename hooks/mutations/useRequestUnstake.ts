@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import getCanUnstakeTime from "helpers/getCanUnstakeTime";
-import useHandleError from "hooks/helpers/useHandleError";
+import { useHandleError } from "hooks/helpers";
 import { useAccountDetails } from "hooks/queries";
 import { StakerDetailsT } from "types/global";
 import { requestUnstake } from "web3/mutations";
