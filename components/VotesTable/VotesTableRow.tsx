@@ -39,10 +39,13 @@ export function VotesTableRow({
     return `${title.substring(0, 45)}...`;
   }
 
+  function getDecryptedVoteAsFormattedString() {
+    return decryptedVote?.price ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier) : undefined;
+  }
+
   function getDecryptedVoteAsNumber() {
-    return decryptedVote?.price
-      ? Number(formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier))
-      : undefined;
+    const formattedString = getDecryptedVoteAsFormattedString();
+    return formattedString ? Number(formattedString) : undefined;
   }
 
   function showVoteInput() {
@@ -61,23 +64,19 @@ export function VotesTableRow({
     return activityStatus === "active";
   }
 
-  function getExistingOrSelectedVote() {
+  function getExistingOrSelectedVoteFromOptions() {
     return (
       options?.find((option) => {
-        const existingVote = getDecryptedVoteAsNumber();
-        const valueAsNumber = Number(option.value);
+        const existingVote = getDecryptedVoteAsFormattedString();
 
         // prefer showing the selected vote if it exists
         if (selectedVote !== undefined) {
-          const selectedVoteAsNumber = Number(selectedVote);
-          return valueAsNumber === selectedVoteAsNumber;
+          return option.value === selectedVote;
         }
 
         if (existingVote !== undefined) {
-          return valueAsNumber === existingVote;
+          return option.value === existingVote;
         }
-
-        return false;
       }) ?? null
     );
   }
@@ -85,7 +84,7 @@ export function VotesTableRow({
   function getYourVote() {
     if (!decryptedVote) return "Did not vote";
     return (
-      findVoteInOptions(getDecryptedVoteAsNumber())?.label ??
+      findVoteInOptions(getDecryptedVoteAsFormattedString())?.label ??
       formatVoteStringWithPrecision(decryptedVote?.price?.toString(), decodedIdentifier)
     );
   }
@@ -93,15 +92,17 @@ export function VotesTableRow({
   function getCorrectVote() {
     if (!correctVote) return;
 
+    const correctVoteAsString = correctVote.toString();
+
     return (
-      findVoteInOptions(correctVote)?.label ?? formatVoteStringWithPrecision(correctVote?.toString(), decodedIdentifier)
+      findVoteInOptions(correctVoteAsString)?.label ??
+      formatVoteStringWithPrecision(correctVoteAsString, decodedIdentifier)
     );
   }
 
-  function findVoteInOptions(valueAsNumber: number | undefined) {
+  function findVoteInOptions(value: string | undefined) {
     return options?.find((option) => {
-      const optionValueAsNumber = Number(option.value);
-      return optionValueAsNumber === valueAsNumber;
+      return option.value === value;
     });
   }
 
@@ -141,12 +142,12 @@ export function VotesTableRow({
             <Dropdown
               label="Choose answer"
               items={options}
-              selected={getExistingOrSelectedVote()}
+              selected={getExistingOrSelectedVoteFromOptions()}
               onSelect={(option) => selectVote(vote, option.value.toString())}
             />
           ) : (
             <TextInput
-              value={selectedVote ?? undefined}
+              value={selectedVote ?? getDecryptedVoteAsNumber() ?? ""}
               onChange={(e) => selectVote(vote, e.target.value)}
               disabled={!signer}
             />
