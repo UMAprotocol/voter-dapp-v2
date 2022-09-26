@@ -5,7 +5,7 @@ import { ChangeEvent } from "react";
 import { Wrapper, Input } from "./Input";
 
 interface Props {
-  value: string | undefined;
+  value: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onMax: () => void;
   disabled?: boolean;
