@@ -1,13 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
+import { useAccountDetails } from "hooks/queries";
 import { approve } from "web3/mutations";
 
 export default function useApprove() {
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(approve, {
+  const { address } = useAccountDetails();
+
+  const { mutate, isLoading } = useMutation(approve, {
     onSuccess: (_data, { approveAmount }) => {
-      queryClient.setQueryData<BigNumber>([tokenAllowanceKey], (oldTokenAllowance) => {
+      queryClient.setQueryData<BigNumber>([tokenAllowanceKey, address], (oldTokenAllowance) => {
         if (oldTokenAllowance === undefined) return;
 
         const newTokenAllowance = oldTokenAllowance.add(approveAmount);
@@ -15,5 +18,8 @@ export default function useApprove() {
       });
     },
   });
-  return mutate;
+  return {
+    approveMutation: mutate,
+    isApproving: isLoading,
+  };
 }
