@@ -164,6 +164,9 @@ a:not([class]) {
 :where(input[type="file"]) {
   cursor: auto;
 }
+:where(input[type="number"]) {
+    -moz-appearance:textfield;
+}
 :where(input[type="file"])::-webkit-file-upload-button,
 :where(input[type="file"])::file-selector-button {
   cursor: pointer;
