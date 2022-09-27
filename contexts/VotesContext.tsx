@@ -1,4 +1,4 @@
-import getVoteMetaData from "helpers/getVoteMetaData";
+import { getVoteMetaData } from "helpers";
 import {
   useAccountDetails,
   useActiveVotes,

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { committedVotesKey } from "constants/queryKeys";
 import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
 import { useHandleError } from "hooks/helpers";
-import { getVotesCommittedByUser } from "web3/queries";
+import { getCommittedVotes } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
 export default function useCommittedVotes() {
@@ -13,7 +13,7 @@ export default function useCommittedVotes() {
 
   const queryResult = useQuery(
     [committedVotesKey, address, roundId],
-    () => getVotesCommittedByUser(voting, address, roundId),
+    () => getCommittedVotes(voting, address, roundId),
     {
       refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,

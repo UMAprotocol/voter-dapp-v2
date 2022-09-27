@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import getCanUnstakeTime from "helpers/getCanUnstakeTime";
+import { getCanUnstakeTime } from "helpers";
 
 export default async function getStakerDetails(votingContract: VotingV2Ethers, address: string) {
   const result = await votingContract.voterStakes(address);
