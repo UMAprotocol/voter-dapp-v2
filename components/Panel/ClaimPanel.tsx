@@ -1,6 +1,4 @@
-import { Button } from "components/Button";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
 import { useBalancesContext, useContractsContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
 import styled from "styled-components";

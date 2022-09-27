@@ -1,11 +1,11 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { CooldownTimer } from "components/Panel/StakeUnstakePanel";
+import { CooldownTimer } from "components";
 import { red500 } from "constants/colors";
 import add from "date-fns/add";
 import { BigNumber } from "ethers";
 
 export default {
-  title: "Base Components/CooldownTimer",
+  title: "Base components",
   component: CooldownTimer,
   decorators: [
     (Story) => (

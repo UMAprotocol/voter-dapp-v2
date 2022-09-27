@@ -1,9 +1,9 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { AmountInput } from "components/Input";
 import { useArgs } from "@storybook/client-api";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { AmountInput } from "components";
 
 export default {
-  title: "Base Components/AmountInput",
+  title: "Base components",
   component: AmountInput,
 } as ComponentMeta<typeof AmountInput>;
 

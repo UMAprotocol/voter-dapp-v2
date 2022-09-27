@@ -1,8 +1,8 @@
-import styled from "styled-components";
+import { Button } from "components";
 import UmaToken from "public/assets/icons/uma-token.svg";
-import { Button } from "components/Button";
 import { ChangeEvent } from "react";
-import { Wrapper, Input } from "./Input";
+import styled from "styled-components";
+import { Input, Wrapper } from "./Input";
 
 interface Props {
   value: string;

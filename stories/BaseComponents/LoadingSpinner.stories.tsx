@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { LoadingSpinner } from "components/LoadingSpinner";
+import { LoadingSpinner } from "components";
 
 export default {
-  title: "Base Components/LoadingSpinner",
+  title: "Base components",
   component: LoadingSpinner,
 } as ComponentMeta<typeof LoadingSpinner>;
 

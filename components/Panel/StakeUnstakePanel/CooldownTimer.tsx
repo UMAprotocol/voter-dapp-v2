@@ -1,4 +1,4 @@
-import { Button } from "components/Button";
+import { Button } from "components";
 import { formatDistanceToNowStrict } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";

@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import { Votes } from "components/Votes";
+import { Votes } from "components";
 import { desktopMaxWidth } from "constants/containers";
 import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
 import {

@@ -1,14 +1,12 @@
 import { Meta, Story } from "@storybook/react";
-import { Button } from "components/Button";
-import { TextInput } from "components/Input";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { Button, PanelErrorBanner, TextInput } from "components";
 import { desktopPanelWidth } from "constants/containers";
 import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {
-  title: "Base Components/PanelErrorBanner",
+  title: "Base components",
   component: PanelErrorBanner,
   decorators: [
     (Story) => (

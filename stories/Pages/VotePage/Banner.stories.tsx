@@ -1,5 +1,5 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Banner } from "components/Banner";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Banner } from "components";
 
 export default {
   title: "Pages/Vote Page/Banner",

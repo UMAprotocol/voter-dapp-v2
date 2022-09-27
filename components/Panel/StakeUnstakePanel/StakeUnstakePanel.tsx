@@ -1,5 +1,4 @@
-import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { Tabs } from "components/Tabs";
+import { LoadingSkeleton, Tabs } from "components";
 import { parseEther } from "ethers/lib/utils";
 import { formatNumberForDisplay } from "helpers";
 import {

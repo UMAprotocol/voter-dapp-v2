@@ -1,9 +1,4 @@
-import { Button } from "components/Button";
-import { LoadingSpinner } from "components/LoadingSpinner";
-import { VotesTableRow } from "components/VotesTable";
-import VotesTable from "components/VotesTable/VotesTable";
-import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
-import { VoteTimeline } from "components/VoteTimeline";
+import { Button, LoadingSpinner, VotesTable, VotesTableHeadings, VotesTableRow, VoteTimeline } from "components";
 import { formatVotesToCommit } from "helpers";
 import {
   useAccountDetails,

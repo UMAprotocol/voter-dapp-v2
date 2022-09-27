@@ -1,5 +1,4 @@
-import { Button } from "components/Button";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { Button, PanelErrorBanner } from "components";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";

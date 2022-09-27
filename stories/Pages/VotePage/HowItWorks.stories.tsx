@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { HowItWorks } from "components/HowItWorks";
-import add from "date-fns/add";
+import { HowItWorks } from "components";
 
 export default {
   title: "Pages/Vote Page/HowItWorks",

@@ -1,7 +1,4 @@
-import { Banner } from "components/Banner";
-import { HowItWorks } from "components/HowItWorks";
-import { Layout } from "components/Layout";
-import { Votes } from "components/Votes";
+import { Banner, HowItWorks, Layout, Votes } from "components";
 import { add } from "date-fns";
 
 export function Vote() {

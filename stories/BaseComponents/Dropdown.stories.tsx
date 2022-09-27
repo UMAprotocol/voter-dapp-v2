@@ -1,6 +1,6 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Dropdown } from "components/Dropdown";
 import { useArgs } from "@storybook/client-api";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Dropdown } from "components";
 import { blackOpacity25 } from "constants/colors";
 
 const defaultMockItems = [
@@ -11,7 +11,7 @@ const defaultMockItems = [
 ];
 
 export default {
-  title: "Base Components/Dropdown",
+  title: "Base components",
   component: Dropdown,
   args: {
     label: "Select answer",

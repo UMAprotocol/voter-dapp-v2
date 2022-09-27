@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import VotesTable from "components/VotesTable/VotesTable";
+import { VotesTable } from "components";
 import {
   Active as ActiveHeading,
   Past as PastHeading,

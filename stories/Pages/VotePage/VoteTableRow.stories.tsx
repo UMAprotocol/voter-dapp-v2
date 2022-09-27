@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { VotesTableRow } from "components/VotesTable";
+import { VotesTableRow } from "components";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,

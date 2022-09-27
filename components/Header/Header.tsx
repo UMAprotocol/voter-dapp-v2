@@ -1,4 +1,4 @@
-import { Wallet } from "components/Wallet";
+import { Wallet } from "components";
 import { usePanelContext } from "hooks";
 import Link from "next/link";
 import Logo from "public/assets/logo.svg";

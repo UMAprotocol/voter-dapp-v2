@@ -1,12 +1,11 @@
 import { useArgs } from "@storybook/client-api";
 import { ComponentMeta, ComponentStory, DecoratorFn } from "@storybook/react";
-import { Button } from "components/Button";
-import { Panel } from "components/Panel";
+import { Button, Panel } from "components";
 import { defaultErrorContextState, ErrorContext, PanelContext } from "contexts";
 import sub from "date-fns/sub";
 
 export default {
-  title: "Base Components/Panel",
+  title: "Base components",
   component: Panel,
 } as ComponentMeta<typeof Panel>;
 

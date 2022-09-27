@@ -1,8 +1,8 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Button } from "components/Button";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Button } from "components";
 
 export default {
-  title: "Base Components/Button",
+  title: "Base components",
   component: Button,
 } as ComponentMeta<typeof Button>;
 

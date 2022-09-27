@@ -1,5 +1,4 @@
-import { InfoBar } from "components/InfoBar";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { InfoBar, LoadingSkeleton } from "components";
 import { formatNumberForDisplay } from "helpers";
 import { useBalancesContext, usePanelContext } from "hooks";
 import One from "public/assets/icons/one.svg";

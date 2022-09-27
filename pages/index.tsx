@@ -1,4 +1,4 @@
-import { Vote } from "components/pages";
+import { Vote } from "components";
 import { useMounted } from "hooks";
 import type { NextPage } from "next";
 

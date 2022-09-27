@@ -1,7 +1,4 @@
-import { Button } from "components/Button";
-import { Dropdown } from "components/Dropdown";
-import { TextInput } from "components/Input";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
 import { formatVoteStringWithPrecision } from "helpers";
 import { useWalletContext } from "hooks";

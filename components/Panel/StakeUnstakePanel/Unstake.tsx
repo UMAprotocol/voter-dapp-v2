@@ -1,6 +1,4 @@
-import { Button } from "components/Button";
-import { AmountInput } from "components/Input";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { AmountInput, Button, PanelErrorBanner } from "components";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
 import { useVotesContext, useVoteTimingContext } from "hooks";
