@@ -4,8 +4,7 @@ import {
   computeRoundId,
   getPhase,
 } from "helpers/voteTiming";
-import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import { useInterval } from "hooks/helpers";
+import { useInterval, useVoteTimingContext } from "hooks";
 
 /** Initializes the vote timing interval
  *

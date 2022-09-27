@@ -5,7 +5,7 @@ import {
   useStakerDetails,
   useTokenAllowance,
   useUnstakedBalance,
-} from "hooks/queries";
+} from "hooks";
 import { createContext, ReactNode } from "react";
 
 interface BalancesContextState {

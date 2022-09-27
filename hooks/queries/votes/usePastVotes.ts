@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { pastVotesKey } from "constants/queryKeys";
 import { getPastVotes } from "graph/queries";
-import { useVoteTimingContext } from "hooks/contexts";
-import { useHandleError } from "hooks/helpers";
+import { useHandleError, useVoteTimingContext } from "hooks";
 
 export default function usePastVotes() {
   const { roundId } = useVoteTimingContext();

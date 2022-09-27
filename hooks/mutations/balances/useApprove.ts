@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useHandleError } from "hooks/helpers";
-import { useAccountDetails } from "hooks/queries";
+import { useAccountDetails, useHandleError } from "hooks";
 import { approve } from "web3/mutations";
 
 export default function useApprove() {

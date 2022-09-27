@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { revealedVotesKey } from "constants/queryKeys";
-import { useContractsContext, useVoteTimingContext } from "hooks/contexts";
-import { useHandleError } from "hooks/helpers";
+import { useAccountDetails, useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getRevealedVotes } from "web3/queries";
-import useAccountDetails from "./useAccountDetails";
 
 export default function useRevealedVotes() {
   const { voting } = useContractsContext();

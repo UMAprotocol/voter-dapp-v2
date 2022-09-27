@@ -4,7 +4,7 @@ import { TextInput } from "components/Input";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { green, red500 } from "constants/colors";
 import { formatVoteStringWithPrecision } from "helpers/formatVotes";
-import { useWalletContext } from "hooks/contexts";
+import { useWalletContext } from "hooks";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";

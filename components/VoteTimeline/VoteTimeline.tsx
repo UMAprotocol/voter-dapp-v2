@@ -1,6 +1,5 @@
 import { phaseLengthMilliseconds } from "constants/voteTiming";
-import { useVotesContext } from "hooks/contexts";
-import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
+import { useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
 import { RevealPhase } from "./RevealPhase";

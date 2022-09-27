@@ -1,4 +1,4 @@
-import { useIsomorphicLayoutEffect } from "hooks/helpers";
+import { useIsomorphicLayoutEffect } from "hooks";
 import { useEffect, useRef } from "react";
 
 /** Allows declarative use of `setInterval` in React hooks

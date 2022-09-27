@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey } from "constants/queryKeys";
 import * as contentful from "contentful";
-import { useHandleError } from "hooks/helpers";
+import { useHandleError } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types/global";
 import useActiveVotes from "./useActiveVotes";
 import useUpcomingVotes from "./useUpcomingVotes";

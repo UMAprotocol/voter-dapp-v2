@@ -6,15 +6,16 @@ import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
 import { VoteTimeline } from "components/VoteTimeline";
 import { formatVotesToCommit } from "helpers/formatVotes";
 import {
+  useAccountDetails,
+  useCommitVotes,
   useContractsContext,
+  useInitializeVoteTiming,
   usePanelContext,
+  useRevealVotes,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
-} from "hooks/contexts";
-import { useInitializeVoteTiming } from "hooks/helpers";
-import { useCommitVotes, useRevealVotes } from "hooks/mutations";
-import { useAccountDetails } from "hooks/queries";
+} from "hooks";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types/global";

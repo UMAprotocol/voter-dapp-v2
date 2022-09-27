@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useHandleError } from "hooks/helpers";
-import { useAccountDetails } from "hooks/queries";
+import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types/global";
 import { stake } from "web3/mutations";
 

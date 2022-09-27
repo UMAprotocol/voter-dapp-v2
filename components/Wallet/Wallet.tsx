@@ -2,7 +2,7 @@ import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import message from "constants/signingMessage";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
-import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
+import { useContractsContext, usePanelContext, useWalletContext } from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types/global";

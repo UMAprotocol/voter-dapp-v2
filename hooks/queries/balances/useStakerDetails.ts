@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useContractsContext } from "hooks/contexts";
-import { useHandleError } from "hooks/helpers";
+import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getStakerDetails } from "web3/queries";
-import useAccountDetails from "./useAccountDetails";
 
 export default function useStakerDetails() {
   const { voting } = useContractsContext();

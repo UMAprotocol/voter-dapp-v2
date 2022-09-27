@@ -1,7 +1,7 @@
 import { InfoBar } from "components/InfoBar";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { formatNumberForDisplay } from "helpers/formatNumber";
-import { useBalancesContext, usePanelContext } from "hooks/contexts";
+import { useBalancesContext, usePanelContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";

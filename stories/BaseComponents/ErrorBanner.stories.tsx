@@ -3,7 +3,7 @@ import { Button } from "components/Button";
 import { ErrorBanner } from "components/ErrorBanner";
 import { TextInput } from "components/Input";
 import { ErrorProvider } from "contexts";
-import { useErrorContext } from "hooks/contexts";
+import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {

@@ -4,7 +4,7 @@ import { Button } from "components/Button";
 import { Nav } from "components/Nav";
 import { getAccountDetails, handleDisconnectWallet } from "components/Wallet";
 import { WalletIcon } from "components/Wallet/WalletIcon";
-import { useWalletContext } from "hooks/contexts";
+import { useWalletContext } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";

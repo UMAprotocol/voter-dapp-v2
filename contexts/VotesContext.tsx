@@ -10,7 +10,7 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
-} from "hooks/queries";
+} from "hooks";
 import { createContext, ReactNode } from "react";
 import {
   ActivityStatusT,
