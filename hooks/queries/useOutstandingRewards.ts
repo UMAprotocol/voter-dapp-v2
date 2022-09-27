@@ -3,7 +3,7 @@ import { outstandingRewardsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useContractsContext } from "hooks/contexts";
 import { useHandleError } from "hooks/helpers";
-import getOutstandingRewards from "web3/queries/getOutstandingRewards";
+import { getOutstandingRewards } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
 export default function useOutstandingRewards() {

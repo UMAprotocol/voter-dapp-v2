@@ -1,8 +1,8 @@
-export { default as approve } from "./approve";
-export { default as commitVotes } from "./commitVotes";
-export { default as executeUnstake } from "./executeUnstake";
-export { default as requestUnstake } from "./requestUnstake";
-export { default as revealVotes } from "./revealVotes";
-export { default as stake } from "./stake";
-export { default as withdrawAndRestake } from "./withdrawAndRestake";
-export { default as withdrawRewards } from "./withdrawRewards";
+export { default as approve } from "./balances/approve";
+export { default as executeUnstake } from "./balances/executeUnstake";
+export { default as requestUnstake } from "./balances/requestUnstake";
+export { default as stake } from "./balances/stake";
+export { default as withdrawAndRestake } from "./balances/withdrawAndRestake";
+export { default as withdrawRewards } from "./balances/withdrawRewards";
+export { default as commitVotes } from "./votes/commitVotes";
+export { default as revealVotes } from "./votes/revealVotes";
