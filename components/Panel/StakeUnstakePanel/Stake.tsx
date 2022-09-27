@@ -16,12 +16,6 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
 
-  function getMax() {
-    if (tokenAllowance === undefined || unstakedBalance === undefined) return "0";
-    if (tokenAllowance.gt(unstakedBalance)) return formatEther(unstakedBalance);
-    return formatEther(tokenAllowance);
-  }
-
   function isApprove() {
     if (tokenAllowance === undefined || stakeAmount === "") return true;
     const parsedStakeAmount = parseEther(stakeAmount);
@@ -52,7 +46,7 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
         <AmountInput
           value={stakeAmount}
           onChange={(e) => setStakeAmount(e.target.value)}
-          onMax={() => setStakeAmount(getMax())}
+          onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
         />
       </AmountInputWrapper>
       <CheckboxWrapper>
