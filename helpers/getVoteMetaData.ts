@@ -2,7 +2,7 @@ import { discordLink } from "constants/discordLink";
 import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { checkIfIsPolymarket } from "helpers";
-import { ContentfulDataT, VoteMetaDataT } from "types/global";
+import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *

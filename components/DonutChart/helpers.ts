@@ -1,4 +1,4 @@
-import { InputDataT } from "types/global";
+import { InputDataT } from "types";
 
 export const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
 export const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);

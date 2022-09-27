@@ -1,6 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { makeUniqueKeyForVote } from "helpers";
-import { VoteExistsByKeyT } from "types/global";
+import { VoteExistsByKeyT } from "types";
 
 export default async function getVotesRevealedByUser(votingContract: VotingV2Ethers, address: string, roundId: number) {
   const filter = votingContract.filters.VoteRevealed(address, null, null, null, null, null, null, null);

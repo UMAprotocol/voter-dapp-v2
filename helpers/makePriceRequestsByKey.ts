@@ -1,4 +1,4 @@
-import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types/global";
+import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
 import { decodeHexString } from "./decodeHexString";
 import { makeUniqueKeyForVote } from "./votes";
 

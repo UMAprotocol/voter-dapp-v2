@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import { VoteOriginT } from "types/global";
-import UMA from "public/assets/icons/uma.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
+import UMA from "public/assets/icons/uma.svg";
+import styled from "styled-components";
+import { VoteOriginT } from "types";
 
 interface Props {
   title: string;

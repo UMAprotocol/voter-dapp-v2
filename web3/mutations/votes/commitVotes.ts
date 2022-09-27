@@ -1,4 +1,4 @@
-import { CommitVotes } from "types/global";
+import { CommitVotes } from "types";
 
 export default async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;

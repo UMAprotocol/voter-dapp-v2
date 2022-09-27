@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ActivityStatusT } from "types/global";
+import { ActivityStatusT } from "types";
 
 interface Props {
   activityStatus: ActivityStatusT;

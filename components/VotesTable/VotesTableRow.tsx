@@ -9,7 +9,7 @@ import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT, VotePhaseT, VoteT } from "types/global";
+import { ActivityStatusT, VotePhaseT, VoteT } from "types";
 
 export interface Props {
   vote: VoteT;

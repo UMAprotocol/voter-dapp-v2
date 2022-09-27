@@ -1,11 +1,11 @@
-import { Menu, MenuButton, MenuItem, MenuContextValue, MenuPopover } from "@reach/menu-button";
-import { positionMatchWidth } from "@reach/popover";
+import { Menu, MenuButton, MenuContextValue, MenuItem, MenuPopover } from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
+import { positionMatchWidth } from "@reach/popover";
+import { black, blackOpacity50 } from "constants/colors";
+import Chevron from "public/assets/icons/chevron.svg";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
-import Chevron from "public/assets/icons/chevron.svg";
-import { black, blackOpacity50 } from "constants/colors";
-import { DropdownItemT } from "types/global";
+import { DropdownItemT } from "types";
 
 interface Props {
   items: DropdownItemT[];

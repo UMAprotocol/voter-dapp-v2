@@ -10,7 +10,7 @@ import {
   voteWithCorrectVoteWithUserVote,
   voteWithoutUserVote,
 } from "stories/mocks/votes";
-import { ActivityStatusT, VoteT } from "types/global";
+import { ActivityStatusT, VoteT } from "types";
 
 interface StoryProps {
   phase: "commit" | "reveal";

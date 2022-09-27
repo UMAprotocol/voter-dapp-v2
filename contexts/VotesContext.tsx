@@ -20,7 +20,7 @@ import {
   PriceRequestByKeyT,
   VoteExistsByKeyT,
   VoteT,
-} from "types/global";
+} from "types";
 
 interface VotesContextState {
   hasActiveVotes: boolean | undefined;

@@ -18,7 +18,7 @@ import {
 } from "hooks";
 import { useState } from "react";
 import styled from "styled-components";
-import { SelectedVotesByKeyT, VoteT } from "types/global";
+import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
   const {

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { outstandingRewardsKey, stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
-import { StakerDetailsT } from "types/global";
+import { StakerDetailsT } from "types";
 import { withdrawAndRestake } from "web3";
 
 export default function useWithdrawAndRestake() {

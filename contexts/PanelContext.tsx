@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useState } from "react";
-import { PanelContentT, PanelTypeT } from "types/global";
+import { PanelContentT, PanelTypeT } from "types";
 
 interface PanelContextState {
   panelType: PanelTypeT;

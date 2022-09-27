@@ -1,5 +1,7 @@
 export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
 export {
+  decryptMessage,
+  encryptMessage,
   derivePrivateKey,
   getPrecisionForIdentifier,
   getRandomSignedInt,
@@ -19,7 +21,12 @@ export {
   toUtf8String,
 } from "./ethers";
 export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
-export { formatVoteStringWithPrecision, parseVoteStringWithPrecision } from "./formatVotes";
+export {
+  formatVotesToCommit,
+  formatVotesToReveal,
+  formatVoteStringWithPrecision,
+  parseVoteStringWithPrecision,
+} from "./formatVotes";
 export { getCanUnstakeTime } from "./getCanUnstakeTime";
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";

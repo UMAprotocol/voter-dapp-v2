@@ -1,7 +1,7 @@
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { BigNumber } from "ethers";
 import { solidityKeccak256 } from "helpers";
-import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types/global";
+import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
 
 function makeVoteHash(

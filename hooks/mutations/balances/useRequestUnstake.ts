@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
-import { StakerDetailsT } from "types/global";
+import { StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
 
 export default function useRequestUnstake() {
