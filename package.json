@@ -10,8 +10,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "chromatic": "npx chromatic --project-token=9e9ed15fd825",
-    "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts",
-    "make-exports": "ts-node ./scripts/makeExports.ts"
+    "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts"
   },
   "dependencies": {
     "@reach/checkbox": "^0.17.0",
