@@ -2,8 +2,7 @@ import { useArgs } from "@storybook/client-api";
 import { ComponentMeta, ComponentStory, DecoratorFn } from "@storybook/react";
 import { Button } from "components/Button";
 import { Panel } from "components/Panel";
-import { defaultErrorContextState, ErrorContext } from "contexts/ErrorContext";
-import { PanelContext } from "contexts/PanelContext";
+import { defaultErrorContextState, ErrorContext, PanelContext } from "contexts";
 import sub from "date-fns/sub";
 
 export default {

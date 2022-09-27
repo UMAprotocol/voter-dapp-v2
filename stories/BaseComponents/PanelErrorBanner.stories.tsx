@@ -3,7 +3,7 @@ import { Button } from "components/Button";
 import { TextInput } from "components/Input";
 import { PanelErrorBanner } from "components/PanelErrorBanner";
 import { desktopPanelWidth } from "constants/containers";
-import { ErrorProvider } from "contexts/ErrorContext";
+import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks/contexts";
 import { ReactNode, useEffect, useState } from "react";
 

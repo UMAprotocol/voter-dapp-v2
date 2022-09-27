@@ -1,4 +1,4 @@
-import { VotesContext } from "contexts/VotesContext";
+import { VotesContext } from "contexts";
 import { useContext } from "react";
 
 const useVotesContext = () => useContext(VotesContext);

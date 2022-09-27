@@ -1,10 +1,9 @@
 import { addDecorator } from "@storybook/react";
-import { GlobalStyle } from 'components/GlobalStyle';
-import { WalletProvider } from "contexts/WalletContext";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { PanelProvider } from "contexts/PanelContext";
-import "styles/fonts.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
+import { GlobalStyle } from 'components/GlobalStyle';
+import { PanelProvider, WalletProvider } from "contexts";
+import "styles/fonts.css";
 
 window.Buffer = Buffer;
 

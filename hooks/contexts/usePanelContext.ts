@@ -1,4 +1,4 @@
-import { PanelContext } from "contexts/PanelContext";
+import { PanelContext } from "contexts";
 import { useContext } from "react";
 
 const usePanelContext = () => useContext(PanelContext);

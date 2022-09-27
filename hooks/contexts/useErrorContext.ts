@@ -1,4 +1,4 @@
-import { ErrorContext } from "contexts/ErrorContext";
+import { ErrorContext } from "contexts";
 import { useContext } from "react";
 
 const useErrorContext = () => useContext(ErrorContext);

@@ -2,7 +2,7 @@ import { Meta, Story } from "@storybook/react";
 import { Button } from "components/Button";
 import { ErrorBanner } from "components/ErrorBanner";
 import { TextInput } from "components/Input";
-import { ErrorProvider } from "contexts/ErrorContext";
+import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks/contexts";
 import { ReactNode, useEffect, useState } from "react";
 
