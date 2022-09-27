@@ -3,7 +3,7 @@ import { encryptedVotesKey } from "constants/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getEncryptedVotes } from "web3";
 
-export default function useEncryptedVotes() {
+export function useEncryptedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();

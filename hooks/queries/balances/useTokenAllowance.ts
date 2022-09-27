@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getTokenAllowance } from "web3";
 
-export default function useTokenAllowance() {
+export function useTokenAllowance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
   const onError = useHandleError();

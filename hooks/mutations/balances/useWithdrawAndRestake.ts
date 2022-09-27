@@ -5,7 +5,7 @@ import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { withdrawAndRestake } from "web3";
 
-export default function useWithdrawAndRestake() {
+export function useWithdrawAndRestake() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const onError = useHandleError();

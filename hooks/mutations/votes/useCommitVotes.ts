@@ -4,7 +4,7 @@ import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
 import { commitVotes } from "web3";
 
-export default function useCommitVotes() {
+export function useCommitVotes() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();

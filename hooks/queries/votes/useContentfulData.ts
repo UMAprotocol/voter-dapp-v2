@@ -38,7 +38,7 @@ async function getContentfulData(adminProposalNumbersByKey: Record<UniqueKeyT, n
   return contentfulDataByKey;
 }
 
-export default function useContentfulData() {
+export function useContentfulData() {
   const { data: activeVotes } = useActiveVotes();
   const {
     data: { upcomingVotes },

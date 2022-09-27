@@ -3,7 +3,7 @@ import { upcomingVotesKey } from "constants/queryKeys";
 import { useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getUpcomingVotes } from "web3";
 
-export default function useUpcomingVotes() {
+export function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
   const onError = useHandleError();

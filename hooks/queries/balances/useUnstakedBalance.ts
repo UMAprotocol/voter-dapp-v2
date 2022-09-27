@@ -3,7 +3,7 @@ import { unstakedBalanceKey } from "constants/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getUnstakedBalance } from "web3";
 
-export default function useUnstakedBalance() {
+export function useUnstakedBalance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
   const onError = useHandleError();

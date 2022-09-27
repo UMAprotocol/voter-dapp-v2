@@ -5,7 +5,7 @@ import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
 
-export default function useRequestUnstake() {
+export function useRequestUnstake() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const onError = useHandleError();

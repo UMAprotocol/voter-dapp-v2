@@ -3,7 +3,7 @@ import { activeVotesKey } from "constants/queryKeys";
 import { useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getActiveVotes } from "web3";
 
-export default function useActiveVotes() {
+export function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
   const onError = useHandleError();

@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { approve } from "web3";
 
-export default function useApprove() {
+export function useApprove() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const onError = useHandleError();

@@ -3,7 +3,7 @@ import { revealedVotesKey } from "constants/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getRevealedVotes } from "web3";
 
-export default function useRevealedVotes() {
+export function useRevealedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();

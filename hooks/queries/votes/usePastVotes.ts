@@ -3,7 +3,7 @@ import { pastVotesKey } from "constants/queryKeys";
 import { getPastVotes } from "graph";
 import { useHandleError, useVoteTimingContext } from "hooks";
 
-export default function usePastVotes() {
+export function usePastVotes() {
   const { roundId } = useVoteTimingContext();
   const onError = useHandleError();
 

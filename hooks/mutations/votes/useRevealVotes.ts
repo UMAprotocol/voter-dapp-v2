@@ -4,7 +4,7 @@ import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { VoteExistsByKeyT } from "types";
 import { revealVotes } from "web3";
 
-export default function useRevealVotes() {
+export function useRevealVotes() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();

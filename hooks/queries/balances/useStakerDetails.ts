@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getStakerDetails } from "web3";
 
-export default function useStakerDetails() {
+export function useStakerDetails() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const onError = useHandleError();
