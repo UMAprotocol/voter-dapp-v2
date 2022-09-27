@@ -1,4 +1,4 @@
-import { formatVotesToReveal } from "helpers/formatVotes";
+import { formatVotesToReveal } from "helpers";
 import { RevealVotes } from "types/global";
 
 export default async function revealVotes({ votesToReveal, voting }: RevealVotes) {

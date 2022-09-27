@@ -1,7 +1,7 @@
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { Tabs } from "components/Tabs";
 import { parseEther } from "ethers/lib/utils";
-import { formatNumberForDisplay } from "helpers/formatNumber";
+import { formatNumberForDisplay } from "helpers";
 import {
   useApprove,
   useBalancesContext,

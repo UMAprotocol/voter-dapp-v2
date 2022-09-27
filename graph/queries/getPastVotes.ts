@@ -1,8 +1,7 @@
 import graphEndpoint from "constants/graphEndpoint";
 import { formatBytes32String } from "ethers/lib/utils";
 import request, { gql } from "graphql-request";
-import { makePriceRequestsByKey } from "helpers";
-import { formatVoteStringWithPrecision } from "helpers/formatVotes";
+import { formatVoteStringWithPrecision, makePriceRequestsByKey } from "helpers";
 import { PastVotesQuery } from "types/global";
 
 const pastVotesQuery = gql`

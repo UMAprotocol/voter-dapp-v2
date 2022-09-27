@@ -1,9 +1,4 @@
-import {
-  computeMillisecondsUntilPhaseEnds,
-  computePhaseEndTimeMilliseconds,
-  computeRoundId,
-  getPhase,
-} from "helpers/voteTiming";
+import { computeMillisecondsUntilPhaseEnds, computePhaseEndTimeMilliseconds, computeRoundId, getPhase } from "helpers";
 import { useInterval, useVoteTimingContext } from "hooks";
 
 /** Initializes the vote timing interval

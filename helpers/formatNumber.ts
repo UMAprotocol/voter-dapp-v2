@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { commify, formatEther } from "helpers/ethers";
+import { commify, formatEther } from "helpers";
 
 export function formatNumberForDisplay(number: BigNumber | undefined, decimals = 2) {
   if (!number) return "0";

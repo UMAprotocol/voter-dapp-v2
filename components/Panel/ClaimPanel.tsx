@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { PanelErrorBanner } from "components/PanelErrorBanner";
-import { formatNumberForDisplay } from "helpers/formatNumber";
+import { formatNumberForDisplay } from "helpers";
 import { useBalancesContext, useContractsContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";

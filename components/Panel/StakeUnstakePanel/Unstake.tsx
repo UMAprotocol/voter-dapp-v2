@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { AmountInput } from "components/Input";
 import { PanelErrorBanner } from "components/PanelErrorBanner";
 import { BigNumber } from "ethers";
-import { formatEther } from "helpers/ethers";
+import { formatEther } from "helpers";
 import { useVotesContext, useVoteTimingContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";

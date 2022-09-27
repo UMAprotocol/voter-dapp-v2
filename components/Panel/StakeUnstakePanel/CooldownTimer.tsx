@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { formatDistanceToNowStrict } from "date-fns";
 import { BigNumber } from "ethers";
-import { formatNumberForDisplay } from "helpers/formatNumber";
+import { formatNumberForDisplay } from "helpers";
 import Time from "public/assets/icons/time.svg";
 import styled from "styled-components";
 

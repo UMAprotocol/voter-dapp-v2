@@ -1,6 +1,6 @@
 import EthCrypto from "eth-crypto";
 import { BigNumber } from "ethers";
-import { randomBytes, solidityKeccak256 } from "helpers/ethers";
+import { randomBytes, solidityKeccak256 } from "helpers";
 
 // Encrypts a message using an ethereum public key. To decrypt messages that are encrypted with this method, use
 // decryptMessage().

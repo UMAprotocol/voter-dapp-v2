@@ -4,7 +4,7 @@ import { VotesTableRow } from "components/VotesTable";
 import VotesTable from "components/VotesTable/VotesTable";
 import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
 import { VoteTimeline } from "components/VoteTimeline";
-import { formatVotesToCommit } from "helpers/formatVotes";
+import { formatVotesToCommit } from "helpers";
 import {
   useAccountDetails,
   useCommitVotes,

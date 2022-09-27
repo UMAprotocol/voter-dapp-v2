@@ -3,7 +3,7 @@ import { Dropdown } from "components/Dropdown";
 import { TextInput } from "components/Input";
 import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { green, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision } from "helpers/formatVotes";
+import { formatVoteStringWithPrecision } from "helpers";
 import { useWalletContext } from "hooks";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";

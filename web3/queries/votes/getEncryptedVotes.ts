@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { makeUniqueKeyForVote } from "helpers/votes";
+import { makeUniqueKeyForVote } from "helpers";
 import { EncryptedVotesByKeyT } from "types/global";
 
 export default async function getEncryptedVotesForUser(
