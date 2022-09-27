@@ -3,7 +3,7 @@ import { stakerDetailsKey } from "constants/queryKeys";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types/global";
-import { requestUnstake } from "web3/mutations";
+import { requestUnstake } from "web3";
 
 export default function useRequestUnstake() {
   const queryClient = useQueryClient();

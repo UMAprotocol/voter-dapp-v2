@@ -3,7 +3,7 @@ import { outstandingRewardsKey, stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types/global";
-import { withdrawAndRestake } from "web3/mutations";
+import { withdrawAndRestake } from "web3";
 
 export default function useWithdrawAndRestake() {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { hasActiveVotesKey } from "constants/queryKeys";
 import { useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
-import { getHasActiveVotes } from "web3/queries";
+import { getHasActiveVotes } from "web3";
 
 export default function useHasActiveVotes() {
   const { voting } = useContractsContext();

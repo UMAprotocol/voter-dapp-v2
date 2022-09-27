@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey } from "constants/queryKeys";
 import * as contentful from "contentful";
-import { useHandleError } from "hooks";
+import { useActiveVotes, useHandleError, useUpcomingVotes } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types/global";
-import useActiveVotes from "./useActiveVotes";
-import useUpcomingVotes from "./useUpcomingVotes";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
 const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";

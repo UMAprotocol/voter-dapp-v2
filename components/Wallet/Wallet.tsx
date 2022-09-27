@@ -6,7 +6,7 @@ import { useContractsContext, usePanelContext, useWalletContext } from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types/global";
-import { createVotingContractInstance, createVotingTokenContractInstance } from "web3/contracts";
+import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 

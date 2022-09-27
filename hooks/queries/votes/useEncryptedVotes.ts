@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { encryptedVotesKey } from "constants/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
-import { getEncryptedVotes } from "web3/queries";
+import { getEncryptedVotes } from "web3";
 
 export default function useEncryptedVotes() {
   const { voting } = useContractsContext();

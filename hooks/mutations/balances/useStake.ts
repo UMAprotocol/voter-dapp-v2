@@ -3,7 +3,7 @@ import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types/global";
-import { stake } from "web3/mutations";
+import { stake } from "web3";
 
 export default function useStake() {
   const queryClient = useQueryClient();

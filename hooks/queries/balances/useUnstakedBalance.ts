@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { unstakedBalanceKey } from "constants/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
-import { getUnstakedBalance } from "web3/queries";
+import { getUnstakedBalance } from "web3";
 
 export default function useUnstakedBalance() {
   const { votingToken } = useContractsContext();

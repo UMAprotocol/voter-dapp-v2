@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
-import { getTokenAllowance } from "web3/queries";
+import { getTokenAllowance } from "web3";
 
 export default function useTokenAllowance() {
   const { votingToken } = useContractsContext();

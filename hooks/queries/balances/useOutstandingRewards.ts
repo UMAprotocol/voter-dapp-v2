@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { outstandingRewardsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useContractsContext, useHandleError } from "hooks";
-import { getOutstandingRewards } from "web3/queries";
+import { getOutstandingRewards } from "web3";
 import useAccountDetails from "../../wallet/useAccountDetails";
 
 export default function useOutstandingRewards() {

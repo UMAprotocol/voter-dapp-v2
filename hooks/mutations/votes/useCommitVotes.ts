@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { committedVotesKey, encryptedVotesKey } from "constants/queryKeys";
 import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { EncryptedVotesByKeyT, VoteExistsByKeyT } from "types/global";
-import { commitVotes } from "web3/mutations";
+import { commitVotes } from "web3";
 
 export default function useCommitVotes() {
   const queryClient = useQueryClient();
