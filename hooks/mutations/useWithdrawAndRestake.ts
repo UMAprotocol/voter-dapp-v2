@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { outstandingRewardsKey, stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
+import { useHandleError } from "hooks/helpers";
 import { useAccountDetails } from "hooks/queries";
 import { StakerDetailsT } from "types/global";
 import { withdrawAndRestake } from "web3/mutations";
@@ -8,6 +9,7 @@ import { withdrawAndRestake } from "web3/mutations";
 export default function useWithdrawAndRestake() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
+  const onError = useHandleError();
 
   const { mutate, isLoading } = useMutation(withdrawAndRestake, {
     onSuccess: () => {
@@ -26,6 +28,7 @@ export default function useWithdrawAndRestake() {
 
       queryClient.setQueryData<BigNumber>([outstandingRewardsKey, address], () => BigNumber.from(0));
     },
+    onError,
   });
   return {
     withdrawAndRestakeMutation: mutate,

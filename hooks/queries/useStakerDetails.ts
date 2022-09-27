@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useContractsContext } from "hooks/contexts";
+import { useHandleError } from "hooks/helpers";
 import { getStakerDetails } from "web3/queries";
 import useAccountDetails from "./useAccountDetails";
 
 export default function useStakerDetails() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
+  const onError = useHandleError();
 
   const queryResult = useQuery([stakerDetailsKey, address], () => getStakerDetails(voting, address), {
     refetchInterval: (data) => (data ? false : 100),
@@ -18,6 +20,7 @@ export default function useStakerDetails() {
       unstakeRequestTime: new Date(0),
       canUnstakeTime: new Date(0),
     },
+    onError,
   });
 
   return queryResult;

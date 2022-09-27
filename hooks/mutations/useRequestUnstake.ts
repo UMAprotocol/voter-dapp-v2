@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import getCanUnstakeTime from "helpers/getCanUnstakeTime";
+import { useHandleError } from "hooks/helpers";
 import { useAccountDetails } from "hooks/queries";
 import { StakerDetailsT } from "types/global";
 import { requestUnstake } from "web3/mutations";
@@ -8,6 +9,7 @@ import { requestUnstake } from "web3/mutations";
 export default function useRequestUnstake() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
+  const onError = useHandleError();
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
     onSuccess: (_data, { unstakeAmount }) => {
@@ -24,6 +26,7 @@ export default function useRequestUnstake() {
         };
       });
     },
+    onError,
   });
   return {
     requestUnstakeMutation: mutate,

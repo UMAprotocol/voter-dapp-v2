@@ -1,7 +1,8 @@
 import { useArgs } from "@storybook/client-api";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { ComponentMeta, ComponentStory, DecoratorFn } from "@storybook/react";
 import { Button } from "components/Button";
 import { Panel } from "components/Panel";
+import { defaultErrorContextState, ErrorContext } from "contexts/ErrorContext";
 import { PanelContext } from "contexts/PanelContext";
 import sub from "date-fns/sub";
 
@@ -36,6 +37,18 @@ const Template: ComponentStory<typeof Panel> = (args) => {
   );
 };
 
+const withErrorDecorator: DecoratorFn = (Story) => {
+  const mockErrorContextState = {
+    ...defaultErrorContextState,
+    errorMessages: ["Something went wrong"],
+  };
+  return (
+    <ErrorContext.Provider value={mockErrorContextState}>
+      <Story />
+    </ErrorContext.Provider>
+  );
+};
+
 export const MenuPanel = Template.bind({});
 MenuPanel.args = {
   panelType: "menu",
@@ -47,6 +60,12 @@ ClaimPanel.args = {
   panelType: "claim",
   panelOpen: true,
 };
+
+export const ClaimPanelWithError = Template.bind({});
+ClaimPanelWithError.args = {
+  ...ClaimPanel.args,
+};
+ClaimPanelWithError.decorators = [withErrorDecorator];
 
 export const VotePanelWithoutResults = Template.bind({});
 VotePanelWithoutResults.args = {
@@ -134,11 +153,29 @@ VotePanelWithLongTitle.args = {
   },
 };
 
+export const VotePanelWithoutResultsWithError = Template.bind({});
+VotePanelWithoutResultsWithError.args = {
+  ...VotePanelWithoutResults.args,
+};
+VotePanelWithoutResultsWithError.decorators = [withErrorDecorator];
+
+export const VotePanelWithResultsWithError = Template.bind({});
+VotePanelWithResultsWithError.args = {
+  ...VotePanelWithResults.args,
+};
+VotePanelWithResultsWithError.decorators = [withErrorDecorator];
+
 export const StakePanel = Template.bind({});
 StakePanel.args = {
   panelType: "stake",
   panelOpen: true,
 };
+
+export const StakePanelWithError = Template.bind({});
+StakePanelWithError.args = {
+  ...StakePanel.args,
+};
+StakePanelWithError.decorators = [withErrorDecorator];
 
 export const RemindPanel = Template.bind({});
 RemindPanel.args = {

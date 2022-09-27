@@ -1,4 +1,5 @@
 import { Button } from "components/Button";
+import { PanelErrorBanner } from "components/PanelErrorBanner";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
@@ -97,6 +98,7 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
             </DiscordLinkContent>
           }
         />
+        <PanelErrorBanner />
       </DiscordLinkWrapper>
     </Wrapper>
   );

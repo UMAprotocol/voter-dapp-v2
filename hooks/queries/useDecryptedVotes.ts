@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decryptedVotesKey } from "constants/queryKeys";
 import { decryptMessage } from "helpers/crypto";
 import { useWalletContext } from "hooks/contexts";
+import { useHandleError } from "hooks/helpers";
 import { DecryptedVotesByKeyT, DecryptedVoteT, EncryptedVotesByKeyT } from "types/global";
 import useAccountDetails from "./useAccountDetails";
 import useEncryptedVotes from "./useEncryptedVotes";
@@ -10,6 +11,7 @@ export default function useDecryptedVotes() {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
   const { data: encryptedVotes } = useEncryptedVotes();
+  const onError = useHandleError();
 
   const queryResult = useQuery(
     [decryptedVotesKey, encryptedVotes, address],
@@ -18,6 +20,7 @@ export default function useDecryptedVotes() {
       refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: {},
+      onError,
     }
   );
 
