@@ -1,6 +1,6 @@
 import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision } from "helpers";
+import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
 import { useWalletContext } from "hooks";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -29,6 +29,7 @@ export function VotesTableRow({
   const { signer } = useWalletContext();
 
   const { decodedIdentifier, title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
+  const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
   function formatTitle(title: string) {
@@ -150,6 +151,7 @@ export function VotesTableRow({
             <TextInput
               value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
               onInput={selectVote}
+              maxDecimals={maxDecimals}
               type="number"
               disabled={!signer}
             />
