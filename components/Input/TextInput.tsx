@@ -1,22 +1,39 @@
 import styled from "styled-components";
-import { ChangeEvent } from "react";
-import { Wrapper, Input } from "./Input";
+import { useOnChange } from "hooks";
+import { Input, Wrapper } from "./Input";
 
 interface Props {
-  value: string | number;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+  onInput: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
-  type?: "text" | "email";
+  type?: "text" | "number" | "email";
+  isNumeric?: boolean;
+  maxDecimals?: number;
+  allowNegative?: boolean;
 }
-export function TextInput({ value, onChange, disabled, placeholder, type = "text" }: Props) {
+export function TextInput({
+  value,
+  onInput,
+  disabled,
+  placeholder,
+  type = "text",
+  maxDecimals = 18,
+  allowNegative = true,
+}: Props) {
+  const inputMode = type === "text" ? "text" : type === "number" ? "decimal" : "email";
+  // treat numbers as text inputs
+  const _type = type === "number" ? "text" : type;
+  const onChange = useOnChange(onInput, maxDecimals, allowNegative);
+
   return (
     <_Wrapper aria-disabled={disabled}>
       <_Input
         value={value ?? undefined}
         onChange={onChange}
+        inputMode={inputMode}
         disabled={disabled}
-        type={type}
+        type={_type}
         autoComplete="off"
         autoCorrect="off"
         placeholder={placeholder ?? "Enter value"}

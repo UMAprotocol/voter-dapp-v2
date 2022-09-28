@@ -1,24 +1,36 @@
 import { Button } from "components";
 import UmaToken from "public/assets/icons/uma-token.svg";
-import { ChangeEvent } from "react";
 import styled from "styled-components";
+import { useOnChange } from "hooks";
 import { Input, Wrapper } from "./Input";
 
 interface Props {
   value: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onInput: (value: string, ...args: any[]) => void;
   onMax: () => void;
   disabled?: boolean;
   placeholder?: string;
+  allowNegative?: boolean;
+  maxDecimals?: number;
 }
-export function AmountInput({ value, onChange, onMax, disabled, placeholder }: Props) {
+export function AmountInput({
+  value,
+  onInput,
+  onMax,
+  disabled,
+  placeholder,
+  allowNegative = true,
+  maxDecimals = 18,
+}: Props) {
+  const onChange = useOnChange(onInput, maxDecimals, allowNegative);
+
   return (
     <_Wrapper aria-disabled={disabled}>
       <_Input
         value={value}
         onChange={onChange}
         disabled={disabled}
-        type="number"
+        type="text"
         inputMode="decimal"
         autoComplete="off"
         autoCorrect="off"
