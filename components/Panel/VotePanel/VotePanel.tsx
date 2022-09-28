@@ -1,4 +1,5 @@
 import { Tabs } from "components";
+import { formatNumberForDisplay } from "helpers";
 import { PanelContentT, VotePanelContentT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -16,6 +17,7 @@ export function VotePanel({ content }: Props) {
     title,
     decodedIdentifier,
     decodedAncillaryData,
+    voteNumber,
     description,
     origin,
     options,
@@ -25,6 +27,8 @@ export function VotePanel({ content }: Props) {
     participation,
     results,
   } = content as VotePanelContentT;
+
+  console.log({ voteNumber });
 
   const hasResults = Boolean(results);
 
@@ -50,8 +54,7 @@ export function VotePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      {/* todo add vote number implementation */}
-      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={123} />
+      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={voteNumber.toString()} />
       {hasResults ? (
         <Tabs tabs={tabs} />
       ) : (

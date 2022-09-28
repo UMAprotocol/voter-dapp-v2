@@ -6,7 +6,7 @@ import { VoteOriginT } from "types";
 interface Props {
   title: string;
   origin?: VoteOriginT;
-  voteNumber?: number;
+  voteNumber?: string;
 }
 export function PanelTitle({ title, origin, voteNumber }: Props) {
   return (
@@ -41,7 +41,7 @@ function TitleIcon({ origin }: { origin?: VoteOriginT }) {
   }
 }
 
-function SubTitleText({ voteNumber, origin }: { voteNumber?: number; origin?: VoteOriginT }) {
+function SubTitleText({ voteNumber, origin }: { voteNumber?: string; origin?: VoteOriginT }) {
   if (!voteNumber || !origin) return null;
 
   return (
