@@ -6,7 +6,7 @@ import { Input, Wrapper } from "./Input";
 
 interface Props {
   value: string;
-  onInput: (value: string, ...args: any[]) => void;
+  onInput: (value: string) => void;
   onMax: () => void;
   disabled?: boolean;
   placeholder?: string;
