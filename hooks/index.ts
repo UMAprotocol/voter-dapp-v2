@@ -10,6 +10,7 @@ export { useInitializeVoteTiming } from "./helpers/useInitializeVoteTiming";
 export { useInterval } from "./helpers/useInterval";
 export { useIsomorphicLayoutEffect } from "./helpers/useIsomorphicLayoutEffect";
 export { useMounted } from "./helpers/useMounted";
+export { useOnChange } from "./helpers/useOnChange";
 export { useApprove } from "./mutations/balances/useApprove";
 export { useExecuteUnstake } from "./mutations/balances/useExecuteUnstake";
 export { useRequestUnstake } from "./mutations/balances/useRequestUnstake";
