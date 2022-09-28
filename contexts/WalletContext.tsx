@@ -1,8 +1,8 @@
 import { OnboardAPI } from "@web3-onboard/core";
 import { ethers } from "ethers";
-import { initOnboard } from "helpers/initOnboard";
+import { initOnboard } from "helpers";
 import { createContext, ReactNode, useState } from "react";
-import { SigningKeys } from "types/global";
+import { SigningKeys } from "types";
 
 interface WalletContextState {
   onboard: OnboardAPI | null;

@@ -1,13 +1,11 @@
 import { Meta, Story } from "@storybook/react";
-import { Button } from "components/Button";
-import { ErrorBanner } from "components/ErrorBanner";
-import { TextInput } from "components/Input";
-import { ErrorProvider } from "contexts/ErrorContext";
-import { useErrorContext } from "hooks/contexts";
+import { Button, ErrorBanner, TextInput } from "components";
+import { ErrorProvider } from "contexts";
+import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {
-  title: "Base Components/ErrorBanner",
+  title: "Base components",
   component: ErrorBanner,
   decorators: [
     (Story) => (

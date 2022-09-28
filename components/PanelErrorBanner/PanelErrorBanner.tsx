@@ -1,4 +1,4 @@
-import { useErrorContext } from "hooks/contexts";
+import { useErrorContext } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 

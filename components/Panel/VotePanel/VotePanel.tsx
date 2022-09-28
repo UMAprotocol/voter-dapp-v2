@@ -1,5 +1,5 @@
-import { Tabs } from "components/Tabs";
-import { PanelContentT, VotePanelContentT } from "types/global";
+import { Tabs } from "components";
+import { PanelContentT, VotePanelContentT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";

@@ -1,8 +1,8 @@
 import { discordLink } from "constants/discordLink";
 import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
-import { ContentfulDataT, VoteMetaDataT } from "types/global";
-import checkIfIsPolymarket from "./checkIfIsPolymarket";
+import { checkIfIsPolymarket } from "helpers";
+import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -12,7 +12,7 @@ import checkIfIsPolymarket from "./checkIfIsPolymarket";
  * 2. For requests for approved price identifiers, the title, description, and UMIP link come from the hard-coded `approvedIdentifiersTable` json file.
  * 3. For requests from Polymarket, the title and description come from the decodedIdentifier's ancillary data (note that there is no UMIP link here).
  */
-export default function getVoteMetaData(
+export function getVoteMetaData(
   decodedIdentifier: string,
   decodedAncillaryData: string,
   transactionHash: string,

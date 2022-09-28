@@ -1,4 +1,4 @@
-import { PanelContentT } from "types/global";
+import { PanelContentT } from "types";
 
 interface Props {
   content: PanelContentT;

@@ -1,15 +1,12 @@
-import { Button } from "components/Button";
-import { Dropdown } from "components/Dropdown";
-import { TextInput } from "components/Input";
-import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision } from "helpers/formatVotes";
-import { useWalletContext } from "hooks/contexts";
+import { formatVoteStringWithPrecision } from "helpers";
+import { useWalletContext } from "hooks";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT, VotePhaseT, VoteT } from "types/global";
+import { ActivityStatusT, VotePhaseT, VoteT } from "types";
 
 export interface Props {
   vote: VoteT;

@@ -1,6 +1,4 @@
-import { BalancesContext } from "contexts/BalancesContext";
+import { BalancesContext } from "contexts";
 import { useContext } from "react";
 
-const useBalancesContext = () => useContext(BalancesContext);
-
-export default useBalancesContext;
+export const useBalancesContext = () => useContext(BalancesContext);

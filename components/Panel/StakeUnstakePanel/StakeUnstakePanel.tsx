@@ -1,9 +1,14 @@
-import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { Tabs } from "components/Tabs";
+import { LoadingSkeleton, Tabs } from "components";
 import { parseEther } from "ethers/lib/utils";
-import { formatNumberForDisplay } from "helpers/formatNumber";
-import { useBalancesContext, useContractsContext } from "hooks/contexts";
-import { useApprove, useExecuteUnstake, useRequestUnstake, useStake } from "hooks/mutations";
+import { formatNumberForDisplay } from "helpers";
+import {
+  useApprove,
+  useBalancesContext,
+  useContractsContext,
+  useExecuteUnstake,
+  useRequestUnstake,
+  useStake,
+} from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";

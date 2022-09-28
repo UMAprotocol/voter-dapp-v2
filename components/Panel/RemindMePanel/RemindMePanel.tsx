@@ -1,12 +1,9 @@
-import { Button } from "components/Button";
-import { Checkbox } from "components/Checkbox";
-import { TextInput } from "components/Input";
+import { Button, Checkbox, TextInput, Toggle } from "components";
+import Check from "public/assets/icons/check.svg";
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
-import { Toggle } from "components/Toggle";
-import Check from "public/assets/icons/check.svg";
-import { PanelTitle } from "../PanelTitle";
 import { PanelFooter } from "../PanelFooter";
+import { PanelTitle } from "../PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "../styles";
 
 export function RemindMePanel() {

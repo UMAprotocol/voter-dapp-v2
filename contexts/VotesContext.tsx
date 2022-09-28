@@ -1,4 +1,4 @@
-import getVoteMetaData from "helpers/getVoteMetaData";
+import { getVoteMetaData } from "helpers";
 import {
   useAccountDetails,
   useActiveVotes,
@@ -10,7 +10,7 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
-} from "hooks/queries";
+} from "hooks";
 import { createContext, ReactNode } from "react";
 import {
   ActivityStatusT,
@@ -20,7 +20,7 @@ import {
   PriceRequestByKeyT,
   VoteExistsByKeyT,
   VoteT,
-} from "types/global";
+} from "types";
 
 interface VotesContextState {
   hasActiveVotes: boolean | undefined;

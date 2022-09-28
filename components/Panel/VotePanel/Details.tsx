@@ -1,5 +1,4 @@
-import { Button } from "components/Button";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { Button, PanelErrorBanner } from "components";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
@@ -7,7 +6,7 @@ import Link from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Vote from "public/assets/icons/voting.svg";
 import styled from "styled-components";
-import { VoteT } from "types/global";
+import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 
 type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;

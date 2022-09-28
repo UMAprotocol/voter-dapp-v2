@@ -1,6 +1,4 @@
-import { VoteTimingContext } from "contexts/VoteTimingContext";
+import { VoteTimingContext } from "contexts";
 import { useContext } from "react";
 
-const useVoteTimingContext = () => useContext(VoteTimingContext);
-
-export default useVoteTimingContext;
+export const useVoteTimingContext = () => useContext(VoteTimingContext);

@@ -1,6 +1,6 @@
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
 import { ethers } from "ethers";
-import truncateEthAddress from "helpers/truncateEthAddress";
+import { truncateEthAddress } from "helpers";
 
 export function handleDisconnectWallet(
   wallet: WalletState | null,

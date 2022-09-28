@@ -1,8 +1,8 @@
-import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types/global";
+import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
 import { decodeHexString } from "./decodeHexString";
 import { makeUniqueKeyForVote } from "./votes";
 
-export default function makePriceRequestsByKey(priceRequests: RawPriceRequestDataT[] | undefined) {
+export function makePriceRequestsByKey(priceRequests: RawPriceRequestDataT[] | undefined) {
   const priceRequestsByKey: PriceRequestByKeyT = {};
 
   if (priceRequests?.length) {

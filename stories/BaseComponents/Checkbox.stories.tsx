@@ -1,9 +1,9 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Checkbox } from "components/Checkbox";
 import { useArgs } from "@storybook/client-api";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Checkbox } from "components";
 
 export default {
-  title: "Base Components/Checkbox",
+  title: "Base components",
   component: Checkbox,
   decorators: [
     (Story) => (

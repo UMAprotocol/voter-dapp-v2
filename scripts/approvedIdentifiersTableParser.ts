@@ -1,7 +1,7 @@
 import fs from "fs";
-import path from "path";
 import https from "https";
-import { IdentifierDetailsT, UmipLinkT } from "types/global";
+import path from "path";
+import { IdentifierDetailsT, UmipLinkT } from "types";
 
 main();
 

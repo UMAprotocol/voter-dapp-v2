@@ -1,9 +1,9 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Toggle } from "components/Toggle";
 import { useArgs } from "@storybook/client-api";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Toggle } from "components";
 
 export default {
-  title: "Base Components/Toggle",
+  title: "Base components",
   component: Toggle,
   decorators: [
     (Story) => (

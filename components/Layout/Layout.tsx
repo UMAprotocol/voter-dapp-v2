@@ -1,6 +1,4 @@
-import { ErrorBanner } from "components/ErrorBanner";
-import { Header } from "components/Header";
-import { Panel } from "components/Panel";
+import { ErrorBanner, Header, Panel } from "components";
 import { ReactNode } from "react";
 
 interface Props {

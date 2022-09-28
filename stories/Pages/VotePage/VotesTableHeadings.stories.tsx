@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
+import { VotesTableHeadings } from "components";
 
 export default {
   title: "Pages/Vote Page/VotesTableHeadings",

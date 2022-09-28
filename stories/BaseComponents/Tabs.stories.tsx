@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Tabs } from "components/Tabs";
+import { Tabs } from "components";
 
 export default {
-  title: "Base Components/Tabs",
+  title: "Base components",
   component: Tabs,
 } as ComponentMeta<typeof Tabs>;
 

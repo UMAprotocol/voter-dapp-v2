@@ -1,11 +1,5 @@
-import {
-  computeMillisecondsUntilPhaseEnds,
-  computePhaseEndTimeMilliseconds,
-  computeRoundId,
-  getPhase,
-} from "helpers/voteTiming";
-import useVoteTimingContext from "hooks/contexts/useVoteTimingContext";
-import { useInterval } from "hooks/helpers";
+import { computeMillisecondsUntilPhaseEnds, computePhaseEndTimeMilliseconds, computeRoundId, getPhase } from "helpers";
+import { useInterval, useVoteTimingContext } from "hooks";
 
 /** Initializes the vote timing interval
  *
@@ -13,7 +7,7 @@ import { useInterval } from "hooks/helpers";
  *
  * This hook only needs to be called once on initialization of the dapp.
  */
-export default function useInitializeVoteTiming() {
+export function useInitializeVoteTiming() {
   const { setRoundId, setPhase, setPhaseEndTimeMilliseconds, setPhaseEndTimeAsDate, setMillisecondsUntilPhaseEnds } =
     useVoteTimingContext();
 

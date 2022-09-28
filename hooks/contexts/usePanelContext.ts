@@ -1,6 +1,4 @@
-import { PanelContext } from "contexts/PanelContext";
+import { PanelContext } from "contexts";
 import { useContext } from "react";
 
-const usePanelContext = () => useContext(PanelContext);
-
-export default usePanelContext;
+export const usePanelContext = () => useContext(PanelContext);

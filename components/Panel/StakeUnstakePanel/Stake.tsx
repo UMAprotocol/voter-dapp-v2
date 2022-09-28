@@ -1,9 +1,6 @@
-import { Button } from "components/Button";
-import { Checkbox } from "components/Checkbox";
-import { AmountInput } from "components/Input";
-import { PanelErrorBanner } from "components/PanelErrorBanner";
+import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "helpers/ethers";
+import { formatEther, parseEther } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";

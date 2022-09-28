@@ -1,23 +1,19 @@
-import { Button } from "components/Button";
-import { LoadingSpinner } from "components/LoadingSpinner";
-import { VotesTableRow } from "components/VotesTable";
-import VotesTable from "components/VotesTable/VotesTable";
-import VotesTableHeadings from "components/VotesTable/VotesTableHeadings";
-import { VoteTimeline } from "components/VoteTimeline";
-import { formatVotesToCommit } from "helpers/formatVotes";
+import { Button, LoadingSpinner, VotesTable, VotesTableHeadings, VotesTableRow, VoteTimeline } from "components";
+import { formatVotesToCommit } from "helpers";
 import {
+  useAccountDetails,
+  useCommitVotes,
   useContractsContext,
+  useInitializeVoteTiming,
   usePanelContext,
+  useRevealVotes,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
-} from "hooks/contexts";
-import { useInitializeVoteTiming } from "hooks/helpers";
-import { useCommitVotes, useRevealVotes } from "hooks/mutations";
-import { useAccountDetails } from "hooks/queries";
+} from "hooks";
 import { useState } from "react";
 import styled from "styled-components";
-import { SelectedVotesByKeyT, VoteT } from "types/global";
+import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
   const {

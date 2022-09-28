@@ -2,7 +2,7 @@ import { black, red500, white } from "constants/colors";
 import { formatDistanceToNowStrict } from "date-fns";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT } from "types/global";
+import { ActivityStatusT } from "types";
 
 interface Props {
   phase: "commit" | "reveal";

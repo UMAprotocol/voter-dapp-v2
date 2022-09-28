@@ -1,14 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { balancesQueryKeys, votingUserDependentQueryKeys } from "constants/queryKeys";
 import message from "constants/signingMessage";
 import { ethers } from "ethers";
-import { derivePrivateKey, recoverPublicKey } from "helpers/crypto";
-import { useContractsContext, usePanelContext, useWalletContext } from "hooks/contexts";
+import { derivePrivateKey, recoverPublicKey } from "helpers";
+import { useContractsContext, usePanelContext, useWalletContext } from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { SigningKey, SigningKeys } from "types/global";
-import { createVotingContractInstance, createVotingTokenContractInstance } from "web3/contracts";
+import { SigningKey, SigningKeys } from "types";
+import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
 import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 
@@ -19,7 +17,6 @@ export function Wallet() {
   const { setVoting, setVotingToken } = useContractsContext();
   const { setPanelType, setPanelOpen } = usePanelContext();
   const { address, truncatedAddress } = getAccountDetails(connectedWallets);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!connectedWallets.length) return;

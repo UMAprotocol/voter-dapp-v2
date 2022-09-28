@@ -1,4 +1,4 @@
-import { toUtf8String } from "helpers/ethers";
+import { toUtf8String } from "helpers";
 
 export function decodeHexString(hexString: string) {
   try {

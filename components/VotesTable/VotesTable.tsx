@@ -4,7 +4,7 @@ interface Props {
   headings: JSX.Element;
   rows: JSX.Element[];
 }
-export default function VotesTable({ headings, rows }: Props) {
+export function VotesTable({ headings, rows }: Props) {
   return (
     <Table>
       <Thead>{headings}</Thead>

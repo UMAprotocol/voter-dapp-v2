@@ -1,8 +1,7 @@
 import { Meta, Story } from "@storybook/react";
-import { Votes } from "components/Votes";
+import { Votes } from "components";
 import { desktopMaxWidth } from "constants/containers";
-import { defaultVotesContextState, VotesContext } from "contexts/VotesContext";
-import { defaultVoteTimingContextState, VoteTimingContext } from "contexts/VoteTimingContext";
+import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,
@@ -11,7 +10,7 @@ import {
   voteWithCorrectVoteWithUserVote,
   voteWithoutUserVote,
 } from "stories/mocks/votes";
-import { ActivityStatusT, VoteT } from "types/global";
+import { ActivityStatusT, VoteT } from "types";
 
 interface StoryProps {
   phase: "commit" | "reveal";

@@ -1,7 +1,6 @@
 import { Meta, Story } from "@storybook/react";
-import { VoteTimeline } from "components/VoteTimeline";
-import { defaultVotesContextState, VotesContext } from "contexts/VotesContext";
-import { defaultVoteTimingContextState, VoteTimingContext } from "contexts/VoteTimingContext";
+import { VoteTimeline } from "components";
+import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
 
 interface StoryProps {
   phase: "commit" | "reveal";

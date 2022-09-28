@@ -1,13 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle } from "components/GlobalStyle";
-import { BalancesProvider } from "contexts/BalancesContext";
-import { ContractsProvider } from "contexts/ContractsContext";
-import { ErrorProvider } from "contexts/ErrorContext";
-import { PanelProvider } from "contexts/PanelContext";
-import { VotesProvider } from "contexts/VotesContext";
-import { VoteTimingProvider } from "contexts/VoteTimingContext";
-import { WalletProvider } from "contexts/WalletContext";
+import { GlobalStyle } from "components";
+import {
+  BalancesProvider,
+  ContractsProvider,
+  ErrorProvider,
+  PanelProvider,
+  VotesProvider,
+  VoteTimingProvider,
+  WalletProvider,
+} from "contexts";
 import type { AppProps } from "next/app";
 import "styles/fonts.css";
 
