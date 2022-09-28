@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey } from "constants/queryKeys";
 import * as contentful from "contentful";
-import { useActiveVotes, useHandleError, useUpcomingVotes } from "hooks";
+import { useActiveVotes, useHandleError, usePastVotes, useUpcomingVotes } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";
 
 const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
@@ -43,24 +43,27 @@ export function useContentfulData() {
   const {
     data: { upcomingVotes },
   } = useUpcomingVotes();
+  const { data: pastVotes } = usePastVotes();
   const onError = useHandleError();
-
-  const allVotes = { ...activeVotes, ...upcomingVotes };
 
   const adminProposalNumbersByKey: Record<UniqueKeyT, number> = {};
 
-  for (const [uniqueKey, { decodedIdentifier }] of Object.entries(allVotes)) {
+  for (const [uniqueKey, { decodedIdentifier }] of Object.entries({ ...activeVotes, ...upcomingVotes, ...pastVotes })) {
     const adminProposalNumber = getAdminProposalNumber(decodedIdentifier);
     if (adminProposalNumber) {
       adminProposalNumbersByKey[uniqueKey] = adminProposalNumber;
     }
   }
 
-  const queryResult = useQuery([contentfulDataKey, allVotes], () => getContentfulData(adminProposalNumbersByKey), {
-    refetchInterval: (data) => (data ? false : 100),
-    initialData: {},
-    onError,
-  });
+  const queryResult = useQuery(
+    [contentfulDataKey, activeVotes, upcomingVotes, pastVotes],
+    () => getContentfulData(adminProposalNumbersByKey),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      initialData: {},
+      onError,
+    }
+  );
 
   return queryResult;
 }
