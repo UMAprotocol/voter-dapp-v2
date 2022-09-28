@@ -10,8 +10,8 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
+  useVoteTransactionHashes,
 } from "hooks";
-import { useVoteTransactionHashes } from "hooks/queries/votes";
 import { createContext, ReactNode } from "react";
 import {
   ActivityStatusT,
