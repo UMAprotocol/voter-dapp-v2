@@ -68,7 +68,7 @@ export function Votes() {
     return getActiveVotes().filter((vote) => vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false);
   }
 
-  function selectVote(vote: VoteT, value: string) {
+  function selectVote(value: string, vote: VoteT) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
   }
 
@@ -126,7 +126,7 @@ export function Votes() {
                   vote={vote}
                   phase={phase}
                   selectedVote={selectedVotes[vote.uniqueKey]}
-                  selectVote={selectVote}
+                  selectVote={(value) => selectVote(value, vote)}
                   activityStatus={getActivityStatus()}
                   moreDetailsAction={() => openVotePanel(vote)}
                   key={vote.uniqueKey}

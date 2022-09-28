@@ -10,19 +10,33 @@ export default {
 const Template: ComponentStory<typeof TextInput> = (args) => {
   const [_args, updateArgs] = useArgs();
 
-  return <TextInput {...args} onChange={(e) => updateArgs({ value: e.target.value })} />;
+  return <TextInput {...args} onInput={(value) => updateArgs({ value })} />;
 };
-
-export const Default = Template.bind({});
 
 export const WithPlaceholder = Template.bind({});
 WithPlaceholder.args = {
   placeholder: "Custom placeholder text",
 };
 
+export const WithTypeText = Template.bind({});
+WithTypeText.args = {
+  type: "text",
+};
+
 export const WithTypeEmail = Template.bind({});
 WithTypeEmail.args = {
   type: "email",
+};
+
+export const WithTypeNumber = Template.bind({});
+WithTypeNumber.args = {
+  type: "number",
+};
+
+export const WithTypeNumberNoNegative = Template.bind({});
+WithTypeNumberNoNegative.args = {
+  type: "number",
+  allowNegative: false,
 };
 
 export const Disabled = Template.bind({});

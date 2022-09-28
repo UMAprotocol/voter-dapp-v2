@@ -12,7 +12,7 @@ export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
   selectedVote: string | undefined;
-  selectVote: (vote: VoteT, value: string) => void;
+  selectVote: (value: string) => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
@@ -38,6 +38,10 @@ export function VotesTableRow({
 
   function getDecryptedVoteAsFormattedString() {
     return decryptedVote?.price ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier) : undefined;
+  }
+
+  function getDecryptedVoteAsString() {
+    return getDecryptedVoteAsNumber()?.toString();
   }
 
   function getDecryptedVoteAsNumber() {
@@ -140,12 +144,13 @@ export function VotesTableRow({
               label="Choose answer"
               items={options}
               selected={getExistingOrSelectedVoteFromOptions()}
-              onSelect={(option) => selectVote(vote, option.value.toString())}
+              onSelect={(option) => selectVote(option.value.toString())}
             />
           ) : (
             <TextInput
-              value={selectedVote ?? getDecryptedVoteAsNumber() ?? ""}
-              onChange={(e) => selectVote(vote, e.target.value)}
+              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
+              onInput={selectVote}
+              type="number"
               disabled={!signer}
             />
           )}

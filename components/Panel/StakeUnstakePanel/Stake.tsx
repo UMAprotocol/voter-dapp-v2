@@ -1,7 +1,8 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { BigNumber } from "ethers";
 import { formatEther, parseEther } from "helpers";
-import { useState } from "react";
+import { useErrorContext } from "hooks";
+import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
@@ -45,8 +46,9 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
       <AmountInputWrapper>
         <AmountInput
           value={stakeAmount}
-          onChange={(e) => setStakeAmount(e.target.value)}
+          onInput={setStakeAmount}
           onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
+          allowNegative={false}
         />
       </AmountInputWrapper>
       <CheckboxWrapper>
