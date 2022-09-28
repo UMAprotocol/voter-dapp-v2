@@ -6,8 +6,6 @@ export async function getVoteTransactionHashes(voting: VotingV2Ethers, allVotesB
   const filter = voting.filters.PriceRequestAdded(null, null, null);
   const events = await voting.queryFilter(filter, goerliDeployBlock);
 
-  console.log({ events, allVotesByKey });
-
   const voteTransactionHashesByKey: Record<UniqueKeyT, string> = {};
 
   for (const [uniqueKey, vote] of Object.entries(allVotesByKey)) {
@@ -16,8 +14,6 @@ export async function getVoteTransactionHashes(voting: VotingV2Ethers, allVotesB
 
     voteTransactionHashesByKey[uniqueKey] = transactionHash;
   }
-
-  console.log({ voteTransactionHashesByKey });
 
   return voteTransactionHashesByKey;
 }

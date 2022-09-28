@@ -28,8 +28,6 @@ export function VotePanel({ content }: Props) {
     results,
   } = content as VotePanelContentT;
 
-  console.log({ voteNumber });
-
   const hasResults = Boolean(results);
 
   const tabs = [
