@@ -2,7 +2,7 @@ import { useErrorContext } from "hooks";
 import { ChangeEvent } from "react";
 
 export function useOnChange(
-  onInput: (value: string, ...args: unknown[]) => void,
+  onInput: (value: string) => void,
   maxDecimals: number,
   allowNegative: boolean,
   type = "number"
