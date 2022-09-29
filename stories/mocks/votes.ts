@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 
 export const voteWithoutUserVote = {
   isCommitted: false,
+  isRolled: false,
   title: "SuperUMAn DAO KPI Options funding proposal",
   origin: "UMA" as const,
   description: "Some description",
