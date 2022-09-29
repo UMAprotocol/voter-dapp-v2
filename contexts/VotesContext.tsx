@@ -10,6 +10,7 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
+  useVoteTransactionHashes,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 import {
@@ -83,6 +84,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isFetching: upcomingVotesIsFetching,
   } = useUpcomingVotes();
   const { data: pastVotes, isLoading: pastVotesIsLoading, isFetching: pastVotesIsFetching } = usePastVotes();
+  const {
+    data: voteTransactionHashes,
+    isLoading: voteTransactionHashesIsLoading,
+    isFetching: voteTransactionHashesIsFetching,
+  } = useVoteTransactionHashes();
   const {
     data: contentfulData,
     isLoading: contentfulDataIsLoading,
@@ -178,10 +184,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         encryptedVote: encryptedVotes[uniqueKey],
         decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
+        transactionHash: voteTransactionHashes[uniqueKey],
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
-          vote.transactionHash,
+          voteTransactionHashes[uniqueKey],
           contentfulData[uniqueKey]
         ),
       };

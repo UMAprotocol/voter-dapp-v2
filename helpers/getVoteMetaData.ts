@@ -162,16 +162,14 @@ function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
 }
 
 function makeVoteLinks(transactionHash: string, umipNumber?: number) {
-  const links = [
-    {
+  const links = [];
+
+  if (transactionHash !== "rolled") {
+    links.push({
       label: "Vote transaction",
-      href: `https://etherscan.io/tx/${transactionHash}`,
-    },
-    {
-      label: "Optimistic Oracle UI",
-      href: `https://oracle.umaproject.org/request?requester=${transactionHash}`,
-    },
-  ];
+      href: `https://goerli.etherscan.io/tx/${transactionHash}`,
+    });
+  }
 
   if (umipNumber) {
     links.push({

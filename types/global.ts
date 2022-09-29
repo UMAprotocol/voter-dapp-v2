@@ -15,14 +15,19 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type VoteT = PriceRequestT & UserVoteDataT & VoteMetaDataT & VoteContentfulDataT & VoteResultT;
+export type VoteT = PriceRequestT &
+  VoteTransactionDataT &
+  UserVoteDataT &
+  VoteMetaDataT &
+  VoteContentfulDataT &
+  VoteResultT;
 
 export type PriceRequestT = {
   // raw values
   time: number;
   identifier: string;
   ancillaryData: string;
-  transactionHash: string;
+  voteNumber: BigNumber;
   correctVote?: number;
   // computed values
   timeMilliseconds: number;
@@ -36,7 +41,12 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
+  priceRequestIndex: BigNumber;
   correctVote?: number;
+};
+
+export type VoteTransactionDataT = {
+  transactionHash: string;
 };
 
 export type PastVotesQuery = {
@@ -48,6 +58,7 @@ export type PastVotesQuery = {
     time: string;
     price: string;
     ancillaryData: string;
+    requestIndex: string;
   }[];
 };
 

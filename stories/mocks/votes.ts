@@ -1,4 +1,5 @@
 import { sub } from "date-fns";
+import { BigNumber } from "ethers";
 
 export const voteWithoutUserVote = {
   isCommitted: false,
@@ -6,6 +7,7 @@ export const voteWithoutUserVote = {
   origin: "UMA" as const,
   description: "Some description",
   transactionHash: "0x1234567890",
+  voteNumber: BigNumber.from(123),
   umipUrl: "https://uma.io",
   timeAsDate: sub(new Date(), { days: 1 }),
   time: sub(new Date(), { days: 1 }).getTime() / 1000,

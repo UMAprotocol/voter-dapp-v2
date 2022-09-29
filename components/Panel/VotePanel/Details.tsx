@@ -66,21 +66,23 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           <span>UNIX</span> <span>{timeAsDate.getTime()}</span>
         </Timestamp>
       </SectionWrapper>
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <LinksIcon />
-          </IconWrapper>
-          Links
-        </PanelSectionTitle>
-        <LinksList>
-          {links.map(({ href, label }) => (
-            <LinkItem key={label}>
-              <Button href={href} label={label} />
-            </LinkItem>
-          ))}
-        </LinksList>
-      </SectionWrapper>
+      {links.length > 0 ? (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <LinksIcon />
+            </IconWrapper>
+            Links
+          </PanelSectionTitle>
+          <LinksList>
+            {links.map(({ href, label }) => (
+              <LinkItem key={label}>
+                <Button href={href} label={label} />
+              </LinkItem>
+            ))}
+          </LinksList>
+        </SectionWrapper>
+      ) : null}
       <DiscordLinkWrapper>
         <Button
           href={discordLink}

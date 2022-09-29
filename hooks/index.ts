@@ -30,5 +30,6 @@ export { useEncryptedVotes } from "./queries/votes/useEncryptedVotes";
 export { useHasActiveVotes } from "./queries/votes/useHasActiveVotes";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
+export { useVoteTransactionHashes } from "./queries/votes/useVoteTransactionHashes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
 export { useAccountDetails } from "./wallet/useAccountDetails";
