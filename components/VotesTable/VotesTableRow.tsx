@@ -153,7 +153,8 @@ export function VotesTableRow({
                   <RolledIconWrapper>
                     <RolledIcon />
                   </RolledIconWrapper>
-                  <Link href="todo" passHref>
+                  {/* todo: add link to explanation of rolled votes in the docs once its written */}
+                  <Link href="https://docs.umaproject.org" passHref>
                     <RolledLink target="_blank">Rolled</RolledLink>
                   </Link>
                 </RolledWrapper>
