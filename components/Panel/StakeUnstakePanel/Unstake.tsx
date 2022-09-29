@@ -50,7 +50,8 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props
           <AmountInputWrapper>
             <AmountInput
               value={unstakeAmount}
-              onChange={(e) => setUnstakeAmount(e.target.value)}
+              onInput={setUnstakeAmount}
+              allowNegative={false}
               onMax={() => setUnstakeAmount(formatEther(stakedBalance ?? 0))}
               disabled={!canUnstake(stakedBalance, pendingUnstake)}
             />

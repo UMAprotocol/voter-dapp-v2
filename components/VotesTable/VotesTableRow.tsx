@@ -1,6 +1,6 @@
 import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision } from "helpers";
+import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
 import { useWalletContext } from "hooks";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -12,7 +12,7 @@ export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
   selectedVote: string | undefined;
-  selectVote: (vote: VoteT, value: string) => void;
+  selectVote: (value: string) => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
@@ -29,6 +29,7 @@ export function VotesTableRow({
   const { signer } = useWalletContext();
 
   const { decodedIdentifier, title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
+  const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
   function formatTitle(title: string) {
@@ -38,6 +39,10 @@ export function VotesTableRow({
 
   function getDecryptedVoteAsFormattedString() {
     return decryptedVote?.price ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier) : undefined;
+  }
+
+  function getDecryptedVoteAsString() {
+    return getDecryptedVoteAsNumber()?.toString();
   }
 
   function getDecryptedVoteAsNumber() {
@@ -140,12 +145,14 @@ export function VotesTableRow({
               label="Choose answer"
               items={options}
               selected={getExistingOrSelectedVoteFromOptions()}
-              onSelect={(option) => selectVote(vote, option.value.toString())}
+              onSelect={(option) => selectVote(option.value.toString())}
             />
           ) : (
             <TextInput
-              value={selectedVote ?? getDecryptedVoteAsNumber() ?? ""}
-              onChange={(e) => selectVote(vote, e.target.value)}
+              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
+              onInput={selectVote}
+              maxDecimals={maxDecimals}
+              type="number"
               disabled={!signer}
             />
           )}

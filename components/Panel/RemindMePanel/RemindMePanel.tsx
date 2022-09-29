@@ -44,12 +44,7 @@ export function RemindMePanel() {
               We’ll send out an email 24 hours before the voting commit and reveal phases end.
             </PanelSectionText>
             <EmailForm onSubmit={onSubmit}>
-              <TextInput
-                placeholder="Your email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <TextInput placeholder="Your email" type="email" value={email} onInput={setEmail} />
               <CheckboxWrapper>
                 <Checkbox
                   label="I consent to receiving email notifications"

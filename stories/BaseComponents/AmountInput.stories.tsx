@@ -11,11 +11,7 @@ const Template: ComponentStory<typeof AmountInput> = (args) => {
   const [_args, updateArgs] = useArgs();
 
   return (
-    <AmountInput
-      {...args}
-      onChange={(e) => updateArgs({ value: e.target.value })}
-      onMax={() => updateArgs({ value: 10000 })}
-    />
+    <AmountInput {...args} onInput={(value) => updateArgs({ value })} onMax={() => updateArgs({ value: 10000 })} />
   );
 };
 

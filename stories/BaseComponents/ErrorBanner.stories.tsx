@@ -29,7 +29,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
     <>
       <ErrorBanner />
       <div style={{ marginTop: 50 }}>
-        <TextInput value={errorText} onChange={(e) => setErrorText(e.target.value)} />
+        <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>
           <Button onClick={() => addErrorMessage(errorText)} label="Add error from text" variant="primary" />
           <Button onClick={() => removeErrorMessage(errorText)} label="Remove error from text" variant="primary" />
