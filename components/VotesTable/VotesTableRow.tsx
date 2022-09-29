@@ -2,8 +2,10 @@ import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
 import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
 import { useWalletContext } from "hooks";
+import Link from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
+import Rolled from "public/assets/icons/rolled.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT, VotePhaseT, VoteT } from "types";
@@ -28,7 +30,18 @@ export function VotesTableRow({
 }: Props) {
   const { signer } = useWalletContext();
 
-  const { decodedIdentifier, title, origin, options, isCommitted, isRevealed, decryptedVote, correctVote } = vote;
+  const {
+    decodedIdentifier,
+    title,
+    origin,
+    options,
+    isCommitted,
+    isRevealed,
+    decryptedVote,
+    correctVote,
+    voteNumber,
+    isRolled,
+  } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
@@ -134,7 +147,21 @@ export function VotesTableRow({
           </VoteIconWrapper>
           <VoteDetailsWrapper>
             <VoteTitle>{formatTitle(title)}</VoteTitle>
-            <VoteOrigin>{origin}</VoteOrigin>
+            <VoteDetailsInnerWrapper>
+              {isRolled ? (
+                <RolledWrapper>
+                  <RolledIconWrapper>
+                    <RolledIcon />
+                  </RolledIconWrapper>
+                  <Link href="todo" passHref>
+                    <RolledLink target="_blank">Rolled</RolledLink>
+                  </Link>
+                </RolledWrapper>
+              ) : null}
+              <VoteOrigin>
+                {origin} | Vote #{voteNumber.toString()}
+              </VoteOrigin>
+            </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
         </VoteTitleWrapper>
       </VoteTitleOuterWrapper>
@@ -209,6 +236,12 @@ const VoteTitleWrapper = styled.div`
 
 const VoteDetailsWrapper = styled.div``;
 
+const VoteDetailsInnerWrapper = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+`;
+
 const VoteIconWrapper = styled.div`
   width: 40px;
   height: 40px;
@@ -261,4 +294,23 @@ const DotIcon = styled(Dot)`
   circle {
     fill: var(--dot-color);
   }
+`;
+
+const RolledWrapper = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+`;
+
+const RolledIconWrapper = styled.div`
+  width: 7px;
+  height: 7px;
+`;
+
+const RolledIcon = styled(Rolled)``;
+
+const RolledLink = styled.a`
+  font: var(--text-sm);
+  color: var(--red-500);
+  text-decoration: underline;
 `;
