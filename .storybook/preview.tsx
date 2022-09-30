@@ -1,11 +1,9 @@
 import { addDecorator } from "@storybook/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Buffer } from "buffer";
-import { GlobalStyle } from 'components/GlobalStyle';
-import { PanelProvider, WalletProvider } from "contexts";
+import React from "react";
 import "styles/fonts.css";
-
-window.Buffer = Buffer;
+import { GlobalStyle } from "../components/GlobalStyle";
+import { PanelProvider, WalletProvider } from "../contexts";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -15,7 +13,7 @@ export const parameters = {
       date: /Date$/,
     },
   },
-}
+};
 
 addDecorator((Story) => (
   <WalletProvider>
