@@ -81,6 +81,7 @@ export type VoteMetaDataT = {
   discordLink: string;
   links: LinkT[];
   options: DropdownItemT[] | undefined;
+  isRolled: boolean;
 };
 
 export type VoteResultT = {

@@ -18,6 +18,8 @@ export function getVoteMetaData(
   transactionHash: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
+  // rolled votes have no transaction hash — the value for `transactionHash` will be `"rolled"`
+  const isRolled = transactionHash === "rolled";
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
   if (isUmip) {
@@ -37,6 +39,7 @@ export function getVoteMetaData(
       origin: "UMA",
       isGovernance: true,
       discordLink,
+      isRolled,
     };
   }
 
@@ -59,6 +62,7 @@ export function getVoteMetaData(
       origin: "Polymarket",
       isGovernance: false,
       discordLink,
+      isRolled,
     };
   }
 
@@ -82,6 +86,7 @@ export function getVoteMetaData(
       origin: "UMA",
       isGovernance: false,
       discordLink,
+      isRolled,
     };
   }
 
@@ -96,6 +101,7 @@ export function getVoteMetaData(
     origin: "UMA",
     isGovernance: false,
     discordLink,
+    isRolled,
   };
 }
 
