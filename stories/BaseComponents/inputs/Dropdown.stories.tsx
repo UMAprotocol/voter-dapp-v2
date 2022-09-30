@@ -11,7 +11,7 @@ const defaultMockItems = [
 ];
 
 export default {
-  title: "Base components",
+  title: "Base components/Inputs/Dropdown",
   component: Dropdown,
   args: {
     label: "Select answer",
