@@ -5,7 +5,7 @@ import { defaultErrorContextState, ErrorContext, PanelContext } from "contexts";
 import sub from "date-fns/sub";
 
 export default {
-  title: "Base components",
+  title: "Base components/Navigation/Panel",
   component: Panel,
 } as ComponentMeta<typeof Panel>;
 

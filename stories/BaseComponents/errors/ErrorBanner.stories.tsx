@@ -1,19 +1,16 @@
 import { Meta, Story } from "@storybook/react";
-import { Button, PanelErrorBanner, TextInput } from "components";
-import { desktopPanelWidth } from "constants/containers";
+import { Button, ErrorBanner, TextInput } from "components";
 import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {
-  title: "Base components",
-  component: PanelErrorBanner,
+  title: "Base components/Errors/Error Banner",
+  component: ErrorBanner,
   decorators: [
     (Story) => (
       <ErrorProvider>
-        <div style={{ width: desktopPanelWidth }}>
-          <Story />
-        </div>
+        <Story />
       </ErrorProvider>
     ),
   ],
@@ -30,7 +27,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
   return (
     <>
-      <PanelErrorBanner />
+      <ErrorBanner />
       <div style={{ marginTop: 50 }}>
         <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>

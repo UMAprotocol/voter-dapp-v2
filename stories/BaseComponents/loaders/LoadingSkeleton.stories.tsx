@@ -3,7 +3,7 @@ import { LoadingSkeleton } from "components";
 import { red500 } from "constants/colors";
 
 export default {
-  title: "Base components",
+  title: "Base components/Loaders/Loading Skeleton",
   component: LoadingSkeleton,
   decorators: [
     (Story) => (
