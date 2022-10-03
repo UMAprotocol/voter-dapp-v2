@@ -7,6 +7,13 @@ import { VoteT } from "types/global";
 export default {
   title: "Base components/Navigation/VoteHistoryTable",
   component: VoteHistoryTable,
+  decorators: [
+    (Story) => (
+      <div style={{ width: 570 }}>
+        <Story />
+      </div>
+    ),
+  ],
 } as ComponentMeta<typeof VoteHistoryTable>;
 
 const mockVoteHistory = {
@@ -22,16 +29,20 @@ function makeMockVotesWithHistory(args?: {
   staking?: boolean;
   slashAmount?: BigNumber;
 }) {
-  const voteHistory = {
-    ...mockVoteHistory,
-    uniqueKey: `${Math.random()}`,
-    ...args,
-  };
   const votes = Array.from({ length: 10 }, (_, i) => ({
     ...voteWithCorrectVoteWithUserVote,
     voteNumber: BigNumber.from(i + 100),
     uniqueKey: `${Math.random()}`,
-    voteHistory,
+    voteHistory: {
+      ...mockVoteHistory,
+      ...args,
+      uniqueKey: `${Math.random()}`,
+      voted: args?.voted ?? Math.random() > 0.5,
+      correctness: args?.correctness ?? Math.random() > 0.5,
+      staking: args?.staking ?? Math.random() > 0.5,
+      slashAmount:
+        args?.slashAmount ?? BigNumber.from(Math.floor(Math.random() * 100) * (Math.random() > 0.5 ? -1 : 1)),
+    },
   }));
 
   return votes as VoteT[];
