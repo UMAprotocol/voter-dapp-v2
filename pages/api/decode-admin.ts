@@ -151,6 +151,8 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
 }
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+  response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
+
   try {
     const body = request.body;
     ["identifiers"].forEach((requiredKey) => {
