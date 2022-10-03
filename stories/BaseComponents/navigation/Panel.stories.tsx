@@ -1,8 +1,15 @@
 import { useArgs } from "@storybook/client-api";
 import { ComponentMeta, ComponentStory, DecoratorFn } from "@storybook/react";
 import { Button, Panel } from "components";
-import { defaultErrorContextState, ErrorContext, PanelContext } from "contexts";
+import { defaultErrorContextState, defaultVotesContextState, ErrorContext, PanelContext, VotesContext } from "contexts";
+import { defaultUserContextState, UserContext } from "contexts/UserContext";
 import sub from "date-fns/sub";
+import { BigNumber } from "ethers";
+import {
+  makeVoteWithHistory,
+  voteWithCorrectVoteWithoutUserVote,
+  voteWithCorrectVoteWithUserVote,
+} from "stories/mocks/votes";
 
 export default {
   title: "Base components/Navigation/Panel",
@@ -44,6 +51,35 @@ const withErrorDecorator: DecoratorFn = (Story) => {
     <ErrorContext.Provider value={mockErrorContextState}>
       <Story />
     </ErrorContext.Provider>
+  );
+};
+
+const withUserDecorator: DecoratorFn = (Story, { args }) => {
+  const mockUserContextState = {
+    ...defaultUserContextState,
+    apr: args.apr ?? 0,
+    cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
+    cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
+    userDataFetching: args.userDataFetching ?? false,
+  };
+
+  return (
+    <UserContext.Provider value={mockUserContextState}>
+      <Story />
+    </UserContext.Provider>
+  );
+};
+
+const withVotesDecorator: DecoratorFn = (Story, { args }) => {
+  const mockVotesContextState = {
+    ...defaultVotesContextState,
+    getPastVotes: () => args.pastVotes ?? [],
+  };
+
+  return (
+    <VotesContext.Provider value={mockVotesContextState}>
+      <Story />
+    </VotesContext.Provider>
   );
 };
 
@@ -179,4 +215,20 @@ export const RemindPanel = Template.bind({});
 RemindPanel.args = {
   panelType: "remind",
   panelOpen: true,
+};
+
+export const HistoryPanel = Template.bind({});
+HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
+HistoryPanel.args = {
+  panelType: "history",
+  panelOpen: true,
+  apr: BigNumber.from(10),
+  cumulativeCalculatedSlash: BigNumber.from(10),
+  cumulativeCalculatedSlashPercentage: BigNumber.from(10),
+  pastVotes: [
+    makeVoteWithHistory(voteWithCorrectVoteWithUserVote),
+    makeVoteWithHistory(voteWithCorrectVoteWithoutUserVote),
+    makeVoteWithHistory(voteWithCorrectVoteWithUserVote),
+    makeVoteWithHistory(voteWithCorrectVoteWithoutUserVote),
+  ],
 };

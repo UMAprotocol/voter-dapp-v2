@@ -36,6 +36,8 @@ export function Votes() {
   useInitializeVoteTiming();
 
   async function commitVotes() {
+    if (!address) return;
+
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
       selectedVotes,
