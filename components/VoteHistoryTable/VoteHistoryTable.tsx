@@ -1,11 +1,14 @@
 import { green, grey500, red500 } from "constants/colors";
 import { formatNumberForDisplay } from "helpers";
+import { usePanelContext } from "hooks";
 import { CSSProperties } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
 
 export function VoteHistoryTable({ votes }: { votes: VoteT[] }) {
+  const { setPanelContent, setPanelType } = usePanelContext();
   const headings = ["Vote", "Staking", "Voted", "Correctness", "Score"];
+
   return (
     <Table>
       <Thead>
@@ -19,14 +22,21 @@ export function VoteHistoryTable({ votes }: { votes: VoteT[] }) {
       </Thead>
       <Tbody>
         {votes.map((vote) => (
-          <VoteHistoryRow vote={vote} key={vote.uniqueKey} />
+          <VoteHistoryRow
+            vote={vote}
+            key={vote.uniqueKey}
+            onVoteClicked={() => {
+              setPanelType("vote");
+              setPanelContent(vote);
+            }}
+          />
         ))}
       </Tbody>
     </Table>
   );
 }
 
-function VoteHistoryRow({ vote }: { vote: VoteT }) {
+function VoteHistoryRow({ vote, onVoteClicked }: { vote: VoteT; onVoteClicked: () => void }) {
   if (!vote.voteHistory) return null;
   const {
     voteNumber,
@@ -37,7 +47,9 @@ function VoteHistoryRow({ vote }: { vote: VoteT }) {
   return (
     <Tr>
       <VoteNumberTd>
-        <VoteNumberButton>#{formatNumberForDisplay(voteNumber, { isEther: false })}</VoteNumberButton>
+        <VoteNumberButton onClick={onVoteClicked}>
+          #{formatNumberForDisplay(voteNumber, { isEther: false })}
+        </VoteNumberButton>
       </VoteNumberTd>
       <StakingTd>
         <Staking>
