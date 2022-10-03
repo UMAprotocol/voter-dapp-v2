@@ -20,7 +20,7 @@ export {
   solidityKeccak256,
   toUtf8String,
 } from "./ethers";
-export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
+export { formatNumberForDisplay, truncateDecimals, bigNumberFromDecimal } from "./formatNumber";
 export {
   formatVotesToCommit,
   formatVotesToReveal,
@@ -33,7 +33,7 @@ export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
 export { truncateEthAddress } from "./truncateEthAddress";
 export { unixTimestampToDate } from "./unixTimestampToDate";
-export { makeUniqueKeyForVote, makeUniqueKeysForVotes } from "./votes";
+export { makeUniqueKeyForVote } from "./votes";
 export {
   computeMillisecondsUntilPhaseEnds,
   computePhase,

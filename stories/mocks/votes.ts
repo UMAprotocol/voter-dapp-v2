@@ -1,5 +1,6 @@
 import { sub } from "date-fns";
 import { BigNumber } from "ethers";
+import { VoteT } from "types";
 
 export const voteWithoutUserVote = {
   isCommitted: false,
@@ -43,6 +44,13 @@ export const voteWithoutUserVote = {
   discordLink: "https://www.todo.com",
   isGovernance: false,
   isRevealed: false,
+  voteHistory: {
+    uniqueKey: "0x1234567890",
+    voted: false,
+    correctness: false,
+    staking: false,
+    slashAmount: BigNumber.from(0),
+  },
 };
 
 export const userVote = {
@@ -76,3 +84,22 @@ export const voteWithCorrectVoteWithUserVote = {
   ...voteWithUserVote,
   correctVote: 0,
 };
+
+export function makeVoteWithHistory(
+  vote: VoteT,
+  voted = false,
+  correctness = false,
+  staking = false,
+  slashAmount = BigNumber.from(0)
+) {
+  return {
+    ...vote,
+    voteHistory: {
+      uniqueKey: vote.uniqueKey,
+      voted,
+      correctness,
+      staking,
+      slashAmount,
+    },
+  };
+}

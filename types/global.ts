@@ -16,6 +16,7 @@ export type DropdownItemT = InputDataT & {
 };
 
 export type VoteT = PriceRequestT &
+  VoteHistoryDataT &
   VoteTransactionDataT &
   UserVoteDataT &
   VoteMetaDataT &
@@ -48,6 +49,50 @@ export type RawPriceRequestDataT = {
 export type VoteTransactionDataT = {
   transactionHash: string;
 };
+
+export type VoteHistoryDataT = {
+  voteHistory: VoteHistoryT | undefined;
+};
+
+export type UserDataQuery = {
+  users: {
+    annualPercentageReturn: string;
+    countReveals: string;
+    countNoVotes: string;
+    countWrongVotes: string;
+    countCorrectVotes: string;
+    cumulativeCalculatedSlash: string;
+    cumulativeCalculatedSlashPercentage: string;
+    votesSlashed: {
+      request: { id: string };
+      voted: boolean;
+      correctness: boolean;
+      staking: boolean;
+      slashAmount: string;
+    }[];
+  }[];
+};
+
+export type UserDataT = {
+  apr: BigNumber;
+  countReveals: number;
+  countNoVotes: number;
+  countWrongVotes: number;
+  countCorrectVotes: number;
+  cumulativeCalculatedSlash: BigNumber;
+  cumulativeCalculatedSlashPercentage: BigNumber;
+  voteHistoryByKey: VoteHistoryByKeyT;
+};
+
+export type VoteHistoryT = {
+  uniqueKey: UniqueKeyT;
+  voted: boolean;
+  correctness: boolean;
+  staking: boolean;
+  slashAmount: BigNumber;
+};
+
+export type VoteHistoryByKeyT = Record<UniqueKeyT, VoteHistoryT>;
 
 export type PastVotesQuery = {
   priceRequests: {
