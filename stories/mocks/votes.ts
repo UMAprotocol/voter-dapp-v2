@@ -103,3 +103,42 @@ export function makeVoteWithHistory(
     },
   };
 }
+
+const mockVoteHistory = {
+  voted: false,
+  correctness: false,
+  staking: false,
+  slashAmount: BigNumber.from(0),
+};
+
+export type VoteHistoryMockArgsT = {
+  vote?: VoteT;
+  voted?: boolean;
+  correctness?: boolean;
+  staking?: boolean;
+  slashAmount?: BigNumber;
+  length?: number;
+};
+
+function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
+  return {
+    ...mockVoteHistory,
+    ...args,
+    uniqueKey: `${Math.random()}`,
+    voted: args?.voted ?? Math.random() > 0.5,
+    correctness: args?.correctness ?? Math.random() > 0.5,
+    staking: args?.staking ?? Math.random() > 0.5,
+    slashAmount: args?.slashAmount ?? BigNumber.from(Math.floor(Math.random() * 100) * (Math.random() > 0.5 ? -1 : 1)),
+  };
+}
+
+export function makeMockVotesWithHistory(args?: VoteHistoryMockArgsT) {
+  const votes = Array.from({ length: args?.length ?? 10 }, (_, i) => ({
+    ...(args?.vote ?? voteWithCorrectVoteWithUserVote),
+    voteNumber: BigNumber.from(i + 100),
+    uniqueKey: `${Math.random()}`,
+    voteHistory: makeMockVoteHistory(args),
+  }));
+
+  return votes as VoteT[];
+}

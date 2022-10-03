@@ -24,7 +24,7 @@ import {
   VoteT,
 } from "types";
 
-interface VotesContextState {
+export interface VotesContextState {
   hasActiveVotes: boolean | undefined;
   activeVotes: PriceRequestByKeyT;
   hasUpcomingVotes: boolean | undefined;

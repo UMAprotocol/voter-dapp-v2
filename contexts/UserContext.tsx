@@ -5,7 +5,7 @@ import { useAccountDetails, useUserData } from "hooks";
 import { createContext, ReactNode } from "react";
 import { VoteHistoryByKeyT } from "types/global";
 
-interface UserContextState {
+export interface UserContextState {
   connectedWallet: WalletState | undefined;
   account: Account | undefined;
   address: string;

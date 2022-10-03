@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useState } from "react";
 import { PanelContentT, PanelTypeT } from "types";
 
-interface PanelContextState {
+export interface PanelContextState {
   panelType: PanelTypeT;
   setPanelType: (panelType: PanelTypeT) => void;
   panelContent: PanelContentT;
@@ -10,7 +10,7 @@ interface PanelContextState {
   setPanelOpen: (panelOpen: boolean) => void;
 }
 
-const defaultPanelContextState = {
+export const defaultPanelContextState = {
   panelType: null,
   setPanelType: () => null,
   panelContent: null,
