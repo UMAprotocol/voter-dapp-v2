@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { makeUniqueKeyForVote } from "helpers";
+import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { VoteExistsByKeyT } from "types";
 
 export default async function getVotesRevealedByUser(votingContract: VotingV2Ethers, address: string, roundId: number) {
@@ -9,7 +9,8 @@ export default async function getVotesRevealedByUser(votingContract: VotingV2Eth
   const revealedVotes: VoteExistsByKeyT = {};
 
   eventData?.forEach(({ identifier, time, ancillaryData }) => {
-    revealedVotes[makeUniqueKeyForVote(identifier, time, ancillaryData)] = true;
+    const decodedIdentifier = decodeHexString(identifier);
+    revealedVotes[makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)] = true;
   });
 
   return revealedVotes;
