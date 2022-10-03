@@ -13,6 +13,7 @@
     "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts"
   },
   "dependencies": {
+    "abi-decoder": "github:UMAprotocol/abi-decoder",
     "@reach/checkbox": "^0.17.0",
     "@reach/dialog": "^0.17.0",
     "@reach/menu-button": "^0.17.0",
@@ -20,6 +21,7 @@
     "@tanstack/react-query": "^4.3.9",
     "@tanstack/react-query-devtools": "^4.3.9",
     "@uma/contracts-frontend": "^0.3.16",
+    "@uma/contracts-node": "^0.3.16",
     "@web3-onboard/core": "^2.8.3",
     "@web3-onboard/gnosis": "^2.1.2",
     "@web3-onboard/injected-wallets": "^2.2.2",
