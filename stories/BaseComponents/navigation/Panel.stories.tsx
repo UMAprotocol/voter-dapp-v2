@@ -1,11 +1,20 @@
 import { useArgs } from "@storybook/client-api";
 import { DecoratorFn, Meta, Story } from "@storybook/react";
 import { Button, Panel } from "components";
-import { defaultErrorContextState, defaultVotesContextState, ErrorContext, PanelContext, VotesContext } from "contexts";
-import { ErrorContextState } from "contexts/ErrorContext";
-import { defaultPanelContextState, PanelContextState } from "contexts/PanelContext";
-import { defaultUserContextState, UserContext, UserContextState } from "contexts/UserContext";
-import { VotesContextState } from "contexts/VotesContext";
+import {
+  defaultErrorContextState,
+  defaultPanelContextState,
+  defaultUserContextState,
+  defaultVotesContextState,
+  ErrorContext,
+  ErrorContextState,
+  PanelContext,
+  PanelContextState,
+  UserContext,
+  UserContextState,
+  VotesContext,
+  VotesContextState,
+} from "contexts";
 import { BigNumber } from "ethers";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { PanelContentT, PanelTypeT, VoteT } from "types";
