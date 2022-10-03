@@ -1,6 +1,6 @@
 import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
 import { green, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
+import { formatVoteStringWithPrecision, getPrecisionForIdentifier, bigNumberFromDecimal } from "helpers";
 import { useWalletContext } from "hooks";
 import Link from "next/link";
 import Dot from "public/assets/icons/dot.svg";
@@ -107,7 +107,7 @@ export function VotesTableRow({
   function getCorrectVote() {
     if (!correctVote) return;
 
-    const correctVoteAsString = correctVote.toString();
+    const correctVoteAsString = bigNumberFromDecimal(correctVote).toString();
 
     return (
       findVoteInOptions(correctVoteAsString)?.label ??
