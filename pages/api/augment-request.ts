@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { Contract, utils } from "ethers";
+import { Contract } from "ethers";
 import { getNodeUrls, constructContractOnChain } from "./_common";
 
 interface Request {
   identifier: string;
-  timestamp: number;
+  time: number;
   ancillaryData: string;
 }
 
@@ -15,13 +15,8 @@ enum OptimisticOracleType {
   SkinnyOptimisticOracle,
 }
 
-interface AugmentedRequest extends Request {
-  transactionHash: string;
-  oracleType: OptimisticOracleType;
-}
-
 function getOoChainIds() {
-  return Object.keys(getNodeUrls).map((z) => Number(z));
+  return Object.keys(getNodeUrls()).map((z) => Number(z));
 }
 
 function constructOoUiLink(txHash: string, chainId: number, oracleType: string) {
@@ -31,6 +26,8 @@ function constructOoUiLink(txHash: string, chainId: number, oracleType: string) 
 async function constructOptimisticOraclesByChain(chainId: number): Promise<(Contract | null)[]> {
   const optimisticOracle = await constructContractOnChain(chainId, "OptimisticOracle");
   const optimisticOracleV2 = await constructContractOnChain(chainId, "OptimisticOracleV2");
+  
+  // Only mainnet has a SkinnyOptimisticOracle so only construct it here. All other chains of interest have OOv1 and V2.
   const skinnyOptimisticOracle =
     chainId == 1 ? await constructContractOnChain(chainId, "SkinnyOptimisticOracle") : null;
   return [optimisticOracle, optimisticOracleV2, skinnyOptimisticOracle];
@@ -38,7 +35,7 @@ async function constructOptimisticOraclesByChain(chainId: number): Promise<(Cont
 
 async function getOptimisticOraclePriceRequestEventsByChainId(chainId: number): Promise<any[]> {
   const chainOptimisticOracles = await constructOptimisticOraclesByChain(chainId);
-  console.log("LEN", chainOptimisticOracles[2]);
+
   const requests = await Promise.all(
     chainOptimisticOracles.map((optimisticOracle) =>
       optimisticOracle ? optimisticOracle.queryFilter(optimisticOracle.filters.RequestPrice()) : null
@@ -52,7 +49,7 @@ async function getOptimisticOraclePriceRequestEventsByChainId(chainId: number): 
             return {
               transactionHash: ooRequest.transactionHash,
               identifier: ooRequest?.args?.identifier,
-              timestamp: Number(ooRequest?.args?.timestamp),
+              time: Number(ooRequest?.args?.timestamp),
               ancillaryData: ooRequest?.args?.ancillaryData,
               oracleType: OptimisticOracleType[index],
             };
@@ -62,29 +59,31 @@ async function getOptimisticOraclePriceRequestEventsByChainId(chainId: number): 
     .flat();
 }
 
-// { requestTransactionHash: string; chainId: number; oracleType: any }[]
-async function getRequestTxFromL1RequestInformation(l1Requests: Request[]): Promise<any> {
+async function getRequestTxFromL1RequestInformation(
+  l1Requests: Request[]
+): Promise<{ requestTransactionHash: string; chainId: number; oracleType: any }[]> {
   const ooChainIds = getOoChainIds();
-  const chainOoRequests = (
-    await Promise.all(ooChainIds.map((chainId) => getOptimisticOraclePriceRequestEventsByChainId(chainId)))
-  ).flat();
 
-  const ooRequestTxs: { requestTransactionHash: string; chainId: number }[] = [];
+  const chainOoRequests = await Promise.all(
+    ooChainIds.map((chainId) => getOptimisticOraclePriceRequestEventsByChainId(chainId))
+  );
+  const ooRequestTxs: { requestTransactionHash: string; chainId: number; oracleType: any }[] = [];
   l1Requests.forEach((l1Request) => {
     let foundOoTx = { requestTransactionHash: "", chainId: 0, oracleType: "" };
-    chainOoRequests.forEach((ooRequest, index) => {
-      if (
-        l1Request.identifier == ooRequest.identifier &&
-        l1Request.timestamp == ooRequest.timestamp &&
-        l1Request.ancillaryData == ooRequest.ancillaryData
-      ) {
-        foundOoTx = {
-          requestTransactionHash: ooRequest.transactionHash,
-          chainId: ooChainIds[index],
-          oracleType: ooRequest.oracleType,
-        };
-        return;
-      }
+    chainOoRequests.forEach((_, ooChainId) => {
+      chainOoRequests[ooChainId].forEach((ooRequest, index) => {
+        if (
+          l1Request.identifier.toLowerCase() == ooRequest.identifier.toLowerCase() &&
+          l1Request.time == ooRequest.time
+        ) {
+          foundOoTx = {
+            requestTransactionHash: ooRequest.transactionHash,
+            chainId: ooChainIds[ooChainId],
+            oracleType: ooRequest.oracleType,
+          };
+          return;
+        }
+      });
     });
     ooRequestTxs.push(foundOoTx);
   });
@@ -102,54 +101,31 @@ async function getAugmentingRequestInformation(l1Requests: Request[]) {
     ])
   ).flat();
 
-  console.log("l1RequestEvents", JSON.stringify(l1RequestEvents));
   const l1RequestTxHashes = l1Requests.map((l1Request) => {
-    console.log("l1Request", l1Request);
     return (
-      l1RequestEvents.find(
-        (event) =>
-          l1Request.identifier == event?.args?.identifier &&
-          l1Request.timestamp == event?.args?.timestamp &&
-          l1Request.ancillaryData == event?.args?.ancillaryData
-      )?.transactionHash ?? "rolled"
+      l1RequestEvents.find((event) => {
+        if (
+          l1Request.identifier.toLowerCase() == event?.args?.identifier.toLowerCase() &&
+          l1Request.time == event?.args?.time
+        ) {
+          return true;
+        } else return false;
+      })?.transactionHash ?? "rolled"
     );
   });
 
-  const processedL1Requests = l1Requests.map((request) => {
-    return {
-      ...request,
-      ancillaryData: stripAncillaryDataOfSupplementaryInformation(request?.ancillaryData),
-    };
-  });
-
-  console.log("processedL1Requests", processedL1Requests);
-
-  const requestTransactions = await getRequestTxFromL1RequestInformation(processedL1Requests);
+  const requestTransactions = await getRequestTxFromL1RequestInformation(l1Requests);
 
   return l1RequestTxHashes.map((l1RequestTxHash, index) => {
     return {
       l1RequestTxHash,
       ooRequestUrl: constructOoUiLink(
-        requestTransactions[index].txHash,
+        requestTransactions[index].requestTransactionHash,
         requestTransactions[index].chainId,
         requestTransactions[index].oracleType
       ),
     };
   });
-}
-
-function stripAncillaryDataofSuplementaryInformation(ancillary: string) {
-  let parsedAncillary = utils.toUtf8String(ancillary);
-  // console.log(parsedAncillary);
-
-  if (
-    parsedAncillary.includes("ooRequester") &&
-    parsedAncillary.includes("childRequester") &&
-    parsedAncillary.includes("childChainId")
-  )
-    parsedAncillary = parsedAncillary.substring(0, parsedAncillary.indexOf("ooRequester") - 1);
-
-  return utils.hexlify(utils.toUtf8Bytes(parsedAncillary));
 }
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
