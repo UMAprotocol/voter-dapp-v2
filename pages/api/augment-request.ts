@@ -6,7 +6,6 @@ import { getNodeUrls, constructContractOnChain } from "./_common";
 interface Request {
   identifier: string;
   time: number;
-  ancillaryData: string;
 }
 
 enum OptimisticOracleType {
@@ -26,7 +25,7 @@ function constructOoUiLink(txHash: string, chainId: number, oracleType: string) 
 async function constructOptimisticOraclesByChain(chainId: number): Promise<(Contract | null)[]> {
   const optimisticOracle = await constructContractOnChain(chainId, "OptimisticOracle");
   const optimisticOracleV2 = await constructContractOnChain(chainId, "OptimisticOracleV2");
-  
+
   // Only mainnet has a SkinnyOptimisticOracle so only construct it here. All other chains of interest have OOv1 and V2.
   const skinnyOptimisticOracle =
     chainId == 1 ? await constructContractOnChain(chainId, "SkinnyOptimisticOracle") : null;
@@ -50,7 +49,6 @@ async function getOptimisticOraclePriceRequestEventsByChainId(chainId: number): 
               transactionHash: ooRequest.transactionHash,
               identifier: ooRequest?.args?.identifier,
               time: Number(ooRequest?.args?.timestamp),
-              ancillaryData: ooRequest?.args?.ancillaryData,
               oracleType: OptimisticOracleType[index],
             };
           })
