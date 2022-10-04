@@ -1,18 +1,15 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { formatNumberForDisplay } from "helpers";
-import { useBalancesContext, usePanelContext } from "hooks";
+import { formatBigNumberForDisplay, formatNumberForDisplay } from "helpers";
+import { useBalancesContext, usePanelContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
 import styled from "styled-components";
 
-interface Props {
-  votesInLastCycles: number;
-  apy: number;
-}
-export function HowItWorks({ votesInLastCycles, apy }: Props) {
+export function HowItWorks() {
   const { openPanel } = usePanelContext();
   const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
+  const { countReveals = 0, apr = 0, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -25,6 +22,10 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
   function totalTokens() {
     if (unstakedBalance === undefined || stakedBalance === undefined) return;
     return unstakedBalance.add(stakedBalance);
+  }
+
+  function isLoading() {
+    return getBalancesFetching() || userDataFetching;
   }
 
   return (
@@ -41,13 +42,9 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           content={
             <>
               You are staking{" "}
-              <Strong>
-                {getBalancesFetching() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(stakedBalance)}
-              </Strong>{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(stakedBalance)}</Strong>{" "}
               UMA tokens of{" "}
-              <Strong>
-                {getBalancesFetching() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(totalTokens())}
-              </Strong>{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(totalTokens())}</Strong>{" "}
               total tokens.
             </>
           }
@@ -64,9 +61,9 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
           content={
             <>
               You have voted in{" "}
-              <Strong>{getBalancesFetching() ? <LoadingSkeleton width={60} /> : votesInLastCycles} out of 5</Strong>{" "}
-              latest voting cycles, and are earning{" "}
-              <Strong>{getBalancesFetching() ? <LoadingSkeleton width={60} /> : apy}% APY</Strong>
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, 0)}</Strong>{" "}
+              voting cycle{countReveals === 1 ? "" : "s"}, and are earning{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
             </>
           }
           actionLabel="Vote history"
@@ -83,8 +80,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
             <>
               You have{" "}
               <Strong>
-                {getBalancesFetching() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(outstandingRewards)}{" "}
-                UMA
+                {isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(outstandingRewards)} UMA
               </Strong>{" "}
               in unclaimed rewards
             </>
