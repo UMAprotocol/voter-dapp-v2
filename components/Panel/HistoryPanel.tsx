@@ -1,6 +1,6 @@
-import { LoadingSkeleton } from "components/LoadingSkeleton";
-import { LoadingSpinner } from "components/LoadingSpinner";
-import { VoteHistoryTable } from "components/VoteHistoryTable/VoteHistoryTable";
+import { LoadingSkeleton } from "components";
+import { LoadingSpinner } from "components";
+import { VoteHistoryTable } from "components";
 import { black, green, red500 } from "constants/colors";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
