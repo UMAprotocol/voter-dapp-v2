@@ -1,3 +1,5 @@
+import { LoadingSkeleton } from "components/LoadingSkeleton";
+import { LoadingSpinner } from "components/LoadingSpinner";
 import { VoteHistoryTable } from "components/VoteHistoryTable/VoteHistoryTable";
 import { black, green, red500 } from "constants/colors";
 import { formatNumberForDisplay } from "helpers";
@@ -9,7 +11,7 @@ import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
-  const { getPastVotes } = useVotesContext();
+  const { getPastVotes, getIsFetching } = useVotesContext();
   const { apr, cumulativeCalculatedSlash, cumulativeCalculatedSlashPercentage, userDataFetching } = useUserContext();
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -17,16 +19,33 @@ export function HistoryPanel() {
     ? green
     : red500;
 
+  function isLoading() {
+    return getIsFetching() || userDataFetching;
+  }
+
   return (
     <PanelWrapper>
       <PanelTitle title="History" />
       <SectionsWrapper>
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
-          <Apr>{formatNumberForDisplay(apr)}%</Apr>
+          <Apr>
+            {isLoading() ? (
+              <LoadingSkeleton variant="white" width={150} height={35} />
+            ) : (
+              `${formatNumberForDisplay(apr)}%`
+            )}
+          </Apr>
           <AprDetailsWrapper>
             <Text>
-              <>Based on participation score = {formatNumberForDisplay(cumulativeCalculatedSlash)}</>
+              <>
+                Based on participation score ={" "}
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} height={15} />
+                ) : (
+                  formatNumberForDisplay(cumulativeCalculatedSlash)
+                )}
+              </>
             </Text>
             <Text>
               Your bonus/penalty ={" "}
@@ -37,7 +56,11 @@ export function HistoryPanel() {
                   } as CSSProperties
                 }
               >
-                {formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} height={15} />
+                ) : (
+                  `${formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%`
+                )}
               </BonusOrPenalty>
             </Text>
           </AprDetailsWrapper>
@@ -51,7 +74,11 @@ export function HistoryPanel() {
         <SectionWrapper>
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
-            <VoteHistoryTable votes={getPastVotes().sort(sortVotesByVoteNumber)} />
+            {isLoading() ? (
+              <LoadingSpinner size={250} />
+            ) : (
+              <VoteHistoryTable votes={getPastVotes().sort(sortVotesByVoteNumber)} />
+            )}
           </HistoryWrapper>
         </SectionWrapper>
       </SectionsWrapper>
@@ -107,4 +134,7 @@ const BonusOrPenalty = styled.span`
   color: var(--color);
 `;
 
-const HistoryWrapper = styled.div``;
+const HistoryWrapper = styled.div`
+  display: grid;
+  place-items: center;
+`;
