@@ -9,7 +9,6 @@ interface Props {
   onVoteClicked: () => void;
 }
 export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
-  if (!vote.voteHistory) return null;
   const {
     voteNumber,
     voteHistory: { voted, correctness, staking, slashAmount },

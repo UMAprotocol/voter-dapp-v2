@@ -51,7 +51,7 @@ export type VoteTransactionDataT = {
 };
 
 export type VoteHistoryDataT = {
-  voteHistory: VoteHistoryT | undefined;
+  voteHistory: VoteHistoryT;
 };
 
 export type UserDataQuery = {
