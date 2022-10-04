@@ -16,6 +16,7 @@ import {
   VotesContextState,
 } from "contexts";
 import { BigNumber } from "ethers";
+import { bigNumberFromFloatString } from "helpers/formatNumber";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { VoteT } from "types";
 
@@ -193,8 +194,8 @@ export const HistoryPanel = Template.bind({});
 HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
 HistoryPanel.args = {
   panelType: "history",
-  apr: BigNumber.from(10),
-  cumulativeCalculatedSlash: BigNumber.from(100),
-  cumulativeCalculatedSlashPercentage: BigNumber.from(100),
+  apr: bigNumberFromFloatString("18.3"),
+  cumulativeCalculatedSlash: bigNumberFromFloatString("76.3"),
+  cumulativeCalculatedSlashPercentage: bigNumberFromFloatString("23.3"),
   votes: makeMockVotesWithHistory(),
 };

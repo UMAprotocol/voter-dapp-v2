@@ -1,5 +1,6 @@
 import { sub } from "date-fns";
 import { BigNumber } from "ethers";
+import { bigNumberFromFloatString } from "helpers/formatNumber";
 import { VoteT } from "types";
 
 export const voteWithoutUserVote = {
@@ -129,7 +130,7 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
     correctness: args?.correctness ?? Math.random() > 0.5,
     staking: args?.staking ?? Math.random() > 0.5,
     slashAmount:
-      args?.slashAmount ?? BigNumber.from(Math.floor(Math.random() * 10000) * (Math.random() > 0.5 ? -1 : 1)),
+      args?.slashAmount ?? bigNumberFromFloatString(`${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`),
   };
 }
 
