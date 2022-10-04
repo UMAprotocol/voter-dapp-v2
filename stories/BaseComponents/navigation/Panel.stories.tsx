@@ -39,7 +39,7 @@ const Template: Story<StoryProps> = (args) => {
   const mockPanelContextState = {
     ...defaultPanelContextState,
     panelType: args.panelType ?? defaultPanelContextState.panelType,
-    panelOpen: args.panelOpen ?? defaultPanelContextState.panelOpen,
+    panelOpen: args.panelOpen ?? true,
     panelContent: args.panelContent ?? defaultPanelContextState.panelContent,
     openPanel,
     closePanel,

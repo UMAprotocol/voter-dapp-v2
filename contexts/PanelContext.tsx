@@ -6,7 +6,7 @@ export interface PanelContextState {
   panelContent: PanelContentT | undefined;
   panelOpen: boolean;
   openPanel: (panelType: PanelTypeT, panelContent?: PanelContentT) => void;
-  closePanel: () => void;
+  closePanel: (clearPreviousPanelData?: boolean) => void;
 }
 
 export const defaultPanelContextState = {
@@ -34,15 +34,19 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     pushPanelDataOntoStack(panelType, panelContent);
   }
 
-  function closePanel() {
+  function closePanel(clearPreviousPanelData = false) {
+    if (clearPreviousPanelData) {
+      setPreviousPanelData([]);
+      setPanelOpen(false);
+      return;
+    }
     if (previousPanelData.length > 1) {
       const previousPanel = previousPanelData[previousPanelData.length - 2];
       setPanelType(previousPanel.panelType);
       setPanelContent(previousPanel.panelContent);
       popPanelDataOffStack();
     } else {
-      setPanelType(null);
-      setPanelContent(null);
+      popPanelDataOffStack();
       setPanelOpen(false);
     }
   }

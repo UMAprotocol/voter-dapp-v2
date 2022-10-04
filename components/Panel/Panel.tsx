@@ -44,13 +44,13 @@ export function Panel() {
         ({ opacity, right }, isOpen) =>
           isOpen && (
             <Overlay
-              onDismiss={closePanel}
+              onDismiss={() => closePanel(true)}
               style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <PanelComponent content={panelContent} />
                 <CloseButton
-                  onClick={closePanel}
+                  onClick={() => closePanel(false)}
                   style={
                     {
                       "--fill": closeButtonColor,
