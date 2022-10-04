@@ -50,7 +50,7 @@ export function Panel() {
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <PanelComponent content={panelContent} />
                 <CloseButton
-                  onClick={() => closePanel(false)}
+                  onClick={() => closePanel()}
                   style={
                     {
                       "--fill": closeButtonColor,
