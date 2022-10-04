@@ -1,7 +1,7 @@
 import { Button } from "components";
 import { formatDistanceToNowStrict } from "date-fns";
 import { BigNumber } from "ethers";
-import { formatBigNumberForDisplay } from "helpers";
+import { formatNumberForDisplay } from "helpers";
 import Time from "public/assets/icons/time.svg";
 import styled from "styled-components";
 
@@ -24,7 +24,7 @@ export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim 
       </IconWrapper>
       <AmountDescriptionWrapper>
         <Amount>
-          <Strong>{formatBigNumberForDisplay(pendingUnstake)}</Strong> UMA
+          <Strong>{formatNumberForDisplay(pendingUnstake)}</Strong> UMA
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>

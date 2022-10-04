@@ -1,5 +1,5 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
-import { formatBigNumberForDisplay } from "helpers";
+import { formatNumberForDisplay } from "helpers";
 import { useBalancesContext, useContractsContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
@@ -35,7 +35,7 @@ export function ClaimPanel() {
               {isLoading() ? (
                 <LoadingSkeleton variant="white" width={150} height={32} />
               ) : (
-                formatBigNumberForDisplay(outstandingRewards)
+                formatNumberForDisplay(outstandingRewards)
               )}
             </Strong>{" "}
             UMA

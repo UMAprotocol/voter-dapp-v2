@@ -1,5 +1,5 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { formatBigNumberForDisplay } from "helpers";
+import { formatNumberForDisplay } from "helpers";
 import { useBalancesContext, usePanelContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -42,9 +42,9 @@ export function HowItWorks() {
           content={
             <>
               You are staking{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(stakedBalance)}</Strong>{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(stakedBalance)}</Strong>{" "}
               UMA tokens of{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(totalTokens())}</Strong>{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(totalTokens())}</Strong>{" "}
               total tokens.
             </>
           }
@@ -62,14 +62,10 @@ export function HowItWorks() {
             <>
               You have voted in{" "}
               <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatBigNumberForDisplay(countReveals, { decimals: 0 })
-                )}
+                {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, { decimals: 0 })}
               </Strong>{" "}
               voting cycle{countReveals?.eq(1) ? "" : "s"}, and are earning{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(apr)}% APR</Strong>
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
             </>
           }
           actionLabel="Vote history"
@@ -86,7 +82,7 @@ export function HowItWorks() {
             <>
               You have{" "}
               <Strong>
-                {isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(outstandingRewards)} UMA
+                {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(outstandingRewards)} UMA
               </Strong>{" "}
               in unclaimed rewards
             </>

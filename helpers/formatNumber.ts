@@ -1,14 +1,7 @@
 import { BigNumber } from "ethers";
 import { commify, formatEther, parseEther } from "helpers";
 
-export function formatNumberForDisplay(value: number | string, decimals = 2) {
-  if (typeof value === "string") {
-    value = parseFloat(value);
-  }
-  return commify(value.toFixed(decimals));
-}
-
-export function formatBigNumberForDisplay(
+export function formatNumberForDisplay(
   number: BigNumber | undefined,
   options?: { decimals?: number; isFormatEther?: boolean }
 ) {

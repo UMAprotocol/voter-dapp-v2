@@ -20,7 +20,7 @@ export {
   solidityKeccak256,
   toUtf8String,
 } from "./ethers";
-export { formatBigNumberForDisplay, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
+export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
   formatVotesToCommit,
   formatVotesToReveal,
