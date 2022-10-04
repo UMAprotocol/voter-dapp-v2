@@ -194,8 +194,10 @@ export const HistoryPanel = Template.bind({});
 HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
 HistoryPanel.args = {
   panelType: "history",
-  apr: bigNumberFromFloatString("18.3"),
-  cumulativeCalculatedSlash: bigNumberFromFloatString("76.3"),
-  cumulativeCalculatedSlashPercentage: bigNumberFromFloatString("23.3"),
+  apr: bigNumberFromFloatString(`${Math.random() * 100}`),
+  cumulativeCalculatedSlash: bigNumberFromFloatString(`${Math.random() * 100}`),
+  cumulativeCalculatedSlashPercentage: bigNumberFromFloatString(
+    `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
+  ),
   votes: makeMockVotesWithHistory(),
 };
