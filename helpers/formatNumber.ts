@@ -1,7 +1,14 @@
-import { BigNumber, FixedNumber } from "ethers";
-import { commify, formatEther } from "helpers";
+import { BigNumber } from "ethers";
+import { commify, formatEther, parseEther } from "helpers";
 
-export function formatNumberForDisplay(
+export function formatNumberForDisplay(value: number | string, decimals = 2) {
+  if (typeof value === "string") {
+    value = parseFloat(value);
+  }
+  return commify(value.toFixed(decimals));
+}
+
+export function formatBigNumberForDisplay(
   number: BigNumber | undefined,
   options?: { decimals?: number; isFormatEther?: boolean }
 ) {
@@ -14,12 +21,11 @@ export function formatNumberForDisplay(
 export function truncateDecimals(number: string, decimals: number) {
   const [whole, decimal] = number.split(".");
   if (!decimal) return number;
+  if (decimals === 0) return whole.toString();
   return `${whole}.${decimal.slice(0, decimals)}`;
 }
 
-export function bigNumberFromDecimal(decimal: string | number) {
-  if (typeof decimal === "number") {
-    decimal = decimal.toFixed(18);
-  }
-  return BigNumber.from(FixedNumber.from(truncateDecimals(decimal, 18)));
+export function bigNumberFromFloatString(value: string) {
+  const truncated = truncateDecimals(value, 18);
+  return BigNumber.from(parseEther(truncated));
 }

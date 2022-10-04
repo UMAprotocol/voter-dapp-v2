@@ -1,5 +1,4 @@
 import { Tabs } from "components";
-import { formatNumberForDisplay } from "helpers";
 import { PanelContentT, VotePanelContentT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";

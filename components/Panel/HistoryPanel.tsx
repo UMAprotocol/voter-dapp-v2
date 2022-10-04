@@ -2,7 +2,7 @@ import { LoadingSkeleton } from "components/LoadingSkeleton";
 import { LoadingSpinner } from "components/LoadingSpinner";
 import { VoteHistoryTable } from "components/VoteHistoryTable/VoteHistoryTable";
 import { black, green, red500 } from "constants/colors";
-import { formatNumberForDisplay } from "helpers";
+import { formatBigNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
 import { VoteT } from "types";
@@ -33,7 +33,7 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSkeleton variant="white" width={150} height={35} />
             ) : (
-              `${formatNumberForDisplay(apr)}%`
+              `${formatBigNumberForDisplay(apr)}%`
             )}
           </Apr>
           <AprDetailsWrapper>
@@ -43,7 +43,7 @@ export function HistoryPanel() {
                 {isLoading() ? (
                   <LoadingSkeleton width={60} height={15} />
                 ) : (
-                  formatNumberForDisplay(cumulativeCalculatedSlash)
+                  formatBigNumberForDisplay(cumulativeCalculatedSlash)
                 )}
               </>
             </Text>
@@ -59,7 +59,7 @@ export function HistoryPanel() {
                 {isLoading() ? (
                   <LoadingSkeleton width={60} height={15} />
                 ) : (
-                  `${formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%`
+                  `${formatBigNumberForDisplay(cumulativeCalculatedSlashPercentage)}%`
                 )}
               </BonusOrPenalty>
             </Text>

@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { getVoteMetaData } from "helpers";
 import {
   useAccountDetails,
@@ -201,7 +202,13 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
         transactionHash: transactionHashes[uniqueKey],
-        voteHistory: voteHistoryByKey[uniqueKey],
+        voteHistory: voteHistoryByKey[uniqueKey] ?? {
+          uniqueKey,
+          voted: false,
+          correctness: false,
+          staking: false,
+          slashAmount: BigNumber.from(0),
+        },
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,

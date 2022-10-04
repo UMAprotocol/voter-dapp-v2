@@ -1,5 +1,5 @@
 import { green, grey500, red500 } from "constants/colors";
-import { formatNumberForDisplay } from "helpers";
+import { formatBigNumberForDisplay } from "helpers";
 import { usePanelContext } from "hooks";
 import { CSSProperties } from "react";
 import styled from "styled-components";
@@ -47,7 +47,7 @@ function VoteHistoryRow({ vote, onVoteClicked }: { vote: VoteT; onVoteClicked: (
     <Tr>
       <VoteNumberTd>
         <VoteNumberButton onClick={onVoteClicked}>
-          #{formatNumberForDisplay(voteNumber, { isFormatEther: false })}
+          #{formatBigNumberForDisplay(voteNumber, { isFormatEther: false })}
         </VoteNumberButton>
       </VoteNumberTd>
       <StakingTd>
@@ -65,7 +65,7 @@ function VoteHistoryRow({ vote, onVoteClicked }: { vote: VoteT; onVoteClicked: (
           <Bar value={correctness} />
         </Correctness>
       </CorrectnessTd>
-      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>{formatNumberForDisplay(slashAmount)}</ScoreTd>
+      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>{formatBigNumberForDisplay(slashAmount)}</ScoreTd>
     </Tr>
   );
 }

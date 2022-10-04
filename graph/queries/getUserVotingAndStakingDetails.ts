@@ -1,6 +1,6 @@
 import graphEndpoint from "constants/graphEndpoint";
 import request, { gql } from "graphql-request";
-import { bigNumberFromDecimal } from "helpers/formatNumber";
+import { bigNumberFromFloatString } from "helpers/formatNumber";
 import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types/global";
 
 export async function getUserVotingAndStakingDetails(address: string | undefined) {
@@ -35,20 +35,20 @@ export async function getUserVotingAndStakingDetails(address: string | undefined
 }
 
 function parseUserVotingAndStakingDetails(rawUserData: UserDataQuery["users"][0]) {
-  const apr = bigNumberFromDecimal(rawUserData?.annualPercentageReturn ?? 0);
-  const countReveals = parseInt(rawUserData?.countReveals ?? 0);
-  const countNoVotes = parseInt(rawUserData?.countNoVotes ?? 0);
-  const countWrongVotes = parseInt(rawUserData?.countWrongVotes ?? 0);
-  const countCorrectVotes = parseInt(rawUserData?.countCorrectVotes ?? 0);
-  const cumulativeCalculatedSlash = bigNumberFromDecimal(rawUserData?.cumulativeCalculatedSlash ?? 0);
-  const cumulativeCalculatedSlashPercentage = bigNumberFromDecimal(
-    rawUserData?.cumulativeCalculatedSlashPercentage ?? 0
+  const apr = bigNumberFromFloatString(rawUserData?.annualPercentageReturn);
+  const countReveals = bigNumberFromFloatString(rawUserData?.countReveals);
+  const countNoVotes = bigNumberFromFloatString(rawUserData?.countNoVotes);
+  const countWrongVotes = bigNumberFromFloatString(rawUserData?.countWrongVotes);
+  const countCorrectVotes = bigNumberFromFloatString(rawUserData?.countCorrectVotes);
+  const cumulativeCalculatedSlash = bigNumberFromFloatString(rawUserData?.cumulativeCalculatedSlash);
+  const cumulativeCalculatedSlashPercentage = bigNumberFromFloatString(
+    rawUserData?.cumulativeCalculatedSlashPercentage
   );
-  const voteHistory = rawUserData?.votesSlashed.map((vote) => {
+  const voteHistory = rawUserData.votesSlashed.map((vote) => {
     const uniqueKey = vote.request.id;
     const voted = vote.voted;
     const correctness = vote.correctness;
-    const slashAmount = bigNumberFromDecimal(vote.slashAmount ?? 0);
+    const slashAmount = bigNumberFromFloatString(vote.slashAmount);
     const staking = vote.staking;
     return { uniqueKey, voted, correctness, slashAmount, staking };
   });

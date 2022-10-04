@@ -75,10 +75,10 @@ export type UserDataQuery = {
 
 export type UserDataT = {
   apr: BigNumber;
-  countReveals: number;
-  countNoVotes: number;
-  countWrongVotes: number;
-  countCorrectVotes: number;
+  countReveals: BigNumber;
+  countNoVotes: BigNumber;
+  countWrongVotes: BigNumber;
+  countCorrectVotes: BigNumber;
   cumulativeCalculatedSlash: BigNumber;
   cumulativeCalculatedSlashPercentage: BigNumber;
   voteHistoryByKey: VoteHistoryByKeyT;

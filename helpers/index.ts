@@ -1,8 +1,8 @@
 export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
 export {
   decryptMessage,
-  encryptMessage,
   derivePrivateKey,
+  encryptMessage,
   getPrecisionForIdentifier,
   getRandomSignedInt,
   getRandomUnsignedInt,
@@ -20,7 +20,7 @@ export {
   solidityKeccak256,
   toUtf8String,
 } from "./ethers";
-export { formatNumberForDisplay, truncateDecimals, bigNumberFromDecimal } from "./formatNumber";
+export { formatBigNumberForDisplay, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
   formatVotesToCommit,
   formatVotesToReveal,

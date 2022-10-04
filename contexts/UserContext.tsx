@@ -11,13 +11,13 @@ export interface UserContextState {
   address: string;
   truncatedAddress: string | undefined;
   apr: BigNumber | undefined;
-  countReveals: number | undefined;
-  countNoVotes: number | undefined;
-  countWrongVotes: number | undefined;
-  countCorrectVotes: number | undefined;
+  countReveals: BigNumber | undefined;
+  countNoVotes: BigNumber | undefined;
+  countWrongVotes: BigNumber | undefined;
+  countCorrectVotes: BigNumber | undefined;
   cumulativeCalculatedSlash: BigNumber | undefined;
   cumulativeCalculatedSlashPercentage: BigNumber | undefined;
-  voteHistoryByKey: VoteHistoryByKeyT;
+  voteHistoryByKey: VoteHistoryByKeyT | undefined;
   userDataLoading: boolean;
   userDataFetching: boolean;
 }

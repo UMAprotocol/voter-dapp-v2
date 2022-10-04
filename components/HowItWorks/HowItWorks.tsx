@@ -1,5 +1,5 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { formatBigNumberForDisplay, formatNumberForDisplay } from "helpers";
+import { formatBigNumberForDisplay } from "helpers";
 import { useBalancesContext, usePanelContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -9,7 +9,7 @@ import styled from "styled-components";
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
   const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
-  const { countReveals = 0, apr = 0, userDataFetching } = useUserContext();
+  const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -61,9 +61,15 @@ export function HowItWorks() {
           content={
             <>
               You have voted in{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, 0)}</Strong>{" "}
-              voting cycle{countReveals === 1 ? "" : "s"}, and are earning{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
+              <Strong>
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatBigNumberForDisplay(countReveals, { decimals: 0 })
+                )}
+              </Strong>{" "}
+              voting cycle{countReveals?.eq(1) ? "" : "s"}, and are earning{" "}
+              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatBigNumberForDisplay(apr)}% APR</Strong>
             </>
           }
           actionLabel="Vote history"

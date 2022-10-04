@@ -1,6 +1,6 @@
 import { LoadingSkeleton, Tabs } from "components";
 import { parseEther } from "ethers/lib/utils";
-import { formatNumberForDisplay } from "helpers";
+import { formatBigNumberForDisplay } from "helpers";
 import {
   useApprove,
   useBalancesContext,
@@ -83,7 +83,7 @@ export function StakeUnstakePanel() {
                 {isLoading() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
-                  formatNumberForDisplay(stakedBalance)
+                  formatBigNumberForDisplay(stakedBalance)
                 )}
               </BalanceAmount>
             </Balance>
@@ -93,7 +93,7 @@ export function StakeUnstakePanel() {
                 {isLoading() ? (
                   <LoadingSkeleton variant="white" width={200} height={45} />
                 ) : (
-                  formatNumberForDisplay(unstakedBalance)
+                  formatBigNumberForDisplay(unstakedBalance)
                 )}
               </BalanceAmount>
             </Balance>
