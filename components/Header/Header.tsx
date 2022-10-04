@@ -6,11 +6,10 @@ import styled from "styled-components";
 import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
-  const { setPanelType, setPanelOpen } = usePanelContext();
+  const { openPanel } = usePanelContext();
 
   function openMenuPanel() {
-    setPanelType("menu");
-    setPanelOpen(true);
+    openPanel("menu");
   }
 
   return (

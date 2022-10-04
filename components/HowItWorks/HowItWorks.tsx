@@ -11,17 +11,15 @@ interface Props {
   apy: number;
 }
 export function HowItWorks({ votesInLastCycles, apy }: Props) {
-  const { setPanelType, setPanelOpen } = usePanelContext();
+  const { openPanel } = usePanelContext();
   const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
 
   function openStakeUnstakePanel() {
-    setPanelType("stake");
-    setPanelOpen(true);
+    openPanel("stake");
   }
 
   function openClaimPanel() {
-    setPanelType("claim");
-    setPanelOpen(true);
+    openPanel("claim");
   }
 
   function totalTokens() {
@@ -72,7 +70,7 @@ export function HowItWorks({ votesInLastCycles, apy }: Props) {
             </>
           }
           actionLabel="Vote history"
-          onClick={() => console.log("TODO")}
+          onClick={() => openPanel("history")}
         />
         <InfoBar
           label={

@@ -128,7 +128,8 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
     voted: args?.voted ?? Math.random() > 0.5,
     correctness: args?.correctness ?? Math.random() > 0.5,
     staking: args?.staking ?? Math.random() > 0.5,
-    slashAmount: args?.slashAmount ?? BigNumber.from(Math.floor(Math.random() * 100) * (Math.random() > 0.5 ? -1 : 1)),
+    slashAmount:
+      args?.slashAmount ?? BigNumber.from(Math.floor(Math.random() * 10000) * (Math.random() > 0.5 ? -1 : 1)),
   };
 }
 

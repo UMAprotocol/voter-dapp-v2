@@ -3,11 +3,11 @@ import { commify, formatEther } from "helpers";
 
 export function formatNumberForDisplay(
   number: BigNumber | undefined,
-  options?: { decimals?: number; isEther?: boolean }
+  options?: { decimals?: number; isFormatEther?: boolean }
 ) {
   if (!number) return "0";
-  const { decimals = 2, isEther = true } = options || {};
-  const _number = isEther ? formatEther(number) : number.toString();
+  const { decimals = 2, isFormatEther = true } = options || {};
+  const _number = isFormatEther ? formatEther(number) : number.toString();
   return truncateDecimals(commify(_number), decimals);
 }
 

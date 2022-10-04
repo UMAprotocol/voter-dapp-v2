@@ -23,7 +23,7 @@ const panelTypeToPanelComponent = {
 };
 
 export function Panel() {
-  const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
+  const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0, right: -desktopPanelWidth },
@@ -38,9 +38,6 @@ export function Panel() {
   const isMenu = panelType === "menu";
   const closeButtonColor = isMenu ? black : white;
 
-  function closePanel() {
-    setPanelOpen(false);
-  }
   return (
     <>
       {transitions(

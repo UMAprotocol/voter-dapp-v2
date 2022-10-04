@@ -8,7 +8,7 @@ import { Details } from "./Details";
 import { Result } from "./Result";
 
 interface Props {
-  content: PanelContentT;
+  content: PanelContentT | undefined;
 }
 export function VotePanel({ content }: Props) {
   if (!content) return null;

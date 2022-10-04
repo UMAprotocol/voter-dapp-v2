@@ -3,6 +3,7 @@ import { black, green, red500 } from "constants/colors";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
+import { VoteT } from "types";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
@@ -22,12 +23,10 @@ export function HistoryPanel() {
       <SectionsWrapper>
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
-          <Apr>{formatNumberForDisplay(apr, { isEther: false })}%</Apr>
+          <Apr>{formatNumberForDisplay(apr)}%</Apr>
           <AprDetailsWrapper>
             <Text>
-              <>
-                Based on participation score = {formatNumberForDisplay(cumulativeCalculatedSlash, { isEther: false })}
-              </>
+              <>Based on participation score = {formatNumberForDisplay(cumulativeCalculatedSlash)}</>
             </Text>
             <Text>
               Your bonus/penalty ={" "}
@@ -38,7 +37,7 @@ export function HistoryPanel() {
                   } as CSSProperties
                 }
               >
-                {formatNumberForDisplay(cumulativeCalculatedSlashPercentage, { isEther: false })}%
+                {formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%
               </BonusOrPenalty>
             </Text>
           </AprDetailsWrapper>
@@ -52,13 +51,17 @@ export function HistoryPanel() {
         <SectionWrapper>
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
-            <VoteHistoryTable votes={getPastVotes()} />
+            <VoteHistoryTable votes={getPastVotes().sort(sortVotesByVoteNumber)} />
           </HistoryWrapper>
         </SectionWrapper>
       </SectionsWrapper>
       <PanelFooter />
     </PanelWrapper>
   );
+}
+
+function sortVotesByVoteNumber(a: VoteT, b: VoteT) {
+  return a.voteNumber.toNumber() - b.voteNumber.toNumber();
 }
 
 const AprWrapper = styled.div`

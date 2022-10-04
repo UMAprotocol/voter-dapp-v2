@@ -17,7 +17,7 @@ import {
 } from "contexts";
 import { BigNumber } from "ethers";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
-import { PanelContentT, PanelTypeT, VoteT } from "types";
+import { VoteT } from "types";
 
 interface StoryProps extends PanelContextState, ErrorContextState, VotesContextState, UserContextState {
   votes: VoteT[];
@@ -30,21 +30,24 @@ export default {
 
 const Template: Story<StoryProps> = (args) => {
   const [_args, updateArgs] = useArgs();
+  const openPanel = () => {
+    updateArgs({ ...args, panelOpen: true });
+  };
+  const closePanel = () => {
+    updateArgs({ ...args, panelOpen: false });
+  };
   const mockPanelContextState = {
     ...defaultPanelContextState,
     panelType: args.panelType ?? defaultPanelContextState.panelType,
-    setPanelType: (panelType: PanelTypeT) => updateArgs({ panelType }),
-    panelContent: args?.panelContent ?? defaultPanelContextState.panelContent,
-    setPanelContent: (panelContent: PanelContentT) => updateArgs({ panelContent }),
     panelOpen: args.panelOpen ?? defaultPanelContextState.panelOpen,
-    setPanelOpen: () => updateArgs({ panelOpen: !args.panelOpen }),
+    panelContent: args.panelContent ?? defaultPanelContextState.panelContent,
+    openPanel,
+    closePanel,
   };
-  function handleClose() {
-    updateArgs({ panelOpen: !args.panelOpen });
-  }
+
   return (
     <PanelContext.Provider value={mockPanelContextState}>
-      <Button variant="primary" onClick={handleClose} label="Open panel" />
+      <Button variant="primary" onClick={openPanel} label="Open panel" />
       <Panel />
     </PanelContext.Provider>
   );
@@ -191,7 +194,7 @@ HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
 HistoryPanel.args = {
   panelType: "history",
   apr: BigNumber.from(10),
-  cumulativeCalculatedSlash: BigNumber.from(10),
-  cumulativeCalculatedSlashPercentage: BigNumber.from(10),
+  cumulativeCalculatedSlash: BigNumber.from(100),
+  cumulativeCalculatedSlashPercentage: BigNumber.from(100),
   votes: makeMockVotesWithHistory(),
 };

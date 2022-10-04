@@ -15,7 +15,7 @@ export function Wallet() {
   const connectedWallets = useWallets();
   const { setProvider, setSigner, setSigningKeys } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
-  const { setPanelType, setPanelOpen } = usePanelContext();
+  const { openPanel } = usePanelContext();
   const { address, truncatedAddress } = getAccountDetails(connectedWallets);
 
   useEffect(() => {
@@ -90,8 +90,7 @@ export function Wallet() {
   }
 
   function openMenuPanel() {
-    setPanelType("menu");
-    setPanelOpen(true);
+    openPanel("menu");
   }
 
   return (

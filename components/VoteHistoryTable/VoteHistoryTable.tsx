@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { VoteT } from "types";
 
 export function VoteHistoryTable({ votes }: { votes: VoteT[] }) {
-  const { setPanelContent, setPanelType } = usePanelContext();
+  const { openPanel } = usePanelContext();
   const headings = ["Vote", "Staking", "Voted", "Correctness", "Score"];
 
   return (
@@ -26,8 +26,7 @@ export function VoteHistoryTable({ votes }: { votes: VoteT[] }) {
             vote={vote}
             key={vote.uniqueKey}
             onVoteClicked={() => {
-              setPanelType("vote");
-              setPanelContent(vote);
+              openPanel("vote", vote);
             }}
           />
         ))}
@@ -48,7 +47,7 @@ function VoteHistoryRow({ vote, onVoteClicked }: { vote: VoteT; onVoteClicked: (
     <Tr>
       <VoteNumberTd>
         <VoteNumberButton onClick={onVoteClicked}>
-          #{formatNumberForDisplay(voteNumber, { isEther: false })}
+          #{formatNumberForDisplay(voteNumber, { isFormatEther: false })}
         </VoteNumberButton>
       </VoteNumberTd>
       <StakingTd>
@@ -66,9 +65,7 @@ function VoteHistoryRow({ vote, onVoteClicked }: { vote: VoteT; onVoteClicked: (
           <Bar value={correctness} />
         </Correctness>
       </CorrectnessTd>
-      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
-        {formatNumberForDisplay(slashAmount, { isEther: false })}
-      </ScoreTd>
+      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>{formatNumberForDisplay(slashAmount)}</ScoreTd>
     </Tr>
   );
 }
