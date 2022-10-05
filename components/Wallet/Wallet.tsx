@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types";
 import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
-import { getAccountDetails } from "./helpers";
 import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {
@@ -27,10 +26,7 @@ export function Wallet() {
   }, [connectedWallets, wallet]);
 
   useEffect(() => {
-    if (!connect) return;
-
-    console.log({ address });
-
+    if (!connect || connectedWallets?.length > 0) return;
     const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]") as string[];
 
     if (previousConnectedWallets?.length) {
@@ -43,6 +39,7 @@ export function Wallet() {
         });
       })();
     }
+    // we don't include `connectedWallets` here because otherwise it would run this logic after disconnecting
   }, [connect]);
 
   useEffect(() => {
