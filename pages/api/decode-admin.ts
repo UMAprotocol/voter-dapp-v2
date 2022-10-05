@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { ethers, Contract } from "ethers";
 // @ts-ignore
 import abiDecoder from "abi-decoder";
-import { getAddress, getContractNames, getAbi } from "@uma/contracts-node";
+import { getContractNames, getAbi } from "@uma/contracts-node";
+import { constructContractOnChain } from "./_common";
 
 type AbiDecoder = typeof abiDecoder;
 
@@ -118,12 +118,10 @@ const _generateTransactionDataRecursive = function (txnObj: any, readableTxData 
 };
 
 async function generateReadableAdminTransactionData(identifiers: string[]) {
-  const provider = new ethers.providers.JsonRpcBatchProvider(process.env.CUSTOM_NODE_URL);
-  const governorV1 = new Contract(await getAddress("Governor", 1), getAbi("Governor"), provider);
+  const governorV1 = await constructContractOnChain(1, "Governor");
 
   // TODO: to enable decoding of v2 transactions we simply need to uncomment this.
-  // const governorV2 = new Contract(await getAddress('GovernorV2', 1), getAbi('GovernorV2'), provider);
-  // const governorV2 = null;
+  // const governorV2 = constructContractOnChain(1, "GovernorV2");
 
   const events = (
     await Promise.all([
