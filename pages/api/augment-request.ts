@@ -90,7 +90,7 @@ async function getRequestTxFromL1RequestInformation(
 
 async function getAugmentingRequestInformation(l1Requests: Request[]) {
   const votingV1 = await constructContractOnChain(1, "Voting");
-  //todo: add voting v2 when released.
+  // todo: add voting v2 when released.
   // const votingV2 = await constructContractOnChain(1, "VotingV2");
   const l1RequestEvents = (
     await Promise.all([
