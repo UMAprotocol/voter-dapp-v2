@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { Button, ErrorBanner, TextInput } from "components";
-import { ErrorProvider } from "contexts";
+import { DefaultError } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
@@ -9,9 +9,9 @@ export default {
   component: ErrorBanner,
   decorators: [
     (Story) => (
-      <ErrorProvider>
+      <DefaultError.Provider>
         <Story />
-      </ErrorProvider>
+      </DefaultError.Provider>
     ),
   ],
 } as Meta<{ errorMessages: ReactNode[] }>;

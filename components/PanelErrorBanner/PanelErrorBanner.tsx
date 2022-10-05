@@ -3,7 +3,7 @@ import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 
 export function PanelErrorBanner() {
-  const { errorMessages } = useErrorContext();
+  const { errorMessages } = useErrorContext("panel");
 
   if (errorMessages.length === 0) return null;
 

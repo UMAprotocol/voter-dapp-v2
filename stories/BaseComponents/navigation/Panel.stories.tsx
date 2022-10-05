@@ -6,7 +6,7 @@ import {
   defaultPanelContextState,
   defaultUserContextState,
   defaultVotesContextState,
-  ErrorContext,
+  PanelError,
   ErrorContextState,
   PanelContext,
   PanelContextState,
@@ -60,9 +60,9 @@ const withErrorDecorator: DecoratorFn = (Story) => {
     errorMessages: ["Something went wrong"],
   };
   return (
-    <ErrorContext.Provider value={mockErrorContextState}>
+    <PanelError.Context.Provider value={mockErrorContextState}>
       <Story />
-    </ErrorContext.Provider>
+    </PanelError.Context.Provider>
   );
 };
 

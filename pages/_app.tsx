@@ -4,7 +4,8 @@ import { GlobalStyle } from "components";
 import {
   BalancesProvider,
   ContractsProvider,
-  ErrorProvider,
+  PanelError,
+  DefaultError,
   PanelProvider,
   UserProvider,
   VotesProvider,
@@ -18,27 +19,29 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ErrorProvider>
-      <VoteTimingProvider>
-        <WalletProvider>
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <ContractsProvider>
-                <BalancesProvider>
-                  <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                    </PanelProvider>
-                  </VotesProvider>
-                </BalancesProvider>
-              </ContractsProvider>
-              <ReactQueryDevtools />
-            </UserProvider>
-          </QueryClientProvider>
-        </WalletProvider>
-      </VoteTimingProvider>
-    </ErrorProvider>
+    <DefaultError.Provider>
+      <PanelError.Provider>
+        <VoteTimingProvider>
+          <WalletProvider>
+            <QueryClientProvider client={queryClient}>
+              <UserProvider>
+                <ContractsProvider>
+                  <BalancesProvider>
+                    <VotesProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </BalancesProvider>
+                </ContractsProvider>
+                <ReactQueryDevtools />
+              </UserProvider>
+            </QueryClientProvider>
+          </WalletProvider>
+        </VoteTimingProvider>
+      </PanelError.Provider>
+    </DefaultError.Provider>
   );
 }
 
