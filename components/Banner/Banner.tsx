@@ -20,7 +20,7 @@ const OuterWrapper = styled.div`
 
 const InnerWrapper = styled.div`
   max-width: var(--desktop-max-width);
-  height: 125px;
+  height: var(--banner-height);
   display: flex;
   align-items: center;
   padding-left: 45px;

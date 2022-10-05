@@ -17,7 +17,7 @@ import {
   white,
   whiteOpacity10,
 } from "constants/colors";
-import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
+import { bannerHeight, desktopMaxWidth, desktopPanelWidth, headerHeight } from "constants/containers";
 import {
   headerLg,
   headerMd,
@@ -74,6 +74,10 @@ html {
   html:focus-within {
     scroll-behavior: smooth;
   }
+}
+
+html, body, #__next {
+  height: 100%;
 }
 
 body {
@@ -237,6 +241,8 @@ a:not([class]) {
     /* Containers */
     --desktop-max-width: ${desktopMaxWidth}px;
     --desktop-panel-width: ${desktopPanelWidth}px;
+    --header-height: ${headerHeight}px;
+    --banner-height: ${bannerHeight}px;
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};

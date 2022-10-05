@@ -1,13 +1,16 @@
-import { Layout } from "components";
-import { useUserContext } from "hooks";
+import { Banner, Layout } from "components";
+import styled from "styled-components";
 
 export function WalletSettings() {
-  const { address } = useUserContext();
-
-  console.log({ address });
   return (
     <Layout>
-      <div>hello</div>
+      <Banner>Wallet Settings</Banner>
+      <Wrapper></Wrapper>
     </Layout>
   );
 }
+
+const Wrapper = styled.div`
+  background: var(--grey-100);
+  min-height: calc(100% - (var(--banner-height) + var(--header-height)));
+`;

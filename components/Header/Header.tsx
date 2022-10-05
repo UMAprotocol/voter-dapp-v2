@@ -42,7 +42,7 @@ const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
   max-width: var(--desktop-max-width);
-  min-height: 80px;
+  min-height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
