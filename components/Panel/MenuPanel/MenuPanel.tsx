@@ -1,5 +1,6 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { Button, getAccountDetails, handleDisconnectWallet, Nav, WalletIcon } from "components";
+import { Button, Nav, WalletIcon } from "components";
+import { getAccountDetails, handleDisconnectWallet } from "helpers";
 import { useWalletContext } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";

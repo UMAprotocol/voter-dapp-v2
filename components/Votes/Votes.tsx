@@ -11,6 +11,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
+import { PageInnerWrapper, PageOuterWrapper } from "pages/styles";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
@@ -111,11 +112,11 @@ export function Votes() {
   }
 
   return (
-    <OuterWrapper>
+    <PageOuterWrapper>
       {getUserIndependentIsLoading() ? (
         <LoadingSpinner size={300} variant="black" />
       ) : (
-        <InnerWrapper>
+        <PageInnerWrapper>
           <Title>{determineTitle()}</Title>
           <VoteTimeline />
           <VotesTableWrapper>
@@ -145,25 +146,11 @@ export function Votes() {
               />
             </CommitVotesButtonWrapper>
           ) : null}
-        </InnerWrapper>
+        </PageInnerWrapper>
       )}
-    </OuterWrapper>
+    </PageOuterWrapper>
   );
 }
-
-const OuterWrapper = styled.div`
-  background: var(--grey-100);
-  min-height: max(50vh, 500px);
-  display: grid;
-  place-items: center;
-`;
-
-const InnerWrapper = styled.div`
-  margin-inline: auto;
-  max-width: var(--desktop-max-width);
-  padding-inline: 45px;
-  padding-block: 45px;
-`;
 
 const VotesTableWrapper = styled.div`
   margin-top: 35px;

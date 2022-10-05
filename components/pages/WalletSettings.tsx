@@ -1,16 +1,20 @@
 import { Banner, Layout } from "components";
+import { PageInnerWrapper, PageOuterWrapper } from "pages/styles";
 import styled from "styled-components";
 
 export function WalletSettings() {
   return (
     <Layout>
       <Banner>Wallet Settings</Banner>
-      <Wrapper></Wrapper>
+      <PageOuterWrapper>
+        <PageInnerWrapper></PageInnerWrapper>
+      </PageOuterWrapper>
     </Layout>
   );
 }
 
-const Wrapper = styled.div`
-  background: var(--grey-100);
-  min-height: calc(100% - (var(--banner-height) + var(--header-height)));
-`;
+function PrimaryWalletBar() {
+  return <BarWrapper></BarWrapper>;
+}
+
+const BarWrapper = styled.div``;

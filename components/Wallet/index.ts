@@ -1,2 +1,2 @@
 export { Wallet } from "./Wallet";
-export * from "./helpers";
+export * from "../../helpers/wallet";

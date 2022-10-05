@@ -52,6 +52,5 @@ export type { Props } from "./VotesTable/VotesTableRow";
 export { CommitPhase } from "./VoteTimeline/CommitPhase";
 export { RevealPhase } from "./VoteTimeline/RevealPhase";
 export { VoteTimeline } from "./VoteTimeline/VoteTimeline";
-export { getAccountDetails, handleDisconnectWallet } from "./Wallet/helpers";
 export { Wallet } from "./Wallet/Wallet";
 export { WalletIcon } from "./Wallet/WalletIcon";

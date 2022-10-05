@@ -43,3 +43,4 @@ export {
   computeRoundId,
   getPhase,
 } from "./voteTiming";
+export { getAccountDetails, handleDisconnectWallet } from "./wallet";
