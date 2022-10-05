@@ -4,7 +4,7 @@ import { initOnboard } from "helpers";
 import { createContext, ReactNode, useState } from "react";
 import { SigningKeys } from "types";
 
-interface WalletContextState {
+export interface WalletContextState {
   onboard: OnboardAPI | null;
   setOnboard: (onboard: OnboardAPI | null) => void;
   provider: ethers.providers.Web3Provider | null;
@@ -15,7 +15,7 @@ interface WalletContextState {
   setSigningKeys: (signingKeys: SigningKeys) => void;
 }
 
-const defaultWalletContextState = {
+export const defaultWalletContextState = {
   onboard: null,
   setOnboard: () => null,
   provider: null,

@@ -1,5 +1,4 @@
 import { Tabs } from "components";
-import { formatNumberForDisplay } from "helpers";
 import { PanelContentT, VotePanelContentT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -8,7 +7,7 @@ import { Details } from "./Details";
 import { Result } from "./Result";
 
 interface Props {
-  content: PanelContentT;
+  content: PanelContentT | undefined;
 }
 export function VotePanel({ content }: Props) {
   if (!content) return null;

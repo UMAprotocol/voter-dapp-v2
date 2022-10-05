@@ -30,12 +30,14 @@ export function Votes() {
   const { voting } = useContractsContext();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
-  const { setPanelType, setPanelContent, setPanelOpen } = usePanelContext();
+  const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
   useInitializeVoteTiming();
 
   async function commitVotes() {
+    if (!address) return;
+
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
       selectedVotes,
@@ -73,9 +75,7 @@ export function Votes() {
   }
 
   function openVotePanel(vote: VoteT) {
-    setPanelType("vote");
-    setPanelContent(vote);
-    setPanelOpen(true);
+    openPanel("vote", vote);
   }
 
   function determineVotesToShow() {

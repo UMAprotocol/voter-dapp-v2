@@ -10,7 +10,7 @@ import { ClaimPanel } from "./ClaimPanel";
 import { MenuPanel } from "./MenuPanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
-import { VoteHistoryPanel } from "./VoteHistoryPanel";
+import { HistoryPanel } from "./HistoryPanel";
 import { VotePanel } from "./VotePanel";
 
 const panelTypeToPanelComponent = {
@@ -19,11 +19,11 @@ const panelTypeToPanelComponent = {
   vote: VotePanel,
   stake: StakeUnstakePanel,
   remind: RemindMePanel,
-  history: VoteHistoryPanel,
+  history: HistoryPanel,
 };
 
 export function Panel() {
-  const { panelType, panelContent, panelOpen, setPanelOpen } = usePanelContext();
+  const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0, right: -desktopPanelWidth },
@@ -38,22 +38,19 @@ export function Panel() {
   const isMenu = panelType === "menu";
   const closeButtonColor = isMenu ? black : white;
 
-  function closePanel() {
-    setPanelOpen(false);
-  }
   return (
     <>
       {transitions(
         ({ opacity, right }, isOpen) =>
           isOpen && (
             <Overlay
-              onDismiss={closePanel}
+              onDismiss={() => closePanel(true)}
               style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <PanelComponent content={panelContent} />
                 <CloseButton
-                  onClick={closePanel}
+                  onClick={() => closePanel()}
                   style={
                     {
                       "--fill": closeButtonColor,

@@ -8,7 +8,7 @@ import {
 } from "hooks";
 import { createContext, ReactNode } from "react";
 
-interface BalancesContextState {
+export interface BalancesContextState {
   stakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;

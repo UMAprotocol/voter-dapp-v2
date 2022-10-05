@@ -1,8 +1,8 @@
 export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
 export {
   decryptMessage,
-  encryptMessage,
   derivePrivateKey,
+  encryptMessage,
   getPrecisionForIdentifier,
   getRandomSignedInt,
   getRandomUnsignedInt,
@@ -33,7 +33,7 @@ export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
 export { truncateEthAddress } from "./truncateEthAddress";
 export { unixTimestampToDate } from "./unixTimestampToDate";
-export { makeUniqueKeyForVote, makeUniqueKeysForVotes } from "./votes";
+export { makeUniqueKeyForVote } from "./votes";
 export {
   computeMillisecondsUntilPhaseEnds,
   computePhase,

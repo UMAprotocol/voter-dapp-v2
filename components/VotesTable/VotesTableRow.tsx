@@ -106,8 +106,7 @@ export function VotesTableRow({
 
   function getCorrectVote() {
     if (!correctVote) return;
-
-    const correctVoteAsString = correctVote.toString();
+    const correctVoteAsString = correctVote.toFixed();
 
     return (
       findVoteInOptions(correctVoteAsString)?.label ??

@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 
-interface ErrorContextState {
+export interface ErrorContextState {
   errorMessages: ReactNode[];
   addErrorMessage: (message: ReactNode) => void;
   removeErrorMessage: (message: ReactNode) => void;
