@@ -47,7 +47,11 @@ const NavItems = styled.ul`
   list-style: none;
 `;
 
-const NavItem = styled.li`
+const NavItem = styled.li``;
+
+const A = styled.a`
+  text-decoration: none;
+  color: var(--black);
   height: 50px;
   display: flex;
   align-items: center;
@@ -63,9 +67,4 @@ const NavItem = styled.li`
   }
 
   transition: background 0.2s ease-in-out;
-`;
-
-const A = styled.a`
-  text-decoration: none;
-  color: var(--black);
 `;
