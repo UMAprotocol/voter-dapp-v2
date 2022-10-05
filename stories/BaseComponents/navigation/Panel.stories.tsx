@@ -1,35 +1,54 @@
 import { useArgs } from "@storybook/client-api";
-import { ComponentMeta, ComponentStory, DecoratorFn } from "@storybook/react";
+import { DecoratorFn, Meta, Story } from "@storybook/react";
 import { Button, Panel } from "components";
-import { defaultErrorContextState, ErrorContext, PanelContext } from "contexts";
-import sub from "date-fns/sub";
+import {
+  defaultErrorContextState,
+  defaultPanelContextState,
+  defaultUserContextState,
+  defaultVotesContextState,
+  ErrorContext,
+  ErrorContextState,
+  PanelContext,
+  PanelContextState,
+  UserContext,
+  UserContextState,
+  VotesContext,
+  VotesContextState,
+} from "contexts";
+import { BigNumber } from "ethers";
+import { bigNumberFromFloatString } from "helpers/formatNumber";
+import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
+import { VoteT } from "types";
+
+interface StoryProps extends PanelContextState, ErrorContextState, VotesContextState, UserContextState {
+  votes: VoteT[];
+}
 
 export default {
   title: "Base components/Navigation/Panel",
   component: Panel,
-} as ComponentMeta<typeof Panel>;
+} as Meta<StoryProps>;
 
-const Template: ComponentStory<typeof Panel> = (args) => {
+const Template: Story<StoryProps> = (args) => {
   const [_args, updateArgs] = useArgs();
-  const mockPanelContextState = {
-    // @ts-expect-error - ignore ts error args is of type unknown
-    panelType: args.panelType,
-    setPanelType: () => null,
-    // @ts-expect-error - ignore ts error args is of type unknown
-    panelContent: args?.panelContent ?? null,
-    setPanelContent: () => null,
-    // @ts-expect-error - ignore ts error args is of type unknown
-    panelOpen: args.panelOpen,
-    // @ts-expect-error - ignore ts error args is of type unknown
-    setPanelOpen: () => updateArgs({ panelOpen: !args.panelOpen }),
+  const openPanel = () => {
+    updateArgs({ ...args, panelOpen: true });
   };
-  function handleClose() {
-    // @ts-expect-error - ignore ts error args is of type unknown
-    updateArgs({ panelOpen: !args.panelOpen });
-  }
+  const closePanel = () => {
+    updateArgs({ ...args, panelOpen: false });
+  };
+  const mockPanelContextState = {
+    ...defaultPanelContextState,
+    panelType: args.panelType ?? defaultPanelContextState.panelType,
+    panelOpen: args.panelOpen ?? true,
+    panelContent: args.panelContent ?? defaultPanelContextState.panelContent,
+    openPanel,
+    closePanel,
+  };
+
   return (
     <PanelContext.Provider value={mockPanelContextState}>
-      <Button variant="primary" onClick={handleClose} label="Open panel" />
+      <Button variant="primary" onClick={openPanel} label="Open panel" />
       <Panel />
     </PanelContext.Provider>
   );
@@ -44,6 +63,35 @@ const withErrorDecorator: DecoratorFn = (Story) => {
     <ErrorContext.Provider value={mockErrorContextState}>
       <Story />
     </ErrorContext.Provider>
+  );
+};
+
+const withUserDecorator: DecoratorFn = (Story, { args }) => {
+  const mockUserContextState = {
+    ...defaultUserContextState,
+    apr: args.apr ?? 0,
+    cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
+    cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
+    userDataFetching: args.userDataFetching ?? false,
+  };
+
+  return (
+    <UserContext.Provider value={mockUserContextState}>
+      <Story />
+    </UserContext.Provider>
+  );
+};
+
+const withVotesDecorator: DecoratorFn = (Story, { args }) => {
+  const mockVotesContextState = {
+    ...defaultVotesContextState,
+    getPastVotes: () => args.votes ?? [],
+  };
+
+  return (
+    <VotesContext.Provider value={mockVotesContextState}>
+      <Story />
+    </VotesContext.Provider>
   );
 };
 
@@ -68,44 +116,7 @@ ClaimPanelWithError.decorators = [withErrorDecorator];
 export const VotePanelWithoutResults = Template.bind({});
 VotePanelWithoutResults.args = {
   panelType: "vote",
-  panelContent: {
-    title: "George Kambosos Jr. vs. Devin Haney",
-    description: ` 'Elvis' is a 2022 biographical musical drama film directed by Baz Luhrmann chronicling the life and career of singer and actor Elvis Presley, from his early days as a child to becoming a rock and roll star and movie star, as well as his complex relationship with his manager Colonel Tom Parker. It premiered at several festivals and is scheduled to be theatrically released by Warner Bros. Pictures in the United States on June 24, 2022. 
-
-    This is a market on how much 'Elvis' will gross domestically on its opening weekend. The “Domestic Weekend” tab on https://www.boxofficemojo.com/title/tt3704428/ will be used to resolve this market once the values for the opening weekend (June 24-26) are final (i.e. not studio estimates).
-    
-    This market will resolve to "Yes" if 'Elvis' grosses more than $45,000,000 on its opening weekend. Otherwise, this market will resolve to "No".
-    
-    Opening weekend is defined as the first Friday, Saturday, and Sunday of this film's release. Please note, this market will resolve according to the Box Office Mojo number under Domestic Weekend for the 3-day weekend.
-    
-    If there is no final data available by July 3, 2022, 11:59:59 PM ET, another credible resolution source will be chosen.
-     res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968.
-        Where p1 corresponds to No, p2 to a Yes, p3 to unknown, and p4 to an early request,ooRequester:cb1822859cef82cd2eb4e6276c7916e692995130,childRequester:bb1a8db2d4350976a11cdfa60a1d43f97710da49,childChainId:137`,
-    decodedAncillaryData: "test test test test",
-    origin: "Polymarket",
-    voteNumber: 205,
-    options: [
-      { label: "Devin Haney", value: 0 },
-      { label: "George Kambosos Jr.", value: 1 },
-      { label: "Tie", value: 3 },
-    ],
-    timeAsDate: sub(new Date(), { days: 1 }),
-    links: [
-      {
-        label: "UMIP link",
-        href: "https://www.todo.com",
-      },
-      {
-        label: "Dispute txid",
-        href: "https://www.todo.com",
-      },
-      {
-        label: "Optimistic Oracle UI",
-        href: "https://www.todo.com",
-      },
-    ],
-    discordLink: "https://www.todo.com",
-  },
+  panelContent: voteCommitted,
   panelOpen: true,
 };
 
@@ -113,8 +124,7 @@ export const VotePanelWithResults = Template.bind({});
 VotePanelWithResults.args = {
   ...VotePanelWithoutResults.args,
   panelContent: {
-    // @ts-expect-error - ignore ts error args is of type unknown
-    ...VotePanelWithoutResults.args.panelContent,
+    ...voteCommitted,
     participation: [
       { label: "Total Votes", value: 188077355.982231 },
       { label: "Unique Commit Addresses", value: 100 },
@@ -145,8 +155,7 @@ export const VotePanelWithLongTitle = Template.bind({});
 VotePanelWithLongTitle.args = {
   ...VotePanelWithoutResults.args,
   panelContent: {
-    // @ts-expect-error - ignore ts error args is of type unknown
-    ...VotePanelWithoutResults.args.panelContent,
+    ...voteCommitted,
     title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
   },
 };
@@ -179,4 +188,16 @@ export const RemindPanel = Template.bind({});
 RemindPanel.args = {
   panelType: "remind",
   panelOpen: true,
+};
+
+export const HistoryPanel = Template.bind({});
+HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
+HistoryPanel.args = {
+  panelType: "history",
+  apr: bigNumberFromFloatString(`${Math.random() * 100}`),
+  cumulativeCalculatedSlash: bigNumberFromFloatString(`${Math.random() * 100}`),
+  cumulativeCalculatedSlashPercentage: bigNumberFromFloatString(
+    `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
+  ),
+  votes: makeMockVotesWithHistory(),
 };

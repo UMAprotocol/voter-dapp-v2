@@ -14,7 +14,7 @@ export function Vote() {
   return (
     <Layout>
       <Banner />
-      <HowItWorks {...mockStakeholderData} />
+      <HowItWorks />
       <Votes />
     </Layout>
   );

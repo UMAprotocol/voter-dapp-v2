@@ -19,7 +19,7 @@ export function getAccountDetails(connectedWallets?: WalletState[]) {
   const connectedWallet = connectedWallets?.[0];
   const account = connectedWallet?.accounts[0];
   const address = account?.address ?? "";
-  const truncatedAddress = truncateEthAddress(address);
+  const truncatedAddress = address ? truncateEthAddress(address) : undefined;
 
   return {
     connectedWallet,

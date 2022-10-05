@@ -20,7 +20,7 @@ const pastVotesQuery = gql`
   }
 `;
 
-export default async function getPastVotes() {
+export async function getPastVotes() {
   const result = await request<PastVotesQuery>(graphEndpoint, pastVotesQuery);
   const parsedData = result?.priceRequests?.map(({ id, time, price, ancillaryData, requestIndex }) => {
     const identifier = getIdentifierFromPriceRequestId(id);

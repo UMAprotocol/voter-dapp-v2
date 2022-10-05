@@ -2,7 +2,7 @@ import { VotingTokenEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { createContext, ReactNode, useState } from "react";
 import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
 
-interface ContractsContextState {
+export interface ContractsContextState {
   voting: VotingV2Ethers;
   setVoting: (voting: VotingV2Ethers) => void;
   votingToken: VotingTokenEthers;
@@ -12,7 +12,7 @@ interface ContractsContextState {
 const defaultVoting = createVotingContractInstance();
 const defaultVotingToken = createVotingTokenContractInstance();
 
-const defaultContractContextState = {
+export const defaultContractContextState = {
   voting: defaultVoting,
   setVoting: () => null,
   votingToken: defaultVotingToken,

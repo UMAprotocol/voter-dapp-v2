@@ -1,7 +1,7 @@
 import { computeMillisecondsUntilPhaseEnds, computePhaseEndTimeMilliseconds, computeRoundId, getPhase } from "helpers";
 import { createContext, ReactNode, useState } from "react";
 
-interface VoteTimingContextState {
+export interface VoteTimingContextState {
   roundId: number;
   setRoundId: (roundId: number) => void;
   phase: "commit" | "reveal";

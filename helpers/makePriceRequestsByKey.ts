@@ -29,7 +29,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const decodedIdentifier = decodeHexString(identifier);
   const decodedAncillaryData = decodeHexString(ancillaryData);
   const correctVote = priceRequest.correctVote;
-  const uniqueKey = makeUniqueKeyForVote(identifier, time, ancillaryData);
+  const uniqueKey = makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData);
 
   return {
     time,

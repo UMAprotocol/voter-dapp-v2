@@ -6,6 +6,7 @@ import {
   ContractsProvider,
   ErrorProvider,
   PanelProvider,
+  UserProvider,
   VotesProvider,
   VoteTimingProvider,
   WalletProvider,
@@ -21,17 +22,19 @@ function MyApp({ Component, pageProps }: AppProps) {
       <VoteTimingProvider>
         <WalletProvider>
           <QueryClientProvider client={queryClient}>
-            <ContractsProvider>
-              <BalancesProvider>
-                <VotesProvider>
-                  <PanelProvider>
-                    <GlobalStyle />
-                    <Component {...pageProps} />
-                  </PanelProvider>
-                </VotesProvider>
-              </BalancesProvider>
-            </ContractsProvider>
-            <ReactQueryDevtools />
+            <UserProvider>
+              <ContractsProvider>
+                <BalancesProvider>
+                  <VotesProvider>
+                    <PanelProvider>
+                      <GlobalStyle />
+                      <Component {...pageProps} />
+                    </PanelProvider>
+                  </VotesProvider>
+                </BalancesProvider>
+              </ContractsProvider>
+              <ReactQueryDevtools />
+            </UserProvider>
           </QueryClientProvider>
         </WalletProvider>
       </VoteTimingProvider>

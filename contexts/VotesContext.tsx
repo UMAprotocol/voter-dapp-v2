@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { getVoteMetaData } from "helpers";
 import {
   useAccountDetails,
@@ -10,6 +11,7 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
+  useUserData,
   useVoteTransactionHashes,
 } from "hooks";
 import { createContext, ReactNode } from "react";
@@ -23,7 +25,7 @@ import {
   VoteT,
 } from "types";
 
-interface VotesContextState {
+export interface VotesContextState {
   hasActiveVotes: boolean | undefined;
   activeVotes: PriceRequestByKeyT;
   hasUpcomingVotes: boolean | undefined;
@@ -85,9 +87,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   } = useUpcomingVotes();
   const { data: pastVotes, isLoading: pastVotesIsLoading, isFetching: pastVotesIsFetching } = usePastVotes();
   const {
-    data: voteTransactionHashes,
-    isLoading: voteTransactionHashesIsLoading,
-    isFetching: voteTransactionHashesIsFetching,
+    data: transactionHashes,
+    isLoading: transactionHashesIsLoading,
+    isFetching: transactionHashesIsFetching,
   } = useVoteTransactionHashes();
   const {
     data: contentfulData,
@@ -115,6 +117,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isFetching: decryptedVotesIsFetching,
   } = useDecryptedVotes();
   const { address } = useAccountDetails();
+  const {
+    data: { voteHistoryByKey },
+  } = useUserData();
 
   function getUserDependentIsLoading() {
     if (!address) return false;
@@ -129,7 +134,13 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getUserIndependentIsLoading() {
-    return hasActiveVotesIsLoading || activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
+    return (
+      hasActiveVotesIsLoading ||
+      activeVotesIsLoading ||
+      upcomingVotesIsLoading ||
+      pastVotesIsLoading ||
+      transactionHashesIsLoading
+    );
   }
 
   function getIsLoading() {
@@ -149,7 +160,13 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getUserIndependentIsFetching() {
-    return hasActiveVotesIsFetching || activeVotesIsFetching || upcomingVotesIsFetching || pastVotesIsFetching;
+    return (
+      hasActiveVotesIsFetching ||
+      activeVotesIsFetching ||
+      upcomingVotesIsFetching ||
+      pastVotesIsFetching ||
+      transactionHashesIsFetching
+    );
   }
 
   function getIsFetching() {
@@ -184,11 +201,18 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         encryptedVote: encryptedVotes[uniqueKey],
         decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
-        transactionHash: voteTransactionHashes[uniqueKey],
+        transactionHash: transactionHashes[uniqueKey],
+        voteHistory: voteHistoryByKey[uniqueKey] ?? {
+          uniqueKey,
+          voted: false,
+          correctness: false,
+          staking: false,
+          slashAmount: BigNumber.from(0),
+        },
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
-          voteTransactionHashes[uniqueKey],
+          transactionHashes[uniqueKey],
           contentfulData[uniqueKey]
         ),
       };
