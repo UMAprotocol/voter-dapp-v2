@@ -1,4 +1,4 @@
-import { ErrorBanner, Header, Panel } from "components";
+import { ErrorBanner, Header } from "components";
 import { ReactNode } from "react";
 
 interface Props {
@@ -10,7 +10,6 @@ export function Layout({ children }: Props) {
       <ErrorBanner />
       <Header />
       <main>{children}</main>
-      <Panel />
     </>
   );
 }
