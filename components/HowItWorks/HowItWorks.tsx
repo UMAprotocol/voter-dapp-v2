@@ -1,5 +1,6 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { formatNumberForDisplay } from "helpers";
+import { BigNumber } from "ethers";
+import { formatNumberForDisplay, parseEther } from "helpers";
 import { useBalancesContext, usePanelContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -10,6 +11,8 @@ export function HowItWorks() {
   const { openPanel } = usePanelContext();
   const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
+
+  console.log(countReveals?.toString());
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -64,7 +67,7 @@ export function HowItWorks() {
               <Strong>
                 {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, { decimals: 0 })}
               </Strong>{" "}
-              voting cycle{countReveals?.eq(1) ? "s" : ""}, and are earning{" "}
+              voting cycle{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}, and are earning{" "}
               <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
             </>
           }
