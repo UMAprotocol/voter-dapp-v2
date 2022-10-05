@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { Button, getAccountDetails, handleDisconnectWallet, Nav, WalletIcon } from "components";
 import { useWalletContext } from "hooks";
@@ -16,8 +15,8 @@ const links = [
     href: "/settled",
   },
   {
-    title: "Two Key Voting",
-    href: "/two-key",
+    title: "Wallet Settings",
+    href: "/wallet-settings",
   },
   {
     title: "Optimistic Oracle",
@@ -34,7 +33,6 @@ export function MenuPanel() {
   const { setSigner, setProvider } = useWalletContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
-  const queryClient = useQueryClient();
 
   return (
     <PanelWrapper>

@@ -28,7 +28,7 @@ export function Nav({ links }: Props) {
                 } as CSSProperties
               }
             >
-              <Link href={href} passHref>
+              <Link href={href} passHref shallow>
                 <A target={isExternalLink(href) ? "_blank" : undefined}>{title}</A>
               </Link>
             </NavItem>

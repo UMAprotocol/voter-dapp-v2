@@ -2,7 +2,7 @@ import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import message from "constants/signingMessage";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
-import { useContractsContext, usePanelContext, useWalletContext } from "hooks";
+import { useContractsContext, usePanelContext, useUserContext, useWalletContext } from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types";
@@ -16,7 +16,7 @@ export function Wallet() {
   const { setProvider, setSigner, setSigningKeys } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
   const { openPanel } = usePanelContext();
-  const { address, truncatedAddress } = getAccountDetails(connectedWallets);
+  const { address, truncatedAddress } = useUserContext();
 
   useEffect(() => {
     if (!connectedWallets.length) return;
@@ -29,7 +29,9 @@ export function Wallet() {
   useEffect(() => {
     if (!connect) return;
 
-    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]");
+    console.log({ address });
+
+    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]") as string[];
 
     if (previousConnectedWallets?.length) {
       (async () => {
