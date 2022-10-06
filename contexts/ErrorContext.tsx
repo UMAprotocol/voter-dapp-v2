@@ -15,9 +15,9 @@ export const defaultErrorContextState: ErrorContextState = {
 };
 
 // This factory allows us to unstance multiple error contexts for different parts of the app.
-export function Factory(){
-  const Context = createContext<ErrorContextState>(defaultErrorContextState)
-  const Provider = function({ children }: { children: ReactNode }) {
+export function Factory() {
+  const Context = createContext<ErrorContextState>(defaultErrorContextState);
+  const Provider = function ({ children }: { children: ReactNode }) {
     const [errorMessages, setErrorMessages] = useState<ReactNode[]>([]);
 
     function addErrorMessage(message: ReactNode) {
@@ -34,25 +34,24 @@ export function Factory(){
 
     return (
       <Context.Provider
-      value={{
-        errorMessages,
-        addErrorMessage,
-        removeErrorMessage,
-        clearErrorMessages,
-      }}
+        value={{
+          errorMessages,
+          addErrorMessage,
+          removeErrorMessage,
+          clearErrorMessages,
+        }}
       >
         {children}
       </Context.Provider>
     );
-  }         
+  };
 
   return {
     Context,
-    Provider
-  }
+    Provider,
+  };
 }
 
 // add more contexts here. Providers must be added to app.tsx, and context to useErrorContext
 export const DefaultError = Factory();
 export const PanelError = Factory();
-
