@@ -69,7 +69,7 @@ async function getRequestTxFromL1RequestInformation(
   l1Requests.forEach((l1Request) => {
     let foundOoTx = { requestTransactionHash: "", chainId: 0, oracleType: "" };
     chainOoRequests.forEach((_, ooChainId) => {
-      chainOoRequests[ooChainId].forEach((ooRequest, index) => {
+      chainOoRequests[ooChainId].forEach((ooRequest) => {
         if (
           l1Request.identifier.toLowerCase() == ooRequest.identifier.toLowerCase() &&
           l1Request.time == ooRequest.time
