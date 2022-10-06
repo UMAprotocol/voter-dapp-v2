@@ -3,8 +3,6 @@ import styled from "styled-components";
 export const PageOuterWrapper = styled.div`
   background: var(--grey-100);
   min-height: calc(100% - (var(--banner-height) + var(--header-height)));
-  display: grid;
-  place-items: center;
 `;
 
 export const PageInnerWrapper = styled.div`

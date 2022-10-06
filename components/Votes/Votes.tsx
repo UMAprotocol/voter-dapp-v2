@@ -114,7 +114,9 @@ export function Votes() {
   return (
     <PageOuterWrapper>
       {getUserIndependentIsLoading() ? (
-        <LoadingSpinner size={300} variant="black" />
+        <LoadingSpinnerWrapper>
+          <LoadingSpinner size={300} variant="black" />
+        </LoadingSpinnerWrapper>
       ) : (
         <PageInnerWrapper>
           <Title>{determineTitle()}</Title>
@@ -154,6 +156,13 @@ export function Votes() {
 
 const VotesTableWrapper = styled.div`
   margin-top: 35px;
+`;
+
+const LoadingSpinnerWrapper = styled.div`
+  width: 100%;
+  padding-top: 50px;
+  display: grid;
+  place-items: center;
 `;
 
 const Title = styled.h1`
