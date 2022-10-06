@@ -1,4 +1,4 @@
-import { ethers, Contract, BigNumber } from "ethers";
+import { Contract, ethers } from "ethers";
 
 import { getAbi, getAddress } from "@uma/contracts-node";
 
