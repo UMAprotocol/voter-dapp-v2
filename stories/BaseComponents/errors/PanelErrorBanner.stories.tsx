@@ -2,7 +2,7 @@ import { Meta, Story } from "@storybook/react";
 import { Button, PanelErrorBanner, TextInput } from "components";
 import { desktopPanelWidth } from "constants/containers";
 import { PanelError } from "contexts";
-import { useErrorContext } from "hooks";
+import { usePanelErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {
@@ -21,7 +21,7 @@ export default {
 
 const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
   const { errorMessages } = args;
-  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext('panel');
+  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = usePanelErrorContext();
   const [errorText, setErrorText] = useState("Test error message");
 
   useEffect(() => {

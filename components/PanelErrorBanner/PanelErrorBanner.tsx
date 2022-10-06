@@ -1,9 +1,9 @@
-import { useErrorContext } from "hooks";
+import { usePanelErrorContext } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 
 export function PanelErrorBanner() {
-  const { errorMessages } = useErrorContext("panel");
+  const { errorMessages } = usePanelErrorContext();
 
   if (errorMessages.length === 0) return null;
 

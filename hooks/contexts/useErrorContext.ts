@@ -1,13 +1,5 @@
 import { DefaultError, PanelError } from "contexts";
 import { useContext } from "react";
 
-export const useErrorContext = (type?:string) => {
-  switch(type){
-    case 'panel':{
-     return useContext(PanelError.Context);
-    }
-    default:{
-     return useContext(DefaultError.Context);
-    }
-  }
-}
+export const useErrorContext = ()=> useContext(DefaultError.Context);
+export const usePanelErrorContext = ()=> useContext(PanelError.Context);
