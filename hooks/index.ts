@@ -1,6 +1,6 @@
 export { useBalancesContext } from "./contexts/useBalancesContext";
 export { useContractsContext } from "./contexts/useContractsContext";
-export { useErrorContext, usePanelErrorContext } from "./contexts/useErrorContext";
+export { useErrorContext } from "./contexts/useErrorContext";
 export { usePanelContext } from "./contexts/usePanelContext";
 export { useUserContext } from "./contexts/useUserContext";
 export { useVotesContext } from "./contexts/useVotesContext";

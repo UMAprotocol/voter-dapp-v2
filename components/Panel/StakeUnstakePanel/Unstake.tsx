@@ -65,7 +65,7 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props
           />
         </>
       )}
-      <PanelErrorBanner />
+      <PanelErrorBanner errorType="unstake" />
       {phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
     </Wrapper>
   );

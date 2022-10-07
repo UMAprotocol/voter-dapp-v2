@@ -1,8 +1,8 @@
 import { Meta, Story } from "@storybook/react";
 import { Button, PanelErrorBanner, TextInput } from "components";
 import { desktopPanelWidth } from "constants/containers";
-import { PanelError } from "contexts";
-import { usePanelErrorContext } from "hooks";
+import { ErrorProvider } from "contexts";
+import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
 export default {
@@ -10,18 +10,19 @@ export default {
   component: PanelErrorBanner,
   decorators: [
     (Story) => (
-      <PanelError.Provider>
+      <ErrorProvider>
         <div style={{ width: desktopPanelWidth }}>
           <Story />
         </div>
-      </PanelError.Provider>
+      </ErrorProvider>
     ),
   ],
 } as Meta<{ errorMessages: ReactNode[] }>;
 
 const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
+  const errorType = 'storybook'
   const { errorMessages } = args;
-  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = usePanelErrorContext();
+  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext(errorType);
   const [errorText, setErrorText] = useState("Test error message");
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
   return (
     <>
-      <PanelErrorBanner />
+      <PanelErrorBanner errorType={errorType}/>
       <div style={{ marginTop: 50 }}>
         <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>

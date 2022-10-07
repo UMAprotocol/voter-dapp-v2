@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { Button, ErrorBanner, TextInput } from "components";
-import { DefaultError } from "contexts";
+import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
 
@@ -9,16 +9,17 @@ export default {
   component: ErrorBanner,
   decorators: [
     (Story) => (
-      <DefaultError.Provider>
+      <ErrorProvider>
         <Story />
-      </DefaultError.Provider>
+      </ErrorProvider>
     ),
   ],
 } as Meta<{ errorMessages: ReactNode[] }>;
 
 const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
+  const errorType = 'storybook'
   const { errorMessages } = args;
-  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext();
+  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext(errorType);
   const [errorText, setErrorText] = useState("Test error message");
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
   return (
     <>
-      <ErrorBanner />
+      <ErrorBanner errorType={errorType}/>
       <div style={{ marginTop: 50 }}>
         <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>

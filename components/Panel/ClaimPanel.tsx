@@ -57,7 +57,7 @@ export function ClaimPanel() {
             </PanelSectionText>
             <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
           </ClaimToWalletWrapper>
-          <PanelErrorBanner />
+          <PanelErrorBanner errorType="claim" />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />

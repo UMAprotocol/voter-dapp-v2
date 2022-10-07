@@ -6,7 +6,7 @@ import {
   defaultPanelContextState,
   defaultUserContextState,
   defaultVotesContextState,
-  PanelError,
+  ErrorContext,
   ErrorContextState,
   PanelContext,
   PanelContextState,
@@ -57,12 +57,17 @@ const Template: Story<StoryProps> = (args) => {
 const withErrorDecorator: DecoratorFn = (Story) => {
   const mockErrorContextState = {
     ...defaultErrorContextState,
-    errorMessages: ["Something went wrong"],
+    errorMessages: {
+      claim:["Something went wrong in claim panel"],
+      stake:["Something went wrong in stake panel"],
+      unstake:["Something went wrong in unstake panel"],
+      vote:["Something went wrong in vote panel"],
+    },
   };
   return (
-    <PanelError.Context.Provider value={mockErrorContextState}>
+    <ErrorContext.Provider value={mockErrorContextState}>
       <Story />
-    </PanelError.Context.Provider>
+    </ErrorContext.Provider>
   );
 };
 
