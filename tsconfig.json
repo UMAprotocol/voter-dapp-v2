@@ -16,8 +16,8 @@
     "incremental": true,
     "baseUrl": "."
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
+  "include": ["custom-next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["next-env.d.ts","node_modules"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"
