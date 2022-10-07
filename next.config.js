@@ -22,7 +22,6 @@ const nextConfig = {
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
-      typescript: true,
       use: ["@svgr/webpack"],
     });
 
