@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { Button, getAccountDetails, handleDisconnectWallet, Nav, WalletIcon } from "components";
 import { useWalletContext } from "hooks";
@@ -30,11 +29,10 @@ const links = [
 ];
 
 export function MenuPanel() {
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const [{ wallet }, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
-  const queryClient = useQueryClient();
 
   return (
     <PanelWrapper>

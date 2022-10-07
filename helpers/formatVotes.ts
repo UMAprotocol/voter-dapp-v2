@@ -63,7 +63,7 @@ export async function formatVotesToCommit({
 
   return formattedVotes.filter((vote): vote is VoteFormattedToCommitT => Boolean(vote));
 }
-export async function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
+export function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   return decryptedVotesForUser.flatMap((vote) => {
     if (vote.isRevealed || !vote.isCommitted || !vote.decryptedVote) return [];
 

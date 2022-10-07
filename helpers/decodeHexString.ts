@@ -10,6 +10,7 @@ export function decodeHexString(hexString: string) {
     if (e instanceof Error) {
       throw new Error(`Invalid hex string: ${e.message}`);
     } else {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Invalid hex string: ${e}`);
     }
   }

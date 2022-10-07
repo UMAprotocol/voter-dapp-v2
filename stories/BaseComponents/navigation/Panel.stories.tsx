@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { useArgs } from "@storybook/client-api";
 import { DecoratorFn, Meta, Story } from "@storybook/react";
 import { Button, Panel } from "components";
@@ -67,7 +69,7 @@ const withErrorDecorator: DecoratorFn = (Story) => {
 };
 
 const withUserDecorator: DecoratorFn = (Story, { args }) => {
-  const mockUserContextState = {
+  const mockUserContextState: UserContextState = {
     ...defaultUserContextState,
     apr: args.apr ?? 0,
     cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),

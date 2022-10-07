@@ -8,8 +8,8 @@ const injected = injectedModule();
 const walletConnect = walletConnectModule();
 const gnosis = gnosisModule();
 
-const blocknativeDappId = process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID;
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
+const blocknativeDappId = process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID ?? "";
+const infuraId = process.env.NEXT_PUBLIC_INFURA_ID ?? "";
 
 export const initOnboard = init({
   wallets: [injected, walletConnect, gnosis],

@@ -23,6 +23,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
   useEffect(() => {
     errorMessages.forEach((message) => addErrorMessage(message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

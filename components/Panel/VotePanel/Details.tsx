@@ -25,7 +25,7 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           Description
         </PanelSectionTitle>
         {descriptionParagraphs.map((paragraph, i) => (
-          <Text key={paragraph + i}>{paragraph}</Text>
+          <Text key={`${paragraph}-${i}`}>{paragraph}</Text>
         ))}
       </SectionWrapper>
       <SectionWrapper>

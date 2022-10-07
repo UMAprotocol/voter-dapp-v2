@@ -1,8 +1,7 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { BigNumber } from "ethers";
 import { formatEther, parseEther } from "helpers";
-import { useErrorContext } from "hooks";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 

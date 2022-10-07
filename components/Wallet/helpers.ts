@@ -9,7 +9,7 @@ export function handleDisconnectWallet(
   setSigner: (signer: ethers.Signer | null) => void
 ) {
   if (!wallet || !disconnect) return;
-  disconnect(wallet);
+  void disconnect(wallet);
   setProvider(null);
   setSigner(null);
   window.localStorage.removeItem("connectedWallets");

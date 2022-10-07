@@ -33,7 +33,7 @@ async function decryptVotes(privateKey: string | undefined, encryptedVotes: Encr
 
     if (encryptedVote && privateKey) {
       const decryptedVoteString = await decryptMessage(privateKey, encryptedVote);
-      decryptedVote = JSON.parse(decryptedVoteString);
+      decryptedVote = JSON.parse(decryptedVoteString) as DecryptedVoteT;
 
       if (decryptedVote) {
         decryptedVotes[uniqueKey] = decryptedVote;

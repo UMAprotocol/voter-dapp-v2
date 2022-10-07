@@ -9,9 +9,9 @@ export interface ErrorContextState {
 
 export const defaultErrorContextState: ErrorContextState = {
   errorMessages: [],
-  addErrorMessage: () => {},
-  removeErrorMessage: () => {},
-  clearErrorMessages: () => {},
+  addErrorMessage: () => null,
+  removeErrorMessage: () => null,
+  clearErrorMessages: () => null,
 };
 
 export const ErrorContext = createContext<ErrorContextState>(defaultErrorContextState);

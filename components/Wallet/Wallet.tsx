@@ -29,10 +29,10 @@ export function Wallet() {
   useEffect(() => {
     if (!connect) return;
 
-    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]");
+    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]") as string[];
 
     if (previousConnectedWallets?.length) {
-      (async () => {
+      void (async () => {
         await connect({
           autoSelect: {
             label: previousConnectedWallets[0],
@@ -55,7 +55,7 @@ export function Wallet() {
       // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
       setVoting(createVotingContractInstance(signer));
       setVotingToken(createVotingTokenContractInstance(signer));
-      (async () => {
+      void (async () => {
         const savedSigningKeys = getSavedSigningKeys();
         if (savedSigningKeys[address]) {
           setSigningKeys(savedSigningKeys);
@@ -67,6 +67,7 @@ export function Wallet() {
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
 
   async function makeSigningKey(signer: ethers.Signer, message: string) {
@@ -104,7 +105,13 @@ export function Wallet() {
         </WalletButtonWrapper>
       ) : (
         <WalletButtonWrapper>
-          <WalletButton onClick={() => connect()}>{connecting ? "Connecting..." : "Connect wallet"}</WalletButton>
+          <WalletButton
+            onClick={() => {
+              void connect();
+            }}
+          >
+            {connecting ? "Connecting..." : "Connect wallet"}
+          </WalletButton>
         </WalletButtonWrapper>
       )}
     </Wrapper>

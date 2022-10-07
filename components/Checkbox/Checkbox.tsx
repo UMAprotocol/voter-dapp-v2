@@ -18,7 +18,7 @@ export function Checkbox({ label, checked, onChange, disabled, gap = 15 }: Props
     <Label
       style={
         {
-          "--gap": gap + "px",
+          "--gap": `${gap}px`,
         } as CSSProperties
       }
     >
