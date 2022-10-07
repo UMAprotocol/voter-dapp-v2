@@ -2,7 +2,7 @@ import { formatVotesToReveal } from "helpers";
 import { RevealVotes } from "types";
 
 export default async function revealVotes({ votesToReveal, voting }: RevealVotes) {
-  const formattedVotes = await formatVotesToReveal(votesToReveal);
+  const formattedVotes = formatVotesToReveal(votesToReveal);
   if (!formattedVotes.length) return;
 
   const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");
