@@ -29,7 +29,7 @@ const links = [
 ];
 
 export function MenuPanel() {
-  const [{ wallet }, disconnect] = useConnectWallet();
+  const [{ wallet }, _connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
   const connectedWallets = useWallets();
   const { address } = getAccountDetails(connectedWallets);
