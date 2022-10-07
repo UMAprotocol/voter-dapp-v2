@@ -14,7 +14,7 @@ export const defaultErrorContextState: ErrorContextState = {
   clearErrorMessages: () => {},
 };
 
-// This factory allows us to unstance multiple error contexts for different parts of the app.
+// This factory allows us to instance multiple error contexts for different parts of the app.
 export function Factory() {
   const Context = createContext<ErrorContextState>(defaultErrorContextState);
   const Provider = function ({ children }: { children: ReactNode }) {
