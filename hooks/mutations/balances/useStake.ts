@@ -5,10 +5,10 @@ import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { stake } from "web3";
 
-export function useStake() {
+export function useStake(errorType?:string) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const onError = useHandleError(errorType);
 
   const { mutate, isLoading } = useMutation(stake, {
     onSuccess: (_data, { stakeAmount }) => {

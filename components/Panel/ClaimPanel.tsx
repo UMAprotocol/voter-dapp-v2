@@ -8,8 +8,8 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
-  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards();
-  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake();
+  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
+  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getBalancesFetching } = useBalancesContext();
 
   function withdrawRewards() {

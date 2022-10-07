@@ -4,10 +4,10 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { withdrawRewards } from "web3";
 
-export function useWithdrawRewards() {
+export function useWithdrawRewards(errorType?:string) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const onError = useHandleError(errorType);
 
   const { mutate, isLoading } = useMutation(withdrawRewards, {
     onSuccess: () => {

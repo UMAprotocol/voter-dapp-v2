@@ -17,7 +17,7 @@ export const defaultErrorContextState:ErrorContextState = {
 
 export const ErrorContext = createContext<ErrorContextState>(defaultErrorContextState);
 
-export const ErrorProvider = function ({ children }: { children: ReactNode }) {
+export function ErrorProvider ({ children }: { children: ReactNode }) {
   const [errorMessages, setErrorMessages] = useState<Record<string,ReactNode[]>>({});
 
   function addErrorMessage(type:string, message: ReactNode) {

@@ -5,10 +5,10 @@ import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
 
-export function useRequestUnstake() {
+export function useRequestUnstake(errorType?:string) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const onError = useHandleError(errorType);
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
     onSuccess: (_data, { unstakeAmount }) => {
