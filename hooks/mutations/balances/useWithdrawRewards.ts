@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { withdrawRewards } from "web3";
 
-export function useWithdrawRewards(errorType?:string) {
+export function useWithdrawRewards(errorType?: string) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const onError = useHandleError(errorType);

@@ -58,10 +58,10 @@ const withErrorDecorator: DecoratorFn = (Story) => {
   const mockErrorContextState = {
     ...defaultErrorContextState,
     errorMessages: {
-      claim:["Something went wrong in claim panel"],
-      stake:["Something went wrong in stake panel"],
-      unstake:["Something went wrong in unstake panel"],
-      vote:["Something went wrong in vote panel"],
+      claim: ["Something went wrong in claim panel"],
+      stake: ["Something went wrong in stake panel"],
+      unstake: ["Something went wrong in unstake panel"],
+      vote: ["Something went wrong in vote panel"],
     },
   };
   return (

@@ -2,7 +2,7 @@ export { BalancesContext, BalancesProvider, defaultBalancesContextState } from "
 export type { BalancesContextState } from "./BalancesContext";
 export { ContractsContext, ContractsProvider, defaultContractContextState } from "./ContractsContext";
 export type { ContractsContextState } from "./ContractsContext";
-export { defaultErrorContextState, ErrorContext, ErrorProvider} from "./ErrorContext";
+export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorContext";
 export type { ErrorContextState } from "./ErrorContext";
 export { PanelContext, PanelProvider, defaultPanelContextState } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";

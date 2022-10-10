@@ -1,6 +1,6 @@
 import { useErrorContext } from "hooks";
 
-export function useHandleError(errorType?:string) {
+export function useHandleError(errorType?: string) {
   const { addErrorMessage } = useErrorContext(errorType);
 
   return (error: unknown) => {
