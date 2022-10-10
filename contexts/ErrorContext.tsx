@@ -1,14 +1,14 @@
 import { createContext, ReactNode, useState } from "react";
 
 export interface ErrorContextState {
-  errorMessages: ReactNode[];
-  addErrorMessage: (message: ReactNode) => void;
-  removeErrorMessage: (message: ReactNode) => void;
-  clearErrorMessages: () => void;
+  errorMessages: Record<string, ReactNode[]>;
+  addErrorMessage: (type: string, message: ReactNode) => void;
+  removeErrorMessage: (type: string, message: ReactNode) => void;
+  clearErrorMessages: (type: string) => void;
 }
 
 export const defaultErrorContextState: ErrorContextState = {
-  errorMessages: [],
+  errorMessages: { default: [] },
   addErrorMessage: () => null,
   removeErrorMessage: () => null,
   clearErrorMessages: () => null,
@@ -17,18 +17,27 @@ export const defaultErrorContextState: ErrorContextState = {
 export const ErrorContext = createContext<ErrorContextState>(defaultErrorContextState);
 
 export function ErrorProvider({ children }: { children: ReactNode }) {
-  const [errorMessages, setErrorMessages] = useState<ReactNode[]>([]);
+  const [errorMessages, setErrorMessages] = useState<Record<string, ReactNode[]>>({});
 
-  function addErrorMessage(message: ReactNode) {
-    setErrorMessages((prev) => [...new Set([...prev, message])]);
+  function addErrorMessage(type: string, message: ReactNode) {
+    setErrorMessages((prev) => ({
+      ...prev,
+      [type]: [...new Set([...(prev[type] || []), message])],
+    }));
   }
 
-  function clearErrorMessages() {
-    setErrorMessages([]);
+  function clearErrorMessages(type: string) {
+    setErrorMessages((prev) => ({
+      ...prev,
+      [type]: [],
+    }));
   }
 
-  function removeErrorMessage(message: ReactNode) {
-    setErrorMessages((prev) => prev.filter((prevMessage) => prevMessage !== message));
+  function removeErrorMessage(type: string, message: ReactNode) {
+    setErrorMessages((prev) => ({
+      ...prev,
+      [type]: prev[type] ? prev[type].filter((prevMessage) => prevMessage !== message) : [],
+    }));
   }
 
   return (

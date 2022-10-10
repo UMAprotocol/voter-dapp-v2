@@ -64,7 +64,7 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
         width="100%"
         disabled={isButtonDisabled()}
       />
-      <PanelErrorBanner />
+      <PanelErrorBanner errorType="stake" />
     </Wrapper>
   );
 }

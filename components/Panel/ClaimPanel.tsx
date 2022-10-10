@@ -8,8 +8,8 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
-  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards();
-  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake();
+  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
+  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getBalancesFetching } = useBalancesContext();
 
   function withdrawRewards() {
@@ -57,7 +57,7 @@ export function ClaimPanel() {
             </PanelSectionText>
             <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
           </ClaimToWalletWrapper>
-          <PanelErrorBanner />
+          <PanelErrorBanner errorType="claim" />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />

@@ -21,10 +21,10 @@ export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
   const { tokenAllowance, stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } =
     useBalancesContext();
-  const { approveMutation } = useApprove();
-  const { stakeMutation, isStaking } = useStake();
-  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake();
-  const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake();
+  const { approveMutation } = useApprove("stake");
+  const { stakeMutation, isStaking } = useStake("stake");
+  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
+  const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;

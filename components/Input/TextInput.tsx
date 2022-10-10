@@ -24,7 +24,7 @@ export function TextInput({
   const inputMode = type === "text" ? "text" : type === "number" ? "decimal" : "email";
   // treat numbers as text inputs
   const _type = type === "number" ? "text" : type;
-  const onChange = useOnChange(onInput, maxDecimals, allowNegative);
+  const onChange = useOnChange(onInput, maxDecimals, allowNegative, _type);
 
   return (
     <_Wrapper aria-disabled={disabled}>

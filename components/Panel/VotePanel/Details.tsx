@@ -99,7 +99,7 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
             </DiscordLinkContent>
           }
         />
-        <PanelErrorBanner />
+        <PanelErrorBanner errorType="vote" />
       </DiscordLinkWrapper>
     </Wrapper>
   );

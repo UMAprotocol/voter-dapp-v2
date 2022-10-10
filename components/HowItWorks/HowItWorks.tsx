@@ -12,8 +12,6 @@ export function HowItWorks() {
   const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
-  console.log(countReveals?.toString());
-
   function openStakeUnstakePanel() {
     openPanel("stake");
   }
