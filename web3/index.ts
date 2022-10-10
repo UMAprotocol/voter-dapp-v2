@@ -12,6 +12,7 @@ export { default as getOutstandingRewards } from "./queries/balances/getOutstand
 export { default as getStakerDetails } from "./queries/balances/getStakerDetails";
 export { default as getTokenAllowance } from "./queries/balances/getTokenAllowance";
 export { default as getUnstakedBalance } from "./queries/balances/getUnstakedBalance";
+export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getDelegateSetEvents } from "./queries/delegation/getDelegateSetEvents";
 export { getDelegatorSetEvents } from "./queries/delegation/getDelegatorSetEvents";
 export { default as getActiveVotes } from "./queries/votes/getActiveVotes";

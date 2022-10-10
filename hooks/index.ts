@@ -37,4 +37,5 @@ export { useHasActiveVotes } from "./queries/votes/useHasActiveVotes";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
+export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
 export { useVoteTransactionHashes } from "./queries/votes/useVoteTransactionHashes";

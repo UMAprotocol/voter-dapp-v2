@@ -20,6 +20,7 @@ export const userDataKey = "userDataKey";
 // delegation
 export const delegatorSetEventsKey = "delegatorSetEventsKey";
 export const delegateSetEventsKey = "delegateSetEventsKey";
+export const voterFromDelegateKey = "voterFromDelegateKey";
 
 export const votingNotUserDependentQueryKeys = [
   hasActiveVotesKey,

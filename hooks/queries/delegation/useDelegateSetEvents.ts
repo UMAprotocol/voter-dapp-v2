@@ -10,6 +10,7 @@ export function useDelegateSetEvents() {
 
   const queryResult = useQuery([delegateSetEventsKey, address], () => getDelegateSetEvents(voting, address), {
     refetchInterval: (data) => (data ? false : 100),
+    initialData: [],
     enabled: !!address,
     onError,
   });

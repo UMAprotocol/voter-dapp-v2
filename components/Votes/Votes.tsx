@@ -40,8 +40,8 @@ export function Votes() {
   const pendingSetDelegateRequests = getPendingSetDelegateRequests();
   const pendingSetDelegatorRequests = getPendingSetDelegatorRequests();
 
-  // console.log("pendingSetDelegateRequests", pendingSetDelegateRequests);
-  // console.log("pendingSetDelegatorRequests", pendingSetDelegatorRequests);
+  console.log("pendingSetDelegateRequests", pendingSetDelegateRequests);
+  console.log("pendingSetDelegatorRequests", pendingSetDelegatorRequests);
 
   useInitializeVoteTiming();
 

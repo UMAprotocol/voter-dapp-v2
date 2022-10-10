@@ -1,5 +1,4 @@
-import { zeroAddress } from "helpers/ethers";
-import { useDelegateSetEvents, useDelegatorSetEvents } from "hooks";
+import { useDelegateSetEvents, useDelegatorSetEvents, useVoterFromDelegate } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import { DelegationStatusT } from "types";
 import { DelegationEventT } from "types/global";
@@ -40,6 +39,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isLoading: delegatorSetEventsLoading,
     isFetching: delegatorSetEventsFetching,
   } = useDelegatorSetEvents();
+  const {
+    data: voterFromDelegate,
+    isLoading: voterFromDelegateLoading,
+    isFetching: voterFromDelegateFetching,
+  } = useVoterFromDelegate();
 
   function getDelegationDataLoading() {
     return delegateSetEventsLoading || delegatorSetEventsLoading;
@@ -49,11 +53,20 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return delegateSetEventsFetching || delegatorSetEventsFetching;
   }
 
+  function getDelegationStatus() {
+    if (voterFromDelegate) return "delegate";
+    if (getHasPendingRequests()) return "pending";
+    return "none";
+  }
+
+  function getHasPendingRequests() {
+    return getPendingSetDelegateRequests().length > 0 || getPendingSetDelegatorRequests().length > 0;
+  }
+
   function getPendingSetDelegateRequests() {
     return (
       delegateSetEvents?.filter(
         (delegateSet) =>
-          delegateSet.delegate !== zeroAddress && // filter out the cancel delegations events
           !delegatorSetEvents?.some(
             (delegatorSet) =>
               delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
@@ -66,7 +79,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return (
       delegatorSetEvents?.filter(
         (delegatorSet) =>
-          delegatorSet.delegator !== zeroAddress && // filter out the cancel delegations events
           !delegateSetEvents?.some(
             (delegateSet) =>
               delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
