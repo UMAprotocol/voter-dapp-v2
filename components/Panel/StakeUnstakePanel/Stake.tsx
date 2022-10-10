@@ -1,9 +1,11 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
-import { BigNumber } from "ethers";
+import { BigNumber, constants } from "ethers";
 import { formatEther, parseEther } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+
+const MaxApproval = formatEther(constants.MaxUint256);
 
 interface Props {
   tokenAllowance: BigNumber | undefined;
@@ -28,7 +30,7 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
   }
 
   function onApprove() {
-    approve(stakeAmount);
+    approve(MaxApproval);
   }
 
   function onStake() {
