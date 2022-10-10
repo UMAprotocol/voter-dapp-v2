@@ -124,7 +124,7 @@ export function DonutChart({ data, size = 200, hole = 160, gapSize = 1 }: Props)
   const withColors = computeColors(withPercentages);
 
   return data.length ? (
-    <Wrapper style={{ "--size": size + "px" } as CSSProperties}>
+    <Wrapper style={{ "--size": `${size}px` } as CSSProperties}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {withColors.reduce(makeSegmentPath, { paths: [], subtotal: 0 }).paths}
       </svg>

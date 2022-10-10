@@ -1,6 +1,13 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextApiRequest, NextApiResponse } from "next";
 
-// @ts-ignore
+// @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
 import { getContractNames, getAbi } from "@uma/contracts-node";
 import { constructContractOnChain } from "./_common";

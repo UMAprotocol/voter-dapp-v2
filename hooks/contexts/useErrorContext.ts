@@ -1,7 +1,7 @@
 import { ErrorContext } from "contexts";
 import { useContext, ReactNode } from "react";
 
-export const useErrorContext = (type: string = "default") => {
+export const useErrorContext = (type = "default") => {
   const context = useContext(ErrorContext);
   function addErrorMessage(message: ReactNode) {
     context.addErrorMessage(type, message);

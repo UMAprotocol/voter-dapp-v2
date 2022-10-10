@@ -3,7 +3,7 @@ import https from "https";
 import path from "path";
 import { IdentifierDetailsT, UmipLinkT } from "types";
 
-main();
+void main();
 
 async function main() {
   // first download the table of approved identifiers from our docs
@@ -78,7 +78,8 @@ async function downloadFile(url: string, targetFile: fs.PathLike) {
 
         // handle redirects
         if (code > 300 && code < 400 && !!response.headers.location) {
-          return downloadFile(response.headers.location, targetFile);
+          void downloadFile(response.headers.location, targetFile);
+          return;
         }
 
         // save the file to disk

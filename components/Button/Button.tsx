@@ -78,8 +78,8 @@ export function Button({
       "--hover-background-color": red600,
       "--width": width,
       "--height": height,
-      "--border-radius": 5 + "px",
-      "--font-size": (fontSize ? fontSize : 18) + "px",
+      "--border-radius": "5px",
+      "--font-size": `${fontSize ? fontSize : 18}px`,
     } as CSSProperties,
     secondary: {
       "--display": "grid",
@@ -89,14 +89,14 @@ export function Button({
       "--hover-background-color": red100,
       "--width": width,
       "--height": height,
-      "--border-radius": 5 + "px",
+      "--border-radius": "5px",
       "--border": `1px solid ${red500}`,
-      "--font-size": (fontSize ? fontSize : 18) + "px",
+      "--font-size": `${fontSize ? fontSize : 18}px`,
     } as CSSProperties,
     tertiary: {
       "--color": red500,
       "--background-color": "transparent",
-      "--font-size": (fontSize ? fontSize : 16) + "px",
+      "--font-size": `${fontSize ? fontSize : 16}px`,
     } as CSSProperties,
   };
 

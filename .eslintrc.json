@@ -1,33 +1,26 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
-  "plugins": ["prettier"],
-  "rules": {
-    "prettier/prettier": "warn",
-    "indent": 0,
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "double", { "avoidEscape": true }],
-    "semi": ["error", "always"],
-    "spaced-comment": ["error", "always", { "exceptions": ["-", "+"] }],
-    "no-console": "off"
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "tsconfigRootDir": ".",
+    "project": ["./tsconfig.json"]
   },
-  "overrides": [
-    {
-      "files": "*.ts",
-      "parser": "@typescript-eslint/parser",
-      "extends": [
-        "plugin:prettier/recommended",
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
-      ],
-      "rules": {
-        "@typescript-eslint/no-var-requires": 0,
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          { "ignoreRestSiblings": true }
-        ],
-        "@typescript-eslint/ban-ts-comment": 0
+  "extends": [
+    "next",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
       }
-    }
-  ]
+    ]
+  }
 }

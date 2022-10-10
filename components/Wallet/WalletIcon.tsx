@@ -9,7 +9,7 @@ export function WalletIcon({ icon, size = 25 }: Props) {
     <WalletIconWrapper
       style={
         {
-          "--size": size + "px",
+          "--size": `${size}px`,
         } as CSSProperties
       }
     >
