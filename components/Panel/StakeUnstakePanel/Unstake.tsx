@@ -8,16 +8,19 @@ import Two from "public/assets/icons/two.svg";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+import formatDuration from "date-fns/formatDuration";
 
 interface Props {
   stakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
+  unstakeCoolDown: number | undefined;
   requestUnstake: (unstakeAmount: string) => void;
 }
-export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props) {
+export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstakeCoolDown }: Props) {
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
+  const unstakeCoolDownFormatted = unstakeCoolDown ? formatDuration({ seconds: unstakeCoolDown }) : "0 seconds";
 
   function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
     if (stakedBalance === undefined || pendingUnstake === undefined) return false;
@@ -28,7 +31,8 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        When you unstake tokens there is a 7 days cool off period and you wont be able to collect rewards text text
+        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off period and you wont be able to collect
+        rewards text text
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
@@ -38,7 +42,7 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake }: Props
         </UnstakeStep>
         <UnstakeStep>
           <TwoIcon />
-          Cool-off period of 7 days
+          Cool-off period of {unstakeCoolDownFormatted}
         </UnstakeStep>
         <UnstakeStep>
           <ThreeIcon />

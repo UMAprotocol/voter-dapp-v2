@@ -5,17 +5,21 @@ import { useErrorContext } from "hooks";
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
+import formatDuration from "date-fns/formatDuration";
 
 interface Props {
   tokenAllowance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
+  unstakeCoolDown: number | undefined;
   approve: (approveAmount: string) => void;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
 }
-export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props) {
+export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstakeCoolDown }: Props) {
   const [stakeAmount, setStakeAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
-  const disclaimer = "I understand that Staked tokens cannot be transferred for 7 days after unstaking.";
+  const unstakeCoolDownFormatted = unstakeCoolDown ? formatDuration({ seconds: unstakeCoolDown }) : "0 seconds";
+
+  const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
 
   function isApprove() {
     if (tokenAllowance === undefined || stakeAmount === "") return true;
@@ -40,8 +44,8 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake }: Props
     <Wrapper>
       <PanelSectionTitle>Stake</PanelSectionTitle>
       <PanelSectionText>
-        Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for 7 days after
-        unstaking.
+        Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for{" "}
+        {unstakeCoolDownFormatted} after unstaking.
       </PanelSectionText>
       <AmountInputWrapper>
         <AmountInput

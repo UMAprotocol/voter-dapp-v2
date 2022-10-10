@@ -19,8 +19,15 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
-  const { tokenAllowance, stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } =
-    useBalancesContext();
+  const {
+    tokenAllowance,
+    stakedBalance,
+    unstakedBalance,
+    pendingUnstake,
+    canUnstakeTime,
+    getBalancesFetching,
+    unstakeCoolDown,
+  } = useBalancesContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
@@ -60,13 +67,24 @@ export function StakeUnstakePanel() {
     {
       title: "Stake",
       content: (
-        <Stake tokenAllowance={tokenAllowance} unstakedBalance={unstakedBalance} approve={approve} stake={stake} />
+        <Stake
+          tokenAllowance={tokenAllowance}
+          unstakedBalance={unstakedBalance}
+          approve={approve}
+          stake={stake}
+          unstakeCoolDown={unstakeCoolDown}
+        />
       ),
     },
     {
       title: "Unstake",
       content: (
-        <Unstake stakedBalance={stakedBalance} pendingUnstake={pendingUnstake} requestUnstake={requestUnstake} />
+        <Unstake
+          stakedBalance={stakedBalance}
+          pendingUnstake={pendingUnstake}
+          requestUnstake={requestUnstake}
+          unstakeCoolDown={unstakeCoolDown}
+        />
       ),
     },
   ];
