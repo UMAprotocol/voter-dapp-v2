@@ -4,13 +4,7 @@ import { DelegateWhenDelegatorIsConnected } from "./DelegateWhenDelegatorIsConne
 import { Delegator } from "./Delegator";
 
 interface Props {
-  connectedAddress: string | undefined;
-  connectedAddressIsDelegator: boolean;
-  delegatorAddress: string | undefined;
-  connectedAddressIsDelegate: boolean;
-  delegateAddress: string | undefined;
-  awaitingApproval: boolean;
-  delegateRequestAccepted: boolean;
+  address: string | undefined;
   delegateRequestTransaction: string | undefined;
   walletIcon: string | undefined;
   addDelegate: () => void;
@@ -25,7 +19,6 @@ export function Wallets({
   delegatorAddress,
   connectedAddressIsDelegate,
   delegateAddress,
-  awaitingApproval,
   delegateRequestAccepted,
   delegateRequestTransaction,
   walletIcon,
@@ -37,21 +30,18 @@ export function Wallets({
 }: Props) {
   function determineComponent() {
     if (!connectedAddress) return "no-wallet-connected";
-    if (connectedAddressIsDelegator) return "is-delegator";
     if (connectedAddressIsDelegate) return "is-delegate";
-    return "no-delegate-requested";
+    return "is-primary";
   }
   const component = determineComponent();
 
   return (
-    <>
+    <Wrapper>
       {component === "no-wallet-connected" && <NoWalletConnected />}
-      {component === "no-delegate-requested" && <NoDelegateRequested addDelegate={addDelegate} />}
-      {component === "is-delegator" && (
-        <DelegatorIsConnected
-          delegatorAddress={delegatorAddress}
+      {component === "is-primary" && (
+        <PrimaryWallet
+          address={connectedAddress}
           delegateAddress={delegateAddress}
-          awaitingApproval={awaitingApproval}
           delegateRequestAccepted={delegateRequestAccepted}
           delegateRequestTransaction={delegateRequestTransaction}
           walletIcon={walletIcon}
@@ -61,10 +51,9 @@ export function Wallets({
         />
       )}
       {component === "is-delegate" && (
-        <DelegateIsConnected
+        <DelegateWallet
           delegateAddress={delegateAddress}
           delegatorAddress={delegatorAddress}
-          awaitingApproval={awaitingApproval}
           delegateRequestAccepted={delegateRequestAccepted}
           delegateRequestTransaction={delegateRequestTransaction}
           walletIcon={walletIcon}
@@ -73,22 +62,21 @@ export function Wallets({
           removeDelegate={removeDelegate}
         />
       )}
-    </>
+    </Wrapper>
   );
 }
+
+const Wrapper = styled.div`
+  background: var(--grey-100);
+`;
 
 function NoWalletConnected() {
   return <div>No wallet connected</div>;
 }
 
-function NoDelegateRequested({ addDelegate }: { addDelegate: () => void }) {
-  return <div>is neither</div>;
-}
-
-function DelegatorIsConnected({
-  delegatorAddress,
+function PrimaryWallet({
+  address,
   delegateAddress,
-  awaitingApproval,
   delegateRequestAccepted,
   delegateRequestTransaction,
   walletIcon,
@@ -96,9 +84,8 @@ function DelegatorIsConnected({
   cancelDelegateRequest,
   removeDelegate,
 }: {
-  delegatorAddress: string | undefined;
+  address: string | undefined;
   delegateAddress: string | undefined;
-  awaitingApproval: boolean;
   delegateRequestAccepted: boolean;
   delegateRequestTransaction: string | undefined;
   walletIcon: string | undefined;
@@ -106,6 +93,14 @@ function DelegatorIsConnected({
   cancelDelegateRequest: () => void;
   removeDelegate: () => void;
 }) {
+  function getStatus() {
+    if (!delegateAddress) return "not-requested";
+    if (delegateAddress && !delegateRequestAccepted) return "awaiting-approval";
+    return "accepted";
+  }
+
+  const status = getStatus();
+
   return (
     <>
       <Header>Primary Wallet</Header>
@@ -113,7 +108,7 @@ function DelegatorIsConnected({
         Short introduction to why this is here and how it works and more info text info text info text info text info
         text info text info text info text{" "}
       </Text>
-      <Delegator address={delegatorAddress} isConnected={true} walletIcon={walletIcon} />
+      <Delegator address={address} isConnected={true} walletIcon={walletIcon} />
       <Header>Delegated Wallet</Header>
       <Text>
         Short introduction to why this is here and how it works and more info text info text info text info text info
@@ -121,8 +116,7 @@ function DelegatorIsConnected({
       </Text>
       <DelegateWhenDelegatorIsConnected
         address={delegateAddress}
-        awaitingApproval={awaitingApproval}
-        delegateRequestAccepted={delegateRequestAccepted}
+        status={status}
         delegateRequestTransaction={delegateRequestTransaction}
         addDelegate={addDelegate}
         cancelDelegateRequest={cancelDelegateRequest}
@@ -132,7 +126,7 @@ function DelegatorIsConnected({
   );
 }
 
-function DelegateIsConnected({
+function DelegateWallet({
   delegateAddress,
   delegatorAddress,
   awaitingApproval,

@@ -5,7 +5,6 @@ interface Props {
   size?: number;
 }
 export function WalletIcon({ icon, size = 25 }: Props) {
-  console.log(icon);
   return icon ? (
     <WalletIconWrapper
       style={

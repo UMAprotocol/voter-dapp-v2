@@ -7,12 +7,19 @@ const mockWalletIcon =
 export default {
   title: "Pages/WalletSettingsPage/Wallets",
   component: Wallets,
+  decorators: [
+    (Story) => (
+      <div style={{ width: "100%", height: "100%", padding: 50, backgroundColor: "var(--grey-100)" }}>
+        <Story />
+      </div>
+    ),
+  ],
 } as ComponentMeta<typeof Wallets>;
 
-const mockAddress1 = "0x1234567890";
-const mockAddress2 = "0x0987654321";
-const mockAddress3 = "0xfedcba9876";
-const mockDelegateRequestTransaction = "0xabcdef1234567890";
+const mockAddress1 = "0x12345678901234567890";
+const mockAddress2 = "0x09876543211234567890";
+const mockAddress3 = "0xfedcba98761234567890";
+const mockDelegateRequestTransaction = "0xabcdef12345678901234567890";
 const addDelegate = () => alert("addDelegate");
 const cancelDelegateRequest = () => alert("cancelDelegateRequest");
 const approveDelegateRequest = () => alert("approveDelegateRequest");
@@ -42,7 +49,6 @@ NoDelegateRequested.args = {
   delegatorAddress: undefined,
   connectedAddressIsDelegate: false,
   delegateAddress: undefined,
-  awaitingApproval: false,
   delegateRequestAccepted: false,
   delegateRequestTransaction: undefined,
 };
