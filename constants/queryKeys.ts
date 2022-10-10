@@ -17,6 +17,9 @@ export const outstandingRewardsKey = "outstandingRewardsKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 // user
 export const userDataKey = "userDataKey";
+// delegation
+export const delegatorSetEventsKey = "delegatorSetEventsKey";
+export const delegateSetEventsKey = "delegateSetEventsKey";
 
 export const votingNotUserDependentQueryKeys = [
   hasActiveVotesKey,

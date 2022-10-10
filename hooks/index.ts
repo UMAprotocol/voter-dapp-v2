@@ -24,8 +24,10 @@ export { useOutstandingRewards } from "./queries/balances/useOutstandingRewards"
 export { useStakerDetails } from "./queries/balances/useStakerDetails";
 export { useTokenAllowance } from "./queries/balances/useTokenAllowance";
 export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
+export { useDelegateSetEvents } from "./queries/delegation/useDelegateSetEvents";
+export { useDelegatorSetEvents } from "./queries/delegation/useDelegatorSetEvents";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
-export { useUserVotingAndStakingDetails as useUserData } from "./queries/user/useUserVotingAndStakingDetails";
+export { useUserVotingAndStakingDetails } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";
 export { useCommittedVotes } from "./queries/votes/useCommittedVotes";
 export { useContentfulData } from "./queries/votes/useContentfulData";

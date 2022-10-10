@@ -229,3 +229,11 @@ export type RevealVotes = {
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
+
+export type DelegationStatusT = "none" | "delegator" | "delegate";
+
+export type DelegationEventT = {
+  delegate: string;
+  delegator: string;
+  transactionHash: string;
+};

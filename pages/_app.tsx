@@ -4,6 +4,7 @@ import { GlobalStyle, Panel } from "components";
 import {
   BalancesProvider,
   ContractsProvider,
+  DelegationProvider,
   ErrorProvider,
   PanelProvider,
   UserProvider,
@@ -24,15 +25,17 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <UserProvider>
               <ContractsProvider>
-                <BalancesProvider>
-                  <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                      <Panel />
-                    </PanelProvider>
-                  </VotesProvider>
-                </BalancesProvider>
+                <DelegationProvider>
+                  <BalancesProvider>
+                    <VotesProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                        <Panel />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </BalancesProvider>
+                </DelegationProvider>
               </ContractsProvider>
               <ReactQueryDevtools />
             </UserProvider>
