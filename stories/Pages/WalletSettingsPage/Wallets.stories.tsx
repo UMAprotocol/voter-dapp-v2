@@ -42,61 +42,64 @@ NoWalletConnected.args = {
   connectedAddress: undefined,
 };
 
-export const NoDelegateRequested = Template.bind({});
-NoDelegateRequested.args = {
+export const NoDelegation = Template.bind({});
+NoDelegation.args = {
+  delegationStatus: "none",
   connectedAddress: mockAddress1,
-  connectedAddressIsDelegator: false,
-  delegatorAddress: undefined,
-  connectedAddressIsDelegate: false,
   delegateAddress: undefined,
-  delegateRequestAccepted: false,
-  delegateRequestTransaction: undefined,
+  delegatorAddress: undefined,
+  pendingSetDelegateRequestsForDelegate: [],
+  pendingSetDelegateRequestsForDelegator: [],
 };
 
-export const DelegatorIsConnectedAwaitingApproval = Template.bind({});
-DelegatorIsConnectedAwaitingApproval.args = {
+export const IsDelegator = Template.bind({});
+IsDelegator.args = {
+  ...commonArgs,
+  delegationStatus: "delegator",
   connectedAddress: mockAddress1,
-  connectedAddressIsDelegator: true,
-  delegatorAddress: mockAddress1,
-  connectedAddressIsDelegate: false,
   delegateAddress: mockAddress2,
-  awaitingApproval: true,
-  delegateRequestAccepted: false,
-  delegateRequestTransaction: mockDelegateRequestTransaction,
+  delegatorAddress: mockAddress1,
 };
 
-export const DelegatorIsConnectedDelegateRequestAccepted = Template.bind({});
-DelegatorIsConnectedDelegateRequestAccepted.args = {
+export const IsDelegate = Template.bind({});
+IsDelegate.args = {
+  ...commonArgs,
+  delegationStatus: "delegate",
+  connectedAddress: mockAddress2,
+  delegateAddress: mockAddress2,
+  delegatorAddress: mockAddress1,
+};
+
+export const PendingIsDelegator = Template.bind({});
+PendingIsDelegator.args = {
+  ...commonArgs,
+  delegationStatus: "none",
   connectedAddress: mockAddress1,
-  connectedAddressIsDelegator: true,
-  delegatorAddress: mockAddress1,
-  connectedAddressIsDelegate: false,
-  delegateAddress: mockAddress2,
-  awaitingApproval: false,
-  delegateRequestAccepted: true,
-  delegateRequestTransaction: undefined,
+  delegateAddress: undefined,
+  delegatorAddress: undefined,
+  pendingSetDelegateRequestsForDelegate: [],
+  pendingSetDelegateRequestsForDelegator: [
+    {
+      transactionHash: mockDelegateRequestTransaction,
+      delegator: mockAddress1,
+      delegate: mockAddress2,
+    },
+  ],
 };
 
-export const DelegateIsConnectedAwaitingApproval = Template.bind({});
-DelegateIsConnectedAwaitingApproval.args = {
+export const PendingIsDelegate = Template.bind({});
+PendingIsDelegate.args = {
+  ...commonArgs,
+  delegationStatus: "none",
   connectedAddress: mockAddress2,
-  connectedAddressIsDelegator: false,
-  delegatorAddress: mockAddress1,
-  connectedAddressIsDelegate: true,
-  delegateAddress: mockAddress2,
-  awaitingApproval: true,
-  delegateRequestAccepted: false,
-  delegateRequestTransaction: mockDelegateRequestTransaction,
-};
-
-export const DelegateIsConnectedDelegateRequestAccepted = Template.bind({});
-DelegateIsConnectedDelegateRequestAccepted.args = {
-  connectedAddress: mockAddress2,
-  connectedAddressIsDelegator: false,
-  delegatorAddress: mockAddress1,
-  connectedAddressIsDelegate: true,
-  delegateAddress: mockAddress2,
-  awaitingApproval: false,
-  delegateRequestAccepted: true,
-  delegateRequestTransaction: undefined,
+  delegateAddress: undefined,
+  delegatorAddress: undefined,
+  pendingSetDelegateRequestsForDelegate: [
+    {
+      transactionHash: mockDelegateRequestTransaction,
+      delegator: mockAddress1,
+      delegate: mockAddress2,
+    },
+  ],
+  pendingSetDelegateRequestsForDelegator: [],
 };
