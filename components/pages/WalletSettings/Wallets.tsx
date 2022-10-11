@@ -1,67 +1,52 @@
 import styled from "styled-components";
+import { DelegationStatusT } from "types";
+import { DelegationEventT } from "types/global";
 import { DelegateWhenDelegateIsConnected } from "./DelegatedWalletConnected";
 import { DelegateWhenDelegatorIsConnected } from "./DelegateWhenDelegatorIsConnected";
-import { Delegator } from "./Delegator";
+import { Delegator as ConnectedWallet } from "./Delegator";
 
 interface Props {
-  address: string | undefined;
-  delegateRequestTransaction: string | undefined;
+  delegationStatus: DelegationStatusT;
+  pendingSetDelegateRequestsForDelegate: DelegationEventT[];
+  pendingSetDelegateRequestsForDelegator: DelegationEventT[];
+  connectedAddress: string;
+  delegateAddress: string;
+  delegatorAddress: string;
   walletIcon: string | undefined;
   addDelegate: () => void;
-  cancelDelegateRequest: () => void;
-  approveDelegateRequest: () => void;
-  ignoreDelegateRequest: () => void;
   removeDelegate: () => void;
+  removeDelegator: () => void;
 }
 export function Wallets({
+  delegationStatus,
+  pendingSetDelegateRequestsForDelegate,
+  pendingSetDelegateRequestsForDelegator,
   connectedAddress,
-  connectedAddressIsDelegator,
-  delegatorAddress,
-  connectedAddressIsDelegate,
   delegateAddress,
-  delegateRequestAccepted,
-  delegateRequestTransaction,
+  delegatorAddress,
   walletIcon,
   addDelegate,
-  cancelDelegateRequest,
-  approveDelegateRequest,
-  ignoreDelegateRequest,
   removeDelegate,
+  removeDelegator,
 }: Props) {
   function determineComponent() {
     if (!connectedAddress) return "no-wallet-connected";
-    if (connectedAddressIsDelegate) return "is-delegate";
-    return "is-primary";
+    if (delegationStatus === "delegator") return "is-delegator";
+    if (delegationStatus === "delegate") return "is-delegate";
+    if (pendingSetDelegateRequestsForDelegate.length) return "pending-is-delegate";
+    if (pendingSetDelegateRequestsForDelegator.length) return "pending-is-delegator";
+    return "no-delegation";
   }
   const component = determineComponent();
 
   return (
     <Wrapper>
       {component === "no-wallet-connected" && <NoWalletConnected />}
-      {component === "is-primary" && (
-        <PrimaryWallet
-          address={connectedAddress}
-          delegateAddress={delegateAddress}
-          delegateRequestAccepted={delegateRequestAccepted}
-          delegateRequestTransaction={delegateRequestTransaction}
-          walletIcon={walletIcon}
-          addDelegate={addDelegate}
-          cancelDelegateRequest={cancelDelegateRequest}
-          removeDelegate={removeDelegate}
-        />
-      )}
-      {component === "is-delegate" && (
-        <DelegateWallet
-          delegateAddress={delegateAddress}
-          delegatorAddress={delegatorAddress}
-          delegateRequestAccepted={delegateRequestAccepted}
-          delegateRequestTransaction={delegateRequestTransaction}
-          walletIcon={walletIcon}
-          approveDelegateRequest={approveDelegateRequest}
-          ignoreDelegateRequest={ignoreDelegateRequest}
-          removeDelegate={removeDelegate}
-        />
-      )}
+      {component === "no-delegation" && <PrimaryWallet status="no-delegation" />}
+      {component === "is-delegator" && <PrimaryWallet status="accepted" />}
+      {component === "pending-is-delegator" && <PrimaryWallet status="pending" />}
+      {component === "is-delegate" && <SecondaryWallet status="accepted" />}
+      {component === "pending-is-delegate" && <SecondaryWallet status="pending" />}
     </Wrapper>
   );
 }
@@ -75,16 +60,14 @@ function NoWalletConnected() {
 }
 
 function PrimaryWallet({
-  address,
+  connectedAddress,
   delegateAddress,
-  delegateRequestAccepted,
-  delegateRequestTransaction,
   walletIcon,
   addDelegate,
-  cancelDelegateRequest,
   removeDelegate,
 }: {
-  address: string | undefined;
+  status: "no-delegation" | "pending" | "accepted";
+  connectedAddress: string | undefined;
   delegateAddress: string | undefined;
   delegateRequestAccepted: boolean;
   delegateRequestTransaction: string | undefined;
@@ -93,14 +76,6 @@ function PrimaryWallet({
   cancelDelegateRequest: () => void;
   removeDelegate: () => void;
 }) {
-  function getStatus() {
-    if (!delegateAddress) return "not-requested";
-    if (delegateAddress && !delegateRequestAccepted) return "awaiting-approval";
-    return "accepted";
-  }
-
-  const status = getStatus();
-
   return (
     <>
       <Header>Primary Wallet</Header>
@@ -108,7 +83,7 @@ function PrimaryWallet({
         Short introduction to why this is here and how it works and more info text info text info text info text info
         text info text info text info text{" "}
       </Text>
-      <Delegator address={address} isConnected={true} walletIcon={walletIcon} />
+      <ConnectedWallet address={address} isConnected={true} walletIcon={walletIcon} />
       <Header>Delegated Wallet</Header>
       <Text>
         Short introduction to why this is here and how it works and more info text info text info text info text info
@@ -169,7 +144,7 @@ function DelegateWallet({
         Short introduction to why this is here and how it works and more info text info text info text info text info
         text info text info text info text{" "}
       </Text>
-      <Delegator address={delegatorAddress} walletIcon={walletIcon} isConnected={false} />
+      <ConnectedWallet address={delegatorAddress} walletIcon={walletIcon} isConnected={false} />
     </>
   );
 }

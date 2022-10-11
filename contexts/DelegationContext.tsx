@@ -15,7 +15,7 @@ import { DelegationEventT } from "types/global";
 
 export interface DelegationContextState {
   getDelegationStatus: () => DelegationStatusT;
-  getPendingSetDelegateRequests: () => DelegationEventT[];
+  getPendingSetDelegateRequestsForDelegate: () => DelegationEventT[];
   getPendingSetDelegateRequestsForDelegator: () => DelegationEventT[];
   getDelegateAddress: () => string;
   getDelegatorAddress: () => string;
@@ -25,7 +25,7 @@ export interface DelegationContextState {
 
 export const defaultDelegationContextState: DelegationContextState = {
   getDelegationStatus: () => "none",
-  getPendingSetDelegateRequests: () => [],
+  getPendingSetDelegateRequestsForDelegate: () => [],
   getPendingSetDelegateRequestsForDelegator: () => [],
   getDelegateAddress: () => zeroAddress,
   getDelegatorAddress: () => zeroAddress,
@@ -125,7 +125,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return delegatorSetEvents.length > 0;
   }
 
-  function getPendingSetDelegateRequests() {
+  function getPendingSetDelegateRequestsForDelegate() {
     return (
       delegateSetEvents?.filter(
         (delegateSet) =>
@@ -155,7 +155,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         getDelegationStatus,
         getDelegateAddress,
         getDelegatorAddress,
-        getPendingSetDelegateRequests,
+        getPendingSetDelegateRequestsForDelegate,
         getPendingSetDelegateRequestsForDelegator,
         getDelegationDataLoading,
         getDelegationDataFetching,
