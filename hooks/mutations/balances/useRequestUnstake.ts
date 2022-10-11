@@ -18,6 +18,7 @@ export function useRequestUnstake(errorType?: string) {
         const newUnstakedBalance = oldStakerDetails.stakedBalance.sub(unstakeAmount);
 
         return {
+          ...oldStakerDetails,
           stakedBalance: newUnstakedBalance,
           pendingUnstake: unstakeAmount,
           unstakeRequestTime: new Date(),

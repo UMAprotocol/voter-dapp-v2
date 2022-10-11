@@ -27,6 +27,7 @@ export function useExecuteUnstake(errorType?: string) {
 
         const newStakedBalance = oldStakerDetails.stakedBalance.sub(oldStakerDetails.pendingUnstake);
         return {
+          ...oldStakerDetails,
           stakedBalance: newStakedBalance,
           pendingUnstake: BigNumber.from(0),
           canUnstakeTime: undefined,

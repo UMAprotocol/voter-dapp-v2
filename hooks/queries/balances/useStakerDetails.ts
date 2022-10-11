@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
+import { zeroAddress } from "helpers/ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getStakerDetails } from "web3";
 
@@ -17,6 +18,7 @@ export function useStakerDetails() {
       pendingUnstake: BigNumber.from(0),
       unstakeRequestTime: new Date(0),
       canUnstakeTime: new Date(0),
+      delegate: zeroAddress,
     },
     onError,
   });
