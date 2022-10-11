@@ -12,9 +12,10 @@ export { getOutstandingRewards } from "./queries/balances/getOutstandingRewards"
 export { getStakerDetails } from "./queries/balances/getStakerDetails";
 export { getTokenAllowance } from "./queries/balances/getTokenAllowance";
 export { getUnstakedBalance } from "./queries/balances/getUnstakedBalance";
-export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getDelegateSetEvents } from "./queries/delegation/getDelegateSetEvents";
+export { getDelegateToStaker } from "./queries/delegation/getDelegateToStaker";
 export { getDelegatorSetEvents } from "./queries/delegation/getDelegatorSetEvents";
+export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getActiveVotes } from "./queries/votes/getActiveVotes";
 export { getCommittedVotes } from "./queries/votes/getCommittedVotes";
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";

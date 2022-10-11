@@ -231,7 +231,7 @@ export type RevealVotes = {
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
 
-export type DelegationStatusT = "none" | "pending" | "delegator" | "delegate";
+export type DelegationStatusT = "none" | "delegator" | "delegate";
 
 export type DelegationEventT = {
   delegate: string;

@@ -36,7 +36,7 @@ export const defaultStakingContextState: StakingContextState = {
 
 export const StakingContext = createContext<StakingContextState>(defaultStakingContextState);
 
-export function BalancesProvider({ children }: { children: ReactNode }) {
+export function StakingProvider({ children }: { children: ReactNode }) {
   const {
     data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime, delegate },
     isLoading: stakerDetailsLoading,

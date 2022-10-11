@@ -19,6 +19,7 @@ export {
   randomBytes,
   solidityKeccak256,
   toUtf8String,
+  zeroAddress,
 } from "./ethers";
 export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {

@@ -2,11 +2,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GlobalStyle, Panel } from "components";
 import {
-  BalancesProvider,
   ContractsProvider,
   DelegationProvider,
   ErrorProvider,
   PanelProvider,
+  StakingProvider,
   UserProvider,
   VotesProvider,
   VoteTimingProvider,
@@ -25,8 +25,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <UserProvider>
               <ContractsProvider>
-                <DelegationProvider>
-                  <BalancesProvider>
+                <StakingProvider>
+                  <DelegationProvider>
                     <VotesProvider>
                       <PanelProvider>
                         <GlobalStyle />
@@ -34,8 +34,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                         <Panel />
                       </PanelProvider>
                     </VotesProvider>
-                  </BalancesProvider>
-                </DelegationProvider>
+                  </DelegationProvider>
+                </StakingProvider>
               </ContractsProvider>
               <ReactQueryDevtools />
             </UserProvider>
