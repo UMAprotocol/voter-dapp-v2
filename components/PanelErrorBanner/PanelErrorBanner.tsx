@@ -36,12 +36,10 @@ const OuterWrapper = styled.div`
 const InnerWrapper = styled.div``;
 
 const ErrorMessage = styled.p`
+  overflow-wrap: anywhere;
   &:not(:last-child) {
     margin-bottom: 8px;
   }
 `;
 
-const IconWrapper = styled.div`
-  width: 26px;
-  height: 26px;
-`;
+const IconWrapper = styled.div``;
