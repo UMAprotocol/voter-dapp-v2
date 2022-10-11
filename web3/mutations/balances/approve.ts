@@ -2,7 +2,7 @@ import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { votingContractAddress } from "constants/addresses";
 import { BigNumber } from "ethers";
 
-export default async function approve({
+export async function approve({
   votingToken,
   approveAmount,
 }: {

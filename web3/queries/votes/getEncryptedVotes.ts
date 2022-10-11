@@ -2,7 +2,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { EncryptedVotesByKeyT } from "types";
 
-export default async function getEncryptedVotes(votingContract: VotingV2Ethers, address: string, roundId: number) {
+export async function getEncryptedVotes(votingContract: VotingV2Ethers, address: string, roundId: number) {
   const filter = votingContract.filters.EncryptedVote(address, roundId, null, null, null, null);
   const result = await votingContract.queryFilter(filter);
 

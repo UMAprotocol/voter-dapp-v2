@@ -1,6 +1,6 @@
 import { CommitVotes } from "types";
 
-export default async function commitVotes({ voting, formattedVotes }: CommitVotes) {
+export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
