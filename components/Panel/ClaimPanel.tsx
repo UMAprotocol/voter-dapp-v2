@@ -1,6 +1,6 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
-import { useBalancesContext, useContractsContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
+import { useContractsContext, useStakingContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -10,7 +10,7 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
-  const { outstandingRewards, getBalancesFetching } = useBalancesContext();
+  const { outstandingRewards, getStakingDataFetching: getBalancesFetching } = useStakingContext();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });

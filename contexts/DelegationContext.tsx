@@ -1,4 +1,4 @@
-import { useDelegateSetEvents, useDelegatorSetEvents, useVoterFromDelegate } from "hooks";
+import { useDelegateSetEvents, useDelegatorSetEvents, useStakerDetails, useVoterFromDelegate } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import { DelegationStatusT } from "types";
 import { DelegationEventT } from "types/global";
@@ -44,13 +44,20 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isLoading: voterFromDelegateLoading,
     isFetching: voterFromDelegateFetching,
   } = useVoterFromDelegate();
+  const {
+    data: { delegate },
+    isLoading: stakerDetailsLoading,
+    isFetching: stakerDetailsFetching,
+  } = useStakerDetails();
 
   function getDelegationDataLoading() {
-    return delegateSetEventsLoading || delegatorSetEventsLoading;
+    return delegateSetEventsLoading || delegatorSetEventsLoading || voterFromDelegateLoading || stakerDetailsLoading;
   }
 
   function getDelegationDataFetching() {
-    return delegateSetEventsFetching || delegatorSetEventsFetching;
+    return (
+      delegateSetEventsFetching || delegatorSetEventsFetching || voterFromDelegateFetching || stakerDetailsFetching
+    );
   }
 
   function getDelegationStatus() {

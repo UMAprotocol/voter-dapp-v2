@@ -1,5 +1,3 @@
-export { BalancesContext, BalancesProvider, defaultBalancesContextState } from "./BalancesContext";
-export type { BalancesContextState } from "./BalancesContext";
 export { ContractsContext, ContractsProvider, defaultContractContextState } from "./ContractsContext";
 export type { ContractsContextState } from "./ContractsContext";
 export { defaultDelegationContextState, DelegationContext, DelegationProvider } from "./DelegationContext";
@@ -8,6 +6,8 @@ export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorCo
 export type { ErrorContextState } from "./ErrorContext";
 export { defaultPanelContextState, PanelContext, PanelProvider } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
+export { BalancesProvider, defaultStakingContextState, StakingContext } from "./StakingContext";
+export type { StakingContextState } from "./StakingContext";
 export { defaultUserContextState, UserContext, UserProvider } from "./UserContext";
 export type { UserContextState } from "./UserContext";
 export { defaultVotesContextState, VotesContext, VotesProvider } from "./VotesContext";
@@ -16,3 +16,4 @@ export { defaultVoteTimingContextState, VoteTimingContext, VoteTimingProvider } 
 export type { VoteTimingContextState } from "./VoteTimingContext";
 export { defaultWalletContextState, WalletContext, WalletProvider } from "./WalletContext";
 export type { WalletContextState } from "./WalletContext";
+

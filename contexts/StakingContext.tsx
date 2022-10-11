@@ -8,7 +8,7 @@ import {
 } from "hooks";
 import { createContext, ReactNode } from "react";
 
-export interface BalancesContextState {
+export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
@@ -16,11 +16,12 @@ export interface BalancesContextState {
   tokenAllowance: BigNumber | undefined;
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
-  getBalancesLoading: () => boolean;
-  getBalancesFetching: () => boolean;
+  delegate: string | undefined;
+  getStakingDataLoading: () => boolean;
+  getStakingDataFetching: () => boolean;
 }
 
-export const defaultBalancesContextState: BalancesContextState = {
+export const defaultStakingContextState: StakingContextState = {
   stakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
@@ -28,15 +29,16 @@ export const defaultBalancesContextState: BalancesContextState = {
   tokenAllowance: undefined,
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
-  getBalancesLoading: () => false,
-  getBalancesFetching: () => false,
+  delegate: undefined,
+  getStakingDataLoading: () => false,
+  getStakingDataFetching: () => false,
 };
 
-export const BalancesContext = createContext<BalancesContextState>(defaultBalancesContextState);
+export const StakingContext = createContext<StakingContextState>(defaultStakingContextState);
 
 export function BalancesProvider({ children }: { children: ReactNode }) {
   const {
-    data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime },
+    data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime, delegate },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails();
@@ -57,20 +59,20 @@ export function BalancesProvider({ children }: { children: ReactNode }) {
   } = useTokenAllowance();
   const { address } = useAccountDetails();
 
-  function getBalancesLoading() {
+  function getStakingDataLoading() {
     if (!address) return false;
 
     return stakerDetailsLoading || unstakedBalanceLoading || outstandingRewardsLoading || tokenAllowanceLoading;
   }
 
-  function getBalancesFetching() {
+  function getStakingDataFetching() {
     if (!address) return false;
 
     return stakerDetailsFetching || unstakedBalanceFetching || outstandingRewardsFetching || tokenAllowanceFetching;
   }
 
   return (
-    <BalancesContext.Provider
+    <StakingContext.Provider
       value={{
         stakedBalance,
         unstakedBalance,
@@ -79,11 +81,12 @@ export function BalancesProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
-        getBalancesLoading,
-        getBalancesFetching,
+        delegate,
+        getStakingDataLoading,
+        getStakingDataFetching,
       }}
     >
       {children}
-    </BalancesContext.Provider>
+    </StakingContext.Provider>
   );
 }

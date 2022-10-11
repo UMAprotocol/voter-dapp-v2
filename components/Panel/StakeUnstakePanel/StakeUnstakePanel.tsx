@@ -3,11 +3,11 @@ import { parseEther } from "ethers/lib/utils";
 import { formatNumberForDisplay } from "helpers";
 import {
   useApprove,
-  useBalancesContext,
   useContractsContext,
   useExecuteUnstake,
   useRequestUnstake,
   useStake,
+  useStakingContext,
 } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
@@ -19,8 +19,14 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
-  const { tokenAllowance, stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getBalancesFetching } =
-    useBalancesContext();
+  const {
+    tokenAllowance,
+    stakedBalance,
+    unstakedBalance,
+    pendingUnstake,
+    canUnstakeTime,
+    getStakingDataFetching: getBalancesFetching,
+  } = useStakingContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
