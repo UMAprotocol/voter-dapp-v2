@@ -24,6 +24,7 @@ export { useOutstandingRewards } from "./queries/balances/useOutstandingRewards"
 export { useStakerDetails } from "./queries/balances/useStakerDetails";
 export { useTokenAllowance } from "./queries/balances/useTokenAllowance";
 export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
+export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
 export { useUserVotingAndStakingDetails as useUserData } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";

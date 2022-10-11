@@ -15,6 +15,7 @@ export const tokenAllowanceKey = "tokenAllowanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
 export const outstandingRewardsKey = "outstandingRewardsKey";
 export const stakerDetailsKey = "stakerDetailsKey";
+export const unstakeCoolDownKey = "unstakeCoolDownKey";
 // user
 export const userDataKey = "userDataKey";
 

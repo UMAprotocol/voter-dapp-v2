@@ -5,6 +5,7 @@ import {
   useStakerDetails,
   useTokenAllowance,
   useUnstakedBalance,
+  useUnstakeCoolDown,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 
@@ -16,6 +17,7 @@ export interface BalancesContextState {
   tokenAllowance: BigNumber | undefined;
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
+  unstakeCoolDown: number | undefined;
   getBalancesLoading: () => boolean;
   getBalancesFetching: () => boolean;
 }
@@ -28,6 +30,7 @@ export const defaultBalancesContextState: BalancesContextState = {
   tokenAllowance: undefined,
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
+  unstakeCoolDown: undefined,
   getBalancesLoading: () => false,
   getBalancesFetching: () => false,
 };
@@ -56,17 +59,34 @@ export function BalancesProvider({ children }: { children: ReactNode }) {
     isFetching: tokenAllowanceFetching,
   } = useTokenAllowance();
   const { address } = useAccountDetails();
+  const {
+    data: { unstakeCoolDown },
+    isLoading: unstakeCoolDownLoading,
+    isFetching: unstakeCoolDownFetching,
+  } = useUnstakeCoolDown();
 
   function getBalancesLoading() {
     if (!address) return false;
 
-    return stakerDetailsLoading || unstakedBalanceLoading || outstandingRewardsLoading || tokenAllowanceLoading;
+    return (
+      stakerDetailsLoading ||
+      unstakedBalanceLoading ||
+      outstandingRewardsLoading ||
+      tokenAllowanceLoading ||
+      unstakeCoolDownLoading
+    );
   }
 
   function getBalancesFetching() {
     if (!address) return false;
 
-    return stakerDetailsFetching || unstakedBalanceFetching || outstandingRewardsFetching || tokenAllowanceFetching;
+    return (
+      stakerDetailsFetching ||
+      unstakedBalanceFetching ||
+      outstandingRewardsFetching ||
+      tokenAllowanceFetching ||
+      unstakeCoolDownFetching
+    );
   }
 
   return (
@@ -75,6 +95,7 @@ export function BalancesProvider({ children }: { children: ReactNode }) {
         stakedBalance,
         unstakedBalance,
         pendingUnstake,
+        unstakeCoolDown,
         outstandingRewards,
         tokenAllowance,
         unstakeRequestTime,

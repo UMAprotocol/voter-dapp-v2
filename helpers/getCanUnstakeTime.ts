@@ -1,5 +1,8 @@
-import { addDays } from "date-fns";
+import addSeconds from "date-fns/addSeconds";
 
-export function getCanUnstakeTime(unstakeRequestTimeAsDate: Date) {
-  return addDays(unstakeRequestTimeAsDate, 7);
+// set 7 day cooldown as default
+const defaultUnstakeCoolDown = 7 * 24 * 60 * 60;
+
+export function getCanUnstakeTime(unstakeRequestTimeAsDate: Date, unstakeCooldownS = defaultUnstakeCoolDown) {
+  return addSeconds(unstakeRequestTimeAsDate, unstakeCooldownS);
 }
