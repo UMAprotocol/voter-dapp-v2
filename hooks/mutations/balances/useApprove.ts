@@ -4,10 +4,10 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { approve } from "web3";
 
-export function useApprove() {
+export function useApprove(errorType?: string) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const onError = useHandleError(errorType);
 
   const { mutate, isLoading } = useMutation(approve, {
     onSuccess: (_data, { approveAmount }) => {

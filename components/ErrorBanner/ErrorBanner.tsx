@@ -2,8 +2,8 @@ import { useErrorContext } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 
-export function ErrorBanner() {
-  const { errorMessages } = useErrorContext();
+export function ErrorBanner(props: { errorType?: string }) {
+  const { errorMessages } = useErrorContext(props.errorType);
 
   if (!errorMessages.length) return null;
 
