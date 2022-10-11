@@ -5,6 +5,7 @@ import {
   useDelegateToStaker,
   useDelegatorSetEvents,
   useDelegatorSetEventsForDelegator,
+  useStakingContext,
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
@@ -66,6 +67,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isFetching: delegateToStakerFetching,
   } = useDelegateToStaker();
   const { address } = useUserContext();
+  const { delegate } = useStakingContext();
 
   function getDelegationDataLoading() {
     return (
@@ -89,9 +91,19 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  function getDelegateAddress() {}
+  function getDelegateAddress() {
+    const status = getDelegationStatus();
+    if (status === "delegator") return delegate!;
+    if (status === "delegate") return address;
+    return zeroAddress;
+  }
 
-  function getDelegatorAddress() {}
+  function getDelegatorAddress() {
+    const status = getDelegationStatus();
+    if (status === "delegator") return address;
+    if (status === "delegate") return voterFromDelegate;
+    return zeroAddress;
+  }
 
   function getDelegationStatus() {
     const hasDelegateSetEvents = getHasDelegateSetEvents();
