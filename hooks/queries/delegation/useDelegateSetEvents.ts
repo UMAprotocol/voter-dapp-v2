@@ -8,12 +8,16 @@ export function useDelegateSetEvents() {
   const { address } = useUserContext();
   const onError = useHandleError();
 
-  const queryResult = useQuery([delegateSetEventsKey, address], () => getDelegateSetEvents(voting, address), {
-    refetchInterval: (data) => (data ? false : 100),
-    initialData: [],
-    enabled: !!address,
-    onError,
-  });
+  const queryResult = useQuery(
+    [delegateSetEventsKey, address],
+    () => getDelegateSetEvents(voting, address, "delegate"),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      initialData: [],
+      enabled: !!address,
+      onError,
+    }
+  );
 
   return queryResult;
 }

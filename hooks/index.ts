@@ -25,6 +25,8 @@ export { useStakerDetails } from "./queries/balances/useStakerDetails";
 export { useTokenAllowance } from "./queries/balances/useTokenAllowance";
 export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
 export { useDelegateSetEvents } from "./queries/delegation/useDelegateSetEvents";
+export { useDelegateSetEventsForDelegator } from "./queries/delegation/useDelegateSetEventsForDelegator";
+export { useDelegatorSetEventsForDelegator } from "./queries/delegation/useDelegatorSetEventsForDelegator";
 export { useDelegateToStaker } from "./queries/delegation/useDelegateToStaker";
 export { useDelegatorSetEvents } from "./queries/delegation/useDelegatorSetEvents";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";

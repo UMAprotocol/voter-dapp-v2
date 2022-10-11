@@ -1,16 +1,21 @@
 import { zeroAddress } from "helpers";
 import {
   useDelegateSetEvents,
+  useDelegateSetEventsForDelegator,
   useDelegateToStaker,
   useDelegatorSetEvents,
+  useDelegatorSetEventsForDelegator,
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 import { DelegationStatusT } from "types";
+import { DelegationEventT } from "types/global";
 
 export interface DelegationContextState {
   getDelegationStatus: () => DelegationStatusT;
+  getPendingSetDelegateRequests: () => DelegationEventT[];
+  getPendingSetDelegateRequestsForDelegator: () => DelegationEventT[];
   getDelegateAddress: () => string;
   getDelegatorAddress: () => string;
   getDelegationDataLoading: () => boolean;
@@ -19,6 +24,8 @@ export interface DelegationContextState {
 
 export const defaultDelegationContextState: DelegationContextState = {
   getDelegationStatus: () => "none",
+  getPendingSetDelegateRequests: () => [],
+  getPendingSetDelegateRequestsForDelegator: () => [],
   getDelegateAddress: () => zeroAddress,
   getDelegatorAddress: () => zeroAddress,
   getDelegationDataLoading: () => false,
@@ -34,10 +41,20 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isFetching: delegateSetEventsFetching,
   } = useDelegateSetEvents();
   const {
+    data: delegateSetEventsForDelegator,
+    isLoading: delegateSetEventsForDelegatorLoading,
+    isFetching: delegateSetEventsForDelegatorFetching,
+  } = useDelegateSetEventsForDelegator();
+  const {
     data: delegatorSetEvents,
     isLoading: delegatorSetEventsLoading,
     isFetching: delegatorSetEventsFetching,
   } = useDelegatorSetEvents();
+  const {
+    data: delegatorSetEventsForDelegator,
+    isLoading: delegatorSetEventsForDelegatorLoading,
+    isFetching: delegatorSetEventsForDelegatorFetching,
+  } = useDelegatorSetEventsForDelegator();
   const {
     data: voterFromDelegate,
     isLoading: voterFromDelegateLoading,
@@ -51,12 +68,24 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const { address } = useUserContext();
 
   function getDelegationDataLoading() {
-    return delegateSetEventsLoading || delegatorSetEventsLoading || voterFromDelegateLoading || delegateToStakerLoading;
+    return (
+      delegateSetEventsLoading ||
+      delegateSetEventsForDelegatorLoading ||
+      delegatorSetEventsLoading ||
+      voterFromDelegateLoading ||
+      delegateToStakerLoading ||
+      delegatorSetEventsForDelegatorLoading
+    );
   }
 
   function getDelegationDataFetching() {
     return (
-      delegateSetEventsFetching || delegatorSetEventsFetching || voterFromDelegateFetching || delegateToStakerFetching
+      delegateSetEventsFetching ||
+      delegateSetEventsForDelegatorFetching ||
+      delegatorSetEventsFetching ||
+      voterFromDelegateFetching ||
+      delegateToStakerFetching ||
+      delegatorSetEventsForDelegatorFetching
     );
   }
 
@@ -84,15 +113,23 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return delegatorSetEvents.length > 0;
   }
 
-  function getHasPendingSetDelegateRequests() {
-    return getPendingSetDelegateRequests().length > 0;
-  }
-
   function getPendingSetDelegateRequests() {
     return (
       delegateSetEvents?.filter(
         (delegateSet) =>
           !delegatorSetEvents?.some(
+            (delegatorSet) =>
+              delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
+          )
+      ) ?? []
+    );
+  }
+
+  function getPendingSetDelegateRequestsForDelegator() {
+    return (
+      delegateSetEventsForDelegator?.filter(
+        (delegateSet) =>
+          !delegatorSetEventsForDelegator?.some(
             (delegatorSet) =>
               delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
           )
@@ -106,6 +143,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         getDelegationStatus,
         getDelegateAddress,
         getDelegatorAddress,
+        getPendingSetDelegateRequests,
+        getPendingSetDelegateRequestsForDelegator,
         getDelegationDataLoading,
         getDelegationDataFetching,
       }}

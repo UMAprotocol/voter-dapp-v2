@@ -1,8 +1,13 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { zeroAddress } from "helpers/ethers";
 
-export async function getDelegatorSetEvents(voting: VotingV2Ethers, address: string) {
-  const filter = voting.filters.DelegatorSet(null, address);
+export async function getDelegatorSetEvents(
+  voting: VotingV2Ethers,
+  address: string,
+  queryFor: "delegate" | "delegator"
+) {
+  const args = queryFor === "delegate" ? [null, address] : [address, null];
+  const filter = voting.filters.DelegatorSet(...args);
   const events = await voting.queryFilter(filter);
   return events
     .map((event) => ({
