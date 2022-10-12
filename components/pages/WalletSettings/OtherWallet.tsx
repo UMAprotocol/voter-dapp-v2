@@ -19,7 +19,7 @@ export function OtherWallet({
       : "Explanation of secondary wallet when secondary is delegator.";
   return (
     <>
-      <Header>Other wallet</Header>
+      <Header>Other wallet ({status})</Header>
       <Text>{text}</Text>
       <div>
         <LinkedAddressIcon />
