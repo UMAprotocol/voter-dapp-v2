@@ -1,8 +1,7 @@
-import { Button } from "components/Button";
 import Link from "public/assets/icons/link.svg";
 import styled from "styled-components";
 import { AllowedAction } from "./AllowedAction";
-import { Address, Header, Text } from "./styles";
+import { AddressWrapper, BarButtonSecondary, BarWrapper, Header, Text } from "./styles";
 
 export function OtherWallet({
   status,
@@ -21,9 +20,14 @@ export function OtherWallet({
     <>
       <Header>Other wallet ({status})</Header>
       <Text>{text}</Text>
-      <div>
-        <LinkedAddressIcon />
-        <Address>{address}</Address>
+      <BarWrapper>
+        <AddressWrapper>
+          {" "}
+          <LinkedAddressIconWrapper>
+            <LinkedAddressIcon />
+          </LinkedAddressIconWrapper>
+          <Text>{address}</Text>
+        </AddressWrapper>
         {status === "delegate" ? (
           <>
             <AllowedAction>Voting</AllowedAction>
@@ -36,11 +40,16 @@ export function OtherWallet({
             <AllowedAction>Claiming Rewards</AllowedAction>
           </>
         )}
-        <Button variant="primary" label="Remove wallet" onClick={remove} />
-      </div>
+        <BarButtonSecondary label={`Remove ${status}`} onClick={remove} />
+      </BarWrapper>
     </>
   );
 }
+
+const LinkedAddressIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
 
 const LinkedAddressIcon = styled(Link)`
   circle {

@@ -1,6 +1,5 @@
 import { Button } from "components/Button";
-import styled from "styled-components";
-import { Header, Text } from "./styles";
+import { BarText, BarWrapper, Header, Text } from "./styles";
 
 export function AddDelegate({ addDelegate }: { addDelegate: () => void }) {
   return (
@@ -10,16 +9,10 @@ export function AddDelegate({ addDelegate }: { addDelegate: () => void }) {
         Explanation of how this works Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ea ratione nobis
         reiciendis, aliquid quidem nulla veniam quasi eos ab error?
       </Text>
-      <Wrapper>
-        <Text>No delegate wallet connected</Text>
+      <BarWrapper>
+        <BarText>No delegate wallet connected</BarText>
         <Button variant="primary" label="Add delegate wallet" onClick={addDelegate} />
-      </Wrapper>
+      </BarWrapper>
     </>
   );
 }
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;

@@ -19,31 +19,29 @@ export function ConnectedWallet({ address, status, walletIcon }: Props) {
         Short introduction to why this is here and how it works and more info text info text info text info text info
         text info text info text info text{" "}
       </Text>
-      <Wrapper>
+      <_BarWrapper>
         <WalletWrapper>
           <WalletIcon icon={walletIcon} />
           <Address>{address}</Address>
-          {status === "delegate" ? (
-            <>
-              <AllowedAction>Voting</AllowedAction>
-              <AllowedAction>Claiming & Restake</AllowedAction>
-            </>
-          ) : (
-            <>
-              <AllowedAction>Staking</AllowedAction>
-              <AllowedAction>Voting</AllowedAction>
-              <AllowedAction>Claiming Rewards</AllowedAction>
-            </>
-          )}
         </WalletWrapper>
-      </Wrapper>
+
+        {status === "delegate" ? (
+          <>
+            <AllowedAction>Voting</AllowedAction>
+            <AllowedAction>Claiming & Restake</AllowedAction>
+          </>
+        ) : (
+          <>
+            <AllowedAction>Staking</AllowedAction>
+            <AllowedAction>Voting</AllowedAction>
+            <AllowedAction>Claiming Rewards</AllowedAction>
+          </>
+        )}
+      </_BarWrapper>
     </>
   );
 }
 
-const Wrapper = styled(BarWrapper)`
-  display: grid;
-  align-items: center;
-  grid-template-rows: 1fr;
-  grid-template-columns: repeat(4, auto);
+const _BarWrapper = styled(BarWrapper)`
+  padding-right: 160px;
 `;
