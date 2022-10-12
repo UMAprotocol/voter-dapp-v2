@@ -14,9 +14,10 @@ interface Props {
   stakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
   unstakeCoolDown: number | undefined;
+  canClaim: boolean;
   requestUnstake: (unstakeAmount: string) => void;
 }
-export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstakeCoolDown }: Props) {
+export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstakeCoolDown, canClaim }: Props) {
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
@@ -24,7 +25,7 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstake
 
   function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
     if (stakedBalance === undefined || pendingUnstake === undefined) return false;
-    return stakedBalance.gt(0) && pendingUnstake.eq(0);
+    return !canClaim && stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
 
   return (
@@ -70,7 +71,8 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstake
         </>
       )}
       <PanelErrorBanner errorType="unstake" />
-      {phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
+      {!canClaim && phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
+      {canClaim && <p>Cannot request to unstake until you claim unstaked tokens</p>}
     </Wrapper>
   );
 }

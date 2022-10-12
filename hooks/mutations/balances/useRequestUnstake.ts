@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey } from "constants/queryKeys";
+import { stakerDetailsKey, unstakeCoolDownKey } from "constants/queryKeys";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
@@ -15,13 +15,17 @@ export function useRequestUnstake(errorType?: string) {
       queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
         if (oldStakerDetails === undefined) return;
 
+        const unstakeCoolDown = queryClient.getQueryData<{ unstakeCoolDown: number }>([unstakeCoolDownKey]);
+
+        if (unstakeCoolDown === undefined || unstakeCoolDown.unstakeCoolDown === undefined) return;
+
         const newUnstakedBalance = oldStakerDetails.stakedBalance.sub(unstakeAmount);
 
         return {
           stakedBalance: newUnstakedBalance,
           pendingUnstake: unstakeAmount,
           unstakeRequestTime: new Date(),
-          canUnstakeTime: getCanUnstakeTime(new Date()),
+          canUnstakeTime: getCanUnstakeTime(new Date(), unstakeCoolDown.unstakeCoolDown),
         };
       });
     },
