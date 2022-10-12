@@ -21,19 +21,15 @@ const mockAddress2 = "0x09876543211234567890";
 const mockAddress3 = "0xfedcba98761234567890";
 const mockDelegateRequestTransaction = "0xabcdef12345678901234567890";
 const addDelegate = () => alert("addDelegate");
-const cancelDelegateRequest = () => alert("cancelDelegateRequest");
-const approveDelegateRequest = () => alert("approveDelegateRequest");
-const ignoreDelegateRequest = () => alert("ignoreDelegateRequest");
 const removeDelegate = () => alert("removeDelegate");
+const addDelegator = () => alert("addDelegator");
 const removeDelegator = () => alert("removeDelegator");
 
 const commonArgs = {
   walletIcon: mockWalletIcon,
   addDelegate,
-  cancelDelegateRequest,
-  approveDelegateRequest,
-  ignoreDelegateRequest,
   removeDelegate,
+  addDelegator,
   removeDelegator,
 };
 

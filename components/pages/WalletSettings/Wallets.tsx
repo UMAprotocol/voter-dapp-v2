@@ -4,6 +4,7 @@ import { DelegationEventT } from "types/global";
 import { AddDelegate } from "./AddDelegate";
 import { ConnectedWallet } from "./ConnectedWallet";
 import { OtherWallet } from "./OtherWallet";
+import { PendingRequests } from "./PendingRequests";
 
 interface Props {
   delegationStatus: DelegationStatusT;
@@ -15,6 +16,7 @@ interface Props {
   walletIcon: string | undefined;
   addDelegate: () => void;
   removeDelegate: () => void;
+  addDelegator: () => void;
   removeDelegator: () => void;
 }
 export function Wallets({
@@ -27,6 +29,7 @@ export function Wallets({
   walletIcon,
   addDelegate,
   removeDelegate,
+  addDelegator,
   removeDelegator,
 }: Props) {
   return (
@@ -47,6 +50,7 @@ export function Wallets({
         <IsDelegate
           connectedAddress={connectedAddress}
           delegatorAddress={delegatorAddress}
+          addDelegator={addDelegator}
           removeDelegator={removeDelegator}
           walletIcon={walletIcon}
         />
@@ -56,7 +60,6 @@ export function Wallets({
           connectedAddress={connectedAddress}
           delegateAddress={delegateAddress}
           walletIcon={walletIcon}
-          hasPending={true}
           pendingSetDelegateRequestsForDelegator={pendingSetDelegateRequestsForDelegator}
           removeDelegate={removeDelegate}
         />
@@ -66,8 +69,8 @@ export function Wallets({
           connectedAddress={connectedAddress}
           delegatorAddress={delegatorAddress}
           walletIcon={walletIcon}
-          hasPending={true}
           pendingSetDelegateRequestsForDelegate={pendingSetDelegateRequestsForDelegate}
+          addDelegator={addDelegator}
           removeDelegator={removeDelegator}
         />
       )}
@@ -103,23 +106,26 @@ function NoDelegation({
 function IsDelegator({
   connectedAddress,
   delegateAddress,
-  hasPending,
   pendingSetDelegateRequestsForDelegator,
   walletIcon,
   removeDelegate,
 }: {
   connectedAddress: string;
   delegateAddress: string | undefined;
-  hasPending?: boolean;
   pendingSetDelegateRequestsForDelegator?: DelegationEventT[];
   walletIcon: string | undefined;
   removeDelegate: () => void;
 }) {
+  const hasPending = pendingSetDelegateRequestsForDelegator && pendingSetDelegateRequestsForDelegator.length > 0;
   return (
     <>
       <ConnectedWallet status={hasPending ? "none" : "delegator"} address={connectedAddress} walletIcon={walletIcon} />
       {hasPending ? (
-        <div>pending requests</div>
+        <PendingRequests
+          requestType="delegate"
+          pendingRequests={pendingSetDelegateRequestsForDelegator}
+          cancelRequest={removeDelegate}
+        />
       ) : (
         <OtherWallet status="delegate" address={delegateAddress} remove={removeDelegate} />
       )}
@@ -131,22 +137,28 @@ function IsDelegate({
   connectedAddress,
   delegatorAddress,
   walletIcon,
-  hasPending,
   pendingSetDelegateRequestsForDelegate,
+  addDelegator,
   removeDelegator,
 }: {
   connectedAddress: string;
   delegatorAddress: string | undefined;
   walletIcon: string | undefined;
-  hasPending?: boolean;
   pendingSetDelegateRequestsForDelegate?: DelegationEventT[];
+  addDelegator: () => void;
   removeDelegator: () => void;
 }) {
+  const hasPending = pendingSetDelegateRequestsForDelegate && pendingSetDelegateRequestsForDelegate.length > 0;
   return (
     <>
       <ConnectedWallet status={hasPending ? "none" : "delegate"} address={connectedAddress} walletIcon={walletIcon} />
       {hasPending ? (
-        <div>pending requests</div>
+        <PendingRequests
+          requestType="delegator"
+          pendingRequests={pendingSetDelegateRequestsForDelegate}
+          acceptRequest={addDelegator}
+          cancelRequest={removeDelegator}
+        />
       ) : (
         <OtherWallet status="delegator" address={delegatorAddress} remove={removeDelegator} />
       )}
