@@ -20,3 +20,12 @@ export const Address = styled.p`
   margin-top: 12px;
   margin-bottom: 15px;
 `;
+
+export const Header = styled.h1`
+  font: var(--header-md);
+`;
+
+export const Text = styled.p`
+  font: var(--text-sm);
+  max-width: 737px;
+`;

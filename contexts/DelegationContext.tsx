@@ -24,7 +24,7 @@ export interface DelegationContextState {
 }
 
 export const defaultDelegationContextState: DelegationContextState = {
-  getDelegationStatus: () => "none",
+  getDelegationStatus: () => "no-wallet-connected",
   getPendingSetDelegateRequestsForDelegate: () => [],
   getPendingSetDelegateRequestsForDelegator: () => [],
   getDelegateAddress: () => zeroAddress,
@@ -105,16 +105,21 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return zeroAddress;
   }
 
-  function getDelegationStatus() {
+  function getDelegationStatus(): DelegationStatusT {
     const hasDelegateSetEvents = getHasDelegateSetEvents();
     const hasDelegatorSetEvents = getHasDelegatorSetEvents();
+    const hasPendingSetDelegateRequestsForDelegate = getHasPendingSetDelegateRequestsForDelegate();
+    const hasPendingSetDelegateRequestsForDelegator = getHasPendingSetDelegateRequestsForDelegator();
+    if (!address) return "no-wallet-connected";
     // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
-    if (!hasDelegateSetEvents && !hasDelegatorSetEvents) return "none";
+    if (!hasDelegateSetEvents && !hasDelegatorSetEvents) return "no-delegation";
     // if there is a delegator set for your address, you are a delegate
     if (voterFromDelegate.toLowerCase() !== address.toLowerCase()) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
     if (address.toLowerCase() === delegateToStaker.toLowerCase()) return "delegator";
-    return "none";
+    if (hasPendingSetDelegateRequestsForDelegate) return "delegate-pending";
+    if (hasPendingSetDelegateRequestsForDelegator) return "delegator-pending";
+    return "no-delegation";
   }
 
   function getHasDelegateSetEvents() {
@@ -123,6 +128,14 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getHasDelegatorSetEvents() {
     return delegatorSetEvents.length > 0;
+  }
+
+  function getHasPendingSetDelegateRequestsForDelegate() {
+    return getPendingSetDelegateRequestsForDelegate().length > 0;
+  }
+
+  function getHasPendingSetDelegateRequestsForDelegator() {
+    return getPendingSetDelegateRequestsForDelegator().length > 0;
   }
 
   function getPendingSetDelegateRequestsForDelegate() {

@@ -231,7 +231,13 @@ export type RevealVotes = {
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
 
-export type DelegationStatusT = "none" | "delegator" | "delegate";
+export type DelegationStatusT =
+  | "no-wallet-connected"
+  | "no-delegation"
+  | "delegate"
+  | "delegator"
+  | "delegate-pending"
+  | "delegator-pending";
 
 export type DelegationEventT = {
   delegate: string;

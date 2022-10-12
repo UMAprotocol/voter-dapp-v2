@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import { DelegationStatusT } from "types";
 import { DelegationEventT } from "types/global";
-import { DelegateWhenDelegateIsConnected } from "./DelegatedWalletConnected";
-import { DelegateWhenDelegatorIsConnected } from "./DelegateWhenDelegatorIsConnected";
-import { Delegator as ConnectedWallet } from "./Delegator";
+import { AddDelegate } from "./AddDelegate";
+import { ConnectedWallet } from "./ConnectedWallet";
 
 interface Props {
   delegationStatus: DelegationStatusT;
@@ -29,24 +28,23 @@ export function Wallets({
   removeDelegate,
   removeDelegator,
 }: Props) {
-  function determineComponent() {
-    if (!connectedAddress) return "no-wallet-connected";
-    if (delegationStatus === "delegator") return "is-delegator";
-    if (delegationStatus === "delegate") return "is-delegate";
-    if (pendingSetDelegateRequestsForDelegate.length) return "pending-is-delegate";
-    if (pendingSetDelegateRequestsForDelegator.length) return "pending-is-delegator";
-    return "no-delegation";
-  }
-  const component = determineComponent();
-
   return (
     <Wrapper>
-      {component === "no-wallet-connected" && <NoWalletConnected />}
-      {component === "no-delegation" && <PrimaryWallet status="no-delegation" />}
-      {component === "is-delegator" && <PrimaryWallet status="accepted" />}
-      {component === "pending-is-delegator" && <PrimaryWallet status="pending" />}
-      {component === "is-delegate" && <SecondaryWallet status="accepted" />}
-      {component === "pending-is-delegate" && <SecondaryWallet status="pending" />}
+      {delegationStatus === "no-wallet-connected" && <NoWalletConnected />}
+      {delegationStatus === "no-delegation" && (
+        <NoDelegation connectedAddress={connectedAddress} walletIcon={walletIcon} addDelegate={addDelegate} />
+      )}
+      {delegationStatus === "delegator" && <IsDelegator />}
+      {delegationStatus === "delegate" && <IsDelegate />}
+      {delegationStatus === "delegator-pending" && (
+        <IsDelegator
+          hasPending={true}
+          pendingSetDelegateRequestsForDelegator={pendingSetDelegateRequestsForDelegator}
+        />
+      )}
+      {delegationStatus === "delegate-pending" && (
+        <IsDelegate hasPending={true} pendingSetDelegateRequestsForDelegate={pendingSetDelegateRequestsForDelegate} />
+      )}
     </Wrapper>
   );
 }
@@ -56,104 +54,42 @@ const Wrapper = styled.div`
 `;
 
 function NoWalletConnected() {
-  return <div>No wallet connected</div>;
+  return <div>no wallet connected</div>;
 }
 
-function PrimaryWallet({
+function NoDelegation({
   connectedAddress,
-  delegateAddress,
   walletIcon,
   addDelegate,
-  removeDelegate,
 }: {
-  status: "no-delegation" | "pending" | "accepted";
-  connectedAddress: string | undefined;
-  delegateAddress: string | undefined;
-  delegateRequestAccepted: boolean;
-  delegateRequestTransaction: string | undefined;
+  connectedAddress: string;
   walletIcon: string | undefined;
   addDelegate: () => void;
-  cancelDelegateRequest: () => void;
-  removeDelegate: () => void;
 }) {
   return (
     <>
-      <Header>Primary Wallet</Header>
-      <Text>
-        Short introduction to why this is here and how it works and more info text info text info text info text info
-        text info text info text info text{" "}
-      </Text>
-      <ConnectedWallet address={address} isConnected={true} walletIcon={walletIcon} />
-      <Header>Delegated Wallet</Header>
-      <Text>
-        Short introduction to why this is here and how it works and more info text info text info text info text info
-        text info text info text info text{" "}
-      </Text>
-      <DelegateWhenDelegatorIsConnected
-        address={delegateAddress}
-        status={status}
-        delegateRequestTransaction={delegateRequestTransaction}
-        addDelegate={addDelegate}
-        cancelDelegateRequest={cancelDelegateRequest}
-        removeDelegate={removeDelegate}
-      />
+      <ConnectedWallet status="none" address={connectedAddress} walletIcon={walletIcon} />
+      <AddDelegate addDelegate={addDelegate} />
     </>
   );
 }
 
-function DelegateWallet({
-  delegateAddress,
-  delegatorAddress,
-  awaitingApproval,
-  delegateRequestAccepted,
-  delegateRequestTransaction,
-  walletIcon,
-  approveDelegateRequest,
-  ignoreDelegateRequest,
-  removeDelegate,
+function IsDelegator({
+  hasPending,
+  pendingSetDelegateRequestsForDelegator,
 }: {
-  delegateAddress: string | undefined;
-  delegatorAddress: string | undefined;
-  awaitingApproval: boolean;
-  delegateRequestAccepted: boolean;
-  delegateRequestTransaction: string | undefined;
-  walletIcon: string | undefined;
-  approveDelegateRequest: () => void;
-  ignoreDelegateRequest: () => void;
-  removeDelegate: () => void;
+  hasPending?: boolean;
+  pendingSetDelegateRequestsForDelegator?: DelegationEventT[];
 }) {
-  return (
-    <>
-      <Header>Delegated Wallet</Header>
-      <Text>
-        Short introduction to why this is here and how it works and more info text info text info text info text info
-        text info text info text info text{" "}
-      </Text>
-      <DelegateWhenDelegateIsConnected
-        address={delegateAddress}
-        awaitingApproval={awaitingApproval}
-        delegateRequestAccepted={delegateRequestAccepted}
-        delegateRequestTransaction={delegateRequestTransaction}
-        walletIcon={walletIcon}
-        approveDelegateRequest={approveDelegateRequest}
-        ignoreDelegateRequest={ignoreDelegateRequest}
-        removeDelegate={removeDelegate}
-      />
-      <Header>Primary Wallet</Header>
-      <Text>
-        Short introduction to why this is here and how it works and more info text info text info text info text info
-        text info text info text info text{" "}
-      </Text>
-      <ConnectedWallet address={delegatorAddress} walletIcon={walletIcon} isConnected={false} />
-    </>
-  );
+  return <div>is delegator {JSON.stringify(pendingSetDelegateRequestsForDelegator)}</div>;
 }
 
-const Header = styled.h1`
-  font: var(--header-md);
-`;
-
-const Text = styled.p`
-  font: var(--text-sm);
-  max-width: 737px;
-`;
+function IsDelegate({
+  hasPending,
+  pendingSetDelegateRequestsForDelegate,
+}: {
+  hasPending?: boolean;
+  pendingSetDelegateRequestsForDelegate?: DelegationEventT[];
+}) {
+  return <div>is delegate {JSON.stringify(pendingSetDelegateRequestsForDelegate)}</div>;
+}

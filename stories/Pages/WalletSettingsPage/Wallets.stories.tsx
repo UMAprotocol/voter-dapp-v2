@@ -39,12 +39,15 @@ const Template: ComponentStory<typeof Wallets> = (args) => <Wallets {...commonAr
 
 export const NoWalletConnected = Template.bind({});
 NoWalletConnected.args = {
+  ...commonArgs,
+  delegationStatus: "no-wallet-connected",
   connectedAddress: undefined,
 };
 
 export const NoDelegation = Template.bind({});
 NoDelegation.args = {
-  delegationStatus: "none",
+  ...commonArgs,
+  delegationStatus: "no-delegation",
   connectedAddress: mockAddress1,
   delegateAddress: undefined,
   delegatorAddress: undefined,
@@ -73,7 +76,7 @@ IsDelegate.args = {
 export const PendingIsDelegator = Template.bind({});
 PendingIsDelegator.args = {
   ...commonArgs,
-  delegationStatus: "none",
+  delegationStatus: "delegator-pending",
   connectedAddress: mockAddress1,
   delegateAddress: undefined,
   delegatorAddress: undefined,
@@ -90,7 +93,7 @@ PendingIsDelegator.args = {
 export const PendingIsDelegate = Template.bind({});
 PendingIsDelegate.args = {
   ...commonArgs,
-  delegationStatus: "none",
+  delegationStatus: "delegate-pending",
   connectedAddress: mockAddress2,
   delegateAddress: undefined,
   delegatorAddress: undefined,
@@ -98,6 +101,11 @@ PendingIsDelegate.args = {
     {
       transactionHash: mockDelegateRequestTransaction,
       delegator: mockAddress1,
+      delegate: mockAddress2,
+    },
+    {
+      transactionHash: mockDelegateRequestTransaction,
+      delegator: mockAddress3,
       delegate: mockAddress2,
     },
   ],
