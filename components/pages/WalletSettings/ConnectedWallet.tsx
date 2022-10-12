@@ -1,5 +1,4 @@
 import { WalletIcon } from "components";
-import Link from "public/assets/icons/link.svg";
 import styled from "styled-components";
 import { AllowedAction } from "./AllowedAction";
 import { Address, BarWrapper, Header, Text, WalletWrapper } from "./styles";
@@ -47,10 +46,4 @@ const Wrapper = styled(BarWrapper)`
   align-items: center;
   grid-template-rows: 1fr;
   grid-template-columns: repeat(4, auto);
-`;
-
-const LinkedAddressIcon = styled(Link)`
-  circle {
-    fill: var(--black);
-  }
 `;

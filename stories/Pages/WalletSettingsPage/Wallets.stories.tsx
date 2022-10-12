@@ -25,6 +25,7 @@ const cancelDelegateRequest = () => alert("cancelDelegateRequest");
 const approveDelegateRequest = () => alert("approveDelegateRequest");
 const ignoreDelegateRequest = () => alert("ignoreDelegateRequest");
 const removeDelegate = () => alert("removeDelegate");
+const removeDelegator = () => alert("removeDelegator");
 
 const commonArgs = {
   walletIcon: mockWalletIcon,
@@ -33,6 +34,7 @@ const commonArgs = {
   approveDelegateRequest,
   ignoreDelegateRequest,
   removeDelegate,
+  removeDelegator,
 };
 
 const Template: ComponentStory<typeof Wallets> = (args) => <Wallets {...commonArgs} {...args} />;
