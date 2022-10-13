@@ -1,6 +1,6 @@
 import { zeroAddress } from "helpers";
 import {
-  useDelegateSetEvents,
+  useDelegateSetEventsForDelegate,
   useDelegateSetEventsForDelegator,
   useDelegateToStaker,
   useDelegatorSetEvents,
@@ -37,10 +37,10 @@ export const DelegationContext = createContext<DelegationContextState>(defaultDe
 
 export function DelegationProvider({ children }: { children: ReactNode }) {
   const {
-    data: delegateSetEvents,
-    isLoading: delegateSetEventsLoading,
-    isFetching: delegateSetEventsFetching,
-  } = useDelegateSetEvents();
+    data: delegateSetEventsForDelegate,
+    isLoading: delegateSetEventsForDelegateLoading,
+    isFetching: delegateSetEventsForDelegateFetching,
+  } = useDelegateSetEventsForDelegate();
   const {
     data: delegateSetEventsForDelegator,
     isLoading: delegateSetEventsForDelegatorLoading,
@@ -71,7 +71,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getDelegationDataLoading() {
     return (
-      delegateSetEventsLoading ||
+      delegateSetEventsForDelegateLoading ||
       delegateSetEventsForDelegatorLoading ||
       delegatorSetEventsLoading ||
       voterFromDelegateLoading ||
@@ -82,7 +82,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getDelegationDataFetching() {
     return (
-      delegateSetEventsFetching ||
+      delegateSetEventsForDelegateFetching ||
       delegateSetEventsForDelegatorFetching ||
       delegatorSetEventsFetching ||
       voterFromDelegateFetching ||
@@ -106,24 +106,30 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getDelegationStatus(): DelegationStatusT {
-    const hasDelegateSetEvents = getHasDelegateSetEvents();
-    const hasDelegatorSetEvents = getHasDelegatorSetEvents();
-    const hasPendingSetDelegateRequestsForDelegate = getHasPendingSetDelegateRequestsForDelegate();
-    const hasPendingSetDelegateRequestsForDelegator = getHasPendingSetDelegateRequestsForDelegator();
     if (!address) return "no-wallet-connected";
     // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
-    if (!hasDelegateSetEvents && !hasDelegatorSetEvents) return "no-delegation";
+    if (
+      !getHasDelegateSetEventsForDelegate() &&
+      !getHasPendingSetDelegateRequestsForDelegator() &&
+      !getHasDelegatorSetEvents()
+    )
+      return "no-delegation";
+    console.log("here");
     // if there is a delegator set for your address, you are a delegate
     if (voterFromDelegate.toLowerCase() !== address.toLowerCase()) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
     if (address.toLowerCase() === delegateToStaker.toLowerCase()) return "delegator";
-    if (hasPendingSetDelegateRequestsForDelegate) return "delegate-pending";
-    if (hasPendingSetDelegateRequestsForDelegator) return "delegator-pending";
+    if (getHasPendingSetDelegateRequestsForDelegate()) return "delegate-pending";
+    if (getHasPendingSetDelegateRequestsForDelegator()) return "delegator-pending";
     return "no-delegation";
   }
 
-  function getHasDelegateSetEvents() {
-    return delegateSetEvents.length > 0;
+  function getHasDelegateSetEventsForDelegate() {
+    return delegateSetEventsForDelegate.length > 0;
+  }
+
+  function getHasDelegateSetEventsForDelegator() {
+    return delegateSetEventsForDelegator.length > 0;
   }
 
   function getHasDelegatorSetEvents() {
@@ -140,7 +146,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getPendingSetDelegateRequestsForDelegate() {
     return (
-      delegateSetEvents?.filter(
+      delegateSetEventsForDelegate?.filter(
         (delegateSet) =>
           !delegatorSetEvents?.some(
             (delegatorSet) =>

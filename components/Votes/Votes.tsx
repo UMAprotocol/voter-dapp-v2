@@ -35,25 +35,6 @@ export function Votes() {
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
-  const {
-    getDelegationStatus,
-    getPendingSetDelegateRequestsForDelegate: getPendingSetDelegateRequests,
-    getPendingSetDelegateRequestsForDelegator,
-    getDelegateAddress,
-    getDelegatorAddress,
-  } = useDelegationContext();
-
-  const delegationStatus = getDelegationStatus();
-  const pendingSetDelegateRequests = getPendingSetDelegateRequests();
-  const pendingSetDelegateRequestsForDelegator = getPendingSetDelegateRequestsForDelegator();
-  const delegateAddress = getDelegateAddress();
-  const delegatorAddress = getDelegatorAddress();
-  console.log("delegateAddress", delegateAddress);
-  console.log("delegatorAddress", delegatorAddress);
-  console.log("delegationStatus", delegationStatus);
-  console.log("pendingSetDelegateRequests", pendingSetDelegateRequests);
-  console.log("pendingSetDelegateRequestsForDelegator", pendingSetDelegateRequestsForDelegator);
-
   useInitializeVoteTiming();
 
   async function commitVotes() {
