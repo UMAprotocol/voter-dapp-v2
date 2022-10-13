@@ -16,9 +16,19 @@ import { DelegationEventT } from "types/global";
 export interface DelegationContextState {
   getDelegationStatus: () => DelegationStatusT;
   getPendingSetDelegateRequestsForDelegate: () => DelegationEventT[];
+  getHasPendingSetDelegateRequestsForDelegate: () => boolean;
   getPendingSetDelegateRequestsForDelegator: () => DelegationEventT[];
+  getHasPendingSetDelegateRequestsForDelegator: () => boolean;
   getDelegateAddress: () => string;
   getDelegatorAddress: () => string;
+  addDelegate: (delegateAddress: string) => void;
+  removeDelegate: (delegateAddress: string) => void;
+  addDelegator: (delegatorAddress: string) => void;
+  removeDelegator: (delegatorAddress: string) => void;
+  acceptDelegatorRequest: (delegatorAddress: string) => void;
+  ignoreDelegatorRequest: (transactionHash: string) => void;
+  acceptDelegateRequest: (delegateAddress: string) => void;
+  cancelDelegateRequest: (transactionHash: string) => void;
   getDelegationDataLoading: () => boolean;
   getDelegationDataFetching: () => boolean;
 }
@@ -26,9 +36,19 @@ export interface DelegationContextState {
 export const defaultDelegationContextState: DelegationContextState = {
   getDelegationStatus: () => "no-wallet-connected",
   getPendingSetDelegateRequestsForDelegate: () => [],
+  getHasPendingSetDelegateRequestsForDelegate: () => false,
   getPendingSetDelegateRequestsForDelegator: () => [],
+  getHasPendingSetDelegateRequestsForDelegator: () => false,
   getDelegateAddress: () => zeroAddress,
   getDelegatorAddress: () => zeroAddress,
+  addDelegate: () => null,
+  removeDelegate: () => null,
+  addDelegator: () => null,
+  removeDelegator: () => null,
+  acceptDelegatorRequest: () => null,
+  ignoreDelegatorRequest: () => null,
+  acceptDelegateRequest: () => null,
+  cancelDelegateRequest: () => null,
   getDelegationDataLoading: () => false,
   getDelegationDataFetching: () => false,
 };
@@ -114,7 +134,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       !getHasDelegatorSetEvents()
     )
       return "no-delegation";
-    console.log("here");
     // if there is a delegator set for your address, you are a delegate
     if (voterFromDelegate.toLowerCase() !== address.toLowerCase()) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
@@ -126,10 +145,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getHasDelegateSetEventsForDelegate() {
     return delegateSetEventsForDelegate.length > 0;
-  }
-
-  function getHasDelegateSetEventsForDelegator() {
-    return delegateSetEventsForDelegator.length > 0;
   }
 
   function getHasDelegatorSetEvents() {
@@ -168,6 +183,45 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function addDelegator(delegatorAddress: string) {
+    return;
+  }
+
+  function removeDelegator(delegatorAddress: string) {
+    return;
+  }
+
+  function addDelegate(delegateAddress: string) {
+    return;
+  }
+
+  function removeDelegate(delegateAddress: string) {
+    return;
+  }
+
+  function acceptDelegatorRequest(delegatorAddress: string) {
+    return;
+  }
+
+  function cancelDelegateRequest(delegateAddress: string) {
+    return;
+  }
+
+  function acceptDelegateRequest(delegateAddress: string) {
+    return;
+  }
+
+  function ignoreDelegatorRequest(delegatorAddress: string) {
+    const ignoredDelegatorRequests = JSON.parse(
+      window.localStorage.get("ignoredDelegatorRequests") ?? "[]"
+    ) as string[];
+
+    if (!ignoredDelegatorRequests.includes(delegatorAddress)) {
+      ignoredDelegatorRequests.push(delegatorAddress);
+      window.localStorage.set("ignoredDelegatorRequests", JSON.stringify(ignoredDelegatorRequests));
+    }
+  }
+
   return (
     <DelegationContext.Provider
       value={{
@@ -175,7 +229,17 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         getDelegateAddress,
         getDelegatorAddress,
         getPendingSetDelegateRequestsForDelegate,
+        getHasPendingSetDelegateRequestsForDelegate,
         getPendingSetDelegateRequestsForDelegator,
+        getHasPendingSetDelegateRequestsForDelegator,
+        addDelegate,
+        removeDelegate,
+        addDelegator,
+        removeDelegator,
+        acceptDelegatorRequest,
+        ignoreDelegatorRequest,
+        acceptDelegateRequest,
+        cancelDelegateRequest,
         getDelegationDataLoading,
         getDelegationDataFetching,
       }}

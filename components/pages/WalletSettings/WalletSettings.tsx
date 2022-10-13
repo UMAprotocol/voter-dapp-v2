@@ -1,40 +1,33 @@
-import { Banner, Layout } from "components";
-import { useUserContext } from "hooks";
+import { Banner, Layout, LoadingSpinner } from "components";
 import { useDelegationContext } from "hooks/contexts/useDelegationContext";
 import { PageInnerWrapper, PageOuterWrapper } from "pages/styles";
+import styled from "styled-components";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {
-  const { address, connectedWallet } = useUserContext();
-  const {
-    getDelegationStatus,
-    getPendingSetDelegateRequestsForDelegate,
-    getPendingSetDelegateRequestsForDelegator,
-    getDelegateAddress,
-    getDelegatorAddress,
-  } = useDelegationContext();
+  const { getDelegationDataFetching } = useDelegationContext();
+
   return (
     <Layout>
       <Banner>Wallet Settings</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          <Wallets
-            delegationStatus={getDelegationStatus()}
-            pendingSetDelegateRequestsForDelegate={getPendingSetDelegateRequestsForDelegate()}
-            pendingSetDelegateRequestsForDelegator={getPendingSetDelegateRequestsForDelegator()}
-            connectedAddress={address}
-            delegateAddress={getDelegateAddress()}
-            delegatorAddress={getDelegatorAddress()}
-            walletIcon={connectedWallet?.icon}
-            addDelegate={() => alert("add delegate")}
-            approveDelegateRequest={() => alert("approve delegate request")}
-            cancelDelegateRequest={() => alert("cancel delegate request")}
-            ignoreDelegateRequest={() => alert("ignore delegate request")}
-            removeDelegate={() => alert("remove delegate")}
-            removeDelegator={() => alert("remove delegator")}
-          />
+          {getDelegationDataFetching() ? (
+            <LoadingSpinnerWrapper>
+              <LoadingSpinner variant="black" size={300} />
+            </LoadingSpinnerWrapper>
+          ) : (
+            <Wallets />
+          )}
         </PageInnerWrapper>
       </PageOuterWrapper>
     </Layout>
   );
 }
+
+const LoadingSpinnerWrapper = styled.div`
+  padding-top: 50px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+`;

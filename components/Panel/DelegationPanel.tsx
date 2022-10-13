@@ -1,34 +1,48 @@
-import { Button, PanelErrorBanner, TextInput } from "components";
+import { Button, LoadingSpinner, PanelErrorBanner, TextInput } from "components";
 import { getAddress, isAddress } from "helpers";
-import { useErrorContext, useUserContext } from "hooks";
-import { useDelegationContext } from "hooks/contexts/useDelegationContext";
+import {
+  useContractsContext,
+  useDelegationContext,
+  useErrorContext,
+  usePanelContext,
+  useSetDelegate,
+  useUserContext,
+} from "hooks";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Two from "public/assets/icons/two.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function DelegationPanel() {
+  const { voting } = useContractsContext();
+  const { closePanel } = usePanelContext();
   const { address } = useUserContext();
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
-  const { getDelegationStatus, getPendingSetDelegateRequestsForDelegator } = useDelegationContext();
+  const { getDelegationStatus, getPendingSetDelegateRequestsForDelegator, getDelegationDataFetching } =
+    useDelegationContext();
+  const { setDelegateMutation, isSettingDelegate } = useSetDelegate();
 
   const delegationStatus = getDelegationStatus();
 
-  // don't show this panel for users who have accepted a delegation relationship or if there is no wallet connected
-  if (
-    delegationStatus === "delegator" ||
-    delegationStatus === "delegate" ||
-    delegationStatus === "delegate-pending" ||
-    delegationStatus === "no-wallet-connected"
-  )
-    return null;
+  useEffect(() => {
+    // don't show this panel for users who have accepted a delegation relationship or if there is no wallet connected
+    if (
+      delegationStatus === "delegator" ||
+      delegationStatus === "delegate" ||
+      delegationStatus === "delegate-pending" ||
+      delegationStatus === "no-wallet-connected"
+    ) {
+      closePanel();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delegationStatus]);
 
   const pendingRequests = getPendingSetDelegateRequestsForDelegator();
 
@@ -37,27 +51,51 @@ export function DelegationPanel() {
 
   const showPendingRequests = delegationStatus === "delegator-pending" && pendingRequests.length > 0;
 
+  function addDelegateWallet() {
+    if (!address) return;
+    if (!validateInputAddress(delegateAddressToAdd)) return;
+
+    setDelegateMutation(
+      {
+        voting,
+        delegateAddress: delegateAddressToAdd,
+      },
+      {
+        onSuccess: () => closePanel(),
+      }
+    );
+  }
+
   function onInput(inputAddress: string) {
     setDelegateAddressToAdd(inputAddress);
 
     if (shouldRunValidation(inputAddress)) {
-      if (!isAddress(inputAddress)) {
-        addErrorMessage("Please enter a valid Ethereum address.");
-        return;
-      }
-      if (getAddress(inputAddress) === getAddress(address)) {
-        addErrorMessage("You cannot delegate to yourself.");
-        return;
-      }
+      if (!validateInputAddress(inputAddress)) return;
     } else {
       clearErrorMessages();
     }
+  }
+
+  function validateInputAddress(inputAddress: string) {
+    if (!isAddress(inputAddress)) {
+      addErrorMessage("Please enter a valid Ethereum address.");
+      return false;
+    }
+    if (getAddress(inputAddress) === getAddress(address)) {
+      addErrorMessage("You cannot delegate to yourself.");
+      return false;
+    }
+    return true;
   }
 
   function shouldRunValidation(address: string) {
     if (address.startsWith("0x") && address.length >= 40) return true;
     if (address.length >= 42) return true;
     return false;
+  }
+
+  function isLoading() {
+    return getDelegationDataFetching() || isSettingDelegate;
   }
 
   return (
@@ -80,11 +118,25 @@ export function DelegationPanel() {
             You now have a secondary delegation wallet where you can vote text text
           </StepWrapper>
         </StepsWrapper>
-        {showAddDelegateInput && (
-          <AddDelegateInputWrapper>
-            <TextInput value={delegateAddressToAdd} onInput={onInput} placeholder="Enter delegate address" />
-            <Button variant="primary" label="Add delegate wallet" onClick={() => {}} height={45} width="100%" />
-          </AddDelegateInputWrapper>
+        {isLoading() ? (
+          <LoadingSpinnerWrapper>
+            <LoadingSpinner />
+          </LoadingSpinnerWrapper>
+        ) : (
+          <>
+            {showAddDelegateInput && (
+              <AddDelegateInputWrapper>
+                <TextInput value={delegateAddressToAdd} onInput={onInput} placeholder="Enter delegate address" />
+                <Button
+                  variant="primary"
+                  label="Add delegate wallet"
+                  onClick={addDelegateWallet}
+                  height={45}
+                  width="100%"
+                />
+              </AddDelegateInputWrapper>
+            )}
+          </>
         )}
         {showPendingRequests &&
           pendingRequests.map(({ delegate, transactionHash }) => (
@@ -110,11 +162,16 @@ export function DelegationPanel() {
   );
 }
 
-const PendingRequestText = styled(PanelSectionText)`
-  margin: 0;
+const LoadingSpinnerWrapper = styled.div`
+  height: 300px;
+  display: grid;
+  place-items: center;
 `;
 
-const PendingRequestDetailsWrapper = styled.div`
+const PendingRequestDetailsWrapper = styled.div``;
+
+const PendingRequestText = styled(PanelSectionText)`
+  margin: 0;
   > :last-child {
     margin-top: 5px;
   }

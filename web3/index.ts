@@ -6,6 +6,8 @@ export { requestUnstake } from "./mutations/balances/requestUnstake";
 export { stake } from "./mutations/balances/stake";
 export { withdrawAndRestake } from "./mutations/balances/withdrawAndRestake";
 export { withdrawRewards } from "./mutations/balances/withdrawRewards";
+export { setDelegate } from "./mutations/delegation/setDelegate";
+export { setDelegator } from "./mutations/delegation/setDelegator";
 export { commitVotes } from "./mutations/votes/commitVotes";
 export { revealVotes } from "./mutations/votes/revealVotes";
 export { getOutstandingRewards } from "./queries/balances/getOutstandingRewards";

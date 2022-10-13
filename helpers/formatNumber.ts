@@ -18,7 +18,8 @@ export function truncateDecimals(number: string, decimals: number) {
   return `${whole}.${decimal.slice(0, decimals)}`;
 }
 
-export function bigNumberFromFloatString(value: string) {
+export function bigNumberFromFloatString(value: string | undefined) {
+  if (!value) return BigNumber.from(0);
   const truncated = truncateDecimals(value, 18);
   return BigNumber.from(parseEther(truncated));
 }

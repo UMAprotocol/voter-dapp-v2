@@ -7,19 +7,32 @@ import { AddressWrapper, BarButtonPrimary, BarButtonSecondary, BarWrapper, Heade
 export function PendingRequests({
   requestType,
   pendingRequests,
-  acceptRequest,
-  cancelRequest,
+  acceptDelegatorRequest,
+  ignoreDelegatorRequest,
+  acceptDelegateRequest,
+  cancelDelegateRequest,
 }: {
   requestType: "delegate" | "delegator";
   pendingRequests: DelegationEventT[];
-  acceptRequest?: () => void;
-  cancelRequest: () => void;
+  acceptDelegatorRequest?: (delegatorAddress: string) => void;
+  ignoreDelegatorRequest?: (delegatorAddress: string) => void;
+  acceptDelegateRequest?: (delegateAddress: string) => void;
+  cancelDelegateRequest?: (delegateAddress: string) => void;
 }) {
-  if (requestType === "delegator" && !acceptRequest) {
-    throw new Error("acceptRequest is required when requestType is delegate");
+  if (requestType === "delegator" && !(acceptDelegatorRequest && ignoreDelegatorRequest)) {
+    throw new Error(
+      "`acceptDelegatorRequest` and `ignoreDelegatorRequest` are required when `requestType` is `delegator`"
+    );
   }
 
-  const showAcceptButton = requestType === "delegator" && acceptRequest;
+  if (requestType === "delegate" && !(acceptDelegateRequest && cancelDelegateRequest)) {
+    throw new Error(
+      "`acceptDelegateRequest` and `cancelDelegateRequest` are required when `requestType` is `delegate`"
+    );
+  }
+
+  const isDelegatorRequest = requestType === "delegator" && acceptDelegatorRequest && ignoreDelegatorRequest;
+  const isDelegateRequest = requestType === "delegate" && acceptDelegateRequest && cancelDelegateRequest;
 
   return (
     <>
@@ -28,25 +41,29 @@ export function PendingRequests({
       {pendingRequests.map(({ delegate, delegator, transactionHash }) => (
         <PendingRequestWrapper
           key={transactionHash}
-          style={{ "--padding-right": showAcceptButton ? "25px" : "160px" } as CSSProperties}
+          style={{ "--padding-right": isDelegatorRequest ? "25px" : "160px" } as CSSProperties}
         >
           <AddressWrapper>
             <PendingRequestIcon />
             <div>
-              <Text>
-                {requestType} wallet request sent to {requestType === "delegate" ? delegate : delegator}
-              </Text>
+              {isDelegatorRequest && <Text>Account {delegator} wants to delegate voting to your address.</Text>}
+              {isDelegateRequest && <Text>You requested {delegate} to be your delegated voting address.</Text>}
               <Text>Waiting for approval</Text>
             </div>
           </AddressWrapper>
           <Text>
-            <NextLink href={`https://goerli.etherscan.io/${transactionHash}`} passHref>
+            <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
               <A target="_blank">View Transaction</A>
             </NextLink>
           </Text>
           <ButtonsWrapper>
-            {showAcceptButton && <BarButtonPrimary label="accept" onClick={acceptRequest} />}
-            <BarButtonSecondary label="cancel" onClick={cancelRequest} />
+            {isDelegatorRequest && (
+              <BarButtonPrimary label="accept" onClick={() => acceptDelegatorRequest(delegator)} />
+            )}
+            {isDelegatorRequest && (
+              <BarButtonSecondary label="ignore" onClick={() => ignoreDelegatorRequest(delegator)} />
+            )}
+            {isDelegateRequest && <BarButtonSecondary label="cancel" onClick={() => cancelDelegateRequest(delegate)} />}
           </ButtonsWrapper>
         </PendingRequestWrapper>
       ))}

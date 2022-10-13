@@ -1,14 +1,15 @@
 import { WalletIcon } from "components";
+import { useUserContext } from "hooks";
 import styled from "styled-components";
 import { AllowedAction } from "./AllowedAction";
 import { Address, BarWrapper, Header, Text, WalletWrapper } from "./styles";
 
 interface Props {
-  address: string | undefined;
   status: "delegator" | "delegate" | "none";
-  walletIcon: string | undefined;
 }
-export function ConnectedWallet({ address, status, walletIcon }: Props) {
+export function ConnectedWallet({ status }: Props) {
+  const { address, connectedWallet } = useUserContext();
+
   return (
     <>
       <Header>
@@ -21,7 +22,7 @@ export function ConnectedWallet({ address, status, walletIcon }: Props) {
       </Text>
       <_BarWrapper>
         <WalletWrapper>
-          <WalletIcon icon={walletIcon} />
+          <WalletIcon icon={connectedWallet?.icon} />
           <Address>{address}</Address>
         </WalletWrapper>
 

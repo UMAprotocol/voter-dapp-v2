@@ -1,33 +1,31 @@
-import { DelegationEventT } from "types/global";
+import { useDelegationContext } from "hooks";
 import { ConnectedWallet } from "./ConnectedWallet";
 import { OtherWallet } from "./OtherWallet";
 import { PendingRequests } from "./PendingRequests";
 
-export function IsDelegator({
-  connectedAddress,
-  delegateAddress,
-  pendingSetDelegateRequestsForDelegator,
-  walletIcon,
-  removeDelegate,
-}: {
-  connectedAddress: string;
-  delegateAddress: string | undefined;
-  pendingSetDelegateRequestsForDelegator?: DelegationEventT[];
-  walletIcon: string | undefined;
-  removeDelegate: () => void;
-}) {
-  const hasPending = pendingSetDelegateRequestsForDelegator && pendingSetDelegateRequestsForDelegator.length > 0;
+export function IsDelegator() {
+  const {
+    getDelegateAddress,
+    getPendingSetDelegateRequestsForDelegator,
+    getHasPendingSetDelegateRequestsForDelegator,
+    acceptDelegateRequest,
+    cancelDelegateRequest,
+    removeDelegate,
+  } = useDelegationContext();
+  const hasPending = getHasPendingSetDelegateRequestsForDelegator();
+
   return (
     <>
-      <ConnectedWallet status={hasPending ? "none" : "delegator"} address={connectedAddress} walletIcon={walletIcon} />
+      <ConnectedWallet status={hasPending ? "none" : "delegator"} />
       {hasPending ? (
         <PendingRequests
           requestType="delegate"
-          pendingRequests={pendingSetDelegateRequestsForDelegator}
-          cancelRequest={removeDelegate}
+          pendingRequests={getPendingSetDelegateRequestsForDelegator()}
+          acceptDelegateRequest={acceptDelegateRequest}
+          cancelDelegateRequest={cancelDelegateRequest}
         />
       ) : (
-        <OtherWallet status="delegate" address={delegateAddress} remove={removeDelegate} />
+        <OtherWallet status="delegate" address={getDelegateAddress()} remove={removeDelegate} />
       )}
     </>
   );

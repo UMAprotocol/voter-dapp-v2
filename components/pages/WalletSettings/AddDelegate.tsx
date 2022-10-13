@@ -1,7 +1,10 @@
 import { Button } from "components/Button";
+import { usePanelContext } from "hooks";
 import { BarText, BarWrapper, Header, Text } from "./styles";
 
-export function AddDelegate({ addDelegate }: { addDelegate: () => void }) {
+export function AddDelegate() {
+  const { openPanel } = usePanelContext();
+
   return (
     <>
       <Header>Delegate wallet</Header>
@@ -11,7 +14,7 @@ export function AddDelegate({ addDelegate }: { addDelegate: () => void }) {
       </Text>
       <BarWrapper>
         <BarText>No delegate wallet connected</BarText>
-        <Button variant="primary" label="Add delegate wallet" onClick={addDelegate} />
+        <Button variant="primary" label="Add delegate wallet" onClick={() => openPanel("delegation")} />
       </BarWrapper>
     </>
   );

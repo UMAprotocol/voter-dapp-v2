@@ -10,12 +10,15 @@ export function OtherWallet({
 }: {
   status: "delegator" | "delegate";
   address: string | undefined;
-  remove: () => void;
+  remove: (address: string) => void;
 }) {
+  if (!address) return null;
+
   const text =
     status === "delegate"
       ? "Explanation of secondary wallet when secondary is delegate."
       : "Explanation of secondary wallet when secondary is delegator.";
+
   return (
     <>
       <Header>Other wallet ({status})</Header>
@@ -40,7 +43,7 @@ export function OtherWallet({
             <AllowedAction>Claiming Rewards</AllowedAction>
           </>
         )}
-        <BarButtonSecondary label={`Remove ${status}`} onClick={remove} />
+        <BarButtonSecondary label={`Remove ${status}`} onClick={() => remove(address)} />
       </BarWrapper>
     </>
   );

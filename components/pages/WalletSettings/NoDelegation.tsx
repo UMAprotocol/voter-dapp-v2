@@ -1,19 +1,11 @@
 import { AddDelegate } from "./AddDelegate";
 import { ConnectedWallet } from "./ConnectedWallet";
 
-export function NoDelegation({
-  connectedAddress,
-  walletIcon,
-  addDelegate,
-}: {
-  connectedAddress: string;
-  walletIcon: string | undefined;
-  addDelegate: () => void;
-}) {
+export function NoDelegation() {
   return (
     <>
-      <ConnectedWallet status="none" address={connectedAddress} walletIcon={walletIcon} />
-      <AddDelegate addDelegate={addDelegate} />
+      <ConnectedWallet status="none" />
+      <AddDelegate />
     </>
   );
 }
