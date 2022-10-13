@@ -21,8 +21,14 @@ export function DelegationPanel() {
 
   const delegationStatus = getDelegationStatus();
 
-  // don't show this panel for users who have accepted a delegation request
-  if (delegationStatus === "delegate") return null;
+  // don't show this panel for users who have accepted a delegation relationship or if there is no wallet connected
+  if (
+    delegationStatus === "delegator" ||
+    delegationStatus === "delegate" ||
+    delegationStatus === "delegate-pending" ||
+    delegationStatus === "no-wallet-connected"
+  )
+    return null;
 
   const pendingRequests = getPendingSetDelegateRequestsForDelegator();
 

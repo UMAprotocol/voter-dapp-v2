@@ -21,7 +21,8 @@ import {
 import { BigNumber } from "ethers";
 import { bigNumberFromFloatString } from "helpers/formatNumber";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
-import { VoteT } from "types";
+import { DelegationStatusT, VoteT } from "types";
+import { DelegationEventT } from "types/global";
 
 interface StoryProps
   extends PanelContextState,
@@ -30,6 +31,9 @@ interface StoryProps
     UserContextState,
     DelegationContextState {
   votes: VoteT[];
+  delegationStatus: DelegationStatusT;
+  delegateAddress: string;
+  pendingSetDelegateRequestsForDelegator: DelegationEventT[];
 }
 
 export default {
@@ -82,7 +86,7 @@ const withErrorDecorator: DecoratorFn = (Story, { args }) => {
 };
 
 const withUserDecorator: DecoratorFn = (Story, { args }) => {
-  const mockUserContextState = {
+  const mockUserContextState: UserContextState = {
     ...defaultUserContextState,
     apr: args.apr ?? 0,
     cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
@@ -99,7 +103,7 @@ const withUserDecorator: DecoratorFn = (Story, { args }) => {
 };
 
 const withVotesDecorator: DecoratorFn = (Story, { args }) => {
-  const mockVotesContextState = {
+  const mockVotesContextState: VotesContextState = {
     ...defaultVotesContextState,
     getPastVotes: () => args.votes ?? [],
   };
@@ -112,8 +116,11 @@ const withVotesDecorator: DecoratorFn = (Story, { args }) => {
 };
 
 const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
-  const mockDelegationContextState = {
+  const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
+    getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
+    getPendingSetDelegateRequestsForDelegator: () => args.pendingSetDelegateRequestsForDelegator ?? [],
+    getDelegateAddress: () => args.delegateAddress ?? "0x1234567890123456789012345678901234567890",
   };
 
   return (
@@ -230,9 +237,66 @@ HistoryPanel.args = {
   votes: makeMockVotesWithHistory(),
 };
 
-export const DelegationPanel = Template.bind({});
-DelegationPanel.args = {
-  panelType: "delegation",
+const delegationPanelDecorators = [withUserDecorator, withDelegationDecorator];
+const delegationPanelCommonArgs = {
+  panelType: "delegation" as const,
   panelOpen: true,
 };
-DelegationPanel.decorators = [withUserDecorator, withDelegationDecorator];
+export const DelegationPanel = Template.bind({});
+DelegationPanel.args = {
+  ...delegationPanelCommonArgs,
+};
+DelegationPanel.decorators = delegationPanelDecorators;
+
+// this should render as nothing in the panel because we don't allow the user to open this panel when no wallet is connected
+export const DelegationPanelWhenNoWalletConnected = Template.bind({});
+DelegationPanelWhenNoWalletConnected.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "no-wallet-connected",
+};
+DelegationPanelWhenNoWalletConnected.decorators = delegationPanelDecorators;
+
+// this should render nothing in the panel because we don't allow a delegate to add a delegate
+export const DelegationPanelWhenStatusIsDelegate = Template.bind({});
+DelegationPanelWhenStatusIsDelegate.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "delegate",
+};
+DelegationPanelWhenStatusIsDelegate.decorators = delegationPanelDecorators;
+
+// this should render nothing in the panel because the user must ignore pending delegate requests before attempting to add their own delegate
+export const DelegationPanelWhenStatusIsDelegatePending = Template.bind({});
+DelegationPanelWhenStatusIsDelegatePending.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "delegate-pending",
+};
+DelegationPanelWhenStatusIsDelegatePending.decorators = delegationPanelDecorators;
+
+// this should render nothing in the panel because we don't allow a delegator to add another delegate
+export const DelegationPanelWhenStatusIsDelegator = Template.bind({});
+DelegationPanelWhenStatusIsDelegator.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "delegator",
+};
+DelegationPanelWhenStatusIsDelegator.decorators = delegationPanelDecorators;
+
+export const DelegationPanelWhenStatusIsNoDelegation = Template.bind({});
+DelegationPanelWhenStatusIsNoDelegation.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "no-delegation",
+};
+DelegationPanelWhenStatusIsNoDelegation.decorators = delegationPanelDecorators;
+
+export const DelegationPanelWhenStatusIsDelegatorPending = Template.bind({});
+DelegationPanelWhenStatusIsDelegatorPending.args = {
+  ...delegationPanelCommonArgs,
+  delegationStatus: "delegator-pending",
+  pendingSetDelegateRequestsForDelegator: [
+    {
+      delegate: "0x0987654321098765432109876543210987654321",
+      delegator: "0x1234567890123456789012345678901234567890",
+      transactionHash: "0x1234567890123456789012345678901234567890123456789012345678901234",
+    },
+  ],
+};
+DelegationPanelWhenStatusIsDelegatorPending.decorators = delegationPanelDecorators;
