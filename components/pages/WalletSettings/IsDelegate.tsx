@@ -3,16 +3,14 @@ import { ConnectedWallet } from "./ConnectedWallet";
 import { OtherWallet } from "./OtherWallet";
 import { PendingRequests } from "./PendingRequests";
 
-export function IsDelegate() {
+export function IsDelegate({ hasPending }: { hasPending?: boolean }) {
   const {
     getDelegatorAddress,
     acceptDelegatorRequest,
     ignoreDelegatorRequest,
     removeDelegator,
     getPendingSetDelegateRequestsForDelegate,
-    getHasPendingSetDelegateRequestsForDelegate,
   } = useDelegationContext();
-  const hasPending = getHasPendingSetDelegateRequestsForDelegate();
 
   return (
     <>
