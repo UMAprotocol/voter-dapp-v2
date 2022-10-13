@@ -15,6 +15,8 @@ export {
   commify,
   formatBytes32String,
   formatEther,
+  getAddress,
+  isAddress,
   parseEther,
   randomBytes,
   solidityKeccak256,

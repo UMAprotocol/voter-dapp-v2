@@ -12,6 +12,7 @@ import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { HistoryPanel } from "./HistoryPanel";
 import { VotePanel } from "./VotePanel";
+import { DelegationPanel } from "./DelegationPanel";
 
 const panelTypeToPanelComponent = {
   menu: MenuPanel,
@@ -20,6 +21,7 @@ const panelTypeToPanelComponent = {
   stake: StakeUnstakePanel,
   remind: RemindMePanel,
   history: HistoryPanel,
+  delegation: DelegationPanel,
 };
 
 export function Panel() {

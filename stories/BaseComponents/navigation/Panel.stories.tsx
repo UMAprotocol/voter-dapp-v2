@@ -2,10 +2,13 @@ import { useArgs } from "@storybook/client-api";
 import { DecoratorFn, Meta, Story } from "@storybook/react";
 import { Button, Panel } from "components";
 import {
+  defaultDelegationContextState,
   defaultErrorContextState,
   defaultPanelContextState,
   defaultUserContextState,
   defaultVotesContextState,
+  DelegationContext,
+  DelegationContextState,
   ErrorContext,
   ErrorContextState,
   PanelContext,
@@ -20,7 +23,12 @@ import { bigNumberFromFloatString } from "helpers/formatNumber";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { VoteT } from "types";
 
-interface StoryProps extends PanelContextState, ErrorContextState, VotesContextState, UserContextState {
+interface StoryProps
+  extends PanelContextState,
+    ErrorContextState,
+    VotesContextState,
+    UserContextState,
+    DelegationContextState {
   votes: VoteT[];
 }
 
@@ -54,15 +62,17 @@ const Template: Story<StoryProps> = (args) => {
   );
 };
 
-const withErrorDecorator: DecoratorFn = (Story) => {
+const withErrorDecorator: DecoratorFn = (Story, { args }) => {
+  const mockErrorMessages = {
+    claim: ["Something went wrong in claim panel"],
+    stake: ["Something went wrong in stake panel"],
+    unstake: ["Something went wrong in unstake panel"],
+    vote: ["Something went wrong in vote panel"],
+    delegation: ["Something went wrong in delegation panel"],
+  };
   const mockErrorContextState = {
     ...defaultErrorContextState,
-    errorMessages: {
-      claim: ["Something went wrong in claim panel"],
-      stake: ["Something went wrong in stake panel"],
-      unstake: ["Something went wrong in unstake panel"],
-      vote: ["Something went wrong in vote panel"],
-    },
+    errorMessages: args.errorMessages ?? mockErrorMessages,
   };
   return (
     <ErrorContext.Provider value={mockErrorContextState}>
@@ -78,6 +88,7 @@ const withUserDecorator: DecoratorFn = (Story, { args }) => {
     cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
     cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
     userDataFetching: args.userDataFetching ?? false,
+    address: args.address ?? "0x1234567890123456789012345678901234567890",
   };
 
   return (
@@ -97,6 +108,18 @@ const withVotesDecorator: DecoratorFn = (Story, { args }) => {
     <VotesContext.Provider value={mockVotesContextState}>
       <Story />
     </VotesContext.Provider>
+  );
+};
+
+const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
+  const mockDelegationContextState = {
+    ...defaultDelegationContextState,
+  };
+
+  return (
+    <DelegationContext.Provider value={mockDelegationContextState}>
+      <Story />
+    </DelegationContext.Provider>
   );
 };
 
@@ -206,3 +229,10 @@ HistoryPanel.args = {
   ),
   votes: makeMockVotesWithHistory(),
 };
+
+export const DelegationPanel = Template.bind({});
+DelegationPanel.args = {
+  panelType: "delegation",
+  panelOpen: true,
+};
+DelegationPanel.decorators = [withUserDecorator, withDelegationDecorator];

@@ -171,7 +171,7 @@ export type VoteTimelineT = {
 
 export type VoteOriginT = "UMA" | "Polymarket";
 
-export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
+export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | "delegation" | null;
 
 export type VotePanelContentT = VoteT;
 
