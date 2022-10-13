@@ -15,3 +15,7 @@ export const formatBytes32String = ethers.utils.formatBytes32String;
 export const commify = ethers.utils.commify;
 
 export const zeroAddress = ethers.constants.AddressZero;
+
+export const getAddress = ethers.utils.getAddress;
+
+export const isAddress = ethers.utils.isAddress;
