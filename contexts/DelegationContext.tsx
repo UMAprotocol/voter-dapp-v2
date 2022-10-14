@@ -9,6 +9,8 @@ import {
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
+import { useIgnoreRequestToBeDelegate } from "hooks/mutations/delegation/useIgnoreRequestToBeDelegate";
+import { useIgnoredRequestToBeDelegateAddresses } from "hooks/queries/delegation/useIgnoredRequestToBeDelegateAddresses";
 import { createContext, ReactNode } from "react";
 import { DelegationStatusT } from "types";
 import { DelegationEventT } from "types/global";
@@ -26,7 +28,7 @@ export interface DelegationContextState {
   addDelegator: (delegatorAddress: string) => void;
   removeDelegator: (delegatorAddress: string) => void;
   acceptDelegatorRequest: (delegatorAddress: string) => void;
-  ignoreDelegatorRequest: (transactionHash: string) => void;
+  ignoreRequestToBeDelegate: (transactionHash: string) => void;
   acceptDelegateRequest: (delegateAddress: string) => void;
   cancelDelegateRequest: (transactionHash: string) => void;
   getDelegationDataLoading: () => boolean;
@@ -46,7 +48,7 @@ export const defaultDelegationContextState: DelegationContextState = {
   addDelegator: () => null,
   removeDelegator: () => null,
   acceptDelegatorRequest: () => null,
-  ignoreDelegatorRequest: () => null,
+  ignoreRequestToBeDelegate: () => null,
   acceptDelegateRequest: () => null,
   cancelDelegateRequest: () => null,
   getDelegationDataLoading: () => false,
@@ -86,6 +88,12 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isLoading: delegateToStakerLoading,
     isFetching: delegateToStakerFetching,
   } = useDelegateToStaker();
+  const {
+    data: ignoredRequestToBeDelegateAddresses,
+    isLoading: ignoredRequestToBeDelegateAddressesLoading,
+    isFetching: ignoredRequestToBeDelegateAddressesFetching,
+  } = useIgnoredRequestToBeDelegateAddresses();
+  const { ignoreRequestToBeDelegateMutation, isIgnoringRequestToBeDelegate } = useIgnoreRequestToBeDelegate();
   const { address } = useUserContext();
   const { delegate } = useStakingContext();
 
@@ -96,7 +104,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       delegatorSetEventsLoading ||
       voterFromDelegateLoading ||
       delegateToStakerLoading ||
-      delegatorSetEventsForDelegatorLoading
+      delegatorSetEventsForDelegatorLoading ||
+      ignoredRequestToBeDelegateAddressesLoading ||
+      isIgnoringRequestToBeDelegate
     );
   }
 
@@ -107,7 +117,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       delegatorSetEventsFetching ||
       voterFromDelegateFetching ||
       delegateToStakerFetching ||
-      delegatorSetEventsForDelegatorFetching
+      delegatorSetEventsForDelegatorFetching ||
+      ignoredRequestToBeDelegateAddressesFetching ||
+      isIgnoringRequestToBeDelegate
     );
   }
 
@@ -161,13 +173,15 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getPendingSetDelegateRequestsForDelegate() {
     return (
-      delegateSetEventsForDelegate?.filter(
-        (delegateSet) =>
-          !delegatorSetEvents?.some(
-            (delegatorSet) =>
-              delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
-          )
-      ) ?? []
+      delegateSetEventsForDelegate
+        ?.filter(
+          (delegateSet) =>
+            !delegatorSetEvents?.some(
+              (delegatorSet) =>
+                delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
+            )
+        )
+        ?.filter(({ delegator }) => !ignoredRequestToBeDelegateAddresses?.includes(delegator)) ?? []
     );
   }
 
@@ -211,15 +225,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return;
   }
 
-  function ignoreDelegatorRequest(delegatorAddress: string) {
-    const ignoredDelegatorRequests = JSON.parse(
-      window.localStorage.get("ignoredDelegatorRequests") ?? "[]"
-    ) as string[];
-
-    if (!ignoredDelegatorRequests.includes(delegatorAddress)) {
-      ignoredDelegatorRequests.push(delegatorAddress);
-      window.localStorage.set("ignoredDelegatorRequests", JSON.stringify(ignoredDelegatorRequests));
-    }
+  function ignoreRequestToBeDelegate(delegatorAddress: string) {
+    ignoreRequestToBeDelegateMutation({ userAddress: address, delegatorAddress });
   }
 
   return (
@@ -237,7 +244,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         addDelegator,
         removeDelegator,
         acceptDelegatorRequest,
-        ignoreDelegatorRequest,
+        ignoreRequestToBeDelegate,
         acceptDelegateRequest,
         cancelDelegateRequest,
         getDelegationDataLoading,

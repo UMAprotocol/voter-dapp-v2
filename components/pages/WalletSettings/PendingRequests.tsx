@@ -8,20 +8,20 @@ export function PendingRequests({
   requestType,
   pendingRequests,
   acceptDelegatorRequest,
-  ignoreDelegatorRequest,
+  ignoreRequestToBeDelegate,
   acceptDelegateRequest,
   cancelDelegateRequest,
 }: {
   requestType: "delegate" | "delegator";
   pendingRequests: DelegationEventT[];
   acceptDelegatorRequest?: (delegatorAddress: string) => void;
-  ignoreDelegatorRequest?: (delegatorAddress: string) => void;
+  ignoreRequestToBeDelegate?: (delegatorAddress: string) => void;
   acceptDelegateRequest?: (delegateAddress: string) => void;
   cancelDelegateRequest?: (delegateAddress: string) => void;
 }) {
-  if (requestType === "delegator" && !(acceptDelegatorRequest && ignoreDelegatorRequest)) {
+  if (requestType === "delegator" && !(acceptDelegatorRequest && ignoreRequestToBeDelegate)) {
     throw new Error(
-      "`acceptDelegatorRequest` and `ignoreDelegatorRequest` are required when `requestType` is `delegator`"
+      "`acceptDelegatorRequest` and `ignoreRequestToBeDelegate` are required when `requestType` is `delegator`"
     );
   }
 
@@ -31,7 +31,7 @@ export function PendingRequests({
     );
   }
 
-  const isDelegatorRequest = requestType === "delegator" && acceptDelegatorRequest && ignoreDelegatorRequest;
+  const isDelegatorRequest = requestType === "delegator" && acceptDelegatorRequest && ignoreRequestToBeDelegate;
   const isDelegateRequest = requestType === "delegate" && acceptDelegateRequest && cancelDelegateRequest;
 
   return (
@@ -61,7 +61,7 @@ export function PendingRequests({
               <BarButtonPrimary label="accept" onClick={() => acceptDelegatorRequest(delegator)} />
             )}
             {isDelegatorRequest && (
-              <BarButtonSecondary label="ignore" onClick={() => ignoreDelegatorRequest(delegator)} />
+              <BarButtonSecondary label="ignore" onClick={() => ignoreRequestToBeDelegate(delegator)} />
             )}
             {isDelegateRequest && <BarButtonSecondary label="cancel" onClick={() => cancelDelegateRequest(delegate)} />}
           </ButtonsWrapper>
