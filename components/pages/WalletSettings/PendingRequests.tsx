@@ -31,11 +31,13 @@ export function PendingRequests({
     requestType === "delegator" && acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate;
   const isDelegateRequest = requestType === "delegate" && cancelSentRequestToBeDelegate;
 
+  const _pendingRequests = isDelegateRequest ? [pendingRequests[pendingRequests.length - 1]] : pendingRequests;
+
   return (
     <>
       <Header>Pending {requestType} requests</Header>
       <Text>Explanation of {requestType} requests</Text>
-      {pendingRequests.map(({ delegate, delegator, transactionHash }) => (
+      {_pendingRequests?.map(({ delegate, delegator, transactionHash }) => (
         <PendingRequestWrapper
           key={transactionHash}
           style={{ "--padding-right": isDelegatorRequest ? "25px" : "160px" } as CSSProperties}

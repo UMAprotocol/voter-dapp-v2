@@ -1,4 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { onlyOneRequestPerAddress } from "helpers/onlyOneRequestPerAddress";
 
 export async function getDelegateSetEvents(
   voting: VotingV2Ethers,
@@ -9,11 +10,13 @@ export async function getDelegateSetEvents(
   const filter = voting.filters.DelegateSet(...args);
   const events = await voting.queryFilter(filter);
   const ignoredDelegateSetEvents = JSON.parse(localStorage.getItem("ignoredDelegateSetEvents") ?? "[]") as string[];
-  return events
+  const parsedEvents = events
     .map((event) => ({
       delegate: event.args.delegate,
       delegator: event.args.delegator,
       transactionHash: event.transactionHash,
     }))
     .filter(({ delegator }) => !ignoredDelegateSetEvents.includes(delegator));
+
+  return onlyOneRequestPerAddress(parsedEvents, queryFor);
 }
