@@ -12,8 +12,11 @@ import {
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
+import { useAcceptReceivedRequestToBeDelegate } from "hooks/mutations/delegation/useAcceptReceivedRequestToBeDelegate";
 import { useCancelSentRequestToBeDelegate } from "hooks/mutations/delegation/useCancelSentRequestToBeDelegate";
 import { useIgnoreReceivedRequestToBeDelegate } from "hooks/mutations/delegation/useIgnoreRequestToBeDelegate";
+import { useTerminateRelationshipWithDelegate } from "hooks/mutations/delegation/useTerminateRelationshipWithDelegate";
+import { useTerminateRelationshipWithDelegator } from "hooks/mutations/delegation/useTerminateRelationshipWithDelegator";
 import { useIgnoredRequestToBeDelegateAddresses } from "hooks/queries/delegation/useIgnoredRequestToBeDelegateAddresses";
 import { createContext, ReactNode } from "react";
 import { DelegationStatusT } from "types";
@@ -28,8 +31,8 @@ export interface DelegationContextState {
   getDelegateAddress: () => string;
   getDelegatorAddress: () => string;
   sendRequestToBeDelegate: (delegateAddress: string) => void;
-  terminateRelationshipWithDelegate: (delegateAddress: string) => void;
-  terminateRelationshipWithDelegator: (delegatorAddress: string) => void;
+  terminateRelationshipWithDelegate: () => void;
+  terminateRelationshipWithDelegator: () => void;
   acceptReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
   ignoreReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
   cancelSentRequestToBeDelegate: () => void;
@@ -98,6 +101,12 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } = useSendRequestToBeDelegate();
   const { cancelSentRequestToBeDelegateMutation, isCancelingSentRequestToBeDelegate } =
     useCancelSentRequestToBeDelegate();
+  const { acceptReceivedRequestToBeDelegateMutation, isAcceptingReceivedRequestToBeDelegate } =
+    useAcceptReceivedRequestToBeDelegate();
+  const { terminateRelationshipWithDelegateMutation, isTerminatingRelationshipWithDelegate } =
+    useTerminateRelationshipWithDelegate();
+  const { terminateRelationshipWithDelegatorMutation, isTerminatingRelationshipWithDelegator } =
+    useTerminateRelationshipWithDelegator();
   const { voting } = useContractsContext();
   const { address } = useUserContext();
   const { delegate } = useStakingContext();
@@ -114,7 +123,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       ignoredRequestToBeDelegateAddressesLoading ||
       isIgnoringRequestToBeDelegate ||
       isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate
+      isCancelingSentRequestToBeDelegate ||
+      isAcceptingReceivedRequestToBeDelegate ||
+      isTerminatingRelationshipWithDelegate ||
+      isTerminatingRelationshipWithDelegator
     );
   }
 
@@ -129,7 +141,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       ignoredRequestToBeDelegateAddressesFetching ||
       isIgnoringRequestToBeDelegate ||
       isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate
+      isCancelingSentRequestToBeDelegate ||
+      isAcceptingReceivedRequestToBeDelegate ||
+      isTerminatingRelationshipWithDelegate ||
+      isTerminatingRelationshipWithDelegator
     );
   }
 
@@ -226,19 +241,26 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
-    return;
+    acceptReceivedRequestToBeDelegateMutation({
+      voting,
+      delegatorAddress,
+    });
   }
 
   function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
     ignoreReceivedRequestToBeDelegateMutation({ userAddress: address, delegatorAddress });
   }
 
-  function terminateRelationshipWithDelegator(delegatorAddress: string) {
-    return;
+  function terminateRelationshipWithDelegator() {
+    terminateRelationshipWithDelegatorMutation({
+      voting,
+    });
   }
 
-  function terminateRelationshipWithDelegate(delegateAddress: string) {
-    return;
+  function terminateRelationshipWithDelegate() {
+    terminateRelationshipWithDelegateMutation({
+      voting,
+    });
   }
 
   return (
