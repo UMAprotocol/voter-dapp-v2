@@ -1,48 +1,49 @@
-import { useConnectWallet, useWallets } from "@web3-onboard/react";
+import { useConnectWallet } from "@web3-onboard/react";
 import { Button, Nav, WalletIcon } from "components";
-import { getAccountDetails, handleDisconnectWallet } from "helpers";
-import { useWalletContext } from "hooks";
+import { handleDisconnectWallet } from "helpers";
+import { useUserContext, useWalletContext } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
 
-const links = [
-  {
-    title: "Vote",
-    href: "/",
-  },
-  {
-    title: "Settled Disputes & Votes",
-    href: "/settled",
-  },
-  {
-    title: "Wallet Settings",
-    href: "/wallet-settings",
-  },
-  {
-    title: "Optimistic Oracle",
-    href: "https://oracle.umaproject.org",
-  },
-  {
-    title: "Docs",
-    href: "https://docs.umaproject.org",
-  },
-];
-
 export function MenuPanel() {
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  const [_wallets, _connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
-  const connectedWallets = useWallets();
-  const { address } = getAccountDetails(connectedWallets);
+  const { address, connectedWallet } = useUserContext();
+
+  const links = [
+    {
+      title: "Vote",
+      href: "/",
+    },
+    {
+      title: "Settled Disputes & Votes",
+      href: "/settled",
+    },
+    {
+      title: "Wallet Settings",
+      href: "/wallet-settings",
+    },
+    {
+      title: "Optimistic Oracle",
+      href: "https://oracle.umaproject.org",
+    },
+    {
+      title: "Docs",
+      href: "https://docs.umaproject.org",
+    },
+  ];
+
+  const _links = connectedWallet ? links : links.filter((link) => link.href !== "/wallet-settings");
 
   return (
     <PanelWrapper>
       <AccountWrapper>
         <Title>Account</Title>
-        {connectedWallets.length ? (
+        {connectedWallet ? (
           <>
             <ConnectedWallet>
-              <WalletIcon icon={wallet?.icon} />
+              <WalletIcon icon={connectedWallet?.icon} />
               <Address>{address}</Address>
             </ConnectedWallet>
             <Button
@@ -50,14 +51,14 @@ export function MenuPanel() {
               label="Disconnect"
               width={150}
               height={40}
-              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner)}
+              onClick={() => handleDisconnectWallet(connectedWallet, disconnect, setProvider, setSigner)}
             />
           </>
         ) : (
           <p>TODO implement no wallet</p>
         )}
       </AccountWrapper>
-      <Nav links={links} />
+      <Nav links={_links} />
       <PanelFooter />
     </PanelWrapper>
   );

@@ -23,6 +23,7 @@ export function Nav({ links }: Props) {
     return () => {
       router.events.off("routeChangeStart", closePanel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -1,5 +1,4 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { zeroAddress } from "helpers/ethers";
 
 export async function getDelegateSetEvents(
   voting: VotingV2Ethers,
@@ -16,6 +15,5 @@ export async function getDelegateSetEvents(
       delegator: event.args.delegator,
       transactionHash: event.transactionHash,
     }))
-    .filter(({ delegate }) => delegate !== zeroAddress)
     .filter(({ delegator }) => !ignoredDelegateSetEvents.includes(delegator));
 }

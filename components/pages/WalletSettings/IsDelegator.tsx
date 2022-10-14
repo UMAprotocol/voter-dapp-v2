@@ -7,7 +7,6 @@ export function IsDelegator({ hasPending }: { hasPending?: boolean }) {
   const {
     getDelegateAddress,
     getPendingSentRequestsToBeDelegate,
-    acceptDelegateRequest,
     cancelSentRequestToBeDelegate,
     terminateRelationshipWithDelegate,
   } = useDelegationContext();
@@ -19,7 +18,6 @@ export function IsDelegator({ hasPending }: { hasPending?: boolean }) {
         <PendingRequests
           requestType="delegate"
           pendingRequests={getPendingSentRequestsToBeDelegate()}
-          acceptDelegateRequest={acceptDelegateRequest}
           cancelSentRequestToBeDelegate={cancelSentRequestToBeDelegate}
         />
       ) : (
