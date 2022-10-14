@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { voteTransactionHashesKey } from "constants/queryKeys";
-import { useActiveVotes, useHandleError, usePastVotes, useUpcomingVotes } from "hooks";
-import { useContractsContext } from "hooks/contexts/useContractsContext";
-import { getVoteTransactionHashes } from "web3/queries/votes/getVoteTransactionHashes";
+import { useActiveVotes, useContractsContext, useHandleError, usePastVotes, useUpcomingVotes } from "hooks";
+import { getVoteTransactionHashes } from "web3";
 
 export function useVoteTransactionHashes() {
   const { voting } = useContractsContext();

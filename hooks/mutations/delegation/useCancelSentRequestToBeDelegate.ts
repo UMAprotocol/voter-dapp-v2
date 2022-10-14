@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sentRequestsToBeDelegateKey } from "constants/queryKeys";
-import { useUserContext } from "hooks/contexts/useUserContext";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useUserContext } from "hooks";
+import { useHandleError } from "hooks";
 import { DelegationEventT } from "types/global";
-import { removeDelegator } from "web3/mutations/delegation/removeDelegator";
+import { removeDelegator } from "web3";
 
 export function useCancelSentRequestToBeDelegate() {
   const { address } = useUserContext();

@@ -1,4 +1,4 @@
-import { useDelegationContext } from "hooks/contexts/useDelegationContext";
+import { useDelegationContext } from "hooks";
 import { ConnectedWallet } from "./ConnectedWallet";
 import { OtherWallet } from "./OtherWallet";
 import { PendingRequests } from "./PendingRequests";

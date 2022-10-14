@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ignoredRequestToBeDelegateAddressesKey } from "constants/queryKeys";
-import { useUserContext } from "hooks/contexts/useUserContext";
-import { useHandleError } from "hooks/helpers/useHandleError";
-import { getIgnoredRequestToBeDelegateAddresses } from "web3/queries/delegation/getIgnoredRequestToBeDelegateAddresses";
+import { useHandleError, useUserContext } from "hooks";
+import { getIgnoredRequestToBeDelegateAddresses } from "web3";
 
 export function useIgnoredRequestToBeDelegateAddresses() {
   const { address } = useUserContext();

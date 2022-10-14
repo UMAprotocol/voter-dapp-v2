@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { voterFromDelegateKey } from "constants/queryKeys";
 import { zeroAddress } from "helpers";
-import { useContractsContext } from "hooks/contexts/useContractsContext";
-import { useUserContext } from "hooks/contexts/useUserContext";
+import { useContractsContext, useUserContext } from "hooks";
 import { getVoterFromDelegate } from "web3";
 
 export function useVoterFromDelegate() {

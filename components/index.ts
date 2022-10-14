@@ -24,6 +24,7 @@ export { LoadingSkeleton } from "./LoadingSkeleton/LoadingSkeleton";
 export { LoadingSpinner } from "./LoadingSpinner/LoadingSpinner";
 export { Nav } from "./Nav/Nav";
 export { Vote } from "./pages/Vote";
+export { Wallets } from "./pages/WalletSettings/Wallets";
 export { WalletSettings } from "./pages/WalletSettings/WalletSettings";
 export { ClaimPanel } from "./Panel/ClaimPanel";
 export { HistoryPanel } from "./Panel/HistoryPanel";

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useHandleError } from "hooks";
 import { setDelegator } from "web3";
 
 export function useSetDelegator(errorType?: string) {

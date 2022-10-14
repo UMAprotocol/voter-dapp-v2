@@ -31,6 +31,7 @@ export {
   parseVoteStringWithPrecision,
 } from "./formatVotes";
 export { getCanUnstakeTime } from "./getCanUnstakeTime";
+export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";

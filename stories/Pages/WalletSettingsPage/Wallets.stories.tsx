@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Wallets } from "components/pages/WalletSettings/Wallets";
+import { Wallets } from "components";
 import { grey100 } from "constants/colors";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 

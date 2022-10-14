@@ -1,27 +1,25 @@
 import { zeroAddress } from "helpers";
 import {
+  useAcceptReceivedRequestToBeDelegate,
+  useCancelSentRequestToBeDelegate,
   useContractsContext,
   useDelegateToStaker,
   useDelegatorSetEventsForDelegate,
   useDelegatorSetEventsForDelegator,
+  useIgnoredRequestToBeDelegateAddresses,
+  useIgnoreReceivedRequestToBeDelegate,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
   useSentRequestsToBeDelegate,
   useStakingContext,
+  useTerminateRelationshipWithDelegate,
+  useTerminateRelationshipWithDelegator,
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
-import { useAcceptReceivedRequestToBeDelegate } from "hooks/mutations/delegation/useAcceptReceivedRequestToBeDelegate";
-import { useCancelSentRequestToBeDelegate } from "hooks/mutations/delegation/useCancelSentRequestToBeDelegate";
-import { useIgnoreReceivedRequestToBeDelegate } from "hooks/mutations/delegation/useIgnoreRequestToBeDelegate";
-import { useTerminateRelationshipWithDelegate } from "hooks/mutations/delegation/useTerminateRelationshipWithDelegate";
-import { useTerminateRelationshipWithDelegator } from "hooks/mutations/delegation/useTerminateRelationshipWithDelegator";
-import { useIgnoredRequestToBeDelegateAddresses } from "hooks/queries/delegation/useIgnoredRequestToBeDelegateAddresses";
 import { createContext, ReactNode } from "react";
-import { DelegationStatusT } from "types";
-import { DelegationEventT } from "types/global";
-
+import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
   getDelegationStatus: () => DelegationStatusT;
   getPendingReceivedRequestsToBeDelegate: () => DelegationEventT[];

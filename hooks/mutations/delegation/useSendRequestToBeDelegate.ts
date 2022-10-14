@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useHandleError } from "hooks";
 import { setDelegate } from "web3";
 
 export function useSendRequestToBeDelegate(errorType?: string) {

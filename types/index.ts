@@ -5,6 +5,7 @@ export type {
   ContentfulDataT,
   DecryptedVotesByKeyT,
   DecryptedVoteT,
+  DelegationEventT,
   DelegationStatusT,
   DropdownItemT,
   EncryptedVotesByKeyT,

@@ -11,7 +11,6 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useDelegationContext } from "hooks/contexts/useDelegationContext";
 import { PageInnerWrapper, PageOuterWrapper } from "pages/styles";
 import { useState } from "react";
 import styled from "styled-components";
