@@ -119,7 +119,7 @@ const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
     getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-    getPendingSetDelegateRequestsForDelegator: () => args.pendingSetDelegateRequestsForDelegator ?? [],
+    getPendingSentRequestsToBeDelegate: () => args.pendingSetDelegateRequestsForDelegator ?? [],
     getDelegateAddress: () => args.delegateAddress ?? "0x1234567890123456789012345678901234567890",
   };
 

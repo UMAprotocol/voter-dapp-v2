@@ -25,8 +25,7 @@ export function DelegationPanel() {
   const { address } = useUserContext();
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
-  const { getDelegationStatus, getPendingSetDelegateRequestsForDelegator, getDelegationDataFetching } =
-    useDelegationContext();
+  const { getDelegationStatus, getPendingSentRequestsToBeDelegate, getDelegationDataFetching } = useDelegationContext();
   const { setDelegateMutation, isSettingDelegate } = useSetDelegate();
 
   const delegationStatus = getDelegationStatus();
@@ -44,14 +43,14 @@ export function DelegationPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delegationStatus]);
 
-  const pendingRequests = getPendingSetDelegateRequestsForDelegator();
+  const pendingRequests = getPendingSentRequestsToBeDelegate();
 
   // only allow user to add a delegate wallet if they are neither a delegator nor a delegate
   const showAddDelegateInput = delegationStatus === "no-delegation";
 
   const showPendingRequests = delegationStatus === "delegator-pending" && pendingRequests.length > 0;
 
-  function addDelegateWallet() {
+  function sendRequestToBeDelegateWallet() {
     if (!address) return;
     if (!validateInputAddress(delegateAddressToAdd)) return;
 
@@ -130,7 +129,7 @@ export function DelegationPanel() {
                 <Button
                   variant="primary"
                   label="Add delegate wallet"
-                  onClick={addDelegateWallet}
+                  onClick={sendRequestToBeDelegateWallet}
                   height={45}
                   width="100%"
                 />

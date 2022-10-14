@@ -4,12 +4,12 @@ import { getIgnoredRequestToBeDelegateAddressesFromStorage } from "helpers/getIg
 import { useUserContext } from "hooks/contexts/useUserContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
 
-export function useIgnoreRequestToBeDelegate() {
+export function useIgnoreReceivedRequestToBeDelegate() {
   const { address } = useUserContext();
   const onError = useHandleError();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation(ignoreRequestToBeDelegate, {
+  const { mutate, isLoading } = useMutation(ignoreReceivedRequestToBeDelegate, {
     onError,
     onSuccess: (_data, { delegatorAddress }) => {
       queryClient.setQueryData<string[]>(
@@ -26,12 +26,12 @@ export function useIgnoreRequestToBeDelegate() {
   });
 
   return {
-    ignoreRequestToBeDelegateMutation: mutate,
+    ignoreReceivedRequestToBeDelegateMutation: mutate,
     isIgnoringRequestToBeDelegate: isLoading,
   };
 }
 
-async function ignoreRequestToBeDelegate({
+async function ignoreReceivedRequestToBeDelegate({
   userAddress,
   delegatorAddress,
 }: {

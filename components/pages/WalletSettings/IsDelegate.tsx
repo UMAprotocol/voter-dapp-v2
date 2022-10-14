@@ -6,10 +6,10 @@ import { PendingRequests } from "./PendingRequests";
 export function IsDelegate({ hasPending }: { hasPending?: boolean }) {
   const {
     getDelegatorAddress,
-    acceptDelegatorRequest,
-    ignoreRequestToBeDelegate,
-    removeDelegator,
-    getPendingSetDelegateRequestsForDelegate,
+    acceptReceivedRequestToBeDelegate,
+    ignoreReceivedRequestToBeDelegate,
+    terminateRelationshipWithDelegator,
+    getPendingReceivedRequestsToBeDelegate,
   } = useDelegationContext();
 
   return (
@@ -18,12 +18,12 @@ export function IsDelegate({ hasPending }: { hasPending?: boolean }) {
       {hasPending ? (
         <PendingRequests
           requestType="delegator"
-          pendingRequests={getPendingSetDelegateRequestsForDelegate()}
-          acceptDelegatorRequest={acceptDelegatorRequest}
-          ignoreRequestToBeDelegate={ignoreRequestToBeDelegate}
+          pendingRequests={getPendingReceivedRequestsToBeDelegate()}
+          acceptReceivedRequestToBeDelegate={acceptReceivedRequestToBeDelegate}
+          ignoreReceivedRequestToBeDelegate={ignoreReceivedRequestToBeDelegate}
         />
       ) : (
-        <OtherWallet status="delegator" address={getDelegatorAddress()} remove={removeDelegator} />
+        <OtherWallet status="delegator" address={getDelegatorAddress()} remove={terminateRelationshipWithDelegator} />
       )}
     </>
   );

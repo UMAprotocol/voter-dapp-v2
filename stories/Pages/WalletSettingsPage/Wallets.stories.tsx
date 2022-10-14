@@ -19,17 +19,17 @@ const mockAddress1 = "0x12345678901234567890";
 const mockAddress2 = "0x09876543211234567890";
 const mockAddress3 = "0xfedcba98761234567890";
 const mockDelegateRequestTransaction = "0xabcdef12345678901234567890";
-const addDelegate = () => alert("addDelegate");
-const removeDelegate = () => alert("removeDelegate");
+const sendRequestToBeDelegate = () => alert("sendRequestToBeDelegate");
+const terminateRelationshipWithDelegate = () => alert("terminateRelationshipWithDelegate");
 const addDelegator = () => alert("addDelegator");
-const removeDelegator = () => alert("removeDelegator");
+const terminateRelationshipWithDelegator = () => alert("terminateRelationshipWithDelegator");
 
 const commonArgs = {
   walletIcon: mockWalletIcon,
-  addDelegate,
-  removeDelegate,
+  sendRequestToBeDelegate,
+  terminateRelationshipWithDelegate,
   addDelegator,
-  removeDelegator,
+  terminateRelationshipWithDelegator,
 };
 
 const Template: ComponentStory<typeof Wallets> = (args) => <Wallets {...commonArgs} {...args} />;

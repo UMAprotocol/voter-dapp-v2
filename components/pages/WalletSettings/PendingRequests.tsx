@@ -7,32 +7,29 @@ import { AddressWrapper, BarButtonPrimary, BarButtonSecondary, BarWrapper, Heade
 export function PendingRequests({
   requestType,
   pendingRequests,
-  acceptDelegatorRequest,
-  ignoreRequestToBeDelegate,
-  acceptDelegateRequest,
-  cancelDelegateRequest,
+  acceptReceivedRequestToBeDelegate,
+  ignoreReceivedRequestToBeDelegate,
+  cancelSentRequestToBeDelegate,
 }: {
   requestType: "delegate" | "delegator";
   pendingRequests: DelegationEventT[];
-  acceptDelegatorRequest?: (delegatorAddress: string) => void;
-  ignoreRequestToBeDelegate?: (delegatorAddress: string) => void;
-  acceptDelegateRequest?: (delegateAddress: string) => void;
-  cancelDelegateRequest?: (delegateAddress: string) => void;
+  acceptReceivedRequestToBeDelegate?: (delegatorAddress: string) => void;
+  ignoreReceivedRequestToBeDelegate?: (delegatorAddress: string) => void;
+  cancelSentRequestToBeDelegate?: () => void;
 }) {
-  if (requestType === "delegator" && !(acceptDelegatorRequest && ignoreRequestToBeDelegate)) {
+  if (requestType === "delegator" && !(acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate)) {
     throw new Error(
-      "`acceptDelegatorRequest` and `ignoreRequestToBeDelegate` are required when `requestType` is `delegator`"
+      "`acceptReceivedRequestToBeDelegate` and `ignoreReceivedRequestToBeDelegate` are required when `requestType` is `delegator`"
     );
   }
 
-  if (requestType === "delegate" && !(acceptDelegateRequest && cancelDelegateRequest)) {
-    throw new Error(
-      "`acceptDelegateRequest` and `cancelDelegateRequest` are required when `requestType` is `delegate`"
-    );
+  if (requestType === "delegate" && !cancelSentRequestToBeDelegate) {
+    throw new Error("`cancelSentRequestToBeDelegate` is required when `requestType` is `delegate`");
   }
 
-  const isDelegatorRequest = requestType === "delegator" && acceptDelegatorRequest && ignoreRequestToBeDelegate;
-  const isDelegateRequest = requestType === "delegate" && acceptDelegateRequest && cancelDelegateRequest;
+  const isDelegatorRequest =
+    requestType === "delegator" && acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate;
+  const isDelegateRequest = requestType === "delegate" && cancelSentRequestToBeDelegate;
 
   return (
     <>
@@ -58,12 +55,12 @@ export function PendingRequests({
           </Text>
           <ButtonsWrapper>
             {isDelegatorRequest && (
-              <BarButtonPrimary label="accept" onClick={() => acceptDelegatorRequest(delegator)} />
+              <BarButtonPrimary label="accept" onClick={() => acceptReceivedRequestToBeDelegate(delegator)} />
             )}
             {isDelegatorRequest && (
-              <BarButtonSecondary label="ignore" onClick={() => ignoreRequestToBeDelegate(delegator)} />
+              <BarButtonSecondary label="ignore" onClick={() => ignoreReceivedRequestToBeDelegate(delegator)} />
             )}
-            {isDelegateRequest && <BarButtonSecondary label="cancel" onClick={() => cancelDelegateRequest(delegate)} />}
+            {isDelegateRequest && <BarButtonSecondary label="cancel" onClick={() => cancelSentRequestToBeDelegate()} />}
           </ButtonsWrapper>
         </PendingRequestWrapper>
       ))}
