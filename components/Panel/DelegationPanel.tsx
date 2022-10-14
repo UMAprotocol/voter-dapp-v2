@@ -1,13 +1,6 @@
 import { Button, LoadingSpinner, PanelErrorBanner, TextInput } from "components";
 import { getAddress, isAddress } from "helpers";
-import {
-  useContractsContext,
-  useDelegationContext,
-  useErrorContext,
-  usePanelContext,
-  useSetDelegate,
-  useUserContext,
-} from "hooks";
+import { useDelegationContext, useErrorContext, usePanelContext, useUserContext } from "hooks";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -20,13 +13,16 @@ import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function DelegationPanel() {
-  const { voting } = useContractsContext();
   const { closePanel } = usePanelContext();
   const { address } = useUserContext();
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
-  const { getDelegationStatus, getPendingSentRequestsToBeDelegate, getDelegationDataFetching } = useDelegationContext();
-  const { setDelegateMutation, isSettingDelegate } = useSetDelegate();
+  const {
+    getDelegationStatus,
+    sendRequestToBeDelegate,
+    getPendingSentRequestsToBeDelegate,
+    getDelegationDataFetching,
+  } = useDelegationContext();
 
   const delegationStatus = getDelegationStatus();
 
@@ -50,19 +46,11 @@ export function DelegationPanel() {
 
   const showPendingRequests = delegationStatus === "delegator-pending" && pendingRequests.length > 0;
 
-  function sendRequestToBeDelegateWallet() {
+  function onAddDelegateWallet() {
     if (!address) return;
     if (!validateInputAddress(delegateAddressToAdd)) return;
 
-    setDelegateMutation(
-      {
-        voting,
-        delegateAddress: delegateAddressToAdd,
-      },
-      {
-        onSuccess: () => closePanel(),
-      }
-    );
+    sendRequestToBeDelegate(delegateAddressToAdd);
   }
 
   function onInput(inputAddress: string) {
@@ -94,7 +82,7 @@ export function DelegationPanel() {
   }
 
   function isLoading() {
-    return getDelegationDataFetching() || isSettingDelegate;
+    return getDelegationDataFetching();
   }
 
   return (
@@ -129,7 +117,7 @@ export function DelegationPanel() {
                 <Button
                   variant="primary"
                   label="Add delegate wallet"
-                  onClick={sendRequestToBeDelegateWallet}
+                  onClick={onAddDelegateWallet}
                   height={45}
                   width="100%"
                 />

@@ -3,7 +3,7 @@ import { delegateSetEventsKey } from "constants/queryKeys";
 import { useContractsContext, useHandleError, useUserContext } from "hooks";
 import { getDelegateSetEvents } from "web3";
 
-export function useDelegateSetEventsForDelegate() {
+export function useReceivedRequestsToBeDelegate() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
   const onError = useHandleError();

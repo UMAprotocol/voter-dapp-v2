@@ -1,14 +1,18 @@
 import { zeroAddress } from "helpers";
 import {
-  useDelegateSetEventsForDelegate,
-  useDelegateSetEventsForDelegator,
+  useContractsContext,
   useDelegateToStaker,
-  useDelegatorSetEvents,
+  useDelegatorSetEventsForDelegate,
   useDelegatorSetEventsForDelegator,
+  usePanelContext,
+  useReceivedRequestsToBeDelegate,
+  useSendRequestToBeDelegate,
+  useSentRequestsToBeDelegate,
   useStakingContext,
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
+import { useCancelSentRequestToBeDelegate } from "hooks/mutations/delegation/useCancelSentRequestToBeDelegate";
 import { useIgnoreReceivedRequestToBeDelegate } from "hooks/mutations/delegation/useIgnoreRequestToBeDelegate";
 import { useIgnoredRequestToBeDelegateAddresses } from "hooks/queries/delegation/useIgnoredRequestToBeDelegateAddresses";
 import { createContext, ReactNode } from "react";
@@ -55,20 +59,20 @@ export const DelegationContext = createContext<DelegationContextState>(defaultDe
 
 export function DelegationProvider({ children }: { children: ReactNode }) {
   const {
-    data: delegateSetEventsForDelegate,
-    isLoading: delegateSetEventsForDelegateLoading,
-    isFetching: delegateSetEventsForDelegateFetching,
-  } = useDelegateSetEventsForDelegate();
+    data: receivedRequestsToBeDelegate,
+    isLoading: receivedRequestsToBeDelegateLoading,
+    isFetching: receivedRequestsToBeDelegateFetching,
+  } = useReceivedRequestsToBeDelegate();
   const {
-    data: delegateSetEventsForDelegator,
-    isLoading: delegateSetEventsForDelegatorLoading,
-    isFetching: delegateSetEventsForDelegatorFetching,
-  } = useDelegateSetEventsForDelegator();
+    data: sentRequestsToBeDelegate,
+    isLoading: sentRequestsToBeDelegateLoading,
+    isFetching: sentRequestsToBeDelegateFetching,
+  } = useSentRequestsToBeDelegate();
   const {
-    data: delegatorSetEvents,
-    isLoading: delegatorSetEventsLoading,
-    isFetching: delegatorSetEventsFetching,
-  } = useDelegatorSetEvents();
+    data: delegatorSetEventsForDelegate,
+    isLoading: delegatorSetEventsForDelegateLoading,
+    isFetching: delegatorSetEventsForDelegateFetching,
+  } = useDelegatorSetEventsForDelegate();
   const {
     data: delegatorSetEventsForDelegator,
     isLoading: delegatorSetEventsForDelegatorLoading,
@@ -91,32 +95,41 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   } = useIgnoredRequestToBeDelegateAddresses();
   const { ignoreReceivedRequestToBeDelegateMutation, isIgnoringRequestToBeDelegate } =
     useIgnoreReceivedRequestToBeDelegate();
+  const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } = useSendRequestToBeDelegate();
+  const { cancelSentRequestToBeDelegateMutation, isCancelingSentRequestToBeDelegate } =
+    useCancelSentRequestToBeDelegate();
+  const { voting } = useContractsContext();
   const { address } = useUserContext();
   const { delegate } = useStakingContext();
+  const { closePanel } = usePanelContext();
 
   function getDelegationDataLoading() {
     return (
-      delegateSetEventsForDelegateLoading ||
-      delegateSetEventsForDelegatorLoading ||
-      delegatorSetEventsLoading ||
+      receivedRequestsToBeDelegateLoading ||
+      sentRequestsToBeDelegateLoading ||
+      delegatorSetEventsForDelegateLoading ||
       voterFromDelegateLoading ||
       delegateToStakerLoading ||
       delegatorSetEventsForDelegatorLoading ||
       ignoredRequestToBeDelegateAddressesLoading ||
-      isIgnoringRequestToBeDelegate
+      isIgnoringRequestToBeDelegate ||
+      isSendingRequestToBeDelegate ||
+      isCancelingSentRequestToBeDelegate
     );
   }
 
   function getDelegationDataFetching() {
     return (
-      delegateSetEventsForDelegateFetching ||
-      delegateSetEventsForDelegatorFetching ||
-      delegatorSetEventsFetching ||
+      receivedRequestsToBeDelegateFetching ||
+      sentRequestsToBeDelegateFetching ||
+      delegatorSetEventsForDelegateFetching ||
       voterFromDelegateFetching ||
       delegateToStakerFetching ||
       delegatorSetEventsForDelegatorFetching ||
       ignoredRequestToBeDelegateAddressesFetching ||
-      isIgnoringRequestToBeDelegate
+      isIgnoringRequestToBeDelegate ||
+      isSendingRequestToBeDelegate ||
+      isCancelingSentRequestToBeDelegate
     );
   }
 
@@ -138,7 +151,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     if (!address) return "no-wallet-connected";
     // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
     if (
-      !getHasDelegateSetEventsForDelegate() &&
+      !getHasReceivedRequestsToBeDelegate() &&
       !getHasPendingSentRequestsToBeDelegate() &&
       !getHasDelegatorSetEvents()
     )
@@ -152,12 +165,12 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return "no-delegation";
   }
 
-  function getHasDelegateSetEventsForDelegate() {
-    return delegateSetEventsForDelegate.length > 0;
+  function getHasReceivedRequestsToBeDelegate() {
+    return receivedRequestsToBeDelegate.length > 0;
   }
 
   function getHasDelegatorSetEvents() {
-    return delegatorSetEvents.length > 0;
+    return delegatorSetEventsForDelegate.length > 0;
   }
 
   function getHasPendingReceivedRequestsToBeDelegate() {
@@ -170,10 +183,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getPendingReceivedRequestsToBeDelegate() {
     return (
-      delegateSetEventsForDelegate
+      receivedRequestsToBeDelegate
         ?.filter(
           (delegateSet) =>
-            !delegatorSetEvents?.some(
+            !delegatorSetEventsForDelegate?.some(
               (delegatorSet) =>
                 delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
             )
@@ -184,7 +197,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getPendingSentRequestsToBeDelegate() {
     return (
-      delegateSetEventsForDelegator?.filter(
+      sentRequestsToBeDelegate?.filter(
         (delegateSet) =>
           !delegatorSetEventsForDelegator?.some(
             (delegatorSet) =>
@@ -194,36 +207,38 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  function addDelegator(delegatorAddress: string) {
-    return;
-  }
-
-  function terminateRelationshipWithDelegator(delegatorAddress: string) {
-    return;
-  }
-
   function sendRequestToBeDelegate(delegateAddress: string) {
-    return;
+    sendRequestToBeDelegateMutation(
+      {
+        voting,
+        delegateAddress,
+      },
+      {
+        onSuccess: () => closePanel(),
+      }
+    );
   }
 
-  function terminateRelationshipWithDelegate(delegateAddress: string) {
-    return;
+  function cancelSentRequestToBeDelegate() {
+    cancelSentRequestToBeDelegateMutation({
+      voting,
+    });
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
     return;
   }
 
-  function cancelSentRequestToBeDelegate() {
-    return;
-  }
-
-  function acceptDelegateRequest(delegateAddress: string) {
-    return;
-  }
-
   function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
     ignoreReceivedRequestToBeDelegateMutation({ userAddress: address, delegatorAddress });
+  }
+
+  function terminateRelationshipWithDelegator(delegatorAddress: string) {
+    return;
+  }
+
+  function terminateRelationshipWithDelegate(delegateAddress: string) {
+    return;
   }
 
   return (
