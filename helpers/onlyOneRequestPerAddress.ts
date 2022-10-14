@@ -1,6 +1,16 @@
 import { DelegationEventT } from "types/global";
 
 export function onlyOneRequestPerAddress(delegationEvents: DelegationEventT[], queryFor: "delegate" | "delegator") {
-  const uniqueAddresses = new Set(delegationEvents.map((event) => event[queryFor]));
-  return Array.from(uniqueAddresses).map((address) => delegationEvents.find((event) => event[queryFor] === address));
+  const uniqueAddresses = new Set<string>();
+  const requestsFromUniqueAddresses: DelegationEventT[] = [];
+
+  for (const event of delegationEvents) {
+    const address = event[queryFor];
+    if (!uniqueAddresses.has(address)) {
+      uniqueAddresses.add(address);
+      requestsFromUniqueAddresses.push(event);
+    }
+  }
+
+  return requestsFromUniqueAddresses;
 }
