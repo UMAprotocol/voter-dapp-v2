@@ -8,12 +8,7 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const {
-    stakedBalance,
-    unstakedBalance,
-    outstandingRewards,
-    getStakingDataFetching: getBalancesFetching,
-  } = useStakingContext();
+  const { stakedBalance, unstakedBalance, outstandingRewards, getStakingDataFetching } = useStakingContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
@@ -30,7 +25,7 @@ export function HowItWorks() {
   }
 
   function isLoading() {
-    return getBalancesFetching() || userDataFetching;
+    return getStakingDataFetching() || userDataFetching;
   }
 
   return (

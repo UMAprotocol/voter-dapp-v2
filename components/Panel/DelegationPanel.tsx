@@ -27,13 +27,8 @@ export function DelegationPanel() {
   const delegationStatus = getDelegationStatus();
 
   useEffect(() => {
-    // don't show this panel for users who have accepted a delegation relationship or if there is no wallet connected
-    if (
-      delegationStatus === "delegator" ||
-      delegationStatus === "delegate" ||
-      delegationStatus === "delegate-pending" ||
-      delegationStatus === "no-wallet-connected"
-    ) {
+    // only show this panel when the user has not yet entered a delegation relationship, or the user has requested another wallet to be their delegate wallet
+    if (!(delegationStatus === "no-delegation" || delegationStatus === "delegator-pending")) {
       closePanel();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
