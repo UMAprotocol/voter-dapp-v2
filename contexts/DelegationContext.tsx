@@ -173,8 +173,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     if (voterFromDelegate.toLowerCase() !== address.toLowerCase()) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
     if (address.toLowerCase() === delegateToStaker.toLowerCase()) return "delegator";
+    // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
     if (getHasPendingReceivedRequestsToBeDelegate()) return "delegate-pending";
+    // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
     if (getHasPendingSentRequestsToBeDelegate()) return "delegator-pending";
+    // if none are true we assume the user has no delegation
     return "no-delegation";
   }
 
