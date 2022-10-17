@@ -29,11 +29,11 @@ export interface DelegationContextState {
   getDelegateAddress: () => string;
   getDelegatorAddress: () => string;
   sendRequestToBeDelegate: (delegateAddress: string) => void;
-  terminateRelationshipWithDelegate: () => void;
-  terminateRelationshipWithDelegator: () => void;
+  cancelSentRequestToBeDelegate: () => void;
   acceptReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
   ignoreReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
-  cancelSentRequestToBeDelegate: () => void;
+  terminateRelationshipWithDelegate: () => void;
+  terminateRelationshipWithDelegator: () => void;
   getDelegationDataLoading: () => boolean;
   getDelegationDataFetching: () => boolean;
 }

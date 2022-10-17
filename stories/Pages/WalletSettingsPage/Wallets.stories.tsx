@@ -1,8 +1,29 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import { Wallets } from "components";
 import { grey100 } from "constants/colors";
+import {
+  defaultDelegationContextState,
+  defaultUserContextState,
+  DelegationContext,
+  DelegationContextState,
+  UserContext,
+  UserContextState,
+} from "contexts";
 import { mockAddress1, mockAddress2, mockAddress3, mockDelegateRequestTransaction } from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
+import { DelegationEventT, DelegationStatusT } from "types";
+
+interface StoryProps extends DelegationContextState, UserContextState {
+  delegationStatus: DelegationStatusT;
+  address: string;
+  walletIcon: string | undefined;
+  pendingReceivedRequestsToBeDelegate: DelegationEventT[];
+  hasPendingReceivedRequestsToBeDelegate: boolean;
+  pendingSentRequestsToBeDelegate: DelegationEventT[];
+  hasPendingSentRequestsToBeDelegate: boolean;
+  delegateAddress: string;
+  delegatorAddress: string;
+}
 
 export default {
   title: "Pages/WalletSettingsPage/Wallets",
@@ -13,47 +34,72 @@ export default {
         <Story />
       </div>
     ),
+    (Story, { args }) => {
+      const mockUserContextState = {
+        ...defaultUserContextState,
+        address: args.address ?? mockAddress1,
+        walletIcon: args.walletIcon ?? mockWalletIcon,
+      };
+      return (
+        <UserContext.Provider value={mockUserContextState}>
+          <Story />
+        </UserContext.Provider>
+      );
+    },
+    (Story, { args }) => {
+      const mockDelegationContextState = {
+        ...defaultDelegationContextState,
+        getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
+        getPendingReceivedRequestsToBeDelegate: () => args.pendingReceivedRequestsToBeDelegate ?? [],
+        getHasPendingReceivedRequestsToBeDelegate: () => args.hasPendingReceivedRequestsToBeDelegate ?? false,
+        getPendingSentRequestsToBeDelegate: () => args.pendingSentRequestsToBeDelegate ?? [],
+        getHasPendingSentRequestsToBeDelegate: () => args.hasPendingSentRequestsToBeDelegate ?? false,
+        getDelegateAddress: () => args.delegateAddress,
+        getDelegatorAddress: () => args.delegatorAddress,
+        sendRequestToBeDelegate: (delegateAddress: string) =>
+          alert(`sent request to be delegate to ${delegateAddress}`),
+        cancelSentRequestToBeDelegate: () => alert("cancelled sent request to be delegate"),
+        acceptReceivedRequestToBeDelegate: (delegatorAddress: string) =>
+          alert(`accepted received request to be delegate from ${delegatorAddress}`),
+        ignoreReceivedRequestToBeDelegate: (delegatorAddress: string) =>
+          alert(`ignored received request to be delegate from ${delegatorAddress}`),
+        terminateRelationshipWithDelegate: () => alert("terminated relationship with delegate"),
+        terminateRelationshipWithDelegator: () => alert("terminated relationship with delegator"),
+      };
+      return (
+        <DelegationContext.Provider value={mockDelegationContextState}>
+          <Story />
+        </DelegationContext.Provider>
+      );
+    },
   ],
-} as ComponentMeta<typeof Wallets>;
-
-const sendRequestToBeDelegate = () => alert("sendRequestToBeDelegate");
-const terminateRelationshipWithDelegate = () => alert("terminateRelationshipWithDelegate");
-const addDelegator = () => alert("addDelegator");
-const terminateRelationshipWithDelegator = () => alert("terminateRelationshipWithDelegator");
+} as Meta<StoryProps>;
 
 const commonArgs = {
   walletIcon: mockWalletIcon,
-  sendRequestToBeDelegate,
-  terminateRelationshipWithDelegate,
-  addDelegator,
-  terminateRelationshipWithDelegator,
 };
 
-const Template: ComponentStory<typeof Wallets> = () => <Wallets />;
+const Template: Story<StoryProps> = () => <Wallets />;
 
 export const NoWalletConnected = Template.bind({});
 NoWalletConnected.args = {
   ...commonArgs,
   delegationStatus: "no-wallet-connected",
-  connectedAddress: undefined,
+  address: undefined,
 };
 
 export const NoDelegation = Template.bind({});
 NoDelegation.args = {
   ...commonArgs,
   delegationStatus: "no-delegation",
-  connectedAddress: mockAddress1,
-  delegateAddress: undefined,
-  delegatorAddress: undefined,
-  pendingSetDelegateRequestsForDelegate: [],
-  pendingSetDelegateRequestsForDelegator: [],
+  address: mockAddress1,
 };
 
 export const IsDelegator = Template.bind({});
 IsDelegator.args = {
   ...commonArgs,
   delegationStatus: "delegator",
-  connectedAddress: mockAddress1,
+  address: mockAddress1,
   delegateAddress: mockAddress2,
   delegatorAddress: mockAddress1,
 };
@@ -62,7 +108,7 @@ export const IsDelegate = Template.bind({});
 IsDelegate.args = {
   ...commonArgs,
   delegationStatus: "delegate",
-  connectedAddress: mockAddress2,
+  address: mockAddress2,
   delegateAddress: mockAddress2,
   delegatorAddress: mockAddress1,
 };
@@ -71,27 +117,27 @@ export const PendingIsDelegator = Template.bind({});
 PendingIsDelegator.args = {
   ...commonArgs,
   delegationStatus: "delegator-pending",
-  connectedAddress: mockAddress1,
+  address: mockAddress1,
   delegateAddress: undefined,
   delegatorAddress: undefined,
-  pendingSetDelegateRequestsForDelegate: [],
-  pendingSetDelegateRequestsForDelegator: [
+  pendingSentRequestsToBeDelegate: [
     {
       transactionHash: mockDelegateRequestTransaction,
       delegator: mockAddress1,
       delegate: mockAddress2,
     },
   ],
+  hasPendingSentRequestsToBeDelegate: true,
 };
 
 export const PendingIsDelegate = Template.bind({});
 PendingIsDelegate.args = {
   ...commonArgs,
   delegationStatus: "delegate-pending",
-  connectedAddress: mockAddress2,
+  address: mockAddress2,
   delegateAddress: undefined,
   delegatorAddress: undefined,
-  pendingSetDelegateRequestsForDelegate: [
+  pendingReceivedRequestsToBeDelegate: [
     {
       transactionHash: mockDelegateRequestTransaction,
       delegator: mockAddress1,
@@ -103,5 +149,5 @@ PendingIsDelegate.args = {
       delegate: mockAddress2,
     },
   ],
-  pendingSetDelegateRequestsForDelegator: [],
+  hasPendingReceivedRequestsToBeDelegate: true,
 };
