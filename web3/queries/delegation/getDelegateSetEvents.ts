@@ -1,5 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { onlyOneRequestPerAddress } from "helpers";
+import { getIgnoredRequestToBeDelegateAddresses } from "./getIgnoredRequestToBeDelegateAddresses";
 
 export async function getDelegateSetEvents(
   voting: VotingV2Ethers,
@@ -9,7 +10,7 @@ export async function getDelegateSetEvents(
   const args = queryFor === "delegate" ? [null, address] : [address, null];
   const filter = voting.filters.DelegateSet(...args);
   const events = await voting.queryFilter(filter);
-  const ignoredDelegateSetEvents = JSON.parse(localStorage.getItem("ignoredDelegateSetEvents") ?? "[]") as string[];
+  const ignoredDelegateSetEvents = await getIgnoredRequestToBeDelegateAddresses(address);
   const parsedEvents = events
     .map((event) => ({
       delegate: event.args.delegate,
