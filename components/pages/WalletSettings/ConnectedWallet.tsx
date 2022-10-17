@@ -8,7 +8,7 @@ interface Props {
   status: "delegator" | "delegate" | "none";
 }
 export function ConnectedWallet({ status }: Props) {
-  const { address, connectedWallet } = useUserContext();
+  const { address, walletIcon } = useUserContext();
 
   return (
     <>
@@ -22,7 +22,7 @@ export function ConnectedWallet({ status }: Props) {
       </Text>
       <_BarWrapper>
         <WalletWrapper>
-          <WalletIcon icon={connectedWallet?.icon} />
+          <WalletIcon icon={walletIcon} />
           <Address>{address}</Address>
         </WalletWrapper>
 

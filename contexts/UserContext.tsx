@@ -10,6 +10,7 @@ export interface UserContextState {
   account: Account | undefined;
   address: string;
   truncatedAddress: string | undefined;
+  walletIcon?: string | undefined;
   apr: BigNumber | undefined;
   countReveals: BigNumber | undefined;
   countNoVotes: BigNumber | undefined;
@@ -27,6 +28,7 @@ export const defaultUserContextState: UserContextState = {
   account: undefined,
   address: "",
   truncatedAddress: undefined,
+  walletIcon: undefined,
   apr: undefined,
   countReveals: undefined,
   countNoVotes: undefined,
@@ -58,6 +60,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     isFetching: userDataFetching,
   } = useUserVotingAndStakingDetails();
 
+  const walletIcon = connectedWallet?.icon;
+
   return (
     <UserContext.Provider
       value={{
@@ -65,6 +69,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         account,
         address,
         truncatedAddress,
+        walletIcon,
         apr,
         countReveals,
         countNoVotes,

@@ -9,7 +9,7 @@ import { PanelWrapper } from "../styles";
 export function MenuPanel() {
   const [_wallets, _connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
-  const { address, connectedWallet } = useUserContext();
+  const { address, connectedWallet, walletIcon } = useUserContext();
 
   const links = [
     {
@@ -43,7 +43,7 @@ export function MenuPanel() {
         {connectedWallet ? (
           <>
             <ConnectedWallet>
-              <WalletIcon icon={connectedWallet?.icon} />
+              <WalletIcon icon={walletIcon} />
               <Address>{address}</Address>
             </ConnectedWallet>
             <Button
