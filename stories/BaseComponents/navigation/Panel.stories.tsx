@@ -20,6 +20,7 @@ import {
 } from "contexts";
 import { BigNumber } from "ethers";
 import { bigNumberFromFloatString } from "helpers";
+import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { DelegationEventT, DelegationStatusT, VoteT } from "types";
 
@@ -92,6 +93,7 @@ const withUserDecorator: DecoratorFn = (Story, { args }) => {
     cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
     userDataFetching: args.userDataFetching ?? false,
     address: args.address ?? "0x1234567890123456789012345678901234567890",
+    walletIcon: mockWalletIcon,
   };
 
   return (

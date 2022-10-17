@@ -7,7 +7,7 @@ import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
 
 export function MenuPanel() {
-  const [_wallets, _connect, disconnect] = useConnectWallet();
+  const [_wallets, connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
   const { address, connectedWallet, walletIcon } = useUserContext();
 
@@ -55,7 +55,9 @@ export function MenuPanel() {
             />
           </>
         ) : (
-          <p>TODO implement no wallet</p>
+          <ConnectButtonWrapper>
+            <Button variant="primary" label="Connect" width={150} height={40} onClick={() => connect()} />
+          </ConnectButtonWrapper>
         )}
       </AccountWrapper>
       <Nav links={_links} />
@@ -74,6 +76,10 @@ const AccountWrapper = styled.div`
 
 const Title = styled.h1`
   font: var(--header-md);
+`;
+
+const ConnectButtonWrapper = styled.div`
+  margin-top: 20px;
 `;
 
 const ConnectedWallet = styled.div`
