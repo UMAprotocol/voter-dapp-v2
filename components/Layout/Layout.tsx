@@ -7,14 +7,14 @@ interface Props {
 }
 export function Layout({ children }: Props) {
   return (
-    <Wrapper>
+    <Main>
       <ErrorBanner />
       <Header />
       {children}
-    </Wrapper>
+    </Main>
   );
 }
 
-const Wrapper = styled.div`
+const Main = styled.main`
   height: 100%;
 `;
