@@ -17,21 +17,25 @@ export function PendingRequests({
   ignoreReceivedRequestToBeDelegate?: (delegatorAddress: string) => void;
   cancelSentRequestToBeDelegate?: () => void;
 }) {
-  if (requestType === "delegator" && !(acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate)) {
+  if (requestType === "delegate" && !(acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate)) {
     throw new Error(
       "`acceptReceivedRequestToBeDelegate` and `ignoreReceivedRequestToBeDelegate` are required when `requestType` is `delegator`"
     );
   }
 
-  if (requestType === "delegate" && !cancelSentRequestToBeDelegate) {
+  if (requestType === "delegator" && !cancelSentRequestToBeDelegate) {
     throw new Error("`cancelSentRequestToBeDelegate` is required when `requestType` is `delegate`");
   }
 
-  const isDelegatorRequest =
-    requestType === "delegator" && acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate;
-  const isDelegateRequest = requestType === "delegate" && cancelSentRequestToBeDelegate;
+  const isReceivedRequestToBeDelegate =
+    requestType === "delegate" && acceptReceivedRequestToBeDelegate && ignoreReceivedRequestToBeDelegate;
 
-  const _pendingRequests = isDelegateRequest ? [pendingRequests[pendingRequests.length - 1]] : pendingRequests;
+  const isSentRequestToBeDelegate = requestType === "delegator" && cancelSentRequestToBeDelegate;
+
+  // we only allow the user to _send_ one request to be delegate at a time in the UI
+  // but the user can _receive_ multiple requests to be delegate
+  // we only show the most recent request to be delegate in the UI just in case the user has somehow sent more than one, by using the contracts directly for example
+  const _pendingRequests = isSentRequestToBeDelegate ? [pendingRequests[pendingRequests.length - 1]] : pendingRequests;
 
   return (
     <>
@@ -40,13 +44,15 @@ export function PendingRequests({
       {_pendingRequests?.map(({ delegate, delegator, transactionHash }) => (
         <PendingRequestWrapper
           key={transactionHash}
-          style={{ "--padding-right": isDelegatorRequest ? "25px" : "160px" } as CSSProperties}
+          style={{ "--padding-right": isReceivedRequestToBeDelegate ? "25px" : "160px" } as CSSProperties}
         >
           <AddressWrapper>
             <PendingRequestIcon />
             <div>
-              {isDelegatorRequest && <Text>Account {delegator} wants to delegate voting to your address.</Text>}
-              {isDelegateRequest && <Text>You requested {delegate} to be your delegated voting address.</Text>}
+              {isReceivedRequestToBeDelegate && (
+                <Text>Account {delegator} wants to delegate voting to your address.</Text>
+              )}
+              {isSentRequestToBeDelegate && <Text>You requested {delegate} to be your delegated voting address.</Text>}
               <Text>Waiting for approval</Text>
             </div>
           </AddressWrapper>
@@ -56,13 +62,15 @@ export function PendingRequests({
             </NextLink>
           </Text>
           <ButtonsWrapper>
-            {isDelegatorRequest && (
+            {isReceivedRequestToBeDelegate && (
               <BarButtonPrimary label="accept" onClick={() => acceptReceivedRequestToBeDelegate(delegator)} />
             )}
-            {isDelegatorRequest && (
+            {isReceivedRequestToBeDelegate && (
               <BarButtonSecondary label="ignore" onClick={() => ignoreReceivedRequestToBeDelegate(delegator)} />
             )}
-            {isDelegateRequest && <BarButtonSecondary label="cancel" onClick={() => cancelSentRequestToBeDelegate()} />}
+            {isSentRequestToBeDelegate && (
+              <BarButtonSecondary label="cancel" onClick={() => cancelSentRequestToBeDelegate()} />
+            )}
           </ButtonsWrapper>
         </PendingRequestWrapper>
       ))}

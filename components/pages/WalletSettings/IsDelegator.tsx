@@ -16,7 +16,7 @@ export function IsDelegator({ hasPending }: { hasPending?: boolean }) {
       <ConnectedWallet status={hasPending ? "none" : "delegator"} />
       {hasPending ? (
         <PendingRequests
-          requestType="delegate"
+          requestType="delegator"
           pendingRequests={getPendingSentRequestsToBeDelegate()}
           cancelSentRequestToBeDelegate={cancelSentRequestToBeDelegate}
         />
