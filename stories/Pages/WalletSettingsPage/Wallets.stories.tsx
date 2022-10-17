@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Wallets } from "components";
 import { grey100 } from "constants/colors";
+import { mockAddress1, mockAddress2, mockAddress3, mockDelegateRequestTransaction } from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 
 export default {
@@ -15,10 +16,6 @@ export default {
   ],
 } as ComponentMeta<typeof Wallets>;
 
-const mockAddress1 = "0x12345678901234567890";
-const mockAddress2 = "0x09876543211234567890";
-const mockAddress3 = "0xfedcba98761234567890";
-const mockDelegateRequestTransaction = "0xabcdef12345678901234567890";
 const sendRequestToBeDelegate = () => alert("sendRequestToBeDelegate");
 const terminateRelationshipWithDelegate = () => alert("terminateRelationshipWithDelegate");
 const addDelegator = () => alert("addDelegator");
@@ -32,7 +29,7 @@ const commonArgs = {
   terminateRelationshipWithDelegator,
 };
 
-const Template: ComponentStory<typeof Wallets> = (args) => <Wallets {...commonArgs} {...args} />;
+const Template: ComponentStory<typeof Wallets> = () => <Wallets />;
 
 export const NoWalletConnected = Template.bind({});
 NoWalletConnected.args = {

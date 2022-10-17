@@ -8,6 +8,7 @@ import { NoWalletConnected } from "./NoWalletConnected";
 export function Wallets() {
   const { getDelegationStatus } = useDelegationContext();
   const delegationStatus = getDelegationStatus();
+
   return (
     <Wrapper>
       {delegationStatus === "no-wallet-connected" && <NoWalletConnected />}
