@@ -1,6 +1,5 @@
 import { LoadingSkeleton, Tabs } from "components";
-import { parseEther } from "ethers/lib/utils";
-import { formatNumberForDisplay } from "helpers";
+import { formatNumberForDisplay, parseEther } from "helpers";
 import {
   useApprove,
   useContractsContext,
@@ -19,14 +18,8 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { voting, votingToken } = useContractsContext();
-  const {
-    tokenAllowance,
-    stakedBalance,
-    unstakedBalance,
-    pendingUnstake,
-    canUnstakeTime,
-    getStakingDataFetching: getBalancesFetching,
-  } = useStakingContext();
+  const { tokenAllowance, stakedBalance, unstakedBalance, pendingUnstake, canUnstakeTime, getStakingDataFetching } =
+    useStakingContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
@@ -38,7 +31,7 @@ export function StakeUnstakePanel() {
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
 
   function isLoading() {
-    return getBalancesFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
+    return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
   }
 
   function approve(approveAmount: string) {

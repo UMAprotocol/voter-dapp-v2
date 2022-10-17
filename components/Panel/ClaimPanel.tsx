@@ -10,7 +10,7 @@ export function ClaimPanel() {
   const { voting } = useContractsContext();
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
-  const { outstandingRewards, getStakingDataFetching: getBalancesFetching } = useStakingContext();
+  const { outstandingRewards, getStakingDataFetching } = useStakingContext();
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
@@ -21,7 +21,7 @@ export function ClaimPanel() {
   }
 
   function isLoading() {
-    return getBalancesFetching() || isWithdrawingAndRestaking || isWithdrawingRewards;
+    return getStakingDataFetching() || isWithdrawingAndRestaking || isWithdrawingRewards;
   }
 
   return (
