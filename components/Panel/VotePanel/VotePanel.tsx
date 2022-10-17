@@ -1,5 +1,5 @@
 import { Tabs } from "components";
-import { PanelContentT, VotePanelContentT } from "types";
+import { PanelContentT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";
@@ -25,7 +25,7 @@ export function VotePanel({ content }: Props) {
     discordLink,
     participation,
     results,
-  } = content as VotePanelContentT;
+  } = content;
 
   const hasResults = Boolean(results);
 

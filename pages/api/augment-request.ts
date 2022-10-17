@@ -1,7 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { Contract } from "ethers";
-import { getNodeUrls, constructContractOnChain } from "./_common";
+import { constructContractOnChain, getNodeUrls } from "./_common";
 
 interface Request {
   identifier: string;

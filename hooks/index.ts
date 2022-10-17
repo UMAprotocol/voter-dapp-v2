@@ -39,6 +39,7 @@ export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/use
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
+export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
 export { useUserVotingAndStakingDetails } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";
