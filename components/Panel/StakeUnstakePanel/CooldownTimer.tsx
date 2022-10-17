@@ -6,7 +6,7 @@ import Time from "public/assets/icons/time.svg";
 import styled from "styled-components";
 
 interface Props {
-  cooldownEnds: Date | null;
+  cooldownEnds: Date | null | undefined;
   pendingUnstake: BigNumber | undefined;
   canClaim: boolean;
   onClaim: () => void;
