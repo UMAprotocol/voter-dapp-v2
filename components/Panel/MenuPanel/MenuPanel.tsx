@@ -56,7 +56,7 @@ export function MenuPanel() {
           </>
         ) : (
           <ConnectButtonWrapper>
-            <Button variant="primary" label="Connect" width={150} height={40} onClick={() => connect()} />
+            <Button variant="primary" label="Connect" width={150} height={40} onClick={() => void connect()} />
           </ConnectButtonWrapper>
         )}
       </AccountWrapper>

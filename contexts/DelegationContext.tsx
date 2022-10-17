@@ -26,8 +26,8 @@ export interface DelegationContextState {
   getHasPendingReceivedRequestsToBeDelegate: () => boolean;
   getPendingSentRequestsToBeDelegate: () => DelegationEventT[];
   getHasPendingSentRequestsToBeDelegate: () => boolean;
-  getDelegateAddress: () => string;
-  getDelegatorAddress: () => string;
+  getDelegateAddress: () => string | undefined;
+  getDelegatorAddress: () => string | undefined;
   sendRequestToBeDelegate: (delegateAddress: string) => void;
   cancelSentRequestToBeDelegate: () => void;
   acceptReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
@@ -148,7 +148,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function getDelegateAddress() {
     const status = getDelegationStatus();
-    if (status === "delegator") return delegate!;
+    if (status === "delegator") return delegate;
     if (status === "delegate") return address;
     return zeroAddress;
   }

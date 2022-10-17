@@ -30,23 +30,25 @@ export function useIgnoreReceivedRequestToBeDelegate() {
   };
 }
 
-async function ignoreReceivedRequestToBeDelegate({
+function ignoreReceivedRequestToBeDelegate({
   userAddress,
   delegatorAddress,
 }: {
   userAddress: string;
   delegatorAddress: string;
 }) {
-  const ignoredRequestToBeDelegateAddresses = getIgnoredRequestToBeDelegateAddressesFromStorage();
+  return new Promise(() => {
+    const ignoredRequestToBeDelegateAddresses = getIgnoredRequestToBeDelegateAddressesFromStorage();
 
-  if (!ignoredRequestToBeDelegateAddresses[userAddress]?.includes(delegatorAddress)) {
-    if (!ignoredRequestToBeDelegateAddresses[userAddress]) {
-      ignoredRequestToBeDelegateAddresses[userAddress] = [];
+    if (!ignoredRequestToBeDelegateAddresses[userAddress]?.includes(delegatorAddress)) {
+      if (!ignoredRequestToBeDelegateAddresses[userAddress]) {
+        ignoredRequestToBeDelegateAddresses[userAddress] = [];
+      }
+      ignoredRequestToBeDelegateAddresses[userAddress].push(delegatorAddress);
+      window.localStorage.setItem(
+        "ignoredRequestToBeDelegateAddresses",
+        JSON.stringify(ignoredRequestToBeDelegateAddresses)
+      );
     }
-    ignoredRequestToBeDelegateAddresses[userAddress].push(delegatorAddress);
-    window.localStorage.setItem(
-      "ignoredRequestToBeDelegateAddresses",
-      JSON.stringify(ignoredRequestToBeDelegateAddresses)
-    );
-  }
+  });
 }

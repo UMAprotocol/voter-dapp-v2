@@ -40,6 +40,7 @@ export function Wallet() {
       })();
     }
     // we don't include `connectedWallets` here because otherwise it would run this logic after disconnecting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connect]);
 
   useEffect(() => {

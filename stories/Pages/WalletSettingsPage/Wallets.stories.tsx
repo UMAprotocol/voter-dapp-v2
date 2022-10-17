@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Meta, Story } from "@storybook/react";
 import { Wallets } from "components";
 import { grey100 } from "constants/colors";
@@ -35,7 +37,7 @@ export default {
       </div>
     ),
     (Story, { args }) => {
-      const mockUserContextState = {
+      const mockUserContextState: UserContextState = {
         ...defaultUserContextState,
         address: args.address ?? mockAddress1,
         walletIcon: args.walletIcon ?? mockWalletIcon,
