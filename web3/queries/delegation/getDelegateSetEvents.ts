@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { onlyOneRequestPerAddress } from "helpers/onlyOneRequestPerAddress";
+import { onlyOneRequestPerAddress } from "helpers";
 
 export async function getDelegateSetEvents(
   voting: VotingV2Ethers,

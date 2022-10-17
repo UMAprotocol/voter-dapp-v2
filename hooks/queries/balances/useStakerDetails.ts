@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { zeroAddress } from "helpers/ethers";
+import { zeroAddress } from "helpers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getStakerDetails } from "web3";
 

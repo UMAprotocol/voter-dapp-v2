@@ -23,7 +23,7 @@ export {
   toUtf8String,
   zeroAddress,
 } from "./ethers";
-export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
+export { bigNumberFromFloatString, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
   formatVotesToCommit,
   formatVotesToReveal,
@@ -35,6 +35,7 @@ export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredR
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
+export { onlyOneRequestPerAddress } from "./onlyOneRequestPerAddress";
 export { truncateEthAddress } from "./truncateEthAddress";
 export { unixTimestampToDate } from "./unixTimestampToDate";
 export { makeUniqueKeyForVote } from "./votes";

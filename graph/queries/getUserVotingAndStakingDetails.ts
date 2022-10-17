@@ -1,7 +1,7 @@
 import graphEndpoint from "constants/graphEndpoint";
 import request, { gql } from "graphql-request";
-import { bigNumberFromFloatString } from "helpers/formatNumber";
-import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types/global";
+import { bigNumberFromFloatString } from "helpers";
+import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types";
 
 export async function getUserVotingAndStakingDetails(address: string | undefined) {
   const userDataQuery = gql`

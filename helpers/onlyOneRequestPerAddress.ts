@@ -1,4 +1,4 @@
-import { DelegationEventT } from "types/global";
+import { DelegationEventT } from "types";
 
 export function onlyOneRequestPerAddress(delegationEvents: DelegationEventT[], queryFor: "delegate" | "delegator") {
   const uniqueAddresses = new Set<string>();

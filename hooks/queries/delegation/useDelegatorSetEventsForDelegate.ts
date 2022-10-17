@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { delegatorSetEventsKey } from "constants/queryKeys";
+import { delegatorSetEventForDelegateKey } from "constants/queryKeys";
 import { useContractsContext, useHandleError, useUserContext } from "hooks";
 import { getDelegatorSetEvents } from "web3";
 
@@ -9,7 +9,7 @@ export function useDelegatorSetEventsForDelegate() {
   const onError = useHandleError();
 
   const queryResult = useQuery(
-    [delegatorSetEventsKey, address],
+    [delegatorSetEventForDelegateKey, address],
     () => getDelegatorSetEvents(voting, address, "delegate"),
     {
       refetchInterval: (data) => (data ? false : 100),

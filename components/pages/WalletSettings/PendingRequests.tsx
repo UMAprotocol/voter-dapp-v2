@@ -1,7 +1,7 @@
 import NextLink from "next/link";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled, { CSSProperties } from "styled-components";
-import { DelegationEventT } from "types/global";
+import { DelegationEventT } from "types";
 import { AddressWrapper, BarButtonPrimary, BarButtonSecondary, BarWrapper, Header, Text } from "./styles";
 
 export function PendingRequests({

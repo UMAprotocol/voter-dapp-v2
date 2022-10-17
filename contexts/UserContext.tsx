@@ -3,7 +3,7 @@ import { Account } from "@web3-onboard/core/dist/types";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useUserVotingAndStakingDetails } from "hooks";
 import { createContext, ReactNode } from "react";
-import { VoteHistoryByKeyT } from "types/global";
+import { VoteHistoryByKeyT } from "types";
 
 export interface UserContextState {
   connectedWallet: WalletState | undefined;

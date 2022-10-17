@@ -19,10 +19,9 @@ import {
   VotesContextState,
 } from "contexts";
 import { BigNumber } from "ethers";
-import { bigNumberFromFloatString } from "helpers/formatNumber";
+import { bigNumberFromFloatString } from "helpers";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
-import { DelegationStatusT, VoteT } from "types";
-import { DelegationEventT } from "types/global";
+import { DelegationEventT, DelegationStatusT, VoteT } from "types";
 
 interface StoryProps
   extends PanelContextState,

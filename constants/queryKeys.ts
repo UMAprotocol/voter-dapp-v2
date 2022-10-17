@@ -18,7 +18,7 @@ export const stakerDetailsKey = "stakerDetailsKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation
-export const delegatorSetEventsKey = "delegatorSetEventsKey";
+export const delegatorSetEventForDelegateKey = "delegatorSetEventForDelegateKey";
 export const delegatorSetEventsForDelegatorKey = "delegatorSetEventsForDelegatorKey";
 export const receivedRequestsToBeDelegateKey = "receivedRequestsToBeDelegateKey";
 export const sentRequestsToBeDelegateKey = "sentRequestsToBeDelegateKey";
