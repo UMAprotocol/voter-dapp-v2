@@ -16,14 +16,8 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
-  const {
-    getActiveVotes,
-    getUpcomingVotes,
-    getPastVotes,
-    getActivityStatus,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
+  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getUserDependentIsFetching } =
+    useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();

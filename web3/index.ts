@@ -15,6 +15,7 @@ export { revealVotes } from "./mutations/votes/revealVotes";
 export { getOutstandingRewards } from "./queries/balances/getOutstandingRewards";
 export { getStakerDetails } from "./queries/balances/getStakerDetails";
 export { getTokenAllowance } from "./queries/balances/getTokenAllowance";
+export { getUnstakeCoolDown } from "./queries/balances/getUnstakeCoolDown";
 export { getUnstakedBalance } from "./queries/balances/getUnstakedBalance";
 export { getDelegateSetEvents } from "./queries/delegation/getDelegateSetEvents";
 export { getDelegateToStaker } from "./queries/delegation/getDelegateToStaker";
