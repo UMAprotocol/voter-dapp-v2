@@ -34,8 +34,8 @@ export function StakeUnstakePanel() {
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
-  const showCooldownTimer = hasCooldownTimeRemaining && hasClaimableTokens;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
+  const showCooldownTimer = canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
 
   function isLoading() {
     return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
@@ -55,7 +55,12 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmount: string) {
-    requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
+    try {
+      requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
+    } catch (err) {
+      // parse ether failed, lets not crash app. this can happen if theres no input or NaN input
+      console.error(err);
+    }
   }
 
   function executeUnstake() {
@@ -83,6 +88,7 @@ export function StakeUnstakePanel() {
           pendingUnstake={pendingUnstake}
           requestUnstake={requestUnstake}
           unstakeCoolDown={unstakeCoolDown}
+          canClaim={canClaim}
         />
       ),
     },
