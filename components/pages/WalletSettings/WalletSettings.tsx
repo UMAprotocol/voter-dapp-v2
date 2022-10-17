@@ -1,6 +1,5 @@
-import { Banner, Layout, LoadingSpinner } from "components";
+import { Banner, Layout, LoadingSpinner, PageInnerWrapper, PageOuterWrapper } from "components";
 import { useDelegationContext } from "hooks";
-import { PageInnerWrapper, PageOuterWrapper } from "pages/styles";
 import styled from "styled-components";
 import { Wallets } from "./Wallets";
 

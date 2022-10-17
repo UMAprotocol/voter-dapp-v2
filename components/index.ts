@@ -23,6 +23,7 @@ export { Layout } from "./Layout/Layout";
 export { LoadingSkeleton } from "./LoadingSkeleton/LoadingSkeleton";
 export { LoadingSpinner } from "./LoadingSpinner/LoadingSpinner";
 export { Nav } from "./Nav/Nav";
+export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
 export { Vote } from "./pages/Vote";
 export { Wallets } from "./pages/WalletSettings/Wallets";
 export { WalletSettings } from "./pages/WalletSettings/WalletSettings";
