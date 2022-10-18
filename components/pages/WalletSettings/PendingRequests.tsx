@@ -53,14 +53,14 @@ export function PendingRequests({
                 <Text>Account {delegator} wants to delegate voting to your address.</Text>
               )}
               {isSentRequestToBeDelegate && <Text>You requested {delegate} to be your delegated voting address.</Text>}
-              <Text>Waiting for approval</Text>
+              <Text>
+                Waiting for approval |{" "}
+                <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
+                  <A target="_blank">View Transaction</A>
+                </NextLink>
+              </Text>
             </div>
           </AddressWrapper>
-          <Text>
-            <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
-              <A target="_blank">View Transaction</A>
-            </NextLink>
-          </Text>
           <ButtonsWrapper>
             {isReceivedRequestToBeDelegate && (
               <BarButtonPrimary label="accept" onClick={() => acceptReceivedRequestToBeDelegate(delegator)} />
