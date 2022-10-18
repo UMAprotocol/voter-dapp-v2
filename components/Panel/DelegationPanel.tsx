@@ -118,25 +118,25 @@ export function DelegationPanel() {
                 />
               </AddDelegateInputWrapper>
             )}
+            {showPendingRequests &&
+              pendingRequests.map(({ delegate, transactionHash }) => (
+                <PendingRequestWrapper key={transactionHash}>
+                  <AddressWrapper>
+                    <PendingRequestIcon />
+                    <PendingRequestDetailsWrapper>
+                      <PendingRequestText>Request sent to {delegate}</PendingRequestText>
+                      <PendingRequestText>Waiting for approval</PendingRequestText>
+                      <PendingRequestText>
+                        <NextLink href={`https://goerli.etherscan.io/${transactionHash}`} passHref>
+                          <A target="_blank">View Transaction</A>
+                        </NextLink>
+                      </PendingRequestText>
+                    </PendingRequestDetailsWrapper>
+                  </AddressWrapper>
+                </PendingRequestWrapper>
+              ))}
           </>
         )}
-        {showPendingRequests &&
-          pendingRequests.map(({ delegate, transactionHash }) => (
-            <PendingRequestWrapper key={transactionHash}>
-              <AddressWrapper>
-                <PendingRequestIcon />
-                <PendingRequestDetailsWrapper>
-                  <PendingRequestText>Request sent to {delegate}</PendingRequestText>
-                  <PendingRequestText>Waiting for approval</PendingRequestText>
-                  <PendingRequestText>
-                    <NextLink href={`https://goerli.etherscan.io/${transactionHash}`} passHref>
-                      <A target="_blank">View Transaction</A>
-                    </NextLink>
-                  </PendingRequestText>
-                </PendingRequestDetailsWrapper>
-              </AddressWrapper>
-            </PendingRequestWrapper>
-          ))}
         <PanelErrorBanner errorType="delegation" />
       </InnerWrapper>
       <PanelFooter />

@@ -1,6 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { zeroAddress } from "helpers";
 
-export function removeDelegator({ voting }: { voting: VotingV2Ethers }) {
-  return voting.setDelegator(zeroAddress);
+export async function removeDelegator({ voting }: { voting: VotingV2Ethers }) {
+  const tx = await voting.setDelegator(zeroAddress);
+  return tx.wait();
 }

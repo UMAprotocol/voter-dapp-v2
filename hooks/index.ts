@@ -23,7 +23,6 @@ export { useAcceptReceivedRequestToBeDelegate } from "./mutations/delegation/use
 export { useCancelSentRequestToBeDelegate } from "./mutations/delegation/useCancelSentRequestToBeDelegate";
 export { useIgnoreReceivedRequestToBeDelegate } from "./mutations/delegation/useIgnoreReceivedRequestToBeDelegate";
 export { useSendRequestToBeDelegate } from "./mutations/delegation/useSendRequestToBeDelegate";
-export { useSetDelegator } from "./mutations/delegation/useSetDelegator";
 export { useTerminateRelationshipWithDelegate } from "./mutations/delegation/useTerminateRelationshipWithDelegate";
 export { useTerminateRelationshipWithDelegator } from "./mutations/delegation/useTerminateRelationshipWithDelegator";
 export { useCommitVotes } from "./mutations/votes/useCommitVotes";

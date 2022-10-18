@@ -4,6 +4,7 @@ interface SetDelegate {
   voting: VotingV2Ethers;
   delegateAddress: string;
 }
-export function setDelegate({ voting, delegateAddress }: SetDelegate) {
-  return voting.setDelegate(delegateAddress);
+export async function setDelegate({ voting, delegateAddress }: SetDelegate) {
+  const tx = await voting.setDelegate(delegateAddress);
+  return tx.wait();
 }

@@ -163,22 +163,22 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   function getDelegationStatus(): DelegationStatusT {
     if (!address) return "no-wallet-connected";
     // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
-    if (
-      !getHasReceivedRequestsToBeDelegate() &&
-      !getHasPendingSentRequestsToBeDelegate() &&
-      !getHasDelegatorSetEvents()
-    )
+    if (!getHasReceivedRequestsToBeDelegate() && !getHasSentRequestsToBeDelegate() && !getHasDelegatorSetEvents())
       return "no-delegation";
     // if there is a delegator set for your address, you are a delegate
-    if (getAddress(voterFromDelegate ?? "") !== getAddress(address)) return "delegate";
+    if (voterFromDelegate && getAddress(voterFromDelegate) !== getAddress(address)) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
-    if (getAddress(address) === getAddress(delegateToStaker ?? "")) return "delegator";
+    if (delegateToStaker && getAddress(address) === getAddress(delegateToStaker)) return "delegator";
     // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
     if (getHasPendingReceivedRequestsToBeDelegate()) return "delegate-pending";
     // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
     if (getHasPendingSentRequestsToBeDelegate()) return "delegator-pending";
     // if none are true we assume the user has no delegation
     return "no-delegation";
+  }
+
+  function getHasSentRequestsToBeDelegate() {
+    return sentRequestsToBeDelegate && sentRequestsToBeDelegate.length > 0;
   }
 
   function getHasReceivedRequestsToBeDelegate() {
