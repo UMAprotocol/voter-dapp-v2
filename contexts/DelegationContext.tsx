@@ -1,4 +1,4 @@
-import { zeroAddress } from "helpers";
+import { getAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useCancelSentRequestToBeDelegate,
@@ -170,9 +170,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     )
       return "no-delegation";
     // if there is a delegator set for your address, you are a delegate
-    if (voterFromDelegate.toLowerCase() !== address.toLowerCase()) return "delegate";
+    if (getAddress(voterFromDelegate ?? "") !== getAddress(address)) return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
-    if (address.toLowerCase() === delegateToStaker.toLowerCase()) return "delegator";
+    if (getAddress(address) === getAddress(delegateToStaker ?? "")) return "delegator";
     // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
     if (getHasPendingReceivedRequestsToBeDelegate()) return "delegate-pending";
     // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
@@ -182,11 +182,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getHasReceivedRequestsToBeDelegate() {
-    return receivedRequestsToBeDelegate.length > 0;
+    return receivedRequestsToBeDelegate && receivedRequestsToBeDelegate.length > 0;
   }
 
   function getHasDelegatorSetEvents() {
-    return delegatorSetEventsForDelegate.length > 0;
+    return delegatorSetEventsForDelegate && delegatorSetEventsForDelegate.length > 0;
   }
 
   function getHasPendingReceivedRequestsToBeDelegate() {
@@ -194,7 +194,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getHasPendingSentRequestsToBeDelegate() {
-    return getPendingSentRequestsToBeDelegate().length > 0;
+    const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
+    const mostRecentSentRequestToBeDelegate = pendingSentRequestsToBeDelegate.at(-1);
+    return mostRecentSentRequestToBeDelegate?.delegate !== zeroAddress && pendingSentRequestsToBeDelegate.length > 0;
   }
 
   function getPendingReceivedRequestsToBeDelegate() {

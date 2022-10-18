@@ -4,14 +4,14 @@ import styled from "styled-components";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {
-  const { getDelegationDataFetching } = useDelegationContext();
+  const { getDelegationDataLoading } = useDelegationContext();
 
   return (
     <Layout>
       <Banner>Wallet Settings</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getDelegationDataFetching() ? (
+          {getDelegationDataLoading() ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner variant="black" size={300} />
             </LoadingSpinnerWrapper>
