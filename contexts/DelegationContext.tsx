@@ -194,9 +194,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getHasPendingSentRequestsToBeDelegate() {
-    const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
-    const mostRecentSentRequestToBeDelegate = pendingSentRequestsToBeDelegate.at(-1);
-    return mostRecentSentRequestToBeDelegate?.delegate !== zeroAddress && pendingSentRequestsToBeDelegate.length > 0;
+    return getPendingSentRequestsToBeDelegate().length > 0;
   }
 
   function getPendingReceivedRequestsToBeDelegate() {
@@ -214,6 +212,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getPendingSentRequestsToBeDelegate() {
+    if (delegate === zeroAddress) return [];
+
     return (
       sentRequestsToBeDelegate?.filter(
         (delegateSet) =>
