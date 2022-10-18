@@ -37,18 +37,18 @@ function ignoreReceivedRequestToBeDelegate({
   userAddress: string;
   delegatorAddress: string;
 }) {
-  return new Promise(() => {
-    const ignoredRequestToBeDelegateAddresses = getIgnoredRequestToBeDelegateAddressesFromStorage();
+  const ignoredRequestToBeDelegateAddresses = getIgnoredRequestToBeDelegateAddressesFromStorage();
 
-    if (!ignoredRequestToBeDelegateAddresses[userAddress]?.includes(delegatorAddress)) {
-      if (!ignoredRequestToBeDelegateAddresses[userAddress]) {
-        ignoredRequestToBeDelegateAddresses[userAddress] = [];
-      }
-      ignoredRequestToBeDelegateAddresses[userAddress].push(delegatorAddress);
-      window.localStorage.setItem(
-        "ignoredRequestToBeDelegateAddresses",
-        JSON.stringify(ignoredRequestToBeDelegateAddresses)
-      );
+  if (!ignoredRequestToBeDelegateAddresses[userAddress]?.includes(delegatorAddress)) {
+    if (!ignoredRequestToBeDelegateAddresses[userAddress]) {
+      ignoredRequestToBeDelegateAddresses[userAddress] = [];
     }
-  });
+    ignoredRequestToBeDelegateAddresses[userAddress].push(delegatorAddress);
+    window.localStorage.setItem(
+      "ignoredRequestToBeDelegateAddresses",
+      JSON.stringify(ignoredRequestToBeDelegateAddresses)
+    );
+  }
+
+  return Promise.resolve();
 }
