@@ -50,5 +50,6 @@ function ignoreReceivedRequestToBeDelegate({
     );
   }
 
+  // react query requires mutation functions to return a promise
   return Promise.resolve();
 }
