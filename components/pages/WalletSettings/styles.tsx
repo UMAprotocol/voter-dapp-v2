@@ -28,6 +28,7 @@ export const Address = styled.p`
 
 export const Header = styled.h1`
   font: var(--header-md);
+  text-transform: capitalize;
 `;
 
 export const Text = styled.p`
