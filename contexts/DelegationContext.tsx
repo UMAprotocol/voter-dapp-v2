@@ -206,7 +206,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
           (delegateSet) =>
             !delegatorSetEventsForDelegate?.some(
               (delegatorSet) =>
-                delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
+                delegatorSet.delegate === delegateSet.delegate && delegatorSet.delegator === delegatorSet.delegator
             )
         )
         ?.filter(({ delegator }) => !ignoredRequestToBeDelegateAddresses?.includes(delegator)) ?? []
@@ -221,7 +221,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         (delegateSet) =>
           !delegatorSetEventsForDelegator?.some(
             (delegatorSet) =>
-              delegatorSet.delegate == delegateSet.delegate && delegatorSet.delegator == delegatorSet.delegator
+              delegatorSet.delegate === delegateSet.delegate && delegatorSet.delegator === delegatorSet.delegator
           )
       ) ?? []
     );
