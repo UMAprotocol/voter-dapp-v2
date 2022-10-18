@@ -39,8 +39,13 @@ export function PendingRequests({
 
   return (
     <>
-      <Header>Pending {requestType} requests</Header>
-      <Text>Explanation of {requestType} requests</Text>
+      <Header>
+        Pending {isSentRequestToBeDelegate ? "sent requests to be delegate" : "received requests to be delegate"}
+      </Header>
+      <Text>
+        Explanation of {isSentRequestToBeDelegate ? "sent requests to be delegate" : "received requests to be delegate"}{" "}
+        requests
+      </Text>
       {_pendingRequests?.map(({ delegate, delegator, transactionHash }) => (
         <PendingRequestWrapper
           key={transactionHash}
