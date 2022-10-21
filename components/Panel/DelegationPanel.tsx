@@ -127,7 +127,7 @@ export function DelegationPanel() {
                       <PendingRequestText>Request sent to {delegate}</PendingRequestText>
                       <PendingRequestText>Waiting for approval</PendingRequestText>
                       <PendingRequestText>
-                        <NextLink href={`https://goerli.etherscan.io/${transactionHash}`} passHref>
+                        <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
                           <A target="_blank">View Transaction</A>
                         </NextLink>
                       </PendingRequestText>

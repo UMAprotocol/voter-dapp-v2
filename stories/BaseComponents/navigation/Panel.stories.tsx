@@ -21,7 +21,8 @@ import {
   VotesContextState,
 } from "contexts";
 import { BigNumber } from "ethers";
-import { bigNumberFromFloatString } from "helpers";
+import { bigNumberFromFloatString, zeroAddress } from "helpers";
+import { mockAddress1, mockAddress2, mockDelegateRequestTransaction } from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { DelegationEventT, DelegationStatusT, VoteT } from "types";
@@ -35,7 +36,9 @@ interface StoryProps
   votes: VoteT[];
   delegationStatus: DelegationStatusT;
   delegateAddress: string;
-  pendingSetDelegateRequestsForDelegator: DelegationEventT[];
+  delegatorAddress: string;
+  pendingSentRequestsToBeDelegate: DelegationEventT[];
+  pendingReceivedRequestsToBeDelegate: DelegationEventT[];
 }
 
 export default {
@@ -87,6 +90,13 @@ const withErrorDecorator: DecoratorFn = (Story, { args }) => {
   );
 };
 
+const mockConnectedWallet = {
+  label: "MetaMask",
+  icon: mockWalletIcon,
+  accounts: [],
+  chains: [],
+};
+
 const withUserDecorator: DecoratorFn = (Story, { args }) => {
   const mockUserContextState: UserContextState = {
     ...defaultUserContextState,
@@ -94,8 +104,9 @@ const withUserDecorator: DecoratorFn = (Story, { args }) => {
     cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
     cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
     userDataFetching: args.userDataFetching ?? false,
-    address: args.address ?? "0x1234567890123456789012345678901234567890",
-    walletIcon: mockWalletIcon,
+    address: args.address ?? mockAddress1,
+    walletIcon: args.walletIcon ?? mockWalletIcon,
+    connectedWallet: args.connectedWallet,
   };
 
   return (
@@ -122,8 +133,10 @@ const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
     getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-    getPendingSentRequestsToBeDelegate: () => args.pendingSetDelegateRequestsForDelegator ?? [],
-    getDelegateAddress: () => args.delegateAddress ?? "0x1234567890123456789012345678901234567890",
+    getPendingSentRequestsToBeDelegate: () => args.pendingSentRequestsToBeDelegate ?? [],
+    getPendingReceivedRequestsToBeDelegate: () => args.pendingReceivedRequestsToBeDelegate ?? [],
+    getDelegateAddress: () => args.delegateAddress ?? zeroAddress,
+    getDelegatorAddress: () => args.delegatorAddress ?? zeroAddress,
   };
 
   return (
@@ -133,11 +146,87 @@ const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
   );
 };
 
-export const MenuPanel = Template.bind({});
-MenuPanel.args = {
+export const MenuPanelNoWalletConnected = Template.bind({});
+MenuPanelNoWalletConnected.args = {
   panelType: "menu",
   panelOpen: true,
+  address: "",
+  connectedWallet: undefined,
+  walletIcon: undefined,
+  delegationStatus: "no-wallet-connected",
 };
+MenuPanelNoWalletConnected.decorators = [withErrorDecorator, withUserDecorator];
+
+export const MenuPanelNoDelegation = Template.bind({});
+MenuPanelNoDelegation.args = {
+  panelType: "menu",
+  panelOpen: true,
+  address: mockAddress1,
+  // @ts-expect-error - no need to do a complicated mock for the provider here
+  connectedWallet: mockConnectedWallet,
+  delegationStatus: "no-delegation",
+};
+MenuPanelNoDelegation.decorators = [withUserDecorator, withDelegationDecorator];
+
+export const MenuPanelDelegator = Template.bind({});
+MenuPanelDelegator.args = {
+  panelType: "menu",
+  panelOpen: true,
+  address: mockAddress1,
+  // @ts-expect-error - no need to do a complicated mock for the provider here
+  connectedWallet: mockConnectedWallet,
+  delegationStatus: "delegator",
+  delegateAddress: mockAddress2,
+};
+MenuPanelDelegator.decorators = [withUserDecorator, withDelegationDecorator];
+
+export const MenuPanelDelegate = Template.bind({});
+MenuPanelDelegate.args = {
+  panelType: "menu",
+  panelOpen: true,
+  address: mockAddress2,
+  // @ts-expect-error - no need to do a complicated mock for the provider here
+  connectedWallet: mockConnectedWallet,
+  delegationStatus: "delegate",
+  delegatorAddress: mockAddress1,
+};
+MenuPanelDelegate.decorators = [withUserDecorator, withDelegationDecorator];
+
+export const MenuPanelDelegatorPending = Template.bind({});
+MenuPanelDelegatorPending.args = {
+  panelType: "menu",
+  panelOpen: true,
+  address: mockAddress1,
+  // @ts-expect-error - no need to do a complicated mock for the provider here
+  connectedWallet: mockConnectedWallet,
+  delegationStatus: "delegator-pending",
+  pendingSentRequestsToBeDelegate: [
+    {
+      delegator: mockAddress1,
+      delegate: mockAddress2,
+      transactionHash: mockDelegateRequestTransaction,
+    },
+  ],
+};
+MenuPanelDelegatorPending.decorators = [withUserDecorator, withDelegationDecorator];
+
+export const MenuPanelDelegatePending = Template.bind({});
+MenuPanelDelegatePending.args = {
+  panelType: "menu",
+  panelOpen: true,
+  address: mockAddress2,
+  // @ts-expect-error - no need to do a complicated mock for the provider here
+  connectedWallet: mockConnectedWallet,
+  delegationStatus: "delegate-pending",
+  pendingReceivedRequestsToBeDelegate: [
+    {
+      delegator: mockAddress1,
+      delegate: mockAddress2,
+      transactionHash: mockDelegateRequestTransaction,
+    },
+  ],
+};
+MenuPanelDelegatePending.decorators = [withUserDecorator, withDelegationDecorator];
 
 export const ClaimPanel = Template.bind({});
 ClaimPanel.args = {
@@ -294,11 +383,11 @@ export const DelegationPanelWhenStatusIsDelegatorPending = Template.bind({});
 DelegationPanelWhenStatusIsDelegatorPending.args = {
   ...delegationPanelCommonArgs,
   delegationStatus: "delegator-pending",
-  pendingSetDelegateRequestsForDelegator: [
+  pendingSentRequestsToBeDelegate: [
     {
-      delegate: "0x0987654321098765432109876543210987654321",
-      delegator: "0x1234567890123456789012345678901234567890",
-      transactionHash: "0x1234567890123456789012345678901234567890123456789012345678901234",
+      delegator: mockAddress1,
+      delegate: mockAddress2,
+      transactionHash: mockDelegateRequestTransaction,
     },
   ],
 };

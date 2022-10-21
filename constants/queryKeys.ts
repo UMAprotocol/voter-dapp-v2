@@ -26,6 +26,7 @@ export const sentRequestsToBeDelegateKey = "sentRequestsToBeDelegateKey";
 export const voterFromDelegateKey = "voterFromDelegateKey";
 export const delegateToStakerKey = "delegateToStakerKey";
 export const ignoredRequestToBeDelegateAddressesKey = "ignoredRequestToBeDelegateAddressesKey";
+export const committedVotesForDelegatorKey = "committedVotesForDelegatorKey";
 
 export const votingNotUserDependentQueryKeys = [
   hasActiveVotesKey,

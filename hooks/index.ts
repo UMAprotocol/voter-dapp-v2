@@ -30,7 +30,9 @@ export { useRevealVotes } from "./mutations/votes/useRevealVotes";
 export { useOutstandingRewards } from "./queries/balances/useOutstandingRewards";
 export { useStakerDetails } from "./queries/balances/useStakerDetails";
 export { useTokenAllowance } from "./queries/balances/useTokenAllowance";
+export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
 export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
+export { useCommittedVotesForDelegator } from "./queries/delegation/useCommittedVotesForDelegator";
 export { useDelegateToStaker } from "./queries/delegation/useDelegateToStaker";
 export { useDelegatorSetEventsForDelegate } from "./queries/delegation/useDelegatorSetEventsForDelegate";
 export { useDelegatorSetEventsForDelegator } from "./queries/delegation/useDelegatorSetEventsForDelegator";
@@ -38,7 +40,6 @@ export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/use
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
-export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
 export { useUserVotingAndStakingDetails } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";
