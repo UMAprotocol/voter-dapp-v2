@@ -19,3 +19,7 @@ export const PanelSectionText = styled.p`
   font: var(--text-sm);
   margin-bottom: 20px;
 `;
+
+export const PanelWarningText = styled(PanelSectionText)`
+  color: var(--red-500);
+`;

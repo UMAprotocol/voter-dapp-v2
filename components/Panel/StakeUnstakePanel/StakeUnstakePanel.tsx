@@ -3,6 +3,7 @@ import { formatNumberForDisplay, parseEther } from "helpers";
 import {
   useApprove,
   useContractsContext,
+  useDelegationContext,
   useExecuteUnstake,
   useRequestUnstake,
   useStake,
@@ -27,6 +28,7 @@ export function StakeUnstakePanel() {
     getStakingDataFetching,
     unstakeCoolDown,
   } = useStakingContext();
+  const { getDelegationStatus } = useDelegationContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
@@ -36,6 +38,7 @@ export function StakeUnstakePanel() {
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
   const showCooldownTimer = canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
+  const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
     return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
@@ -77,6 +80,7 @@ export function StakeUnstakePanel() {
           approve={approve}
           stake={stake}
           unstakeCoolDown={unstakeCoolDown}
+          isDelegate={isDelegate}
         />
       ),
     },
@@ -89,6 +93,7 @@ export function StakeUnstakePanel() {
           requestUnstake={requestUnstake}
           unstakeCoolDown={unstakeCoolDown}
           canClaim={canClaim}
+          isDelegate={isDelegate}
         />
       ),
     },

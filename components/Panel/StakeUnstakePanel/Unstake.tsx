@@ -1,4 +1,5 @@
 import { AmountInput, Button, PanelErrorBanner } from "components";
+import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
 import { useVotesContext, useVoteTimingContext } from "hooks";
@@ -7,17 +8,24 @@ import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
 import { useState } from "react";
 import styled from "styled-components";
-import { PanelSectionText, PanelSectionTitle } from "../styles";
-import formatDuration from "date-fns/formatDuration";
+import { PanelSectionText, PanelSectionTitle, PanelWarningText } from "../styles";
 
 interface Props {
   stakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
   unstakeCoolDown: number | undefined;
   canClaim: boolean;
+  isDelegate: boolean;
   requestUnstake: (unstakeAmount: string) => void;
 }
-export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstakeCoolDown, canClaim }: Props) {
+export function Unstake({
+  stakedBalance,
+  pendingUnstake,
+  requestUnstake,
+  unstakeCoolDown,
+  canClaim,
+  isDelegate,
+}: Props) {
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
@@ -50,7 +58,7 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstake
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
-      {(phase === "commit" || !hasActiveVotes) && (
+      {!isDelegate && (phase === "commit" || !hasActiveVotes) && (
         <>
           <AmountInputWrapper>
             <AmountInput
@@ -71,8 +79,11 @@ export function Unstake({ stakedBalance, pendingUnstake, requestUnstake, unstake
         </>
       )}
       <PanelErrorBanner errorType="unstake" />
-      {!canClaim && phase === "reveal" && hasActiveVotes && <p>Cannot request unstake in active reveal phase</p>}
-      {canClaim && <p>Cannot request to unstake until you claim unstaked tokens</p>}
+      {!canClaim && phase === "reveal" && hasActiveVotes && (
+        <PanelWarningText>Cannot request unstake in active reveal phase</PanelWarningText>
+      )}
+      {canClaim && <PanelWarningText>Cannot request to unstake until you claim unstaked tokens</PanelWarningText>}
+      {isDelegate && <PanelWarningText>Cannot request to unstake while you are a delegate</PanelWarningText>}
     </Wrapper>
   );
 }

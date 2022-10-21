@@ -1,10 +1,10 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
+import formatDuration from "date-fns/formatDuration";
 import { BigNumber, constants } from "ethers";
 import { formatEther, parseEther } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
-import { PanelSectionText, PanelSectionTitle } from "../styles";
-import formatDuration from "date-fns/formatDuration";
+import { PanelSectionText, PanelSectionTitle, PanelWarningText } from "../styles";
 
 const MaxApproval = formatEther(constants.MaxUint256);
 
@@ -12,10 +12,11 @@ interface Props {
   tokenAllowance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   unstakeCoolDown: number | undefined;
+  isDelegate: boolean;
   approve: (approveAmount: string) => void;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
 }
-export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstakeCoolDown }: Props) {
+export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstakeCoolDown, isDelegate }: Props) {
   const [stakeAmount, setStakeAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const unstakeCoolDownFormatted = unstakeCoolDown ? formatDuration({ seconds: unstakeCoolDown }) : "0 seconds";
@@ -48,28 +49,36 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstake
         Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for{" "}
         {unstakeCoolDownFormatted} after unstaking.
       </PanelSectionText>
-      <AmountInputWrapper>
-        <AmountInput
-          value={stakeAmount}
-          onInput={setStakeAmount}
-          onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
-          allowNegative={false}
-        />
-      </AmountInputWrapper>
-      <CheckboxWrapper>
-        <Checkbox
-          label={disclaimer}
-          checked={disclaimerChecked}
-          onChange={(e) => setDisclaimerChecked(e.target.checked)}
-        />
-      </CheckboxWrapper>
-      <Button
-        variant="primary"
-        label={isApprove() ? "Approve" : "Stake"}
-        onClick={isApprove() ? onApprove : onStake}
-        width="100%"
-        disabled={isButtonDisabled()}
-      />
+      {isDelegate ? (
+        <PanelWarningText>
+          You are currently delegating your vote. You will need to undelegate your vote before you can stake.
+        </PanelWarningText>
+      ) : (
+        <>
+          <AmountInputWrapper>
+            <AmountInput
+              value={stakeAmount}
+              onInput={setStakeAmount}
+              onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
+              allowNegative={false}
+            />
+          </AmountInputWrapper>
+          <CheckboxWrapper>
+            <Checkbox
+              label={disclaimer}
+              checked={disclaimerChecked}
+              onChange={(e) => setDisclaimerChecked(e.target.checked)}
+            />
+          </CheckboxWrapper>
+          <Button
+            variant="primary"
+            label={isApprove() ? "Approve" : "Stake"}
+            onClick={isApprove() ? onApprove : onStake}
+            width="100%"
+            disabled={isButtonDisabled()}
+          />
+        </>
+      )}
       <PanelErrorBanner errorType="stake" />
     </Wrapper>
   );
