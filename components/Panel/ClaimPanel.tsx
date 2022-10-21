@@ -1,16 +1,24 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
-import { useContractsContext, useStakingContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
+import {
+  useContractsContext,
+  useDelegationContext,
+  useStakingContext,
+  useWithdrawAndRestake,
+  useWithdrawRewards,
+} from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
-import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
+import { PanelSectionText, PanelSectionTitle, PanelWarningText, PanelWrapper } from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
+  const { getDelegationStatus } = useDelegationContext();
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getStakingDataFetching } = useStakingContext();
+  const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
     withdrawRewardsMutation({ voting });
@@ -55,7 +63,14 @@ export function ClaimPanel() {
               By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
               text TODO.
             </PanelSectionText>
-            <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
+            {isDelegate ? (
+              <PanelWarningText>
+                Delegated wallets can only claim and restake. Claiming to your wallet from a delegated voting wallet is
+                not allowed.
+              </PanelWarningText>
+            ) : (
+              <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
+            )}
           </ClaimToWalletWrapper>
           <PanelErrorBanner errorType="claim" />
         </InnerWrapper>
