@@ -47,7 +47,6 @@ export function Wallet() {
     if (!wallet?.provider) {
       setProvider(null);
     } else {
-      console.log(wallet.provider);
       // After this is set you can use the provider to sign or transact
       const provider = new ethers.providers.Web3Provider(wallet.provider);
       setProvider(provider);

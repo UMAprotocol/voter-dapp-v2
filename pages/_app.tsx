@@ -25,8 +25,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <UserProvider>
               <ContractsProvider>
-                <StakingProvider>
-                  <DelegationProvider>
+                <DelegationProvider>
+                  <StakingProvider>
                     <VotesProvider>
                       <PanelProvider>
                         <GlobalStyle />
@@ -34,8 +34,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                         <Panel />
                       </PanelProvider>
                     </VotesProvider>
-                  </DelegationProvider>
-                </StakingProvider>
+                  </StakingProvider>
+                </DelegationProvider>
               </ContractsProvider>
               <ReactQueryDevtools />
             </UserProvider>

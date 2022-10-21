@@ -4,8 +4,8 @@ import {
   useOutstandingRewards,
   useStakerDetails,
   useTokenAllowance,
-  useUnstakedBalance,
   useUnstakeCoolDown,
+  useUnstakedBalance,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 
@@ -18,7 +18,6 @@ export interface StakingContextState {
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: number | undefined;
-  delegate: string | undefined;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
 }
@@ -31,7 +30,6 @@ export const defaultStakingContextState: StakingContextState = {
   tokenAllowance: undefined,
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
-  delegate: undefined,
   unstakeCoolDown: undefined,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
@@ -41,7 +39,7 @@ export const StakingContext = createContext<StakingContextState>(defaultStakingC
 
 export function StakingProvider({ children }: { children: ReactNode }) {
   const {
-    data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime, delegate },
+    data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails();
@@ -102,7 +100,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
-        delegate,
         getStakingDataLoading,
         getStakingDataFetching,
       }}

@@ -12,7 +12,7 @@ import {
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
   useSentRequestsToBeDelegate,
-  useStakingContext,
+  useStakerDetails,
   useTerminateRelationshipWithDelegate,
   useTerminateRelationshipWithDelegator,
   useUserContext,
@@ -107,7 +107,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     useTerminateRelationshipWithDelegator();
   const { voting } = useContractsContext();
   const { address } = useUserContext();
-  const { delegate } = useStakingContext();
+  const {
+    data: { delegate },
+  } = useStakerDetails();
   const { closePanel } = usePanelContext();
 
   function getDelegationDataLoading() {
