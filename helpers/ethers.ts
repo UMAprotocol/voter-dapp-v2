@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { capitalizeFirstLetter } from "./misc";
 
 export const formatEther = ethers.utils.formatEther;
 
@@ -22,3 +23,12 @@ export const toUtf8String = ethers.utils.toUtf8String;
 export const formatBytes32String = ethers.utils.formatBytes32String;
 
 export const commify = ethers.utils.commify;
+
+export const formatTransactionError = (error: unknown): string | unknown => {
+  if (error instanceof Error) {
+    // ethers transactions put all call data and debug data between parens, so we will filter it out
+    const message = error.message.split("(")[0] || error.message;
+    return capitalizeFirstLetter(message);
+  }
+  return error;
+};

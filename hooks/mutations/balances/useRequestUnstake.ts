@@ -4,6 +4,7 @@ import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
+import { formatTransactionError } from "helpers";
 
 export function useRequestUnstake(errorType?: string) {
   const queryClient = useQueryClient();
@@ -29,7 +30,9 @@ export function useRequestUnstake(errorType?: string) {
         };
       });
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
   return {
     requestUnstakeMutation: mutate,

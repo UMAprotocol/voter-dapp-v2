@@ -4,6 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { withdrawAndRestake } from "web3";
+import { formatTransactionError } from "helpers";
 
 export function useWithdrawAndRestake(errorType?: string) {
   const queryClient = useQueryClient();
@@ -27,7 +28,9 @@ export function useWithdrawAndRestake(errorType?: string) {
 
       queryClient.setQueryData<BigNumber>([outstandingRewardsKey, address], () => BigNumber.from(0));
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
   return {
     withdrawAndRestakeMutation: mutate,
