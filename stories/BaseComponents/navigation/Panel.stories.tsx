@@ -97,7 +97,7 @@ const mockConnectedWallet = {
   chains: [],
 };
 
-const withUserDecorator: DecoratorFn = (Story, { args }) => {
+const userDecorator: DecoratorFn = (Story, { args }) => {
   const mockUserContextState: UserContextState = {
     ...defaultUserContextState,
     apr: args.apr ?? 0,
@@ -116,7 +116,7 @@ const withUserDecorator: DecoratorFn = (Story, { args }) => {
   );
 };
 
-const withVotesDecorator: DecoratorFn = (Story, { args }) => {
+const votesDecorator: DecoratorFn = (Story, { args }) => {
   const mockVotesContextState: VotesContextState = {
     ...defaultVotesContextState,
     getPastVotes: () => args.votes ?? [],
@@ -129,7 +129,7 @@ const withVotesDecorator: DecoratorFn = (Story, { args }) => {
   );
 };
 
-const withDelegationDecorator: DecoratorFn = (Story, { args }) => {
+const delegationDecorator: DecoratorFn = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
     getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
@@ -155,7 +155,7 @@ MenuPanelNoWalletConnected.args = {
   walletIcon: undefined,
   delegationStatus: "no-wallet-connected",
 };
-MenuPanelNoWalletConnected.decorators = [withErrorDecorator, withUserDecorator];
+MenuPanelNoWalletConnected.decorators = [withErrorDecorator, userDecorator];
 
 export const MenuPanelNoDelegation = Template.bind({});
 MenuPanelNoDelegation.args = {
@@ -166,7 +166,7 @@ MenuPanelNoDelegation.args = {
   connectedWallet: mockConnectedWallet,
   delegationStatus: "no-delegation",
 };
-MenuPanelNoDelegation.decorators = [withUserDecorator, withDelegationDecorator];
+MenuPanelNoDelegation.decorators = [userDecorator, delegationDecorator];
 
 export const MenuPanelDelegator = Template.bind({});
 MenuPanelDelegator.args = {
@@ -178,7 +178,7 @@ MenuPanelDelegator.args = {
   delegationStatus: "delegator",
   delegateAddress: mockAddress2,
 };
-MenuPanelDelegator.decorators = [withUserDecorator, withDelegationDecorator];
+MenuPanelDelegator.decorators = [userDecorator, delegationDecorator];
 
 export const MenuPanelDelegate = Template.bind({});
 MenuPanelDelegate.args = {
@@ -190,7 +190,7 @@ MenuPanelDelegate.args = {
   delegationStatus: "delegate",
   delegatorAddress: mockAddress1,
 };
-MenuPanelDelegate.decorators = [withUserDecorator, withDelegationDecorator];
+MenuPanelDelegate.decorators = [userDecorator, delegationDecorator];
 
 export const MenuPanelDelegatorPending = Template.bind({});
 MenuPanelDelegatorPending.args = {
@@ -208,7 +208,7 @@ MenuPanelDelegatorPending.args = {
     },
   ],
 };
-MenuPanelDelegatorPending.decorators = [withUserDecorator, withDelegationDecorator];
+MenuPanelDelegatorPending.decorators = [userDecorator, delegationDecorator];
 
 export const MenuPanelDelegatePending = Template.bind({});
 MenuPanelDelegatePending.args = {
@@ -226,7 +226,7 @@ MenuPanelDelegatePending.args = {
     },
   ],
 };
-MenuPanelDelegatePending.decorators = [withUserDecorator, withDelegationDecorator];
+MenuPanelDelegatePending.decorators = [userDecorator, delegationDecorator];
 
 export const ClaimPanel = Template.bind({});
 ClaimPanel.args = {
@@ -318,7 +318,7 @@ RemindPanel.args = {
 };
 
 export const HistoryPanel = Template.bind({});
-HistoryPanel.decorators = [withUserDecorator, withVotesDecorator];
+HistoryPanel.decorators = [userDecorator, votesDecorator];
 HistoryPanel.args = {
   panelType: "history",
   apr: bigNumberFromFloatString(`${Math.random() * 100}`),
@@ -329,7 +329,7 @@ HistoryPanel.args = {
   votes: makeMockVotesWithHistory(),
 };
 
-const delegationPanelDecorators = [withUserDecorator, withDelegationDecorator];
+const delegationPanelDecorators = [userDecorator, delegationDecorator];
 const delegationPanelCommonArgs = {
   panelType: "delegation" as const,
   panelOpen: true,

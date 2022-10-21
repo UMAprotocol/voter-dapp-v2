@@ -1,6 +1,12 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Meta, Story } from "@storybook/react";
 import { Header } from "components";
+import { defaultDelegationContextState, DelegationContext, DelegationContextState } from "contexts";
+import { DelegationStatusT } from "types";
 
+interface StoryProps {
+  delegationStatus: DelegationStatusT;
+}
 export default {
   title: "Base components/Navigation/Header",
   component: Header,
@@ -8,8 +14,27 @@ export default {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: "fullscreen",
   },
-} as ComponentMeta<typeof Header>;
+  decorators: [
+    (Story, { args }) => {
+      const mockDelegationContextState: DelegationContextState = {
+        ...defaultDelegationContextState,
+        getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
+      };
 
-const Template: ComponentStory<typeof Header> = () => <Header />;
+      return (
+        <DelegationContext.Provider value={mockDelegationContextState}>
+          <Story />
+        </DelegationContext.Provider>
+      );
+    },
+  ],
+} as Meta<StoryProps>;
 
-export const NotConnected = Template.bind({});
+const Template: Story<StoryProps> = () => <Header />;
+
+export const Default = Template.bind({});
+
+export const WithReceivedRequestToBeDelegate = Template.bind({});
+WithReceivedRequestToBeDelegate.args = {
+  delegationStatus: "delegate-pending",
+};
