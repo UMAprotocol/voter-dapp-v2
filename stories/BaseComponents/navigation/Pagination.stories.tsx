@@ -1,0 +1,75 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { useArgs } from "@storybook/client-api";
+import { Meta, Story } from "@storybook/react";
+import { Pagination } from "components";
+import { Props as PaginationProps } from "components/Pagination/Pagination";
+import { defaultPaginationContextState, PaginationContext, PaginationContextState } from "contexts";
+import { PaginateForT } from "types/global";
+
+interface StoryProps extends PaginationProps {
+  paginateFor: PaginateForT;
+}
+
+export default {
+  title: "Base components/Navigation/Pagination",
+  component: Pagination,
+  decorators: [
+    (Story, { args }) => {
+      const [_args, updateArgs] = useArgs();
+
+      const pageStates = args.pageStates ?? defaultPaginationContextState.pageStates;
+
+      function goToPage(paginateFor: PaginateForT, number: number) {
+        updateArgs({ ...pageStates, [paginateFor]: (pageStates[paginateFor].number = number) });
+      }
+
+      function nextPage(paginateFor: PaginateForT) {
+        updateArgs({
+          ...pageStates,
+          [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number + 1),
+        });
+      }
+
+      function previousPage(paginateFor: PaginateForT) {
+        updateArgs({
+          ...pageStates,
+          [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number - 1),
+        });
+      }
+
+      function firstPage(paginateFor: PaginateForT) {
+        goToPage(paginateFor, 1);
+      }
+
+      function lastPage(paginateFor: PaginateForT) {
+        goToPage(paginateFor, 100);
+      }
+
+      const mockPaginationContextState: PaginationContextState = {
+        ...defaultPaginationContextState,
+        pageStates,
+        goToPage,
+        nextPage,
+        previousPage,
+        firstPage,
+        lastPage,
+      };
+
+      return (
+        <PaginationContext.Provider value={mockPaginationContextState}>
+          <Story />
+        </PaginationContext.Provider>
+      );
+    },
+  ],
+} as Meta<StoryProps>;
+
+const Template: Story<StoryProps> = (args) => <Pagination {...args} />;
+
+export const PastVotes = Template.bind({});
+PastVotes.args = {
+  paginateFor: "pastVotesPage",
+};

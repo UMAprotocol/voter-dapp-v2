@@ -26,6 +26,7 @@ export { Nav } from "./Nav/Nav";
 export { PastVotes } from "./pages/PastVotes";
 export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
 export { Vote } from "./pages/Vote";
+export { Pagination } from "./Pagination/Pagination";
 export { ClaimPanel } from "./Panel/ClaimPanel";
 export { HistoryPanel } from "./Panel/HistoryPanel";
 export { MenuPanel } from "./Panel/MenuPanel/MenuPanel";

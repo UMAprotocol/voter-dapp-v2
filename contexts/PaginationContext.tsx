@@ -1,21 +1,14 @@
 import { createContext, ReactNode, useState } from "react";
+import { PageStatesT, PaginateForT } from "types/global";
 
-export interface PaginationContextState extends PageStatesT {
+export interface PaginationContextState {
+  pageStates: PageStatesT;
   goToPage: (paginateFor: PaginateForT, page: number) => void;
   nextPage: (paginateFor: PaginateForT) => void;
   previousPage: (paginateFor: PaginateForT) => void;
   firstPage: (paginateFor: PaginateForT) => void;
   lastPage: (paginateFor: PaginateForT) => void;
 }
-
-type PaginateForT = "activeVotesPage" | "upcomingVotesPage" | "pastVotesPage" | "voteHistoryPage";
-
-type PageStateT = {
-  number: number;
-  resultsPerPage: number;
-};
-
-type PageStatesT = Record<PaginateForT, PageStateT>;
 
 const defaultPageState = {
   number: 1,
@@ -30,7 +23,7 @@ const defaultPageStates = {
 };
 
 export const defaultPaginationContextState: PaginationContextState = {
-  ...defaultPageStates,
+  pageStates: defaultPageStates,
   goToPage: () => null,
   nextPage: () => null,
   previousPage: () => null,
@@ -66,7 +59,7 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
   return (
     <PaginationContext.Provider
       value={{
-        ...pageStates,
+        pageStates,
         goToPage,
         nextPage,
         previousPage,

@@ -7,7 +7,9 @@ import { usePaginationContext } from "hooks/contexts/usePaginationContext";
 export function usePastVotes() {
   const { roundId } = useVoteTimingContext();
   const onError = useHandleError();
-  const { pastVotesPage } = usePaginationContext();
+  const {
+    pageStates: { pastVotesPage },
+  } = usePaginationContext();
 
   const queryResult = useQuery([pastVotesKey, roundId, pastVotesPage], () => getPastVotes(), {
     refetchInterval: (data) => (data ? false : 100),
