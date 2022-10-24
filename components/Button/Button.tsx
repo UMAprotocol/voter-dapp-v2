@@ -2,6 +2,7 @@ import { red100, red500, red600, white } from "constants/colors";
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
+import { isExternalLink } from "helpers";
 
 interface Props {
   /**
@@ -126,7 +127,9 @@ interface LinkProps {
 function _Link({ href, children, style }: LinkProps) {
   return (
     <Link href={href} passHref>
-      <A style={style}>{children}</A>
+      <A style={style} target={isExternalLink(href) ? "_blank" : undefined}>
+        {children}
+      </A>
     </Link>
   );
 }
