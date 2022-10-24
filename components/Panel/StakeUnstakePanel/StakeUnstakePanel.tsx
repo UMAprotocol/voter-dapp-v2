@@ -1,6 +1,5 @@
 import { LoadingSkeleton, Tabs } from "components";
-import { parseEther } from "ethers/lib/utils";
-import { formatNumberForDisplay } from "helpers";
+import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
   useApprove,
   useBalancesContext,
@@ -43,12 +42,12 @@ export function StakeUnstakePanel() {
   }
 
   function approve(approveAmount: string) {
-    approveMutation({ votingToken, approveAmount: parseEther(approveAmount) });
+    approveMutation({ votingToken, approveAmount: parseEtherSafe(approveAmount) });
   }
 
   function stake(stakeAmount: string, resetStakeAmount: () => void) {
     stakeMutation(
-      { voting, stakeAmount: parseEther(stakeAmount) },
+      { voting, stakeAmount: parseEtherSafe(stakeAmount) },
       {
         onSuccess: () => resetStakeAmount(),
       }
@@ -56,12 +55,7 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmount: string) {
-    try {
-      requestUnstakeMutation({ voting, unstakeAmount: parseEther(unstakeAmount) });
-    } catch (err) {
-      // parse ether failed, lets not crash app. this can happen if theres no input or NaN input
-      console.error(err);
-    }
+    requestUnstakeMutation({ voting, unstakeAmount: parseEtherSafe(unstakeAmount) });
   }
 
   function executeUnstake() {

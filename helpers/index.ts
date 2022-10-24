@@ -16,6 +16,7 @@ export {
   formatBytes32String,
   formatEther,
   parseEther,
+  parseEtherSafe,
   randomBytes,
   solidityKeccak256,
   toUtf8String,
