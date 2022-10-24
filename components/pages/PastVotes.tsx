@@ -1,6 +1,5 @@
 import {
   Banner,
-  HowItWorks,
   Layout,
   LoadingSpinner,
   PageInnerWrapper,
@@ -18,6 +17,8 @@ export function PastVotes() {
   const { getPastVotes, getUserIndependentIsLoading, getUserDependentIsFetching } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
+
+  console.log(getPastVotes());
 
   return (
     <Layout>

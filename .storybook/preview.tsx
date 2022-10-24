@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import "styles/fonts.css";
 import { GlobalStyle } from "../components/GlobalStyle";
-import { PanelProvider, WalletProvider } from "../contexts";
+import { PaginationProvider, PanelProvider, WalletProvider } from "../contexts";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -18,10 +18,12 @@ export const parameters = {
 addDecorator((Story) => (
   <WalletProvider>
     <QueryClientProvider client={new QueryClient()}>
-      <PanelProvider>
+      <PaginationProvider>
+        <PanelProvider>
         <GlobalStyle />
         <Story />
       </PanelProvider>
+      </PaginationProvider>
     </QueryClientProvider>
   </WalletProvider>
 ));

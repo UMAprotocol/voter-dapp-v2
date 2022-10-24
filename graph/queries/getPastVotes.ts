@@ -8,7 +8,7 @@ import { PastVotesQuery } from "types";
 export async function getPastVotes(resultsPerPage = 5, page = 1) {
   const pastVotesQuery = gql`
     {
-      priceRequests(where: { isResolved: true }, orderBy: time, orderDirection: desc, first: ${resultsPerPage}, skip: ${
+      priceRequests(where: { isResolved: true }, orderBy: requestIndex, orderDirection: desc, first: ${resultsPerPage}, skip: ${
     resultsPerPage * (page - 1)
   }) {
         id

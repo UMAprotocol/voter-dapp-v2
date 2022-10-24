@@ -13,16 +13,15 @@ export function Pagination({ paginateFor, numberOfVotes }: Props) {
   console.log(pageStates["pastVotesPage"]);
 
   const pageState = pageStates[paginateFor];
+  const lastPageNumber = Math.ceil(numberOfVotes / pageState.resultsPerPage);
+  const buttonNumbers = Array.from({ length: 5 }, (_, i) => i + 1);
+
   const _goToPage = (page: number) => goToPage(paginateFor, page);
   const _nextPage = () => nextPage(paginateFor);
   const _previousPage = () => previousPage(paginateFor);
-  const lastPageNumber = Math.ceil(numberOfVotes / pageState.resultsPerPage);
   const _lastPage = () => lastPage(paginateFor, lastPageNumber);
-  const buttonNumbers = Array.from({ length: 5 }, (_, i) => i + 1);
 
-  function isActive(button: number) {
-    return button === pageState.number;
-  }
+  const isActive = (button: number) => button === pageState.number;
 
   return (
     <Wrapper>
@@ -33,8 +32,12 @@ export function Pagination({ paginateFor, numberOfVotes }: Props) {
       ))}
       <Ellipsis>...</Ellipsis>
       <LastPageButton onClick={_lastPage}>{lastPageNumber}</LastPageButton>
-      <PreviousPageButton onClick={_previousPage}>&lt;</PreviousPageButton>
-      <NextPageButton onClick={_nextPage}>&gt;</NextPageButton>
+      <PreviousPageButton onClick={_previousPage} disabled={pageState.number === 1}>
+        &lt;
+      </PreviousPageButton>
+      <NextPageButton onClick={_nextPage} disabled={pageState.number === lastPageNumber}>
+        &gt;
+      </NextPageButton>
     </Wrapper>
   );
 }
