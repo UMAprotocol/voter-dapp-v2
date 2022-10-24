@@ -11,3 +11,14 @@ export const PageInnerWrapper = styled.div`
   padding-inline: 45px;
   padding-block: 45px;
 `;
+
+export const Strong = styled.strong`
+  color: var(--red-500);
+`;
+
+export const LoadingSpinnerWrapper = styled.div`
+  width: 100%;
+  padding-top: 50px;
+  display: grid;
+  place-items: center;
+`;
