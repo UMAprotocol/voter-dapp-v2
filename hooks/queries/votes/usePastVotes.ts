@@ -2,15 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { pastVotesKey } from "constants/queryKeys";
 import { getPastVotes } from "graph";
 import { useHandleError, useVoteTimingContext } from "hooks";
+import { usePaginationContext } from "hooks/contexts/usePaginationContext";
 
 export function usePastVotes() {
   const { roundId } = useVoteTimingContext();
   const onError = useHandleError();
+  const { pastVotesPage } = usePaginationContext();
 
-  const queryResult = useQuery([pastVotesKey, roundId], () => getPastVotes(), {
+  const queryResult = useQuery([pastVotesKey, roundId, pastVotesPage], () => getPastVotes(), {
     refetchInterval: (data) => (data ? false : 100),
     initialData: {},
     onError,
+    keepPreviousData: true,
   });
 
   return queryResult;
