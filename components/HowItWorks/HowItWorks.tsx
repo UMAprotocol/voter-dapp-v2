@@ -9,7 +9,8 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching } = useBalancesContext();
+  const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching, pendingUnstake } =
+    useBalancesContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
@@ -21,8 +22,8 @@ export function HowItWorks() {
   }
 
   function totalTokens() {
-    if (unstakedBalance === undefined || stakedBalance === undefined) return;
-    return unstakedBalance.add(stakedBalance);
+    if (unstakedBalance === undefined || stakedBalance === undefined || pendingUnstake === undefined) return;
+    return unstakedBalance.add(stakedBalance).add(pendingUnstake);
   }
 
   function isLoading() {
