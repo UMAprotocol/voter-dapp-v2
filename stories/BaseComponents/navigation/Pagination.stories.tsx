@@ -7,10 +7,14 @@ import { Meta, Story } from "@storybook/react";
 import { Pagination } from "components";
 import { Props as PaginationProps } from "components/Pagination/Pagination";
 import { defaultPaginationContextState, PaginationContext, PaginationContextState } from "contexts";
-import { PaginateForT } from "types/global";
+import { defaultPageStates } from "contexts/PaginationContext";
+import { PageStatesT, PaginateForT } from "types/global";
 
 interface StoryProps extends PaginationProps {
+  pageStates: PageStatesT;
   paginateFor: PaginateForT;
+  resultsPerPage: number;
+  numberOfVotes: number;
 }
 
 export default {
@@ -20,7 +24,7 @@ export default {
     (Story, { args }) => {
       const [_args, updateArgs] = useArgs();
 
-      const pageStates = args.pageStates ?? defaultPaginationContextState.pageStates;
+      const pageStates = args.pageStates ?? defaultPageStates;
 
       function goToPage(paginateFor: PaginateForT, number: number) {
         updateArgs({ ...pageStates, [paginateFor]: (pageStates[paginateFor].number = number) });
@@ -44,8 +48,8 @@ export default {
         goToPage(paginateFor, 1);
       }
 
-      function lastPage(paginateFor: PaginateForT) {
-        goToPage(paginateFor, 100);
+      function lastPage(paginateFor: PaginateForT, lastPageNumber: number) {
+        goToPage(paginateFor, lastPageNumber);
       }
 
       const mockPaginationContextState: PaginationContextState = {
@@ -72,4 +76,5 @@ const Template: Story<StoryProps> = (args) => <Pagination {...args} />;
 export const PastVotes = Template.bind({});
 PastVotes.args = {
   paginateFor: "pastVotesPage",
+  numberOfVotes: 100,
 };

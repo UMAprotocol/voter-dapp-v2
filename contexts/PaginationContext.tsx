@@ -7,15 +7,15 @@ export interface PaginationContextState {
   nextPage: (paginateFor: PaginateForT) => void;
   previousPage: (paginateFor: PaginateForT) => void;
   firstPage: (paginateFor: PaginateForT) => void;
-  lastPage: (paginateFor: PaginateForT) => void;
+  lastPage: (paginateFor: PaginateForT, lastPageNumber: number) => void;
 }
 
-const defaultPageState = {
+export const defaultPageState = {
   number: 1,
   resultsPerPage: 5,
 };
 
-const defaultPageStates = {
+export const defaultPageStates = {
   activeVotesPage: defaultPageState,
   upcomingVotesPage: defaultPageState,
   pastVotesPage: defaultPageState,
@@ -41,19 +41,25 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
   }
 
   function nextPage(paginateFor: PaginateForT) {
-    setPageStates({ ...pageStates, [paginateFor]: pageStates[paginateFor].number + 1 });
+    setPageStates({
+      ...pageStates,
+      [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number + 1),
+    });
   }
 
   function previousPage(paginateFor: PaginateForT) {
-    setPageStates({ ...pageStates, [paginateFor]: pageStates[paginateFor].number - 1 });
+    setPageStates({
+      ...pageStates,
+      [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number - 1),
+    });
   }
 
   function firstPage(paginateFor: PaginateForT) {
     goToPage(paginateFor, 1);
   }
 
-  function lastPage(paginateFor: PaginateForT) {
-    goToPage(paginateFor, 100);
+  function lastPage(paginateFor: PaginateForT, lastPageNumber: number) {
+    goToPage(paginateFor, lastPageNumber);
   }
 
   return (
