@@ -1,11 +1,11 @@
-import { Dropdown } from "components/Dropdown";
+import { Dropdown } from "components";
 import { grey800, white } from "constants/colors";
 import { addOpacityToHsl } from "helpers";
-import { usePaginationContext } from "hooks/contexts/usePaginationContext";
+import { usePaginationContext } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
 import styled, { CSSProperties } from "styled-components";
-import { DropdownItemT, PaginateForT } from "types/global";
+import { DropdownItemT, PaginateForT } from "types";
 
 export interface Props {
   paginateFor: PaginateForT;

@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useState } from "react";
-import { PageStatesT, PaginateForT } from "types/global";
+import { PageStatesT, PaginateForT } from "types";
 
 export interface PaginationContextState {
   pageStates: PageStatesT;

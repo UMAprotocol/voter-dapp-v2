@@ -1,8 +1,7 @@
 import graphEndpoint from "constants/graphEndpoint";
 import { BigNumber } from "ethers";
-import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import request, { gql } from "graphql-request";
-import { formatVoteStringWithPrecision, makePriceRequestsByKey } from "helpers";
+import { formatBytes32String, formatVoteStringWithPrecision, makePriceRequestsByKey, parseEther } from "helpers";
 import { PastVotesQuery } from "types";
 
 export async function getPastVotes(resultsPerPage: number, pageNumber: number) {
