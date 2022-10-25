@@ -7,7 +7,6 @@ export interface PaginationContextState {
   nextPage: (paginateFor: PaginateForT) => void;
   previousPage: (paginateFor: PaginateForT) => void;
   firstPage: (paginateFor: PaginateForT) => void;
-  lastPage: (paginateFor: PaginateForT, lastPageNumber: number) => void;
 }
 
 export const defaultPageState = {
@@ -28,7 +27,6 @@ export const defaultPaginationContextState: PaginationContextState = {
   nextPage: () => null,
   previousPage: () => null,
   firstPage: () => null,
-  lastPage: () => null,
 };
 
 export const PaginationContext = createContext<PaginationContextState>(defaultPaginationContextState);
@@ -58,10 +56,6 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
     goToPage(paginateFor, 1);
   }
 
-  function lastPage(paginateFor: PaginateForT, lastPageNumber: number) {
-    goToPage(paginateFor, lastPageNumber);
-  }
-
   return (
     <PaginationContext.Provider
       value={{
@@ -70,7 +64,6 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
         nextPage,
         previousPage,
         firstPage,
-        lastPage,
       }}
     >
       {children}

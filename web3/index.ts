@@ -17,6 +17,5 @@ export { default as getActiveVotes } from "./queries/votes/getActiveVotes";
 export { default as getCommittedVotes } from "./queries/votes/getCommittedVotes";
 export { default as getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { default as getHasActiveVotes } from "./queries/votes/getHasActiveVotes";
-export { getNumberOfVotes } from "./queries/votes/getNumberOfVotes";
 export { default as getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { default as getUpcomingVotes } from "./queries/votes/getUpcomingVotes";

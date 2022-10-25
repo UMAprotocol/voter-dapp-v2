@@ -4,7 +4,6 @@ export const activeVotesKey = "activeVotesKey";
 export const upcomingVotesKey = "upcomingVotesKey";
 export const pastVotesKey = "pastVotesKey";
 export const voteTransactionHashesKey = "voteTransactionHashesKey";
-export const numberOfVotesKey = "numberOfVotesKey";
 // voting - user dependent
 export const encryptedVotesKey = "encryptedVotesKey";
 export const decryptedVotesKey = "decryptedVotesKey";

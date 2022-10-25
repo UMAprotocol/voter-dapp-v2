@@ -14,7 +14,6 @@ interface StoryProps extends PaginationProps {
   pageStates: PageStatesT;
   paginateFor: PaginateForT;
   resultsPerPage: number;
-  numberOfVotes: number;
 }
 
 export default {
@@ -48,10 +47,6 @@ export default {
         goToPage(paginateFor, 1);
       }
 
-      function lastPage(paginateFor: PaginateForT, lastPageNumber: number) {
-        goToPage(paginateFor, lastPageNumber);
-      }
-
       const mockPaginationContextState: PaginationContextState = {
         ...defaultPaginationContextState,
         pageStates,
@@ -59,7 +54,6 @@ export default {
         nextPage,
         previousPage,
         firstPage,
-        lastPage,
       };
 
       return (
@@ -76,5 +70,4 @@ const Template: Story<StoryProps> = (args) => <Pagination {...args} />;
 export const PastVotes = Template.bind({});
 PastVotes.args = {
   paginateFor: "pastVotesPage",
-  numberOfVotes: 100,
 };
