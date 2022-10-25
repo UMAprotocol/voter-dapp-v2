@@ -4,6 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { executeUnstake } from "web3";
+import { formatTransactionError } from "helpers";
 
 function max(a: BigNumber, b: BigNumber) {
   if (a.gt(b)) return a;
@@ -41,7 +42,9 @@ export function useExecuteUnstake(errorType?: string) {
         };
       });
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
 
   return {

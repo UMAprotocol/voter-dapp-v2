@@ -3,6 +3,7 @@ import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { approve } from "web3";
+import { formatTransactionError } from "helpers";
 
 export function useApprove(errorType?: string) {
   const queryClient = useQueryClient();
@@ -18,7 +19,9 @@ export function useApprove(errorType?: string) {
         return newTokenAllowance;
       });
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
   return {
     approveMutation: mutate,

@@ -42,4 +42,7 @@ const ErrorMessage = styled.p`
   }
 `;
 
-const IconWrapper = styled.div``;
+const IconWrapper = styled.div`
+  width: 26px;
+  height: 26px;
+`;

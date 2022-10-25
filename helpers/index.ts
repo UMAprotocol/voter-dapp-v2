@@ -20,6 +20,7 @@ export {
   randomBytes,
   solidityKeccak256,
   toUtf8String,
+  formatTransactionError,
 } from "./ethers";
 export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
