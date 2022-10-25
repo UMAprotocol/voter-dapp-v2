@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
+import { isExternalLink } from "helpers";
 
 interface Props {
   links: {
@@ -13,7 +14,6 @@ interface Props {
 export function Nav({ links }: Props) {
   const { pathname } = useRouter();
   const isActive = (href: string) => pathname === href;
-  const isExternalLink = (href: string) => !href.startsWith("/");
 
   return (
     <Wrapper>
