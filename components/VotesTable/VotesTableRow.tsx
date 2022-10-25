@@ -80,20 +80,18 @@ export function VotesTableRow({
   }
 
   function getExistingOrSelectedVoteFromOptions() {
-    return (
-      options?.find((option) => {
-        const existingVote = getDecryptedVoteAsFormattedString();
+    return options?.find((option) => {
+      const existingVote = getDecryptedVoteAsFormattedString();
 
-        // prefer showing the selected vote if it exists
-        if (selectedVote !== undefined) {
-          return option.value === selectedVote;
-        }
+      // prefer showing the selected vote if it exists
+      if (selectedVote !== undefined) {
+        return option.value === selectedVote;
+      }
 
-        if (existingVote !== undefined) {
-          return option.value === existingVote;
-        }
-      }) ?? null
-    );
+      if (existingVote !== undefined) {
+        return option.value === existingVote;
+      }
+    });
   }
 
   function getYourVote() {

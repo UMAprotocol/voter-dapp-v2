@@ -47,6 +47,13 @@ export default {
         goToPage(paginateFor, 1);
       }
 
+      function setResultsPerPage(paginateFor: PaginateForT, resultsPerPage: number) {
+        updateArgs({
+          ...pageStates,
+          [paginateFor]: (pageStates[paginateFor].resultsPerPage = resultsPerPage),
+        });
+      }
+
       const mockPaginationContextState: PaginationContextState = {
         ...defaultPaginationContextState,
         pageStates,
@@ -54,6 +61,7 @@ export default {
         nextPage,
         previousPage,
         firstPage,
+        setResultsPerPage,
       };
 
       return (

@@ -10,7 +10,7 @@ import { DropdownItemT } from "types";
 interface Props {
   items: DropdownItemT[];
   label: ReactNode;
-  selected: DropdownItemT | null;
+  selected: DropdownItemT | undefined;
   onSelect: (item: DropdownItemT) => void;
   disabled?: boolean;
   borderColor?: string;
