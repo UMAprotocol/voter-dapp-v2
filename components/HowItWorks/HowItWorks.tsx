@@ -65,7 +65,7 @@ export function HowItWorks() {
               <Strong>
                 {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, { decimals: 0 })}
               </Strong>{" "}
-              voting cycle{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}, and are earning{" "}
+              vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}, and are earning{" "}
               <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
             </>
           }
