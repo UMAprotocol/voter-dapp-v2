@@ -14,7 +14,6 @@ export interface Props {
 export function Pagination({ paginateFor }: Props) {
   const { pageStates, goToPage, nextPage, previousPage, setResultsPerPage } = usePaginationContext();
 
-  console.log(pageStates["pastVotesPage"]);
   const pageState = pageStates[paginateFor];
   const numberOfButtons = 5;
   const numbersPastMax = pageState.number - numberOfButtons;

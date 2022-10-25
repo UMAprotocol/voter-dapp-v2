@@ -19,8 +19,6 @@ export function PastVotes() {
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
 
-  console.log(getPastVotes());
-
   return (
     <Layout>
       <Banner>Past Votes</Banner>
@@ -50,7 +48,9 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              <Pagination paginateFor="pastVotesPage" />
+              <PaginationWrapper>
+                <Pagination paginateFor="pastVotesPage" />
+              </PaginationWrapper>
             </>
           )}
         </PageInnerWrapper>
@@ -61,4 +61,8 @@ export function PastVotes() {
 
 const VotesTableWrapper = styled.div`
   margin-top: 35px;
+`;
+
+const PaginationWrapper = styled.div`
+  margin-top: 10px;
 `;

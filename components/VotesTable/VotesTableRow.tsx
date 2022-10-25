@@ -51,7 +51,9 @@ export function VotesTableRow({
   }
 
   function getDecryptedVoteAsFormattedString() {
-    return decryptedVote?.price ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier) : undefined;
+    return decryptedVote?.price !== undefined
+      ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier)
+      : undefined;
   }
 
   function getDecryptedVoteAsString() {
@@ -103,7 +105,7 @@ export function VotesTableRow({
   }
 
   function getCorrectVote() {
-    if (!correctVote) return;
+    if (correctVote === undefined) return;
     const correctVoteAsString = correctVote.toFixed();
 
     return (
