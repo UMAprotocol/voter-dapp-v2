@@ -11,7 +11,9 @@ export function usePastVotes() {
     pageStates: { pastVotesPage },
   } = usePaginationContext();
 
-  const queryResult = useQuery([pastVotesKey, roundId, pastVotesPage], () => getPastVotes(), {
+  const { resultsPerPage, number } = pastVotesPage;
+
+  const queryResult = useQuery([pastVotesKey, roundId, pastVotesPage], () => getPastVotes(resultsPerPage, number), {
     refetchInterval: (data) => (data ? false : 100),
     initialData: {},
     onError,

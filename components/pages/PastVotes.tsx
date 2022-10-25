@@ -4,6 +4,7 @@ import {
   LoadingSpinner,
   PageInnerWrapper,
   PageOuterWrapper,
+  Pagination,
   VotesTable,
   VotesTableHeadings,
   VotesTableRow,
@@ -49,6 +50,7 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
+              <Pagination paginateFor="pastVotesPage" />
             </>
           )}
         </PageInnerWrapper>

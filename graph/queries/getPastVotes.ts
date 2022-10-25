@@ -5,11 +5,11 @@ import request, { gql } from "graphql-request";
 import { formatVoteStringWithPrecision, makePriceRequestsByKey } from "helpers";
 import { PastVotesQuery } from "types";
 
-export async function getPastVotes(resultsPerPage = 5, page = 1) {
+export async function getPastVotes(resultsPerPage = 5, pageNumber = 1) {
   const pastVotesQuery = gql`
     {
       priceRequests(where: { isResolved: true }, orderBy: requestIndex, orderDirection: desc, first: ${resultsPerPage}, skip: ${
-    resultsPerPage * (page - 1)
+    resultsPerPage * (pageNumber - 1)
   }) {
         id
         identifier {

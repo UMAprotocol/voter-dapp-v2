@@ -37,20 +37,26 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
   const [pageStates, setPageStates] = useState<PageStatesT>(defaultPageStates);
 
   function goToPage(paginateFor: PaginateForT, number: number) {
-    setPageStates({ ...pageStates, [paginateFor]: (pageStates[paginateFor].number = number) });
+    setPageStates((prev) => {
+      const newState = { ...prev };
+      newState[paginateFor].number = number;
+      return newState;
+    });
   }
 
   function nextPage(paginateFor: PaginateForT) {
-    setPageStates({
-      ...pageStates,
-      [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number + 1),
+    setPageStates((prev) => {
+      const newState = { ...prev };
+      newState[paginateFor].number += 1;
+      return newState;
     });
   }
 
   function previousPage(paginateFor: PaginateForT) {
-    setPageStates({
-      ...pageStates,
-      [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number - 1),
+    setPageStates((prev) => {
+      const newState = { ...prev };
+      newState[paginateFor].number -= 1;
+      return newState;
     });
   }
 
@@ -59,9 +65,10 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
   }
 
   function setResultsPerPage(paginateFor: PaginateForT, resultsPerPage: number) {
-    setPageStates({
-      ...pageStates,
-      [paginateFor]: (pageStates[paginateFor].resultsPerPage = resultsPerPage),
+    setPageStates((prev) => {
+      const newState = { ...prev };
+      newState[paginateFor].resultsPerPage = resultsPerPage;
+      return newState;
     });
   }
 
