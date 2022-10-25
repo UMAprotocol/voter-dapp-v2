@@ -11,9 +11,15 @@ export function Pagination({ paginateFor }: Props) {
   const { pageStates, goToPage, nextPage, previousPage, setResultsPerPage } = usePaginationContext();
 
   console.log(pageStates["pastVotesPage"]);
-
   const pageState = pageStates[paginateFor];
-  const buttonNumbers = Array.from({ length: 5 }, (_, i) => i + 1);
+  const numberOfButtons = 5;
+  const numbersPastMax = pageState.number - numberOfButtons;
+  const buttonNumbers = Array.from({ length: 5 }, (_, i) => i + 1).map((number) => {
+    if (numbersPastMax > 0) {
+      return number + numbersPastMax;
+    }
+    return number;
+  });
 
   const _goToPage = (page: number) => goToPage(paginateFor, page);
   const _nextPage = () => nextPage(paginateFor);
