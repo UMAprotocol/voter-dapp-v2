@@ -1,9 +1,10 @@
 import { useErrorContext } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
+import Close from "public/assets/icons/close.svg";
 
 export function PanelErrorBanner({ errorType }: { errorType?: string }) {
-  const { errorMessages } = useErrorContext(errorType);
+  const { errorMessages, clearErrorMessages } = useErrorContext(errorType);
 
   if (errorMessages.length === 0) return null;
 
@@ -17,6 +18,11 @@ export function PanelErrorBanner({ errorType }: { errorType?: string }) {
           <ErrorMessage key={message?.toString()}>{message}</ErrorMessage>
         ))}
       </InnerWrapper>
+      <CloseButton onClick={() => clearErrorMessages()}>
+        <CloseIconWrapper>
+          <CloseIcon />
+        </CloseIconWrapper>
+      </CloseButton>
     </OuterWrapper>
   );
 }
@@ -33,7 +39,9 @@ const OuterWrapper = styled.div`
   gap: 13px;
 `;
 
-const InnerWrapper = styled.div``;
+const InnerWrapper = styled.div`
+  width: 100%;
+`;
 
 const ErrorMessage = styled.p`
   overflow-wrap: anywhere;
@@ -45,4 +53,18 @@ const ErrorMessage = styled.p`
 const IconWrapper = styled.div`
   width: 26px;
   height: 26px;
+`;
+
+const CloseIconWrapper = styled.div`
+  width: 15px;
+  height: 15px;
+`;
+
+const CloseIcon = styled(Close)`
+  path {
+    fill: var(--fill);
+  }
+`;
+const CloseButton = styled.button`
+  background: transparent;
 `;

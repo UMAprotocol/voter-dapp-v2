@@ -1,9 +1,10 @@
 import { useErrorContext } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
+import Close from "public/assets/icons/close.svg";
 
 export function ErrorBanner(props: { errorType?: string }) {
-  const { errorMessages } = useErrorContext(props.errorType);
+  const { errorMessages, removeErrorMessage } = useErrorContext(props.errorType);
 
   if (!errorMessages.length) return null;
 
@@ -15,6 +16,11 @@ export function ErrorBanner(props: { errorType?: string }) {
             <Warning />
           </IconWrapper>
           <ErrorMessage>{message}</ErrorMessage>
+          <CloseButton onClick={() => removeErrorMessage(message)}>
+            <IconWrapper>
+              <CloseIcon />
+            </IconWrapper>
+          </CloseButton>
         </ErrorMessageWrapper>
       ))}
     </Wrapper>
@@ -49,4 +55,13 @@ const ErrorMessage = styled.p`
 const IconWrapper = styled.div`
   width: 15px;
   height: 15px;
+`;
+const CloseIcon = styled(Close)`
+  path {
+    fill: var(--fill);
+  }
+`;
+const CloseButton = styled.button`
+  background: transparent;
+  fill: var(--white);
 `;
