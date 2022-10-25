@@ -77,6 +77,10 @@ html {
   }
 }
 
+html, body, #__next {
+  height: 100%;
+}
+
 body {
   /* Improve text rendering */
   -webkit-font-smoothing: antialiased;
