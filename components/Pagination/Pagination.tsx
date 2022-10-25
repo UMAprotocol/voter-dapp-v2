@@ -17,7 +17,7 @@ export function Pagination({ paginateFor }: Props) {
   const pageState = pageStates[paginateFor];
   const numberOfButtons = 5;
   const numbersPastMax = pageState.number - numberOfButtons;
-  const buttonNumbers = Array.from({ length: 5 }, (_, i) => i + 1).map((number) => {
+  const buttonNumbers = Array.from({ length: numberOfButtons }, (_, i) => i + 1).map((number) => {
     if (numbersPastMax > 0) {
       return number + numbersPastMax;
     }
