@@ -8,6 +8,7 @@ import {
   grey100,
   grey50,
   grey500,
+  grey800,
   loadingSkeletonOpacity10,
   loadingSkeletonOpacity100,
   red100,
@@ -221,6 +222,7 @@ a:not([class]) {
     --grey-50: ${grey50};
     --grey-100: ${grey100};
     --grey-500: ${grey500};
+    --grey-800: ${grey800};
     --loading-skeleton-opacity-100: ${loadingSkeletonOpacity100};
     --loading-skeleton-opacity-10: ${loadingSkeletonOpacity10};
     /* Fonts */

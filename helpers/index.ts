@@ -1,3 +1,4 @@
+export { addOpacityToHsl } from "./addOpacityToHsl";
 export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
 export {
   decryptMessage,

@@ -1,6 +1,10 @@
 import { Dropdown } from "components/Dropdown";
+import { grey800, white } from "constants/colors";
+import { addOpacityToHsl } from "helpers";
 import { usePaginationContext } from "hooks/contexts/usePaginationContext";
-import styled from "styled-components";
+import PreviousPage from "public/assets/icons/left-chevron.svg";
+import NextPage from "public/assets/icons/right-chevron.svg";
+import styled, { CSSProperties } from "styled-components";
 import { DropdownItemT, PaginateForT } from "types/global";
 
 export interface Props {
@@ -29,9 +33,9 @@ export function Pagination({ paginateFor }: Props) {
   const isActive = (button: number) => button === pageState.number;
 
   const resultsPerPageOptions = [
-    { value: 5, label: "5" },
-    { value: 20, label: "20" },
-    { value: 50, label: "50" },
+    { value: 5, label: "5 results" },
+    { value: 20, label: "20 results" },
+    { value: 50, label: "50 results" },
   ];
 
   function getSelectedResultsPerPage() {
@@ -44,33 +48,86 @@ export function Pagination({ paginateFor }: Props) {
 
   return (
     <Wrapper>
-      <Dropdown
-        items={resultsPerPageOptions}
-        label="Results per page"
-        selected={getSelectedResultsPerPage()}
-        onSelect={onSelectResultsPerPage}
-      />
-      {buttonNumbers.map((buttonNumber) => (
-        <PageButton key={buttonNumber} onClick={() => _goToPage(buttonNumber)} isActive={isActive(buttonNumber)}>
-          {buttonNumber}
-        </PageButton>
-      ))}
-      <PreviousPageButton onClick={_previousPage} disabled={pageState.number === 1}>
-        &lt;
-      </PreviousPageButton>
-      <NextPageButton onClick={_nextPage}>&gt;</NextPageButton>
+      <ResultsPerPageWrapper>
+        <Dropdown
+          items={resultsPerPageOptions}
+          label="Results per page"
+          selected={getSelectedResultsPerPage()}
+          onSelect={onSelectResultsPerPage}
+          textColor={grey800}
+          borderColor={grey800}
+        />
+      </ResultsPerPageWrapper>
+      <ButtonsWrapper>
+        {buttonNumbers.map((buttonNumber) => (
+          <PageButton
+            key={buttonNumber}
+            onClick={() => _goToPage(buttonNumber)}
+            style={
+              {
+                "--color": isActive(buttonNumber) ? white : grey800,
+                "--background-color": isActive(buttonNumber) ? grey800 : "transparent",
+              } as CSSProperties
+            }
+          >
+            {buttonNumber}
+          </PageButton>
+        ))}
+        <PreviousPageButton onClick={_previousPage} disabled={pageState.number === 1}>
+          <PreviousPage />
+        </PreviousPageButton>
+        <NextPageButton onClick={_nextPage}>
+          <NextPage />
+        </NextPageButton>
+      </ButtonsWrapper>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
   display: flex;
-  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const PageButton = styled.button<{ isActive?: boolean }>``;
+const ResultsPerPageWrapper = styled.div`
+  width: 120px;
+`;
 
-const NavigationButton = styled.button``;
+const ButtonsWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const BaseButton = styled.button`
+  height: 32px;
+  min-width: 32px;
+  display: grid;
+  place-items: center;
+  font: var(--text-sm);
+  color: var(--grey-800);
+  background: transparent;
+  border-radius: 5px;
+  &:hover {
+    background: ${addOpacityToHsl(grey800, 0.1)};
+  }
+  transition: color 200ms, background 200ms;
+`;
+
+const PageButton = styled(BaseButton)`
+  color: var(--color);
+  background: var(--background-color);
+  border: 1px solid var(--grey-800);
+  &:hover {
+    color: var(--grey-800);
+  }
+`;
+
+const NavigationButton = styled(BaseButton)`
+  :disabled {
+    opacity: 0.5;
+  }
+`;
 
 const PreviousPageButton = styled(NavigationButton)``;
 

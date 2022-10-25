@@ -6,6 +6,7 @@ import { useArgs } from "@storybook/client-api";
 import { Meta, Story } from "@storybook/react";
 import { Pagination } from "components";
 import { Props as PaginationProps } from "components/Pagination/Pagination";
+import { grey100 } from "constants/colors";
 import { defaultPaginationContextState, PaginationContext, PaginationContextState } from "contexts";
 import { defaultPageStates } from "contexts/PaginationContext";
 import { PageStatesT, PaginateForT } from "types/global";
@@ -65,6 +66,11 @@ export default {
         </PaginationContext.Provider>
       );
     },
+    (Story) => (
+      <div style={{ width: "100%", maxWidth: "600px", background: grey100, padding: 20 }}>
+        <Story />
+      </div>
+    ),
   ],
 } as Meta<StoryProps>;
 
