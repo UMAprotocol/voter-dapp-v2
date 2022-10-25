@@ -43,10 +43,6 @@ export default {
         });
       }
 
-      function firstPage(paginateFor: PaginateForT) {
-        goToPage(paginateFor, 1);
-      }
-
       function setResultsPerPage(paginateFor: PaginateForT, resultsPerPage: number) {
         updateArgs({
           ...pageStates,
@@ -60,7 +56,6 @@ export default {
         goToPage,
         nextPage,
         previousPage,
-        firstPage,
         setResultsPerPage,
       };
 

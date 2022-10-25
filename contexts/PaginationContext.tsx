@@ -6,7 +6,6 @@ export interface PaginationContextState {
   goToPage: (paginateFor: PaginateForT, page: number) => void;
   nextPage: (paginateFor: PaginateForT) => void;
   previousPage: (paginateFor: PaginateForT) => void;
-  firstPage: (paginateFor: PaginateForT) => void;
   setResultsPerPage: (paginateFor: PaginateForT, resultsPerPage: number) => void;
 }
 
@@ -27,7 +26,6 @@ export const defaultPaginationContextState: PaginationContextState = {
   goToPage: () => null,
   nextPage: () => null,
   previousPage: () => null,
-  firstPage: () => null,
   setResultsPerPage: () => null,
 };
 
@@ -60,10 +58,6 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  function firstPage(paginateFor: PaginateForT) {
-    goToPage(paginateFor, 1);
-  }
-
   function setResultsPerPage(paginateFor: PaginateForT, resultsPerPage: number) {
     setPageStates((prev) => {
       const newState = { ...prev };
@@ -79,7 +73,6 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
         goToPage,
         nextPage,
         previousPage,
-        firstPage,
         setResultsPerPage,
       }}
     >
