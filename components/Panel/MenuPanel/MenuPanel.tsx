@@ -117,8 +117,8 @@ export function MenuPanel() {
                   <PendingRequestWrapper key={transactionHash}>
                     <PendingRequestIcon />
                     <PendingRequestText>
-                      <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
-                        <A target="_blank">{pendingRequestLinkText}</A>
+                      <NextLink href="/wallet-settings" passHref>
+                        <A>{pendingRequestLinkText}</A>
                       </NextLink>{" "}
                       to be delegate {toOrFrom} address{" "}
                       <NextLink

@@ -35,7 +35,7 @@ export function Header() {
               <DelegationNotificationIcon />
               <DelegationNotificationText>
                 <NextLink href="/wallet-settings" passHref>
-                  <A target="_blank">Received request</A>
+                  <A>Received request</A>
                 </NextLink>{" "}
                 to be a delegate
               </DelegationNotificationText>
