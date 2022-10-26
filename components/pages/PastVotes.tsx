@@ -8,7 +8,6 @@ import {
   VotesTable,
   VotesTableHeadings,
   VotesTableRow,
-  VoteTimeline,
 } from "components";
 import { getEntriesForPage } from "helpers";
 import { usePaginationContext, usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
@@ -40,7 +39,6 @@ export function PastVotes() {
             </LoadingSpinnerWrapper>
           ) : (
             <>
-              <VoteTimeline />
               <VotesTableWrapper>
                 <VotesTable
                   headings={<VotesTableHeadings activityStatus="past" />}
