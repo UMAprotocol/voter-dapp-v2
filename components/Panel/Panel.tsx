@@ -57,7 +57,9 @@ export function Panel() {
                     } as CSSProperties
                   }
                 >
-                  <CloseIcon />
+                  <IconWrapper>
+                    <CloseIcon />
+                  </IconWrapper>
                 </CloseButton>
               </Content>
             </Overlay>
@@ -98,4 +100,8 @@ const CloseIcon = styled(Close)`
   path {
     fill: var(--fill);
   }
+`;
+const IconWrapper = styled.div`
+  width: 15px;
+  height: 15px;
 `;
