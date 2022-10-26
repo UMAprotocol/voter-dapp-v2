@@ -58,7 +58,7 @@ const IconWrapper = styled.div`
 `;
 const CloseIcon = styled(Close)`
   path {
-    fill: var(--fill);
+    fill: var(--white);
   }
 `;
 const CloseButton = styled.button`
