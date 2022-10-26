@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { delegateToStakerKey } from "constants/queryKeys";
+import { delegateToStakerKey, sentRequestsToBeDelegateKey } from "constants/queryKeys";
 import { zeroAddress } from "helpers";
 import { useHandleError, useUserContext } from "hooks";
+import { DelegationEventT } from "types";
 import { removeDelegate } from "web3";
 
 export function useTerminateRelationshipWithDelegate() {
@@ -13,6 +14,7 @@ export function useTerminateRelationshipWithDelegate() {
     onError,
     onSuccess: () => {
       queryClient.setQueryData<string>([delegateToStakerKey, address], () => zeroAddress);
+      queryClient.setQueryData<DelegationEventT[]>([sentRequestsToBeDelegateKey, address], () => []);
     },
   });
 
