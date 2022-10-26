@@ -1,5 +1,6 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { formatNumberForDisplay } from "helpers";
+import { BigNumber } from "ethers";
+import { formatNumberForDisplay, parseEther } from "helpers";
 import { usePanelContext, useStakingContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";

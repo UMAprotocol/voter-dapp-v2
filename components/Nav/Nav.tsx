@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { isExternalLink } from "helpers";
 
 interface Props {
   links: {
