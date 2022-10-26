@@ -17,9 +17,11 @@ export {
   formatBytes32String,
   formatEther,
   parseEther,
+  parseEtherSafe,
   randomBytes,
   solidityKeccak256,
   toUtf8String,
+  formatTransactionError,
 } from "./ethers";
 export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
@@ -45,3 +47,4 @@ export {
   computeRoundId,
   getPhase,
 } from "./voteTiming";
+export { isExternalLink } from "./misc";

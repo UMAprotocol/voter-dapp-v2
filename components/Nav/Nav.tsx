@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
+import { isExternalLink } from "helpers";
 
 interface Props {
   links: {
@@ -15,7 +16,6 @@ export function Nav({ links }: Props) {
   const { closePanel } = usePanelContext();
   const router = useRouter();
   const isActive = (href: string) => router.pathname === href;
-  const isExternalLink = (href: string) => !href.startsWith("/");
 
   useEffect(() => {
     router.events.on("routeChangeStart", closePanel);

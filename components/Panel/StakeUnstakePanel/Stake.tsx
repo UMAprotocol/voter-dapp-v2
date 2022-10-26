@@ -1,6 +1,6 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { BigNumber, constants } from "ethers";
-import { formatEther, parseEther } from "helpers";
+import { formatEther, parseEtherSafe } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
@@ -24,13 +24,13 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstake
 
   function isApprove() {
     if (tokenAllowance === undefined || stakeAmount === "") return true;
-    const parsedStakeAmount = parseEther(stakeAmount);
+    const parsedStakeAmount = parseEtherSafe(stakeAmount);
     if (parsedStakeAmount.eq(0)) return true;
     return parsedStakeAmount.gt(tokenAllowance);
   }
 
   function isButtonDisabled() {
-    return !disclaimerChecked || stakeAmount === "" || parseEther(stakeAmount).eq(0);
+    return !disclaimerChecked || stakeAmount === "" || parseEtherSafe(stakeAmount).eq(0);
   }
 
   function onApprove() {
