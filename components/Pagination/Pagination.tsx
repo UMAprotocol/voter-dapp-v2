@@ -4,7 +4,7 @@ import { addOpacityToHsl } from "helpers";
 import { usePaginationContext } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
-import styled, { CSSProperties } from "styled-components";
+import styled from "styled-components";
 import { DropdownItemT, PaginateForT } from "types";
 
 export interface Props {
@@ -67,13 +67,6 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
     _setResultsPerPage(Number(item.value));
   }
 
-  function getPageButtonStyle(buttonNumber: number) {
-    return {
-      "--color": isActive(buttonNumber) ? white : grey800,
-      "--background-color": isActive(buttonNumber) ? grey800 : "transparent",
-    } as CSSProperties;
-  }
-
   return (
     <Wrapper>
       <ResultsPerPageWrapper>
@@ -87,22 +80,18 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
         />
       </ResultsPerPageWrapper>
       <ButtonsWrapper>
-        <PageButton onClick={_firstPage} disabled={pageNumber === 1} style={getPageButtonStyle(1)}>
+        <PageButton onClick={_firstPage} disabled={pageNumber === 1} $isActive={isActive(1)}>
           1
         </PageButton>
         {buttonNumbers.map((buttonNumber) => (
-          <PageButton
-            key={buttonNumber}
-            onClick={() => _goToPage(buttonNumber)}
-            style={getPageButtonStyle(buttonNumber)}
-          >
+          <PageButton key={buttonNumber} onClick={() => _goToPage(buttonNumber)} $isActive={isActive(buttonNumber)}>
             {buttonNumber}
           </PageButton>
         ))}
         {showLastButton && (
           <>
             <Ellipsis>...</Ellipsis>
-            <PageButton onClick={_lastPage} style={getPageButtonStyle(lastPageNumber)}>
+            <PageButton onClick={_lastPage} $isActive={isActive(lastPageNumber)}>
               {lastPageNumber}
             </PageButton>
           </>
@@ -142,23 +131,23 @@ const BaseButton = styled.button`
   color: var(--grey-800);
   background: transparent;
   border-radius: 5px;
-  &:hover {
-    background: ${addOpacityToHsl(grey800, 0.1)};
-  }
   transition: color 200ms, background 200ms;
 `;
 
-const PageButton = styled(BaseButton)`
-  color: var(--color);
-  background: var(--background-color);
+const PageButton = styled(BaseButton)<{ $isActive: boolean }>`
   border: 1px solid var(--grey-800);
+  color: ${({ $isActive }) => ($isActive ? white : grey800)};
+  background: ${({ $isActive }) => ($isActive ? grey800 : "transparent")};
   &:hover {
-    color: var(--grey-800);
+    ${({ $isActive }) => ($isActive ? "" : `background: ${addOpacityToHsl(grey800, 0.1)};`)}
   }
 `;
 
 const NavigationButton = styled(BaseButton)`
-  :disabled {
+  &:hover {
+    background: ${addOpacityToHsl(grey800, 0.1)};
+  }
+  &:disabled {
     opacity: 0.5;
   }
 `;
