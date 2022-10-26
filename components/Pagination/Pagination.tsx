@@ -21,6 +21,7 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   const lastPageNumber = numberOfPages;
   const defaultNumberOfButtons = 4;
   const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
+  const showFirstButton = hasMorePagesThanButtons;
   const showLastButton = hasMorePagesThanButtons;
   const numberOfButtons = hasMorePagesThanButtons ? defaultNumberOfButtons : numberOfPages;
   const numbersPastMax = pageNumber - numberOfButtons;
@@ -28,9 +29,11 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   const buttonNumbers = makeButtonNumbers();
 
   function makeButtonNumbers() {
-    const s = 2 * numberOfButtons + numbersPastMax;
-    const isLastPastNumbers = s >= numberOfPages;
-    console.log({ s, isLastPastNumbers, lastPageNumber, numbersPastMax, numberOfButtons, hasMorePagesThanButtons });
+    if (!hasMorePagesThanButtons) {
+      return Array.from({ length: numberOfPages }, (_, i) => i + 1);
+    }
+
+    const isLastPastNumbers = 2 * numberOfButtons + numbersPastMax >= numberOfPages;
 
     if (isLastPastNumbers) {
       return Array.from({ length: numberOfButtons }, (_, i) => lastPageNumber - numberOfButtons + i);
@@ -54,7 +57,7 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   const isActive = (button: number) => button === pageNumber;
 
   const resultsPerPageOptions = [
-    { value: 5, label: "5 results" },
+    { value: 10, label: "10 results" },
     { value: 20, label: "20 results" },
     { value: 50, label: "50 results" },
   ];
@@ -80,9 +83,11 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
         />
       </ResultsPerPageWrapper>
       <ButtonsWrapper>
-        <PageButton onClick={_firstPage} disabled={pageNumber === 1} $isActive={isActive(1)}>
-          1
-        </PageButton>
+        {showFirstButton && (
+          <PageButton onClick={_firstPage} disabled={pageNumber === 1} $isActive={isActive(1)}>
+            1
+          </PageButton>
+        )}
         {buttonNumbers.map((buttonNumber) => (
           <PageButton key={buttonNumber} onClick={() => _goToPage(buttonNumber)} $isActive={isActive(buttonNumber)}>
             {buttonNumber}
