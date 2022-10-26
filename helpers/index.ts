@@ -18,9 +18,11 @@ export {
   getAddress,
   isAddress,
   parseEther,
+  parseEtherSafe,
   randomBytes,
   solidityKeccak256,
   toUtf8String,
+  formatTransactionError,
   zeroAddress,
 } from "./ethers";
 export { bigNumberFromFloatString, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
@@ -48,4 +50,5 @@ export {
   computeRoundId,
   getPhase,
 } from "./voteTiming";
+export { isExternalLink } from "./misc";
 export { getAccountDetails, handleDisconnectWallet } from "./wallet";

@@ -8,7 +8,8 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const { stakedBalance, unstakedBalance, outstandingRewards, getStakingDataFetching } = useStakingContext();
+  const { stakedBalance, unstakedBalance, outstandingRewards, getStakingDataFetching, pendingUnstake } =
+    useStakingContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
@@ -20,8 +21,8 @@ export function HowItWorks() {
   }
 
   function totalTokens() {
-    if (unstakedBalance === undefined || stakedBalance === undefined) return;
-    return unstakedBalance.add(stakedBalance);
+    if (unstakedBalance === undefined || stakedBalance === undefined || pendingUnstake === undefined) return;
+    return unstakedBalance.add(stakedBalance).add(pendingUnstake);
   }
 
   function isLoading() {
@@ -64,7 +65,7 @@ export function HowItWorks() {
               <Strong>
                 {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, { decimals: 0 })}
               </Strong>{" "}
-              voting cycle{countReveals?.eq(1) ? "s" : ""}, and are earning{" "}
+              vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}, and are earning{" "}
               <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
             </>
           }

@@ -4,6 +4,7 @@ import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { StakerDetailsT } from "types";
 import { stake } from "web3";
+import { formatTransactionError } from "helpers";
 
 export function useStake(errorType?: string) {
   const queryClient = useQueryClient();
@@ -31,7 +32,9 @@ export function useStake(errorType?: string) {
         return newUnstakedBalance;
       });
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
   return {
     stakeMutation: mutate,

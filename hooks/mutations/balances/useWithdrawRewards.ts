@@ -3,6 +3,7 @@ import { outstandingRewardsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { withdrawRewards } from "web3";
+import { formatTransactionError } from "helpers";
 
 export function useWithdrawRewards(errorType?: string) {
   const queryClient = useQueryClient();
@@ -23,7 +24,9 @@ export function useWithdrawRewards(errorType?: string) {
 
       queryClient.setQueryData<BigNumber>([outstandingRewardsKey, address], () => BigNumber.from(0));
     },
-    onError,
+    onError(error: unknown) {
+      onError(formatTransactionError(error));
+    },
   });
 
   return {
