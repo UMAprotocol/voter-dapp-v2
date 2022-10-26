@@ -29,6 +29,7 @@ export {
   parseVoteStringWithPrecision,
 } from "./formatVotes";
 export { getCanUnstakeTime } from "./getCanUnstakeTime";
+export { getEntriesForPage } from "./getEntriesForPage";
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";

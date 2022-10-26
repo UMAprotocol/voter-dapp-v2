@@ -9,27 +9,49 @@ import { DropdownItemT, PaginateForT } from "types";
 
 export interface Props {
   paginateFor: PaginateForT;
+  numberOfEntries: number;
 }
 
-export function Pagination({ paginateFor }: Props) {
-  const { pageStates, goToPage, nextPage, previousPage, setResultsPerPage } = usePaginationContext();
+export function Pagination({ paginateFor, numberOfEntries }: Props) {
+  const { pageStates, goToPage, nextPage, previousPage, firstPage, lastPage, setResultsPerPage } =
+    usePaginationContext();
 
-  const pageState = pageStates[paginateFor];
-  const numberOfButtons = 5;
-  const numbersPastMax = pageState.number - numberOfButtons;
-  const buttonNumbers = Array.from({ length: numberOfButtons }, (_, i) => i + 1).map((number) => {
-    if (numbersPastMax > 0) {
-      return number + numbersPastMax;
+  const { pageNumber, resultsPerPage } = pageStates[paginateFor];
+  const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
+  const lastPageNumber = numberOfPages;
+  const defaultNumberOfButtons = 4;
+  const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
+  const showLastButton = hasMorePagesThanButtons;
+  const numberOfButtons = hasMorePagesThanButtons ? defaultNumberOfButtons : numberOfPages;
+  const numbersPastMax = pageNumber - numberOfButtons;
+
+  const buttonNumbers = makeButtonNumbers();
+
+  function makeButtonNumbers() {
+    const s = 2 * numberOfButtons + numbersPastMax;
+    const isLastPastNumbers = s >= numberOfPages;
+    console.log({ s, isLastPastNumbers, lastPageNumber, numbersPastMax, numberOfButtons, hasMorePagesThanButtons });
+
+    if (isLastPastNumbers) {
+      return Array.from({ length: numberOfButtons }, (_, i) => lastPageNumber - numberOfButtons + i);
     }
-    return number;
-  });
+
+    return Array.from({ length: numberOfButtons }, (_, i) => i + 2).map((number) => {
+      if (numbersPastMax > 0) {
+        return number + numbersPastMax;
+      }
+      return number;
+    });
+  }
 
   const _goToPage = (page: number) => goToPage(paginateFor, page);
   const _nextPage = () => nextPage(paginateFor);
   const _previousPage = () => previousPage(paginateFor);
+  const _firstPage = () => firstPage(paginateFor);
+  const _lastPage = () => lastPage(paginateFor, lastPageNumber);
   const _setResultsPerPage = (resultsPerPage: number) => setResultsPerPage(paginateFor, resultsPerPage);
 
-  const isActive = (button: number) => button === pageState.number;
+  const isActive = (button: number) => button === pageNumber;
 
   const resultsPerPageOptions = [
     { value: 5, label: "5 results" },
@@ -38,11 +60,18 @@ export function Pagination({ paginateFor }: Props) {
   ];
 
   function getSelectedResultsPerPage() {
-    return resultsPerPageOptions.find((option) => option.value === pageState.resultsPerPage);
+    return resultsPerPageOptions.find((option) => option.value === resultsPerPage);
   }
 
   function onSelectResultsPerPage(item: DropdownItemT) {
     _setResultsPerPage(Number(item.value));
+  }
+
+  function getPageButtonStyle(buttonNumber: number) {
+    return {
+      "--color": isActive(buttonNumber) ? white : grey800,
+      "--background-color": isActive(buttonNumber) ? grey800 : "transparent",
+    } as CSSProperties;
   }
 
   return (
@@ -58,24 +87,30 @@ export function Pagination({ paginateFor }: Props) {
         />
       </ResultsPerPageWrapper>
       <ButtonsWrapper>
+        <PageButton onClick={_firstPage} disabled={pageNumber === 1} style={getPageButtonStyle(1)}>
+          1
+        </PageButton>
         {buttonNumbers.map((buttonNumber) => (
           <PageButton
             key={buttonNumber}
             onClick={() => _goToPage(buttonNumber)}
-            style={
-              {
-                "--color": isActive(buttonNumber) ? white : grey800,
-                "--background-color": isActive(buttonNumber) ? grey800 : "transparent",
-              } as CSSProperties
-            }
+            style={getPageButtonStyle(buttonNumber)}
           >
             {buttonNumber}
           </PageButton>
         ))}
-        <PreviousPageButton onClick={_previousPage} disabled={pageState.number === 1}>
+        {showLastButton && (
+          <>
+            <Ellipsis>...</Ellipsis>
+            <PageButton onClick={_lastPage} style={getPageButtonStyle(lastPageNumber)}>
+              {lastPageNumber}
+            </PageButton>
+          </>
+        )}
+        <PreviousPageButton onClick={_previousPage} disabled={pageNumber === 1}>
           <PreviousPage />
         </PreviousPageButton>
-        <NextPageButton onClick={_nextPage}>
+        <NextPageButton onClick={_nextPage} disabled={pageNumber === lastPageNumber}>
           <NextPage />
         </NextPageButton>
       </ButtonsWrapper>
@@ -131,3 +166,10 @@ const NavigationButton = styled(BaseButton)`
 const PreviousPageButton = styled(NavigationButton)``;
 
 const NextPageButton = styled(NavigationButton)``;
+
+const Ellipsis = styled.span`
+  height: min-content;
+  margin-top: auto;
+  font: var(--text-sm);
+  color: var(--grey-800);
+`;

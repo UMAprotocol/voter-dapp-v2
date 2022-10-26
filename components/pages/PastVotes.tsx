@@ -10,7 +10,8 @@ import {
   VotesTableRow,
   VoteTimeline,
 } from "components";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { getEntriesForPage } from "helpers";
+import { usePaginationContext, usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -18,6 +19,15 @@ export function PastVotes() {
   const { getPastVotes, getUserIndependentIsLoading, getUserDependentIsFetching } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
+  const {
+    pageStates: {
+      pastVotesPage: { resultsPerPage, pageNumber },
+    },
+  } = usePaginationContext();
+
+  const pastVotes = getPastVotes();
+  const numberOfPastVotes = pastVotes.length;
+  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
 
   return (
     <Layout>
@@ -34,7 +44,7 @@ export function PastVotes() {
               <VotesTableWrapper>
                 <VotesTable
                   headings={<VotesTableHeadings activityStatus="past" />}
-                  rows={getPastVotes().map((vote) => (
+                  rows={votesToShow.map((vote) => (
                     <VotesTableRow
                       vote={vote}
                       phase={phase}
@@ -49,7 +59,7 @@ export function PastVotes() {
                 />
               </VotesTableWrapper>
               <PaginationWrapper>
-                <Pagination paginateFor="pastVotesPage" />
+                <Pagination paginateFor="pastVotesPage" numberOfEntries={numberOfPastVotes} />
               </PaginationWrapper>
             </>
           )}

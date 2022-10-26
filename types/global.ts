@@ -233,7 +233,7 @@ export type ActivityStatusT = "active" | "upcoming" | "past";
 export type PaginateForT = "activeVotesPage" | "upcomingVotesPage" | "pastVotesPage" | "voteHistoryPage";
 
 export type PageStateT = {
-  number: number;
+  pageNumber: number;
   resultsPerPage: number;
 };
 

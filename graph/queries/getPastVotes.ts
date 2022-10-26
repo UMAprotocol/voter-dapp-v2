@@ -4,12 +4,10 @@ import request, { gql } from "graphql-request";
 import { formatBytes32String, formatVoteStringWithPrecision, makePriceRequestsByKey, parseEther } from "helpers";
 import { PastVotesQuery } from "types";
 
-export async function getPastVotes(resultsPerPage: number, pageNumber: number) {
+export async function getPastVotes() {
   const pastVotesQuery = gql`
     {
-      priceRequests(where: { isResolved: true }, orderBy: requestIndex, orderDirection: desc, first: ${resultsPerPage}, skip: ${
-    resultsPerPage * (pageNumber - 1)
-  }) {
+      priceRequests(where: { isResolved: true }, orderBy: time, orderDirection: desc) {
         id
         identifier {
           id
