@@ -1,7 +1,7 @@
 import graphEndpoint from "constants/graphEndpoint";
 import request, { gql } from "graphql-request";
-import { bigNumberFromFloatString } from "helpers/formatNumber";
-import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types/global";
+import { bigNumberFromFloatString } from "helpers";
+import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types";
 
 export async function getUserVotingAndStakingDetails(address: string | undefined) {
   const userDataQuery = gql`
@@ -34,7 +34,7 @@ export async function getUserVotingAndStakingDetails(address: string | undefined
   return userData;
 }
 
-function parseUserVotingAndStakingDetails(rawUserData: UserDataQuery["users"][0]) {
+function parseUserVotingAndStakingDetails(rawUserData: UserDataQuery["users"][0] | undefined) {
   const apr = bigNumberFromFloatString(rawUserData?.annualPercentageReturn);
   const countReveals = bigNumberFromFloatString(rawUserData?.countReveals);
   const countNoVotes = bigNumberFromFloatString(rawUserData?.countNoVotes);
@@ -44,14 +44,15 @@ function parseUserVotingAndStakingDetails(rawUserData: UserDataQuery["users"][0]
   const cumulativeCalculatedSlashPercentage = bigNumberFromFloatString(
     rawUserData?.cumulativeCalculatedSlashPercentage
   );
-  const voteHistory = rawUserData.votesSlashed.map((vote) => {
-    const uniqueKey = vote.request.id;
-    const voted = vote.voted;
-    const correctness = vote.correctness;
-    const slashAmount = bigNumberFromFloatString(vote.slashAmount);
-    const staking = vote.staking;
-    return { uniqueKey, voted, correctness, slashAmount, staking };
-  });
+  const voteHistory =
+    rawUserData?.votesSlashed.map((vote) => {
+      const uniqueKey = vote.request.id;
+      const voted = vote.voted;
+      const correctness = vote.correctness;
+      const slashAmount = bigNumberFromFloatString(vote.slashAmount);
+      const staking = vote.staking;
+      return { uniqueKey, voted, correctness, slashAmount, staking };
+    }) ?? [];
   const voteHistoryByKey = makeVoteHistoryByKey(voteHistory);
 
   return {

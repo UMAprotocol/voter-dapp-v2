@@ -1,7 +1,7 @@
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {
-  icon?: string;
+  icon: string | undefined;
   size?: number;
 }
 export function WalletIcon({ icon, size = 25 }: Props) {

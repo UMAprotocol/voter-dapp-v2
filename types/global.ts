@@ -171,7 +171,7 @@ export type VoteTimelineT = {
 
 export type VoteOriginT = "UMA" | "Polymarket";
 
-export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | null;
+export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | "delegation" | null;
 
 export type VotePanelContentT = VoteT;
 
@@ -203,6 +203,7 @@ export type StakerDetailsT = {
   pendingUnstake: BigNumber;
   canUnstakeTime: Date | undefined;
   unstakeRequestTime: Date | undefined;
+  delegate: string;
 };
 
 export type FormatVotesToCommit = {
@@ -238,3 +239,17 @@ export type PageStateT = {
 };
 
 export type PageStatesT = Record<PaginateForT, PageStateT>;
+
+export type DelegationStatusT =
+  | "no-wallet-connected"
+  | "no-delegation"
+  | "delegate"
+  | "delegator"
+  | "delegate-pending"
+  | "delegator-pending";
+
+export type DelegationEventT = {
+  delegate: string;
+  delegator: string;
+  transactionHash: string;
+};

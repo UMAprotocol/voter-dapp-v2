@@ -2,11 +2,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GlobalStyle, Panel } from "components";
 import {
-  BalancesProvider,
   ContractsProvider,
+  DelegationProvider,
   ErrorProvider,
   PaginationProvider,
   PanelProvider,
+  StakingProvider,
   UserProvider,
   VotesProvider,
   VoteTimingProvider,
@@ -22,24 +23,26 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ErrorProvider>
       <VoteTimingProvider>
         <WalletProvider>
-          <PaginationProvider>
-            <QueryClientProvider client={queryClient}>
-              <UserProvider>
-                <ContractsProvider>
-                  <BalancesProvider>
-                    <VotesProvider>
-                      <PanelProvider>
-                        <GlobalStyle />
-                        <Component {...pageProps} />
-                        <Panel />
-                      </PanelProvider>
-                    </VotesProvider>
-                  </BalancesProvider>
-                </ContractsProvider>
-                <ReactQueryDevtools />
-              </UserProvider>
-            </QueryClientProvider>
-          </PaginationProvider>
+          <QueryClientProvider client={queryClient}>
+            <UserProvider>
+              <ContractsProvider>
+                <PaginationProvider>
+                  <DelegationProvider>
+                    <StakingProvider>
+                      <VotesProvider>
+                        <PanelProvider>
+                          <GlobalStyle />
+                          <Component {...pageProps} />
+                          <Panel />
+                        </PanelProvider>
+                      </VotesProvider>
+                    </StakingProvider>
+                  </DelegationProvider>
+                </PaginationProvider>
+              </ContractsProvider>
+              <ReactQueryDevtools />
+            </UserProvider>
+          </QueryClientProvider>
         </WalletProvider>
       </VoteTimingProvider>
     </ErrorProvider>

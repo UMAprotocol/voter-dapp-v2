@@ -1,10 +1,10 @@
 import { red500 } from "constants/colors";
+import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { isExternalLink } from "helpers";
 
 interface Props {
   links: {
@@ -58,7 +58,11 @@ const NavItems = styled.ul`
   list-style: none;
 `;
 
-const NavItem = styled.li`
+const NavItem = styled.li``;
+
+const A = styled.a`
+  text-decoration: none;
+  color: var(--black);
   height: 50px;
   display: flex;
   align-items: center;
@@ -74,9 +78,4 @@ const NavItem = styled.li`
   }
 
   transition: background 0.2s ease-in-out;
-`;
-
-const A = styled.a`
-  text-decoration: none;
-  color: var(--black);
 `;

@@ -9,3 +9,6 @@ export default {
 const Template: ComponentStory<typeof Banner> = (args) => <Banner {...args} />;
 
 export const Default = Template.bind({});
+Default.args = {
+  children: "Stake, vote & earn up to 30% APY",
+};

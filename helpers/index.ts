@@ -16,14 +16,17 @@ export {
   commify,
   formatBytes32String,
   formatEther,
+  getAddress,
+  isAddress,
   parseEther,
   parseEtherSafe,
   randomBytes,
   solidityKeccak256,
   toUtf8String,
   formatTransactionError,
+  zeroAddress,
 } from "./ethers";
-export { formatNumberForDisplay, truncateDecimals } from "./formatNumber";
+export { bigNumberFromFloatString, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
 export {
   formatVotesToCommit,
   formatVotesToReveal,
@@ -32,9 +35,11 @@ export {
 } from "./formatVotes";
 export { getCanUnstakeTime } from "./getCanUnstakeTime";
 export { getEntriesForPage } from "./getEntriesForPage";
+export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
+export { onlyOneRequestPerAddress } from "./onlyOneRequestPerAddress";
 export { truncateEthAddress } from "./truncateEthAddress";
 export { unixTimestampToDate } from "./unixTimestampToDate";
 export { makeUniqueKeyForVote } from "./votes";
@@ -48,3 +53,4 @@ export {
   getPhase,
 } from "./voteTiming";
 export { isExternalLink } from "./misc";
+export { getAccountDetails, handleDisconnectWallet } from "./wallet";

@@ -1,12 +1,16 @@
 import { Wallet } from "components";
-import { usePanelContext } from "hooks";
-import Link from "next/link";
+import { useDelegationContext, usePanelContext } from "hooks";
+import NextLink from "next/link";
+import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Logo from "public/assets/logo.svg";
 import styled from "styled-components";
 import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
+  const { getDelegationStatus, getDelegationDataLoading } = useDelegationContext();
+
+  const showDelegationNotification = !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
 
   function openMenuPanel() {
     openPanel("menu");
@@ -17,15 +21,26 @@ export function Header() {
       <InnerWrapper>
         <HomeLinkAndPageDescriptionWrapper>
           <HomeLinkWrapper>
-            <Link href="/">
+            <NextLink href="/">
               <HomeLink>
                 <LogoIcon />
               </HomeLink>
-            </Link>
+            </NextLink>
           </HomeLinkWrapper>
           <PageDescription>VOTING</PageDescription>
         </HomeLinkAndPageDescriptionWrapper>
         <WalletAndMenuWrapper>
+          {showDelegationNotification && (
+            <DelegationNotificationWrapper>
+              <DelegationNotificationIcon />
+              <DelegationNotificationText>
+                <NextLink href="/wallet-settings" passHref>
+                  <A>Received request</A>
+                </NextLink>{" "}
+                to be a delegate
+              </DelegationNotificationText>
+            </DelegationNotificationWrapper>
+          )}
           <Wallet />
           <MenuButton onClick={openMenuPanel}>
             <MenuIconWrapper>
@@ -38,11 +53,26 @@ export function Header() {
   );
 }
 
+const DelegationNotificationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-left: 15px;
+  padding-right: 25px;
+  font: var(--text-sm);
+  color: var(--red-500);
+  background: var(--red-100);
+  border: 1px solid var(--red-500);
+  border-radius: 5px;
+`;
+
+const DelegationNotificationText = styled.p``;
+
 const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
   max-width: var(--desktop-max-width);
-  min-height: 80px;
+  min-height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -88,4 +118,13 @@ const MenuButton = styled.button`
 const MenuIconWrapper = styled.div`
   width: 40px;
   height: 40px;
+`;
+
+const DelegationNotificationIcon = styled(Time)`
+  margin-top: 2px;
+`;
+
+const A = styled.a`
+  color: var(--red-500);
+  text-decoration: underline;
 `;

@@ -1,7 +1,7 @@
 import { InfoBar, LoadingSkeleton } from "components";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
-import { useBalancesContext, usePanelContext, useUserContext } from "hooks";
+import { usePanelContext, useStakingContext, useUserContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -9,8 +9,8 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const { stakedBalance, unstakedBalance, outstandingRewards, getBalancesFetching, pendingUnstake } =
-    useBalancesContext();
+  const { stakedBalance, unstakedBalance, outstandingRewards, getStakingDataFetching, pendingUnstake } =
+    useStakingContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
@@ -27,7 +27,7 @@ export function HowItWorks() {
   }
 
   function isLoading() {
-    return getBalancesFetching() || userDataFetching;
+    return getStakingDataFetching() || userDataFetching;
   }
 
   return (

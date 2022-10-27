@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import "styles/fonts.css";
 import { GlobalStyle } from "../components/GlobalStyle";
-import { PaginationProvider, PanelProvider, WalletProvider } from "../contexts";
+import { Panel } from "../components/Panel/Panel";
+import { ContractsProvider, DelegationProvider, ErrorProvider, PaginationProvider, PanelProvider, StakingProvider, UserProvider, VotesProvider, VoteTimingProvider, WalletProvider } from "../contexts";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -15,15 +16,31 @@ export const parameters = {
   },
 };
 
+const queryClient = new QueryClient();
+
 addDecorator((Story) => (
-  <WalletProvider>
-    <QueryClientProvider client={new QueryClient()}>
-      <PaginationProvider>
-        <PanelProvider>
-        <GlobalStyle />
-        <Story />
-      </PanelProvider>
-      </PaginationProvider>
-    </QueryClientProvider>
-  </WalletProvider>
+  <ErrorProvider>
+      <VoteTimingProvider>
+        <WalletProvider>
+          <QueryClientProvider client={queryClient}>
+            <UserProvider>
+              <ContractsProvider>
+                <StakingProvider>
+                  <DelegationProvider>
+                    <VotesProvider>
+                    <PanelProvider>
+                      <PaginationProvider />
+                        <GlobalStyle />
+                        <Story />
+                        <Panel />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </DelegationProvider>
+                </StakingProvider>
+              </ContractsProvider>
+            </UserProvider>
+          </QueryClientProvider>
+        </WalletProvider>
+      </VoteTimingProvider>
+    </ErrorProvider>
 ));
