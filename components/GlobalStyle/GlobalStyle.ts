@@ -8,6 +8,7 @@ import {
   grey100,
   grey50,
   grey500,
+  grey800,
   loadingSkeletonOpacity10,
   loadingSkeletonOpacity100,
   red100,
@@ -17,7 +18,7 @@ import {
   white,
   whiteOpacity10,
 } from "constants/colors";
-import { desktopMaxWidth, desktopPanelWidth } from "constants/containers";
+import { bannerHeight, desktopMaxWidth, desktopPanelWidth, headerHeight } from "constants/containers";
 import {
   headerLg,
   headerMd,
@@ -74,6 +75,10 @@ html {
   html:focus-within {
     scroll-behavior: smooth;
   }
+}
+
+html, body, #__next {
+  height: 100%;
 }
 
 body {
@@ -221,6 +226,7 @@ a:not([class]) {
     --grey-50: ${grey50};
     --grey-100: ${grey100};
     --grey-500: ${grey500};
+    --grey-800: ${grey800};
     --loading-skeleton-opacity-100: ${loadingSkeletonOpacity100};
     --loading-skeleton-opacity-10: ${loadingSkeletonOpacity10};
     /* Fonts */
@@ -237,6 +243,8 @@ a:not([class]) {
     /* Containers */
     --desktop-max-width: ${desktopMaxWidth}px;
     --desktop-panel-width: ${desktopPanelWidth}px;
+    --header-height: ${headerHeight}px;
+    --banner-height: ${bannerHeight}px;
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};

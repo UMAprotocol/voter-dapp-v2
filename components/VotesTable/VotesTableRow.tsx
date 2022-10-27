@@ -51,7 +51,9 @@ export function VotesTableRow({
   }
 
   function getDecryptedVoteAsFormattedString() {
-    return decryptedVote?.price ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier) : undefined;
+    return decryptedVote?.price !== undefined
+      ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier)
+      : undefined;
   }
 
   function getDecryptedVoteAsString() {
@@ -80,20 +82,18 @@ export function VotesTableRow({
   }
 
   function getExistingOrSelectedVoteFromOptions() {
-    return (
-      options?.find((option) => {
-        const existingVote = getDecryptedVoteAsFormattedString();
+    return options?.find((option) => {
+      const existingVote = getDecryptedVoteAsFormattedString();
 
-        // prefer showing the selected vote if it exists
-        if (selectedVote !== undefined) {
-          return option.value === selectedVote;
-        }
+      // prefer showing the selected vote if it exists
+      if (selectedVote !== undefined) {
+        return option.value === selectedVote;
+      }
 
-        if (existingVote !== undefined) {
-          return option.value === existingVote;
-        }
-      }) ?? null
-    );
+      if (existingVote !== undefined) {
+        return option.value === existingVote;
+      }
+    });
   }
 
   function getYourVote() {
@@ -105,7 +105,7 @@ export function VotesTableRow({
   }
 
   function getCorrectVote() {
-    if (!correctVote) return;
+    if (correctVote === undefined) return;
     const correctVoteAsString = correctVote.toFixed();
 
     return (

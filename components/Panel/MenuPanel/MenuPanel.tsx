@@ -11,8 +11,8 @@ const links = [
     href: "/",
   },
   {
-    title: "Settled Disputes & Votes",
-    href: "/settled",
+    title: "Past Votes",
+    href: "/past-votes",
   },
   {
     title: "Two Key Voting",

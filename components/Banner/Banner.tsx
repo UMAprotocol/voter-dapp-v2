@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
 
-export function Banner() {
+interface Props {
+  children: ReactNode;
+}
+export function Banner({ children }: Props) {
   return (
     <OuterWrapper>
       <InnerWrapper>
-        <Text>
-          Stake, vote &amp; earn up to <Emphasis>30% APY</Emphasis>
-        </Text>
+        <Text>{children}</Text>
       </InnerWrapper>
     </OuterWrapper>
   );
@@ -18,7 +20,7 @@ const OuterWrapper = styled.div`
 
 const InnerWrapper = styled.div`
   max-width: var(--desktop-max-width);
-  height: 125px;
+  height: var(--banner-height);
   display: flex;
   align-items: center;
   padding-left: 45px;
@@ -28,8 +30,4 @@ const InnerWrapper = styled.div`
 const Text = styled.h1`
   color: var(--white);
   font: var(--header-lg);
-`;
-
-const Emphasis = styled.span`
-  color: var(--red-500);
 `;

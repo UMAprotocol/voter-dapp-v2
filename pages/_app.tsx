@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle } from "components";
+import { GlobalStyle, Panel } from "components";
 import {
   BalancesProvider,
   ContractsProvider,
   ErrorProvider,
+  PaginationProvider,
   PanelProvider,
   UserProvider,
   VotesProvider,
@@ -21,21 +22,24 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ErrorProvider>
       <VoteTimingProvider>
         <WalletProvider>
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <ContractsProvider>
-                <BalancesProvider>
-                  <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                    </PanelProvider>
-                  </VotesProvider>
-                </BalancesProvider>
-              </ContractsProvider>
-              <ReactQueryDevtools />
-            </UserProvider>
-          </QueryClientProvider>
+          <PaginationProvider>
+            <QueryClientProvider client={queryClient}>
+              <UserProvider>
+                <ContractsProvider>
+                  <BalancesProvider>
+                    <VotesProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                        <Panel />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </BalancesProvider>
+                </ContractsProvider>
+                <ReactQueryDevtools />
+              </UserProvider>
+            </QueryClientProvider>
+          </PaginationProvider>
         </WalletProvider>
       </VoteTimingProvider>
     </ErrorProvider>
