@@ -1,3 +1,4 @@
+export { addOpacityToHsl } from "./addOpacityToHsl";
 export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
 export {
   decryptMessage,
@@ -33,6 +34,7 @@ export {
   parseVoteStringWithPrecision,
 } from "./formatVotes";
 export { getCanUnstakeTime } from "./getCanUnstakeTime";
+export { getEntriesForPage } from "./getEntriesForPage";
 export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { getVoteMetaData } from "./getVoteMetaData";
 export { initOnboard } from "./initOnboard";

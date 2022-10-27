@@ -10,13 +10,14 @@ import { DropdownItemT } from "types";
 interface Props {
   items: DropdownItemT[];
   label: ReactNode;
-  selected: DropdownItemT | null;
+  selected: DropdownItemT | undefined;
   onSelect: (item: DropdownItemT) => void;
   disabled?: boolean;
+  textColor?: string;
   borderColor?: string;
 }
-export function Dropdown({ items, label, selected, onSelect, disabled, borderColor = black }: Props) {
-  const toggleTextColor = selected ? black : blackOpacity50;
+export function Dropdown({ items, label, selected, onSelect, disabled, textColor, borderColor = black }: Props) {
+  const toggleTextColor = selected ? textColor ?? black : blackOpacity50;
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (

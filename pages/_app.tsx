@@ -5,6 +5,7 @@ import {
   ContractsProvider,
   DelegationProvider,
   ErrorProvider,
+  PaginationProvider,
   PanelProvider,
   StakingProvider,
   UserProvider,
@@ -25,17 +26,19 @@ function MyApp({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <UserProvider>
               <ContractsProvider>
-                <DelegationProvider>
-                  <StakingProvider>
-                    <VotesProvider>
-                      <PanelProvider>
-                        <GlobalStyle />
-                        <Component {...pageProps} />
-                        <Panel />
-                      </PanelProvider>
-                    </VotesProvider>
-                  </StakingProvider>
-                </DelegationProvider>
+                <PaginationProvider>
+                  <DelegationProvider>
+                    <StakingProvider>
+                      <VotesProvider>
+                        <PanelProvider>
+                          <GlobalStyle />
+                          <Component {...pageProps} />
+                          <Panel />
+                        </PanelProvider>
+                      </VotesProvider>
+                    </StakingProvider>
+                  </DelegationProvider>
+                </PaginationProvider>
               </ContractsProvider>
               <ReactQueryDevtools />
             </UserProvider>

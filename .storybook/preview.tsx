@@ -4,7 +4,7 @@ import React from "react";
 import "styles/fonts.css";
 import { GlobalStyle } from "../components/GlobalStyle";
 import { Panel } from "../components/Panel/Panel";
-import { ContractsProvider, DelegationProvider, ErrorProvider, PanelProvider, StakingProvider, UserProvider, VotesProvider, VoteTimingProvider, WalletProvider } from "../contexts";
+import { ContractsProvider, DelegationProvider, ErrorProvider, PaginationProvider, PanelProvider, StakingProvider, UserProvider, VotesProvider, VoteTimingProvider, WalletProvider } from "../contexts";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -28,7 +28,8 @@ addDecorator((Story) => (
                 <StakingProvider>
                   <DelegationProvider>
                     <VotesProvider>
-                      <PanelProvider>
+                    <PanelProvider>
+                      <PaginationProvider />
                         <GlobalStyle />
                         <Story />
                         <Panel />

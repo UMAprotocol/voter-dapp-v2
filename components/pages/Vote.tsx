@@ -1,6 +1,6 @@
 import { Banner, HowItWorks, Layout, LoadingSpinner, PageInnerWrapper, PageOuterWrapper, Votes } from "components";
 import { useVotesContext } from "hooks";
-import styled from "styled-components";
+import { LoadingSpinnerWrapper, Strong } from "./styles";
 
 export function Vote() {
   const { getUserIndependentIsLoading } = useVotesContext();
@@ -24,14 +24,3 @@ export function Vote() {
     </Layout>
   );
 }
-
-const Strong = styled.strong`
-  color: var(--red-500);
-`;
-
-const LoadingSpinnerWrapper = styled.div`
-  width: 100%;
-  padding-top: 50px;
-  display: grid;
-  place-items: center;
-`;

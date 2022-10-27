@@ -27,8 +27,8 @@ export function MenuPanel() {
       href: "/",
     },
     {
-      title: "Settled Disputes & Votes",
-      href: "/settled",
+      title: "Past Votes",
+      href: "/past-votes",
     },
     {
       title: "Wallet Settings",

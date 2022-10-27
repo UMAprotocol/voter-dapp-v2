@@ -1,4 +1,5 @@
 import { red500 } from "constants/colors";
+import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -15,7 +16,6 @@ export function Nav({ links }: Props) {
   const { closePanel } = usePanelContext();
   const router = useRouter();
   const isActive = (href: string) => router.pathname === href;
-  const isExternalLink = (href: string) => !href.startsWith("/");
 
   useEffect(() => {
     router.events.on("routeChangeStart", closePanel);
