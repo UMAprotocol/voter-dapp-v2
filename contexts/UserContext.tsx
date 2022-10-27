@@ -1,7 +1,7 @@
 import { WalletState } from "@web3-onboard/core";
 import { Account } from "@web3-onboard/core/dist/types";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useUserData } from "hooks";
+import { useAccountDetails, useUserVotingAndStakingDetails } from "hooks";
 import { createContext, ReactNode } from "react";
 import { VoteHistoryByKeyT } from "types/global";
 
@@ -56,7 +56,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     },
     isLoading: userDataLoading,
     isFetching: userDataFetching,
-  } = useUserData();
+  } = useUserVotingAndStakingDetails();
 
   return (
     <UserContext.Provider

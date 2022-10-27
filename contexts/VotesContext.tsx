@@ -11,7 +11,7 @@ import {
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
-  useUserData,
+  useUserVotingAndStakingDetails,
   useVoteTransactionHashes,
 } from "hooks";
 import { createContext, ReactNode } from "react";
@@ -119,7 +119,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { address } = useAccountDetails();
   const {
     data: { voteHistoryByKey },
-  } = useUserData();
+  } = useUserVotingAndStakingDetails();
 
   function getUserDependentIsLoading() {
     if (!address) return false;

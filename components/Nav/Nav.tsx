@@ -1,7 +1,8 @@
 import { red500 } from "constants/colors";
+import { usePanelContext } from "hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { isExternalLink } from "helpers";
 
@@ -12,8 +13,18 @@ interface Props {
   }[];
 }
 export function Nav({ links }: Props) {
-  const { pathname } = useRouter();
-  const isActive = (href: string) => pathname === href;
+  const { closePanel } = usePanelContext();
+  const router = useRouter();
+  const isActive = (href: string) => router.pathname === href;
+
+  useEffect(() => {
+    router.events.on("routeChangeStart", closePanel);
+
+    return () => {
+      router.events.off("routeChangeStart", closePanel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Wrapper>

@@ -231,6 +231,15 @@ export type RevealVotes = {
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
 
+export type PaginateForT = "activeVotesPage" | "upcomingVotesPage" | "pastVotesPage" | "voteHistoryPage";
+
+export type PageStateT = {
+  pageNumber: number;
+  resultsPerPage: number;
+};
+
+export type PageStatesT = Record<PaginateForT, PageStateT>;
+
 export type NotificationT = {
   description: ReactNode;
   transactionHash?: string;

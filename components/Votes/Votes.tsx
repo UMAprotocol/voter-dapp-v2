@@ -1,4 +1,4 @@
-import { Button, LoadingSpinner, VotesTable, VotesTableHeadings, VotesTableRow, VoteTimeline } from "components";
+import { Button, VotesTable, VotesTableHeadings, VotesTableRow, VoteTimeline } from "components";
 import { formatVotesToCommit } from "helpers";
 import {
   useAccountDetails,
@@ -16,14 +16,8 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
-  const {
-    getActiveVotes,
-    getUpcomingVotes,
-    getPastVotes,
-    getActivityStatus,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
+  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getUserDependentIsFetching } =
+    useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -111,59 +105,39 @@ export function Votes() {
   }
 
   return (
-    <OuterWrapper>
-      {getUserIndependentIsLoading() ? (
-        <LoadingSpinner size={300} variant="black" />
-      ) : (
-        <InnerWrapper>
-          <Title>{determineTitle()}</Title>
-          <VoteTimeline />
-          <VotesTableWrapper>
-            <VotesTable
-              headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
-              rows={determineVotesToShow().map((vote) => (
-                <VotesTableRow
-                  vote={vote}
-                  phase={phase}
-                  selectedVote={selectedVotes[vote.uniqueKey]}
-                  selectVote={(value) => selectVote(value, vote)}
-                  activityStatus={getActivityStatus()}
-                  moreDetailsAction={() => openVotePanel(vote)}
-                  key={vote.uniqueKey}
-                  isFetching={getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes}
-                />
-              ))}
+    <>
+      <Title>{determineTitle()}</Title>
+      <VoteTimeline />
+      <VotesTableWrapper>
+        <VotesTable
+          headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
+          rows={determineVotesToShow().map((vote) => (
+            <VotesTableRow
+              vote={vote}
+              phase={phase}
+              selectedVote={selectedVotes[vote.uniqueKey]}
+              selectVote={(value) => selectVote(value, vote)}
+              activityStatus={getActivityStatus()}
+              moreDetailsAction={() => openVotePanel(vote)}
+              key={vote.uniqueKey}
+              isFetching={getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes}
             />
-          </VotesTableWrapper>
-          {getActivityStatus() === "active" ? (
-            <CommitVotesButtonWrapper>
-              <Button
-                variant="primary"
-                label={`${phase} Votes`}
-                onClick={phase === "commit" ? commitVotes : revealVotes}
-                disabled={!(canCommit() || canReveal())}
-              />
-            </CommitVotesButtonWrapper>
-          ) : null}
-        </InnerWrapper>
-      )}
-    </OuterWrapper>
+          ))}
+        />
+      </VotesTableWrapper>
+      {getActivityStatus() === "active" ? (
+        <CommitVotesButtonWrapper>
+          <Button
+            variant="primary"
+            label={`${phase} Votes`}
+            onClick={phase === "commit" ? commitVotes : revealVotes}
+            disabled={!(canCommit() || canReveal())}
+          />
+        </CommitVotesButtonWrapper>
+      ) : null}
+    </>
   );
 }
-
-const OuterWrapper = styled.div`
-  background: var(--grey-100);
-  min-height: max(50vh, 500px);
-  display: grid;
-  place-items: center;
-`;
-
-const InnerWrapper = styled.div`
-  margin-inline: auto;
-  max-width: var(--desktop-max-width);
-  padding-inline: 45px;
-  padding-block: 45px;
-`;
 
 const VotesTableWrapper = styled.div`
   margin-top: 35px;

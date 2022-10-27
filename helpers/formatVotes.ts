@@ -1,5 +1,5 @@
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { solidityKeccak256 } from "helpers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types";
 import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
@@ -86,7 +86,7 @@ export function parseVoteStringWithPrecision(vote: string, decodedIdentifier: st
   return parseFixed(vote, identifierPrecision).toString();
 }
 
-export function formatVoteStringWithPrecision(vote: string, decodedIdentifier: string) {
+export function formatVoteStringWithPrecision(vote: BigNumberish, decodedIdentifier: string) {
   // check the precision to use from our table of precisions
   const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
   return formatFixed(vote, identifierPrecision).toString();

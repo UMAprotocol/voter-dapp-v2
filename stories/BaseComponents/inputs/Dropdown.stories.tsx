@@ -15,7 +15,7 @@ export default {
   component: Dropdown,
   args: {
     label: "Select answer",
-    selected: null,
+    selected: undefined,
     items: defaultMockItems,
   },
   decorators: [

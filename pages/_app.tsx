@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle } from "components";
+import { GlobalStyle, Panel } from "components";
 import {
   BalancesProvider,
   ContractsProvider,
   ErrorProvider,
   NotificationsProvider,
+  PaginationProvider,
   PanelProvider,
   UserProvider,
   VotesProvider,
@@ -20,9 +21,9 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ErrorProvider>
-      <NotificationsProvider>
-        <VoteTimingProvider>
-          <WalletProvider>
+      <VoteTimingProvider>
+        <WalletProvider>
+          <PaginationProvider>
             <QueryClientProvider client={queryClient}>
               <UserProvider>
                 <ContractsProvider>
@@ -31,6 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       <PanelProvider>
                         <GlobalStyle />
                         <Component {...pageProps} />
+                        <Panel />
                       </PanelProvider>
                     </VotesProvider>
                   </BalancesProvider>
@@ -38,9 +40,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <ReactQueryDevtools />
               </UserProvider>
             </QueryClientProvider>
-          </WalletProvider>
-        </VoteTimingProvider>
-      </NotificationsProvider>
+          </PaginationProvider>
+        </WalletProvider>
+      </VoteTimingProvider>
     </ErrorProvider>
   );
 }
