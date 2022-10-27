@@ -39,3 +39,17 @@ OneNotification.args = {
     },
   ],
 };
+
+export const MultipleNotifications = Template.bind({});
+MultipleNotifications.args = {
+  notifications: [
+    {
+      description: "Test notification. Committing votes or something",
+      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    },
+    {
+      description: "Another one. DJ Khaled!",
+      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    },
+  ],
+};

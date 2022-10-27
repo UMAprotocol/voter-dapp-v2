@@ -3,8 +3,8 @@ import { NotificationT } from "types";
 
 export interface NotificationsContextState {
   notifications: NotificationT[];
-  addNotification: (description: ReactNode, transactionHash?: string) => void;
-  removeNotification: (description: ReactNode) => void;
+  addNotification: (description: ReactNode, transactionHash: string) => void;
+  removeNotification: (transactionHash: string) => void;
   clearNotifications: () => void;
 }
 
@@ -20,16 +20,16 @@ export const NotificationsContext = createContext(defaultNotificationsContextSta
 export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationT[]>([]);
 
-  function addNotification(description: ReactNode, transactionHash?: string) {
-    setNotifications((prev) => [...new Set([...prev, { description, transactionHash }])]);
+  function addNotification(description: ReactNode, transactionHash: string) {
+    setNotifications((prev) => [...prev, { description, transactionHash }]);
   }
 
   function clearNotifications() {
     setNotifications([]);
   }
 
-  function removeNotification(description: ReactNode) {
-    setNotifications((prev) => prev.filter((prevNotification) => prevNotification.description !== description));
+  function removeNotification(transactionHash: string) {
+    setNotifications((prev) => prev.filter((prevNotification) => prevNotification.transactionHash !== transactionHash));
   }
 
   return (

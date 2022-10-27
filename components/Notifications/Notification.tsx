@@ -1,7 +1,6 @@
 import { LoadingSpinner } from "components/LoadingSpinner";
 import NextLink from "next/link";
 import Close from "public/assets/icons/close.svg";
-import { ReactNode } from "react";
 import styled from "styled-components";
 import { NotificationT } from "types";
 
@@ -9,7 +8,7 @@ export function Notification({
   description,
   transactionHash,
   dismiss,
-}: NotificationT & { dismiss: (description: ReactNode) => void }) {
+}: NotificationT & { dismiss: (transactionHash: string) => void }) {
   return (
     <Wrapper>
       <LoadingSpinnerWrapper>
@@ -17,15 +16,13 @@ export function Notification({
       </LoadingSpinnerWrapper>
       <TextWrapper>
         <Description>{description}</Description>
-        {transactionHash && (
-          <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
-            <A target="_blank" rel="noopener noreferrer">
-              View on Etherscan
-            </A>
-          </NextLink>
-        )}
+        <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
+          <A target="_blank" rel="noopener noreferrer">
+            View on Etherscan
+          </A>
+        </NextLink>
       </TextWrapper>
-      <CloseButton onClick={() => dismiss(description)}>
+      <CloseButton onClick={() => dismiss(transactionHash)}>
         <CloseIconWrapper>
           <CloseIcon />
         </CloseIconWrapper>
@@ -57,7 +54,7 @@ const TextWrapper = styled.div`
   gap: 8px;
 `;
 
-const Description = styled.p``;
+const Description = styled.div``;
 
 const A = styled.a`
   color: var(--red-500);
@@ -69,10 +66,10 @@ const A = styled.a`
 
 const CloseIconWrapper = styled.div`
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 15px;
-  height: 15px;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
 `;
 
 const CloseIcon = styled(Close)`

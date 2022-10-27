@@ -242,5 +242,5 @@ export type PageStatesT = Record<PaginateForT, PageStateT>;
 
 export type NotificationT = {
   description: ReactNode;
-  transactionHash?: string;
+  transactionHash: string;
 };
