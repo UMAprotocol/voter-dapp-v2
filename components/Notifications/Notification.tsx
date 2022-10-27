@@ -8,9 +8,15 @@ export function Notification({
   description,
   transactionHash,
   dismiss,
-}: NotificationT & { dismiss: (transactionHash: string) => void }) {
+  style,
+}: NotificationT & {
+  style: {
+    opacity: number;
+  };
+  dismiss: (transactionHash: string) => void;
+}) {
   return (
-    <Wrapper>
+    <Wrapper style={style}>
       <LoadingSpinnerWrapper>
         <LoadingSpinner variant="black" size={32} />
       </LoadingSpinnerWrapper>
