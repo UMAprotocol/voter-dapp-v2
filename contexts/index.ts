@@ -4,6 +4,8 @@ export { defaultDelegationContextState, DelegationContext, DelegationProvider } 
 export type { DelegationContextState } from "./DelegationContext";
 export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorContext";
 export type { ErrorContextState } from "./ErrorContext";
+export { defaultPaginationContextState, PaginationContext, PaginationProvider } from "./PaginationContext";
+export type { PaginationContextState } from "./PaginationContext";
 export { defaultPanelContextState, PanelContext, PanelProvider } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export { defaultStakingContextState, StakingContext, StakingProvider } from "./StakingContext";

@@ -50,5 +50,6 @@ export { useEncryptedVotes } from "./queries/votes/useEncryptedVotes";
 export { useHasActiveVotes } from "./queries/votes/useHasActiveVotes";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
+export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
 export { useVoteTransactionHashes } from "./queries/votes/useVoteTransactionHashes";

@@ -60,6 +60,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     isFetching: userDataFetching,
   } = useUserVotingAndStakingDetails();
 
+  const walletIcon = connectedWallet?.icon;
+
   return (
     <UserContext.Provider
       value={{
