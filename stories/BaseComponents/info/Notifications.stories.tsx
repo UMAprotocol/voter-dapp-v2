@@ -49,7 +49,7 @@ MultipleNotifications.args = {
     },
     {
       description: "Another one. DJ Khaled!",
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
     },
   ],
 };

@@ -17,6 +17,10 @@ export function Notifications() {
 }
 
 const Wrapper = styled.div`
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: grid;
   gap: 10px;
   padding: 15px;

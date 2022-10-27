@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle, Panel } from "components";
+import { GlobalStyle, Notifications, Panel } from "components";
 import {
   BalancesProvider,
   ContractsProvider,
@@ -34,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                           <GlobalStyle />
                           <Component {...pageProps} />
                           <Panel />
+                          <Notifications />
                         </PanelProvider>
                       </VotesProvider>
                     </BalancesProvider>
