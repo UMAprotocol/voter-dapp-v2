@@ -42,6 +42,7 @@ export { VotePanel } from "./Panel/VotePanel/VotePanel";
 export { PanelErrorBanner } from "./PanelErrorBanner/PanelErrorBanner";
 export { Tabs } from "./Tabs/Tabs";
 export { Toggle } from "./Toggle/Toggle";
+export { Tooltip } from "./Tooltip/Tooltip";
 export { VoteHistoryTable } from "./VoteHistoryTable/VoteHistoryTable";
 export { Votes } from "./Votes/Votes";
 export { VotesTable } from "./VotesTable/VotesTable";
