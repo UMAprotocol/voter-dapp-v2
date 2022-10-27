@@ -1,5 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
+import { ReactNode } from "react";
 
 export type InputDataT = {
   value: string | number;
@@ -229,3 +230,8 @@ export type RevealVotes = {
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
+
+export type NotificationT = {
+  description: ReactNode;
+  transactionHash?: string;
+};

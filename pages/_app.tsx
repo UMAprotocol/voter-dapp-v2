@@ -5,6 +5,7 @@ import {
   BalancesProvider,
   ContractsProvider,
   ErrorProvider,
+  NotificationsProvider,
   PanelProvider,
   UserProvider,
   VotesProvider,
@@ -19,25 +20,27 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ErrorProvider>
-      <VoteTimingProvider>
-        <WalletProvider>
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <ContractsProvider>
-                <BalancesProvider>
-                  <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                    </PanelProvider>
-                  </VotesProvider>
-                </BalancesProvider>
-              </ContractsProvider>
-              <ReactQueryDevtools />
-            </UserProvider>
-          </QueryClientProvider>
-        </WalletProvider>
-      </VoteTimingProvider>
+      <NotificationsProvider>
+        <VoteTimingProvider>
+          <WalletProvider>
+            <QueryClientProvider client={queryClient}>
+              <UserProvider>
+                <ContractsProvider>
+                  <BalancesProvider>
+                    <VotesProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </BalancesProvider>
+                </ContractsProvider>
+                <ReactQueryDevtools />
+              </UserProvider>
+            </QueryClientProvider>
+          </WalletProvider>
+        </VoteTimingProvider>
+      </NotificationsProvider>
     </ErrorProvider>
   );
 }

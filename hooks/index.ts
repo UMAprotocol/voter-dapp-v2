@@ -1,6 +1,7 @@
 export { useBalancesContext } from "./contexts/useBalancesContext";
 export { useContractsContext } from "./contexts/useContractsContext";
 export { useErrorContext } from "./contexts/useErrorContext";
+export { useNotificationsContext } from "./contexts/useNotificationsContext";
 export { usePanelContext } from "./contexts/usePanelContext";
 export { useUserContext } from "./contexts/useUserContext";
 export { useVotesContext } from "./contexts/useVotesContext";
@@ -23,8 +24,8 @@ export { useRevealVotes } from "./mutations/votes/useRevealVotes";
 export { useOutstandingRewards } from "./queries/balances/useOutstandingRewards";
 export { useStakerDetails } from "./queries/balances/useStakerDetails";
 export { useTokenAllowance } from "./queries/balances/useTokenAllowance";
-export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
 export { useUnstakeCoolDown } from "./queries/balances/useUnstakeCoolDown";
+export { useUnstakedBalance } from "./queries/balances/useUnstakedBalance";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
 export { useUserVotingAndStakingDetails as useUserData } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";
