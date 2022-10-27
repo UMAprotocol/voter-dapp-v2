@@ -8,17 +8,6 @@ export interface NotificationsContextState {
   clearNotifications: () => void;
 }
 
-const dummyNotifications = [
-  {
-    description: "Test notification. Committing votes or something",
-    transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-  },
-  {
-    description: "Another one. DJ Khaled!",
-    transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
-  },
-];
-
 export const defaultNotificationsContextState: NotificationsContextState = {
   notifications: [],
   addNotification: () => null,
@@ -29,7 +18,7 @@ export const defaultNotificationsContextState: NotificationsContextState = {
 export const NotificationsContext = createContext(defaultNotificationsContextState);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationT[]>(dummyNotifications);
+  const [notifications, setNotifications] = useState<NotificationT[]>([]);
 
   function addNotification(description: ReactNode, transactionHash: string) {
     setNotifications((prev) => [...prev, { description, transactionHash }]);
