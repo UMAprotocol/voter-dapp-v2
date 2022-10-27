@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Tooltip } from "components";
 
 export default {
-  title: "Base Components/Tooltip",
+  title: "Base Components/Info/Tooltip",
   component: Tooltip,
 } as ComponentMeta<typeof Tooltip>;
 
