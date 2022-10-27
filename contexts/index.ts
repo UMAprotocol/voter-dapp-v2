@@ -5,6 +5,7 @@ export type { ContractsContextState } from "./ContractsContext";
 export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorContext";
 export type { ErrorContextState } from "./ErrorContext";
 export { defaultNotificationsContextState, NotificationsContext, NotificationsProvider } from "./NotificationsContext";
+export { defaultPaginationContextState, PaginationContext, PaginationProvider } from "./PaginationContext";
 export { defaultPanelContextState, PanelContext, PanelProvider } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export { defaultUserContextState, UserContext, UserProvider } from "./UserContext";
