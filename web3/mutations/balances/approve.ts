@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
 import { AddNotificationT } from "types";
 
-export default async function approve({
+export async function approve({
   votingToken,
   approveAmount,
   addNotification,

@@ -1,13 +1,15 @@
-export { BalancesContext, BalancesProvider, defaultBalancesContextState } from "./BalancesContext";
-export type { BalancesContextState } from "./BalancesContext";
 export { ContractsContext, ContractsProvider, defaultContractContextState } from "./ContractsContext";
 export type { ContractsContextState } from "./ContractsContext";
+export { defaultDelegationContextState, DelegationContext, DelegationProvider } from "./DelegationContext";
+export type { DelegationContextState } from "./DelegationContext";
 export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorContext";
 export type { ErrorContextState } from "./ErrorContext";
 export { defaultNotificationsContextState, NotificationsContext, NotificationsProvider } from "./NotificationsContext";
 export { defaultPaginationContextState, PaginationContext, PaginationProvider } from "./PaginationContext";
 export { defaultPanelContextState, PanelContext, PanelProvider } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
+export { defaultStakingContextState, StakingContext, StakingProvider } from "./StakingContext";
+export type { StakingContextState } from "./StakingContext";
 export { defaultUserContextState, UserContext, UserProvider } from "./UserContext";
 export type { UserContextState } from "./UserContext";
 export { defaultVotesContextState, VotesContext, VotesProvider } from "./VotesContext";

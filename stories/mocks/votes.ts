@@ -1,6 +1,6 @@
 import { sub } from "date-fns";
 import { BigNumber } from "ethers";
-import { bigNumberFromFloatString } from "helpers/formatNumber";
+import { bigNumberFromFloatString } from "helpers";
 import { VoteT } from "types";
 
 export const voteWithoutUserVote = {

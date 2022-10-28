@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle, Notifications, Panel } from "components";
+import { GlobalStyle, Panel } from "components";
 import {
-  BalancesProvider,
   ContractsProvider,
+  DelegationProvider,
   ErrorProvider,
   NotificationsProvider,
   PaginationProvider,
   PanelProvider,
+  StakingProvider,
   UserProvider,
   VotesProvider,
   VoteTimingProvider,
@@ -24,25 +25,26 @@ function MyApp({ Component, pageProps }: AppProps) {
       <NotificationsProvider>
         <VoteTimingProvider>
           <WalletProvider>
-            <PaginationProvider>
-              <QueryClientProvider client={queryClient}>
-                <UserProvider>
-                  <ContractsProvider>
-                    <BalancesProvider>
-                      <VotesProvider>
-                        <PanelProvider>
-                          <GlobalStyle />
-                          <Component {...pageProps} />
-                          <Panel />
-                          <Notifications />
-                        </PanelProvider>
-                      </VotesProvider>
-                    </BalancesProvider>
-                  </ContractsProvider>
-                  <ReactQueryDevtools />
-                </UserProvider>
-              </QueryClientProvider>
-            </PaginationProvider>
+            <QueryClientProvider client={queryClient}>
+              <UserProvider>
+                <ContractsProvider>
+                  <PaginationProvider>
+                    <DelegationProvider>
+                      <StakingProvider>
+                        <VotesProvider>
+                          <PanelProvider>
+                            <GlobalStyle />
+                            <Component {...pageProps} />
+                            <Panel />
+                          </PanelProvider>
+                        </VotesProvider>
+                      </StakingProvider>
+                    </DelegationProvider>
+                  </PaginationProvider>
+                </ContractsProvider>
+                <ReactQueryDevtools />
+              </UserProvider>
+            </QueryClientProvider>
           </WalletProvider>
         </VoteTimingProvider>
       </NotificationsProvider>

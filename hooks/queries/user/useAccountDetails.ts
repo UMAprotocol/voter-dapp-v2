@@ -1,5 +1,5 @@
 import { useWallets } from "@web3-onboard/react";
-import { getAccountDetails } from "components";
+import { getAccountDetails } from "helpers";
 
 export function useAccountDetails() {
   const connectedWallets = useWallets();

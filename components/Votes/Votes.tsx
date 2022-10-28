@@ -2,8 +2,11 @@ import { Button, VotesTable, VotesTableHeadings, VotesTableRow, VoteTimeline } f
 import { formatVotesToCommit } from "helpers";
 import {
   useAccountDetails,
+  useCommittedVotesForDelegator,
   useCommitVotes,
   useContractsContext,
+  useDelegationContext,
+  useHandleError,
   useInitializeVoteTiming,
   useNotificationsContext,
   usePanelContext,
@@ -23,6 +26,9 @@ export function Votes() {
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
   const { voting } = useContractsContext();
+  const { getDelegationStatus } = useDelegationContext();
+  const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
+  const handleError = useHandleError();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
@@ -60,6 +66,12 @@ export function Votes() {
   }
 
   function revealVotes() {
+    const cannotRevealWhenDelegatorHasCommittedErrorMessage =
+      "Cannot reveal votes with delegate wallet when delegator has committed votes";
+    if (getDelegationStatus() === "delegate" && Object.keys(committedVotesForDelegator).length > 0) {
+      handleError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
+    }
+
     revealVotesMutation(
       {
         voting,

@@ -1,80 +1,188 @@
-import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { Button, getAccountDetails, handleDisconnectWallet, Nav, WalletIcon } from "components";
-import { useWalletContext } from "hooks";
+import { useConnectWallet } from "@web3-onboard/react";
+import { Button, Nav, WalletIcon } from "components";
+import { handleDisconnectWallet, truncateEthAddress } from "helpers";
+import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
+import NextLink from "next/link";
+import Link from "public/assets/icons/link.svg";
+import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
 
-const links = [
-  {
-    title: "Vote",
-    href: "/",
-  },
-  {
-    title: "Past Votes",
-    href: "/past-votes",
-  },
-  {
-    title: "Two Key Voting",
-    href: "/two-key",
-  },
-  {
-    title: "Optimistic Oracle",
-    href: "https://oracle.umaproject.org",
-  },
-  {
-    title: "Docs",
-    href: "https://docs.umaproject.org",
-  },
-];
-
 export function MenuPanel() {
-  const [{ wallet }, _connect, disconnect] = useConnectWallet();
+  const [_wallets, connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
-  const connectedWallets = useWallets();
-  const { address } = getAccountDetails(connectedWallets);
+  const { address, connectedWallet, walletIcon } = useUserContext();
+  const {
+    getDelegationStatus,
+    getDelegateAddress,
+    getDelegatorAddress,
+    getPendingSentRequestsToBeDelegate,
+    getPendingReceivedRequestsToBeDelegate,
+  } = useDelegationContext();
+
+  const links = [
+    {
+      title: "Vote",
+      href: "/",
+    },
+    {
+      title: "Past Votes",
+      href: "/past-votes",
+    },
+    {
+      title: "Wallet Settings",
+      href: "/wallet-settings",
+    },
+    {
+      title: "Optimistic Oracle",
+      href: "https://oracle.umaproject.org",
+    },
+    {
+      title: "Docs",
+      href: "https://docs.umaproject.org",
+    },
+  ];
+
+  const _links = connectedWallet ? links : links.filter((link) => link.href !== "/wallet-settings");
+
+  const status = getDelegationStatus();
+
+  const isDelegator = status === "delegator";
+  const isDelegate = status === "delegate";
+  const isDelegatorPending = status === "delegator-pending";
+  const isDelegatePending = status === "delegate-pending";
+
+  const walletTitle = isDelegator ? "Delegator Wallet" : isDelegate ? "Delegate Wallet" : "Your Wallet";
+
+  const showOtherWallet = isDelegator || isDelegate;
+  const otherWalletTitle = isDelegator ? "Delegate Wallet" : "Delegator Wallet";
+  const otherWalletAddress = isDelegator ? getDelegateAddress() : getDelegatorAddress();
+
+  const showPending = isDelegatorPending || isDelegatePending;
+  const pendingRequests = isDelegatorPending
+    ? getPendingSentRequestsToBeDelegate()
+    : getPendingReceivedRequestsToBeDelegate();
+  const pendingRequestLinkText = isDelegatorPending ? "Sent request" : "Received request";
+  const toOrFrom = isDelegatorPending ? "to" : "from";
+
+  function getPendingRequestAddress(delegator: string, delegate: string) {
+    return isDelegatorPending ? delegate : delegator;
+  }
 
   return (
     <PanelWrapper>
-      <AccountWrapper>
-        <Title>Account</Title>
-        {connectedWallets.length ? (
-          <>
-            <ConnectedWallet>
-              <WalletIcon icon={wallet?.icon} />
-              <Address>{address}</Address>
-            </ConnectedWallet>
-            <Button
-              variant="secondary"
-              label="Disconnect"
-              width={150}
-              height={40}
-              onClick={() => handleDisconnectWallet(wallet, disconnect, setProvider, setSigner)}
-            />
-          </>
-        ) : (
-          <p>TODO implement no wallet</p>
+      <OuterWrapper>
+        <AccountWrapper>
+          <Title>Account</Title>
+          {connectedWallet ? (
+            <>
+              <WalletHeader>
+                {walletTitle} <ConnectedIndicator>(connected)</ConnectedIndicator>
+              </WalletHeader>
+              <WalletWrapper>
+                <WalletIcon icon={walletIcon} />
+                <Address>{address}</Address>
+              </WalletWrapper>
+              <Button
+                variant="secondary"
+                label="Disconnect"
+                width={150}
+                height={40}
+                onClick={() => handleDisconnectWallet(connectedWallet, disconnect, setProvider, setSigner)}
+              />
+            </>
+          ) : (
+            <ConnectButtonWrapper>
+              <Button variant="primary" label="Connect" width={150} height={40} onClick={() => void connect()} />
+            </ConnectButtonWrapper>
+          )}
+        </AccountWrapper>
+        {(showOtherWallet || showPending) && (
+          <SecondaryWrapper>
+            {showOtherWallet && (
+              <>
+                <WalletHeader>{otherWalletTitle}</WalletHeader>
+                <WalletWrapper>
+                  <LinkedAddressIconWrapper>
+                    <LinkedAddressIcon />
+                  </LinkedAddressIconWrapper>
+                  <Address>{otherWalletAddress}</Address>
+                </WalletWrapper>
+              </>
+            )}
+            {showPending && (
+              <>
+                {pendingRequests.map(({ transactionHash, delegate, delegator }) => (
+                  <PendingRequestWrapper key={transactionHash}>
+                    <PendingRequestIcon />
+                    <PendingRequestText>
+                      <NextLink href="/wallet-settings" passHref>
+                        <A>{pendingRequestLinkText}</A>
+                      </NextLink>{" "}
+                      to be delegate {toOrFrom} address{" "}
+                      <NextLink
+                        href={`https://goerli.etherscan.io/address/${getPendingRequestAddress(delegator, delegate)}`}
+                        passHref
+                      >
+                        <A target="_blank">{truncateEthAddress(getPendingRequestAddress(delegator, delegate))}</A>
+                      </NextLink>
+                    </PendingRequestText>
+                  </PendingRequestWrapper>
+                ))}
+              </>
+            )}
+          </SecondaryWrapper>
         )}
-      </AccountWrapper>
-      <Nav links={links} />
+      </OuterWrapper>
+      <Nav links={_links} />
       <PanelFooter />
     </PanelWrapper>
   );
 }
 
-const AccountWrapper = styled.div`
-  min-height: 160px;
+const OuterWrapper = styled.div``;
+
+const PendingRequestWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font: var(--text-sm);
+`;
+
+const PendingRequestText = styled.p``;
+
+const Wrapper = styled.div`
   background: var(--grey-100);
   padding-inline: 30px;
   padding-top: 25px;
   padding-bottom: 15px;
 `;
 
+const AccountWrapper = styled(Wrapper)`
+  min-height: 160px;
+`;
+
+const SecondaryWrapper = styled(Wrapper)`
+  padding-top: 10px;
+  border-top: 1px solid var(--white);
+`;
+
 const Title = styled.h1`
   font: var(--header-md);
 `;
 
-const ConnectedWallet = styled.div`
+const WalletHeader = styled.h2`
+  font: var(--text-sm);
+  font-weight: 700;
+  margin-top: 12px;
+`;
+
+const ConnectButtonWrapper = styled.div`
+  margin-top: 20px;
+`;
+
+const WalletWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
@@ -82,6 +190,33 @@ const ConnectedWallet = styled.div`
 
 const Address = styled.p`
   font: var(--text-sm);
-  margin-top: 12px;
+  margin-top: 10px;
   margin-bottom: 15px;
+`;
+
+const A = styled.a`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const LinkedAddressIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
+
+const LinkedAddressIcon = styled(Link)`
+  circle {
+    fill: var(--black);
+  }
+`;
+
+const ConnectedIndicator = styled.span`
+  color: var(--green);
+`;
+
+const PendingRequestIcon = styled(Time)`
+  margin-top: 2px;
 `;

@@ -32,3 +32,9 @@ export const formatTransactionError = (error: unknown): string | unknown => {
   }
   return error;
 };
+
+export const zeroAddress = ethers.constants.AddressZero;
+
+export const getAddress = ethers.utils.getAddress;
+
+export const isAddress = ethers.utils.isAddress;

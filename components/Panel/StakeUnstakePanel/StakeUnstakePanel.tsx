@@ -2,12 +2,13 @@ import { LoadingSkeleton, Tabs } from "components";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
   useApprove,
-  useBalancesContext,
   useContractsContext,
+  useDelegationContext,
   useExecuteUnstake,
   useNotificationsContext,
   useRequestUnstake,
   useStake,
+  useStakingContext,
 } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
@@ -25,9 +26,10 @@ export function StakeUnstakePanel() {
     unstakedBalance,
     pendingUnstake,
     canUnstakeTime,
-    getBalancesFetching,
+    getStakingDataFetching,
     unstakeCoolDown,
-  } = useBalancesContext();
+  } = useStakingContext();
+  const { getDelegationStatus } = useDelegationContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
@@ -38,9 +40,10 @@ export function StakeUnstakePanel() {
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
   const showCooldownTimer = canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
+  const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
-    return getBalancesFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
+    return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
   }
 
   function approve(approveAmountInput: string) {
@@ -107,6 +110,7 @@ export function StakeUnstakePanel() {
           approve={approve}
           stake={stake}
           unstakeCoolDown={unstakeCoolDown}
+          isDelegate={isDelegate}
         />
       ),
     },
@@ -119,6 +123,7 @@ export function StakeUnstakePanel() {
           requestUnstake={requestUnstake}
           unstakeCoolDown={unstakeCoolDown}
           canClaim={canClaim}
+          isDelegate={isDelegate}
         />
       ),
     },
