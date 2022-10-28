@@ -6,11 +6,11 @@ import {
   useDelegationContext,
   useExecuteUnstake,
   useNotificationsContext,
+  useNotifySettledContractInteraction,
   useRequestUnstake,
   useStake,
   useStakingContext,
 } from "hooks";
-import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";

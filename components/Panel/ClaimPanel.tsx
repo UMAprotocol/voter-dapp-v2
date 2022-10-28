@@ -4,11 +4,11 @@ import {
   useContractsContext,
   useDelegationContext,
   useNotificationsContext,
+  useNotifySettledContractInteraction,
   useStakingContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
-import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";

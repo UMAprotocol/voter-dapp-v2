@@ -9,6 +9,7 @@ import {
   useIgnoredRequestToBeDelegateAddresses,
   useIgnoreReceivedRequestToBeDelegate,
   useNotificationsContext,
+  useNotifySettledContractInteraction,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
@@ -19,7 +20,6 @@ import {
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
-import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import { createContext, ReactNode } from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {

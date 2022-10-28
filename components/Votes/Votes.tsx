@@ -9,13 +9,13 @@ import {
   useHandleError,
   useInitializeVoteTiming,
   useNotificationsContext,
+  useNotifySettledContractInteraction,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
