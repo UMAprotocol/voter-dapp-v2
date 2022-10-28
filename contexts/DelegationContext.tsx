@@ -8,6 +8,7 @@ import {
   useDelegatorSetEventsForDelegator,
   useIgnoredRequestToBeDelegateAddresses,
   useIgnoreReceivedRequestToBeDelegate,
+  useNotificationsContext,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
@@ -111,6 +112,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: { delegate },
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
+  const { addNotification, removeNotification } = useNotificationsContext();
 
   function getDelegationDataLoading() {
     return (
@@ -230,28 +232,58 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function sendRequestToBeDelegate(delegateAddress: string) {
+    const notify = (transactionHash: string) =>
+      addNotification(`Requesting ${delegateAddress} to be your delegate...`, transactionHash);
     sendRequestToBeDelegateMutation(
       {
         voting,
         delegateAddress,
+        notify,
       },
       {
-        onSuccess: () => closePanel(),
+        onSuccess: (data) => {
+          closePanel();
+          removeNotification(data.transactionHash);
+          addNotification(`Requested ${delegateAddress} to be your delegate`, data.transactionHash);
+        },
       }
     );
   }
 
   function cancelSentRequestToBeDelegate() {
-    cancelSentRequestToBeDelegateMutation({
-      voting,
-    });
+    const notify = (transactionHash: string) =>
+      addNotification(`Cancelling sent request to be delegate...`, transactionHash);
+    cancelSentRequestToBeDelegateMutation(
+      {
+        voting,
+        notify,
+      },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Cancelled sent request to be delegate`, data.transactionHash);
+        },
+      }
+    );
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
-    acceptReceivedRequestToBeDelegateMutation({
-      voting,
-      delegatorAddress,
-    });
+    const notify = (transactionHash: string) =>
+      addNotification(`Accepting request to be delegate from ${delegatorAddress}...`, transactionHash);
+
+    acceptReceivedRequestToBeDelegateMutation(
+      {
+        voting,
+        delegatorAddress,
+        notify,
+      },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Accepted request to be delegate from ${delegatorAddress}`, data.transactionHash);
+        },
+      }
+    );
   }
 
   function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
@@ -259,15 +291,36 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegator() {
-    terminateRelationshipWithDelegatorMutation({
-      voting,
-    });
+    const notify = (transactionHash: string) => addNotification(`Removing delegator...`, transactionHash);
+    terminateRelationshipWithDelegatorMutation(
+      {
+        voting,
+        notify,
+      },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Removed delegator`, data.transactionHash);
+        },
+      }
+    );
   }
 
   function terminateRelationshipWithDelegate() {
-    terminateRelationshipWithDelegateMutation({
-      voting,
-    });
+    const notify = (transactionHash: string) => addNotification(`Removing delegate...`, transactionHash);
+
+    terminateRelationshipWithDelegateMutation(
+      {
+        voting,
+        notify,
+      },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Removed delegate`, data.transactionHash);
+        },
+      }
+    );
   }
 
   return (
