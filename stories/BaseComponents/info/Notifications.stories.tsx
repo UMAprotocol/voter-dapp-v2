@@ -24,7 +24,7 @@ export default {
 const Template: Story<StoryProps> = ({ notifications }) => {
   const { addNotification } = useNotificationsContext();
   useEffect(() => {
-    notifications.forEach((notification) => addNotification(notification.description, notification.transactionHash));
+    notifications.forEach(addNotification);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <Notifications />;
@@ -36,6 +36,7 @@ OneNotification.args = {
     {
       description: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      type: "pending",
     },
   ],
 };
@@ -46,10 +47,17 @@ MultipleNotifications.args = {
     {
       description: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      type: "pending",
+    },
+    {
+      description: "Testing testing one two three",
+      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdea",
+      type: "error",
     },
     {
       description: "Another one. DJ Khaled!",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
+      type: "success",
     },
   ],
 };

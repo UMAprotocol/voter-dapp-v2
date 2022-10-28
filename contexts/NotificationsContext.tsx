@@ -3,6 +3,7 @@ import { AddNotificationFn, NotificationT, RemoveNotificationFn } from "types";
 
 export interface NotificationsContextState {
   notifications: NotificationT[];
+  addNotification: (notification: NotificationT) => void;
   addSuccessNotification: AddNotificationFn;
   addErrorNotification: AddNotificationFn;
   addPendingNotification: AddNotificationFn;
@@ -12,6 +13,7 @@ export interface NotificationsContextState {
 
 export const defaultNotificationsContextState: NotificationsContextState = {
   notifications: [],
+  addNotification: () => null,
   addSuccessNotification: () => null,
   addErrorNotification: () => null,
   addPendingNotification: () => null,
@@ -72,6 +74,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     <NotificationsContext.Provider
       value={{
         notifications,
+        addNotification,
         addSuccessNotification,
         addErrorNotification,
         addPendingNotification,

@@ -1,12 +1,15 @@
 import { LoadingSpinner } from "components/LoadingSpinner";
 import NextLink from "next/link";
+import Check from "public/assets/icons/check.svg";
 import Close from "public/assets/icons/close.svg";
+import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 import { NotificationT } from "types";
 
 export function Notification({
   description,
   transactionHash,
+  type,
   dismiss,
   style,
 }: NotificationT & {
@@ -17,9 +20,19 @@ export function Notification({
 }) {
   return (
     <Wrapper style={style}>
-      <LoadingSpinnerWrapper>
-        <LoadingSpinner variant="black" size={32} />
-      </LoadingSpinnerWrapper>
+      <IndicatorWrapper>
+        {type === "pending" && <LoadingSpinner variant="black" size={32} />}
+        {type === "error" && (
+          <IconWrapper>
+            <Warning />
+          </IconWrapper>
+        )}
+        {type === "success" && (
+          <IconWrapper>
+            <CheckIcon />
+          </IconWrapper>
+        )}
+      </IndicatorWrapper>
       <TextWrapper>
         <Description>{description}</Description>
         <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
@@ -53,7 +66,19 @@ const Wrapper = styled.div`
   box-shadow: var(--shadow-3);
 `;
 
-const LoadingSpinnerWrapper = styled.div``;
+const IndicatorWrapper = styled.div``;
+
+const IconWrapper = styled.div`
+  width: 32px;
+  height: 32px;
+`;
+
+const CheckIcon = styled(Check)`
+  path {
+    fill: var(--white);
+    stroke: var(--black);
+  }
+`;
 
 const TextWrapper = styled.div`
   display: grid;
