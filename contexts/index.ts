@@ -6,6 +6,7 @@ export { defaultErrorContextState, ErrorContext, ErrorProvider } from "./ErrorCo
 export type { ErrorContextState } from "./ErrorContext";
 export { defaultNotificationsContextState, NotificationsContext, NotificationsProvider } from "./NotificationsContext";
 export { defaultPaginationContextState, PaginationContext, PaginationProvider } from "./PaginationContext";
+export type { PaginationContextState } from "./PaginationContext";
 export { defaultPanelContextState, PanelContext, PanelProvider } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export { defaultStakingContextState, StakingContext, StakingProvider } from "./StakingContext";

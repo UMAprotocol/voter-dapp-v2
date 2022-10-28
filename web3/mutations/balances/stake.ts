@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
 import { AddNotificationT } from "types";
 
-export default async function stake({
+export async function stake({
   voting,
   stakeAmount,
   addNotification,
