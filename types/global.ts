@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { BigNumber } from "ethers";
+import { BigNumber, ContractReceipt, ContractTransaction } from "ethers";
 import { ReactNode } from "react";
 
 export type InputDataT = {
@@ -223,13 +223,13 @@ export type VoteFormattedToCommitT = VoteT & {
 export type CommitVotes = {
   voting: VotingV2Ethers;
   formattedVotes: VoteFormattedToCommitT[];
-  addPendingNotification: AddNotificationFn;
+  notificationHandler: NotificationHandlerFn;
 };
 
 export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
-  addPendingNotification: AddNotificationFn;
+  notificationHandler: NotificationHandlerFn;
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
@@ -248,6 +248,17 @@ export type NotificationT = {
   transactionHash: string;
   type: "success" | "error" | "pending";
 };
+
+export type ContractInteractionNotificationT = {
+  contractTransaction?: ContractTransaction | undefined;
+  contractReceipt?: ContractReceipt | undefined;
+  error?: unknown;
+  successMessage?: ReactNode;
+  errorMessage?: ReactNode;
+  pendingMessage?: ReactNode;
+};
+
+export type NotificationHandlerFn = (notification: ContractInteractionNotificationT) => void;
 
 export type AddNotificationFn = (description: ReactNode, transactionHash: string) => void;
 

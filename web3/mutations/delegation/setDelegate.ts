@@ -1,12 +1,20 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { ReactNode } from "react";
+import { NotificationHandlerFn } from "types";
 
 interface SetDelegate {
   voting: VotingV2Ethers;
   delegateAddress: string;
-  notify: (transactionHash: string) => void;
+  notificationMessage: ReactNode;
+  notificationHandler: NotificationHandlerFn;
 }
-export async function setDelegate({ voting, delegateAddress, notify }: SetDelegate) {
+export async function setDelegate({ voting, delegateAddress, notificationMessage, notificationHandler }: SetDelegate) {
   const tx = await voting.setDelegate(delegateAddress);
-  notify(tx.hash);
+
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: notificationMessage,
+  });
+
   return tx.wait();
 }

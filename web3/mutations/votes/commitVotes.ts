@@ -1,6 +1,6 @@
 import { CommitVotes } from "types";
 
-export async function commitVotes({ voting, formattedVotes, addPendingNotification }: CommitVotes) {
+export async function commitVotes({ voting, formattedVotes, notificationHandler }: CommitVotes) {
   if (!formattedVotes.length) return;
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -19,7 +19,11 @@ export async function commitVotes({ voting, formattedVotes, addPendingNotificati
       encryptedVote,
     ]);
   });
+
   const tx = await voting.functions.multicall(calldata);
-  addPendingNotification("Committing votes...", tx.hash);
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: "Committing votes...",
+  });
   return tx.wait();
 }

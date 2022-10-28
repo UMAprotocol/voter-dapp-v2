@@ -2,14 +2,13 @@ import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useCancelSentRequestToBeDelegate,
+  useContractInteractionNotifications,
   useContractsContext,
   useDelegateToStaker,
   useDelegatorSetEventsForDelegate,
   useDelegatorSetEventsForDelegator,
   useIgnoredRequestToBeDelegateAddresses,
   useIgnoreReceivedRequestToBeDelegate,
-  useNotificationsContext,
-  useNotifySettledContractInteraction,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
@@ -113,8 +112,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: { delegate },
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
-  const { addPendingNotification } = useNotificationsContext();
-  const notifySettledContractInteraction = useNotifySettledContractInteraction();
+  const notificationHandler = useContractInteractionNotifications();
 
   function getDelegationDataLoading() {
     return (
@@ -234,23 +232,19 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function sendRequestToBeDelegate(delegateAddress: string) {
-    const notify = (transactionHash: string) =>
-      addPendingNotification(
-        `Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`,
-        transactionHash
-      );
     sendRequestToBeDelegateMutation(
       {
         voting,
         delegateAddress,
-        notify,
+        notificationMessage: `Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
           if (!error) {
             closePanel();
           }
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Successfully requested ${truncateEthAddress(delegateAddress)} to be your delegate`,
@@ -262,16 +256,15 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function cancelSentRequestToBeDelegate() {
-    const notify = (transactionHash: string) =>
-      addPendingNotification(`Cancelling sent request to be delegate...`, transactionHash);
     cancelSentRequestToBeDelegateMutation(
       {
         voting,
-        notify,
+        notificationMessage: `Cancelling sent request to be delegate...`,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Cancelled sent request to be delegate`,
@@ -283,21 +276,16 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
-    const notify = (transactionHash: string) =>
-      addPendingNotification(
-        `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
-        transactionHash
-      );
-
     acceptReceivedRequestToBeDelegateMutation(
       {
         voting,
         delegatorAddress,
-        notify,
+        notificationMessage: `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Accepted request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
@@ -313,15 +301,15 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegator() {
-    const notify = (transactionHash: string) => addPendingNotification(`Removing delegator...`, transactionHash);
     terminateRelationshipWithDelegatorMutation(
       {
         voting,
-        notify,
+        notificationMessage: `Removing delegator...`,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Removed delegator`,
@@ -333,16 +321,15 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegate() {
-    const notify = (transactionHash: string) => addPendingNotification(`Removing delegate...`, transactionHash);
-
     terminateRelationshipWithDelegateMutation(
       {
         voting,
-        notify,
+        notificationMessage: `Removing delegate...`,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Removed delegate`,

@@ -1,18 +1,21 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
-import { AddNotificationFn } from "types";
+import { NotificationHandlerFn } from "types";
 
 export async function withdrawRewards({
   voting,
   outstandingRewards,
-  addPendingNotification,
+  notificationHandler,
 }: {
   voting: VotingV2Ethers;
   outstandingRewards: BigNumber;
-  addPendingNotification: AddNotificationFn;
+  notificationHandler: NotificationHandlerFn;
 }) {
   const tx = await voting.functions.withdrawRewards();
-  addPendingNotification(`Withdrawing ${formatNumberForDisplay(outstandingRewards)} UMA rewards...`, tx.hash);
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: `Withdrawing ${formatNumberForDisplay(outstandingRewards)} UMA...`,
+  });
   return await tx.wait();
 }

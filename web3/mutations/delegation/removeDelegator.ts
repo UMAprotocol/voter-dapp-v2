@@ -1,14 +1,23 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { zeroAddress } from "helpers";
+import { ReactNode } from "react";
+import { NotificationHandlerFn } from "types";
 
 export async function removeDelegator({
   voting,
-  notify,
+  notificationMessage,
+  notificationHandler,
 }: {
   voting: VotingV2Ethers;
-  notify: (transactionHash: string) => void;
+  notificationMessage: ReactNode;
+  notificationHandler: NotificationHandlerFn;
 }) {
   const tx = await voting.setDelegator(zeroAddress);
-  notify(tx.hash);
+
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: notificationMessage,
+  });
+
   return tx.wait();
 }

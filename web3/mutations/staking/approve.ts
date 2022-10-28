@@ -2,18 +2,23 @@ import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { votingContractAddress } from "constants/addresses";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
-import { AddNotificationFn } from "types";
+import { NotificationHandlerFn } from "types";
 
 export async function approve({
   votingToken,
   approveAmount,
-  addPendingNotification,
+  notificationHandler,
 }: {
   votingToken: VotingTokenEthers;
   approveAmount: BigNumber;
-  addPendingNotification: AddNotificationFn;
+  notificationHandler: NotificationHandlerFn;
 }) {
   const tx = await votingToken.functions.approve(votingContractAddress, approveAmount);
-  addPendingNotification(`Approving ${formatNumberForDisplay(approveAmount)} UMA...`, tx.hash);
+
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: `Approving ${formatNumberForDisplay(approveAmount)} UMA...`,
+  });
+
   return await tx.wait();
 }

@@ -2,11 +2,10 @@ import { LoadingSkeleton, Tabs } from "components";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
   useApprove,
+  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
   useExecuteUnstake,
-  useNotificationsContext,
-  useNotifySettledContractInteraction,
   useRequestUnstake,
   useStake,
   useStakingContext,
@@ -35,8 +34,7 @@ export function StakeUnstakePanel() {
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
   const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
-  const { addPendingNotification } = useNotificationsContext();
-  const notifySettledContractInteraction = useNotifySettledContractInteraction();
+  const notificationHandler = useContractInteractionNotifications();
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
@@ -51,10 +49,10 @@ export function StakeUnstakePanel() {
   function approve(approveAmountInput: string) {
     const approveAmount = parseEtherSafe(approveAmountInput);
     approveMutation(
-      { votingToken, approveAmount, addPendingNotification },
+      { votingToken, approveAmount, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Approved ${formatNumberForDisplay(approveAmount)} UMA`,
@@ -68,14 +66,14 @@ export function StakeUnstakePanel() {
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
     const stakeAmount = parseEtherSafe(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount, addPendingNotification },
+      { voting, stakeAmount, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
           if (!error) {
             resetStakeAmount();
           }
 
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Staked ${formatNumberForDisplay(stakeAmount)} UMA`,
@@ -89,10 +87,10 @@ export function StakeUnstakePanel() {
   function requestUnstake(unstakeAmountInput: string) {
     const unstakeAmount = parseEtherSafe(unstakeAmountInput);
     requestUnstakeMutation(
-      { voting, unstakeAmount, addPendingNotification },
+      { voting, unstakeAmount, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Requested to unstake ${formatNumberForDisplay(unstakeAmount)} UMA`,
@@ -107,10 +105,10 @@ export function StakeUnstakePanel() {
     if (!pendingUnstake) return;
 
     executeUnstakeMutation(
-      { voting, pendingUnstake, addPendingNotification },
+      { voting, pendingUnstake, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Unstaked ${formatNumberForDisplay(pendingUnstake)} UMA`,

@@ -1,10 +1,9 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
 import {
+  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
-  useNotificationsContext,
-  useNotifySettledContractInteraction,
   useStakingContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
@@ -20,18 +19,17 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getStakingDataFetching } = useStakingContext();
-  const { addPendingNotification } = useNotificationsContext();
-  const notifySettledContractInteraction = useNotifySettledContractInteraction();
+  const notificationHandler = useContractInteractionNotifications();
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
     if (!outstandingRewards) return;
 
     withdrawRewardsMutation(
-      { voting, outstandingRewards, addPendingNotification },
+      { voting, outstandingRewards, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`,
@@ -46,10 +44,10 @@ export function ClaimPanel() {
     if (!outstandingRewards) return;
 
     withdrawAndRestakeMutation(
-      { voting, outstandingRewards, addPendingNotification },
+      { voting, outstandingRewards, notificationHandler },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: `Withdrew and restaked ${formatNumberForDisplay(outstandingRewards)} UMA`,

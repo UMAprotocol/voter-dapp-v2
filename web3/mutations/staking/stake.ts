@@ -1,18 +1,21 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
-import { AddNotificationFn } from "types";
+import { NotificationHandlerFn } from "types";
 
 export async function stake({
   voting,
   stakeAmount,
-  addPendingNotification,
+  notificationHandler,
 }: {
   voting: VotingV2Ethers;
   stakeAmount: BigNumber;
-  addPendingNotification: AddNotificationFn;
+  notificationHandler: NotificationHandlerFn;
 }) {
   const tx = await voting.functions.stake(stakeAmount);
-  addPendingNotification(`Staking ${formatNumberForDisplay(stakeAmount)} UMA...`, tx.hash);
+  notificationHandler({
+    contractTransaction: tx,
+    pendingMessage: `Staking ${formatNumberForDisplay(stakeAmount)} UMA...`,
+  });
   return await tx.wait();
 }

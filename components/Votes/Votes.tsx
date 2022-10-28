@@ -4,12 +4,12 @@ import {
   useAccountDetails,
   useCommittedVotesForDelegator,
   useCommitVotes,
+  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
   useHandleError,
   useInitializeVoteTiming,
   useNotificationsContext,
-  useNotifySettledContractInteraction,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
@@ -35,7 +35,7 @@ export function Votes() {
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const { addPendingNotification } = useNotificationsContext();
-  const notifySettledContractInteraction = useNotifySettledContractInteraction();
+  const notificationHandler = useContractInteractionNotifications();
 
   useInitializeVoteTiming();
 
@@ -54,14 +54,14 @@ export function Votes() {
       {
         voting,
         formattedVotes,
-        addPendingNotification,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
           if (!error) {
             setSelectedVotes({});
           }
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: "Committed votes",
@@ -83,11 +83,11 @@ export function Votes() {
       {
         voting,
         votesToReveal: getVotesToReveal(),
-        addPendingNotification,
+        notificationHandler,
       },
       {
         onSettled: (contractReceipt, error) => {
-          notifySettledContractInteraction({
+          notificationHandler({
             contractReceipt,
             error,
             successMessage: "Revealed votes",
