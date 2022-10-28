@@ -1,4 +1,4 @@
-import { getAddress, zeroAddress } from "helpers";
+import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useCancelSentRequestToBeDelegate,
@@ -233,7 +233,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function sendRequestToBeDelegate(delegateAddress: string) {
     const notify = (transactionHash: string) =>
-      addNotification(`Requesting ${delegateAddress} to be your delegate...`, transactionHash);
+      addNotification(`Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`, transactionHash);
     sendRequestToBeDelegateMutation(
       {
         voting,
@@ -244,7 +244,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         onSuccess: (data) => {
           closePanel();
           removeNotification(data.transactionHash);
-          addNotification(`Requested ${delegateAddress} to be your delegate`, data.transactionHash);
+          addNotification(`Requested ${truncateEthAddress(delegateAddress)} to be your delegate`, data.transactionHash);
         },
       }
     );
@@ -269,7 +269,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
     const notify = (transactionHash: string) =>
-      addNotification(`Accepting request to be delegate from ${delegatorAddress}...`, transactionHash);
+      addNotification(
+        `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
+        transactionHash
+      );
 
     acceptReceivedRequestToBeDelegateMutation(
       {
@@ -280,7 +283,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       {
         onSuccess: (data) => {
           removeNotification(data.transactionHash);
-          addNotification(`Accepted request to be delegate from ${delegatorAddress}`, data.transactionHash);
+          addNotification(
+            `Accepted request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
+            data.transactionHash
+          );
         },
       }
     );
