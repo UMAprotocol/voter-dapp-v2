@@ -222,11 +222,13 @@ export type VoteFormattedToCommitT = VoteT & {
 export type CommitVotes = {
   voting: VotingV2Ethers;
   formattedVotes: VoteFormattedToCommitT[];
+  addNotification: AddNotificationT;
 };
 
 export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
+  addNotification: AddNotificationT;
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
@@ -244,3 +246,7 @@ export type NotificationT = {
   description: ReactNode;
   transactionHash: string;
 };
+
+export type AddNotificationT = (description: ReactNode, transactionHash: string) => void;
+
+export type RemoveNotificationT = (transactionHash: string) => void;

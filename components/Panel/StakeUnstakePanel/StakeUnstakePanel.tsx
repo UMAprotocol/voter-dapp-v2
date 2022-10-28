@@ -5,6 +5,7 @@ import {
   useBalancesContext,
   useContractsContext,
   useExecuteUnstake,
+  useNotificationsContext,
   useRequestUnstake,
   useStake,
 } from "hooks";
@@ -31,6 +32,7 @@ export function StakeUnstakePanel() {
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
   const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
+  const { addNotification, removeNotification } = useNotificationsContext();
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
@@ -41,25 +43,58 @@ export function StakeUnstakePanel() {
     return getBalancesFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
   }
 
-  function approve(approveAmount: string) {
-    approveMutation({ votingToken, approveAmount: parseEtherSafe(approveAmount) });
-  }
-
-  function stake(stakeAmount: string, resetStakeAmount: () => void) {
-    stakeMutation(
-      { voting, stakeAmount: parseEtherSafe(stakeAmount) },
+  function approve(approveAmountInput: string) {
+    const approveAmount = parseEtherSafe(approveAmountInput);
+    approveMutation(
+      { votingToken, approveAmount, addNotification },
       {
-        onSuccess: () => resetStakeAmount(),
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Approved ${formatNumberForDisplay(approveAmount)} UMA`, data.transactionHash);
+        },
       }
     );
   }
 
-  function requestUnstake(unstakeAmount: string) {
-    requestUnstakeMutation({ voting, unstakeAmount: parseEtherSafe(unstakeAmount) });
+  function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
+    const stakeAmount = parseEtherSafe(stakeAmountInput);
+    stakeMutation(
+      { voting, stakeAmount, addNotification },
+      {
+        onSuccess: (data) => {
+          resetStakeAmount();
+          removeNotification(data.transactionHash);
+          addNotification(`Staked ${formatNumberForDisplay(stakeAmount)} UMA`, data.transactionHash);
+        },
+      }
+    );
+  }
+
+  function requestUnstake(unstakeAmountInput: string) {
+    const unstakeAmount = parseEtherSafe(unstakeAmountInput);
+    requestUnstakeMutation(
+      { voting, unstakeAmount, addNotification },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Requested unstake of ${formatNumberForDisplay(unstakeAmount)} UMA`, data.transactionHash);
+        },
+      }
+    );
   }
 
   function executeUnstake() {
-    executeUnstakeMutation({ voting });
+    if (!pendingUnstake) return;
+
+    executeUnstakeMutation(
+      { voting, pendingUnstake, addNotification },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Unstaked ${formatNumberForDisplay(pendingUnstake)} UMA`, data.transactionHash);
+        },
+      }
+    );
   }
 
   const tabs = [

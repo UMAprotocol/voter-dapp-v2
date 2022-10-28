@@ -5,6 +5,7 @@ import {
   useCommitVotes,
   useContractsContext,
   useInitializeVoteTiming,
+  useNotificationsContext,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
@@ -26,6 +27,7 @@ export function Votes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const { addNotification, removeNotification } = useNotificationsContext();
 
   useInitializeVoteTiming();
 
@@ -44,20 +46,34 @@ export function Votes() {
       {
         voting,
         formattedVotes,
+        addNotification,
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           setSelectedVotes({});
+          if (!data) return;
+          removeNotification(data.transactionHash);
+          addNotification("Votes Committed!", data.transactionHash);
         },
       }
     );
   }
 
   function revealVotes() {
-    revealVotesMutation({
-      voting,
-      votesToReveal: getVotesToReveal(),
-    });
+    revealVotesMutation(
+      {
+        voting,
+        votesToReveal: getVotesToReveal(),
+        addNotification,
+      },
+      {
+        onSuccess(data) {
+          if (!data) return;
+          removeNotification(data.transactionHash);
+          addNotification("Votes Revealed!", data.transactionHash);
+        },
+      }
+    );
   }
 
   function getVotesToReveal() {

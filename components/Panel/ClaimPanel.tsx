@@ -1,6 +1,12 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
-import { useBalancesContext, useContractsContext, useWithdrawAndRestake, useWithdrawRewards } from "hooks";
+import {
+  useBalancesContext,
+  useContractsContext,
+  useNotificationsContext,
+  useWithdrawAndRestake,
+  useWithdrawRewards,
+} from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -11,13 +17,37 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getBalancesFetching } = useBalancesContext();
+  const { addNotification, removeNotification } = useNotificationsContext();
 
   function withdrawRewards() {
-    withdrawRewardsMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawRewardsMutation(
+      { voting, outstandingRewards, addNotification },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(`Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`, data.transactionHash);
+        },
+      }
+    );
   }
 
   function withdrawAndRestake() {
-    withdrawAndRestakeMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawAndRestakeMutation(
+      { voting, outstandingRewards, addNotification },
+      {
+        onSuccess: (data) => {
+          removeNotification(data.transactionHash);
+          addNotification(
+            `Withdrew and restaked ${formatNumberForDisplay(outstandingRewards)} UMA`,
+            data.transactionHash
+          );
+        },
+      }
+    );
   }
 
   function isLoading() {
