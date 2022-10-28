@@ -9,7 +9,6 @@ import {
   useDelegationContext,
   useHandleError,
   useInitializeVoteTiming,
-  useNotificationsContext,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
@@ -34,7 +33,6 @@ export function Votes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-  const { addPendingNotification } = useNotificationsContext();
   const notificationHandler = useContractInteractionNotifications();
 
   useInitializeVoteTiming();
