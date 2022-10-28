@@ -8,6 +8,7 @@ import {
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
+import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -19,18 +20,23 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getStakingDataFetching } = useStakingContext();
-  const { addNotification, removeNotification } = useNotificationsContext();
+  const { addPendingNotification } = useNotificationsContext();
+  const notifySettledContractInteraction = useNotifySettledContractInteraction();
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
     if (!outstandingRewards) return;
 
     withdrawRewardsMutation(
-      { voting, outstandingRewards, addNotification },
+      { voting, outstandingRewards, addPendingNotification },
       {
-        onSuccess: (data) => {
-          removeNotification(data.transactionHash);
-          addNotification(`Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`, data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`,
+            errorMessage: "Failed to withdraw UMA",
+          });
         },
       }
     );
@@ -40,14 +46,15 @@ export function ClaimPanel() {
     if (!outstandingRewards) return;
 
     withdrawAndRestakeMutation(
-      { voting, outstandingRewards, addNotification },
+      { voting, outstandingRewards, addPendingNotification },
       {
-        onSuccess: (data) => {
-          removeNotification(data.transactionHash);
-          addNotification(
-            `Withdrew and restaked ${formatNumberForDisplay(outstandingRewards)} UMA`,
-            data.transactionHash
-          );
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Withdrew and restaked ${formatNumberForDisplay(outstandingRewards)} UMA`,
+            errorMessage: "Failed to withdraw and restake UMA",
+          });
         },
       }
     );

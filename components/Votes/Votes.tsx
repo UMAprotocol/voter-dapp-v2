@@ -15,6 +15,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
+import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
@@ -33,7 +34,8 @@ export function Votes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-  const { addNotification, removeNotification } = useNotificationsContext();
+  const { addPendingNotification } = useNotificationsContext();
+  const notifySettledContractInteraction = useNotifySettledContractInteraction();
 
   useInitializeVoteTiming();
 
@@ -52,14 +54,19 @@ export function Votes() {
       {
         voting,
         formattedVotes,
-        addNotification,
+        addPendingNotification,
       },
       {
-        onSuccess: (data) => {
-          setSelectedVotes({});
-          if (!data) return;
-          removeNotification(data.transactionHash);
-          addNotification("Votes Committed!", data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          if (!error) {
+            setSelectedVotes({});
+          }
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: "Committed votes",
+            errorMessage: "Failed to commit votes",
+          });
         },
       }
     );
@@ -76,13 +83,16 @@ export function Votes() {
       {
         voting,
         votesToReveal: getVotesToReveal(),
-        addNotification,
+        addPendingNotification,
       },
       {
-        onSuccess(data) {
-          if (!data) return;
-          removeNotification(data.transactionHash);
-          addNotification("Votes Revealed!", data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: "Revealed votes",
+            errorMessage: "Failed to reveal votes",
+          });
         },
       }
     );

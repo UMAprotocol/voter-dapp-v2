@@ -1,6 +1,6 @@
 import { CommitVotes } from "types";
 
-export async function commitVotes({ voting, formattedVotes, addNotification }: CommitVotes) {
+export async function commitVotes({ voting, formattedVotes, addPendingNotification }: CommitVotes) {
   if (!formattedVotes.length) return;
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -20,6 +20,6 @@ export async function commitVotes({ voting, formattedVotes, addNotification }: C
     ]);
   });
   const tx = await voting.functions.multicall(calldata);
-  addNotification("Committing votes...", tx.hash);
+  addPendingNotification("Committing votes...", tx.hash);
   return tx.wait();
 }

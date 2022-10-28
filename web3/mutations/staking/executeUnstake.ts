@@ -1,18 +1,18 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
-import { AddNotificationT } from "types";
+import { AddNotificationFn } from "types";
 
 export async function executeUnstake({
   voting,
   pendingUnstake,
-  addNotification,
+  addPendingNotification,
 }: {
   voting: VotingV2Ethers;
   pendingUnstake: BigNumber;
-  addNotification: AddNotificationT;
+  addPendingNotification: AddNotificationFn;
 }) {
   const tx = await voting.functions.executeUnstake();
-  addNotification(`Executing unstake of ${formatNumberForDisplay(pendingUnstake)} UMA...`, tx.hash);
+  addPendingNotification(`Executing unstake of ${formatNumberForDisplay(pendingUnstake)} UMA...`, tx.hash);
   return await tx.wait();
 }

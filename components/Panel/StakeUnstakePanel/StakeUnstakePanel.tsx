@@ -10,6 +10,7 @@ import {
   useStake,
   useStakingContext,
 } from "hooks";
+import { useNotifySettledContractInteraction } from "hooks/helpers/notifySettledContractInteraction";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -34,7 +35,8 @@ export function StakeUnstakePanel() {
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
   const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
-  const { addNotification, removeNotification } = useNotificationsContext();
+  const { addPendingNotification } = useNotificationsContext();
+  const notifySettledContractInteraction = useNotifySettledContractInteraction();
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
@@ -49,11 +51,15 @@ export function StakeUnstakePanel() {
   function approve(approveAmountInput: string) {
     const approveAmount = parseEtherSafe(approveAmountInput);
     approveMutation(
-      { votingToken, approveAmount, addNotification },
+      { votingToken, approveAmount, addPendingNotification },
       {
-        onSuccess: (data) => {
-          removeNotification(data.transactionHash);
-          addNotification(`Approved ${formatNumberForDisplay(approveAmount)} UMA`, data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Approved ${formatNumberForDisplay(approveAmount)} UMA`,
+            errorMessage: "Failed to approve UMA",
+          });
         },
       }
     );
@@ -62,12 +68,19 @@ export function StakeUnstakePanel() {
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
     const stakeAmount = parseEtherSafe(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount, addNotification },
+      { voting, stakeAmount, addPendingNotification },
       {
-        onSuccess: (data) => {
-          resetStakeAmount();
-          removeNotification(data.transactionHash);
-          addNotification(`Staked ${formatNumberForDisplay(stakeAmount)} UMA`, data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          if (!error) {
+            resetStakeAmount();
+          }
+
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Staked ${formatNumberForDisplay(stakeAmount)} UMA`,
+            errorMessage: "Failed to stake UMA",
+          });
         },
       }
     );
@@ -76,11 +89,15 @@ export function StakeUnstakePanel() {
   function requestUnstake(unstakeAmountInput: string) {
     const unstakeAmount = parseEtherSafe(unstakeAmountInput);
     requestUnstakeMutation(
-      { voting, unstakeAmount, addNotification },
+      { voting, unstakeAmount, addPendingNotification },
       {
-        onSuccess: (data) => {
-          removeNotification(data.transactionHash);
-          addNotification(`Requested unstake of ${formatNumberForDisplay(unstakeAmount)} UMA`, data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Requested to unstake ${formatNumberForDisplay(unstakeAmount)} UMA`,
+            errorMessage: "Failed to request unstake UMA",
+          });
         },
       }
     );
@@ -90,11 +107,15 @@ export function StakeUnstakePanel() {
     if (!pendingUnstake) return;
 
     executeUnstakeMutation(
-      { voting, pendingUnstake, addNotification },
+      { voting, pendingUnstake, addPendingNotification },
       {
-        onSuccess: (data) => {
-          removeNotification(data.transactionHash);
-          addNotification(`Unstaked ${formatNumberForDisplay(pendingUnstake)} UMA`, data.transactionHash);
+        onSettled: (contractReceipt, error) => {
+          notifySettledContractInteraction({
+            contractReceipt,
+            error,
+            successMessage: `Unstaked ${formatNumberForDisplay(pendingUnstake)} UMA`,
+            errorMessage: "Failed to unstake UMA",
+          });
         },
       }
     );

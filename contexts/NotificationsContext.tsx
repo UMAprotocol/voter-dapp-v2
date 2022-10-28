@@ -1,16 +1,20 @@
 import { createContext, ReactNode, useState } from "react";
-import { NotificationT } from "types";
+import { AddNotificationFn, NotificationT, RemoveNotificationFn } from "types";
 
 export interface NotificationsContextState {
   notifications: NotificationT[];
-  addNotification: (description: ReactNode, transactionHash: string) => void;
-  removeNotification: (transactionHash: string) => void;
+  addSuccessNotification: AddNotificationFn;
+  addErrorNotification: AddNotificationFn;
+  addPendingNotification: AddNotificationFn;
+  removeNotification: RemoveNotificationFn;
   clearNotifications: () => void;
 }
 
 export const defaultNotificationsContextState: NotificationsContextState = {
   notifications: [],
-  addNotification: () => null,
+  addSuccessNotification: () => null,
+  addErrorNotification: () => null,
+  addPendingNotification: () => null,
   removeNotification: () => null,
   clearNotifications: () => null,
 };
@@ -20,8 +24,8 @@ export const NotificationsContext = createContext(defaultNotificationsContextSta
 export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationT[]>([]);
 
-  function addNotification(description: ReactNode, transactionHash: string) {
-    setNotifications((prev) => [...prev, { description, transactionHash }]);
+  function addNotification(notification: NotificationT) {
+    setNotifications((prev) => [...prev, notification]);
   }
 
   function clearNotifications() {
@@ -32,11 +36,45 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications((prev) => prev.filter((prevNotification) => prevNotification.transactionHash !== transactionHash));
   }
 
+  function addSuccessNotification(description: ReactNode, transactionHash: string) {
+    addNotification({
+      description,
+      transactionHash,
+      type: "success",
+    });
+
+    setTimeout(() => {
+      removeNotification(transactionHash);
+    }, 5000);
+  }
+
+  function addErrorNotification(description: ReactNode, transactionHash: string) {
+    addNotification({
+      description,
+      transactionHash,
+      type: "error",
+    });
+
+    setTimeout(() => {
+      removeNotification(transactionHash);
+    }, 10000);
+  }
+
+  function addPendingNotification(description: ReactNode, transactionHash: string) {
+    addNotification({
+      description,
+      transactionHash,
+      type: "pending",
+    });
+  }
+
   return (
     <NotificationsContext.Provider
       value={{
         notifications,
-        addNotification,
+        addSuccessNotification,
+        addErrorNotification,
+        addPendingNotification,
         removeNotification,
         clearNotifications,
       }}

@@ -1,7 +1,7 @@
 import { formatVotesToReveal } from "helpers";
 import { RevealVotes } from "types";
 
-export async function revealVotes({ votesToReveal, voting, addNotification }: RevealVotes) {
+export async function revealVotes({ votesToReveal, voting, addPendingNotification }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
   if (!formattedVotes.length) return;
 
@@ -23,6 +23,6 @@ export async function revealVotes({ votesToReveal, voting, addNotification }: Re
   });
 
   const tx = await voting.functions.multicall(calldata);
-  addNotification("Revealing votes...", tx.hash);
+  addPendingNotification("Revealing votes...", tx.hash);
   return tx.wait();
 }

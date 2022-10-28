@@ -223,13 +223,13 @@ export type VoteFormattedToCommitT = VoteT & {
 export type CommitVotes = {
   voting: VotingV2Ethers;
   formattedVotes: VoteFormattedToCommitT[];
-  addNotification: AddNotificationT;
+  addPendingNotification: AddNotificationFn;
 };
 
 export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
-  addNotification: AddNotificationT;
+  addPendingNotification: AddNotificationFn;
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
@@ -246,11 +246,12 @@ export type PageStatesT = Record<PaginateForT, PageStateT>;
 export type NotificationT = {
   description: ReactNode;
   transactionHash: string;
+  type: "success" | "error" | "pending";
 };
 
-export type AddNotificationT = (description: ReactNode, transactionHash: string) => void;
+export type AddNotificationFn = (description: ReactNode, transactionHash: string) => void;
 
-export type RemoveNotificationT = (transactionHash: string) => void;
+export type RemoveNotificationFn = (transactionHash: string) => void;
 
 export type DelegationStatusT =
   | "no-wallet-connected"
