@@ -234,7 +234,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       {
         voting,
         delegateAddress,
-        notificationMessage: `Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`,
+        notificationMessages: {
+          pending: `Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`,
+          success: `Successfully requested ${truncateEthAddress(delegateAddress)} to be your delegate`,
+          error: `Failed to request ${truncateEthAddress(delegateAddress)} to be your delegate`,
+        },
       },
       {
         onSuccess: () => {
@@ -247,7 +251,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   function cancelSentRequestToBeDelegate() {
     cancelSentRequestToBeDelegateMutation({
       voting,
-      notificationMessage: `Cancelling sent request to be delegate...`,
+      notificationMessages: {
+        pending: "Cancelling request to be delegate...",
+        success: "Successfully cancelled request to be delegate",
+        error: "Failed to cancel request to be delegate",
+      },
     });
   }
 
@@ -255,7 +263,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     acceptReceivedRequestToBeDelegateMutation({
       voting,
       delegatorAddress,
-      notificationMessage: `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
+      notificationMessages: {
+        pending: `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
+        success: `Successfully accepted request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
+        error: `Failed to accept request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
+      },
     });
   }
 
@@ -266,14 +278,22 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   function terminateRelationshipWithDelegator() {
     terminateRelationshipWithDelegatorMutation({
       voting,
-      notificationMessage: `Removing delegator...`,
+      notificationMessages: {
+        pending: "Removing delegator...",
+        success: "Successfully removed delegator",
+        error: "Failed to remove delegator",
+      },
     });
   }
 
   function terminateRelationshipWithDelegate() {
     terminateRelationshipWithDelegateMutation({
       voting,
-      notificationMessage: `Removing delegate...`,
+      notificationMessages: {
+        pending: "Removing delegate...",
+        success: "Successfully removed delegate",
+        error: "Failed to remove delegate",
+      },
     });
   }
 

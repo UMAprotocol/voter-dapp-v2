@@ -38,6 +38,7 @@ export { getCanUnstakeTime } from "./getCanUnstakeTime";
 export { getEntriesForPage } from "./getEntriesForPage";
 export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { getVoteMetaData } from "./getVoteMetaData";
+export { handleNotifications } from "./handleNotifications";
 export { initOnboard } from "./initOnboard";
 export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
 export { isExternalLink } from "./misc";

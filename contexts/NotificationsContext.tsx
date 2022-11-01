@@ -2,8 +2,10 @@ import { events } from "helpers";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { NotificationT, PendingNotificationT, SettledEventT, UuidT } from "types";
 
+export type NotificationsByUuid = Record<UuidT, NotificationT | undefined>;
+
 export interface NotificationsContextState {
-  notifications: Record<UuidT, NotificationT | undefined>;
+  notifications: NotificationsByUuid;
   removeNotification: (id: UuidT) => void;
   clearNotifications: () => void;
 }
@@ -17,7 +19,7 @@ export const defaultNotificationsContextState: NotificationsContextState = {
 export const NotificationsContext = createContext(defaultNotificationsContextState);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<Record<UuidT, NotificationT | undefined>>({});
+  const [notifications, setNotifications] = useState<NotificationsByUuid>({});
 
   useEffect(() => {
     function handlePendingEvent({ message, id, transactionHash }: PendingNotificationT) {

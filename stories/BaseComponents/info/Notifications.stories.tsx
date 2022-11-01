@@ -1,63 +1,64 @@
 import { Meta, Story } from "@storybook/react";
 import { Notifications } from "components";
-import { NotificationsProvider } from "contexts";
-import { useNotificationsContext } from "hooks";
-import { useEffect } from "react";
-import { NotificationT } from "types";
+import { defaultNotificationsContextState, NotificationsContext } from "contexts";
+import { NotificationsByUuid } from "contexts/NotificationsContext";
+import uuid from "react-uuid";
 
 interface StoryProps {
-  notifications: NotificationT[];
+  notifications: NotificationsByUuid;
 }
 
 export default {
   title: "Base components/Info/Notifications",
   component: Notifications,
-  decorators: [
-    (Story) => (
-      <NotificationsProvider>
-        <Story />
-      </NotificationsProvider>
-    ),
-  ],
 } as Meta<StoryProps>;
 
 const Template: Story<StoryProps> = ({ notifications }) => {
-  const { addNotification } = useNotificationsContext();
-  useEffect(() => {
-    notifications.forEach(addNotification);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  return <Notifications />;
+  const mockNotificationsContextState = {
+    ...defaultNotificationsContextState,
+    notifications,
+  };
+  return (
+    <NotificationsContext.Provider value={mockNotificationsContextState}>
+      <Notifications />
+    </NotificationsContext.Provider>
+  );
 };
+
+const [mockId1, mockId2, mockId3] = Array.from({ length: 3 }, () => uuid());
 
 export const OneNotification = Template.bind({});
 OneNotification.args = {
-  notifications: [
-    {
+  notifications: {
+    [mockId1]: {
       message: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
+      id: mockId1,
     },
-  ],
+  },
 };
 
 export const MultipleNotifications = Template.bind({});
 MultipleNotifications.args = {
-  notifications: [
-    {
+  notifications: {
+    [mockId1]: {
       message: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
+      id: mockId1,
     },
-    {
+    [mockId2]: {
       message: "Testing testing one two three",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdea",
       type: "error",
+      id: mockId2,
     },
-    {
+    [mockId3]: {
       message: "Another one. DJ Khaled!",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
       type: "success",
+      id: mockId3,
     },
-  ],
+  },
 };

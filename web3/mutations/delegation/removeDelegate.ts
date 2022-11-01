@@ -1,15 +1,18 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { emitPendingEvent, zeroAddress } from "helpers";
+import { handleNotifications, zeroAddress } from "helpers";
 import { ReactNode } from "react";
 
 export async function removeDelegate({
   voting,
-  notificationMessage,
+  notificationMessages,
 }: {
   voting: VotingV2Ethers;
-  notificationMessage: ReactNode;
+  notificationMessages: { pending: ReactNode; success: ReactNode; error: ReactNode };
 }) {
   const tx = await voting.setDelegate(zeroAddress);
-  emitPendingEvent(notificationMessage, tx.hash);
-  return await tx.wait();
+  return handleNotifications(tx, {
+    pending: notificationMessages.pending,
+    success: notificationMessages.success,
+    error: notificationMessages.error,
+  });
 }

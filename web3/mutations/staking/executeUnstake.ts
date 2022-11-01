@@ -1,6 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
-import { emitPendingEvent, formatNumberForDisplay } from "helpers";
+import { formatNumberForDisplay, handleNotifications } from "helpers";
 
 export async function executeUnstake({
   voting,
@@ -10,6 +10,9 @@ export async function executeUnstake({
   pendingUnstake: BigNumber;
 }) {
   const tx = await voting.functions.executeUnstake();
-  emitPendingEvent(`Executing unstake of ${formatNumberForDisplay(pendingUnstake)} UMA...`, tx.hash);
-  return await tx.wait();
+  return handleNotifications(tx, {
+    pending: `Executing unstake of ${formatNumberForDisplay(pendingUnstake)} UMA...`,
+    success: `Executed unstake of ${formatNumberForDisplay(pendingUnstake)} UMA`,
+    error: `Failed to execute unstake of ${formatNumberForDisplay(pendingUnstake)} UMA`,
+  });
 }

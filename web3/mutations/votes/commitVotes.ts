@@ -1,4 +1,4 @@
-import { emitPendingEvent } from "helpers";
+import { handleNotifications } from "helpers";
 import { CommitVotes } from "types";
 
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
@@ -22,6 +22,9 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
-  emitPendingEvent("Committing votes...", tx.hash);
-  return await tx.wait();
+  return handleNotifications(tx, {
+    pending: `Committing ${formattedVotes.length} votes...`,
+    success: `Committed ${formattedVotes.length} votes`,
+    error: `Failed to commit ${formattedVotes.length} votes`,
+  });
 }
