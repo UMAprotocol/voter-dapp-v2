@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { BigNumber, ContractReceipt, ContractTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { ReactNode } from "react";
 import uuid from "react-uuid";
 
@@ -245,26 +245,19 @@ export type PageStatesT = Record<PaginateForT, PageStateT>;
 export type UuidT = ReturnType<typeof uuid>;
 
 export type NotificationT = {
-  description: ReactNode;
+  message: ReactNode;
   id: UuidT;
   transactionHash?: string;
   type: "success" | "error" | "pending";
 };
 
-export type ContractInteractionNotificationT = {
-  contractTransaction?: ContractTransaction | undefined;
-  contractReceipt?: ContractReceipt | undefined;
-  error?: unknown;
-  successMessage?: ReactNode;
-  errorMessage?: ReactNode;
-  pendingMessage?: ReactNode;
+export type PendingNotificationT = NotificationT;
+
+export type SettledEventT = {
+  message: ReactNode;
+  id: UuidT;
+  pendingId: UuidT;
 };
-
-export type NotificationHandlerFn = (notification: ContractInteractionNotificationT) => void;
-
-export type AddNotificationFn = (description: ReactNode, transactionHash: string) => void;
-
-export type RemoveNotificationFn = (transactionHash: string) => void;
 
 export type DelegationStatusT =
   | "no-wallet-connected"

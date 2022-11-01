@@ -7,7 +7,8 @@ import { Notification } from "./Notification";
 export function Notifications() {
   const { notifications, removeNotification } = useNotificationsContext();
 
-  const transitions = useTransition(notifications, {
+  const transitions = useTransition(Object.values(notifications), {
+    keys: Object.keys(notifications),
     from: { opacity: 0 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },

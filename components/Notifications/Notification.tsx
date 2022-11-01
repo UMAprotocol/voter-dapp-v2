@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { NotificationT, UuidT } from "types";
 
 export function Notification({
-  description,
+  message,
   id,
   transactionHash,
   type,
@@ -35,7 +35,7 @@ export function Notification({
         )}
       </IndicatorWrapper>
       <TextWrapper>
-        <Description>{description}</Description>
+        <Message>{message}</Message>
         {transactionHash && (
           <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
             <A target="_blank" rel="noopener noreferrer">
@@ -88,7 +88,7 @@ const TextWrapper = styled.div`
   gap: 8px;
 `;
 
-const Description = styled.div``;
+const Message = styled.div``;
 
 const A = styled.a`
   color: var(--red-500);

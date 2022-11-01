@@ -1,15 +1,15 @@
 import { events } from "helpers";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { NotificationT, UuidT } from "types";
+import { NotificationT, PendingNotificationT, SettledEventT, UuidT } from "types";
 
 export interface NotificationsContextState {
-  notifications: NotificationT[];
+  notifications: Record<UuidT, NotificationT | undefined>;
   removeNotification: (id: UuidT) => void;
   clearNotifications: () => void;
 }
 
 export const defaultNotificationsContextState: NotificationsContextState = {
-  notifications: [],
+  notifications: {},
   removeNotification: () => null,
   clearNotifications: () => null,
 };
@@ -17,65 +17,67 @@ export const defaultNotificationsContextState: NotificationsContextState = {
 export const NotificationsContext = createContext(defaultNotificationsContextState);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationT[]>([]);
+  const [notifications, setNotifications] = useState<Record<UuidT, NotificationT | undefined>>({});
 
   useEffect(() => {
-    function addSuccessNotification(description: ReactNode, id: UuidT, transactionHash?: string) {
+    function handlePendingEvent({ message, id, transactionHash }: PendingNotificationT) {
       addNotification({
-        description,
         id,
-        transactionHash,
-        type: "success",
-      });
-
-      setTimeout(() => {
-        removeNotification(id);
-      }, 5000);
-    }
-
-    function addErrorNotification(description: ReactNode, id: UuidT, transactionHash?: string) {
-      addNotification({
-        description,
-        id,
-        transactionHash,
-        type: "error",
-      });
-
-      setTimeout(() => {
-        removeNotification(id);
-      }, 10000);
-    }
-
-    function addPendingNotification(description: ReactNode, id: UuidT, transactionHash: string) {
-      addNotification({
-        description,
-        id,
+        message,
         transactionHash,
         type: "pending",
       });
     }
 
-    events.on("success", addSuccessNotification);
-    events.on("error", addErrorNotification);
-    events.on("pending", addPendingNotification);
+    function handleSuccessEvent({ message, pendingId }: SettledEventT) {
+      updatePendingNotification(pendingId, message, "success");
+
+      setTimeout(() => {
+        removeNotification(pendingId);
+      }, 5000);
+    }
+
+    function handleErrorEvent({ message, pendingId }: SettledEventT) {
+      updatePendingNotification(pendingId, message, "error");
+
+      setTimeout(() => {
+        removeNotification(pendingId);
+      }, 5000);
+    }
+
+    events.on("success", handleSuccessEvent);
+    events.on("error", handleErrorEvent);
+    events.on("pending", handlePendingEvent);
 
     return () => {
-      events.removeListener("success", addSuccessNotification);
-      events.removeListener("error", addErrorNotification);
-      events.removeListener("pending", addPendingNotification);
+      events.removeListener("success", handleSuccessEvent);
+      events.removeListener("error", handleErrorEvent);
+      events.removeListener("pending", handlePendingEvent);
     };
   }, []);
 
   function addNotification(notification: NotificationT) {
-    setNotifications((prev) => [...prev, notification]);
+    setNotifications((prev) => ({ ...prev, [notification.id]: notification }));
+  }
+
+  function updatePendingNotification(id: UuidT, message: ReactNode, type: "success" | "error") {
+    setNotifications((prev) => ({
+      ...prev,
+      [id]: {
+        message,
+        type,
+        id,
+        transactionHash: prev[id]?.transactionHash,
+      },
+    }));
   }
 
   function clearNotifications() {
-    setNotifications([]);
+    setNotifications({});
   }
 
   function removeNotification(id: UuidT) {
-    setNotifications((prev) => prev.filter((prevNotification) => prevNotification.id !== id));
+    setNotifications((prev) => ({ ...prev, [id]: undefined }));
   }
 
   return (

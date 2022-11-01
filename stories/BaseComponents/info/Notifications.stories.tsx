@@ -34,7 +34,7 @@ export const OneNotification = Template.bind({});
 OneNotification.args = {
   notifications: [
     {
-      description: "Test notification. Committing votes or something",
+      message: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
     },
@@ -45,17 +45,17 @@ export const MultipleNotifications = Template.bind({});
 MultipleNotifications.args = {
   notifications: [
     {
-      description: "Test notification. Committing votes or something",
+      message: "Test notification. Committing votes or something",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
     },
     {
-      description: "Testing testing one two three",
+      message: "Testing testing one two three",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdea",
       type: "error",
     },
     {
-      description: "Another one. DJ Khaled!",
+      message: "Another one. DJ Khaled!",
       transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
       type: "success",
     },
