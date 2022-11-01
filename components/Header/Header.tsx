@@ -71,7 +71,7 @@ const DelegationNotificationText = styled.p``;
 const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
-  max-width: var(--desktop-max-width);
+  max-width: var(--desktop-page-width);
   min-height: var(--header-height);
   display: flex;
   justify-content: space-between;

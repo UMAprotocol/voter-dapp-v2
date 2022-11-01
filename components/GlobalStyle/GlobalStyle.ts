@@ -18,7 +18,7 @@ import {
   white,
   whiteOpacity10,
 } from "constants/colors";
-import { bannerHeight, desktopMaxWidth, desktopPanelWidth, headerHeight } from "constants/containers";
+import { bannerHeight, desktopPageWidth, desktopPanelWidth, headerHeight } from "constants/containers";
 import {
   headerLg,
   headerMd,
@@ -241,7 +241,7 @@ a:not([class]) {
     --text-xs: ${textXs};
     --text-fine: ${textFine};
     /* Containers */
-    --desktop-max-width: ${desktopMaxWidth}px;
+    --desktop-page-width: ${desktopPageWidth}px;
     --desktop-panel-width: ${desktopPanelWidth}px;
     --header-height: ${headerHeight}px;
     --banner-height: ${bannerHeight}px;

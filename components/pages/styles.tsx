@@ -1,3 +1,4 @@
+import { desktopAndUp } from "constants/breakpoints";
 import styled from "styled-components";
 
 export const PageOuterWrapper = styled.div`
@@ -7,7 +8,10 @@ export const PageOuterWrapper = styled.div`
 
 export const PageInnerWrapper = styled.div`
   margin-inline: auto;
-  max-width: var(--desktop-max-width);
+  max-width: 95%;
+  @media ${desktopAndUp} {
+    max-width: var(--desktop-page-width);
+  }
   padding-inline: 45px;
   padding-block: 45px;
 `;

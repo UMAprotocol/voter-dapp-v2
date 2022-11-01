@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { Votes } from "components";
-import { desktopMaxWidth } from "constants/containers";
+import { desktopPageWidth } from "constants/containers";
 import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
 import {
   voteCommitted,
@@ -25,7 +25,7 @@ export default {
   component: Votes,
   decorators: [
     (Story) => (
-      <div style={{ width: desktopMaxWidth }}>
+      <div style={{ width: desktopPageWidth }}>
         <Story />
       </div>
     ),

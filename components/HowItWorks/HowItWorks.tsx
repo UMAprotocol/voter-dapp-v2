@@ -98,7 +98,7 @@ export function HowItWorks() {
 }
 
 const OuterWrapper = styled.section`
-  max-width: var(--desktop-max-width);
+  max-width: var(--desktop-page-width);
   margin-inline: auto;
 `;
 
