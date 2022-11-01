@@ -1,4 +1,5 @@
 import { Wallet } from "components";
+import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
 import { useDelegationContext, usePanelContext } from "hooks";
 import NextLink from "next/link";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
@@ -72,13 +73,17 @@ const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
   max-width: var(--desktop-page-width);
-  min-height: var(--header-height);
+  height: var(--header-height);
+  padding-inline: 45px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
   margin-inline: auto;
-  padding-inline: 45px;
+  @media ${tabletAndUnder} {
+    max-width: var(--mobile-page-width);
+    padding-inline: 0;
+  }
 `;
 
 const HomeLinkWrapper = styled.div`
@@ -99,6 +104,9 @@ const WalletAndMenuWrapper = styled.div`
 `;
 
 const PageDescription = styled.p`
+  @media ${mobileAndUnder} {
+    display: none;
+  }
   font-family: "Halyard Display";
   font-style: normal;
   font-weight: 300;
