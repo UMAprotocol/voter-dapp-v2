@@ -1,6 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber, ContractReceipt, ContractTransaction } from "ethers";
 import { ReactNode } from "react";
+import uuid from "react-uuid";
 
 export type InputDataT = {
   value: string | number;
@@ -223,13 +224,11 @@ export type VoteFormattedToCommitT = VoteT & {
 export type CommitVotes = {
   voting: VotingV2Ethers;
   formattedVotes: VoteFormattedToCommitT[];
-  notificationHandler: NotificationHandlerFn;
 };
 
 export type RevealVotes = {
   voting: VotingV2Ethers;
   votesToReveal: VoteT[];
-  notificationHandler: NotificationHandlerFn;
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
@@ -243,9 +242,12 @@ export type PageStateT = {
 
 export type PageStatesT = Record<PaginateForT, PageStateT>;
 
+export type UuidT = ReturnType<typeof uuid>;
+
 export type NotificationT = {
   description: ReactNode;
-  transactionHash: string;
+  id: UuidT;
+  transactionHash?: string;
   type: "success" | "error" | "pending";
 };
 
@@ -277,3 +279,5 @@ export type DelegationEventT = {
   delegator: string;
   transactionHash: string;
 };
+
+export type ErrorOriginT = "default" | "vote" | "stake" | "unstake" | "claim" | "delegation" | "storybook";

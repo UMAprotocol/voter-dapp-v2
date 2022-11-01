@@ -2,7 +2,6 @@ import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useCancelSentRequestToBeDelegate,
-  useContractInteractionNotifications,
   useContractsContext,
   useDelegateToStaker,
   useDelegatorSetEventsForDelegate,
@@ -112,7 +111,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: { delegate },
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
-  const notificationHandler = useContractInteractionNotifications();
 
   function getDelegationDataLoading() {
     return (
@@ -237,63 +235,28 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         voting,
         delegateAddress,
         notificationMessage: `Requesting ${truncateEthAddress(delegateAddress)} to be your delegate...`,
-        notificationHandler,
       },
       {
-        onSettled: (contractReceipt, error) => {
-          if (!error) {
-            closePanel();
-          }
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Successfully requested ${truncateEthAddress(delegateAddress)} to be your delegate`,
-            errorMessage: `Failed to request ${truncateEthAddress(delegateAddress)} to be your delegate`,
-          });
+        onSuccess: () => {
+          closePanel();
         },
       }
     );
   }
 
   function cancelSentRequestToBeDelegate() {
-    cancelSentRequestToBeDelegateMutation(
-      {
-        voting,
-        notificationMessage: `Cancelling sent request to be delegate...`,
-        notificationHandler,
-      },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Cancelled sent request to be delegate`,
-            errorMessage: `Failed to cancel sent request to be delegate`,
-          });
-        },
-      }
-    );
+    cancelSentRequestToBeDelegateMutation({
+      voting,
+      notificationMessage: `Cancelling sent request to be delegate...`,
+    });
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
-    acceptReceivedRequestToBeDelegateMutation(
-      {
-        voting,
-        delegatorAddress,
-        notificationMessage: `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
-        notificationHandler,
-      },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Accepted request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
-            errorMessage: `Failed to accept request to be delegate from ${truncateEthAddress(delegatorAddress)}`,
-          });
-        },
-      }
-    );
+    acceptReceivedRequestToBeDelegateMutation({
+      voting,
+      delegatorAddress,
+      notificationMessage: `Accepting request to be delegate from ${truncateEthAddress(delegatorAddress)}...`,
+    });
   }
 
   function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
@@ -301,43 +264,17 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegator() {
-    terminateRelationshipWithDelegatorMutation(
-      {
-        voting,
-        notificationMessage: `Removing delegator...`,
-        notificationHandler,
-      },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Removed delegator`,
-            errorMessage: `Failed to remove delegator`,
-          });
-        },
-      }
-    );
+    terminateRelationshipWithDelegatorMutation({
+      voting,
+      notificationMessage: `Removing delegator...`,
+    });
   }
 
   function terminateRelationshipWithDelegate() {
-    terminateRelationshipWithDelegateMutation(
-      {
-        voting,
-        notificationMessage: `Removing delegate...`,
-        notificationHandler,
-      },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Removed delegate`,
-            errorMessage: `Failed to remove delegate`,
-          });
-        },
-      }
-    );
+    terminateRelationshipWithDelegateMutation({
+      voting,
+      notificationMessage: `Removing delegate...`,
+    });
   }
 
   return (

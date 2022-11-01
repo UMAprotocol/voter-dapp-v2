@@ -1,22 +1,15 @@
-import { createContext, ReactNode, useState } from "react";
-import { AddNotificationFn, NotificationT, RemoveNotificationFn } from "types";
+import { events } from "helpers";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { NotificationT, UuidT } from "types";
 
 export interface NotificationsContextState {
   notifications: NotificationT[];
-  addNotification: (notification: NotificationT) => void;
-  addSuccessNotification: AddNotificationFn;
-  addErrorNotification: AddNotificationFn;
-  addPendingNotification: AddNotificationFn;
-  removeNotification: RemoveNotificationFn;
+  removeNotification: (id: UuidT) => void;
   clearNotifications: () => void;
 }
 
 export const defaultNotificationsContextState: NotificationsContextState = {
   notifications: [],
-  addNotification: () => null,
-  addSuccessNotification: () => null,
-  addErrorNotification: () => null,
-  addPendingNotification: () => null,
   removeNotification: () => null,
   clearNotifications: () => null,
 };
@@ -26,6 +19,53 @@ export const NotificationsContext = createContext(defaultNotificationsContextSta
 export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationT[]>([]);
 
+  useEffect(() => {
+    function addSuccessNotification(description: ReactNode, id: UuidT, transactionHash?: string) {
+      addNotification({
+        description,
+        id,
+        transactionHash,
+        type: "success",
+      });
+
+      setTimeout(() => {
+        removeNotification(id);
+      }, 5000);
+    }
+
+    function addErrorNotification(description: ReactNode, id: UuidT, transactionHash?: string) {
+      addNotification({
+        description,
+        id,
+        transactionHash,
+        type: "error",
+      });
+
+      setTimeout(() => {
+        removeNotification(id);
+      }, 10000);
+    }
+
+    function addPendingNotification(description: ReactNode, id: UuidT, transactionHash: string) {
+      addNotification({
+        description,
+        id,
+        transactionHash,
+        type: "pending",
+      });
+    }
+
+    events.on("success", addSuccessNotification);
+    events.on("error", addErrorNotification);
+    events.on("pending", addPendingNotification);
+
+    return () => {
+      events.removeListener("success", addSuccessNotification);
+      events.removeListener("error", addErrorNotification);
+      events.removeListener("pending", addPendingNotification);
+    };
+  }, []);
+
   function addNotification(notification: NotificationT) {
     setNotifications((prev) => [...prev, notification]);
   }
@@ -34,50 +74,14 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   }
 
-  function removeNotification(transactionHash: string) {
-    setNotifications((prev) => prev.filter((prevNotification) => prevNotification.transactionHash !== transactionHash));
-  }
-
-  function addSuccessNotification(description: ReactNode, transactionHash: string) {
-    addNotification({
-      description,
-      transactionHash,
-      type: "success",
-    });
-
-    setTimeout(() => {
-      removeNotification(transactionHash);
-    }, 5000);
-  }
-
-  function addErrorNotification(description: ReactNode, transactionHash: string) {
-    addNotification({
-      description,
-      transactionHash,
-      type: "error",
-    });
-
-    setTimeout(() => {
-      removeNotification(transactionHash);
-    }, 10000);
-  }
-
-  function addPendingNotification(description: ReactNode, transactionHash: string) {
-    addNotification({
-      description,
-      transactionHash,
-      type: "pending",
-    });
+  function removeNotification(id: UuidT) {
+    setNotifications((prev) => prev.filter((prevNotification) => prevNotification.id !== id));
   }
 
   return (
     <NotificationsContext.Provider
       value={{
         notifications,
-        addNotification,
-        addSuccessNotification,
-        addErrorNotification,
-        addPendingNotification,
         removeNotification,
         clearNotifications,
       }}

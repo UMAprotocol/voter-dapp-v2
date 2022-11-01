@@ -4,7 +4,6 @@ import {
   useAccountDetails,
   useCommittedVotesForDelegator,
   useCommitVotes,
-  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
   useHandleError,
@@ -33,7 +32,6 @@ export function Votes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-  const notificationHandler = useContractInteractionNotifications();
 
   useInitializeVoteTiming();
 
@@ -52,19 +50,10 @@ export function Votes() {
       {
         voting,
         formattedVotes,
-        notificationHandler,
       },
       {
-        onSettled: (contractReceipt, error) => {
-          if (!error) {
-            setSelectedVotes({});
-          }
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: "Committed votes",
-            errorMessage: "Failed to commit votes",
-          });
+        onSuccess: () => {
+          setSelectedVotes({});
         },
       }
     );
@@ -77,23 +66,10 @@ export function Votes() {
       handleError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
     }
 
-    revealVotesMutation(
-      {
-        voting,
-        votesToReveal: getVotesToReveal(),
-        notificationHandler,
-      },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: "Revealed votes",
-            errorMessage: "Failed to reveal votes",
-          });
-        },
-      }
-    );
+    revealVotesMutation({
+      voting,
+      votesToReveal: getVotesToReveal(),
+    });
   }
 
   function getVotesToReveal() {

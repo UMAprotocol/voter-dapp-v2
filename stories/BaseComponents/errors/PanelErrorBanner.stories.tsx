@@ -20,9 +20,9 @@ export default {
 } as Meta<{ errorMessages: ReactNode[] }>;
 
 const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
-  const errorType = "storybook";
+  const errorOrigin = "storybook";
   const { errorMessages } = args;
-  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext(errorType);
+  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext(errorOrigin);
   const [errorText, setErrorText] = useState("Test error message");
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
   return (
     <>
-      <PanelErrorBanner errorType={errorType} />
+      <PanelErrorBanner errorOrigin={errorOrigin} />
       <div style={{ marginTop: 50 }}>
         <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>

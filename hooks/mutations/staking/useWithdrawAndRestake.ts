@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { outstandingRewardsKey, stakerDetailsKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
-import { StakerDetailsT } from "types";
-import { withdrawAndRestake } from "web3";
 import { formatTransactionError } from "helpers";
+import { useAccountDetails, useHandleError } from "hooks";
+import { ErrorOriginT, StakerDetailsT } from "types";
+import { withdrawAndRestake } from "web3";
 
-export function useWithdrawAndRestake(errorType?: string) {
+export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorType);
+  const onError = useHandleError(errorOrigin);
 
   const { mutate, isLoading } = useMutation(withdrawAndRestake, {
     onSuccess: () => {

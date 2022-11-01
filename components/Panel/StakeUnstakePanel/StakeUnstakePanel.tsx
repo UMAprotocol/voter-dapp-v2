@@ -2,7 +2,6 @@ import { LoadingSkeleton, Tabs } from "components";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
   useApprove,
-  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
   useExecuteUnstake,
@@ -34,7 +33,6 @@ export function StakeUnstakePanel() {
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
   const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
-  const notificationHandler = useContractInteractionNotifications();
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
@@ -48,37 +46,16 @@ export function StakeUnstakePanel() {
 
   function approve(approveAmountInput: string) {
     const approveAmount = parseEtherSafe(approveAmountInput);
-    approveMutation(
-      { votingToken, approveAmount, notificationHandler },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Approved ${formatNumberForDisplay(approveAmount)} UMA`,
-            errorMessage: "Failed to approve UMA",
-          });
-        },
-      }
-    );
+    approveMutation({ votingToken, approveAmount });
   }
 
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
     const stakeAmount = parseEtherSafe(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount, notificationHandler },
+      { voting, stakeAmount },
       {
-        onSettled: (contractReceipt, error) => {
-          if (!error) {
-            resetStakeAmount();
-          }
-
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Staked ${formatNumberForDisplay(stakeAmount)} UMA`,
-            errorMessage: "Failed to stake UMA",
-          });
+        onSuccess: () => {
+          resetStakeAmount();
         },
       }
     );
@@ -86,37 +63,13 @@ export function StakeUnstakePanel() {
 
   function requestUnstake(unstakeAmountInput: string) {
     const unstakeAmount = parseEtherSafe(unstakeAmountInput);
-    requestUnstakeMutation(
-      { voting, unstakeAmount, notificationHandler },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Requested to unstake ${formatNumberForDisplay(unstakeAmount)} UMA`,
-            errorMessage: "Failed to request unstake UMA",
-          });
-        },
-      }
-    );
+    requestUnstakeMutation({ voting, unstakeAmount });
   }
 
   function executeUnstake() {
     if (!pendingUnstake) return;
 
-    executeUnstakeMutation(
-      { voting, pendingUnstake, notificationHandler },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Unstaked ${formatNumberForDisplay(pendingUnstake)} UMA`,
-            errorMessage: "Failed to unstake UMA",
-          });
-        },
-      }
-    );
+    executeUnstakeMutation({ voting, pendingUnstake });
   }
 
   const tabs = [

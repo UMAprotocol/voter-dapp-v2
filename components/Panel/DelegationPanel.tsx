@@ -137,7 +137,7 @@ export function DelegationPanel() {
               ))}
           </>
         )}
-        <PanelErrorBanner errorType="delegation" />
+        <PanelErrorBanner errorOrigin="delegation" />
       </InnerWrapper>
       <PanelFooter />
     </PanelWrapper>

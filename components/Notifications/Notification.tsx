@@ -4,10 +4,11 @@ import Check from "public/assets/icons/check.svg";
 import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
-import { NotificationT } from "types";
+import { NotificationT, UuidT } from "types";
 
 export function Notification({
   description,
+  id,
   transactionHash,
   type,
   dismiss,
@@ -16,7 +17,7 @@ export function Notification({
   style: {
     opacity: number;
   };
-  dismiss: (transactionHash: string) => void;
+  dismiss: (id: UuidT) => void;
 }) {
   return (
     <Wrapper style={style}>
@@ -35,13 +36,15 @@ export function Notification({
       </IndicatorWrapper>
       <TextWrapper>
         <Description>{description}</Description>
-        <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
-          <A target="_blank" rel="noopener noreferrer">
-            View on Etherscan
-          </A>
-        </NextLink>
+        {transactionHash && (
+          <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
+            <A target="_blank" rel="noopener noreferrer">
+              View on Etherscan
+            </A>
+          </NextLink>
+        )}
       </TextWrapper>
-      <CloseButton onClick={() => dismiss(transactionHash)}>
+      <CloseButton onClick={() => dismiss(id)}>
         <CloseIconWrapper>
           <CloseIcon />
         </CloseIconWrapper>

@@ -9,7 +9,6 @@ export { useUserContext } from "./contexts/useUserContext";
 export { useVotesContext } from "./contexts/useVotesContext";
 export { useVoteTimingContext } from "./contexts/useVoteTimingContext";
 export { useWalletContext } from "./contexts/useWalletContext";
-export { useContractInteractionNotifications } from "./helpers/useContractInteractionNotifications";
 export { useHandleError } from "./helpers/useHandleError";
 export { useInitializeVoteTiming } from "./helpers/useInitializeVoteTiming";
 export { useInterval } from "./helpers/useInterval";

@@ -1,7 +1,6 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { formatNumberForDisplay } from "helpers";
 import {
-  useContractInteractionNotifications,
   useContractsContext,
   useDelegationContext,
   useStakingContext,
@@ -19,43 +18,18 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
   const { outstandingRewards, getStakingDataFetching } = useStakingContext();
-  const notificationHandler = useContractInteractionNotifications();
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
     if (!outstandingRewards) return;
 
-    withdrawRewardsMutation(
-      { voting, outstandingRewards, notificationHandler },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`,
-            errorMessage: "Failed to withdraw UMA",
-          });
-        },
-      }
-    );
+    withdrawRewardsMutation({ voting, outstandingRewards });
   }
 
   function withdrawAndRestake() {
     if (!outstandingRewards) return;
 
-    withdrawAndRestakeMutation(
-      { voting, outstandingRewards, notificationHandler },
-      {
-        onSettled: (contractReceipt, error) => {
-          notificationHandler({
-            contractReceipt,
-            error,
-            successMessage: `Withdrew and restaked ${formatNumberForDisplay(outstandingRewards)} UMA`,
-            errorMessage: "Failed to withdraw and restake UMA",
-          });
-        },
-      }
-    );
+    withdrawAndRestakeMutation({ voting, outstandingRewards });
   }
 
   function isLoading() {
@@ -102,7 +76,7 @@ export function ClaimPanel() {
               <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
             )}
           </ClaimToWalletWrapper>
-          <PanelErrorBanner errorType="claim" />
+          <PanelErrorBanner errorOrigin="claim" />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />

@@ -1,6 +1,7 @@
+import { emitPendingEvent } from "helpers";
 import { CommitVotes } from "types";
 
-export async function commitVotes({ voting, formattedVotes, notificationHandler }: CommitVotes) {
+export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -21,9 +22,6 @@ export async function commitVotes({ voting, formattedVotes, notificationHandler 
   });
 
   const tx = await voting.functions.multicall(calldata);
-  notificationHandler({
-    contractTransaction: tx,
-    pendingMessage: "Committing votes...",
-  });
-  return tx.wait();
+  emitPendingEvent("Committing votes...", tx.hash);
+  return await tx.wait();
 }

@@ -1,7 +1,7 @@
-import { formatVotesToReveal } from "helpers";
+import { emitPendingEvent, formatVotesToReveal } from "helpers";
 import { RevealVotes } from "types";
 
-export async function revealVotes({ votesToReveal, voting, notificationHandler }: RevealVotes) {
+export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
   if (!formattedVotes.length) return;
 
@@ -23,9 +23,7 @@ export async function revealVotes({ votesToReveal, voting, notificationHandler }
   });
 
   const tx = await voting.functions.multicall(calldata);
-  notificationHandler({
-    contractTransaction: tx,
-    pendingMessage: "Revealing votes...",
-  });
-  return tx.wait();
+  emitPendingEvent("Revealing votes...", tx.hash);
+
+  return await tx.wait();
 }
