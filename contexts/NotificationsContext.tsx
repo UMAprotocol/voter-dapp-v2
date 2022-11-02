@@ -1,12 +1,12 @@
 import { events } from "helpers";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { NotificationT, PendingNotificationT, SettledEventT, UuidT } from "types";
+import { NotificationT, PendingNotificationT, SettledEventT, UniqueIdT } from "types";
 
-export type NotificationsByUuid = Record<UuidT, NotificationT | undefined>;
+export type NotificationsById = Record<UniqueIdT, NotificationT | undefined>;
 
 export interface NotificationsContextState {
-  notifications: NotificationsByUuid;
-  removeNotification: (id: UuidT) => void;
+  notifications: NotificationsById;
+  removeNotification: (id: UniqueIdT) => void;
   clearNotifications: () => void;
 }
 
@@ -19,7 +19,7 @@ export const defaultNotificationsContextState: NotificationsContextState = {
 export const NotificationsContext = createContext(defaultNotificationsContextState);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationsByUuid>({});
+  const [notifications, setNotifications] = useState<NotificationsById>({});
 
   useEffect(() => {
     function handlePendingEvent({ message, id, transactionHash }: PendingNotificationT) {
@@ -62,7 +62,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications((prev) => ({ ...prev, [notification.id]: notification }));
   }
 
-  function updatePendingNotification(id: UuidT, message: ReactNode, type: "success" | "error") {
+  function updatePendingNotification(id: UniqueIdT, message: ReactNode, type: "success" | "error") {
     setNotifications((prev) => ({
       ...prev,
       [id]: {
@@ -78,7 +78,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications({});
   }
 
-  function removeNotification(id: UuidT) {
+  function removeNotification(id: UniqueIdT) {
     setNotifications((prev) => ({ ...prev, [id]: undefined }));
   }
 

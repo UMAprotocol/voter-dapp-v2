@@ -4,7 +4,7 @@ import Check from "public/assets/icons/check.svg";
 import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
-import { NotificationT, UuidT } from "types";
+import { NotificationT, UniqueIdT } from "types";
 
 export function Notification({
   message,
@@ -17,7 +17,7 @@ export function Notification({
   style: {
     opacity: number;
   };
-  dismiss: (id: UuidT) => void;
+  dismiss: (id: UniqueIdT) => void;
 }) {
   return (
     <Wrapper style={style}>

@@ -1,11 +1,11 @@
 import { Meta, Story } from "@storybook/react";
 import { Notifications } from "components";
 import { defaultNotificationsContextState, NotificationsContext } from "contexts";
-import { NotificationsByUuid } from "contexts/NotificationsContext";
-import uuid from "react-uuid";
+import { NotificationsById } from "contexts/NotificationsContext";
+import uniqueId from "lodash/uniqueId";
 
 interface StoryProps {
-  notifications: NotificationsByUuid;
+  notifications: NotificationsById;
 }
 
 export default {
@@ -25,7 +25,7 @@ const Template: Story<StoryProps> = ({ notifications }) => {
   );
 };
 
-const [mockId1, mockId2, mockId3] = Array.from({ length: 3 }, () => uuid());
+const [mockId1, mockId2, mockId3] = Array.from({ length: 3 }, () => uniqueId());
 
 export const OneNotification = Template.bind({});
 OneNotification.args = {
