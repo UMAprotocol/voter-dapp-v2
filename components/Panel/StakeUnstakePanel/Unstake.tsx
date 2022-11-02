@@ -1,4 +1,5 @@
 import { AmountInput, Button, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
@@ -111,6 +112,10 @@ export function Unstake({
 const Wrapper = styled.div`
   padding-top: 25px;
   padding-inline: 30px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const AmountInputWrapper = styled.div`

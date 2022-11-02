@@ -1,4 +1,5 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber, constants } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
@@ -105,6 +106,10 @@ export function Stake({
 const Wrapper = styled.div`
   padding-top: 25px;
   padding-inline: 30px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const AmountInputWrapper = styled.div`
