@@ -38,8 +38,8 @@ const Template: Story<StoryProps> = (args) => {
 
 export const ActiveCommit = Template.bind({});
 ActiveCommit.args = {
-  // @ts-expect-error - Storybook makes all args optional, but we know they're not.
   headings: (
+    // @ts-expect-error - Storybook makes all args optional, but we know they're not.
     <ActiveHeading activityStatus={ActiveHeading.args.activityStatus} />
   ),
   rows: [
@@ -56,8 +56,8 @@ ActiveCommit.args = {
 
 export const ActiveReveal = Template.bind({});
 ActiveReveal.args = {
-  // @ts-expect-error - Storybook makes all args optional, but we know they're not.
   headings: (
+    // @ts-expect-error - Storybook makes all args optional, but we know they're not.
     <ActiveHeading activityStatus={ActiveHeading.args.activityStatus} />
   ),
   rows: [
@@ -76,8 +76,8 @@ ActiveReveal.args = {
 
 export const Upcoming = Template.bind({});
 Upcoming.args = {
-  // @ts-expect-error - Storybook makes all args optional, but we know they're not.
   headings: (
+    // @ts-expect-error - Storybook makes all args optional, but we know they're not.
     <UpcomingHeading activityStatus={UpcomingHeading.args.activityStatus} />
   ),
   rows: [
