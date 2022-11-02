@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constants/breakpoints";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -24,6 +25,9 @@ const InnerWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-left: 45px;
+  @media ${mobileAndUnder} {
+    padding: 15px;
+  }
   margin-inline: auto;
 `;
 

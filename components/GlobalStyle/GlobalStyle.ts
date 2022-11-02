@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constants/breakpoints";
 import {
   black,
   blackOpacity25,
@@ -18,7 +19,14 @@ import {
   white,
   whiteOpacity10,
 } from "constants/colors";
-import { bannerHeight, desktopPageWidth, desktopPanelWidth, headerHeight, mobilePageWidth } from "constants/containers";
+import {
+  desktopHeaderHeight,
+  desktopPageWidth,
+  desktopPanelWidth,
+  mobileBannerHeight,
+  mobileHeaderHeight,
+  mobilePageWidth,
+} from "constants/containers";
 import {
   headerLg,
   headerMd,
@@ -244,8 +252,13 @@ a:not([class]) {
     --mobile-page-width: ${mobilePageWidth};
     --desktop-page-width: ${desktopPageWidth}px;
     --desktop-panel-width: ${desktopPanelWidth}px;
-    --header-height: ${headerHeight}px;
-    --banner-height: ${bannerHeight}px;
+    --header-height: ${desktopHeaderHeight}px;
+    --banner-height: ${desktopHeaderHeight}px;
+    @media ${mobileAndUnder} {
+      --header-height: ${mobileHeaderHeight}px;
+      --banner-height: ${mobileBannerHeight}px;
+    }
+    --full-height: calc(100% - (var(--banner-height) + var(--header-height)));
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};
