@@ -42,7 +42,9 @@ export function Header() {
               </DelegationNotificationText>
             </DelegationNotificationWrapper>
           )}
-          <Wallet />
+          <WalletWrapper>
+            <Wallet />
+          </WalletWrapper>
           <MenuButton onClick={openMenuPanel}>
             <MenuIconWrapper>
               <MenuIcon />
@@ -65,6 +67,12 @@ const DelegationNotificationWrapper = styled.div`
   background: var(--red-100);
   border: 1px solid var(--red-500);
   border-radius: 5px;
+`;
+
+const WalletWrapper = styled.div`
+  @media ${mobileAndUnder} {
+    display: none;
+  }
 `;
 
 const DelegationNotificationText = styled.p``;
