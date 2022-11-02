@@ -1,10 +1,11 @@
 import { useErrorContext } from "hooks";
+import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
-import Close from "public/assets/icons/close.svg";
+import { ErrorOriginT } from "types";
 
-export function ErrorBanner(props: { errorType?: string }) {
-  const { errorMessages, removeErrorMessage } = useErrorContext(props.errorType);
+export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
+  const { errorMessages, removeErrorMessage } = useErrorContext(errorOrigin);
 
   if (!errorMessages.length) return null;
 

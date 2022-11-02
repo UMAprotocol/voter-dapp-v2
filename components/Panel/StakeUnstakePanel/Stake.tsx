@@ -79,7 +79,7 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstake
           />
         </>
       )}
-      <PanelErrorBanner errorType="stake" />
+      <PanelErrorBanner errorOrigin="stake" />
     </Wrapper>
   );
 }

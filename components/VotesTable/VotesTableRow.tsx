@@ -1,4 +1,4 @@
-import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
+import { Button, Dropdown, LoadingSkeleton, TextInput, Tooltip } from "components";
 import { green, red500 } from "constants/colors";
 import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
 import { useWalletContext } from "hooks";
@@ -148,15 +148,17 @@ export function VotesTableRow({
             <VoteTitle>{formatTitle(title)}</VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled ? (
-                <RolledWrapper>
-                  <RolledIconWrapper>
-                    <RolledIcon />
-                  </RolledIconWrapper>
-                  {/* todo: add link to explanation of rolled votes in the docs once its written */}
-                  <Link href="https://docs.umaproject.org" passHref>
-                    <RolledLink target="_blank">Rolled</RolledLink>
-                  </Link>
-                </RolledWrapper>
+                <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
+                  <RolledWrapper>
+                    <RolledIconWrapper>
+                      <RolledIcon />
+                    </RolledIconWrapper>
+                    {/* todo: add link to explanation of rolled votes in the docs once its written */}
+                    <Link href="https://docs.umaproject.org" passHref>
+                      <RolledLink target="_blank">Rolled</RolledLink>
+                    </Link>
+                  </RolledWrapper>
+                </Tooltip>
               ) : null}
               <VoteOrigin>
                 {origin} | Vote #{voteNumber.toString()}

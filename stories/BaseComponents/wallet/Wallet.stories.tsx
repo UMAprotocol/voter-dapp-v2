@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Wallet } from "components";
 
 export default {
-  title: "Base components/Wallet",
+  title: "Base components/Wallet/Wallet",
   component: Wallet,
   decorators: [
     (Story) => (

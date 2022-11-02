@@ -1,5 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
+import { uniqueId } from "lodash";
+import { ReactNode } from "react";
 
 export type InputDataT = {
   value: string | number;
@@ -240,6 +242,23 @@ export type PageStateT = {
 
 export type PageStatesT = Record<PaginateForT, PageStateT>;
 
+export type UniqueIdT = ReturnType<typeof uniqueId>;
+
+export type NotificationT = {
+  message: ReactNode;
+  id: UniqueIdT;
+  transactionHash?: string;
+  type: "success" | "error" | "pending";
+};
+
+export type PendingNotificationT = NotificationT;
+
+export type SettledEventT = {
+  message: ReactNode;
+  id: UniqueIdT;
+  pendingId: UniqueIdT;
+};
+
 export type DelegationStatusT =
   | "no-wallet-connected"
   | "no-delegation"
@@ -253,3 +272,5 @@ export type DelegationEventT = {
   delegator: string;
   transactionHash: string;
 };
+
+export type ErrorOriginT = "default" | "vote" | "stake" | "unstake" | "claim" | "delegation" | "storybook";

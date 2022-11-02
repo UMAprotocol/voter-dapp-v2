@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
-import { StakerDetailsT } from "types";
-import { executeUnstake } from "web3";
 import { formatTransactionError } from "helpers";
+import { useAccountDetails, useHandleError } from "hooks";
+import { ErrorOriginT, StakerDetailsT } from "types";
+import { executeUnstake } from "web3";
 
 function max(a: BigNumber, b: BigNumber) {
   if (a.gt(b)) return a;
   return b;
 }
 
-export function useExecuteUnstake(errorType?: string) {
+export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorType);
+  const onError = useHandleError(errorOrigin);
 
   const { mutate, isLoading } = useMutation(executeUnstake, {
     onSuccess: () => {

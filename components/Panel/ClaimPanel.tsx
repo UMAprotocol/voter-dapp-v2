@@ -21,11 +21,15 @@ export function ClaimPanel() {
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
-    withdrawRewardsMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawRewardsMutation({ voting, outstandingRewards });
   }
 
   function withdrawAndRestake() {
-    withdrawAndRestakeMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawAndRestakeMutation({ voting, outstandingRewards });
   }
 
   function isLoading() {
@@ -72,7 +76,7 @@ export function ClaimPanel() {
               <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
             )}
           </ClaimToWalletWrapper>
-          <PanelErrorBanner errorType="claim" />
+          <PanelErrorBanner errorOrigin="claim" />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />

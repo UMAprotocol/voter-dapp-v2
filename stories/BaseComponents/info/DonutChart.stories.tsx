@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { DonutChart } from "components";
 
 export default {
-  title: "Base components/Donut Chart",
+  title: "Base components/Info/Donut Chart",
   component: DonutChart,
 } as ComponentMeta<typeof DonutChart>;
 

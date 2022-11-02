@@ -44,25 +44,32 @@ export function StakeUnstakePanel() {
     return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
   }
 
-  function approve(approveAmount: string) {
-    approveMutation({ votingToken, approveAmount: parseEtherSafe(approveAmount) });
+  function approve(approveAmountInput: string) {
+    const approveAmount = parseEtherSafe(approveAmountInput);
+    approveMutation({ votingToken, approveAmount });
   }
 
-  function stake(stakeAmount: string, resetStakeAmount: () => void) {
+  function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
+    const stakeAmount = parseEtherSafe(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount: parseEtherSafe(stakeAmount) },
+      { voting, stakeAmount },
       {
-        onSuccess: () => resetStakeAmount(),
+        onSuccess: () => {
+          resetStakeAmount();
+        },
       }
     );
   }
 
-  function requestUnstake(unstakeAmount: string) {
-    requestUnstakeMutation({ voting, unstakeAmount: parseEtherSafe(unstakeAmount) });
+  function requestUnstake(unstakeAmountInput: string) {
+    const unstakeAmount = parseEtherSafe(unstakeAmountInput);
+    requestUnstakeMutation({ voting, unstakeAmount });
   }
 
   function executeUnstake() {
-    executeUnstakeMutation({ voting });
+    if (!pendingUnstake) return;
+
+    executeUnstakeMutation({ voting, pendingUnstake });
   }
 
   const tabs = [

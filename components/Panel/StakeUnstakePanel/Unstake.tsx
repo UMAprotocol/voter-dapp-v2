@@ -78,7 +78,7 @@ export function Unstake({
           />
         </>
       )}
-      <PanelErrorBanner errorType="unstake" />
+      <PanelErrorBanner errorOrigin="unstake" />
       {!canClaim && phase === "reveal" && hasActiveVotes && (
         <PanelWarningText>Cannot request unstake in active reveal phase</PanelWarningText>
       )}

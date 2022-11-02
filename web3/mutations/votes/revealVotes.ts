@@ -1,4 +1,4 @@
-import { formatVotesToReveal } from "helpers";
+import { formatVotesToReveal, handleNotifications } from "helpers";
 import { RevealVotes } from "types";
 
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
@@ -23,5 +23,9 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
-  return tx.wait();
+  return handleNotifications(tx, {
+    pending: `Revealing ${formattedVotes.length} votes...`,
+    success: `Revealed ${formattedVotes.length} votes`,
+    error: `Failed to reveal ${formattedVotes.length} votes`,
+  });
 }

@@ -5,7 +5,7 @@ import add from "date-fns/add";
 import { BigNumber } from "ethers";
 
 export default {
-  title: "Base components/Cooldown Timer",
+  title: "Base components/Info/Cooldown Timer",
   component: CooldownTimer,
   decorators: [
     (Story) => (

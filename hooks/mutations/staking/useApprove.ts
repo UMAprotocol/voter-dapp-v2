@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constants/queryKeys";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
-import { approve } from "web3";
 import { formatTransactionError } from "helpers";
+import { useAccountDetails, useHandleError } from "hooks";
+import { ErrorOriginT } from "types";
+import { approve } from "web3";
 
-export function useApprove(errorType?: string) {
+export function useApprove(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorType);
+  const onError = useHandleError(errorOrigin);
 
   const { mutate, isLoading } = useMutation(approve, {
     onSuccess: (_data, { approveAmount }) => {

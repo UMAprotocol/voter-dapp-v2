@@ -31,7 +31,7 @@ import {
   textSm,
   textXs,
 } from "constants/fonts";
-import { shadow1, shadow2 } from "constants/shadows";
+import { shadow1, shadow2, shadow3 } from "constants/shadows";
 import { createGlobalStyle } from "styled-components";
 
 /** Creates the global style object for the dapp.
@@ -248,5 +248,6 @@ a:not([class]) {
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};
+    --shadow-3: ${shadow3};
   }
 `;
