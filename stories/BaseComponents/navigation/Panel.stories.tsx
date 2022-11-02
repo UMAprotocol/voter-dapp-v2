@@ -44,6 +44,11 @@ interface StoryProps
 export default {
   title: "Base components/Navigation/Panel",
   component: Panel,
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile2",
+    },
+  },
 } as Meta<StoryProps>;
 
 const Template: Story<StoryProps> = (args) => {

@@ -80,7 +80,7 @@ const Overlay = styled(AnimatedOverlay)`
 `;
 
 const Content = styled(AnimatedContent)`
-  width: var(--desktop-panel-width);
+  width: var(--panel-width);
   min-height: 100%;
   margin: 0;
   padding: 0;

@@ -14,7 +14,7 @@ export const PageInnerWrapper = styled.div`
   @media ${mobileAndUnder} {
     max-width: var(--mobile-page-width);
     padding-inline: 0;
-    padding-block: 30px;
+    padding-block: 10px;
   }
 `;
 

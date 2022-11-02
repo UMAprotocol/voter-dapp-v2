@@ -1,5 +1,6 @@
 export const mobilePageWidth = "95%";
 export const desktopPageWidth = 1190;
+export const mobilePanelWidth = "100%";
 export const desktopPanelWidth = 570;
 export const mobileHeaderHeight = 70;
 export const mobileBannerHeight = 80;
