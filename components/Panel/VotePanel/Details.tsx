@@ -8,13 +8,11 @@ import Vote from "public/assets/icons/voting.svg";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;
 export function Details({ description, decodedAncillaryData, options, timeAsDate, links, discordLink }: Props) {
   const optionLabels = options?.map(({ label }) => label);
-
-  const descriptionParagraphs = description?.split("\n");
 
   return (
     <Wrapper>
@@ -25,9 +23,9 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
-        {descriptionParagraphs.map((paragraph, i) => (
-          <Text key={`${paragraph}-${i}`}>{paragraph}</Text>
-        ))}
+        <Text>
+          <ReactMarkdown>{description}</ReactMarkdown>
+        </Text>
       </SectionWrapper>
       <SectionWrapper>
         <PanelSectionTitle>
@@ -36,9 +34,7 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           </IconWrapper>{" "}
           Decoded ancillary data
         </PanelSectionTitle>
-        <Text>
-          <ReactMarkdown>{decodedAncillaryData}</ReactMarkdown>
-        </Text>
+        <Text> {decodedAncillaryData} </Text>
       </SectionWrapper>
       {optionLabels && (
         <SectionWrapper>
