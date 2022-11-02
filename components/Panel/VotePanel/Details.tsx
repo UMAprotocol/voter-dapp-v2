@@ -8,6 +8,7 @@ import Vote from "public/assets/icons/voting.svg";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
+import ReactMarkdown from 'react-markdown';
 
 type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;
 export function Details({ description, decodedAncillaryData, options, timeAsDate, links, discordLink }: Props) {
@@ -35,7 +36,9 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           </IconWrapper>{" "}
           Decoded ancillary data
         </PanelSectionTitle>
-        <Text>{decodedAncillaryData}</Text>
+        <Text>
+          <ReactMarkdown>{decodedAncillaryData}</ReactMarkdown>
+        </Text>
       </SectionWrapper>
       {optionLabels && (
         <SectionWrapper>
