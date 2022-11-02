@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { userDataKey } from "constant/queryKeys";
+import { userDataKey } from "constant";
 import { BigNumber } from "ethers";
 import { getUserData } from "graph";
 import { useAccountDetails, useHandleError } from "hooks";

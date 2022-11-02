@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { unstakeCoolDownKey } from "constant/queryKeys";
+import { unstakeCoolDownKey } from "constant";
 import { useContractsContext, useHandleError } from "hooks";
 import { getUnstakeCoolDown } from "web3";
 

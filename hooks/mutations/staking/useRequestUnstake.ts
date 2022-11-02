@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey, unstakeCoolDownKey } from "constant/queryKeys";
+import { stakerDetailsKey, unstakeCoolDownKey } from "constant";
 import { formatTransactionError, getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";

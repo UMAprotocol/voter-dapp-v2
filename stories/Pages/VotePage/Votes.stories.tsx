@@ -1,14 +1,14 @@
 import { Meta, Story } from "@storybook/react";
 import { Votes } from "components";
-import { desktopMaxWidth } from "constant/containers";
+import { desktopMaxWidth } from "constant";
 import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
 import {
-    voteCommitted,
-    voteCommittedButNotRevealed,
-    voteRevealed,
-    voteWithCorrectVoteWithoutUserVote,
-    voteWithCorrectVoteWithUserVote,
-    voteWithoutUserVote
+  voteCommitted,
+  voteCommittedButNotRevealed,
+  voteRevealed,
+  voteWithCorrectVoteWithoutUserVote,
+  voteWithCorrectVoteWithUserVote,
+  voteWithoutUserVote
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
 

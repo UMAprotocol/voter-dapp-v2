@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { contentfulDataKey } from "constant/queryKeys";
+import { contentfulDataKey } from "constant";
 import * as contentful from "contentful";
 import { useActiveVotes, useHandleError, usePastVotes, useUpcomingVotes } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";

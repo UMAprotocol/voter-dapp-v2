@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { revealedVotesKey } from "constant/queryKeys";
+import { revealedVotesKey } from "constant";
 import { useAccountDetails, useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getRevealedVotes } from "web3";
 

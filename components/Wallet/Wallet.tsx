@@ -1,5 +1,5 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import message from "constant/web3/signingMessage";
+import { signingMessage } from "constant";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
 import { useContractsContext, usePanelContext, useUserContext, useWalletContext } from "hooks";
@@ -60,7 +60,7 @@ export function Wallet() {
         if (savedSigningKeys[address]) {
           setSigningKeys(savedSigningKeys);
         } else {
-          const newSigningKey = await makeSigningKey(signer, message);
+          const newSigningKey = await makeSigningKey(signer, signingMessage);
           const newSigningKeys = { ...savedSigningKeys, [address]: newSigningKey };
           setSigningKeys(newSigningKeys);
           saveSigningKeys(newSigningKeys);

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { decryptedVotesKey } from "constant/queryKeys";
+import { decryptedVotesKey } from "constant";
 import { decryptMessage } from "helpers";
 import { useAccountDetails, useEncryptedVotes, useHandleError, useWalletContext } from "hooks";
 import { DecryptedVotesByKeyT, DecryptedVoteT, EncryptedVotesByKeyT } from "types";

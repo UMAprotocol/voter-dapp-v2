@@ -1,4 +1,4 @@
-import { phaseLengthMilliseconds } from "constant/voteTiming";
+import { phaseLengthMilliseconds } from "constant";
 import { useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";

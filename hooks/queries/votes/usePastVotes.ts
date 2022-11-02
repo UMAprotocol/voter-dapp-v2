@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { pastVotesKey } from "constant/queryKeys";
+import { pastVotesKey } from "constant";
 import { getPastVotes } from "graph";
 import { useHandleError, useVoteTimingContext } from "hooks";
 

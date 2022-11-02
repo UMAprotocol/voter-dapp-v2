@@ -1,4 +1,4 @@
-import { numPhases, phaseLength, roundLength } from "constant/voteTiming";
+import { numPhases, phaseLength, roundLength } from "constant";
 
 /** Computes the round ID with the current time */
 export function computeRoundId() {

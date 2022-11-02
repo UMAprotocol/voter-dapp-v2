@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { Button, PanelErrorBanner, TextInput } from "components";
-import { desktopPanelWidth } from "constant/containers";
+import { desktopPanelWidth } from "constant";
 import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Meta, Story } from "@storybook/react";
 import { Wallets } from "components";
-import { grey100 } from "constant/styles/colors";
+import { grey100 } from "constant";
 import {
   defaultDelegationContextState,
   defaultUserContextState,

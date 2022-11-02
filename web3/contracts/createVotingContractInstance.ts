@@ -1,5 +1,5 @@
 import { VotingV2Ethers__factory } from "@uma/contracts-frontend";
-import { votingContractAddress } from "constant/addresses";
+import { votingContractAddress } from "constant";
 import { ethers } from "ethers";
 
 export function createVotingContractInstance(signer?: ethers.Signer) {

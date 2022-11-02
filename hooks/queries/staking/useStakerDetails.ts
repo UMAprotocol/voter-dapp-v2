@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { stakerDetailsKey } from "constant/queryKeys";
+import { stakerDetailsKey } from "constant";
 import { BigNumber } from "ethers";
 import { zeroAddress } from "helpers";
 import { useAccountDetails, useContractsContext, useDelegationContext, useHandleError } from "hooks";

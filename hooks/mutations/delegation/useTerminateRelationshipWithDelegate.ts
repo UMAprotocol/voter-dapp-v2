@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { delegateToStakerKey, sentRequestsToBeDelegateKey } from "constant/queryKeys";
+import { delegateToStakerKey, sentRequestsToBeDelegateKey } from "constant";
 import { zeroAddress } from "helpers";
 import { useHandleError, useUserContext } from "hooks";
 import { DelegationEventT } from "types";

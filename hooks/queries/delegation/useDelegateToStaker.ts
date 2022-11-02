@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { delegateToStakerKey } from "constant/queryKeys";
+import { delegateToStakerKey } from "constant";
 import { zeroAddress } from "helpers";
 import { useContractsContext, useHandleError, useStakerDetails, useUserContext } from "hooks";
 import { getDelegateToStaker } from "web3";

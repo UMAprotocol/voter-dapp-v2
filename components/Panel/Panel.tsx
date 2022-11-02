@@ -1,7 +1,6 @@
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { desktopPanelWidth } from "constant/containers";
-import { black, white } from "constant/styles/colors";
+import { black, desktopPanelWidth, white } from "constant";
 import { usePanelContext } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
