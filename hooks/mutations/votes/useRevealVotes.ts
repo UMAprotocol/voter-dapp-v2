@@ -18,7 +18,9 @@ export function useRevealVotes() {
           const newRevealedVotes = { ...oldRevealedVotes };
 
           for (const { uniqueKey } of votesToReveal) {
-            newRevealedVotes[uniqueKey] = true;
+            if (_data?.transactionHash) {
+              newRevealedVotes[uniqueKey] = _data.transactionHash;
+            }
           }
 
           return newRevealedVotes;
