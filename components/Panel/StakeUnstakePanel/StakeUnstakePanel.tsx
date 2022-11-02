@@ -31,38 +31,53 @@ export function StakeUnstakePanel() {
   const { getDelegationStatus } = useDelegationContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
-  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
-  const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
+  const { requestUnstakeMutation, isRequestingUnstake } =
+    useRequestUnstake("unstake");
+  const { executeUnstakeMutation, isExecutingUnstake } =
+    useExecuteUnstake("unstake");
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
-  const showCooldownTimer = canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
+  const showCooldownTimer =
+    canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
   const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
-    return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
+    return (
+      getStakingDataFetching() ||
+      isStaking ||
+      isRequestingUnstake ||
+      isExecutingUnstake
+    );
   }
 
-  function approve(approveAmount: string) {
-    approveMutation({ votingToken, approveAmount: parseEtherSafe(approveAmount) });
+  function approve(approveAmountInput: string) {
+    const approveAmount = parseEtherSafe(approveAmountInput);
+    approveMutation({ votingToken, approveAmount });
   }
 
-  function stake(stakeAmount: string, resetStakeAmount: () => void) {
+  function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
+    const stakeAmount = parseEtherSafe(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount: parseEtherSafe(stakeAmount) },
+      { voting, stakeAmount },
       {
-        onSuccess: () => resetStakeAmount(),
+        onSuccess: () => {
+          resetStakeAmount();
+        },
       }
     );
   }
 
-  function requestUnstake(unstakeAmount: string) {
-    requestUnstakeMutation({ voting, unstakeAmount: parseEtherSafe(unstakeAmount) });
+  function requestUnstake(unstakeAmountInput: string) {
+    const unstakeAmount = parseEtherSafe(unstakeAmountInput);
+    requestUnstakeMutation({ voting, unstakeAmount });
   }
 
   function executeUnstake() {
-    executeUnstakeMutation({ voting });
+    if (!pendingUnstake) return;
+
+    executeUnstakeMutation({ voting, pendingUnstake });
   }
 
   const tabs = [

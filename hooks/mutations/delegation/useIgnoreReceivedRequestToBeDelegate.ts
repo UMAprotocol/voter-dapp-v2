@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ignoredRequestToBeDelegateAddressesKey } from "constants/queryKeys";
+import { ignoredRequestToBeDelegateAddressesKey } from "constant";
 import { getIgnoredRequestToBeDelegateAddressesFromStorage } from "helpers";
 import { useHandleError, useUserContext } from "hooks";
 
@@ -16,7 +16,10 @@ export function useIgnoreReceivedRequestToBeDelegate() {
         (oldIgnoredRequestToBeDelegateAddresses) => {
           if (!oldIgnoredRequestToBeDelegateAddresses) return;
 
-          const newIgnoredRequestToBeDelegateAddresses = [...oldIgnoredRequestToBeDelegateAddresses, delegatorAddress];
+          const newIgnoredRequestToBeDelegateAddresses = [
+            ...oldIgnoredRequestToBeDelegateAddresses,
+            delegatorAddress,
+          ];
 
           return newIgnoredRequestToBeDelegateAddresses;
         }
@@ -37,9 +40,14 @@ function ignoreReceivedRequestToBeDelegate({
   userAddress: string;
   delegatorAddress: string;
 }) {
-  const ignoredRequestToBeDelegateAddresses = getIgnoredRequestToBeDelegateAddressesFromStorage();
+  const ignoredRequestToBeDelegateAddresses =
+    getIgnoredRequestToBeDelegateAddressesFromStorage();
 
-  if (!ignoredRequestToBeDelegateAddresses[userAddress]?.includes(delegatorAddress)) {
+  if (
+    !ignoredRequestToBeDelegateAddresses[userAddress]?.includes(
+      delegatorAddress
+    )
+  ) {
     if (!ignoredRequestToBeDelegateAddresses[userAddress]) {
       ignoredRequestToBeDelegateAddresses[userAddress] = [];
     }

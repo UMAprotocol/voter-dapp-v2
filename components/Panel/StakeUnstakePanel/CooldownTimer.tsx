@@ -11,8 +11,14 @@ interface Props {
   canClaim: boolean;
   onClaim: () => void;
 }
-export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim }: Props) {
-  const formattedCooldownEnds = cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
+export function CooldownTimer({
+  cooldownEnds,
+  pendingUnstake,
+  canClaim,
+  onClaim,
+}: Props) {
+  const formattedCooldownEnds =
+    cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
   const cooldownDescription = "in cooldown period";
   const claimDescription = "ready to claim";
   const description = canClaim ? claimDescription : cooldownDescription;
@@ -30,7 +36,13 @@ export function CooldownTimer({ cooldownEnds, pendingUnstake, canClaim, onClaim 
       </AmountDescriptionWrapper>
       {canClaim ? (
         <ClaimButtonWrapper>
-          <Button variant="primary" label="Claim tokens" onClick={onClaim} width={150} height={35} />
+          <Button
+            variant="primary"
+            label="Claim tokens"
+            onClick={onClaim}
+            width={150}
+            height={35}
+          />
         </ClaimButtonWrapper>
       ) : (
         <TimeRemaining>{formattedCooldownEnds} left</TimeRemaining>

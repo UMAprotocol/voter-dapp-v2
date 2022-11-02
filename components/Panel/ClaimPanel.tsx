@@ -10,26 +10,41 @@ import {
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
-import { PanelSectionText, PanelSectionTitle, PanelWarningText, PanelWrapper } from "./styles";
+import {
+  PanelSectionText,
+  PanelSectionTitle,
+  PanelWarningText,
+  PanelWrapper,
+} from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
   const { getDelegationStatus } = useDelegationContext();
-  const { withdrawRewardsMutation, isWithdrawingRewards } = useWithdrawRewards("claim");
-  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } = useWithdrawAndRestake("claim");
+  const { withdrawRewardsMutation, isWithdrawingRewards } =
+    useWithdrawRewards("claim");
+  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } =
+    useWithdrawAndRestake("claim");
   const { outstandingRewards, getStakingDataFetching } = useStakingContext();
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
-    withdrawRewardsMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawRewardsMutation({ voting, outstandingRewards });
   }
 
   function withdrawAndRestake() {
-    withdrawAndRestakeMutation({ voting });
+    if (!outstandingRewards) return;
+
+    withdrawAndRestakeMutation({ voting, outstandingRewards });
   }
 
   function isLoading() {
-    return getStakingDataFetching() || isWithdrawingAndRestaking || isWithdrawingRewards;
+    return (
+      getStakingDataFetching() ||
+      isWithdrawingAndRestaking ||
+      isWithdrawingRewards
+    );
   }
 
   return (
@@ -53,26 +68,39 @@ export function ClaimPanel() {
           <ClaimAndStakeWrapper>
             <PanelSectionTitle>Claim and Stake</PanelSectionTitle>
             <PanelSectionText>
-              Earn even more rewards by claiming and automatically stake/lock these rewards text TODO
+              Earn even more rewards by claiming and automatically stake/lock
+              these rewards text TODO
             </PanelSectionText>
-            <Button variant="primary" width="100%" height={45} label="Claim and Stake" onClick={withdrawAndRestake} />
+            <Button
+              variant="primary"
+              width="100%"
+              height={45}
+              label="Claim and Stake"
+              onClick={withdrawAndRestake}
+            />
           </ClaimAndStakeWrapper>
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
             <PanelSectionText>
-              By claiming to your wallet you will not earn rewards text text but this could be an option for tax reasons
-              text TODO.
+              By claiming to your wallet you will not earn rewards text text but
+              this could be an option for tax reasons text TODO.
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
-                Delegated wallets can only claim and restake. Claiming to your wallet from a delegated voting wallet is
-                not allowed.
+                Delegated wallets can only claim and restake. Claiming to your
+                wallet from a delegated voting wallet is not allowed.
               </PanelWarningText>
             ) : (
-              <Button variant="secondary" width="100%" height={45} label="Claim to Wallet" onClick={withdrawRewards} />
+              <Button
+                variant="secondary"
+                width="100%"
+                height={45}
+                label="Claim to Wallet"
+                onClick={withdrawRewards}
+              />
             )}
           </ClaimToWalletWrapper>
-          <PanelErrorBanner errorType="claim" />
+          <PanelErrorBanner errorOrigin="claim" />
         </InnerWrapper>
       </SectionsWrapper>
       <PanelFooter />

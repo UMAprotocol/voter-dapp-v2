@@ -45,7 +45,9 @@ export function MenuPanel() {
     },
   ];
 
-  const _links = connectedWallet ? links : links.filter((link) => link.href !== "/wallet-settings");
+  const _links = connectedWallet
+    ? links
+    : links.filter((link) => link.href !== "/wallet-settings");
 
   const status = getDelegationStatus();
 
@@ -54,17 +56,25 @@ export function MenuPanel() {
   const isDelegatorPending = status === "delegator-pending";
   const isDelegatePending = status === "delegate-pending";
 
-  const walletTitle = isDelegator ? "Delegator Wallet" : isDelegate ? "Delegate Wallet" : "Your Wallet";
+  const walletTitle = isDelegator
+    ? "Delegator Wallet"
+    : isDelegate
+    ? "Delegate Wallet"
+    : "Your Wallet";
 
   const showOtherWallet = isDelegator || isDelegate;
   const otherWalletTitle = isDelegator ? "Delegate Wallet" : "Delegator Wallet";
-  const otherWalletAddress = isDelegator ? getDelegateAddress() : getDelegatorAddress();
+  const otherWalletAddress = isDelegator
+    ? getDelegateAddress()
+    : getDelegatorAddress();
 
   const showPending = isDelegatorPending || isDelegatePending;
   const pendingRequests = isDelegatorPending
     ? getPendingSentRequestsToBeDelegate()
     : getPendingReceivedRequestsToBeDelegate();
-  const pendingRequestLinkText = isDelegatorPending ? "Sent request" : "Received request";
+  const pendingRequestLinkText = isDelegatorPending
+    ? "Sent request"
+    : "Received request";
   const toOrFrom = isDelegatorPending ? "to" : "from";
 
   function getPendingRequestAddress(delegator: string, delegate: string) {
@@ -79,7 +89,8 @@ export function MenuPanel() {
           {connectedWallet ? (
             <>
               <WalletHeader>
-                {walletTitle} <ConnectedIndicator>(connected)</ConnectedIndicator>
+                {walletTitle}{" "}
+                <ConnectedIndicator>(connected)</ConnectedIndicator>
               </WalletHeader>
               <WalletWrapper>
                 <WalletIcon icon={walletIcon} />
@@ -91,12 +102,25 @@ export function MenuPanel() {
                 label="Disconnect"
                 width={150}
                 height={40}
-                onClick={() => handleDisconnectWallet(connectedWallet, disconnect, setProvider, setSigner)}
+                onClick={() =>
+                  handleDisconnectWallet(
+                    connectedWallet,
+                    disconnect,
+                    setProvider,
+                    setSigner
+                  )
+                }
               />
             </>
           ) : (
             <ConnectButtonWrapper>
-              <Button variant="primary" label="Connect" width={150} height={40} onClick={() => void connect()} />
+              <Button
+                variant="primary"
+                label="Connect"
+                width={150}
+                height={40}
+                onClick={() => void connect()}
+              />
             </ConnectButtonWrapper>
           )}
         </AccountWrapper>
@@ -116,23 +140,32 @@ export function MenuPanel() {
             )}
             {showPending && (
               <>
-                {pendingRequests.map(({ transactionHash, delegate, delegator }) => (
-                  <PendingRequestWrapper key={transactionHash}>
-                    <PendingRequestIcon />
-                    <PendingRequestText>
-                      <NextLink href="/wallet-settings" passHref>
-                        <A>{pendingRequestLinkText}</A>
-                      </NextLink>{" "}
-                      to be delegate {toOrFrom} address{" "}
-                      <NextLink
-                        href={`https://goerli.etherscan.io/address/${getPendingRequestAddress(delegator, delegate)}`}
-                        passHref
-                      >
-                        <A target="_blank">{truncateEthAddress(getPendingRequestAddress(delegator, delegate))}</A>
-                      </NextLink>
-                    </PendingRequestText>
-                  </PendingRequestWrapper>
-                ))}
+                {pendingRequests.map(
+                  ({ transactionHash, delegate, delegator }) => (
+                    <PendingRequestWrapper key={transactionHash}>
+                      <PendingRequestIcon />
+                      <PendingRequestText>
+                        <NextLink href="/wallet-settings" passHref>
+                          <A>{pendingRequestLinkText}</A>
+                        </NextLink>{" "}
+                        to be delegate {toOrFrom} address{" "}
+                        <NextLink
+                          href={`https://goerli.etherscan.io/address/${getPendingRequestAddress(
+                            delegator,
+                            delegate
+                          )}`}
+                          passHref
+                        >
+                          <A target="_blank">
+                            {truncateEthAddress(
+                              getPendingRequestAddress(delegator, delegate)
+                            )}
+                          </A>
+                        </NextLink>
+                      </PendingRequestText>
+                    </PendingRequestWrapper>
+                  )
+                )}
               </>
             )}
           </SecondaryWrapper>

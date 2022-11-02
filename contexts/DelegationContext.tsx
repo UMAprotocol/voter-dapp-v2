@@ -1,4 +1,4 @@
-import { getAddress, zeroAddress } from "helpers";
+import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useCancelSentRequestToBeDelegate,
@@ -56,7 +56,9 @@ export const defaultDelegationContextState: DelegationContextState = {
   getDelegationDataFetching: () => false,
 };
 
-export const DelegationContext = createContext<DelegationContextState>(defaultDelegationContextState);
+export const DelegationContext = createContext<DelegationContextState>(
+  defaultDelegationContextState
+);
 
 export function DelegationProvider({ children }: { children: ReactNode }) {
   const {
@@ -94,17 +96,28 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isLoading: ignoredRequestToBeDelegateAddressesLoading,
     isFetching: ignoredRequestToBeDelegateAddressesFetching,
   } = useIgnoredRequestToBeDelegateAddresses();
-  const { ignoreReceivedRequestToBeDelegateMutation, isIgnoringRequestToBeDelegate } =
-    useIgnoreReceivedRequestToBeDelegate();
-  const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } = useSendRequestToBeDelegate();
-  const { cancelSentRequestToBeDelegateMutation, isCancelingSentRequestToBeDelegate } =
-    useCancelSentRequestToBeDelegate();
-  const { acceptReceivedRequestToBeDelegateMutation, isAcceptingReceivedRequestToBeDelegate } =
-    useAcceptReceivedRequestToBeDelegate();
-  const { terminateRelationshipWithDelegateMutation, isTerminatingRelationshipWithDelegate } =
-    useTerminateRelationshipWithDelegate();
-  const { terminateRelationshipWithDelegatorMutation, isTerminatingRelationshipWithDelegator } =
-    useTerminateRelationshipWithDelegator();
+  const {
+    ignoreReceivedRequestToBeDelegateMutation,
+    isIgnoringRequestToBeDelegate,
+  } = useIgnoreReceivedRequestToBeDelegate();
+  const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } =
+    useSendRequestToBeDelegate();
+  const {
+    cancelSentRequestToBeDelegateMutation,
+    isCancelingSentRequestToBeDelegate,
+  } = useCancelSentRequestToBeDelegate();
+  const {
+    acceptReceivedRequestToBeDelegateMutation,
+    isAcceptingReceivedRequestToBeDelegate,
+  } = useAcceptReceivedRequestToBeDelegate();
+  const {
+    terminateRelationshipWithDelegateMutation,
+    isTerminatingRelationshipWithDelegate,
+  } = useTerminateRelationshipWithDelegate();
+  const {
+    terminateRelationshipWithDelegatorMutation,
+    isTerminatingRelationshipWithDelegator,
+  } = useTerminateRelationshipWithDelegator();
   const { voting } = useContractsContext();
   const { address } = useUserContext();
   const {
@@ -165,12 +178,24 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   function getDelegationStatus(): DelegationStatusT {
     if (!address) return "no-wallet-connected";
     // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
-    if (!getHasReceivedRequestsToBeDelegate() && !getHasSentRequestsToBeDelegate() && !getHasDelegatorSetEvents())
+    if (
+      !getHasReceivedRequestsToBeDelegate() &&
+      !getHasSentRequestsToBeDelegate() &&
+      !getHasDelegatorSetEvents()
+    )
       return "no-delegation";
     // if there is a delegator set for your address, you are a delegate
-    if (voterFromDelegate && getAddress(voterFromDelegate) !== getAddress(address)) return "delegate";
+    if (
+      voterFromDelegate &&
+      getAddress(voterFromDelegate) !== getAddress(address)
+    )
+      return "delegate";
     // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
-    if (delegateToStaker && getAddress(address) === getAddress(delegateToStaker)) return "delegator";
+    if (
+      delegateToStaker &&
+      getAddress(address) === getAddress(delegateToStaker)
+    )
+      return "delegator";
     // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
     if (getHasPendingReceivedRequestsToBeDelegate()) return "delegate-pending";
     // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
@@ -184,11 +209,15 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getHasReceivedRequestsToBeDelegate() {
-    return receivedRequestsToBeDelegate && receivedRequestsToBeDelegate.length > 0;
+    return (
+      receivedRequestsToBeDelegate && receivedRequestsToBeDelegate.length > 0
+    );
   }
 
   function getHasDelegatorSetEvents() {
-    return delegatorSetEventsForDelegate && delegatorSetEventsForDelegate.length > 0;
+    return (
+      delegatorSetEventsForDelegate && delegatorSetEventsForDelegate.length > 0
+    );
   }
 
   function getHasPendingReceivedRequestsToBeDelegate() {
@@ -196,9 +225,14 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getHasPendingSentRequestsToBeDelegate() {
-    const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
-    const mostRecentSentRequestToBeDelegate = pendingSentRequestsToBeDelegate.at(-1);
-    return mostRecentSentRequestToBeDelegate?.delegate !== zeroAddress && pendingSentRequestsToBeDelegate.length > 0;
+    const pendingSentRequestsToBeDelegate =
+      getPendingSentRequestsToBeDelegate();
+    const mostRecentSentRequestToBeDelegate =
+      pendingSentRequestsToBeDelegate.at(-1);
+    return (
+      mostRecentSentRequestToBeDelegate?.delegate !== zeroAddress &&
+      pendingSentRequestsToBeDelegate.length > 0
+    );
   }
 
   function getPendingReceivedRequestsToBeDelegate() {
@@ -208,10 +242,14 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
           (delegateSet) =>
             !delegatorSetEventsForDelegate?.some(
               (delegatorSet) =>
-                delegatorSet.delegate === delegateSet.delegate && delegatorSet.delegator === delegatorSet.delegator
+                delegatorSet.delegate === delegateSet.delegate &&
+                delegatorSet.delegator === delegatorSet.delegator
             )
         )
-        ?.filter(({ delegator }) => !ignoredRequestToBeDelegateAddresses?.includes(delegator)) ?? []
+        ?.filter(
+          ({ delegator }) =>
+            !ignoredRequestToBeDelegateAddresses?.includes(delegator)
+        ) ?? []
     );
   }
 
@@ -223,7 +261,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         (delegateSet) =>
           !delegatorSetEventsForDelegator?.some(
             (delegatorSet) =>
-              delegatorSet.delegate === delegateSet.delegate && delegatorSet.delegator === delegatorSet.delegator
+              delegatorSet.delegate === delegateSet.delegate &&
+              delegatorSet.delegator === delegatorSet.delegator
           )
       ) ?? []
     );
@@ -234,9 +273,22 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       {
         voting,
         delegateAddress,
+        notificationMessages: {
+          pending: `Requesting ${truncateEthAddress(
+            delegateAddress
+          )} to be your delegate...`,
+          success: `Successfully requested ${truncateEthAddress(
+            delegateAddress
+          )} to be your delegate`,
+          error: `Failed to request ${truncateEthAddress(
+            delegateAddress
+          )} to be your delegate`,
+        },
       },
       {
-        onSuccess: () => closePanel(),
+        onSuccess: () => {
+          closePanel();
+        },
       }
     );
   }
@@ -244,6 +296,11 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   function cancelSentRequestToBeDelegate() {
     cancelSentRequestToBeDelegateMutation({
       voting,
+      notificationMessages: {
+        pending: "Cancelling request to be delegate...",
+        success: "Successfully cancelled request to be delegate",
+        error: "Failed to cancel request to be delegate",
+      },
     });
   }
 
@@ -251,22 +308,46 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     acceptReceivedRequestToBeDelegateMutation({
       voting,
       delegatorAddress,
+      notificationMessages: {
+        pending: `Accepting request to be delegate from ${truncateEthAddress(
+          delegatorAddress
+        )}...`,
+        success: `Successfully accepted request to be delegate from ${truncateEthAddress(
+          delegatorAddress
+        )}`,
+        error: `Failed to accept request to be delegate from ${truncateEthAddress(
+          delegatorAddress
+        )}`,
+      },
     });
   }
 
   function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
-    ignoreReceivedRequestToBeDelegateMutation({ userAddress: address, delegatorAddress });
+    ignoreReceivedRequestToBeDelegateMutation({
+      userAddress: address,
+      delegatorAddress,
+    });
   }
 
   function terminateRelationshipWithDelegator() {
     terminateRelationshipWithDelegatorMutation({
       voting,
+      notificationMessages: {
+        pending: "Removing delegator...",
+        success: "Successfully removed delegator",
+        error: "Failed to remove delegator",
+      },
     });
   }
 
   function terminateRelationshipWithDelegate() {
     terminateRelationshipWithDelegateMutation({
       voting,
+      notificationMessages: {
+        pending: "Removing delegate...",
+        success: "Successfully removed delegate",
+        error: "Failed to remove delegate",
+      },
     });
   }
 

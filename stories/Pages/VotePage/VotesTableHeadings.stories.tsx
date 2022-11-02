@@ -6,7 +6,9 @@ export default {
   component: VotesTableHeadings,
 } as ComponentMeta<typeof VotesTableHeadings>;
 
-const Template: ComponentStory<typeof VotesTableHeadings> = (args) => <VotesTableHeadings {...args} />;
+const Template: ComponentStory<typeof VotesTableHeadings> = (args) => (
+  <VotesTableHeadings {...args} />
+);
 
 export const Active = Template.bind({});
 Active.args = {

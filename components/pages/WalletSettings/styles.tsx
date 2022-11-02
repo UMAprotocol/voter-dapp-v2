@@ -49,10 +49,38 @@ export const AddressWrapper = styled.div`
 const barButtonWidth = 160;
 const barButtonHeight = 40;
 
-export const BarButtonPrimary = ({ label, onClick }: { label: ReactNode; onClick: () => void }) => {
-  return <Button variant="primary" label={label} onClick={onClick} width={barButtonWidth} height={barButtonHeight} />;
+export const BarButtonPrimary = ({
+  label,
+  onClick,
+}: {
+  label: ReactNode;
+  onClick: () => void;
+}) => {
+  return (
+    <Button
+      variant="primary"
+      label={label}
+      onClick={onClick}
+      width={barButtonWidth}
+      height={barButtonHeight}
+    />
+  );
 };
 
-export const BarButtonSecondary = ({ label, onClick }: { label: ReactNode; onClick: () => void }) => {
-  return <Button variant="secondary" label={label} onClick={onClick} width={barButtonWidth} height={barButtonHeight} />;
+export const BarButtonSecondary = ({
+  label,
+  onClick,
+}: {
+  label: ReactNode;
+  onClick: () => void;
+}) => {
+  return (
+    <Button
+      variant="secondary"
+      label={label}
+      onClick={onClick}
+      width={barButtonWidth}
+      height={barButtonHeight}
+    />
+  );
 };

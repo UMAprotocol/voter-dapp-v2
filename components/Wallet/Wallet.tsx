@@ -1,12 +1,20 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import message from "constants/signingMessage";
+import { signingMessage } from "constant";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
-import { useContractsContext, usePanelContext, useUserContext, useWalletContext } from "hooks";
+import {
+  useContractsContext,
+  usePanelContext,
+  useUserContext,
+  useWalletContext,
+} from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { SigningKey, SigningKeys } from "types";
-import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
+import {
+  createVotingContractInstance,
+  createVotingTokenContractInstance,
+} from "web3";
 import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {
@@ -20,14 +28,21 @@ export function Wallet() {
   useEffect(() => {
     if (!connectedWallets.length) return;
 
-    const connectedWalletsLabelArray = connectedWallets.map(({ label }) => label);
+    const connectedWalletsLabelArray = connectedWallets.map(
+      ({ label }) => label
+    );
 
-    window.localStorage.setItem("connectedWallets", JSON.stringify(connectedWalletsLabelArray));
+    window.localStorage.setItem(
+      "connectedWallets",
+      JSON.stringify(connectedWalletsLabelArray)
+    );
   }, [connectedWallets, wallet]);
 
   useEffect(() => {
     if (!connect || connectedWallets?.length > 0) return;
-    const previousConnectedWallets = JSON.parse(window.localStorage.getItem("connectedWallets") || "[]") as string[];
+    const previousConnectedWallets = JSON.parse(
+      window.localStorage.getItem("connectedWallets") || "[]"
+    ) as string[];
 
     if (previousConnectedWallets?.length) {
       void (async () => {
@@ -60,8 +75,11 @@ export function Wallet() {
         if (savedSigningKeys[address]) {
           setSigningKeys(savedSigningKeys);
         } else {
-          const newSigningKey = await makeSigningKey(signer, message);
-          const newSigningKeys = { ...savedSigningKeys, [address]: newSigningKey };
+          const newSigningKey = await makeSigningKey(signer, signingMessage);
+          const newSigningKeys = {
+            ...savedSigningKeys,
+            [address]: newSigningKey,
+          };
           setSigningKeys(newSigningKeys);
           saveSigningKeys(newSigningKeys);
         }
@@ -87,7 +105,9 @@ export function Wallet() {
 
   function getSavedSigningKeys() {
     const savedSigningKeys = localStorage.getItem("signingKeys");
-    return savedSigningKeys ? (JSON.parse(savedSigningKeys) as SigningKeys) : {};
+    return savedSigningKeys
+      ? (JSON.parse(savedSigningKeys) as SigningKeys)
+      : {};
   }
 
   function openMenuPanel() {

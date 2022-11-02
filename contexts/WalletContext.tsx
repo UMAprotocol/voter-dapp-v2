@@ -26,17 +26,29 @@ export const defaultWalletContextState = {
   setSigningKeys: () => null,
 };
 
-export const WalletContext = createContext<WalletContextState>(defaultWalletContextState);
+export const WalletContext = createContext<WalletContextState>(
+  defaultWalletContextState
+);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [onboard, setOnboard] = useState<OnboardAPI | null>(initOnboard);
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [signingKeys, setSigningKeys] = useState<SigningKeys>({});
 
   return (
     <WalletContext.Provider
-      value={{ onboard, setOnboard, provider, setProvider, signer, setSigner, signingKeys, setSigningKeys }}
+      value={{
+        onboard,
+        setOnboard,
+        provider,
+        setProvider,
+        signer,
+        setSigner,
+        signingKeys,
+        setSigningKeys,
+      }}
     >
       {children}
     </WalletContext.Provider>

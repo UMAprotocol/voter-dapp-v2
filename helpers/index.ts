@@ -1,5 +1,36 @@
-export { addOpacityToHsl } from "./addOpacityToHsl";
-export { checkIfIsPolymarket } from "./checkIfIsPolymarket";
+export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./delegation/getIgnoredRequestToBeDelegateAddressesFromStorage";
+export { getCanUnstakeTime } from "./staking/getCanUnstakeTime";
+export { addOpacityToHsl } from "./util/addOpacityToHsl";
+export {
+  bigNumberFromFloatString,
+  formatNumberForDisplay,
+  truncateDecimals,
+} from "./util/formatNumber";
+export { getEntriesForPage } from "./util/getEntriesForPage";
+export { handleNotifications } from "./util/handleNotifications";
+export { capitalizeFirstLetter, isExternalLink } from "./util/isExternalLink";
+export { logTruthy } from "./util/logTruthy";
+export { unixTimestampToDate } from "./util/unixTimestampToDate";
+export { checkIfIsPolymarket } from "./voting/checkIfIsPolymarket";
+export {
+  formatVotesToCommit,
+  formatVotesToReveal,
+  formatVoteStringWithPrecision,
+  parseVoteStringWithPrecision,
+} from "./voting/formatVotes";
+export { getVoteMetaData } from "./voting/getVoteMetaData";
+export { makePriceRequestsByKey } from "./voting/makePriceRequestsByKey";
+export { makeUniqueKeyForVote } from "./voting/makeUniqueKeyForVote";
+export { onlyOneRequestPerAddress } from "./voting/onlyOneRequestPerAddress";
+export {
+  computeMillisecondsUntilPhaseEnds,
+  computePhase,
+  computePhaseEndTime,
+  computePhaseEndTimeMilliseconds,
+  computeRoundEndTime,
+  computeRoundId,
+  getPhase,
+} from "./voting/voteTiming";
 export {
   decryptMessage,
   derivePrivateKey,
@@ -10,12 +41,13 @@ export {
   IDENTIFIER_BLACKLIST,
   IDENTIFIER_NON_18_PRECISION,
   recoverPublicKey,
-} from "./crypto";
-export { decodeHexString } from "./decodeHexString";
+} from "./web3/crypto";
+export { decodeHexString } from "./web3/decodeHexString";
 export {
   commify,
   formatBytes32String,
   formatEther,
+  formatTransactionError,
   getAddress,
   isAddress,
   parseEther,
@@ -23,34 +55,14 @@ export {
   randomBytes,
   solidityKeccak256,
   toUtf8String,
-  formatTransactionError,
   zeroAddress,
-} from "./ethers";
-export { bigNumberFromFloatString, formatNumberForDisplay, truncateDecimals } from "./formatNumber";
+} from "./web3/ethers";
 export {
-  formatVotesToCommit,
-  formatVotesToReveal,
-  formatVoteStringWithPrecision,
-  parseVoteStringWithPrecision,
-} from "./formatVotes";
-export { getCanUnstakeTime } from "./getCanUnstakeTime";
-export { getEntriesForPage } from "./getEntriesForPage";
-export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./getIgnoredRequestToBeDelegateAddressesFromStorage";
-export { getVoteMetaData } from "./getVoteMetaData";
-export { initOnboard } from "./initOnboard";
-export { makePriceRequestsByKey } from "./makePriceRequestsByKey";
-export { onlyOneRequestPerAddress } from "./onlyOneRequestPerAddress";
-export { truncateEthAddress } from "./truncateEthAddress";
-export { unixTimestampToDate } from "./unixTimestampToDate";
-export { makeUniqueKeyForVote } from "./votes";
-export {
-  computeMillisecondsUntilPhaseEnds,
-  computePhase,
-  computePhaseEndTime,
-  computePhaseEndTimeMilliseconds,
-  computeRoundEndTime,
-  computeRoundId,
-  getPhase,
-} from "./voteTiming";
-export { isExternalLink } from "./misc";
-export { getAccountDetails, handleDisconnectWallet } from "./wallet";
+  emitErrorEvent,
+  emitPendingEvent,
+  emitSuccessEvent,
+  events,
+} from "./web3/events";
+export { initOnboard } from "./web3/initOnboard";
+export { truncateEthAddress } from "./web3/truncateEthAddress";
+export { getAccountDetails, handleDisconnectWallet } from "./web3/wallet";

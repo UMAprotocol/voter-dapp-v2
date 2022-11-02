@@ -7,7 +7,9 @@ export function convertToNumbers(data: InputDataT[]) {
   return data.map(({ value, label }) => {
     const numberValue = Number(value);
     if (Number.isNaN(numberValue)) {
-      throw new Error(`Non-numeric string used as value in input data: ${value}`);
+      throw new Error(
+        `Non-numeric string used as value in input data: ${value}`
+      );
     }
     return {
       value: numberValue,
@@ -58,4 +60,7 @@ function determineLightness(initialLightness: number, index: number) {
  * @param {number} atRadius - the radius of the arc
  * @returns {number} - the angle in radians of an arc of the given length at the given radius
  */
-export const angleForArcLength = (arcLength: number, atRadius: number): number => arcLength / atRadius;
+export const angleForArcLength = (
+  arcLength: number,
+  atRadius: number
+): number => arcLength / atRadius;

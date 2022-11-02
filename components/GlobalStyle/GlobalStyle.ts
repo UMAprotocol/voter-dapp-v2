@@ -1,47 +1,41 @@
 import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
 import {
+  bannerHeight,
   black,
   blackOpacity25,
   blackOpacity50,
   blackOpacity60,
   blackOpacity75,
+  desktopMaxWidth,
+  desktopPanelWidth,
   green,
   grey100,
   grey50,
   grey500,
   grey800,
+  headerHeight,
+  headerLg,
+  headerMd,
+  headerSm,
+  headerXl,
+  headerXs,
   loadingSkeletonOpacity10,
   loadingSkeletonOpacity100,
   red100,
   red500,
   red500Opacity5,
   red600,
-  white,
-  whiteOpacity10,
-} from "constants/colors";
-import {
-  desktopBannerHeight,
-  desktopHeaderHeight,
-  desktopPageWidth,
-  desktopPanelWidth,
-  mobileBannerHeight,
-  mobileHeaderHeight,
-  mobilePageWidth,
-  mobilePanelWidth,
-} from "constants/containers";
-import {
-  headerLg,
-  headerMd,
-  headerSm,
-  headerXl,
-  headerXs,
+  shadow1,
+  shadow2,
+  shadow3,
   textFine,
   textLg,
   textMd,
   textSm,
   textXs,
-} from "constants/fonts";
-import { shadow1, shadow2 } from "constants/shadows";
+  white,
+  whiteOpacity10,
+} from "constant";
 import { createGlobalStyle } from "styled-components";
 
 /** Creates the global style object for the dapp.
@@ -275,5 +269,6 @@ a:not([class]) {
     /* Shadows */
     --shadow-1: ${shadow1};
     --shadow-2: ${shadow2};
+    --shadow-3: ${shadow3};
   }
 `;

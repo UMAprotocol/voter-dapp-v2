@@ -1,11 +1,13 @@
-import { formatVotesToReveal } from "helpers";
+import { formatVotesToReveal, handleNotifications } from "helpers";
 import { RevealVotes } from "types";
 
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
   if (!formattedVotes.length) return;
 
-  const revealVoteFunctionFragment = voting.interface.getFunction("revealVote(bytes32,uint256,int256,bytes,int256)");
+  const revealVoteFunctionFragment = voting.interface.getFunction(
+    "revealVote(bytes32,uint256,int256,bytes,int256)"
+  );
 
   const calldata = formattedVotes.flatMap((vote) => {
     if (!vote) return [];
@@ -23,5 +25,9 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
-  return tx.wait();
+  return handleNotifications(tx, {
+    pending: `Revealing ${formattedVotes.length} votes...`,
+    success: `Revealed ${formattedVotes.length} votes`,
+    error: `Failed to reveal ${formattedVotes.length} votes`,
+  });
 }

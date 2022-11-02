@@ -18,7 +18,20 @@ export function getNodeUrls(): { [key: string]: string } {
   return JSON.parse(process.env.NODE_URLS);
 }
 
-export async function constructContractOnChain(chainId: number, contractName: any) {
-  console.log("getting", contractName, "on chain", chainId, await getAddress(contractName, chainId));
-  return new Contract(await getAddress(contractName, chainId), getAbi(contractName), getProviderByChainId(chainId));
+export async function constructContractOnChain(
+  chainId: number,
+  contractName: any
+) {
+  console.log(
+    "getting",
+    contractName,
+    "on chain",
+    chainId,
+    await getAddress(contractName, chainId)
+  );
+  return new Contract(
+    await getAddress(contractName, chainId),
+    getAbi(contractName),
+    getProviderByChainId(chainId)
+  );
 }

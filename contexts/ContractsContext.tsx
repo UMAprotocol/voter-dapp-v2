@@ -1,6 +1,9 @@
 import { VotingTokenEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { createContext, ReactNode, useState } from "react";
-import { createVotingContractInstance, createVotingTokenContractInstance } from "web3";
+import {
+  createVotingContractInstance,
+  createVotingTokenContractInstance,
+} from "web3";
 
 export interface ContractsContextState {
   voting: VotingV2Ethers;
@@ -19,14 +22,19 @@ export const defaultContractContextState = {
   setVotingToken: () => null,
 };
 
-export const ContractsContext = createContext<ContractsContextState>(defaultContractContextState);
+export const ContractsContext = createContext<ContractsContextState>(
+  defaultContractContextState
+);
 
 export function ContractsProvider({ children }: { children: ReactNode }) {
   const [voting, setVoting] = useState<VotingV2Ethers>(defaultVoting);
-  const [votingToken, setVotingToken] = useState<VotingTokenEthers>(defaultVotingToken);
+  const [votingToken, setVotingToken] =
+    useState<VotingTokenEthers>(defaultVotingToken);
 
   return (
-    <ContractsContext.Provider value={{ voting, setVoting, votingToken, setVotingToken }}>
+    <ContractsContext.Provider
+      value={{ voting, setVoting, votingToken, setVotingToken }}
+    >
       {children}
     </ContractsContext.Provider>
   );

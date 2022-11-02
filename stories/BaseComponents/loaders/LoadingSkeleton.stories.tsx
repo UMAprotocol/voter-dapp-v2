@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { LoadingSkeleton } from "components";
-import { red500 } from "constants/colors";
+import { red500 } from "constant";
 
 export default {
   title: "Base components/Loaders/Loading Skeleton",
@@ -14,7 +14,9 @@ export default {
   ],
 } as ComponentMeta<typeof LoadingSkeleton>;
 
-const Template: ComponentStory<typeof LoadingSkeleton> = (args) => <LoadingSkeleton {...args} />;
+const Template: ComponentStory<typeof LoadingSkeleton> = (args) => (
+  <LoadingSkeleton {...args} />
+);
 
 export const Default = Template.bind({});
 
@@ -44,7 +46,15 @@ WhiteVariant.args = {
 };
 WhiteVariant.decorators = [
   (Story) => (
-    <div style={{ width: 200, height: 40, background: red500, display: "grid", placeItems: "center" }}>
+    <div
+      style={{
+        width: 200,
+        height: 40,
+        background: red500,
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
       <Story />
     </div>
   ),

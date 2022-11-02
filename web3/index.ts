@@ -1,11 +1,11 @@
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
-export { approve } from "./mutations/balances/approve";
-export { executeUnstake } from "./mutations/balances/executeUnstake";
-export { requestUnstake } from "./mutations/balances/requestUnstake";
-export { stake } from "./mutations/balances/stake";
-export { withdrawAndRestake } from "./mutations/balances/withdrawAndRestake";
-export { withdrawRewards } from "./mutations/balances/withdrawRewards";
+export { approve } from "./mutations/staking/approve";
+export { executeUnstake } from "./mutations/staking/executeUnstake";
+export { requestUnstake } from "./mutations/staking/requestUnstake";
+export { stake } from "./mutations/staking/stake";
+export { withdrawAndRestake } from "./mutations/staking/withdrawAndRestake";
+export { withdrawRewards } from "./mutations/staking/withdrawRewards";
 export { removeDelegate } from "./mutations/delegation/removeDelegate";
 export { removeDelegator } from "./mutations/delegation/removeDelegator";
 export { setDelegate } from "./mutations/delegation/setDelegate";

@@ -14,10 +14,14 @@ export const defaultErrorContextState: ErrorContextState = {
   clearErrorMessages: () => null,
 };
 
-export const ErrorContext = createContext<ErrorContextState>(defaultErrorContextState);
+export const ErrorContext = createContext<ErrorContextState>(
+  defaultErrorContextState
+);
 
 export function ErrorProvider({ children }: { children: ReactNode }) {
-  const [errorMessages, setErrorMessages] = useState<Record<string, ReactNode[]>>({});
+  const [errorMessages, setErrorMessages] = useState<
+    Record<string, ReactNode[]>
+  >({});
 
   function addErrorMessage(type: string, message: ReactNode) {
     setErrorMessages((prev) => ({
@@ -36,7 +40,9 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
   function removeErrorMessage(type: string, message: ReactNode) {
     setErrorMessages((prev) => ({
       ...prev,
-      [type]: prev[type] ? prev[type].filter((prevMessage) => prevMessage !== message) : [],
+      [type]: prev[type]
+        ? prev[type].filter((prevMessage) => prevMessage !== message)
+        : [],
     }));
   }
 

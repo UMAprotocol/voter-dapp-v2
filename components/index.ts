@@ -23,6 +23,7 @@ export { Layout } from "./Layout/Layout";
 export { LoadingSkeleton } from "./LoadingSkeleton/LoadingSkeleton";
 export { LoadingSpinner } from "./LoadingSpinner/LoadingSpinner";
 export { Nav } from "./Nav/Nav";
+export { Notifications } from "./Notifications/Notifications";
 export { PastVotes } from "./pages/PastVotes";
 export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
 export { Vote } from "./pages/Vote";
@@ -40,13 +41,18 @@ export { CooldownTimer } from "./Panel/StakeUnstakePanel/CooldownTimer";
 export { Stake } from "./Panel/StakeUnstakePanel/Stake";
 export { StakeUnstakePanel } from "./Panel/StakeUnstakePanel/StakeUnstakePanel";
 export { Unstake } from "./Panel/StakeUnstakePanel/Unstake";
-export { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./Panel/styles";
+export {
+  PanelSectionText,
+  PanelSectionTitle,
+  PanelWrapper,
+} from "./Panel/styles";
 export { Details } from "./Panel/VotePanel/Details";
 export { Result } from "./Panel/VotePanel/Result";
 export { VotePanel } from "./Panel/VotePanel/VotePanel";
 export { PanelErrorBanner } from "./PanelErrorBanner/PanelErrorBanner";
 export { Tabs } from "./Tabs/Tabs";
 export { Toggle } from "./Toggle/Toggle";
+export { Tooltip } from "./Tooltip/Tooltip";
 export { VoteHistoryTable } from "./VoteHistoryTable/VoteHistoryTable";
 export { Votes } from "./Votes/Votes";
 export { VotesList } from "./VotesList/VotesList";

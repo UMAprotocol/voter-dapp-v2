@@ -1,4 +1,4 @@
-import { green, grey500, red500 } from "constants/colors";
+import { green, grey500, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { CSSProperties } from "react";
 import styled from "styled-components";
@@ -37,7 +37,9 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
           <Bar value={correctness} />
         </Correctness>
       </CorrectnessTd>
-      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>{formatNumberForDisplay(slashAmount)}</ScoreTd>
+      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
+        {formatNumberForDisplay(slashAmount)}
+      </ScoreTd>
     </Tr>
   );
 }

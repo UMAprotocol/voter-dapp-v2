@@ -1,3 +1,4 @@
+import { handleNotifications } from "helpers";
 import { CommitVotes } from "types";
 
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
@@ -19,6 +20,11 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
       encryptedVote,
     ]);
   });
+
   const tx = await voting.functions.multicall(calldata);
-  return tx.wait();
+  return handleNotifications(tx, {
+    pending: `Committing ${formattedVotes.length} votes...`,
+    success: `Committed ${formattedVotes.length} votes`,
+    error: `Failed to commit ${formattedVotes.length} votes`,
+  });
 }

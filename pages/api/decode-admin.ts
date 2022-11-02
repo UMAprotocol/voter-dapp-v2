@@ -19,11 +19,14 @@ export class TransactionDataDecoder {
   public readonly abiDecoder: AbiDecoder;
   private constructor() {
     this.abiDecoder = abiDecoder;
-    getContractNames().forEach((name: any) => this.abiDecoder.addABI(getAbi(name)));
+    getContractNames().forEach((name: any) =>
+      this.abiDecoder.addABI(getAbi(name))
+    );
   }
 
   public static getInstance(): TransactionDataDecoder {
-    if (!TransactionDataDecoder.instance) TransactionDataDecoder.instance = new TransactionDataDecoder();
+    if (!TransactionDataDecoder.instance)
+      TransactionDataDecoder.instance = new TransactionDataDecoder();
 
     return TransactionDataDecoder.instance;
   }
@@ -47,7 +50,11 @@ export function decodeTransaction(transaction: Transaction): string {
   returnValue += "\nValue (in Wei): " + transaction.value;
 
   // No data -> simple ETH send.
-  if (!transaction.data || transaction.data.length === 0 || transaction.data === "0x")
+  if (
+    !transaction.data ||
+    transaction.data.length === 0 ||
+    transaction.data === "0x"
+  )
     returnValue += "\nTransaction is a simple ETH send (no data).";
   else {
     // Loading the abi decoder is expensive, so do it only if called and cache it for repeated use.
@@ -57,7 +64,8 @@ export function decodeTransaction(transaction: Transaction): string {
     const decodedTxn = decoder.decodeTransaction(transaction.data);
     if (!decodedTxn) {
       // Cannot decode txn, just give the user the raw data.
-      returnValue += "\nCannot decode transaction (does not match any UMA Protocol Signature).";
+      returnValue +=
+        "\nCannot decode transaction (does not match any UMA Protocol Signature).";
       returnValue += "\nRaw transaction data: " + transaction.data;
     } else {
       // Decode was successful -- pretty print the results.
@@ -72,7 +80,10 @@ function _decodeData(data: any) {
   return TransactionDataDecoder.getInstance().decodeTransaction(data);
 }
 
-const _generateTransactionDataRecursive = function (txnObj: any, readableTxData = "") {
+const _generateTransactionDataRecursive = function (
+  txnObj: any,
+  readableTxData = ""
+) {
   // If transaction is a proposal then recursively print out its transactions
   if (txnObj.name === "propose" && txnObj.params.transactions.length > 0) {
     readableTxData += `Transaction is a proposal containing ${txnObj.params.transactions.length} transactions:\n`;
@@ -90,7 +101,10 @@ const _generateTransactionDataRecursive = function (txnObj: any, readableTxData 
       );
     });
     // cross-chain governance
-  } else if (txnObj.name === "relayGovernance" && txnObj?.params?.calls?.length > 0) {
+  } else if (
+    txnObj.name === "relayGovernance" &&
+    txnObj?.params?.calls?.length > 0
+  ) {
     readableTxData += `Transaction is a cross-chain governance action proposal containing ${txnObj?.params?.calls?.length} transactions:\n`;
     txnObj.params.calls.forEach((_txn: any) => {
       const decodedTxnData = _decodeData(_txn.data);
@@ -119,7 +133,11 @@ const _generateTransactionDataRecursive = function (txnObj: any, readableTxData 
     });
   } else {
     // Pretty print:
-    readableTxData += `\nNested transactions: \n${JSON.stringify(txnObj, null, 4)}`;
+    readableTxData += `\nNested transactions: \n${JSON.stringify(
+      txnObj,
+      null,
+      4
+    )}`;
   }
   return readableTxData;
 };
@@ -140,8 +158,11 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
   const transactions = identifiers
     .map(
       (identifier) =>
-        events.find((event) => event?.args?.id.toString() === identifier.substring(identifier.indexOf(" ") + 1))?.args
-          ?.transactions || null
+        events.find(
+          (event) =>
+            event?.args?.id.toString() ===
+            identifier.substring(identifier.indexOf(" ") + 1)
+        )?.args?.transactions || null
     )
     .flat();
 
@@ -150,23 +171,34 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
       data: transaction.data,
       to: transaction.to,
       value: transaction.value,
-      decodedData: _generateTransactionDataRecursive(_decodeData(transaction.data)),
+      decodedData: _generateTransactionDataRecursive(
+        _decodeData(transaction.data)
+      ),
     };
   });
 }
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+export default async function handler(
+  request: NextApiRequest,
+  response: NextApiResponse
+) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
     const body = request.body;
     ["identifiers"].forEach((requiredKey) => {
-      if (!Object.keys(body).includes(requiredKey)) throw "Missing key in req body! required: identifiers";
+      if (!Object.keys(body).includes(requiredKey))
+        throw "Missing key in req body! required: identifiers";
     });
-    const readableTxData = await generateReadableAdminTransactionData(body.identifiers);
+    const readableTxData = await generateReadableAdminTransactionData(
+      body.identifiers
+    );
     response.status(200).send(readableTxData);
   } catch (e) {
     console.error(e);
-    response.status(500).send({ message: "Error in decoding admin call", error: e instanceof Error ? e.message : e });
+    response.status(500).send({
+      message: "Error in decoding admin call",
+      error: e instanceof Error ? e.message : e,
+    });
   }
 }

@@ -17,7 +17,9 @@ export default {
 const Template: ComponentStory<typeof Toggle> = (args) => {
   const [_args, updateArgs] = useArgs();
 
-  return <Toggle {...args} onClick={() => updateArgs({ clicked: !args.clicked })} />;
+  return (
+    <Toggle {...args} onClick={() => updateArgs({ clicked: !args.clicked })} />
+  );
 };
 
 export const NotClicked = Template.bind({});

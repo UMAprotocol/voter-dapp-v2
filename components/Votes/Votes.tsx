@@ -19,8 +19,13 @@ import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
-  const { getActiveVotes, getUpcomingVotes, getPastVotes, getActivityStatus, getUserDependentIsFetching } =
-    useVotesContext();
+  const {
+    getActiveVotes,
+    getUpcomingVotes,
+    getPastVotes,
+    getActivityStatus,
+    getUserDependentIsFetching,
+  } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
@@ -62,7 +67,10 @@ export function Votes() {
   function revealVotes() {
     const cannotRevealWhenDelegatorHasCommittedErrorMessage =
       "Cannot reveal votes with delegate wallet when delegator has committed votes";
-    if (getDelegationStatus() === "delegate" && Object.keys(committedVotesForDelegator).length > 0) {
+    if (
+      getDelegationStatus() === "delegate" &&
+      Object.keys(committedVotesForDelegator).length > 0
+    ) {
       handleError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
     }
 
@@ -73,7 +81,10 @@ export function Votes() {
   }
 
   function getVotesToReveal() {
-    return getActiveVotes().filter((vote) => vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false);
+    return getActiveVotes().filter(
+      (vote) =>
+        vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false
+    );
   }
 
   function selectVote(value: string, vote: VoteT) {
@@ -97,7 +108,12 @@ export function Votes() {
   }
 
   function canCommit() {
-    return phase === "commit" && !!signer && !!Object.keys(selectedVotes).length && !isCommittingVotes;
+    return (
+      phase === "commit" &&
+      !!signer &&
+      !!Object.keys(selectedVotes).length &&
+      !isCommittingVotes
+    );
   }
 
   function canReveal() {
@@ -132,7 +148,11 @@ export function Votes() {
               activityStatus={getActivityStatus()}
               moreDetailsAction={() => openVotePanel(vote)}
               key={vote.uniqueKey}
-              isFetching={getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes}
+              isFetching={
+                getUserDependentIsFetching() ||
+                isCommittingVotes ||
+                isRevealingVotes
+              }
             />
           ))}
         />

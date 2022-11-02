@@ -1,6 +1,7 @@
 export { useContractsContext } from "./contexts/useContractsContext";
 export { useDelegationContext } from "./contexts/useDelegationContext";
 export { useErrorContext } from "./contexts/useErrorContext";
+export { useNotificationsContext } from "./contexts/useNotificationsContext";
 export { usePaginationContext } from "./contexts/usePaginationContext";
 export { usePanelContext } from "./contexts/usePanelContext";
 export { useStakingContext } from "./contexts/useStakingContext";
@@ -27,6 +28,12 @@ export { useIgnoreReceivedRequestToBeDelegate } from "./mutations/delegation/use
 export { useSendRequestToBeDelegate } from "./mutations/delegation/useSendRequestToBeDelegate";
 export { useTerminateRelationshipWithDelegate } from "./mutations/delegation/useTerminateRelationshipWithDelegate";
 export { useTerminateRelationshipWithDelegator } from "./mutations/delegation/useTerminateRelationshipWithDelegator";
+export { useApprove } from "./mutations/staking/useApprove";
+export { useExecuteUnstake } from "./mutations/staking/useExecuteUnstake";
+export { useRequestUnstake } from "./mutations/staking/useRequestUnstake";
+export { useStake } from "./mutations/staking/useStake";
+export { useWithdrawAndRestake } from "./mutations/staking/useWithdrawAndRestake";
+export { useWithdrawRewards } from "./mutations/staking/useWithdrawRewards";
 export { useCommitVotes } from "./mutations/votes/useCommitVotes";
 export { useRevealVotes } from "./mutations/votes/useRevealVotes";
 export { useOutstandingRewards } from "./queries/balances/useOutstandingRewards";
@@ -42,6 +49,11 @@ export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/use
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
+export { useOutstandingRewards } from "./queries/staking/useOutstandingRewards";
+export { useStakerDetails } from "./queries/staking/useStakerDetails";
+export { useTokenAllowance } from "./queries/staking/useTokenAllowance";
+export { useUnstakeCoolDown } from "./queries/staking/useUnstakeCoolDown";
+export { useUnstakedBalance } from "./queries/staking/useUnstakedBalance";
 export { useAccountDetails } from "./queries/user/useAccountDetails";
 export { useUserVotingAndStakingDetails } from "./queries/user/useUserVotingAndStakingDetails";
 export { useActiveVotes } from "./queries/votes/useActiveVotes";

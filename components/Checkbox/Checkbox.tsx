@@ -1,9 +1,9 @@
 import { CustomCheckboxContainer, CustomCheckboxInput } from "@reach/checkbox";
 import "@reach/checkbox/styles.css";
-import { black, white } from "constants/colors";
+import { black, white } from "constant";
+import Check from "public/assets/icons/check.svg";
 import { ChangeEvent, ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
-import Check from "public/assets/icons/check.svg";
 
 interface Props {
   label: ReactNode;
@@ -12,7 +12,13 @@ interface Props {
   disabled?: boolean;
   gap?: number;
 }
-export function Checkbox({ label, checked, onChange, disabled, gap = 15 }: Props) {
+export function Checkbox({
+  label,
+  checked,
+  onChange,
+  disabled,
+  gap = 15,
+}: Props) {
   const boxBackgroundColor = checked ? black : white;
   return (
     <Label

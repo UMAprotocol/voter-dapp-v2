@@ -1,7 +1,16 @@
-import { Button, Dropdown, LoadingSkeleton, TextInput } from "components";
+import {
+  Button,
+  Dropdown,
+  LoadingSkeleton,
+  TextInput,
+  Tooltip,
+} from "components";
 import { tabletAndUnder, tabletMax } from "constants/breakpoints";
-import { green, grey100, red500 } from "constants/colors";
-import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
+import { green, grey100, red500 } from "constant";
+import {
+  formatVoteStringWithPrecision,
+  getPrecisionForIdentifier,
+} from "helpers";
 import { useWalletContext, useWindowSize } from "hooks";
 import Link from "next/link";
 import Dot from "public/assets/icons/dot.svg";
@@ -76,7 +85,10 @@ export function VotesListItem({
   }
 
   function showYourVote() {
-    return (activityStatus === "active" && phase === "reveal") || activityStatus === "past";
+    return (
+      (activityStatus === "active" && phase === "reveal") ||
+      activityStatus === "past"
+    );
   }
 
   function showCorrectVote() {
@@ -106,7 +118,10 @@ export function VotesListItem({
     if (!decryptedVote) return "Did not vote";
     return (
       findVoteInOptions(getDecryptedVoteAsFormattedString())?.label ??
-      formatVoteStringWithPrecision(decryptedVote?.price?.toString(), decodedIdentifier)
+      formatVoteStringWithPrecision(
+        decryptedVote?.price?.toString(),
+        decodedIdentifier
+      )
     );
   }
 
@@ -165,15 +180,17 @@ export function VotesListItem({
             <VoteTitle>{formatTitle(title)}</VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled ? (
-                <RolledWrapper>
-                  <RolledIconWrapper>
-                    <RolledIcon />
-                  </RolledIconWrapper>
-                  {/* todo: add link to explanation of rolled votes in the docs once its written */}
-                  <Link href="https://docs.umaproject.org" passHref>
-                    <RolledLink target="_blank">Rolled</RolledLink>
-                  </Link>
-                </RolledWrapper>
+                <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
+                  <RolledWrapper>
+                    <RolledIconWrapper>
+                      <RolledIcon />
+                    </RolledIconWrapper>
+                    {/* todo: add link to explanation of rolled votes in the docs once its written */}
+                    <Link href="https://docs.umaproject.org" passHref>
+                      <RolledLink target="_blank">Rolled</RolledLink>
+                    </Link>
+                  </RolledWrapper>
+                </Tooltip>
               ) : null}
               <VoteOrigin>
                 {origin} | Vote #{voteNumber.toString()}

@@ -1,4 +1,4 @@
-import { black, red500 } from "constants/colors";
+import { black, red500 } from "constant";
 import styled, { CSSProperties, keyframes } from "styled-components";
 
 interface Props {
@@ -6,7 +6,11 @@ interface Props {
   thickness?: number;
   variant?: "red" | "black";
 }
-export function LoadingSpinner({ size = 200, thickness = size / 10, variant = "red" }: Props) {
+export function LoadingSpinner({
+  size = 200,
+  thickness = size / 10,
+  variant = "red",
+}: Props) {
   const maskSize = size / 2 - thickness;
   const blockSize = thickness + 1;
   const color = variant === "red" ? red500 : black;
@@ -47,8 +51,13 @@ const Ring = styled.div`
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
-  background: conic-gradient(from 180deg at 50% 50%, var(--color) 0deg, #0000 360deg);
-  mask: radial-gradient(var(--mask-size), transparent 99%, var(--color) 100%) 0 0;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--color) 0deg,
+    #0000 360deg
+  );
+  mask: radial-gradient(var(--mask-size), transparent 99%, var(--color) 100%) 0
+    0;
   animation: ${rotate} 2.5s linear infinite;
 `;
 

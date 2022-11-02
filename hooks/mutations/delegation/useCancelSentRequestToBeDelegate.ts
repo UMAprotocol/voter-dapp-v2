@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { sentRequestsToBeDelegateKey } from "constants/queryKeys";
+import { sentRequestsToBeDelegateKey } from "constant";
 import { useHandleError, useUserContext } from "hooks";
 import { DelegationEventT } from "types";
 import { removeDelegate } from "web3";
@@ -12,9 +12,12 @@ export function useCancelSentRequestToBeDelegate() {
   const { mutate, isLoading } = useMutation(removeDelegate, {
     onError,
     onSuccess: () => {
-      queryClient.setQueryData<DelegationEventT[]>([sentRequestsToBeDelegateKey, address], () => {
-        return [];
-      });
+      queryClient.setQueryData<DelegationEventT[]>(
+        [sentRequestsToBeDelegateKey, address],
+        () => {
+          return [];
+        }
+      );
     },
   });
 

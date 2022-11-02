@@ -10,12 +10,21 @@ import {
   VotesListItem,
 } from "components";
 import { getEntriesForPage } from "helpers";
-import { usePaginationContext, usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import {
+  usePaginationContext,
+  usePanelContext,
+  useVotesContext,
+  useVoteTimingContext,
+} from "hooks";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const { getPastVotes, getUserIndependentIsLoading, getUserDependentIsFetching } = useVotesContext();
+  const {
+    getPastVotes,
+    getUserIndependentIsLoading,
+    getUserDependentIsFetching,
+  } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const {
@@ -57,7 +66,10 @@ export function PastVotes() {
                 />
               </VotesTableWrapper>
               <PaginationWrapper>
-                <Pagination paginateFor="pastVotesPage" numberOfEntries={numberOfPastVotes} />
+                <Pagination
+                  paginateFor="pastVotesPage"
+                  numberOfEntries={numberOfPastVotes}
+                />
               </PaginationWrapper>
             </>
           )}

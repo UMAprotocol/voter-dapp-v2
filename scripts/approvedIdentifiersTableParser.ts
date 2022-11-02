@@ -9,8 +9,14 @@ async function main() {
   // first download the table of approved identifiers from our docs
   const url =
     "https://raw.githubusercontent.com/UMAprotocol/docs/master/docs/uma-tokenholders/approved-price-identifiers.md";
-  const markdownPath = path.join(__dirname, "../data/approvedIdentifiersTable.md");
-  const jsonPath = path.join(__dirname, "../data/approvedIdentifiersTable.json");
+  const markdownPath = path.join(
+    __dirname,
+    "../data/approvedIdentifiersTable.md"
+  );
+  const jsonPath = path.join(
+    __dirname,
+    "../data/approvedIdentifiersTable.json"
+  );
 
   await downloadFile(url, markdownPath);
 
@@ -60,8 +66,14 @@ function parseLine(line: string): IdentifierDetailsT {
 }
 
 function parseMarkdownUmipLink(umipLink: string): UmipLinkT {
-  const number = umipLink.substring(umipLink.indexOf("[") + 1, umipLink.indexOf("]"));
-  const url = umipLink.substring(umipLink.indexOf("(") + 1, umipLink.indexOf(")"));
+  const number = umipLink.substring(
+    umipLink.indexOf("[") + 1,
+    umipLink.indexOf("]")
+  );
+  const url = umipLink.substring(
+    umipLink.indexOf("(") + 1,
+    umipLink.indexOf(")")
+  );
 
   return { number, url };
 }

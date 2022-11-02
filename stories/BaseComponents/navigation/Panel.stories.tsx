@@ -22,7 +22,11 @@ import {
 } from "contexts";
 import { BigNumber } from "ethers";
 import { bigNumberFromFloatString, zeroAddress } from "helpers";
-import { mockAddress1, mockAddress2, mockDelegateRequestTransaction } from "stories/mocks/delegation";
+import {
+  mockAddress1,
+  mockAddress2,
+  mockDelegateRequestTransaction,
+} from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
 import { DelegationEventT, DelegationStatusT, VoteT } from "types";
@@ -106,8 +110,10 @@ const userDecorator: DecoratorFn = (Story, { args }) => {
   const mockUserContextState: UserContextState = {
     ...defaultUserContextState,
     apr: args.apr ?? 0,
-    cumulativeCalculatedSlash: args.cumulativeCalculatedSlash ?? BigNumber.from(0),
-    cumulativeCalculatedSlashPercentage: args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
+    cumulativeCalculatedSlash:
+      args.cumulativeCalculatedSlash ?? BigNumber.from(0),
+    cumulativeCalculatedSlashPercentage:
+      args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
     userDataFetching: args.userDataFetching ?? false,
     address: args.address ?? mockAddress1,
     walletIcon: args.walletIcon ?? mockWalletIcon,
@@ -138,8 +144,10 @@ const delegationDecorator: DecoratorFn = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
     getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-    getPendingSentRequestsToBeDelegate: () => args.pendingSentRequestsToBeDelegate ?? [],
-    getPendingReceivedRequestsToBeDelegate: () => args.pendingReceivedRequestsToBeDelegate ?? [],
+    getPendingSentRequestsToBeDelegate: () =>
+      args.pendingSentRequestsToBeDelegate ?? [],
+    getPendingReceivedRequestsToBeDelegate: () =>
+      args.pendingReceivedRequestsToBeDelegate ?? [],
     getDelegateAddress: () => args.delegateAddress ?? zeroAddress,
     getDelegatorAddress: () => args.delegatorAddress ?? zeroAddress,
   };
@@ -288,7 +296,8 @@ VotePanelWithLongTitle.args = {
   ...VotePanelWithoutResults.args,
   panelContent: {
     ...voteCommitted,
-    title: "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
+    title:
+      "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
   },
 };
 
@@ -367,7 +376,8 @@ DelegationPanelWhenStatusIsDelegatePending.args = {
   ...delegationPanelCommonArgs,
   delegationStatus: "delegate-pending",
 };
-DelegationPanelWhenStatusIsDelegatePending.decorators = delegationPanelDecorators;
+DelegationPanelWhenStatusIsDelegatePending.decorators =
+  delegationPanelDecorators;
 
 // this should render nothing in the panel because we don't allow a delegator to add another delegate
 export const DelegationPanelWhenStatusIsDelegator = Template.bind({});
@@ -396,4 +406,5 @@ DelegationPanelWhenStatusIsDelegatorPending.args = {
     },
   ],
 };
-DelegationPanelWhenStatusIsDelegatorPending.decorators = delegationPanelDecorators;
+DelegationPanelWhenStatusIsDelegatorPending.decorators =
+  delegationPanelDecorators;

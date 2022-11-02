@@ -9,9 +9,17 @@ export function NoWalletConnected() {
   return (
     <>
       <Header>No Wallet Connected</Header>
-      <Text>Wallet settings will become available once you connect your wallet.</Text>
+      <Text>
+        Wallet settings will become available once you connect your wallet.
+      </Text>
       <ConnectButtonWrapper>
-        <Button variant="primary" label="Connect" width={150} height={40} onClick={() => void connect()} />
+        <Button
+          variant="primary"
+          label="Connect"
+          width={150}
+          height={40}
+          onClick={() => void connect()}
+        />
       </ConnectButtonWrapper>
     </>
   );

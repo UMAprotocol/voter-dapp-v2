@@ -1,7 +1,13 @@
 import Link from "public/assets/icons/link.svg";
 import styled from "styled-components";
 import { AllowedAction } from "./AllowedAction";
-import { AddressWrapper, BarButtonSecondary, BarWrapper, Header, Text } from "./styles";
+import {
+  AddressWrapper,
+  BarButtonSecondary,
+  BarWrapper,
+  Header,
+  Text,
+} from "./styles";
 
 export function OtherWallet({
   status,
@@ -43,7 +49,10 @@ export function OtherWallet({
             <AllowedAction>Claiming Rewards</AllowedAction>
           </>
         )}
-        <BarButtonSecondary label={`Remove ${status}`} onClick={() => remove(address)} />
+        <BarButtonSecondary
+          label={`Remove ${status}`}
+          onClick={() => remove(address)}
+        />
       </BarWrapper>
     </>
   );

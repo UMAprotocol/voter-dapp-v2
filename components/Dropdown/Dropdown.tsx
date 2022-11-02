@@ -1,7 +1,13 @@
-import { Menu, MenuButton, MenuContextValue, MenuItem, MenuPopover } from "@reach/menu-button";
+import {
+  Menu,
+  MenuButton,
+  MenuContextValue,
+  MenuItem,
+  MenuPopover,
+} from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
 import { positionMatchWidth } from "@reach/popover";
-import { black, blackOpacity50 } from "constants/colors";
+import { black, blackOpacity50 } from "constant";
 import Chevron from "public/assets/icons/chevron.svg";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
@@ -16,20 +22,36 @@ interface Props {
   textColor?: string;
   borderColor?: string;
 }
-export function Dropdown({ items, label, selected, onSelect, disabled, textColor, borderColor = black }: Props) {
+export function Dropdown({
+  items,
+  label,
+  selected,
+  onSelect,
+  disabled,
+  textColor,
+  borderColor = black,
+}: Props) {
   const toggleTextColor = selected ? textColor ?? black : blackOpacity50;
   return (
     <Wrapper>
       {({ isExpanded }: MenuContextValue) => (
         <>
           <ToggleButton
-            style={{ "--color": toggleTextColor, "--border-color": borderColor } as CSSProperties}
+            style={
+              {
+                "--color": toggleTextColor,
+                "--border-color": borderColor,
+              } as CSSProperties
+            }
             aria-disabled={disabled}
           >
             {selected ? selected.label : label}
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
-          <DropdownList position={positionMatchWidth} style={{ "--border-color": borderColor } as CSSProperties}>
+          <DropdownList
+            position={positionMatchWidth}
+            style={{ "--border-color": borderColor } as CSSProperties}
+          >
             {items.map((item) => (
               <DropdownItem
                 $isSelected={selected?.value === item.value}
@@ -37,7 +59,9 @@ export function Dropdown({ items, label, selected, onSelect, disabled, textColor
                 key={item.label}
               >
                 <Label>{item.label}</Label>
-                {item.secondaryLabel ? <SecondaryLabel>({item.secondaryLabel})</SecondaryLabel> : null}
+                {item.secondaryLabel ? (
+                  <SecondaryLabel>({item.secondaryLabel})</SecondaryLabel>
+                ) : null}
               </DropdownItem>
             ))}
           </DropdownList>
@@ -98,7 +122,8 @@ const DropdownItem = styled(MenuItem)<{ $isSelected: boolean }>`
   font: var(--text-md);
   color: var(--black);
   border-radius: 5px;
-  background-color: ${({ $isSelected }) => ($isSelected ? "var(--grey-50)" : "var(--white)")};
+  background-color: ${({ $isSelected }) =>
+    $isSelected ? "var(--grey-50)" : "var(--white)"};
   &:hover {
     background-color: var(--grey-50);
     color: currentColor;
