@@ -4,6 +4,7 @@ import {
   PanelErrorBanner,
   TextInput,
 } from "components";
+import { mobileAndUnder } from "constant";
 import { getAddress, isAddress } from "helpers";
 import {
   useDelegationContext,
@@ -208,6 +209,10 @@ const PendingRequestIcon = styled(Time)`
 const InnerWrapper = styled.div`
   padding-inline: 30px;
   padding-block: 20px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const StepsWrapper = styled.ul`
