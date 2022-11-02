@@ -9,3 +9,8 @@ export default {
 const Template: ComponentStory<typeof VotePage> = () => <VotePage />;
 
 export const Default = Template.bind({});
+Default.parameters = {
+  viewport: {
+    defaultViewport: "mobile2",
+  },
+};

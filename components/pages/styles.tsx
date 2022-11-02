@@ -13,7 +13,8 @@ export const PageInnerWrapper = styled.div`
   margin-inline: auto;
   @media ${mobileAndUnder} {
     max-width: var(--mobile-page-width);
-    padding: 0;
+    padding-inline: 0;
+    padding-block: 30px;
   }
 `;
 
