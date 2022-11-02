@@ -4,7 +4,11 @@ import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 import { ErrorOriginT } from "types";
 
-export function PanelErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
+export function PanelErrorBanner({
+  errorOrigin,
+}: {
+  errorOrigin?: ErrorOriginT;
+}) {
   const { errorMessages, clearErrorMessages } = useErrorContext(errorOrigin);
 
   if (errorMessages.length === 0) return null;

@@ -1,4 +1,7 @@
-export function checkIfIsPolymarket(decodedIdentifier: string, decodedAncillaryData: string) {
+export function checkIfIsPolymarket(
+  decodedIdentifier: string,
+  decodedAncillaryData: string
+) {
   const queryTitleToken = "q: title:";
   const resultDataToken = "res_data:";
   const isPolymarket =

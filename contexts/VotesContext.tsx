@@ -71,7 +71,9 @@ export const defaultVotesContextState: VotesContextState = {
   getIsFetching: () => false,
 };
 
-export const VotesContext = createContext<VotesContextState>(defaultVotesContextState);
+export const VotesContext = createContext<VotesContextState>(
+  defaultVotesContextState
+);
 
 export function VotesProvider({ children }: { children: ReactNode }) {
   const {
@@ -79,13 +81,21 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: hasActiveVotesIsLoading,
     isFetching: hasActiveVotesIsFetching,
   } = useHasActiveVotes();
-  const { data: activeVotes, isLoading: activeVotesIsLoading, isFetching: activeVotesIsFetching } = useActiveVotes();
+  const {
+    data: activeVotes,
+    isLoading: activeVotesIsLoading,
+    isFetching: activeVotesIsFetching,
+  } = useActiveVotes();
   const {
     data: { upcomingVotes, hasUpcomingVotes },
     isLoading: upcomingVotesIsLoading,
     isFetching: upcomingVotesIsFetching,
   } = useUpcomingVotes();
-  const { data: pastVotes, isLoading: pastVotesIsLoading, isFetching: pastVotesIsFetching } = usePastVotes();
+  const {
+    data: pastVotes,
+    isLoading: pastVotesIsLoading,
+    isFetching: pastVotesIsFetching,
+  } = usePastVotes();
   const {
     data: transactionHashes,
     isLoading: transactionHashesIsLoading,

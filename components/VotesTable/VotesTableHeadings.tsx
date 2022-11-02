@@ -9,7 +9,11 @@ export function VotesTableHeadings({ activityStatus }: Props) {
   const upcomingHeadings = ["Vote"];
   const pastHeadings = ["Vote", "Your vote", "Correct vote"];
   const headings =
-    activityStatus === "active" ? activeHeadings : activityStatus === "upcoming" ? upcomingHeadings : pastHeadings;
+    activityStatus === "active"
+      ? activeHeadings
+      : activityStatus === "upcoming"
+      ? upcomingHeadings
+      : pastHeadings;
   return (
     <Wrapper>
       {headings.map((heading) => (

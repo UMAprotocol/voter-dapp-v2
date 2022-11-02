@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { CooldownTimer } from "components";
-import { red500 } from "constants/colors";
+import { red500 } from "constant";
 import add from "date-fns/add";
 import { BigNumber } from "ethers";
 
@@ -25,7 +25,9 @@ export default {
   ],
 } as ComponentMeta<typeof CooldownTimer>;
 
-const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer {...args} />;
+const Template: ComponentStory<typeof CooldownTimer> = (args) => (
+  <CooldownTimer {...args} />
+);
 
 export const InCooldown = Template.bind({});
 InCooldown.args = {

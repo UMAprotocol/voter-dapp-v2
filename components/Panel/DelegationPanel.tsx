@@ -1,6 +1,16 @@
-import { Button, LoadingSpinner, PanelErrorBanner, TextInput } from "components";
+import {
+  Button,
+  LoadingSpinner,
+  PanelErrorBanner,
+  TextInput,
+} from "components";
 import { getAddress, isAddress } from "helpers";
-import { useDelegationContext, useErrorContext, usePanelContext, useUserContext } from "hooks";
+import {
+  useDelegationContext,
+  useErrorContext,
+  usePanelContext,
+  useUserContext,
+} from "hooks";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -28,7 +38,12 @@ export function DelegationPanel() {
 
   useEffect(() => {
     // only show this panel when the user has not yet entered a delegation relationship, or the user has requested another wallet to be their delegate wallet
-    if (!(delegationStatus === "no-delegation" || delegationStatus === "delegator-pending")) {
+    if (
+      !(
+        delegationStatus === "no-delegation" ||
+        delegationStatus === "delegator-pending"
+      )
+    ) {
       closePanel();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,7 +54,8 @@ export function DelegationPanel() {
   // only allow user to add a delegate wallet if they are neither a delegator nor a delegate
   const showAddDelegateInput = delegationStatus === "no-delegation";
 
-  const showPendingRequests = delegationStatus === "delegator-pending" && pendingRequests.length > 0;
+  const showPendingRequests =
+    delegationStatus === "delegator-pending" && pendingRequests.length > 0;
 
   function onAddDelegateWallet() {
     if (!address) return;
@@ -97,7 +113,8 @@ export function DelegationPanel() {
           </StepWrapper>
           <StepWrapper>
             <ThreeIcon />
-            You now have a secondary delegation wallet where you can vote text text
+            You now have a secondary delegation wallet where you can vote text
+            text
           </StepWrapper>
         </StepsWrapper>
         {isLoading() ? (
@@ -108,7 +125,11 @@ export function DelegationPanel() {
           <>
             {showAddDelegateInput && (
               <AddDelegateInputWrapper>
-                <TextInput value={delegateAddressToAdd} onInput={onInput} placeholder="Enter delegate address" />
+                <TextInput
+                  value={delegateAddressToAdd}
+                  onInput={onInput}
+                  placeholder="Enter delegate address"
+                />
                 <Button
                   variant="primary"
                   label="Add delegate wallet"
@@ -124,10 +145,17 @@ export function DelegationPanel() {
                   <AddressWrapper>
                     <PendingRequestIcon />
                     <PendingRequestDetailsWrapper>
-                      <PendingRequestText>Request sent to {delegate}</PendingRequestText>
-                      <PendingRequestText>Waiting for approval</PendingRequestText>
                       <PendingRequestText>
-                        <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
+                        Request sent to {delegate}
+                      </PendingRequestText>
+                      <PendingRequestText>
+                        Waiting for approval
+                      </PendingRequestText>
+                      <PendingRequestText>
+                        <NextLink
+                          href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+                          passHref
+                        >
                           <A target="_blank">View Transaction</A>
                         </NextLink>
                       </PendingRequestText>

@@ -41,7 +41,13 @@ function TitleIcon({ origin }: { origin?: VoteOriginT }) {
   }
 }
 
-function SubTitleText({ voteNumber, origin }: { voteNumber?: string; origin?: VoteOriginT }) {
+function SubTitleText({
+  voteNumber,
+  origin,
+}: {
+  voteNumber?: string;
+  origin?: VoteOriginT;
+}) {
   if (!voteNumber || !origin) return null;
 
   return (

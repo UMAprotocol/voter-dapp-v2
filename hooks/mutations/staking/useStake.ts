@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
+import { stakerDetailsKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
 import { formatTransactionError } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
@@ -13,24 +13,31 @@ export function useStake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(stake, {
     onSuccess: (_data, { stakeAmount }) => {
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
-        if (oldStakerDetails === undefined) return;
+      queryClient.setQueryData<StakerDetailsT>(
+        [stakerDetailsKey, address],
+        (oldStakerDetails) => {
+          if (oldStakerDetails === undefined) return;
 
-        const newStakedBalance = oldStakerDetails.stakedBalance.add(stakeAmount);
+          const newStakedBalance =
+            oldStakerDetails.stakedBalance.add(stakeAmount);
 
-        return {
-          ...oldStakerDetails,
-          stakedBalance: newStakedBalance,
-        };
-      });
+          return {
+            ...oldStakerDetails,
+            stakedBalance: newStakedBalance,
+          };
+        }
+      );
 
-      queryClient.setQueryData<BigNumber>([unstakedBalanceKey, address], (oldUnstakedBalance) => {
-        if (oldUnstakedBalance === undefined) return;
+      queryClient.setQueryData<BigNumber>(
+        [unstakedBalanceKey, address],
+        (oldUnstakedBalance) => {
+          if (oldUnstakedBalance === undefined) return;
 
-        const newUnstakedBalance = oldUnstakedBalance.sub(stakeAmount);
+          const newUnstakedBalance = oldUnstakedBalance.sub(stakeAmount);
 
-        return newUnstakedBalance;
-      });
+          return newUnstakedBalance;
+        }
+      );
     },
     onError(error: unknown) {
       onError(formatTransactionError(error));

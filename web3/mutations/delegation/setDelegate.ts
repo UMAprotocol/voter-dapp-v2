@@ -11,7 +11,11 @@ interface SetDelegate {
     error: ReactNode;
   };
 }
-export async function setDelegate({ voting, delegateAddress, notificationMessages }: SetDelegate) {
+export async function setDelegate({
+  voting,
+  delegateAddress,
+  notificationMessages,
+}: SetDelegate) {
   const tx = await voting.setDelegate(delegateAddress);
   return handleNotifications(tx, {
     pending: notificationMessages.pending,

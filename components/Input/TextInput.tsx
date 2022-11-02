@@ -21,7 +21,8 @@ export function TextInput({
   maxDecimals = 18,
   allowNegative = true,
 }: Props) {
-  const inputMode = type === "text" ? "text" : type === "number" ? "decimal" : "email";
+  const inputMode =
+    type === "text" ? "text" : type === "number" ? "decimal" : "email";
   // treat numbers as text inputs
   const _type = type === "number" ? "text" : type;
   const onChange = useOnChange(onInput, maxDecimals, allowNegative, _type);

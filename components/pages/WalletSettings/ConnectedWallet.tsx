@@ -17,8 +17,9 @@ export function ConnectedWallet({ status }: Props) {
         {status === "delegator" && "(Delegator)"}
       </Header>
       <Text>
-        Short introduction to why this is here and how it works and more info text info text info text info text info
-        text info text info text info text{" "}
+        Short introduction to why this is here and how it works and more info
+        text info text info text info text info text info text info text info
+        text{" "}
       </Text>
       <_BarWrapper>
         <WalletWrapper>

@@ -10,7 +10,8 @@ export function RemindMePanel() {
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-  const [notificationButtonClicked, setNotificationButtonClicked] = useState(false);
+  const [notificationButtonClicked, setNotificationButtonClicked] =
+    useState(false);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,7 +31,9 @@ export function RemindMePanel() {
         {emailSubmitted ? (
           <SectionWrapper>
             <SuccessTitle>Success!</SuccessTitle>
-            <SuccessDescription>Your email has been added TODO improve copy</SuccessDescription>
+            <SuccessDescription>
+              Your email has been added TODO improve copy
+            </SuccessDescription>
             <SuccessIconOuterWrapper>
               <SuccessIconWrapper>
                 <SuccessIcon />
@@ -41,10 +44,16 @@ export function RemindMePanel() {
           <SectionWrapper>
             <PanelSectionTitle>Email reminder</PanelSectionTitle>
             <PanelSectionText>
-              We’ll send out an email 24 hours before the voting commit and reveal phases end.
+              We’ll send out an email 24 hours before the voting commit and
+              reveal phases end.
             </PanelSectionText>
             <EmailForm onSubmit={onSubmit}>
-              <TextInput placeholder="Your email" type="email" value={email} onInput={setEmail} />
+              <TextInput
+                placeholder="Your email"
+                type="email"
+                value={email}
+                onInput={setEmail}
+              />
               <CheckboxWrapper>
                 <Checkbox
                   label="I consent to receiving email notifications"
@@ -54,7 +63,13 @@ export function RemindMePanel() {
                 />
               </CheckboxWrapper>
               <SubmitButtonWrapper>
-                <Button variant="primary" type="submit" label="Submit" width="100%" disabled={!disclaimerAccepted} />
+                <Button
+                  variant="primary"
+                  type="submit"
+                  label="Submit"
+                  width="100%"
+                  disabled={!disclaimerAccepted}
+                />
               </SubmitButtonWrapper>
             </EmailForm>
           </SectionWrapper>
@@ -63,10 +78,14 @@ export function RemindMePanel() {
           <BrowserReminderTextWrapper>
             <PanelSectionTitle>Browser reminder</PanelSectionTitle>
             <PanelSectionText>
-              You’ll get notified in the browser 1 hour before the voting commit and reveal phases end.
+              You’ll get notified in the browser 1 hour before the voting commit
+              and reveal phases end.
             </PanelSectionText>
           </BrowserReminderTextWrapper>
-          <Toggle clicked={notificationButtonClicked} onClick={onNotificationButtonClick} />
+          <Toggle
+            clicked={notificationButtonClicked}
+            onClick={onNotificationButtonClick}
+          />
         </BrowserReminderSectionWrapper>
       </SectionsWrapper>
       <PanelFooter />

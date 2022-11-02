@@ -17,11 +17,15 @@ export const defaultPanelContextState = {
   closePanel: () => null,
 };
 
-export const PanelContext = createContext<PanelContextState>(defaultPanelContextState);
+export const PanelContext = createContext<PanelContextState>(
+  defaultPanelContextState
+);
 
 export function PanelProvider({ children }: { children: ReactNode }) {
   const [panelType, setPanelType] = useState<PanelTypeT>(null);
-  const [panelContent, setPanelContent] = useState<PanelContentT | undefined>(null);
+  const [panelContent, setPanelContent] = useState<PanelContentT | undefined>(
+    null
+  );
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [previousPanelData, setPreviousPanelData] = useState<
     { panelType: PanelTypeT; panelContent: PanelContentT | undefined }[]
@@ -51,7 +55,10 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  function pushPanelDataOntoStack(panelType: PanelTypeT, panelContent?: PanelContentT) {
+  function pushPanelDataOntoStack(
+    panelType: PanelTypeT,
+    panelContent?: PanelContentT
+  ) {
     setPreviousPanelData((prev) => {
       return [...prev, { panelType, panelContent }];
     });

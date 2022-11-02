@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey, unstakedBalanceKey } from "constants/queryKeys";
+import { stakerDetailsKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
 import { formatTransactionError } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
@@ -18,30 +18,44 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(executeUnstake, {
     onSuccess: () => {
-      queryClient.setQueryData<BigNumber>([unstakedBalanceKey, address], (oldUnstakedBalance) => {
-        const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>([stakerDetailsKey]);
+      queryClient.setQueryData<BigNumber>(
+        [unstakedBalanceKey, address],
+        (oldUnstakedBalance) => {
+          const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>([
+            stakerDetailsKey,
+          ]);
 
-        if (oldStakerDetails === undefined || oldUnstakedBalance === undefined) return;
+          if (
+            oldStakerDetails === undefined ||
+            oldUnstakedBalance === undefined
+          )
+            return;
 
-        const newUnstakedBalance = oldUnstakedBalance.add(oldStakerDetails.pendingUnstake);
+          const newUnstakedBalance = oldUnstakedBalance.add(
+            oldStakerDetails.pendingUnstake
+          );
 
-        return newUnstakedBalance;
-      });
+          return newUnstakedBalance;
+        }
+      );
 
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
-        if (!oldStakerDetails) return;
-        const newStakedBalance = max(
-          BigNumber.from(0),
-          oldStakerDetails.stakedBalance.sub(oldStakerDetails.pendingUnstake)
-        );
-        return {
-          ...oldStakerDetails,
-          stakedBalance: newStakedBalance,
-          pendingUnstake: BigNumber.from(0),
-          canUnstakeTime: undefined,
-          unstakeRequestTime: undefined,
-        };
-      });
+      queryClient.setQueryData<StakerDetailsT>(
+        [stakerDetailsKey, address],
+        (oldStakerDetails) => {
+          if (!oldStakerDetails) return;
+          const newStakedBalance = max(
+            BigNumber.from(0),
+            oldStakerDetails.stakedBalance.sub(oldStakerDetails.pendingUnstake)
+          );
+          return {
+            ...oldStakerDetails,
+            stakedBalance: newStakedBalance,
+            pendingUnstake: BigNumber.from(0),
+            canUnstakeTime: undefined,
+            unstakeRequestTime: undefined,
+          };
+        }
+      );
     },
     onError(error: unknown) {
       onError(formatTransactionError(error));

@@ -1,4 +1,5 @@
 export const mockAddress1 = "0x1234567890123456789012345678901234567890";
 export const mockAddress2 = "0x0987654321098765432109876543210987654321";
 export const mockAddress3 = "0xfedcba98761234567890fedcba98761234567890";
-export const mockDelegateRequestTransaction = "0xabcdef12345678901234567890abcdef12345678901234567890abcdefabcdef";
+export const mockDelegateRequestTransaction =
+  "0xabcdef12345678901234567890abcdef12345678901234567890abcdefabcdef";

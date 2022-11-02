@@ -1,18 +1,17 @@
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { black, white } from "constants/colors";
-import { desktopPanelWidth } from "constants/containers";
+import { black, desktopPanelWidth, white } from "constant";
 import { usePanelContext } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import { animated, useTransition } from "react-spring";
 import styled, { CSSProperties } from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
+import { DelegationPanel } from "./DelegationPanel";
+import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
-import { HistoryPanel } from "./HistoryPanel";
 import { VotePanel } from "./VotePanel";
-import { DelegationPanel } from "./DelegationPanel";
 
 const panelTypeToPanelComponent = {
   menu: MenuPanel,
@@ -47,7 +46,11 @@ export function Panel() {
           isOpen && (
             <Overlay
               onDismiss={() => closePanel(true)}
-              style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
+              style={{
+                backgroundColor: opacity.to(
+                  (value) => `hsla(280, 4%, 15%, ${value})`
+                ),
+              }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <PanelComponent content={panelContent} />

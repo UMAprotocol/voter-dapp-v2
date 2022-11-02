@@ -32,13 +32,19 @@ async function removeDanglingDelegateEvents(
 ) {
   const result = [];
   for (const event of events) {
-    const stillWantToBeDelegator = await detectDanglingDelegate(voting, event.delegator);
+    const stillWantToBeDelegator = await detectDanglingDelegate(
+      voting,
+      event.delegator
+    );
     if (stillWantToBeDelegator) result.push(event);
   }
   return result;
 }
 
-async function detectDanglingDelegate(voting: VotingV2Ethers, delegator: string) {
+async function detectDanglingDelegate(
+  voting: VotingV2Ethers,
+  delegator: string
+) {
   const { delegate } = await getStakerDetails(voting, delegator);
   if (delegate === zeroAddress) return false;
   return true;

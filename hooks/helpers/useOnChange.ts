@@ -20,7 +20,9 @@ export function useOnChange(
     const decimalsErrorMessage = `Cannot have more than ${maxDecimals} decimals.`;
     const negativeAllowedDecimalRegex = /^-?\d*\.?\d{0,}$/;
     const onlyPositiveDecimalsRegex = /^\d*\.?\d{0,}$/;
-    const decimalsRegex = allowNegative ? negativeAllowedDecimalRegex : onlyPositiveDecimalsRegex;
+    const decimalsRegex = allowNegative
+      ? negativeAllowedDecimalRegex
+      : onlyPositiveDecimalsRegex;
     const isValidDecimalNumber = decimalsRegex.test(value);
 
     if (!isValidDecimalNumber) return;

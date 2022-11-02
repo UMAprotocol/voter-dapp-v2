@@ -7,7 +7,11 @@ export async function removeDelegator({
   notificationMessages,
 }: {
   voting: VotingV2Ethers;
-  notificationMessages: { pending: ReactNode; success: ReactNode; error: ReactNode };
+  notificationMessages: {
+    pending: ReactNode;
+    success: ReactNode;
+    error: ReactNode;
+  };
 }) {
   const tx = await voting.setDelegator(zeroAddress);
   return handleNotifications(tx, {

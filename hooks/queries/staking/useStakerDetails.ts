@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { stakerDetailsKey } from "constants/queryKeys";
+import { stakerDetailsKey } from "constant";
 import { BigNumber } from "ethers";
 import { zeroAddress } from "helpers";
-import { useAccountDetails, useContractsContext, useDelegationContext, useHandleError } from "hooks";
+import {
+  useAccountDetails,
+  useContractsContext,
+  useDelegationContext,
+  useHandleError,
+} from "hooks";
 import { getStakerDetails } from "web3";
 
 export function useStakerDetails() {
@@ -14,20 +19,25 @@ export function useStakerDetails() {
   const status = getDelegationStatus();
   const delegatorAddress = getDelegatorAddress();
 
-  const addressToQuery = status === "delegate" && delegatorAddress ? delegatorAddress : address;
+  const addressToQuery =
+    status === "delegate" && delegatorAddress ? delegatorAddress : address;
 
-  const queryResult = useQuery([stakerDetailsKey, address], () => getStakerDetails(voting, addressToQuery), {
-    refetchInterval: (data) => (data ? false : 100),
-    enabled: !!address,
-    initialData: {
-      stakedBalance: BigNumber.from(0),
-      pendingUnstake: BigNumber.from(0),
-      unstakeRequestTime: new Date(0),
-      canUnstakeTime: new Date(0),
-      delegate: zeroAddress,
-    },
-    onError,
-  });
+  const queryResult = useQuery(
+    [stakerDetailsKey, address],
+    () => getStakerDetails(voting, addressToQuery),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+      initialData: {
+        stakedBalance: BigNumber.from(0),
+        pendingUnstake: BigNumber.from(0),
+        unstakeRequestTime: new Date(0),
+        canUnstakeTime: new Date(0),
+        delegate: zeroAddress,
+      },
+      onError,
+    }
+  );
 
   return queryResult;
 }

@@ -1,37 +1,40 @@
 import {
+  bannerHeight,
   black,
   blackOpacity25,
   blackOpacity50,
   blackOpacity60,
   blackOpacity75,
+  desktopMaxWidth,
+  desktopPanelWidth,
   green,
   grey100,
   grey50,
   grey500,
   grey800,
+  headerHeight,
+  headerLg,
+  headerMd,
+  headerSm,
+  headerXl,
+  headerXs,
   loadingSkeletonOpacity10,
   loadingSkeletonOpacity100,
   red100,
   red500,
   red500Opacity5,
   red600,
-  white,
-  whiteOpacity10,
-} from "constants/colors";
-import { bannerHeight, desktopMaxWidth, desktopPanelWidth, headerHeight } from "constants/containers";
-import {
-  headerLg,
-  headerMd,
-  headerSm,
-  headerXl,
-  headerXs,
+  shadow1,
+  shadow2,
+  shadow3,
   textFine,
   textLg,
   textMd,
   textSm,
   textXs,
-} from "constants/fonts";
-import { shadow1, shadow2, shadow3 } from "constants/shadows";
+  white,
+  whiteOpacity10,
+} from "constant";
 import { createGlobalStyle } from "styled-components";
 
 /** Creates the global style object for the dapp.

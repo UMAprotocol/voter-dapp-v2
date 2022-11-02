@@ -1,6 +1,11 @@
 import { events } from "helpers";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { NotificationT, PendingNotificationT, SettledEventT, UniqueIdT } from "types";
+import {
+  NotificationT,
+  PendingNotificationT,
+  SettledEventT,
+  UniqueIdT,
+} from "types";
 
 export type NotificationsById = Record<UniqueIdT, NotificationT | undefined>;
 
@@ -16,13 +21,19 @@ export const defaultNotificationsContextState: NotificationsContextState = {
   clearNotifications: () => null,
 };
 
-export const NotificationsContext = createContext(defaultNotificationsContextState);
+export const NotificationsContext = createContext(
+  defaultNotificationsContextState
+);
 
 export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationsById>({});
 
   useEffect(() => {
-    function handlePendingEvent({ message, id, transactionHash }: PendingNotificationT) {
+    function handlePendingEvent({
+      message,
+      id,
+      transactionHash,
+    }: PendingNotificationT) {
       addNotification({
         id,
         message,
@@ -62,7 +73,11 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications((prev) => ({ ...prev, [notification.id]: notification }));
   }
 
-  function updatePendingNotification(id: UniqueIdT, message: ReactNode, type: "success" | "error") {
+  function updatePendingNotification(
+    id: UniqueIdT,
+    message: ReactNode,
+    type: "success" | "error"
+  ) {
     setNotifications((prev) => ({
       ...prev,
       [id]: {

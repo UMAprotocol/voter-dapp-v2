@@ -35,7 +35,9 @@ export const defaultStakingContextState: StakingContextState = {
   getStakingDataFetching: () => false,
 };
 
-export const StakingContext = createContext<StakingContextState>(defaultStakingContextState);
+export const StakingContext = createContext<StakingContextState>(
+  defaultStakingContextState
+);
 
 export function StakingProvider({ children }: { children: ReactNode }) {
   const {

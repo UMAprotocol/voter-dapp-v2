@@ -8,9 +8,11 @@ import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus, getDelegationDataLoading } = useDelegationContext();
+  const { getDelegationStatus, getDelegationDataLoading } =
+    useDelegationContext();
 
-  const showDelegationNotification = !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
+  const showDelegationNotification =
+    !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
 
   function openMenuPanel() {
     openPanel("menu");

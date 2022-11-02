@@ -1,5 +1,4 @@
-import { discordLink } from "constants/discordLink";
-import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
+import { discordLink, earlyRequestMagicNumber } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { checkIfIsPolymarket } from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";
@@ -24,7 +23,9 @@ export function getVoteMetaData(
   const isUmip = decodedIdentifier.includes("Admin");
   if (isUmip) {
     const title = umipDataFromContentful?.title ?? decodedIdentifier;
-    const description = umipDataFromContentful?.description ?? "No description was found for this UMIP.";
+    const description =
+      umipDataFromContentful?.description ??
+      "No description was found for this UMIP.";
     const umipUrl = umipDataFromContentful?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
@@ -43,12 +44,17 @@ export function getVoteMetaData(
     };
   }
 
-  const isPolymarket = checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData);
+  const isPolymarket = checkIfIsPolymarket(
+    decodedIdentifier,
+    decodedAncillaryData
+  );
   if (isPolymarket) {
     const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
-    const ancillaryDataDescription = getDescriptionFromAncillaryData(decodedAncillaryData);
+    const ancillaryDataDescription =
+      getDescriptionFromAncillaryData(decodedAncillaryData);
     const title = ancillaryDataTitle ?? decodedIdentifier;
-    const description = ancillaryDataDescription ?? "No description was found for this request.";
+    const description =
+      ancillaryDataDescription ?? "No description was found for this request.";
     const links = makeVoteLinks(transactionHash);
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
     const options = isYesNoQuery ? makeVoteOptions("yesNoQuery") : undefined;
@@ -111,18 +117,25 @@ function getTitleFromAncillaryData(
   descriptionIdentifier = "description:"
 ) {
   const start = decodedAncillaryData.indexOf(titleIdentifier);
-  const end = decodedAncillaryData.indexOf(descriptionIdentifier) ?? decodedAncillaryData.length;
+  const end =
+    decodedAncillaryData.indexOf(descriptionIdentifier) ??
+    decodedAncillaryData.length;
 
   if (start === -1) {
     return undefined;
   }
 
-  const title = decodedAncillaryData.substring(start + titleIdentifier.length, end).trim();
+  const title = decodedAncillaryData
+    .substring(start + titleIdentifier.length, end)
+    .trim();
   // remove the trailing comma if it exists (from Polymarket)
   return title.endsWith(",") ? title.slice(0, -1) : title;
 }
 
-function getDescriptionFromAncillaryData(decodedAncillaryData: string, descriptionIdentifier = "description:") {
+function getDescriptionFromAncillaryData(
+  decodedAncillaryData: string,
+  descriptionIdentifier = "description:"
+) {
   if (!decodedAncillaryData) {
     return undefined;
   }
@@ -133,7 +146,10 @@ function getDescriptionFromAncillaryData(decodedAncillaryData: string, descripti
     return undefined;
   }
 
-  return decodedAncillaryData.substring(start + descriptionIdentifier.length, end);
+  return decodedAncillaryData.substring(
+    start + descriptionIdentifier.length,
+    end
+  );
 }
 
 function getUmipNumber(umipOrAdmin: string | undefined) {
@@ -152,7 +168,11 @@ function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
     { label: "Yes", value: "0", secondaryLabel: "p1" },
     { label: "No", value: "1", secondaryLabel: "p2" },
     { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
-    { label: "Early request", value: earlyRequestMagicNumber, secondaryLabel: "p4" },
+    {
+      label: "Early request",
+      value: earlyRequestMagicNumber,
+      secondaryLabel: "p4",
+    },
   ];
   const umipVoteOptions = [
     { label: "Yes", value: "1" },

@@ -31,17 +31,25 @@ export function StakeUnstakePanel() {
   const { getDelegationStatus } = useDelegationContext();
   const { approveMutation } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
-  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake("unstake");
-  const { executeUnstakeMutation, isExecutingUnstake } = useExecuteUnstake("unstake");
+  const { requestUnstakeMutation, isRequestingUnstake } =
+    useRequestUnstake("unstake");
+  const { executeUnstakeMutation, isExecutingUnstake } =
+    useExecuteUnstake("unstake");
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
   const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
-  const showCooldownTimer = canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
+  const showCooldownTimer =
+    canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
   const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
-    return getStakingDataFetching() || isStaking || isRequestingUnstake || isExecutingUnstake;
+    return (
+      getStakingDataFetching() ||
+      isStaking ||
+      isRequestingUnstake ||
+      isExecutingUnstake
+    );
   }
 
   function approve(approveAmountInput: string) {

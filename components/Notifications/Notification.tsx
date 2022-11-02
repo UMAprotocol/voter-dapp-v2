@@ -37,7 +37,10 @@ export function Notification({
       <TextWrapper>
         <Message>{message}</Message>
         {transactionHash && (
-          <NextLink href={`https://goerli.etherscan.io/tx/${transactionHash}`} passHref>
+          <NextLink
+            href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+            passHref
+          >
             <A target="_blank" rel="noopener noreferrer">
               View on Etherscan
             </A>

@@ -2,12 +2,23 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { getCanUnstakeTime } from "helpers";
 import { getUnstakeCoolDown } from "./getUnstakeCoolDown";
 
-export async function getStakerDetails(votingContract: VotingV2Ethers, address: string) {
+export async function getStakerDetails(
+  votingContract: VotingV2Ethers,
+  address: string
+) {
   const result = await votingContract.voterStakes(address);
   const { unstakeCoolDown } = await getUnstakeCoolDown(votingContract);
-  const { stake: stakedBalance, pendingUnstake, unstakeRequestTime, delegate } = result ?? {};
+  const {
+    stake: stakedBalance,
+    pendingUnstake,
+    unstakeRequestTime,
+    delegate,
+  } = result ?? {};
   const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime) * 1000);
-  const canUnstakeTime = getCanUnstakeTime(unstakeRequestTimeAsDate, unstakeCoolDown);
+  const canUnstakeTime = getCanUnstakeTime(
+    unstakeRequestTimeAsDate,
+    unstakeCoolDown
+  );
 
   return {
     stakedBalance,

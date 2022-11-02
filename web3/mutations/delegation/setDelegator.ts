@@ -5,9 +5,17 @@ import { ReactNode } from "react";
 interface SetDelegator {
   voting: VotingV2Ethers;
   delegatorAddress: string;
-  notificationMessages: { pending: ReactNode; success: ReactNode; error: ReactNode };
+  notificationMessages: {
+    pending: ReactNode;
+    success: ReactNode;
+    error: ReactNode;
+  };
 }
-export async function setDelegator({ voting, delegatorAddress, notificationMessages }: SetDelegator) {
+export async function setDelegator({
+  voting,
+  delegatorAddress,
+  notificationMessages,
+}: SetDelegator) {
   const tx = await voting.setDelegator(delegatorAddress);
   return handleNotifications(tx, {
     pending: notificationMessages.pending,

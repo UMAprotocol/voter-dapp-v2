@@ -1,4 +1,4 @@
-import { black, red500, white } from "constants/colors";
+import { black, red500, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
@@ -16,7 +16,9 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
   const iconFillColor = isActive ? white : black;
-  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
+  const formattedTimeRemaining = formatDistanceToNowStrict(
+    Date.now() + timeRemaining
+  );
 
   return (
     <Wrapper
@@ -37,7 +39,8 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
       />
       {isActive ? (
         <Message>
-          Time remaining to reveal votes: <Strong>{formattedTimeRemaining}</Strong>
+          Time remaining to reveal votes:{" "}
+          <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       ) : (
         <Message>

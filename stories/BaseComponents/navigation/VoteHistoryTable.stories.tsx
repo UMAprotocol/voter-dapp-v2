@@ -14,7 +14,9 @@ export default {
   ],
 } as ComponentMeta<typeof VoteHistoryTable>;
 
-const Template: ComponentStory<typeof VoteHistoryTable> = (args) => <VoteHistoryTable {...args} />;
+const Template: ComponentStory<typeof VoteHistoryTable> = (args) => (
+  <VoteHistoryTable {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {

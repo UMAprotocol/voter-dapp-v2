@@ -8,7 +8,9 @@ export default {
   component: InfoBar,
 } as ComponentMeta<typeof InfoBar>;
 
-const Template: ComponentStory<typeof InfoBar> = (args) => <InfoBar {...args} />;
+const Template: ComponentStory<typeof InfoBar> = (args) => (
+  <InfoBar {...args} />
+);
 
 export const WithButton = Template.bind({});
 WithButton.args = {

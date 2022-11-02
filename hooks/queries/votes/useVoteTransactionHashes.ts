@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { voteTransactionHashesKey } from "constants/queryKeys";
-import { useActiveVotes, useContractsContext, useHandleError, usePastVotes, useUpcomingVotes } from "hooks";
+import { voteTransactionHashesKey } from "constant";
+import {
+  useActiveVotes,
+  useContractsContext,
+  useHandleError,
+  usePastVotes,
+  useUpcomingVotes,
+} from "hooks";
 import { getVoteTransactionHashes } from "web3";
 
 export function useVoteTransactionHashes() {
@@ -14,7 +20,12 @@ export function useVoteTransactionHashes() {
 
   const queryResult = useQuery(
     [voteTransactionHashesKey, activeVotes, upcomingVotes, pastVotes],
-    () => getVoteTransactionHashes(voting, { ...activeVotes, ...upcomingVotes, ...pastVotes }),
+    () =>
+      getVoteTransactionHashes(voting, {
+        ...activeVotes,
+        ...upcomingVotes,
+        ...pastVotes,
+      }),
     {
       refetchInterval: (data) => (data ? false : 100),
       initialData: {},

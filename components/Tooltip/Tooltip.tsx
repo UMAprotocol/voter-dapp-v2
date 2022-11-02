@@ -22,7 +22,10 @@ export function Tooltip({ children, ...rest }: Props) {
   return (
     <>
       {cloneElement(children, trigger)}
-      {transitions((style, item) => item && <TooltipContent {...tooltip} {...rest} style={style} />)}
+      {transitions(
+        (style, item) =>
+          item && <TooltipContent {...tooltip} {...rest} style={style} />
+      )}
     </>
   );
 }

@@ -51,7 +51,11 @@ export function VotePanel({ content }: Props) {
 
   return (
     <PanelWrapper>
-      <PanelTitle title={title ?? decodedIdentifier} origin={origin} voteNumber={voteNumber.toString()} />
+      <PanelTitle
+        title={title ?? decodedIdentifier}
+        origin={origin}
+        voteNumber={voteNumber.toString()}
+      />
       {hasResults ? (
         <Tabs tabs={tabs} />
       ) : (

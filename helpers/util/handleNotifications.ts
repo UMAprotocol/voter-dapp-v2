@@ -1,6 +1,6 @@
 import { ContractTransaction } from "ethers";
 import { ReactNode } from "react";
-import { emitErrorEvent, emitPendingEvent, emitSuccessEvent } from "./events";
+import { emitErrorEvent, emitPendingEvent, emitSuccessEvent } from "helpers";
 
 export async function handleNotifications(
   tx: ContractTransaction,

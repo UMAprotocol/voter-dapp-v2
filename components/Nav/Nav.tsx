@@ -1,4 +1,4 @@
-import { red500 } from "constants/colors";
+import { red500 } from "constant";
 import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
 import Link from "next/link";
@@ -35,12 +35,16 @@ export function Nav({ links }: Props) {
               key={href}
               style={
                 {
-                  "--border-left-color": isActive(href) ? red500 : "transparent",
+                  "--border-left-color": isActive(href)
+                    ? red500
+                    : "transparent",
                 } as CSSProperties
               }
             >
               <Link href={href} passHref>
-                <A target={isExternalLink(href) ? "_blank" : undefined}>{title}</A>
+                <A target={isExternalLink(href) ? "_blank" : undefined}>
+                  {title}
+                </A>
               </Link>
             </NavItem>
           ))}
