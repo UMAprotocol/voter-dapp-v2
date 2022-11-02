@@ -20,7 +20,6 @@ const OuterWrapper = styled.div`
 `;
 
 const InnerWrapper = styled.div`
-  max-width: var(--desktop-page-width);
   height: var(--banner-height);
   display: flex;
   align-items: center;

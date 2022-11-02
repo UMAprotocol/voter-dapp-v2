@@ -9,9 +9,11 @@ import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus, getDelegationDataLoading } = useDelegationContext();
+  const { getDelegationStatus, getDelegationDataLoading } =
+    useDelegationContext();
 
-  const showDelegationNotification = !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
+  const showDelegationNotification =
+    !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
 
   function openMenuPanel() {
     openPanel("menu");
@@ -80,7 +82,7 @@ const DelegationNotificationText = styled.p``;
 const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
-  max-width: var(--desktop-page-width);
+  max-width: var(--page-width);
   height: var(--header-height);
   padding-inline: 45px;
   display: flex;
@@ -89,7 +91,6 @@ const InnerWrapper = styled.div`
   gap: 15px;
   margin-inline: auto;
   @media ${tabletAndUnder} {
-    max-width: var(--mobile-page-width);
     padding-inline: 0;
   }
 `;

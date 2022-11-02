@@ -1,4 +1,4 @@
-import { mobileAndUnder } from "constants/breakpoints";
+import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
 import {
   black,
   blackOpacity25,
@@ -251,6 +251,10 @@ a:not([class]) {
     /* Containers */
     --mobile-page-width: ${mobilePageWidth};
     --desktop-page-width: ${desktopPageWidth}px;
+    --page-width: var(--desktop-page-width);
+    @media ${tabletAndUnder} {
+      --page-width: var(--mobile-page-width);
+    }
     --desktop-panel-width: ${desktopPanelWidth}px;
     --header-height: ${desktopHeaderHeight}px;
     --banner-height: ${desktopHeaderHeight}px;

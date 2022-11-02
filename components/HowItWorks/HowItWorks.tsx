@@ -1,4 +1,5 @@
 import { InfoBar, LoadingSkeleton } from "components";
+import { tabletAndUnder } from "constants/breakpoints";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
 import { usePanelContext, useStakingContext, useUserContext } from "hooks";
@@ -9,8 +10,13 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const { stakedBalance, unstakedBalance, outstandingRewards, getStakingDataFetching, pendingUnstake } =
-    useStakingContext();
+  const {
+    stakedBalance,
+    unstakedBalance,
+    outstandingRewards,
+    getStakingDataFetching,
+    pendingUnstake,
+  } = useStakingContext();
   const { countReveals, apr, userDataFetching } = useUserContext();
 
   function openStakeUnstakePanel() {
@@ -22,7 +28,12 @@ export function HowItWorks() {
   }
 
   function totalTokens() {
-    if (unstakedBalance === undefined || stakedBalance === undefined || pendingUnstake === undefined) return;
+    if (
+      unstakedBalance === undefined ||
+      stakedBalance === undefined ||
+      pendingUnstake === undefined
+    )
+      return;
     return unstakedBalance.add(stakedBalance).add(pendingUnstake);
   }
 
@@ -44,9 +55,21 @@ export function HowItWorks() {
           content={
             <>
               You are staking{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(stakedBalance)}</Strong>{" "}
+              <Strong>
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatNumberForDisplay(stakedBalance)
+                )}
+              </Strong>{" "}
               UMA tokens of{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(totalTokens())}</Strong>{" "}
+              <Strong>
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatNumberForDisplay(totalTokens())
+                )}
+              </Strong>{" "}
               total tokens.
             </>
           }
@@ -64,10 +87,22 @@ export function HowItWorks() {
             <>
               You have voted in{" "}
               <Strong>
-                {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(countReveals, { decimals: 0 })}
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatNumberForDisplay(countReveals, { decimals: 0 })
+                )}
               </Strong>{" "}
-              vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}, and are earning{" "}
-              <Strong>{isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(apr)}% APR</Strong>
+              vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}
+              , and are earning{" "}
+              <Strong>
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatNumberForDisplay(apr)
+                )}
+                % APR
+              </Strong>
             </>
           }
           actionLabel="Vote history"
@@ -84,7 +119,12 @@ export function HowItWorks() {
             <>
               You have{" "}
               <Strong>
-                {isLoading() ? <LoadingSkeleton width={60} /> : formatNumberForDisplay(outstandingRewards)} UMA
+                {isLoading() ? (
+                  <LoadingSkeleton width={60} />
+                ) : (
+                  formatNumberForDisplay(outstandingRewards)
+                )}{" "}
+                UMA
               </Strong>{" "}
               in unclaimed rewards
             </>
@@ -98,8 +138,8 @@ export function HowItWorks() {
 }
 
 const OuterWrapper = styled.section`
-  max-width: var(--desktop-page-width);
   margin-inline: auto;
+  max-width: var(--page-width);
 `;
 
 const InnerWrapper = styled.div`
@@ -107,6 +147,9 @@ const InnerWrapper = styled.div`
   padding-block: 30px;
   div {
     margin-bottom: 5px;
+  }
+  @media ${tabletAndUnder} {
+    padding-inline: 0;
   }
 `;
 
