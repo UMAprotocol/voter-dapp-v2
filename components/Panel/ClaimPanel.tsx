@@ -1,4 +1,5 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import {
   useContractsContext,
@@ -113,6 +114,10 @@ const SectionsWrapper = styled.div``;
 const InnerWrapper = styled.div`
   padding-inline: 30px;
   padding-block: 20px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const RewardsWrapper = styled.div`

@@ -56,7 +56,7 @@ export function Result({ participation, results }: VoteResultT) {
           </ParticipationItem>
         ))}
       </SectionWrapper>
-      <PanelErrorBanner />
+      <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>
   );
 }
