@@ -1,9 +1,9 @@
 import { CustomCheckboxContainer, CustomCheckboxInput } from "@reach/checkbox";
 import "@reach/checkbox/styles.css";
-import { black, white } from "constants/colors";
+import { black, white } from "constant/colors";
+import Check from "public/assets/icons/check.svg";
 import { ChangeEvent, ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
-import Check from "public/assets/icons/check.svg";
 
 interface Props {
   label: ReactNode;

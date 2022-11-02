@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { goerliDeployBlock } from "constants/deployBlocks";
+import { goerliDeployBlock } from "constant/deployBlocks";
 import { PriceRequestByKeyT, UniqueKeyT } from "types";
 
 export async function getVoteTransactionHashes(voting: VotingV2Ethers, allVotesByKey: PriceRequestByKeyT) {

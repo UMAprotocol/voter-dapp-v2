@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Meta, Story } from "@storybook/react";
 import { Wallets } from "components";
-import { grey100 } from "constants/colors";
+import { grey100 } from "constant/colors";
 import {
-  defaultDelegationContextState,
-  defaultUserContextState,
-  DelegationContext,
-  DelegationContextState,
-  UserContext,
-  UserContextState,
+    defaultDelegationContextState,
+    defaultUserContextState,
+    DelegationContext,
+    DelegationContextState,
+    UserContext,
+    UserContextState
 } from "contexts";
 import { mockAddress1, mockAddress2, mockAddress3, mockDelegateRequestTransaction } from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";

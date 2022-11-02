@@ -1,5 +1,5 @@
 import { Dropdown } from "components";
-import { grey800, white } from "constants/colors";
+import { grey800, white } from "constant/colors";
 import { addOpacityToHsl } from "helpers";
 import { usePaginationContext } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";

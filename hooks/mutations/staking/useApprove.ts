@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { tokenAllowanceKey } from "constants/queryKeys";
+import { tokenAllowanceKey } from "constant/queryKeys";
 import { BigNumber } from "ethers";
 import { formatTransactionError } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";

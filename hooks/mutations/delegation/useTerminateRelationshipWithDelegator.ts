@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { voterFromDelegateKey } from "constants/queryKeys";
+import { voterFromDelegateKey } from "constant/queryKeys";
 import { useHandleError, useUserContext } from "hooks";
 import { removeDelegator } from "web3";
 

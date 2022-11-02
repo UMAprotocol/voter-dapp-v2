@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { outstandingRewardsKey } from "constants/queryKeys";
+import { outstandingRewardsKey } from "constant/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getOutstandingRewards } from "web3";

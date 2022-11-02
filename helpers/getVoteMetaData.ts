@@ -1,5 +1,5 @@
-import { discordLink } from "constants/discordLink";
-import earlyRequestMagicNumber from "constants/earlyRequestMagicNumber";
+import { discordLink } from "constant/discordLink";
+import earlyRequestMagicNumber from "constant/earlyRequestMagicNumber";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { checkIfIsPolymarket } from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";

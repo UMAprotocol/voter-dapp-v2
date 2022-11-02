@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { LoadingSkeleton } from "components";
-import { red500 } from "constants/colors";
+import { red500 } from "constant/colors";
 
 export default {
   title: "Base components/Loaders/Loading Skeleton",

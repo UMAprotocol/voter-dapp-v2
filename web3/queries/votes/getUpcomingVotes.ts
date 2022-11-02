@@ -1,5 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { goerliDeployBlock } from "constants/deployBlocks";
+import { goerliDeployBlock } from "constant/deployBlocks";
 import { makePriceRequestsByKey } from "helpers";
 
 export async function getUpcomingVotes(voting: VotingV2Ethers, roundId: number) {

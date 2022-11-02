@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { unstakedBalanceKey } from "constants/queryKeys";
+import { unstakedBalanceKey } from "constant/queryKeys";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getUnstakedBalance } from "web3";
 

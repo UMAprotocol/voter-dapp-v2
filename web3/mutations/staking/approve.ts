@@ -1,5 +1,5 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
-import { votingContractAddress } from "constants/addresses";
+import { votingContractAddress } from "constant/addresses";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, handleNotifications } from "helpers";
 

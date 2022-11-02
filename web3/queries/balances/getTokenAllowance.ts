@@ -1,5 +1,5 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
-import { votingContractAddress } from "constants/addresses";
+import { votingContractAddress } from "constant/addresses";
 
 export async function getTokenAllowance(votingTokenContract: VotingTokenEthers, address: string) {
   const result = await votingTokenContract.functions.allowance(address, votingContractAddress);

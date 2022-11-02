@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ignoredRequestToBeDelegateAddressesKey } from "constants/queryKeys";
+import { ignoredRequestToBeDelegateAddressesKey } from "constant/queryKeys";
 import { getIgnoredRequestToBeDelegateAddressesFromStorage } from "helpers";
 import { useHandleError, useUserContext } from "hooks";
 

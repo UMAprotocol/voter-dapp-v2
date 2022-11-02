@@ -1,4 +1,4 @@
-import { black, red500 } from "constants/colors";
+import { black, red500 } from "constant/colors";
 import styled, { CSSProperties, keyframes } from "styled-components";
 
 interface Props {

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { tokenAllowanceKey } from "constants/queryKeys";
+import { tokenAllowanceKey } from "constant/queryKeys";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
 import { getTokenAllowance } from "web3";

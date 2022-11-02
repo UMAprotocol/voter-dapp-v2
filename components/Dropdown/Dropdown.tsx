@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuContextValue, MenuItem, MenuPopover } from "@reach/menu-button";
 import "@reach/menu-button/styles.css";
 import { positionMatchWidth } from "@reach/popover";
-import { black, blackOpacity50 } from "constants/colors";
+import { black, blackOpacity50 } from "constant/colors";
 import Chevron from "public/assets/icons/chevron.svg";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";

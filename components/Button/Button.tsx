@@ -1,8 +1,8 @@
-import { red100, red500, red600, white } from "constants/colors";
+import { red100, red500, red600, white } from "constant/colors";
+import { isExternalLink } from "helpers";
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { isExternalLink } from "helpers";
 
 interface Props {
   /**

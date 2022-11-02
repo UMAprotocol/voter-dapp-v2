@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { committedVotesKey, encryptedVotesKey } from "constants/queryKeys";
+import { committedVotesKey, encryptedVotesKey } from "constant/queryKeys";
 import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
 import { commitVotes } from "web3";

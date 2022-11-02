@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { upcomingVotesKey } from "constants/queryKeys";
+import { upcomingVotesKey } from "constant/queryKeys";
 import { useContractsContext, useHandleError, useVoteTimingContext } from "hooks";
 import { getUpcomingVotes } from "web3";
 

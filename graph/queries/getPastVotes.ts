@@ -1,4 +1,4 @@
-import graphEndpoint from "constants/graphEndpoint";
+import graphEndpoint from "constant/graphEndpoint";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 import { formatBytes32String, formatVoteStringWithPrecision, makePriceRequestsByKey, parseEther } from "helpers";

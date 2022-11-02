@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { receivedRequestsToBeDelegateKey } from "constants/queryKeys";
+import { receivedRequestsToBeDelegateKey } from "constant/queryKeys";
 import { useContractsContext, useHandleError, useUserContext } from "hooks";
 import { getDelegateSetEvents } from "web3";
 

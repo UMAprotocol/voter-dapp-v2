@@ -1,4 +1,4 @@
-import { loadingSkeletonOpacity100, white, whiteOpacity10 } from "constants/colors";
+import { loadingSkeletonOpacity100, white, whiteOpacity10 } from "constant/colors";
 import styled, { CSSProperties, keyframes } from "styled-components";
 
 interface Props {
