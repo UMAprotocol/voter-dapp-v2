@@ -151,19 +151,19 @@ export function VotesListItem({
   return (
     <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
       <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
-        <VoteTitleWrapper>
+        <VoteTitleWrapper
+          style={
+            {
+              "--border-color": getBorderColor(),
+            } as CSSProperties
+          }
+        >
           <VoteIconWrapper>
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
             <VoteTitle>{formatTitle(title)}</VoteTitle>
-            <VoteDetailsInnerWrapper
-              style={
-                {
-                  "--border-color": getBorderColor(),
-                } as CSSProperties
-              }
-            >
+            <VoteDetailsInnerWrapper>
               {isRolled ? (
                 <RolledWrapper>
                   <RolledIconWrapper>
@@ -275,7 +275,9 @@ const Wrapper = styled.tr`
   }
 `;
 
-const VoteTitleOuterWrapper = styled.td``;
+const VoteTitleOuterWrapper = styled.td`
+  width: 100%;
+`;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
@@ -285,6 +287,8 @@ const VoteTitleWrapper = styled.div`
 
   @media ${tabletAndUnder} {
     margin-left: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
   }
 `;
 
@@ -294,11 +298,6 @@ const VoteDetailsInnerWrapper = styled.div`
   display: flex;
   align-items: baseline;
   gap: 10px;
-
-  @media ${tabletAndUnder} {
-    padding-bottom: 5px;
-    border-bottom: 1px solid var(--border-color);
-  }
 `;
 
 const VoteIconWrapper = styled.div`
