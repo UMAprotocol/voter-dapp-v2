@@ -1,5 +1,5 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { tabletAndUnder } from "constants/breakpoints";
+import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
 import { usePanelContext, useStakingContext, useUserContext } from "hooks";

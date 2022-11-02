@@ -1,4 +1,4 @@
-import { mobileAndUnder } from "constants/breakpoints";
+import { mobileAndUnder } from "constant";
 import styled from "styled-components";
 
 export const PageOuterWrapper = styled.div`

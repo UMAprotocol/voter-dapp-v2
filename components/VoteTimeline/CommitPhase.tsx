@@ -1,5 +1,4 @@
-import { tabletAndUnder } from "constants/breakpoints";
-import { black, red500, white } from "constant";
+import { black, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Commit from "public/assets/icons/commit.svg";
@@ -19,9 +18,7 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
   const iconStrokeColor = isActive ? red500 : white;
   const iconFillColor = isActive ? white : black;
   const formattedTimeRemaining = formatDistanceToNowStrict(
-    
     Date.now() + timeRemaining
-  
   );
 
   return (
@@ -54,7 +51,6 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
         {isActive ? (
           <Message>
             Time remaining to commit votes:{" "}
-           {" "}
             <Strong>{formattedTimeRemaining}</Strong>
           </Message>
         ) : (

@@ -1,7 +1,12 @@
 import { Meta, Story } from "@storybook/react";
 import { Votes } from "components";
-import { desktopPageWidth } from "constants/containers";
-import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
+import { desktopPageWidth } from "constant";
+import {
+  defaultVotesContextState,
+  defaultVoteTimingContextState,
+  VotesContext,
+  VoteTimingContext,
+} from "contexts";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,

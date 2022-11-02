@@ -1,4 +1,4 @@
-import { tabletAndUnder, tabletMax } from "constants/breakpoints";
+import { tabletAndUnder, tabletMax } from "constant";
 import { useWindowSize } from "hooks";
 import styled from "styled-components";
 

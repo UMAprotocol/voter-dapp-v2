@@ -1,5 +1,5 @@
 import { Button } from "components";
-import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
+import { mobileAndUnder, tabletAndUnder } from "constant";
 import { ReactNode } from "react";
 import styled from "styled-components";
 

@@ -1,4 +1,10 @@
-import { Button, VotesList, VotesListItem, VotesTableHeadings, VoteTimeline } from "components";
+import {
+  Button,
+  VotesList,
+  VotesListItem,
+  VotesTableHeadings,
+  VoteTimeline,
+} from "components";
 import { formatVotesToCommit } from "helpers";
 import {
   useAccountDetails,

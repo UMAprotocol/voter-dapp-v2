@@ -1,6 +1,6 @@
 import { useConnectWallet } from "@web3-onboard/react";
 import { Button, Nav, WalletIcon } from "components";
-import { mobileAndUnder } from "constants/breakpoints";
+import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
 import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
 import NextLink from "next/link";
@@ -95,7 +95,9 @@ export function MenuPanel() {
               <WalletWrapper>
                 <WalletIcon icon={walletIcon} />
                 <Address>{address}</Address>
-                <TruncatedAddress>{truncateEthAddress(address)}</TruncatedAddress>
+                <TruncatedAddress>
+                  {truncateEthAddress(address)}
+                </TruncatedAddress>
               </WalletWrapper>
               <Button
                 variant="secondary"
@@ -134,7 +136,10 @@ export function MenuPanel() {
                     <LinkedAddressIcon />
                   </LinkedAddressIconWrapper>
                   <Address>{otherWalletAddress}</Address>
-                  <TruncatedAddress>{truncateEthAddress(otherWalletAddress)}</TruncatedAddress>
+                  <TruncatedAddress>
+                    {otherWalletAddress &&
+                      truncateEthAddress(otherWalletAddress)}
+                  </TruncatedAddress>
                 </WalletWrapper>
               </>
             )}

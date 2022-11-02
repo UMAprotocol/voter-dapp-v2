@@ -1,5 +1,4 @@
-import { tabletAndUnder } from "constants/breakpoints";
-import { phaseLengthMilliseconds } from "constant";
+import { phaseLengthMilliseconds, tabletAndUnder } from "constant";
 import { useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";

@@ -1,5 +1,4 @@
-import { tabletAndUnder } from "constants/breakpoints";
-import { black, red500, white } from "constant";
+import { black, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Reveal from "public/assets/icons/reveal.svg";

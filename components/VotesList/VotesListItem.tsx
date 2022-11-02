@@ -5,8 +5,7 @@ import {
   TextInput,
   Tooltip,
 } from "components";
-import { tabletAndUnder, tabletMax } from "constants/breakpoints";
-import { green, grey100, red500 } from "constant";
+import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
 import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,

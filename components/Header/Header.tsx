@@ -1,5 +1,5 @@
 import { Wallet } from "components";
-import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
+import { mobileAndUnder, tabletAndUnder } from "constant";
 import { useDelegationContext, usePanelContext } from "hooks";
 import NextLink from "next/link";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
