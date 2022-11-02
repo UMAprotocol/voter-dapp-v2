@@ -1,4 +1,4 @@
-import graphEndpoint from "constant/graphEndpoint";
+import graphEndpoint from "constant/query/graphEndpoint";
 import request, { gql } from "graphql-request";
 import { bigNumberFromFloatString } from "helpers";
 import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types";

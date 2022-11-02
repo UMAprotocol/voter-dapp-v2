@@ -1,4 +1,4 @@
-import { red100, red500, red600, white } from "constant/colors";
+import { red100, red500, red600, white } from "constant/styles/colors";
 import { isExternalLink } from "helpers";
 import Link from "next/link";
 import { ReactNode } from "react";

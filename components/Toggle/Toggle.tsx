@@ -1,4 +1,4 @@
-import { blackOpacity25, red500 } from "constant/colors";
+import { blackOpacity25, red500 } from "constant/styles/colors";
 import styled, { CSSProperties } from "styled-components";
 
 interface Props {

@@ -1,4 +1,4 @@
-import { red500 } from "constant/colors";
+import { red500 } from "constant/styles/colors";
 import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
 import Link from "next/link";

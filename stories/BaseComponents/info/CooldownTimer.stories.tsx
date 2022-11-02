@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { CooldownTimer } from "components";
-import { red500 } from "constant/colors";
+import { red500 } from "constant/styles/colors";
 import add from "date-fns/add";
 import { BigNumber } from "ethers";
 

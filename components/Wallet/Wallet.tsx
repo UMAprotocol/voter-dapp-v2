@@ -1,5 +1,5 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import message from "constant/signingMessage";
+import message from "constant/web3/signingMessage";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
 import { useContractsContext, usePanelContext, useUserContext, useWalletContext } from "hooks";

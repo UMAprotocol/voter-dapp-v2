@@ -1,5 +1,5 @@
 import { Button, Dropdown, LoadingSkeleton, TextInput, Tooltip } from "components";
-import { green, red500 } from "constant/colors";
+import { green, red500 } from "constant/styles/colors";
 import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
 import { useWalletContext } from "hooks";
 import Link from "next/link";

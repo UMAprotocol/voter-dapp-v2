@@ -1,5 +1,5 @@
 import { LoadingSkeleton, LoadingSpinner, VoteHistoryTable } from "components";
-import { black, green, red500 } from "constant/colors";
+import { black, green, red500 } from "constant/styles/colors";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";

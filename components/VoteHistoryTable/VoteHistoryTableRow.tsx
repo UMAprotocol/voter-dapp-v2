@@ -1,4 +1,4 @@
-import { green, grey500, red500 } from "constant/colors";
+import { green, grey500, red500 } from "constant/styles/colors";
 import { formatNumberForDisplay } from "helpers";
 import { CSSProperties } from "react";
 import styled from "styled-components";

@@ -1,4 +1,4 @@
-import { black, red500, white } from "constant/colors";
+import { black, red500, white } from "constant/styles/colors";
 import { formatDistanceToNowStrict } from "date-fns";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
