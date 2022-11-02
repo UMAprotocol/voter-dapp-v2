@@ -1,4 +1,5 @@
 import { Button } from "components";
+import { mobileAndUnder, tabletAndUnder } from "constants/breakpoints";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -28,6 +29,15 @@ const Wrapper = styled.div`
   gap: 30px;
   align-items: center;
   background: var(--grey-100);
+
+  @media ${tabletAndUnder} {
+    gap: 5px;
+    height: calc(85px + 40px + 2 * 5px);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    border-radius: 10px;
+  }
 `;
 
 const Label = styled.h1`
@@ -40,6 +50,13 @@ const Label = styled.h1`
   color: var(--white);
   background: var(--black);
   padding-inline: 15px;
+
+  @media ${tabletAndUnder} {
+    width: 100%;
+    height: 40px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
 `;
 
 const Content = styled.p`
@@ -49,9 +66,23 @@ const Content = styled.p`
   strong {
     color: var(--black);
   }
+
+  @media ${tabletAndUnder} {
+    margin-top: 5px;
+    margin-inline: 10px;
+  }
+
+  @media ${mobileAndUnder} {
+    font: var(--text-sm);
+  }
 `;
 
 const ButtonWrapper = styled.div`
   margin-left: auto;
   margin-right: 30px;
+
+  @media ${tabletAndUnder} {
+    margin-inline: 10px;
+    margin-bottom: 5px;
+  }
 `;
