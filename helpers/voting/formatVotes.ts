@@ -2,7 +2,7 @@ import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { BigNumber, BigNumberish } from "ethers";
 import { solidityKeccak256 } from "helpers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types";
-import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "./crypto";
+import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt } from "helpers";
 
 function makeVoteHash(
   price: string,

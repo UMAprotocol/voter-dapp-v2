@@ -1,6 +1,6 @@
 import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
-import { decodeHexString } from "./decodeHexString";
-import { makeUniqueKeyForVote } from "./votes";
+import { decodeHexString } from "helpers";
+import { makeUniqueKeyForVote } from "helpers";
 
 export function makePriceRequestsByKey(priceRequests: RawPriceRequestDataT[] | undefined) {
   const priceRequestsByKey: PriceRequestByKeyT = {};

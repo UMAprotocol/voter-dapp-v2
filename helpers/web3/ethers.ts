@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { capitalizeFirstLetter } from "./misc";
+import { capitalizeFirstLetter } from "helpers";
 
 export const formatEther = ethers.utils.formatEther;
 
