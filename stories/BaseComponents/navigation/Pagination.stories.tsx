@@ -7,7 +7,11 @@ import { Meta, Story } from "@storybook/react";
 import { Pagination } from "components";
 import { Props as PaginationProps } from "components/Pagination/Pagination";
 import { grey100 } from "constant";
-import { defaultPaginationContextState, PaginationContext, PaginationContextState } from "contexts";
+import {
+  defaultPaginationContextState,
+  PaginationContext,
+  PaginationContextState,
+} from "contexts";
 import { defaultPageStates } from "contexts/PaginationContext";
 import { PageStatesT, PaginateForT } from "types";
 
@@ -27,27 +31,36 @@ export default {
       const pageStates = args.pageStates ?? defaultPageStates;
 
       function goToPage(paginateFor: PaginateForT, number: number) {
-        updateArgs({ ...pageStates, [paginateFor]: (pageStates[paginateFor].number = number) });
+        updateArgs({
+          ...pageStates,
+          [paginateFor]: (pageStates[paginateFor].number = number),
+        });
       }
 
       function nextPage(paginateFor: PaginateForT) {
         updateArgs({
           ...pageStates,
-          [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number + 1),
+          [paginateFor]: (pageStates[paginateFor].number =
+            pageStates[paginateFor].number + 1),
         });
       }
 
       function previousPage(paginateFor: PaginateForT) {
         updateArgs({
           ...pageStates,
-          [paginateFor]: (pageStates[paginateFor].number = pageStates[paginateFor].number - 1),
+          [paginateFor]: (pageStates[paginateFor].number =
+            pageStates[paginateFor].number - 1),
         });
       }
 
-      function setResultsPerPage(paginateFor: PaginateForT, resultsPerPage: number) {
+      function setResultsPerPage(
+        paginateFor: PaginateForT,
+        resultsPerPage: number
+      ) {
         updateArgs({
           ...pageStates,
-          [paginateFor]: (pageStates[paginateFor].resultsPerPage = resultsPerPage),
+          [paginateFor]: (pageStates[paginateFor].resultsPerPage =
+            resultsPerPage),
         });
       }
 
@@ -67,7 +80,14 @@ export default {
       );
     },
     (Story) => (
-      <div style={{ width: "100%", maxWidth: "600px", background: grey100, padding: 20 }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "600px",
+          background: grey100,
+          padding: 20,
+        }}
+      >
         <Story />
       </div>
     ),

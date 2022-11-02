@@ -7,10 +7,14 @@ export function useVoterFromDelegate() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
 
-  const queryResult = useQuery([voterFromDelegateKey, address], () => getVoterFromDelegate(voting, address), {
-    refetchInterval: (data) => (data ? false : 100),
-    enabled: !!address,
-  });
+  const queryResult = useQuery(
+    [voterFromDelegateKey, address],
+    () => getVoterFromDelegate(voting, address),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+    }
+  );
 
   return queryResult;
 }

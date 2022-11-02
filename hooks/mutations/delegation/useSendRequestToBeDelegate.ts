@@ -12,21 +12,27 @@ export function useSendRequestToBeDelegate(errorOrigin?: ErrorOriginT) {
   const { mutate, isLoading } = useMutation(setDelegate, {
     onError,
     onSuccess: ({ transactionHash }, { delegateAddress }) => {
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
-        if (!oldStakerDetails) return;
+      queryClient.setQueryData<StakerDetailsT>(
+        [stakerDetailsKey, address],
+        (oldStakerDetails) => {
+          if (!oldStakerDetails) return;
 
-        return {
-          ...oldStakerDetails,
-          delegate: delegateAddress,
-        };
-      });
-      queryClient.setQueryData<DelegationEventT[]>([sentRequestsToBeDelegateKey, address], () => [
-        {
-          delegate: delegateAddress,
-          delegator: address,
-          transactionHash,
-        },
-      ]);
+          return {
+            ...oldStakerDetails,
+            delegate: delegateAddress,
+          };
+        }
+      );
+      queryClient.setQueryData<DelegationEventT[]>(
+        [sentRequestsToBeDelegateKey, address],
+        () => [
+          {
+            delegate: delegateAddress,
+            delegator: address,
+            transactionHash,
+          },
+        ]
+      );
     },
   });
 

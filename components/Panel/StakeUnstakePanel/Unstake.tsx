@@ -8,7 +8,11 @@ import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
 import { useState } from "react";
 import styled from "styled-components";
-import { PanelSectionText, PanelSectionTitle, PanelWarningText } from "../styles";
+import {
+  PanelSectionText,
+  PanelSectionTitle,
+  PanelWarningText,
+} from "../styles";
 
 interface Props {
   stakedBalance: BigNumber | undefined;
@@ -29,10 +33,16 @@ export function Unstake({
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
-  const unstakeCoolDownFormatted = unstakeCoolDown ? formatDuration({ seconds: unstakeCoolDown }) : "0 seconds";
+  const unstakeCoolDownFormatted = unstakeCoolDown
+    ? formatDuration({ seconds: unstakeCoolDown })
+    : "0 seconds";
 
-  function canUnstake(stakedBalance: BigNumber | undefined, pendingUnstake: BigNumber | undefined) {
-    if (stakedBalance === undefined || pendingUnstake === undefined) return false;
+  function canUnstake(
+    stakedBalance: BigNumber | undefined,
+    pendingUnstake: BigNumber | undefined
+  ) {
+    if (stakedBalance === undefined || pendingUnstake === undefined)
+      return false;
     return !canClaim && stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
 
@@ -40,8 +50,8 @@ export function Unstake({
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off period and you wont be able to collect
-        rewards text text
+        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off
+        period and you wont be able to collect rewards text text
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
@@ -80,10 +90,20 @@ export function Unstake({
       )}
       <PanelErrorBanner errorOrigin="unstake" />
       {!canClaim && phase === "reveal" && hasActiveVotes && (
-        <PanelWarningText>Cannot request unstake in active reveal phase</PanelWarningText>
+        <PanelWarningText>
+          Cannot request unstake in active reveal phase
+        </PanelWarningText>
       )}
-      {canClaim && <PanelWarningText>Cannot request to unstake until you claim unstaked tokens</PanelWarningText>}
-      {isDelegate && <PanelWarningText>Cannot request to unstake while you are a delegate</PanelWarningText>}
+      {canClaim && (
+        <PanelWarningText>
+          Cannot request to unstake until you claim unstaked tokens
+        </PanelWarningText>
+      )}
+      {isDelegate && (
+        <PanelWarningText>
+          Cannot request to unstake while you are a delegate
+        </PanelWarningText>
+      )}
     </Wrapper>
   );
 }

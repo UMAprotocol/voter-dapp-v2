@@ -8,7 +8,10 @@ export default {
 
 const Template: ComponentStory<typeof Tooltip> = (args) => (
   <div>
-    <Tooltip label={args.label ?? "Dummy text"} aria-label={args["aria-label"] ?? "Dummy text"}>
+    <Tooltip
+      label={args.label ?? "Dummy text"}
+      aria-label={args["aria-label"] ?? "Dummy text"}
+    >
       {args.children ?? <p>Hover me</p>}
     </Tooltip>
   </div>

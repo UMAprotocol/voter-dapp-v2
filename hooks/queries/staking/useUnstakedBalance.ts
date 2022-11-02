@@ -8,11 +8,15 @@ export function useUnstakedBalance() {
   const { address } = useAccountDetails();
   const onError = useHandleError();
 
-  const queryResult = useQuery([unstakedBalanceKey, address], () => getUnstakedBalance(votingToken, address), {
-    refetchInterval: (data) => (data ? false : 100),
-    enabled: !!address,
-    onError,
-  });
+  const queryResult = useQuery(
+    [unstakedBalanceKey, address],
+    () => getUnstakedBalance(votingToken, address),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+      onError,
+    }
+  );
 
   return queryResult;
 }

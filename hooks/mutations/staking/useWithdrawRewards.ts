@@ -13,17 +13,29 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(withdrawRewards, {
     onSuccess: () => {
-      queryClient.setQueryData<BigNumber>([unstakedBalanceKey, address], (oldUnstakedBalance) => {
-        const outstandingRewards = queryClient.getQueryData<BigNumber>([outstandingRewardsKey]);
+      queryClient.setQueryData<BigNumber>(
+        [unstakedBalanceKey, address],
+        (oldUnstakedBalance) => {
+          const outstandingRewards = queryClient.getQueryData<BigNumber>([
+            outstandingRewardsKey,
+          ]);
 
-        if (outstandingRewards === undefined || oldUnstakedBalance === undefined) return;
+          if (
+            outstandingRewards === undefined ||
+            oldUnstakedBalance === undefined
+          )
+            return;
 
-        const newUnstakedBalance = oldUnstakedBalance.add(outstandingRewards);
+          const newUnstakedBalance = oldUnstakedBalance.add(outstandingRewards);
 
-        return newUnstakedBalance;
-      });
+          return newUnstakedBalance;
+        }
+      );
 
-      queryClient.setQueryData<BigNumber>([outstandingRewardsKey, address], () => BigNumber.from(0));
+      queryClient.setQueryData<BigNumber>(
+        [outstandingRewardsKey, address],
+        () => BigNumber.from(0)
+      );
     },
     onError(error: unknown) {
       onError(formatTransactionError(error));

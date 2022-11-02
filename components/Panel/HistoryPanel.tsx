@@ -10,7 +10,12 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
   const { getPastVotes, getIsFetching } = useVotesContext();
-  const { apr, cumulativeCalculatedSlash, cumulativeCalculatedSlashPercentage, userDataFetching } = useUserContext();
+  const {
+    apr,
+    cumulativeCalculatedSlash,
+    cumulativeCalculatedSlashPercentage,
+    userDataFetching,
+  } = useUserContext();
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
     : cumulativeCalculatedSlashPercentage?.gt(0)
@@ -57,7 +62,9 @@ export function HistoryPanel() {
                 {isLoading() ? (
                   <LoadingSkeleton width={60} height={15} />
                 ) : (
-                  `${formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%`
+                  `${formatNumberForDisplay(
+                    cumulativeCalculatedSlashPercentage
+                  )}%`
                 )}
               </BonusOrPenalty>
             </Text>
@@ -65,8 +72,9 @@ export function HistoryPanel() {
         </AprWrapper>
         <SectionWrapper>
           <PanelSectionText>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit enim voluptate rem perferendis
-            numquam, consequuntur sapiente nesciunt laudantium quibusdam pariatur.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Reprehenderit enim voluptate rem perferendis numquam, consequuntur
+            sapiente nesciunt laudantium quibusdam pariatur.
           </PanelSectionText>
         </SectionWrapper>
         <SectionWrapper>
@@ -75,7 +83,9 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSpinner size={250} />
             ) : (
-              <VoteHistoryTable votes={getPastVotes().sort(sortVotesByVoteNumber)} />
+              <VoteHistoryTable
+                votes={getPastVotes().sort(sortVotesByVoteNumber)}
+              />
             )}
           </HistoryWrapper>
         </SectionWrapper>

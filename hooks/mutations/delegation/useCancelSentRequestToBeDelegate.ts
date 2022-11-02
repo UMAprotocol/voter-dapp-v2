@@ -12,9 +12,12 @@ export function useCancelSentRequestToBeDelegate() {
   const { mutate, isLoading } = useMutation(removeDelegate, {
     onError,
     onSuccess: () => {
-      queryClient.setQueryData<DelegationEventT[]>([sentRequestsToBeDelegateKey, address], () => {
-        return [];
-      });
+      queryClient.setQueryData<DelegationEventT[]>(
+        [sentRequestsToBeDelegateKey, address],
+        () => {
+          return [];
+        }
+      );
     },
   });
 

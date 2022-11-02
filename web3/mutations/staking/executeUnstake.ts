@@ -11,8 +11,14 @@ export async function executeUnstake({
 }) {
   const tx = await voting.functions.executeUnstake();
   return handleNotifications(tx, {
-    pending: `Executing unstake of ${formatNumberForDisplay(pendingUnstake)} UMA...`,
-    success: `Executed unstake of ${formatNumberForDisplay(pendingUnstake)} UMA`,
-    error: `Failed to execute unstake of ${formatNumberForDisplay(pendingUnstake)} UMA`,
+    pending: `Executing unstake of ${formatNumberForDisplay(
+      pendingUnstake
+    )} UMA...`,
+    success: `Executed unstake of ${formatNumberForDisplay(
+      pendingUnstake
+    )} UMA`,
+    error: `Failed to execute unstake of ${formatNumberForDisplay(
+      pendingUnstake
+    )} UMA`,
   });
 }

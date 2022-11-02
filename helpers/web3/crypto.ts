@@ -4,13 +4,24 @@ import { randomBytes, solidityKeccak256 } from "helpers";
 
 // Encrypts a message using an ethereum public key. To decrypt messages that are encrypted with this method, use
 // decryptMessage().
-export async function encryptMessage(publicKey: string, message: string): Promise<string> {
-  const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(publicKey, message);
+export async function encryptMessage(
+  publicKey: string,
+  message: string
+): Promise<string> {
+  const encryptedMessageObject = await EthCrypto.encryptWithPublicKey(
+    publicKey,
+    message
+  );
   return "0x" + EthCrypto.cipher.stringify(encryptedMessageObject);
 }
 
-export async function decryptMessage(privKey: string, encryptedMessage: string): Promise<string> {
-  const encryptedMessageObject = EthCrypto.cipher.parse(encryptedMessage.slice(2));
+export async function decryptMessage(
+  privKey: string,
+  encryptedMessage: string
+): Promise<string> {
+  const encryptedMessageObject = EthCrypto.cipher.parse(
+    encryptedMessage.slice(2)
+  );
   return await EthCrypto.decryptWithPrivateKey(privKey, encryptedMessageObject);
 }
 
@@ -37,12 +48,16 @@ export const IDENTIFIER_NON_18_PRECISION = {
 
 type IdentifierNon18Precision = keyof typeof IDENTIFIER_NON_18_PRECISION;
 
-function isNon18Precision(identifier: string): identifier is IdentifierNon18Precision {
+function isNon18Precision(
+  identifier: string
+): identifier is IdentifierNon18Precision {
   return identifier in IDENTIFIER_NON_18_PRECISION;
 }
 
 export const getPrecisionForIdentifier = (identifier: string): number => {
-  return isNon18Precision(identifier) ? IDENTIFIER_NON_18_PRECISION[identifier] : 18;
+  return isNon18Precision(identifier)
+    ? IDENTIFIER_NON_18_PRECISION[identifier]
+    : 18;
 };
 
 export function getRandomSignedInt(): BigNumber {

@@ -10,7 +10,10 @@ export async function approve({
   votingToken: VotingTokenEthers;
   approveAmount: BigNumber;
 }) {
-  const tx = await votingToken.functions.approve(votingContractAddress, approveAmount);
+  const tx = await votingToken.functions.approve(
+    votingContractAddress,
+    approveAmount
+  );
   return handleNotifications(tx, {
     pending: `Approving ${formatNumberForDisplay(approveAmount)} UMA...`,
     success: `Approved ${formatNumberForDisplay(approveAmount)} UMA`,

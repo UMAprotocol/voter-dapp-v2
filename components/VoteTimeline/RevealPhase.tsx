@@ -16,7 +16,9 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
   const iconFillColor = isActive ? white : black;
-  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
+  const formattedTimeRemaining = formatDistanceToNowStrict(
+    Date.now() + timeRemaining
+  );
 
   return (
     <Wrapper
@@ -37,7 +39,8 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
       />
       {isActive ? (
         <Message>
-          Time remaining to reveal votes: <Strong>{formattedTimeRemaining}</Strong>
+          Time remaining to reveal votes:{" "}
+          <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       ) : (
         <Message>

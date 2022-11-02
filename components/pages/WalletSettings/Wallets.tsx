@@ -15,8 +15,12 @@ export function Wallets() {
       {delegationStatus === "no-delegation" && <NoDelegation />}
       {delegationStatus === "delegator" && <IsDelegator />}
       {delegationStatus === "delegate" && <IsDelegate />}
-      {delegationStatus === "delegator-pending" && <IsDelegator hasPending={true} />}
-      {delegationStatus === "delegate-pending" && <IsDelegate hasPending={true} />}
+      {delegationStatus === "delegator-pending" && (
+        <IsDelegator hasPending={true} />
+      )}
+      {delegationStatus === "delegate-pending" && (
+        <IsDelegate hasPending={true} />
+      )}
     </Wrapper>
   );
 }

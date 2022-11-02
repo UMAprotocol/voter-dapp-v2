@@ -20,7 +20,13 @@ export function Notifications() {
       <Wrapper>
         {transitions(
           (style, notification) =>
-            notification && <AnimatedNotification style={style} {...notification} dismiss={removeNotification} />
+            notification && (
+              <AnimatedNotification
+                style={style}
+                {...notification}
+                dismiss={removeNotification}
+              />
+            )
         )}
       </Wrapper>
     </Portal>

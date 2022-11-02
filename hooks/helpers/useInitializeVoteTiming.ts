@@ -1,4 +1,9 @@
-import { computeMillisecondsUntilPhaseEnds, computePhaseEndTimeMilliseconds, computeRoundId, getPhase } from "helpers";
+import {
+  computeMillisecondsUntilPhaseEnds,
+  computePhaseEndTimeMilliseconds,
+  computeRoundId,
+  getPhase,
+} from "helpers";
 import { useInterval, useVoteTimingContext } from "hooks";
 
 /** Initializes the vote timing interval
@@ -8,8 +13,13 @@ import { useInterval, useVoteTimingContext } from "hooks";
  * This hook only needs to be called once on initialization of the dapp.
  */
 export function useInitializeVoteTiming() {
-  const { setRoundId, setPhase, setPhaseEndTimeMilliseconds, setPhaseEndTimeAsDate, setMillisecondsUntilPhaseEnds } =
-    useVoteTimingContext();
+  const {
+    setRoundId,
+    setPhase,
+    setPhaseEndTimeMilliseconds,
+    setPhaseEndTimeAsDate,
+    setMillisecondsUntilPhaseEnds,
+  } = useVoteTimingContext();
 
   useInterval(() => {
     setRoundId(computeRoundId());

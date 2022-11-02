@@ -1,6 +1,11 @@
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { BigNumber, BigNumberish } from "ethers";
-import { encryptMessage, getPrecisionForIdentifier, getRandomSignedInt, solidityKeccak256 } from "helpers";
+import {
+  encryptMessage,
+  getPrecisionForIdentifier,
+  getRandomSignedInt,
+  solidityKeccak256,
+} from "helpers";
 import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types";
 
 function makeVoteHash(
@@ -34,7 +39,9 @@ export async function formatVotesToCommit({
   // this should have been saved in local storage when the user connected their wallet
   const hasSignedMessage = Boolean(signingKeys[address].signedMessage);
   if (!hasSignedMessage) {
-    throw new Error("You must sign the message to commit votes. Please re-connect your wallet and try again.");
+    throw new Error(
+      "You must sign the message to commit votes. Please re-connect your wallet and try again."
+    );
   }
 
   const formattedVotes = await Promise.all(
@@ -46,11 +53,25 @@ export async function formatVotesToCommit({
 
       const { identifier, decodedIdentifier, ancillaryData, time } = vote;
       // the selected option for a vote is called `price` for legacy reasons
-      const price = parseVoteStringWithPrecision(selectedVote, decodedIdentifier);
+      const price = parseVoteStringWithPrecision(
+        selectedVote,
+        decodedIdentifier
+      );
       // the hash must be created with exactly these values in exactly this order
-      const hash = makeVoteHash(price, salt, account, time, ancillaryData, roundId, identifier);
+      const hash = makeVoteHash(
+        price,
+        salt,
+        account,
+        time,
+        ancillaryData,
+        roundId,
+        identifier
+      );
       // encrypt the hash with the signed message we created when the user first connected their wallet
-      const encryptedVote = await encryptMessage(signingPublicKey, JSON.stringify({ price, salt }));
+      const encryptedVote = await encryptMessage(
+        signingPublicKey,
+        JSON.stringify({ price, salt })
+      );
 
       return {
         ...vote,
@@ -60,7 +81,9 @@ export async function formatVotesToCommit({
     })
   );
 
-  return formattedVotes.filter((vote): vote is VoteFormattedToCommitT => Boolean(vote));
+  return formattedVotes.filter((vote): vote is VoteFormattedToCommitT =>
+    Boolean(vote)
+  );
 }
 export function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   return decryptedVotesForUser.flatMap((vote) => {
@@ -79,14 +102,24 @@ export function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   });
 }
 
-export function parseVoteStringWithPrecision(vote: string, decodedIdentifier: string) {
+export function parseVoteStringWithPrecision(
+  vote: string,
+  decodedIdentifier: string
+) {
   // check the precision to use from our table of precisions
-  const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+  const identifierPrecision = BigNumber.from(
+    getPrecisionForIdentifier(decodedIdentifier)
+  ).toString();
   return parseFixed(vote, identifierPrecision).toString();
 }
 
-export function formatVoteStringWithPrecision(vote: BigNumberish, decodedIdentifier: string) {
+export function formatVoteStringWithPrecision(
+  vote: BigNumberish,
+  decodedIdentifier: string
+) {
   // check the precision to use from our table of precisions
-  const identifierPrecision = BigNumber.from(getPrecisionForIdentifier(decodedIdentifier)).toString();
+  const identifierPrecision = BigNumber.from(
+    getPrecisionForIdentifier(decodedIdentifier)
+  ).toString();
   return formatFixed(vote, identifierPrecision).toString();
 }

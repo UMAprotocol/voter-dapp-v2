@@ -13,8 +13,15 @@ export interface Props {
 }
 
 export function Pagination({ paginateFor, numberOfEntries }: Props) {
-  const { pageStates, goToPage, nextPage, previousPage, firstPage, lastPage, setResultsPerPage } =
-    usePaginationContext();
+  const {
+    pageStates,
+    goToPage,
+    nextPage,
+    previousPage,
+    firstPage,
+    lastPage,
+    setResultsPerPage,
+  } = usePaginationContext();
 
   const { pageNumber, resultsPerPage } = pageStates[paginateFor];
   const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
@@ -23,7 +30,9 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
   const showFirstButton = hasMorePagesThanButtons;
   const showLastButton = hasMorePagesThanButtons;
-  const numberOfButtons = hasMorePagesThanButtons ? defaultNumberOfButtons : numberOfPages;
+  const numberOfButtons = hasMorePagesThanButtons
+    ? defaultNumberOfButtons
+    : numberOfPages;
   const numbersPastMax = pageNumber - numberOfButtons;
 
   const buttonNumbers = makeButtonNumbers();
@@ -33,18 +42,24 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
       return Array.from({ length: numberOfPages }, (_, i) => i + 1);
     }
 
-    const isLastPastNumbers = 2 * numberOfButtons + numbersPastMax >= numberOfPages;
+    const isLastPastNumbers =
+      2 * numberOfButtons + numbersPastMax >= numberOfPages;
 
     if (isLastPastNumbers) {
-      return Array.from({ length: numberOfButtons }, (_, i) => lastPageNumber - numberOfButtons + i);
+      return Array.from(
+        { length: numberOfButtons },
+        (_, i) => lastPageNumber - numberOfButtons + i
+      );
     }
 
-    return Array.from({ length: numberOfButtons }, (_, i) => i + 2).map((number) => {
-      if (numbersPastMax > 0) {
-        return number + numbersPastMax;
+    return Array.from({ length: numberOfButtons }, (_, i) => i + 2).map(
+      (number) => {
+        if (numbersPastMax > 0) {
+          return number + numbersPastMax;
+        }
+        return number;
       }
-      return number;
-    });
+    );
   }
 
   const _goToPage = (page: number) => goToPage(paginateFor, page);
@@ -52,7 +67,8 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   const _previousPage = () => previousPage(paginateFor);
   const _firstPage = () => firstPage(paginateFor);
   const _lastPage = () => lastPage(paginateFor, lastPageNumber);
-  const _setResultsPerPage = (resultsPerPage: number) => setResultsPerPage(paginateFor, resultsPerPage);
+  const _setResultsPerPage = (resultsPerPage: number) =>
+    setResultsPerPage(paginateFor, resultsPerPage);
 
   const isActive = (button: number) => button === pageNumber;
 
@@ -63,7 +79,9 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   ];
 
   function getSelectedResultsPerPage() {
-    return resultsPerPageOptions.find((option) => option.value === resultsPerPage);
+    return resultsPerPageOptions.find(
+      (option) => option.value === resultsPerPage
+    );
   }
 
   function onSelectResultsPerPage(item: DropdownItemT) {
@@ -84,19 +102,30 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
       </ResultsPerPageWrapper>
       <ButtonsWrapper>
         {showFirstButton && (
-          <PageButton onClick={_firstPage} disabled={pageNumber === 1} $isActive={isActive(1)}>
+          <PageButton
+            onClick={_firstPage}
+            disabled={pageNumber === 1}
+            $isActive={isActive(1)}
+          >
             1
           </PageButton>
         )}
         {buttonNumbers.map((buttonNumber) => (
-          <PageButton key={buttonNumber} onClick={() => _goToPage(buttonNumber)} $isActive={isActive(buttonNumber)}>
+          <PageButton
+            key={buttonNumber}
+            onClick={() => _goToPage(buttonNumber)}
+            $isActive={isActive(buttonNumber)}
+          >
             {buttonNumber}
           </PageButton>
         ))}
         {showLastButton && (
           <>
             <Ellipsis>...</Ellipsis>
-            <PageButton onClick={_lastPage} $isActive={isActive(lastPageNumber)}>
+            <PageButton
+              onClick={_lastPage}
+              $isActive={isActive(lastPageNumber)}
+            >
               {lastPageNumber}
             </PageButton>
           </>
@@ -104,7 +133,10 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
         <PreviousPageButton onClick={_previousPage} disabled={pageNumber === 1}>
           <PreviousPage />
         </PreviousPageButton>
-        <NextPageButton onClick={_nextPage} disabled={pageNumber === lastPageNumber}>
+        <NextPageButton
+          onClick={_nextPage}
+          disabled={pageNumber === lastPageNumber}
+        >
           <NextPage />
         </NextPageButton>
       </ButtonsWrapper>
@@ -144,7 +176,8 @@ const PageButton = styled(BaseButton)<{ $isActive: boolean }>`
   color: ${({ $isActive }) => ($isActive ? white : grey800)};
   background: ${({ $isActive }) => ($isActive ? grey800 : "transparent")};
   &:hover {
-    ${({ $isActive }) => ($isActive ? "" : `background: ${addOpacityToHsl(grey800, 0.1)};`)}
+    ${({ $isActive }) =>
+      $isActive ? "" : `background: ${addOpacityToHsl(grey800, 0.1)};`}
   }
 `;
 

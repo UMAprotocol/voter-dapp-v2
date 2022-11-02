@@ -1,6 +1,15 @@
-import { Button, Dropdown, LoadingSkeleton, TextInput, Tooltip } from "components";
+import {
+  Button,
+  Dropdown,
+  LoadingSkeleton,
+  TextInput,
+  Tooltip,
+} from "components";
 import { green, red500 } from "constant";
-import { formatVoteStringWithPrecision, getPrecisionForIdentifier } from "helpers";
+import {
+  formatVoteStringWithPrecision,
+  getPrecisionForIdentifier,
+} from "helpers";
 import { useWalletContext } from "hooks";
 import Link from "next/link";
 import Dot from "public/assets/icons/dot.svg";
@@ -70,7 +79,10 @@ export function VotesTableRow({
   }
 
   function showYourVote() {
-    return (activityStatus === "active" && phase === "reveal") || activityStatus === "past";
+    return (
+      (activityStatus === "active" && phase === "reveal") ||
+      activityStatus === "past"
+    );
   }
 
   function showCorrectVote() {
@@ -100,7 +112,10 @@ export function VotesTableRow({
     if (!decryptedVote) return "Did not vote";
     return (
       findVoteInOptions(getDecryptedVoteAsFormattedString())?.label ??
-      formatVoteStringWithPrecision(decryptedVote?.price?.toString(), decodedIdentifier)
+      formatVoteStringWithPrecision(
+        decryptedVote?.price?.toString(),
+        decodedIdentifier
+      )
     );
   }
 
@@ -188,10 +203,22 @@ export function VotesTableRow({
         </VoteInput>
       ) : null}
       {showYourVote() ? (
-        <YourVote>{isFetching ? <LoadingSkeleton width={100} height={22} /> : getYourVote()}</YourVote>
+        <YourVote>
+          {isFetching ? (
+            <LoadingSkeleton width={100} height={22} />
+          ) : (
+            getYourVote()
+          )}
+        </YourVote>
       ) : null}
       {showCorrectVote() ? (
-        <CorrectVote>{isFetching ? <LoadingSkeleton width={100} height={22} /> : getCorrectVote()}</CorrectVote>
+        <CorrectVote>
+          {isFetching ? (
+            <LoadingSkeleton width={100} height={22} />
+          ) : (
+            getCorrectVote()
+          )}
+        </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper>

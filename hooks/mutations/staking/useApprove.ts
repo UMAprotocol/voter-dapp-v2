@@ -13,12 +13,15 @@ export function useApprove(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(approve, {
     onSuccess: (_data, { approveAmount }) => {
-      queryClient.setQueryData<BigNumber>([tokenAllowanceKey, address], (oldTokenAllowance) => {
-        if (oldTokenAllowance === undefined) return;
+      queryClient.setQueryData<BigNumber>(
+        [tokenAllowanceKey, address],
+        (oldTokenAllowance) => {
+          if (oldTokenAllowance === undefined) return;
 
-        const newTokenAllowance = oldTokenAllowance.add(approveAmount);
-        return newTokenAllowance;
-      });
+          const newTokenAllowance = oldTokenAllowance.add(approveAmount);
+          return newTokenAllowance;
+        }
+      );
     },
     onError(error: unknown) {
       onError(formatTransactionError(error));

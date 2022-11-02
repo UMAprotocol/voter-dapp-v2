@@ -9,12 +9,16 @@ export function useTokenAllowance() {
   const { address } = useAccountDetails();
   const onError = useHandleError();
 
-  const queryResult = useQuery([tokenAllowanceKey, address], () => getTokenAllowance(votingToken, address), {
-    refetchInterval: (data) => (data ? false : 100),
-    enabled: !!address,
-    initialData: BigNumber.from(0),
-    onError,
-  });
+  const queryResult = useQuery(
+    [tokenAllowanceKey, address],
+    () => getTokenAllowance(votingToken, address),
+    {
+      refetchInterval: (data) => (data ? false : 100),
+      enabled: !!address,
+      initialData: BigNumber.from(0),
+      onError,
+    }
+  );
 
   return queryResult;
 }

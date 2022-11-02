@@ -12,7 +12,13 @@ interface Props {
   disabled?: boolean;
   gap?: number;
 }
-export function Checkbox({ label, checked, onChange, disabled, gap = 15 }: Props) {
+export function Checkbox({
+  label,
+  checked,
+  onChange,
+  disabled,
+  gap = 15,
+}: Props) {
   const boxBackgroundColor = checked ? black : white;
   return (
     <Label

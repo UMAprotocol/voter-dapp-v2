@@ -12,23 +12,36 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
     onSuccess: (_data, { unstakeAmount }) => {
-      queryClient.setQueryData<StakerDetailsT>([stakerDetailsKey, address], (oldStakerDetails) => {
-        if (oldStakerDetails === undefined) return;
+      queryClient.setQueryData<StakerDetailsT>(
+        [stakerDetailsKey, address],
+        (oldStakerDetails) => {
+          if (oldStakerDetails === undefined) return;
 
-        const unstakeCoolDown = queryClient.getQueryData<{ unstakeCoolDown: number }>([unstakeCoolDownKey]);
+          const unstakeCoolDown = queryClient.getQueryData<{
+            unstakeCoolDown: number;
+          }>([unstakeCoolDownKey]);
 
-        if (unstakeCoolDown === undefined || unstakeCoolDown.unstakeCoolDown === undefined) return;
+          if (
+            unstakeCoolDown === undefined ||
+            unstakeCoolDown.unstakeCoolDown === undefined
+          )
+            return;
 
-        const newUnstakedBalance = oldStakerDetails.stakedBalance.sub(unstakeAmount);
+          const newUnstakedBalance =
+            oldStakerDetails.stakedBalance.sub(unstakeAmount);
 
-        return {
-          ...oldStakerDetails,
-          stakedBalance: newUnstakedBalance,
-          pendingUnstake: unstakeAmount,
-          unstakeRequestTime: new Date(),
-          canUnstakeTime: getCanUnstakeTime(new Date(), unstakeCoolDown.unstakeCoolDown),
-        };
-      });
+          return {
+            ...oldStakerDetails,
+            stakedBalance: newUnstakedBalance,
+            pendingUnstake: unstakeAmount,
+            unstakeRequestTime: new Date(),
+            canUnstakeTime: getCanUnstakeTime(
+              new Date(),
+              unstakeCoolDown.unstakeCoolDown
+            ),
+          };
+        }
+      );
     },
     onError(error: unknown) {
       onError(formatTransactionError(error));

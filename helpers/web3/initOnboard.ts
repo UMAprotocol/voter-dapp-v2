@@ -32,7 +32,9 @@ export const initOnboard = init({
     icon: logo,
     logo,
     description: "UMA 2.0 Voter Dapp",
-    recommendedInjectedWallets: [{ name: "MetaMask", url: "https://metamask.io" }],
+    recommendedInjectedWallets: [
+      { name: "MetaMask", url: "https://metamask.io" },
+    ],
   },
   apiKey: blocknativeDappId,
   notify: {

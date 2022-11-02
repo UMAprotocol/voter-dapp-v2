@@ -23,7 +23,11 @@ export function IsDelegate({ hasPending }: { hasPending?: boolean }) {
           ignoreReceivedRequestToBeDelegate={ignoreReceivedRequestToBeDelegate}
         />
       ) : (
-        <OtherWallet status="delegator" address={getDelegatorAddress()} remove={terminateRelationshipWithDelegator} />
+        <OtherWallet
+          status="delegator"
+          address={getDelegatorAddress()}
+          remove={terminateRelationshipWithDelegator}
+        />
       )}
     </>
   );

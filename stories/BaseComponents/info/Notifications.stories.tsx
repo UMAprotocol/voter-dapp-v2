@@ -1,6 +1,9 @@
 import { Meta, Story } from "@storybook/react";
 import { Notifications } from "components";
-import { defaultNotificationsContextState, NotificationsContext } from "contexts";
+import {
+  defaultNotificationsContextState,
+  NotificationsContext,
+} from "contexts";
 import { NotificationsById } from "contexts/NotificationsContext";
 import uniqueId from "lodash/uniqueId";
 
@@ -32,7 +35,8 @@ OneNotification.args = {
   notifications: {
     [mockId1]: {
       message: "Test notification. Committing votes or something",
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
       id: mockId1,
     },
@@ -44,19 +48,22 @@ MultipleNotifications.args = {
   notifications: {
     [mockId1]: {
       message: "Test notification. Committing votes or something",
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       type: "pending",
       id: mockId1,
     },
     [mockId2]: {
       message: "Testing testing one two three",
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdea",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdea",
       type: "error",
       id: mockId2,
     },
     [mockId3]: {
       message: "Another one. DJ Khaled!",
-      transactionHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
+      transactionHash:
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdee",
       type: "success",
       id: mockId3,
     },

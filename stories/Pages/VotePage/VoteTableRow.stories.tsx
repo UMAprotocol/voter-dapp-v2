@@ -21,7 +21,9 @@ export default {
   ],
 } as ComponentMeta<typeof VotesTableRow>;
 
-const Template: ComponentStory<typeof VotesTableRow> = (args) => <VotesTableRow {...args} />;
+const Template: ComponentStory<typeof VotesTableRow> = (args) => (
+  <VotesTableRow {...args} />
+);
 
 const mockMoreDetailsAction = () => alert("More details clicked");
 

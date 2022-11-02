@@ -1,4 +1,10 @@
-import Document, { DocumentContext, Html, Head, Main, NextScript } from "next/document";
+import Document, {
+  DocumentContext,
+  Html,
+  Head,
+  Main,
+  NextScript,
+} from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
 export default class MyDocument extends Document {
@@ -13,10 +19,16 @@ export default class MyDocument extends Document {
 
     try {
       ctx.renderPage = () =>
-        originalRenderPage({ enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />) });
+        originalRenderPage({
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(<App {...props} />),
+        });
 
       const initialProps = await Document.getInitialProps(ctx);
-      return { ...initialProps, styles: [initialProps.styles, sheet.getStyleElement()] };
+      return {
+        ...initialProps,
+        styles: [initialProps.styles, sheet.getStyleElement()],
+      };
     } finally {
       sheet.seal();
     }
@@ -54,7 +66,13 @@ export default class MyDocument extends Document {
             type="font/woff2"
             crossOrigin="anonymous"
           />
-          <link rel="preload" href="/fonts/HalyardDisplayLight.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplayLight.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
           <link
             rel="preload"
             href="/fonts/HalyardDisplay-Regular.ttf"
@@ -69,7 +87,13 @@ export default class MyDocument extends Document {
             type="font/ttf"
             crossOrigin="anonymous"
           />
-          <link rel="preload" href="/fonts/HalyardDisplay-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+          <link
+            rel="preload"
+            href="/fonts/HalyardDisplay-Bold.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
         </Head>
         <body>
           <Main />

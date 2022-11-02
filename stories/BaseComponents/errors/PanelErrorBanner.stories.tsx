@@ -22,7 +22,8 @@ export default {
 const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
   const errorOrigin = "storybook";
   const { errorMessages } = args;
-  const { addErrorMessage, removeErrorMessage, clearErrorMessages } = useErrorContext(errorOrigin);
+  const { addErrorMessage, removeErrorMessage, clearErrorMessages } =
+    useErrorContext(errorOrigin);
   const [errorText, setErrorText] = useState("Test error message");
 
   useEffect(() => {
@@ -36,9 +37,21 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
       <div style={{ marginTop: 50 }}>
         <TextInput value={errorText} onInput={setErrorText} />
         <div style={{ display: "grid", width: 200, marginTop: 50, gap: 5 }}>
-          <Button onClick={() => addErrorMessage(errorText)} label="Add error from text" variant="primary" />
-          <Button onClick={() => removeErrorMessage(errorText)} label="Remove error from text" variant="primary" />
-          <Button onClick={clearErrorMessages} label="Clear error messages" variant="primary" />
+          <Button
+            onClick={() => addErrorMessage(errorText)}
+            label="Add error from text"
+            variant="primary"
+          />
+          <Button
+            onClick={() => removeErrorMessage(errorText)}
+            label="Remove error from text"
+            variant="primary"
+          />
+          <Button
+            onClick={clearErrorMessages}
+            label="Clear error messages"
+            variant="primary"
+          />
         </div>
       </div>
     </>
@@ -47,7 +60,9 @@ const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
 
 export const OneErrorMessage = Template.bind({});
 OneErrorMessage.args = {
-  errorMessages: ["You seem to be offline. Please check your internet connection and try again."],
+  errorMessages: [
+    "You seem to be offline. Please check your internet connection and try again.",
+  ],
 };
 
 export const MultipleErrorMessages = Template.bind({});
@@ -71,7 +86,8 @@ export const CustomMarkup = Template.bind({});
 CustomMarkup.args = {
   errorMessages: [
     <>
-      You seem to be offline. <strong>Please check your internet connection and try again.</strong>
+      You seem to be offline.{" "}
+      <strong>Please check your internet connection and try again.</strong>
     </>,
   ],
 };

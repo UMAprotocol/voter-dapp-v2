@@ -1,9 +1,16 @@
 import { graphEndpoint } from "constant";
 import request, { gql } from "graphql-request";
 import { bigNumberFromFloatString } from "helpers";
-import { UserDataQuery, UserDataT, VoteHistoryByKeyT, VoteHistoryT } from "types";
+import {
+  UserDataQuery,
+  UserDataT,
+  VoteHistoryByKeyT,
+  VoteHistoryT,
+} from "types";
 
-export async function getUserVotingAndStakingDetails(address: string | undefined) {
+export async function getUserVotingAndStakingDetails(
+  address: string | undefined
+) {
   const userDataQuery = gql`
     {
       users(where: { address: "${address}" }) {
@@ -34,13 +41,21 @@ export async function getUserVotingAndStakingDetails(address: string | undefined
   return userData;
 }
 
-function parseUserVotingAndStakingDetails(rawUserData: UserDataQuery["users"][0] | undefined) {
+function parseUserVotingAndStakingDetails(
+  rawUserData: UserDataQuery["users"][0] | undefined
+) {
   const apr = bigNumberFromFloatString(rawUserData?.annualPercentageReturn);
   const countReveals = bigNumberFromFloatString(rawUserData?.countReveals);
   const countNoVotes = bigNumberFromFloatString(rawUserData?.countNoVotes);
-  const countWrongVotes = bigNumberFromFloatString(rawUserData?.countWrongVotes);
-  const countCorrectVotes = bigNumberFromFloatString(rawUserData?.countCorrectVotes);
-  const cumulativeCalculatedSlash = bigNumberFromFloatString(rawUserData?.cumulativeCalculatedSlash);
+  const countWrongVotes = bigNumberFromFloatString(
+    rawUserData?.countWrongVotes
+  );
+  const countCorrectVotes = bigNumberFromFloatString(
+    rawUserData?.countCorrectVotes
+  );
+  const cumulativeCalculatedSlash = bigNumberFromFloatString(
+    rawUserData?.cumulativeCalculatedSlash
+  );
   const cumulativeCalculatedSlashPercentage = bigNumberFromFloatString(
     rawUserData?.cumulativeCalculatedSlashPercentage
   );

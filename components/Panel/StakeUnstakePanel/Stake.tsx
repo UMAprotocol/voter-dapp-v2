@@ -4,7 +4,11 @@ import { BigNumber, constants } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
-import { PanelSectionText, PanelSectionTitle, PanelWarningText } from "../styles";
+import {
+  PanelSectionText,
+  PanelSectionTitle,
+  PanelWarningText,
+} from "../styles";
 
 const MaxApproval = formatEther(constants.MaxUint256);
 
@@ -16,10 +20,19 @@ interface Props {
   approve: (approveAmount: string) => void;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
 }
-export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstakeCoolDown, isDelegate }: Props) {
+export function Stake({
+  tokenAllowance,
+  unstakedBalance,
+  approve,
+  stake,
+  unstakeCoolDown,
+  isDelegate,
+}: Props) {
   const [stakeAmount, setStakeAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
-  const unstakeCoolDownFormatted = unstakeCoolDown ? formatDuration({ seconds: unstakeCoolDown }) : "0 seconds";
+  const unstakeCoolDownFormatted = unstakeCoolDown
+    ? formatDuration({ seconds: unstakeCoolDown })
+    : "0 seconds";
 
   const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
 
@@ -31,7 +44,11 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstake
   }
 
   function isButtonDisabled() {
-    return !disclaimerChecked || stakeAmount === "" || parseEtherSafe(stakeAmount).eq(0);
+    return (
+      !disclaimerChecked ||
+      stakeAmount === "" ||
+      parseEtherSafe(stakeAmount).eq(0)
+    );
   }
 
   function onApprove() {
@@ -46,12 +63,13 @@ export function Stake({ tokenAllowance, unstakedBalance, approve, stake, unstake
     <Wrapper>
       <PanelSectionTitle>Stake</PanelSectionTitle>
       <PanelSectionText>
-        Staked tokens can be used to vote and earn rewards. Staked tokens cannot be transferred for{" "}
-        {unstakeCoolDownFormatted} after unstaking.
+        Staked tokens can be used to vote and earn rewards. Staked tokens cannot
+        be transferred for {unstakeCoolDownFormatted} after unstaking.
       </PanelSectionText>
       {isDelegate ? (
         <PanelWarningText>
-          You are currently delegating your vote. You will need to undelegate your vote before you can stake.
+          You are currently delegating your vote. You will need to undelegate
+          your vote before you can stake.
         </PanelWarningText>
       ) : (
         <>

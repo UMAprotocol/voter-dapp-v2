@@ -25,7 +25,9 @@ export default {
   ],
 } as ComponentMeta<typeof CooldownTimer>;
 
-const Template: ComponentStory<typeof CooldownTimer> = (args) => <CooldownTimer {...args} />;
+const Template: ComponentStory<typeof CooldownTimer> = (args) => (
+  <CooldownTimer {...args} />
+);
 
 export const InCooldown = Template.bind({});
 InCooldown.args = {

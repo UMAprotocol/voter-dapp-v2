@@ -24,18 +24,21 @@ export function VoteTimeline() {
         // the commit phase starts when:
         // - the current phase ends
         // - the next (reveal) phase ends
-        commitTimeRemaining = millisecondsUntilPhaseEnds + phaseLengthMilliseconds;
+        commitTimeRemaining =
+          millisecondsUntilPhaseEnds + phaseLengthMilliseconds;
         // the reveal phase starts when:
         // - the current phase ends
         // - the next (reveal) phase ends
         // the next next (commit) phase ends
-        revealTimeRemaining = millisecondsUntilPhaseEnds + phaseLengthMilliseconds * 2;
+        revealTimeRemaining =
+          millisecondsUntilPhaseEnds + phaseLengthMilliseconds * 2;
       }
       if (phase === "reveal") {
         // the reveal phase starts when:
         // - the current (reveal) phase ends
         // - the next (commit) phase ends
-        revealTimeRemaining = millisecondsUntilPhaseEnds + phaseLengthMilliseconds;
+        revealTimeRemaining =
+          millisecondsUntilPhaseEnds + phaseLengthMilliseconds;
         // the commit phase starts when:
         // - the current (reveal) phase ends
         commitTimeRemaining = millisecondsUntilPhaseEnds;
@@ -47,8 +50,16 @@ export function VoteTimeline() {
 
   return (
     <Wrapper>
-      <CommitPhase phase={phase} timeRemaining={commitTimeRemaining} status={getActivityStatus()} />
-      <RevealPhase phase={phase} timeRemaining={revealTimeRemaining} status={getActivityStatus()} />
+      <CommitPhase
+        phase={phase}
+        timeRemaining={commitTimeRemaining}
+        status={getActivityStatus()}
+      />
+      <RevealPhase
+        phase={phase}
+        timeRemaining={revealTimeRemaining}
+        status={getActivityStatus()}
+      />
     </Wrapper>
   );
 }

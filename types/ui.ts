@@ -14,13 +14,25 @@ export type DropdownItemT = InputDataT & {
   secondaryLabel?: string;
 };
 
-export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | "delegation" | null;
+export type PanelTypeT =
+  | "menu"
+  | "claim"
+  | "vote"
+  | "stake"
+  | "history"
+  | "remind"
+  | "delegation"
+  | null;
 
 export type VotePanelContentT = VoteT;
 
 export type PanelContentT = VotePanelContentT | null;
 
-export type PaginateForT = "activeVotesPage" | "upcomingVotesPage" | "pastVotesPage" | "voteHistoryPage";
+export type PaginateForT =
+  | "activeVotesPage"
+  | "upcomingVotesPage"
+  | "pastVotesPage"
+  | "voteHistoryPage";
 
 export type PageStateT = {
   pageNumber: number;
@@ -29,4 +41,11 @@ export type PageStateT = {
 
 export type PageStatesT = Record<PaginateForT, PageStateT>;
 
-export type ErrorOriginT = "default" | "vote" | "stake" | "unstake" | "claim" | "delegation" | "storybook";
+export type ErrorOriginT =
+  | "default"
+  | "vote"
+  | "stake"
+  | "unstake"
+  | "claim"
+  | "delegation"
+  | "storybook";

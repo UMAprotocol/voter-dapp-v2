@@ -41,7 +41,11 @@ export { CooldownTimer } from "./Panel/StakeUnstakePanel/CooldownTimer";
 export { Stake } from "./Panel/StakeUnstakePanel/Stake";
 export { StakeUnstakePanel } from "./Panel/StakeUnstakePanel/StakeUnstakePanel";
 export { Unstake } from "./Panel/StakeUnstakePanel/Unstake";
-export { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./Panel/styles";
+export {
+  PanelSectionText,
+  PanelSectionTitle,
+  PanelWrapper,
+} from "./Panel/styles";
 export { Details } from "./Panel/VotePanel/Details";
 export { Result } from "./Panel/VotePanel/Result";
 export { VotePanel } from "./Panel/VotePanel/VotePanel";

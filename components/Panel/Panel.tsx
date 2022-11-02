@@ -46,7 +46,11 @@ export function Panel() {
           isOpen && (
             <Overlay
               onDismiss={() => closePanel(true)}
-              style={{ backgroundColor: opacity.to((value) => `hsla(280, 4%, 15%, ${value})`) }}
+              style={{
+                backgroundColor: opacity.to(
+                  (value) => `hsla(280, 4%, 15%, ${value})`
+                ),
+              }}
             >
               <Content aria-labelledby="panel-title" style={{ right }}>
                 <PanelComponent content={panelContent} />

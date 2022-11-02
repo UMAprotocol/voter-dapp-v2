@@ -74,7 +74,10 @@ export const voteCommitted = {
 
 export const voteCommittedButNotRevealed = { ...voteCommitted };
 
-export const voteRevealed = { ...voteCommittedButNotRevealed, isRevealed: true };
+export const voteRevealed = {
+  ...voteCommittedButNotRevealed,
+  isRevealed: true,
+};
 
 export const voteWithCorrectVoteWithoutUserVote = {
   ...voteWithoutUserVote,
@@ -130,7 +133,10 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
     correctness: args?.correctness ?? Math.random() > 0.5,
     staking: args?.staking ?? Math.random() > 0.5,
     slashAmount:
-      args?.slashAmount ?? bigNumberFromFloatString(`${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`),
+      args?.slashAmount ??
+      bigNumberFromFloatString(
+        `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
+      ),
   };
 }
 

@@ -87,13 +87,22 @@ export type ContentfulDataT = {
   umipLink?: string;
 };
 
-export type ContentfulDataByKeyT = Record<UniqueKeyT, ContentfulDataT | undefined>;
+export type ContentfulDataByKeyT = Record<
+  UniqueKeyT,
+  ContentfulDataT | undefined
+>;
 
 export type EncryptedVoteT = string;
-export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
+export type EncryptedVotesByKeyT = Record<
+  UniqueKeyT,
+  EncryptedVoteT | undefined
+>;
 
 export type DecryptedVoteT = { price: string; salt: string };
-export type DecryptedVotesByKeyT = Record<UniqueKeyT, DecryptedVoteT | undefined>;
+export type DecryptedVotesByKeyT = Record<
+  UniqueKeyT,
+  DecryptedVoteT | undefined
+>;
 
 export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
 

@@ -11,8 +11,14 @@ export function useAcceptReceivedRequestToBeDelegate() {
   const { mutate, isLoading } = useMutation(setDelegator, {
     onError,
     onSuccess: (_data, { delegatorAddress }) => {
-      queryClient.setQueryData<string>([voterFromDelegateKey, address], () => delegatorAddress);
-      queryClient.setQueryData<string>([delegateToStakerKey, address], () => address);
+      queryClient.setQueryData<string>(
+        [voterFromDelegateKey, address],
+        () => delegatorAddress
+      );
+      queryClient.setQueryData<string>(
+        [delegateToStakerKey, address],
+        () => address
+      );
     },
   });
 

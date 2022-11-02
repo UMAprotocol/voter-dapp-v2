@@ -1,4 +1,9 @@
-import { computeColors, computePercentages, DonutChart, PanelErrorBanner } from "components";
+import {
+  computeColors,
+  computePercentages,
+  DonutChart,
+  PanelErrorBanner,
+} from "components";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";

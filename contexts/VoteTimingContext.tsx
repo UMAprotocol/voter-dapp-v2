@@ -1,4 +1,9 @@
-import { computeMillisecondsUntilPhaseEnds, computePhaseEndTimeMilliseconds, computeRoundId, getPhase } from "helpers";
+import {
+  computeMillisecondsUntilPhaseEnds,
+  computePhaseEndTimeMilliseconds,
+  computeRoundId,
+  getPhase,
+} from "helpers";
 import { createContext, ReactNode, useState } from "react";
 
 export interface VoteTimingContextState {
@@ -27,7 +32,9 @@ export const defaultVoteTimingContextState: VoteTimingContextState = {
   setMillisecondsUntilPhaseEnds: () => null,
 };
 
-export const VoteTimingContext = createContext<VoteTimingContextState>(defaultVoteTimingContextState);
+export const VoteTimingContext = createContext<VoteTimingContextState>(
+  defaultVoteTimingContextState
+);
 
 export function VoteTimingProvider({ children }: { children: ReactNode }) {
   const [roundId, setRoundId] = useState(defaultVoteTimingContextState.roundId);
@@ -35,7 +42,9 @@ export function VoteTimingProvider({ children }: { children: ReactNode }) {
   const [phaseEndTimeMilliseconds, setPhaseEndTimeMilliseconds] = useState(
     defaultVoteTimingContextState.phaseEndTimeMilliseconds
   );
-  const [phaseEndTimeAsDate, setPhaseEndTimeAsDate] = useState(defaultVoteTimingContextState.phaseEndTimeAsDate);
+  const [phaseEndTimeAsDate, setPhaseEndTimeAsDate] = useState(
+    defaultVoteTimingContextState.phaseEndTimeAsDate
+  );
   const [millisecondsUntilPhaseEnds, setMillisecondsUntilPhaseEnds] = useState(
     defaultVoteTimingContextState.millisecondsUntilPhaseEnds
   );

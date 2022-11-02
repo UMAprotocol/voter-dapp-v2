@@ -7,12 +7,16 @@ export function useUnstakeCoolDown() {
   const { voting } = useContractsContext();
   const onError = useHandleError();
   // only need to fetch this one time
-  const queryResult = useQuery([unstakeCoolDownKey], () => getUnstakeCoolDown(voting), {
-    initialData: {
-      unstakeCoolDown: 0,
-    },
-    onError,
-  });
+  const queryResult = useQuery(
+    [unstakeCoolDownKey],
+    () => getUnstakeCoolDown(voting),
+    {
+      initialData: {
+        unstakeCoolDown: 0,
+      },
+      onError,
+    }
+  );
 
   return queryResult;
 }

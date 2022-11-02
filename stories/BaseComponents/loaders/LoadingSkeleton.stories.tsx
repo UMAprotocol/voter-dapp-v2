@@ -14,7 +14,9 @@ export default {
   ],
 } as ComponentMeta<typeof LoadingSkeleton>;
 
-const Template: ComponentStory<typeof LoadingSkeleton> = (args) => <LoadingSkeleton {...args} />;
+const Template: ComponentStory<typeof LoadingSkeleton> = (args) => (
+  <LoadingSkeleton {...args} />
+);
 
 export const Default = Template.bind({});
 
@@ -44,7 +46,15 @@ WhiteVariant.args = {
 };
 WhiteVariant.decorators = [
   (Story) => (
-    <div style={{ width: 200, height: 40, background: red500, display: "grid", placeItems: "center" }}>
+    <div
+      style={{
+        width: 200,
+        height: 40,
+        background: red500,
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
       <Story />
     </div>
   ),

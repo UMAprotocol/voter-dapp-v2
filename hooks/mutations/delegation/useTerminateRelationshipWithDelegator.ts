@@ -11,7 +11,10 @@ export function useTerminateRelationshipWithDelegator() {
   const { mutate, isLoading } = useMutation(removeDelegator, {
     onError,
     onSuccess: () => {
-      queryClient.setQueryData<string>([voterFromDelegateKey, address], () => address);
+      queryClient.setQueryData<string>(
+        [voterFromDelegateKey, address],
+        () => address
+      );
     },
   });
 

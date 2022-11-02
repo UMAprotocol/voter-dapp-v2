@@ -13,8 +13,14 @@ export function useTerminateRelationshipWithDelegate() {
   const { mutate, isLoading } = useMutation(removeDelegate, {
     onError,
     onSuccess: () => {
-      queryClient.setQueryData<string>([delegateToStakerKey, address], () => zeroAddress);
-      queryClient.setQueryData<DelegationEventT[]>([sentRequestsToBeDelegateKey, address], () => []);
+      queryClient.setQueryData<string>(
+        [delegateToStakerKey, address],
+        () => zeroAddress
+      );
+      queryClient.setQueryData<DelegationEventT[]>(
+        [sentRequestsToBeDelegateKey, address],
+        () => []
+      );
     },
   });
 

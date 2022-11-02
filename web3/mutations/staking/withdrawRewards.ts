@@ -14,6 +14,8 @@ export async function withdrawRewards({
   return handleNotifications(tx, {
     pending: `Withdrawing ${formatNumberForDisplay(outstandingRewards)} UMA...`,
     success: `Withdrew ${formatNumberForDisplay(outstandingRewards)} UMA`,
-    error: `Failed to withdraw ${formatNumberForDisplay(outstandingRewards)} UMA`,
+    error: `Failed to withdraw ${formatNumberForDisplay(
+      outstandingRewards
+    )} UMA`,
   });
 }

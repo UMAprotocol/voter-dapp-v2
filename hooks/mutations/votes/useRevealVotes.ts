@@ -12,15 +12,18 @@ export function useRevealVotes() {
 
   const { mutate, isLoading } = useMutation(revealVotes, {
     onSuccess: (_data, { votesToReveal }) => {
-      queryClient.setQueryData<VoteExistsByKeyT>([revealedVotesKey, address, roundId], (oldRevealedVotes) => {
-        const newRevealedVotes = { ...oldRevealedVotes };
+      queryClient.setQueryData<VoteExistsByKeyT>(
+        [revealedVotesKey, address, roundId],
+        (oldRevealedVotes) => {
+          const newRevealedVotes = { ...oldRevealedVotes };
 
-        for (const { uniqueKey } of votesToReveal) {
-          newRevealedVotes[uniqueKey] = true;
+          for (const { uniqueKey } of votesToReveal) {
+            newRevealedVotes[uniqueKey] = true;
+          }
+
+          return newRevealedVotes;
         }
-
-        return newRevealedVotes;
-      });
+      );
     },
     onError,
   });

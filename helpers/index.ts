@@ -1,7 +1,11 @@
 export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./delegation/getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { getCanUnstakeTime } from "./staking/getCanUnstakeTime";
 export { addOpacityToHsl } from "./util/addOpacityToHsl";
-export { bigNumberFromFloatString, formatNumberForDisplay, truncateDecimals } from "./util/formatNumber";
+export {
+  bigNumberFromFloatString,
+  formatNumberForDisplay,
+  truncateDecimals,
+} from "./util/formatNumber";
 export { getEntriesForPage } from "./util/getEntriesForPage";
 export { handleNotifications } from "./util/handleNotifications";
 export { capitalizeFirstLetter, isExternalLink } from "./util/isExternalLink";
@@ -53,7 +57,12 @@ export {
   toUtf8String,
   zeroAddress,
 } from "./web3/ethers";
-export { emitErrorEvent, emitPendingEvent, emitSuccessEvent, events } from "./web3/events";
+export {
+  emitErrorEvent,
+  emitPendingEvent,
+  emitSuccessEvent,
+  events,
+} from "./web3/events";
 export { initOnboard } from "./web3/initOnboard";
 export { truncateEthAddress } from "./web3/truncateEthAddress";
 export { getAccountDetails, handleDisconnectWallet } from "./web3/wallet";

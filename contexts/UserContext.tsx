@@ -41,10 +41,13 @@ export const defaultUserContextState: UserContextState = {
   userDataFetching: false,
 };
 
-export const UserContext = createContext<UserContextState>(defaultUserContextState);
+export const UserContext = createContext<UserContextState>(
+  defaultUserContextState
+);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { connectedWallet, account, address, truncatedAddress } = useAccountDetails();
+  const { connectedWallet, account, address, truncatedAddress } =
+    useAccountDetails();
   const {
     data: {
       apr,

@@ -17,7 +17,12 @@ export default {
 const Template: ComponentStory<typeof Checkbox> = (args) => {
   const [_args, updateArgs] = useArgs();
 
-  return <Checkbox {...args} onChange={(e) => updateArgs({ checked: e.target.checked })} />;
+  return (
+    <Checkbox
+      {...args}
+      onChange={(e) => updateArgs({ checked: e.target.checked })}
+    />
+  );
 };
 
 export const Unchecked = Template.bind({});

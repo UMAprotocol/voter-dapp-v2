@@ -9,8 +9,23 @@ import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 
-type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;
-export function Details({ description, decodedAncillaryData, options, timeAsDate, links, discordLink }: Props) {
+type Props = Pick<
+  VoteT,
+  | "description"
+  | "decodedAncillaryData"
+  | "options"
+  | "timeAsDate"
+  | "links"
+  | "discordLink"
+>;
+export function Details({
+  description,
+  decodedAncillaryData,
+  options,
+  timeAsDate,
+  links,
+  discordLink,
+}: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
   const descriptionParagraphs = description?.split("\n");

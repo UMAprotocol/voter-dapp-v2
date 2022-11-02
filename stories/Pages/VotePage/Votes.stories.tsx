@@ -1,14 +1,19 @@
 import { Meta, Story } from "@storybook/react";
 import { Votes } from "components";
 import { desktopMaxWidth } from "constant";
-import { defaultVotesContextState, defaultVoteTimingContextState, VotesContext, VoteTimingContext } from "contexts";
+import {
+  defaultVotesContextState,
+  defaultVoteTimingContextState,
+  VotesContext,
+  VoteTimingContext,
+} from "contexts";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,
   voteRevealed,
   voteWithCorrectVoteWithoutUserVote,
   voteWithCorrectVoteWithUserVote,
-  voteWithoutUserVote
+  voteWithoutUserVote,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
 
@@ -60,20 +65,34 @@ export const ActiveCommit = Template.bind({});
 ActiveCommit.args = {
   activityStatus: "active",
   phase: "commit",
-  activeVotes: [voteWithoutUserVote, voteCommitted, voteWithoutUserVote, voteCommitted],
+  activeVotes: [
+    voteWithoutUserVote,
+    voteCommitted,
+    voteWithoutUserVote,
+    voteCommitted,
+  ],
 };
 
 export const ActiveReveal = Template.bind({});
 ActiveReveal.args = {
   activityStatus: "active",
   phase: "reveal",
-  activeVotes: [voteCommittedButNotRevealed, voteRevealed, voteCommittedButNotRevealed, voteRevealed],
+  activeVotes: [
+    voteCommittedButNotRevealed,
+    voteRevealed,
+    voteCommittedButNotRevealed,
+    voteRevealed,
+  ],
 };
 
 export const Upcoming = Template.bind({});
 Upcoming.args = {
   activityStatus: "upcoming",
-  upcomingVotes: [voteWithoutUserVote, voteWithoutUserVote, voteWithoutUserVote],
+  upcomingVotes: [
+    voteWithoutUserVote,
+    voteWithoutUserVote,
+    voteWithoutUserVote,
+  ],
 };
 
 export const Past = Template.bind({});

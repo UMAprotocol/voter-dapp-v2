@@ -1,4 +1,12 @@
-import { Banner, HowItWorks, Layout, LoadingSpinner, PageInnerWrapper, PageOuterWrapper, Votes } from "components";
+import {
+  Banner,
+  HowItWorks,
+  Layout,
+  LoadingSpinner,
+  PageInnerWrapper,
+  PageOuterWrapper,
+  Votes,
+} from "components";
 import { useVotesContext } from "hooks";
 import { LoadingSpinnerWrapper, Strong } from "./styles";
 

@@ -9,9 +9,14 @@ import {
   DelegationContext,
   DelegationContextState,
   UserContext,
-  UserContextState
+  UserContextState,
 } from "contexts";
-import { mockAddress1, mockAddress2, mockAddress3, mockDelegateRequestTransaction } from "stories/mocks/delegation";
+import {
+  mockAddress1,
+  mockAddress2,
+  mockAddress3,
+  mockDelegateRequestTransaction,
+} from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { DelegationEventT, DelegationStatusT } from "types";
 
@@ -32,7 +37,14 @@ export default {
   component: Wallets,
   decorators: [
     (Story) => (
-      <div style={{ width: "100%", height: "100%", padding: 50, backgroundColor: grey100 }}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          padding: 50,
+          backgroundColor: grey100,
+        }}
+      >
         <Story />
       </div>
     ),
@@ -52,21 +64,32 @@ export default {
       const mockDelegationContextState = {
         ...defaultDelegationContextState,
         getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-        getPendingReceivedRequestsToBeDelegate: () => args.pendingReceivedRequestsToBeDelegate ?? [],
-        getHasPendingReceivedRequestsToBeDelegate: () => args.hasPendingReceivedRequestsToBeDelegate ?? false,
-        getPendingSentRequestsToBeDelegate: () => args.pendingSentRequestsToBeDelegate ?? [],
-        getHasPendingSentRequestsToBeDelegate: () => args.hasPendingSentRequestsToBeDelegate ?? false,
+        getPendingReceivedRequestsToBeDelegate: () =>
+          args.pendingReceivedRequestsToBeDelegate ?? [],
+        getHasPendingReceivedRequestsToBeDelegate: () =>
+          args.hasPendingReceivedRequestsToBeDelegate ?? false,
+        getPendingSentRequestsToBeDelegate: () =>
+          args.pendingSentRequestsToBeDelegate ?? [],
+        getHasPendingSentRequestsToBeDelegate: () =>
+          args.hasPendingSentRequestsToBeDelegate ?? false,
         getDelegateAddress: () => args.delegateAddress,
         getDelegatorAddress: () => args.delegatorAddress,
         sendRequestToBeDelegate: (delegateAddress: string) =>
           alert(`sent request to be delegate to ${delegateAddress}`),
-        cancelSentRequestToBeDelegate: () => alert("cancelled sent request to be delegate"),
+        cancelSentRequestToBeDelegate: () =>
+          alert("cancelled sent request to be delegate"),
         acceptReceivedRequestToBeDelegate: (delegatorAddress: string) =>
-          alert(`accepted received request to be delegate from ${delegatorAddress}`),
+          alert(
+            `accepted received request to be delegate from ${delegatorAddress}`
+          ),
         ignoreReceivedRequestToBeDelegate: (delegatorAddress: string) =>
-          alert(`ignored received request to be delegate from ${delegatorAddress}`),
-        terminateRelationshipWithDelegate: () => alert("terminated relationship with delegate"),
-        terminateRelationshipWithDelegator: () => alert("terminated relationship with delegator"),
+          alert(
+            `ignored received request to be delegate from ${delegatorAddress}`
+          ),
+        terminateRelationshipWithDelegate: () =>
+          alert("terminated relationship with delegate"),
+        terminateRelationshipWithDelegator: () =>
+          alert("terminated relationship with delegator"),
       };
       return (
         <DelegationContext.Provider value={mockDelegationContextState}>

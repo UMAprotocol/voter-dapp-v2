@@ -37,7 +37,9 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
           <Bar value={correctness} />
         </Correctness>
       </CorrectnessTd>
-      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>{formatNumberForDisplay(slashAmount)}</ScoreTd>
+      <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
+        {formatNumberForDisplay(slashAmount)}
+      </ScoreTd>
     </Tr>
   );
 }

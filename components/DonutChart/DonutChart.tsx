@@ -3,7 +3,13 @@ Adapted from: https://codesandbox.io/s/yw3zyr0q2j?file=/src/DonutView.jsx
 */
 import styled, { CSSProperties } from "styled-components";
 import { InputDataT } from "types";
-import { angleForArcLength, computeColors, computePercentages, degreesToRadians, radiansToDegrees } from "./helpers";
+import {
+  angleForArcLength,
+  computeColors,
+  computePercentages,
+  degreesToRadians,
+  radiansToDegrees,
+} from "./helpers";
 
 interface Props {
   data: InputDataT[];
@@ -20,7 +26,12 @@ interface Props {
    */
   gapSize?: number;
 }
-export function DonutChart({ data, size = 200, hole = 160, gapSize = 1 }: Props) {
+export function DonutChart({
+  data,
+  size = 200,
+  hole = 160,
+  gapSize = 1,
+}: Props) {
   /**
    * The center of the viewBox, center of the chart
    */
@@ -40,16 +51,22 @@ export function DonutChart({ data, size = 200, hole = 160, gapSize = 1 }: Props)
   /**
    * Compute the angle offset required to establish the gaps between segments at the inner edge
    */
-  const gapAngleOffsetInner = radiansToDegrees(angleForArcLength(gapSize, radiusInner));
+  const gapAngleOffsetInner = radiansToDegrees(
+    angleForArcLength(gapSize, radiusInner)
+  );
   /**
    * Compute the angle offset required to establish the gaps between segments at the outer edge
    */
-  const gapAngleOffsetOuter = radiansToDegrees(angleForArcLength(gapSize, radiusOuter));
+  const gapAngleOffsetOuter = radiansToDegrees(
+    angleForArcLength(gapSize, radiusOuter)
+  );
   /**
    * The minimum angle that won't be swallowed by the gap offsets at the inner edge.
    * Used to compute the minimum value that won't get swallowed (minimumValue defined below)
    */
-  const minimumAngleDeg = radiansToDegrees(angleForArcLength(gapSize * 2, radiusInner));
+  const minimumAngleDeg = radiansToDegrees(
+    angleForArcLength(gapSize * 2, radiusInner)
+  );
 
   /**
    * The minimum value that won't get swallowed by the gap offsets at the inner edge
@@ -112,7 +129,9 @@ export function DonutChart({ data, size = 200, hole = 160, gapSize = 1 }: Props)
       `A${radiusInner} ${radiusInner} 0 ${largeArc} ${sweepInner} ${x1} ${y1}`,
     ];
 
-    paths.push(<path key={i} fill={color} stroke="none" d={commands.join(" ")} />);
+    paths.push(
+      <path key={i} fill={color} stroke="none" d={commands.join(" ")} />
+    );
 
     return {
       paths,
