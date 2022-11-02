@@ -9,7 +9,7 @@ import { Props as PaginationProps } from "components/Pagination/Pagination";
 import { grey100 } from "constant";
 import { defaultPaginationContextState, PaginationContext, PaginationContextState } from "contexts";
 import { defaultPageStates } from "contexts/PaginationContext";
-import { PageStatesT, PaginateForT } from "types/global";
+import { PageStatesT, PaginateForT } from "types";
 
 interface StoryProps extends PaginationProps {
   pageStates: PageStatesT;

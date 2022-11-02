@@ -1,21 +1,8 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
-import { uniqueId } from "lodash";
-import { ReactNode } from "react";
+import { DropdownItemT, InputDataT, LinkT, UserVoteDataT } from "types";
 
-export type InputDataT = {
-  value: string | number;
-  label: string;
-};
-
-export type LinkT = {
-  href: string;
-  label: string;
-};
-
-export type DropdownItemT = InputDataT & {
-  secondaryLabel?: string;
-};
+export type UniqueKeyT = string;
 
 export type VoteT = PriceRequestT &
   VoteHistoryDataT &
@@ -56,36 +43,6 @@ export type VoteHistoryDataT = {
   voteHistory: VoteHistoryT;
 };
 
-export type UserDataQuery = {
-  users: {
-    annualPercentageReturn: string;
-    countReveals: string;
-    countNoVotes: string;
-    countWrongVotes: string;
-    countCorrectVotes: string;
-    cumulativeCalculatedSlash: string;
-    cumulativeCalculatedSlashPercentage: string;
-    votesSlashed: {
-      request: { id: string };
-      voted: boolean;
-      correctness: boolean;
-      staking: boolean;
-      slashAmount: string;
-    }[];
-  }[];
-};
-
-export type UserDataT = {
-  apr: BigNumber;
-  countReveals: BigNumber;
-  countNoVotes: BigNumber;
-  countWrongVotes: BigNumber;
-  countCorrectVotes: BigNumber;
-  cumulativeCalculatedSlash: BigNumber;
-  cumulativeCalculatedSlashPercentage: BigNumber;
-  voteHistoryByKey: VoteHistoryByKeyT;
-};
-
 export type VoteHistoryT = {
   uniqueKey: UniqueKeyT;
   voted: boolean;
@@ -96,27 +53,7 @@ export type VoteHistoryT = {
 
 export type VoteHistoryByKeyT = Record<UniqueKeyT, VoteHistoryT>;
 
-export type PastVotesQuery = {
-  priceRequests: {
-    id: string;
-    identifier: {
-      id: string;
-    };
-    time: string;
-    price: string;
-    ancillaryData: string;
-    requestIndex: string;
-  }[];
-};
-
 export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
-
-export type UserVoteDataT = {
-  isCommitted: boolean;
-  isRevealed: boolean;
-  encryptedVote: EncryptedVoteT | undefined;
-  decryptedVote: DecryptedVoteT | undefined;
-};
 
 export type VoteMetaDataT = {
   title: string;
@@ -152,8 +89,6 @@ export type ContentfulDataT = {
 
 export type ContentfulDataByKeyT = Record<UniqueKeyT, ContentfulDataT | undefined>;
 
-export type UniqueKeyT = string;
-
 export type EncryptedVoteT = string;
 export type EncryptedVotesByKeyT = Record<UniqueKeyT, EncryptedVoteT | undefined>;
 
@@ -172,12 +107,6 @@ export type VoteTimelineT = {
 };
 
 export type VoteOriginT = "UMA" | "Polymarket";
-
-export type PanelTypeT = "menu" | "claim" | "vote" | "stake" | "history" | "remind" | "delegation" | null;
-
-export type VotePanelContentT = VoteT;
-
-export type PanelContentT = VotePanelContentT | null;
 
 export type SigningKey = {
   publicKey: string;
@@ -198,14 +127,6 @@ export type IdentifierDetailsT = {
   identifier: string;
   summary: string;
   umipLink: UmipLinkT;
-};
-
-export type StakerDetailsT = {
-  stakedBalance: BigNumber;
-  pendingUnstake: BigNumber;
-  canUnstakeTime: Date | undefined;
-  unstakeRequestTime: Date | undefined;
-  delegate: string;
 };
 
 export type FormatVotesToCommit = {
@@ -232,45 +153,3 @@ export type RevealVotes = {
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
-
-export type PaginateForT = "activeVotesPage" | "upcomingVotesPage" | "pastVotesPage" | "voteHistoryPage";
-
-export type PageStateT = {
-  pageNumber: number;
-  resultsPerPage: number;
-};
-
-export type PageStatesT = Record<PaginateForT, PageStateT>;
-
-export type UniqueIdT = ReturnType<typeof uniqueId>;
-
-export type NotificationT = {
-  message: ReactNode;
-  id: UniqueIdT;
-  transactionHash?: string;
-  type: "success" | "error" | "pending";
-};
-
-export type PendingNotificationT = NotificationT;
-
-export type SettledEventT = {
-  message: ReactNode;
-  id: UniqueIdT;
-  pendingId: UniqueIdT;
-};
-
-export type DelegationStatusT =
-  | "no-wallet-connected"
-  | "no-delegation"
-  | "delegate"
-  | "delegator"
-  | "delegate-pending"
-  | "delegator-pending";
-
-export type DelegationEventT = {
-  delegate: string;
-  delegator: string;
-  transactionHash: string;
-};
-
-export type ErrorOriginT = "default" | "vote" | "stake" | "unstake" | "claim" | "delegation" | "storybook";
