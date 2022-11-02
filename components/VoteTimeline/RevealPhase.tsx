@@ -1,5 +1,7 @@
+import { tabletAndUnder } from "constants/breakpoints";
 import { black, red500, white } from "constants/colors";
 import { formatDistanceToNowStrict } from "date-fns";
+import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT } from "types";
@@ -16,7 +18,9 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
   const iconFillColor = isActive ? white : black;
-  const formattedTimeRemaining = formatDistanceToNowStrict(Date.now() + timeRemaining);
+  const formattedTimeRemaining = formatDistanceToNowStrict(
+    Date.now() + timeRemaining
+  );
 
   return (
     <Wrapper
@@ -24,31 +28,41 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
         {
           "--color": textColor,
           "--background-color": backgroundColor,
+          "--position": isActive ? "relative" : "unset",
         } as CSSProperties
       }
     >
-      <RevealIcon
-        style={
-          {
-            "--stroke-color": iconStrokeColor,
-            "--fill-color": iconFillColor,
-          } as CSSProperties
-        }
-      />
+      <RevealIconWrapper>
+        <RevealIcon
+          style={
+            {
+              "--stroke-color": iconStrokeColor,
+              "--fill-color": iconFillColor,
+            } as CSSProperties
+          }
+        />
+      </RevealIconWrapper>
       {isActive ? (
         <Message>
-          Time remaining to reveal votes: <Strong>{formattedTimeRemaining}</Strong>
+          Time remaining to reveal votes:{" "}
+          <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       ) : (
         <Message>
           Reveal phase starts in <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       )}
+      {isActive && (
+        <MobileActiveIndicatorWrapper>
+          <MobileActiveIndicator />
+        </MobileActiveIndicatorWrapper>
+      )}
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
+  position: var(--position);
   height: 50px;
   display: flex;
   align-items: center;
@@ -58,9 +72,23 @@ const Wrapper = styled.div`
   font: var(--text-md);
   color: var(--color);
   background-color: var(--background-color);
+
+  @media ${tabletAndUnder} {
+    height: unset;
+    padding: 15px;
+    gap: 10px;
+    margin: unset;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
 `;
 
 const Message = styled.p``;
+
+const RevealIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
 
 const RevealIcon = styled(Reveal)`
   * {
@@ -71,4 +99,16 @@ const RevealIcon = styled(Reveal)`
 
 const Strong = styled.strong`
   font-weight: 700;
+`;
+
+const MobileActiveIndicatorWrapper = styled.div`
+  display: none;
+  position: absolute;
+  left: 15px;
+  top: -12px;
+  transform: rotate(180deg);
+
+  @media ${tabletAndUnder} {
+    display: block;
+  }
 `;
