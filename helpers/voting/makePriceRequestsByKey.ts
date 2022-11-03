@@ -1,6 +1,5 @@
+import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
-import { decodeHexString } from "helpers";
-import { makeUniqueKeyForVote } from "helpers";
 
 export function makePriceRequestsByKey(
   priceRequests: RawPriceRequestDataT[] | undefined
@@ -33,6 +32,8 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const decodedIdentifier = decodeHexString(identifier);
   const decodedAncillaryData = decodeHexString(ancillaryData);
   const correctVote = priceRequest.correctVote;
+  const participation = priceRequest.participation;
+  const results = priceRequest.results;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
     time,
@@ -49,6 +50,8 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     decodedIdentifier,
     decodedAncillaryData,
     correctVote,
+    participation,
+    results,
     uniqueKey,
   } as PriceRequestT;
 }

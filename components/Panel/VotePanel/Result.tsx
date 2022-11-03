@@ -7,13 +7,24 @@ import {
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";
-import { VoteResultT } from "types";
+import { ParticipationT, ResultsT } from "types";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
-export function Result({ participation, results }: VoteResultT) {
+interface Props {
+  participation: ParticipationT | undefined;
+  results: ResultsT | undefined;
+}
+export function Result({ participation, results }: Props) {
   if (!participation || !results) return null;
 
-  const resultsWithPercentages = computePercentages(results);
+  const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
+    participation;
+
+  const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => ({
+    label: vote.toFixed(),
+    value: tokensVotedWith,
+  }));
+  const resultsWithPercentages = computePercentages(resultsWithLabels);
   const resultsWithColors = computeColors(resultsWithPercentages);
 
   return (
@@ -27,7 +38,7 @@ export function Result({ participation, results }: VoteResultT) {
       <SectionWrapper>
         <ResultSectionWrapper>
           <Chart>
-            <DonutChart data={results} />
+            <DonutChart data={resultsWithLabels} />
           </Chart>
           <Legend>
             {resultsWithColors.map(({ label, value, percent, color }) => (
@@ -49,12 +60,18 @@ export function Result({ participation, results }: VoteResultT) {
         Participation
       </PanelSectionTitle>
       <SectionWrapper>
-        {participation.map(({ label, value }) => (
-          <ParticipationItem key={label}>
-            <span>{label}</span>
-            <Strong>{value}</Strong>
-          </ParticipationItem>
-        ))}
+        <ParticipationItem>
+          <span>Unique commit addresses</span>
+          <Strong>{uniqueCommitAddresses}</Strong>
+        </ParticipationItem>
+        <ParticipationItem>
+          <span>Unique reveal addresses</span>
+          <Strong>{uniqueRevealAddresses}</Strong>
+        </ParticipationItem>
+        <ParticipationItem>
+          <span>Total tokens voted with</span>
+          <Strong>{totalTokensVotedWith}</Strong>
+        </ParticipationItem>
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>

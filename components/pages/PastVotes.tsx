@@ -6,8 +6,8 @@ import {
   PageOuterWrapper,
   Pagination,
   VotesList,
-  VotesTableHeadings,
   VotesListItem,
+  VotesTableHeadings,
 } from "components";
 import { getEntriesForPage } from "helpers";
 import {
