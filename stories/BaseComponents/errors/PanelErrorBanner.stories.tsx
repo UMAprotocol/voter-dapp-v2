@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import { Button, PanelErrorBanner, TextInput } from "components";
-import { desktopPanelWidth } from "constant";
+import { defaultPanelWidth } from "constant";
 import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
 import { ReactNode, useEffect, useState } from "react";
@@ -11,7 +11,7 @@ export default {
   decorators: [
     (Story) => (
       <ErrorProvider>
-        <div style={{ width: desktopPanelWidth }}>
+        <div style={{ width: defaultPanelWidth }}>
           <Story />
         </div>
       </ErrorProvider>

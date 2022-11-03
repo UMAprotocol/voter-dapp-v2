@@ -7,7 +7,6 @@ import {
   desktopBannerHeight,
   desktopHeaderHeight,
   desktopPageWidth,
-  desktopPanelWidth,
   green,
   grey100,
   grey50,
@@ -24,7 +23,6 @@ import {
   mobileBannerHeight,
   mobileHeaderHeight,
   mobilePageWidth,
-  mobilePanelWidth,
   red100,
   red500,
   red500Opacity5,
@@ -252,14 +250,11 @@ a:not([class]) {
     /* Containers */
     --mobile-page-width: ${mobilePageWidth};
     --desktop-page-width: ${desktopPageWidth}px;
-    --mobile-panel-width: ${mobilePanelWidth};
-    --desktop-panel-width: ${desktopPanelWidth}px;
     --mobile-header-height: ${mobileHeaderHeight}px;
     --desktop-header-height: ${desktopHeaderHeight}px;
     --mobile-banner-height: ${mobileBannerHeight}px;
     --desktop-banner-height: ${desktopBannerHeight}px;
     --page-width: var(--desktop-page-width);
-    --panel-width: var(--desktop-panel-width);
     --header-height: var(--desktop-header-height);
     --banner-height: var(--desktop-banner-height);
     @media ${tabletAndUnder} {
@@ -268,7 +263,6 @@ a:not([class]) {
     @media ${mobileAndUnder} {
       --header-height: var(--mobile-header-height);
       --banner-height: var(--mobile-banner-height);
-      --panel-width: var(--mobile-panel-width);
     }
     --full-height: calc(100% - (var(--banner-height) + var(--header-height)));
     /* Shadows */

@@ -126,10 +126,9 @@ export function Details({
 }
 
 const Wrapper = styled.div`
-  --scrollbar-width: 15px;
   margin-top: 20px;
   padding-inline: 30px;
-  max-width: calc(var(--desktop-panel-width) - var(--scrollbar-width));
+  max-width: var(--panel-width);
 `;
 
 const SectionWrapper = styled.div`
