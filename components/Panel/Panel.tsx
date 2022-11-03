@@ -112,6 +112,7 @@ const Content = styled(AnimatedContent)`
   top: 0;
   bottom: 0;
   background: var(--white);
+  overflow-y: scroll;
 `;
 
 const CloseButton = styled.button`

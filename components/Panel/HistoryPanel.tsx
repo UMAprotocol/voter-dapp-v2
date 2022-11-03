@@ -128,7 +128,7 @@ const AprDetailsWrapper = styled.div`
   display: grid;
   place-items: center;
   padding-block: 10px;
-  min-width: 319px;
+  padding-inline: 15px;
   background: var(--white);
   color: var(--black);
   border-radius: 5px;

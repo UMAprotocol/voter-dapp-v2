@@ -1,4 +1,5 @@
 import { Button, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
@@ -129,6 +130,10 @@ const Wrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
   max-width: var(--panel-width);
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const SectionWrapper = styled.div`
