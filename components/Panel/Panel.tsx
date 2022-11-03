@@ -1,9 +1,9 @@
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { black, defaultPanelWidth, mobileMax, white } from "constant";
-import { usePanelContext, useWindowSize } from "hooks";
+import { black, white } from "constant";
+import { usePanelContext, usePanelWidth } from "hooks";
 import Close from "public/assets/icons/close.svg";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties } from "react";
 import { animated, useTransition } from "react-spring";
 import styled from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
@@ -26,17 +26,7 @@ const panelTypeToPanelComponent = {
 
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
-  const { width: pageWidth } = useWindowSize();
-  const [panelWidth, setPanelWidth] = useState(defaultPanelWidth);
-
-  useEffect(() => {
-    if (!pageWidth) return;
-    if (pageWidth <= mobileMax) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-      setPanelWidth(pageWidth - scrollbarWidth);
-    }
-  }, [pageWidth]);
+  const panelWidth = usePanelWidth();
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0, right: -panelWidth },

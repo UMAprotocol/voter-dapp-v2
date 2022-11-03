@@ -27,7 +27,7 @@ export function VotePanel({ content }: Props) {
     results,
   } = content;
 
-  const hasResults = Boolean(results);
+  const hasResults = Boolean(results?.length);
 
   const tabs = [
     {
