@@ -26,7 +26,7 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
         <Text>
           <ReactMarkdown
             components={{
-              a: (props) => <A {...props} />,
+              a: (props) => <A {...props} target="_blank" />,
             }}
           >
             {description}
