@@ -4,6 +4,8 @@ import {
   DonutChart,
   PanelErrorBanner,
 } from "components";
+import { mobileAndUnder } from "constant";
+import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";
@@ -15,6 +17,8 @@ interface Props {
   results: ResultsT | undefined;
 }
 export function Result({ participation, results }: Props) {
+  const panelWidth = usePanelWidth();
+
   if (!participation || !results) return null;
 
   const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
@@ -38,7 +42,11 @@ export function Result({ participation, results }: Props) {
       <SectionWrapper>
         <ResultSectionWrapper>
           <Chart>
-            <DonutChart data={resultsWithLabels} />
+            <DonutChart
+              data={resultsWithLabels}
+              size={panelWidth / 3}
+              hole={panelWidth / 3 - 30}
+            />
           </Chart>
           <Legend>
             {resultsWithColors.map(({ label, value, percent, color }) => (
@@ -81,6 +89,10 @@ export function Result({ participation, results }: Props) {
 const Wrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -95,12 +107,16 @@ const SectionWrapper = styled.div`
   margin-bottom: 30px;
   background: var(--grey-50);
   border-radius: 5px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const ResultSectionWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 60px;
+  gap: 10%;
 `;
 
 const Chart = styled.div``;
@@ -131,6 +147,10 @@ const LegendItemLabel = styled.h3`
 
 const LegendItemData = styled.div`
   font: var(--text-md);
+
+  @media ${mobileAndUnder} {
+    font: var(--text-sm);
+  }
 `;
 
 const VotingIcon = styled(Voting)`
