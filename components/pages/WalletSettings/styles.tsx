@@ -1,4 +1,5 @@
 import { Button } from "components";
+import { mobileAndUnder } from "constant";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -12,6 +13,10 @@ export const BarWrapper = styled.div`
   margin-bottom: 40px;
   background: var(--white);
   border-radius: 5px;
+
+  @media ${mobileAndUnder} {
+    display: grid;
+  }
 `;
 
 export const WalletWrapper = styled.div`

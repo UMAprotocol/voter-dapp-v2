@@ -1,4 +1,5 @@
 import { WalletIcon } from "components";
+import { mobileAndUnder } from "constant";
 import { useUserContext } from "hooks";
 import styled from "styled-components";
 import { AllowedAction } from "./AllowedAction";
@@ -27,18 +28,20 @@ export function ConnectedWallet({ status }: Props) {
           <Address>{address}</Address>
         </WalletWrapper>
 
-        {status === "delegate" ? (
-          <>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming & Restake</AllowedAction>
-          </>
-        ) : (
-          <>
-            <AllowedAction>Staking</AllowedAction>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming Rewards</AllowedAction>
-          </>
-        )}
+        <AllowedActionsWrapper>
+          {status === "delegate" ? (
+            <>
+              <AllowedAction>Voting</AllowedAction>
+              <AllowedAction>Claiming & Restake</AllowedAction>
+            </>
+          ) : (
+            <>
+              <AllowedAction>Staking</AllowedAction>
+              <AllowedAction>Voting</AllowedAction>
+              <AllowedAction>Claiming Rewards</AllowedAction>
+            </>
+          )}
+        </AllowedActionsWrapper>
       </_BarWrapper>
     </>
   );
@@ -46,4 +49,14 @@ export function ConnectedWallet({ status }: Props) {
 
 const _BarWrapper = styled(BarWrapper)`
   padding-right: 160px;
+
+  @media ${mobileAndUnder} {
+    padding-right: 0;
+  }
+`;
+
+const AllowedActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
