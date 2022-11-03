@@ -1,4 +1,4 @@
-import { mobileAndUnder, tabletAndUnder } from "constant";
+import { tabletAndUnder } from "constant";
 import styled from "styled-components";
 
 export const PageOuterWrapper = styled.div`
@@ -11,6 +11,7 @@ export const PageInnerWrapper = styled.div`
   padding-inline: 45px;
   padding-block: 45px;
   margin-inline: auto;
+
   @media ${tabletAndUnder} {
     padding-inline: 0;
     padding-block: 10px;
