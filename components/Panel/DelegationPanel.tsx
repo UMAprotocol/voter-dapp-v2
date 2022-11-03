@@ -5,7 +5,7 @@ import {
   TextInput,
 } from "components";
 import { mobileAndUnder } from "constant";
-import { getAddress, isAddress } from "helpers";
+import { getAddress, isAddress, truncateEthAddress } from "helpers";
 import {
   useDelegationContext,
   useErrorContext,
@@ -105,17 +105,22 @@ export function DelegationPanel() {
         <PanelSectionText>Explanation of voting delegation</PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
-            <OneIcon />
+            <IconWrapper>
+              <OneIcon />
+            </IconWrapper>
             Add secondary wallet address text text
           </StepWrapper>
           <StepWrapper>
-            <TwoIcon />
+            <IconWrapper>
+              <TwoIcon />
+            </IconWrapper>
             Request has to be accepted in secondary wallet text text
           </StepWrapper>
           <StepWrapper>
-            <ThreeIcon />
-            You now have a secondary delegation wallet where you can vote text
-            text
+            <IconWrapper>
+              <ThreeIcon />
+            </IconWrapper>
+            You can now vote with your delegate wallet
           </StepWrapper>
         </StepsWrapper>
         {isLoading() ? (
@@ -144,10 +149,12 @@ export function DelegationPanel() {
               pendingRequests.map(({ delegate, transactionHash }) => (
                 <PendingRequestWrapper key={transactionHash}>
                   <AddressWrapper>
-                    <PendingRequestIcon />
+                    <IconWrapper>
+                      <PendingRequestIcon />
+                    </IconWrapper>
                     <PendingRequestDetailsWrapper>
                       <PendingRequestText>
-                        Request sent to {delegate}
+                        Request sent to {truncateEthAddress(delegate)}
                       </PendingRequestText>
                       <PendingRequestText>
                         Waiting for approval
@@ -261,4 +268,9 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

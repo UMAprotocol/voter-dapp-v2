@@ -48,7 +48,9 @@ export function HowItWorks() {
         <InfoBar
           label={
             <>
-              <One />
+              <IconWrapper>
+                <One />
+              </IconWrapper>
               Stake UMA
             </>
           }
@@ -79,7 +81,9 @@ export function HowItWorks() {
         <InfoBar
           label={
             <>
-              <Two />
+              <IconWrapper>
+                <Two />
+              </IconWrapper>
               Vote
             </>
           }
@@ -111,7 +115,9 @@ export function HowItWorks() {
         <InfoBar
           label={
             <>
-              <Three />
+              <IconWrapper>
+                <Three />
+              </IconWrapper>
               Get rewards
             </>
           }
@@ -161,4 +167,10 @@ const Title = styled.h1`
 
 const Strong = styled.strong`
   font-weight: 700;
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+  padding-top: 2px;
 `;

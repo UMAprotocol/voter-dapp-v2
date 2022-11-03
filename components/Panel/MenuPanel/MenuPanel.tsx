@@ -148,7 +148,9 @@ export function MenuPanel() {
                 {pendingRequests.map(
                   ({ transactionHash, delegate, delegator }) => (
                     <PendingRequestWrapper key={transactionHash}>
-                      <PendingRequestIcon />
+                      <IconWrapper>
+                        <PendingRequestIcon />
+                      </IconWrapper>
                       <PendingRequestText>
                         <NextLink href="/wallet-settings" passHref>
                           <A>{pendingRequestLinkText}</A>
@@ -277,4 +279,9 @@ const ConnectedIndicator = styled.span`
 
 const PendingRequestIcon = styled(Time)`
   margin-top: 2px;
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

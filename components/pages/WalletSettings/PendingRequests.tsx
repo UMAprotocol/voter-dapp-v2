@@ -81,7 +81,9 @@ export function PendingRequests({
           }
         >
           <AddressWrapper>
-            <PendingRequestIcon />
+            <IconWrapper>
+              <PendingRequestIcon />
+            </IconWrapper>
             <div>
               {isReceivedRequestToBeDelegate && (
                 <Text>
@@ -149,4 +151,9 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

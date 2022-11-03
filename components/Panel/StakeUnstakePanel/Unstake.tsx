@@ -57,15 +57,21 @@ export function Unstake({
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
         <UnstakeStep>
-          <OneIcon />
+          <IconWrapper>
+            <OneIcon />
+          </IconWrapper>
           Unstake tokens
         </UnstakeStep>
         <UnstakeStep>
-          <TwoIcon />
+          <IconWrapper>
+            <TwoIcon />
+          </IconWrapper>
           Cool-off period of {unstakeCoolDownFormatted}
         </UnstakeStep>
         <UnstakeStep>
-          <ThreeIcon />
+          <IconWrapper>
+            <ThreeIcon />
+          </IconWrapper>
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
@@ -170,4 +176,9 @@ const ThreeIcon = styled(Three)`
   path {
     fill: var(--white);
   }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

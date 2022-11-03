@@ -35,7 +35,9 @@ export function Header() {
         <WalletAndMenuWrapper>
           {showDelegationNotification && (
             <DelegationNotificationWrapper>
-              <DelegationNotificationIcon />
+              <DelegationNotificationIconWrapper>
+                <DelegationNotificationIcon />
+              </DelegationNotificationIconWrapper>
               <DelegationNotificationText>
                 <NextLink href="/wallet-settings" passHref>
                   <A>Received request</A>
@@ -144,4 +146,9 @@ const DelegationNotificationIcon = styled(Time)`
 const A = styled.a`
   color: var(--red-500);
   text-decoration: underline;
+`;
+
+const DelegationNotificationIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;
