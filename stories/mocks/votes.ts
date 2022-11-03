@@ -5,6 +5,7 @@ import { VoteT } from "types";
 
 export const voteWithoutUserVote = {
   isCommitted: false,
+  commitHash: undefined,
   isRolled: false,
   title: "SuperUMAn DAO KPI Options funding proposal",
   origin: "UMA" as const,
@@ -45,6 +46,7 @@ export const voteWithoutUserVote = {
   discordLink: "https://www.todo.com",
   isGovernance: false,
   isRevealed: false,
+  revealHash: undefined,
   voteHistory: {
     uniqueKey: "0x1234567890",
     voted: false,
@@ -70,6 +72,9 @@ export const voteWithUserVote = {
 export const voteCommitted = {
   ...voteWithUserVote,
   isCommitted: true,
+  commitHash:
+    "0xb7013512cb5f4e59fd08c299d8534373457f0f02aeb294e4f61611bfc8f43286",
+  revealHash: undefined,
 };
 
 export const voteCommittedButNotRevealed = { ...voteCommitted };
@@ -77,6 +82,10 @@ export const voteCommittedButNotRevealed = { ...voteCommitted };
 export const voteRevealed = {
   ...voteCommittedButNotRevealed,
   isRevealed: true,
+  revealHash:
+    "0xb7013512cb5f4e59fd08c299d8534373457f0f02aeb294e4f61611bfc8f43286",
+  commitHash:
+    "0xb7013512cb5f4e59fd08c299d8534373457f0f02aeb294e4f61611bfc8f43286",
 };
 
 export const voteWithCorrectVoteWithoutUserVote = {

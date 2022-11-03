@@ -206,8 +206,10 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       return {
         ...vote,
         uniqueKey,
-        isCommitted: committedVotes[uniqueKey] ?? false,
-        isRevealed: revealedVotes[uniqueKey] ?? false,
+        isCommitted: committedVotes[uniqueKey] ? true : false,
+        commitHash: committedVotes[uniqueKey],
+        isRevealed: revealedVotes[uniqueKey] ? true : false,
+        revealHash: revealedVotes[uniqueKey],
         encryptedVote: encryptedVotes[uniqueKey],
         decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],

@@ -16,15 +16,16 @@ export async function getCommittedVotes(
     null
   );
   const result = await votingContract.queryFilter(filter);
-  const eventData = result
-    ?.map(({ args }) => args)
-    .filter((args) => args.roundId.toNumber() === roundId);
+  const eventData = result?.filter(
+    ({ args }) => args.roundId.toNumber() === roundId
+  );
   const committedVotes: VoteExistsByKeyT = {};
-  eventData?.forEach(({ identifier, time, ancillaryData }) => {
+  eventData?.forEach(({ args, transactionHash }) => {
+    const { identifier, time, ancillaryData } = args;
     const decodedIdentifier = decodeHexString(identifier);
     committedVotes[
       makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
-    ] = true;
+    ] = transactionHash;
   });
   return committedVotes;
 }
