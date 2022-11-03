@@ -5,10 +5,10 @@ import Doc from "public/assets/icons/doc.svg";
 import Link from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Vote from "public/assets/icons/voting.svg";
+import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
-import ReactMarkdown from "react-markdown";
 
 type Props = Pick<VoteT, "description" | "decodedAncillaryData" | "options" | "timeAsDate" | "links" | "discordLink">;
 export function Details({ description, decodedAncillaryData, options, timeAsDate, links, discordLink }: Props) {
@@ -24,7 +24,13 @@ export function Details({ description, decodedAncillaryData, options, timeAsDate
           Description
         </PanelSectionTitle>
         <Text>
-          <ReactMarkdown>{description}</ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              a: (props) => <A {...props} />,
+            }}
+          >
+            {description}
+          </ReactMarkdown>
         </Text>
       </SectionWrapper>
       <SectionWrapper>
@@ -191,4 +197,12 @@ const DiscordLinkContent = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`;
+
+const A = styled.a`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
