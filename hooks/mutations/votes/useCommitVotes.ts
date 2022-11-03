@@ -11,16 +11,15 @@ export function useCommitVotes() {
   const onError = useHandleError();
 
   const { mutate, isLoading } = useMutation(commitVotes, {
-    onSuccess: (_data, { formattedVotes }) => {
-      console.log({ _data });
+    onSuccess: (data, { formattedVotes }) => {
       queryClient.setQueryData<VoteExistsByKeyT>(
         [committedVotesKey, address, roundId],
         (oldCommittedVotes) => {
           const newCommittedVotes = { ...oldCommittedVotes };
 
           for (const { uniqueKey } of formattedVotes) {
-            if (_data?.transactionHash) {
-              newCommittedVotes[uniqueKey] = _data.transactionHash;
+            if (data?.transactionHash) {
+              newCommittedVotes[uniqueKey] = data.transactionHash;
             }
           }
 
