@@ -4,6 +4,7 @@ export const PanelWrapper = styled.div`
   min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  overflow-y: scroll;
 `;
 
 export const PanelSectionTitle = styled.h2`
