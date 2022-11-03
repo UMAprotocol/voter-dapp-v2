@@ -85,7 +85,9 @@ export function Unstake({
             label="Unstake"
             onClick={() => requestUnstake(unstakeAmount)}
             width="100%"
-            disabled={!canUnstake(stakedBalance, pendingUnstake)}
+            disabled={
+              !canUnstake(stakedBalance, pendingUnstake) || unstakeAmount === ""
+            }
           />
         </>
       )}
