@@ -5,6 +5,7 @@ import Doc from "public/assets/icons/doc.svg";
 import Link from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Vote from "public/assets/icons/voting.svg";
+import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
@@ -28,8 +29,6 @@ export function Details({
 }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
-  const descriptionParagraphs = description?.split("\n");
-
   return (
     <Wrapper>
       <SectionWrapper>
@@ -39,9 +38,15 @@ export function Details({
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
-        {descriptionParagraphs.map((paragraph, i) => (
-          <Text key={`${paragraph}-${i}`}>{paragraph}</Text>
-        ))}
+        <Text>
+          <ReactMarkdown
+            components={{
+              a: (props) => <A {...props} target="_blank" />,
+            }}
+          >
+            {description}
+          </ReactMarkdown>
+        </Text>
       </SectionWrapper>
       <SectionWrapper>
         <PanelSectionTitle>
@@ -50,7 +55,7 @@ export function Details({
           </IconWrapper>{" "}
           Decoded ancillary data
         </PanelSectionTitle>
-        <Text>{decodedAncillaryData}</Text>
+        <Text> {decodedAncillaryData} </Text>
       </SectionWrapper>
       {optionLabels && (
         <SectionWrapper>
@@ -207,4 +212,12 @@ const DiscordLinkContent = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`;
+
+const A = styled.a`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
