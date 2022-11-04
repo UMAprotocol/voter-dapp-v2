@@ -57,7 +57,7 @@ export function ClaimPanel() {
           <Rewards>
             <Strong>
               {isLoading() ? (
-                <LoadingSkeleton variant="white" width={150} height={32} />
+                <LoadingSkeleton variant="white" width={100} height={32} />
               ) : (
                 formatNumberForDisplay(outstandingRewards)
               )}

@@ -34,7 +34,7 @@ export function HistoryPanel() {
           <AprHeader>Your return</AprHeader>
           <Apr>
             {isLoading() ? (
-              <LoadingSkeleton variant="white" width={150} height={35} />
+              <LoadingSkeleton variant="white" width={100} height={35} />
             ) : (
               `${formatNumberForDisplay(apr)}%`
             )}
