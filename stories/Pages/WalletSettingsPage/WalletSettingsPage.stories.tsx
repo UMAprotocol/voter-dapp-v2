@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Meta, Story } from "@storybook/react";
-import { grey100 } from "constant";
 import {
   defaultDelegationContextState,
   defaultUserContextState,
@@ -35,19 +34,12 @@ interface StoryProps extends DelegationContextState, UserContextState {
 export default {
   title: "Pages/WalletSettingsPage/WalletSettingsPage",
   component: WalletSettingsPage,
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile1",
+    },
+  },
   decorators: [
-    (Story) => (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          padding: 50,
-          backgroundColor: grey100,
-        }}
-      >
-        <Story />
-      </div>
-    ),
     (Story, { args }) => {
       const mockUserContextState: UserContextState = {
         ...defaultUserContextState,

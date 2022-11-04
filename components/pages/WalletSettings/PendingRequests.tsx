@@ -1,3 +1,5 @@
+import { mobileAndUnder } from "constant";
+import { truncateEthAddress } from "helpers";
 import NextLink from "next/link";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled, { CSSProperties } from "styled-components";
@@ -70,7 +72,7 @@ export function PendingRequests({
         requests
       </Text>
       {_pendingRequests?.map(({ delegate, delegator, transactionHash }) => (
-        <PendingRequestWrapper
+        <BarWrapper
           key={transactionHash}
           style={
             {
@@ -87,25 +89,29 @@ export function PendingRequests({
             <div>
               {isReceivedRequestToBeDelegate && (
                 <Text>
-                  Account {delegator} wants to delegate voting to your address.
+                  Account {truncateEthAddress(delegator)} wants to delegate
+                  voting to your address.
                 </Text>
               )}
               {isSentRequestToBeDelegate && (
                 <Text>
-                  You requested {delegate} to be your delegated voting address.
+                  You requested {truncateEthAddress(delegate)} to be your
+                  delegated voting address.
                 </Text>
               )}
-              <Text>
-                Waiting for approval |{" "}
-                <NextLink
-                  href={`https://goerli.etherscan.io/tx/${transactionHash}`}
-                  passHref
-                >
-                  <A target="_blank">View Transaction</A>
-                </NextLink>
-              </Text>
             </div>
           </AddressWrapper>
+          <WaitingForApprovalWrapper>
+            <Text>
+              Waiting for approval |{" "}
+              <NextLink
+                href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+                passHref
+              >
+                <A target="_blank">View Transaction</A>
+              </NextLink>
+            </Text>
+          </WaitingForApprovalWrapper>
           <ButtonsWrapper>
             {isReceivedRequestToBeDelegate && (
               <BarButtonPrimary
@@ -126,19 +132,19 @@ export function PendingRequests({
               />
             )}
           </ButtonsWrapper>
-        </PendingRequestWrapper>
+        </BarWrapper>
       ))}
     </>
   );
 }
 
-const PendingRequestWrapper = styled(BarWrapper)`
-  padding-right: var(--padding-right);
-`;
-
 const ButtonsWrapper = styled.div`
   display: flex;
   gap: 15px;
+
+  @media ${mobileAndUnder} {
+    display: grid;
+  }
 `;
 
 const PendingRequestIcon = styled(Time)`
@@ -157,3 +163,5 @@ const IconWrapper = styled.div`
   width: 24px;
   height: 24px;
 `;
+
+const WaitingForApprovalWrapper = styled.div``;

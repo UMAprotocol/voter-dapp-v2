@@ -1,12 +1,14 @@
 import { Button } from "components";
-import { mobileAndUnder } from "constant";
+import { mobileAndUnder, tabletAndUnder } from "constant";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
 export const BarWrapper = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
   align-items: center;
-  justify-content: space-between;
   height: 80px;
   padding-inline: 25px;
   margin-top: 20px;
@@ -14,8 +16,25 @@ export const BarWrapper = styled.div`
   background: var(--white);
   border-radius: 5px;
 
+  > :last-child {
+    justify-self: right;
+  }
+
+  @media ${tabletAndUnder} {
+    grid-auto-columns: auto;
+  }
+
   @media ${mobileAndUnder} {
-    display: grid;
+    height: auto;
+    grid-auto-columns: unset;
+    grid-auto-flow: row;
+    grid-auto-rows: auto;
+    gap: 10px;
+    padding: 15px;
+
+    > :last-child {
+      justify-self: unset;
+    }
   }
 `;
 
@@ -29,6 +48,18 @@ export const Address = styled.p`
   font: var(--text-sm);
   margin-top: 12px;
   margin-bottom: 15px;
+
+  @media ${tabletAndUnder} {
+    display: none;
+  }
+`;
+
+export const TruncatedAddress = styled(Address)`
+  display: none;
+
+  @media ${tabletAndUnder} {
+    display: block;
+  }
 `;
 
 export const Header = styled.h1`
