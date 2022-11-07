@@ -224,7 +224,8 @@ export function VotesListItem({
             <LoadingSkeleton width={100} height={22} />
           ) : (
             <>
-              <VoteLabel>Your vote</VoteLabel> {getYourVote()}
+              <VoteLabel>Your vote</VoteLabel>{" "}
+              <VoteText voteText={getYourVote()} />
             </>
           )}
         </YourVote>
@@ -235,7 +236,8 @@ export function VotesListItem({
             <LoadingSkeleton width={100} height={22} />
           ) : (
             <>
-              <VoteLabel>Correct vote</VoteLabel> {getCorrectVote()}
+              <VoteLabel>Correct vote</VoteLabel>{" "}
+              <VoteText voteText={getCorrectVote()} />
             </>
           )}
         </CorrectVote>
@@ -276,6 +278,28 @@ export function VotesListItem({
     </Wrapper>
   );
 }
+
+function VoteText({ voteText }: { voteText: string | undefined }) {
+  if (!voteText) return <></>;
+
+  const maxVoteTextLength = 10;
+  if (voteText.length > maxVoteTextLength) {
+    return (
+      <Tooltip label={voteText}>
+        <VoteTextWrapper>
+          {voteText.slice(0, maxVoteTextLength)}...
+        </VoteTextWrapper>
+      </Tooltip>
+    );
+  }
+
+  return <span>{voteText}</span>;
+}
+
+const VoteTextWrapper = styled.span`
+  text-decoration: underline;
+  cursor: pointer;
+`;
 
 const Wrapper = styled.tr`
   background: var(--white);

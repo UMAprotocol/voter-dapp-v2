@@ -57,7 +57,8 @@ export const voteWithoutUserVote = {
 export const userVote = {
   encryptedVote: "0x0",
   decryptedVote: {
-    price: "0",
+    price:
+      "12341234123412354123512351235125123512351235129254252512521356126161234623462362346272",
     salt: "0",
   },
 };
