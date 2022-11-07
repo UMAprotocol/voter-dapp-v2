@@ -31,7 +31,17 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const ancillaryData = priceRequest.ancillaryData;
   const voteNumber = priceRequest.priceRequestIndex;
   const decodedIdentifier = decodeHexString(identifier);
-  const decodedAncillaryData = decodeHexString(ancillaryData);
+  let decodedAncillaryData = ancillaryData;
+  try {
+    // this will fail expecially with data from previous contracts. So catch and warn.
+    decodedAncillaryData = decodeHexString(ancillaryData);
+  } catch (err) {
+    console.warn(
+      "unable to format price request, ancillary data decode failed:",
+      err,
+      priceRequest
+    );
+  }
   const correctVote = priceRequest.correctVote;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
