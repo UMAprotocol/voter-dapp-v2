@@ -55,14 +55,9 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <Strong>
-              {isLoading() ? (
-                <LoadingSkeleton variant="white" width={100} height={32} />
-              ) : (
-                formatNumberForDisplay(outstandingRewards)
-              )}
-            </Strong>{" "}
-            UMA
+            <LoadingSkeleton isLoading={isLoading()} variant="white">
+              <Strong>{formatNumberForDisplay(outstandingRewards)} UMA</Strong>
+            </LoadingSkeleton>{" "}
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

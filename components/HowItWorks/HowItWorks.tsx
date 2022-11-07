@@ -57,21 +57,13 @@ export function HowItWorks() {
           content={
             <>
               You are staking{" "}
-              <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatNumberForDisplay(stakedBalance)
-                )}
-              </Strong>{" "}
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <Strong>{formatNumberForDisplay(stakedBalance)}</Strong>
+              </LoadingSkeleton>{" "}
               UMA tokens of{" "}
-              <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatNumberForDisplay(totalTokens())
-                )}
-              </Strong>{" "}
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <Strong>{formatNumberForDisplay(totalTokens())}</Strong>
+              </LoadingSkeleton>{" "}
               total tokens.
             </>
           }
@@ -90,23 +82,16 @@ export function HowItWorks() {
           content={
             <>
               You have voted in{" "}
-              <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatNumberForDisplay(countReveals, { decimals: 0 })
-                )}
-              </Strong>{" "}
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <Strong>
+                  {formatNumberForDisplay(countReveals, { decimals: 0 })}
+                </Strong>
+              </LoadingSkeleton>{" "}
               vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}
               , and are earning{" "}
-              <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatNumberForDisplay(apr)
-                )}
-                % APR
-              </Strong>
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <Strong>{formatNumberForDisplay(apr, { decimals: 1 })}%</Strong>
+              </LoadingSkeleton>{" "}
             </>
           }
           actionLabel="Vote history"
@@ -124,14 +109,9 @@ export function HowItWorks() {
           content={
             <>
               You have{" "}
-              <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} />
-                ) : (
-                  formatNumberForDisplay(outstandingRewards)
-                )}{" "}
-                UMA
-              </Strong>{" "}
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <Strong>{formatNumberForDisplay(outstandingRewards)}</Strong>
+              </LoadingSkeleton>{" "}
               in unclaimed rewards
             </>
           }

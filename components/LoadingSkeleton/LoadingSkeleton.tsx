@@ -5,8 +5,8 @@ import styled, { CSSProperties, keyframes } from "styled-components";
 interface Props {
   children: JSX.Element;
   isLoading: boolean;
-  height?: number;
-  width?: number;
+  height?: CSSProperties["height"];
+  width?: CSSProperties["width"];
   variant?: "grey" | "white";
 }
 export function LoadingSkeleton({
@@ -23,13 +23,19 @@ export function LoadingSkeleton({
   const style = {
     "--opaque-color": opaqueColor,
     "--semi-transparent-color": semiTransparentColor,
-    "--width": width ? `${width}px` : undefined,
-    "--height": height ? `${height}px` : undefined,
+    "--width": getDimension(width),
+    "--height": getDimension(height),
   } as CSSProperties;
 
   const placeholder = cloneElement(children, {
-    children: <Placeholder>0</Placeholder>,
+    children: <Placeholder>INVISIBLE</Placeholder>,
   });
+
+  function getDimension(dimension: number | string | undefined) {
+    if (dimension === undefined) return;
+
+    return typeof dimension === "number" ? `${dimension}px` : dimension;
+  }
 
   return isLoading ? (
     <Wrapper style={style}>{placeholder}</Wrapper>

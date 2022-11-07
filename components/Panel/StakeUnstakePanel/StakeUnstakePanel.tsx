@@ -117,23 +117,19 @@ export function StakeUnstakePanel() {
           <Balances>
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
-              <BalanceAmount>
-                {isLoading() ? (
-                  <LoadingSkeleton variant="white" width={100} height={45} />
-                ) : (
-                  formatNumberForDisplay(stakedBalance)
-                )}
-              </BalanceAmount>
+              <LoadingSkeleton isLoading={isLoading()} variant="white">
+                <BalanceAmount>
+                  {formatNumberForDisplay(stakedBalance)}
+                </BalanceAmount>
+              </LoadingSkeleton>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
-              <BalanceAmount>
-                {isLoading() ? (
-                  <LoadingSkeleton variant="white" width={100} height={45} />
-                ) : (
-                  formatNumberForDisplay(unstakedBalance)
-                )}
-              </BalanceAmount>
+              <LoadingSkeleton isLoading={isLoading()} variant="white">
+                <BalanceAmount>
+                  {formatNumberForDisplay(unstakedBalance)}
+                </BalanceAmount>
+              </LoadingSkeleton>
             </Balance>
           </Balances>
           {showCooldownTimer && (

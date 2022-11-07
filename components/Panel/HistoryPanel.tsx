@@ -32,41 +32,34 @@ export function HistoryPanel() {
       <SectionsWrapper>
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
-          <Apr>
-            {isLoading() ? (
-              <LoadingSkeleton variant="white" width={100} height={35} />
-            ) : (
-              `${formatNumberForDisplay(apr)}%`
-            )}
-          </Apr>
+          <LoadingSkeleton isLoading={isLoading()} variant="white" width={100}>
+            <Apr>{`${formatNumberForDisplay(apr)}%`}</Apr>
+          </LoadingSkeleton>
           <AprDetailsWrapper>
             <Text>
-              <>
-                Based on participation score ={" "}
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} height={15} />
-                ) : (
-                  formatNumberForDisplay(cumulativeCalculatedSlash)
-                )}
-              </>
+              <LoadingSkeleton
+                isLoading={isLoading()}
+                variant="white"
+                width={60}
+              >
+                <>{formatNumberForDisplay(cumulativeCalculatedSlash)}</>
+              </LoadingSkeleton>
             </Text>
             <Text>
               Your bonus/penalty ={" "}
-              <BonusOrPenalty
-                style={
-                  {
-                    "--color": bonusPenaltyHighlightColor,
-                  } as CSSProperties
-                }
-              >
-                {isLoading() ? (
-                  <LoadingSkeleton width={60} height={15} />
-                ) : (
-                  `${formatNumberForDisplay(
+              <LoadingSkeleton isLoading={isLoading()} width={60}>
+                <BonusOrPenalty
+                  style={
+                    {
+                      "--color": bonusPenaltyHighlightColor,
+                    } as CSSProperties
+                  }
+                >
+                  {`${formatNumberForDisplay(
                     cumulativeCalculatedSlashPercentage
-                  )}%`
-                )}
-              </BonusOrPenalty>
+                  )}%`}
+                </BonusOrPenalty>
+              </LoadingSkeleton>
             </Text>
           </AprDetailsWrapper>
         </AprWrapper>

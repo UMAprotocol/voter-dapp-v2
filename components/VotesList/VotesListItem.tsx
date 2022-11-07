@@ -220,35 +220,25 @@ export function VotesListItem({
       ) : null}
       {showYourVote() ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
-          {isFetching ? (
-            <LoadingSkeleton width={100} height={22} />
-          ) : (
-            <>
-              <VoteLabel>Your vote</VoteLabel>{" "}
-              <VoteText voteText={getYourVote()} />
-            </>
-          )}
+          <VoteLabel>Your vote</VoteLabel>{" "}
+          <LoadingSkeleton isLoading={isFetching} width={100}>
+            <VoteText voteText={getYourVote()} />
+          </LoadingSkeleton>
         </YourVote>
       ) : null}
       {showCorrectVote() ? (
         <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
-          {isFetching ? (
-            <LoadingSkeleton width={100} height={22} />
-          ) : (
-            <>
-              <VoteLabel>Correct vote</VoteLabel>{" "}
-              <VoteText voteText={getCorrectVote()} />
-            </>
-          )}
+          <VoteLabel>Correct vote</VoteLabel>{" "}
+          <LoadingSkeleton isLoading={isFetching} width={100}>
+            <VoteText voteText={getCorrectVote()} />
+          </LoadingSkeleton>
         </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {isFetching ? (
-              <LoadingSkeleton width={100} height={22} />
-            ) : (
+            <LoadingSkeleton isLoading={isFetching} width={100}>
               <>
                 <DotIcon
                   style={
@@ -259,7 +249,7 @@ export function VotesListItem({
                 />{" "}
                 {getCommittedOrRevealed()}
               </>
-            )}
+            </LoadingSkeleton>
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}
