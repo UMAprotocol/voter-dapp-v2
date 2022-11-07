@@ -17,8 +17,8 @@ export function Vote() {
       <Banner>
         Stake, vote &amp; earn up to <Strong>30% APY</Strong>
       </Banner>
-      <HowItWorks />
       <PageOuterWrapper>
+        <HowItWorks />
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
