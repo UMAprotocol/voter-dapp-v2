@@ -6,12 +6,14 @@ import { removeDelegate } from "web3";
 
 export function useCancelSentRequestToBeDelegate() {
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError, clearErrors } = useHandleError();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation(removeDelegate, {
     onError,
     onSuccess: () => {
+      clearErrors();
+
       queryClient.setQueryData<DelegationEventT[]>(
         [sentRequestsToBeDelegateKey, address],
         () => {

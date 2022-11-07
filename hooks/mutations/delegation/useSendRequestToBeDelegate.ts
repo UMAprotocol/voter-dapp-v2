@@ -6,12 +6,14 @@ import { setDelegate } from "web3";
 
 export function useSendRequestToBeDelegate(errorOrigin?: ErrorOriginT) {
   const { address } = useUserContext();
-  const onError = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError(errorOrigin);
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation(setDelegate, {
     onError,
     onSuccess: ({ transactionHash }, { delegateAddress }) => {
+      clearErrors();
+
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
         (oldStakerDetails) => {
@@ -23,6 +25,7 @@ export function useSendRequestToBeDelegate(errorOrigin?: ErrorOriginT) {
           };
         }
       );
+
       queryClient.setQueryData<DelegationEventT[]>(
         [sentRequestsToBeDelegateKey, address],
         () => [

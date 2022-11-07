@@ -38,7 +38,7 @@ export function Votes() {
   const { voting } = useContractsContext();
   const { getDelegationStatus } = useDelegationContext();
   const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
-  const handleError = useHandleError();
+  const { onError, clearErrors } = useHandleError(undefined, false);
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
@@ -71,13 +71,14 @@ export function Votes() {
   }
 
   function revealVotes() {
+    clearErrors();
     const cannotRevealWhenDelegatorHasCommittedErrorMessage =
       "Cannot reveal votes with delegate wallet when delegator has committed votes";
     if (
       getDelegationStatus() === "delegate" &&
       Object.keys(committedVotesForDelegator).length > 0
     ) {
-      handleError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
+      onError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
     }
 
     revealVotesMutation({

@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { outstandingRewardsKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
-import { formatTransactionError } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT } from "types";
 import { withdrawRewards } from "web3";
@@ -9,10 +8,13 @@ import { withdrawRewards } from "web3";
 export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError(errorOrigin);
 
   const { mutate, isLoading } = useMutation(withdrawRewards, {
+    onError,
     onSuccess: () => {
+      clearErrors();
+
       queryClient.setQueryData<BigNumber>(
         [unstakedBalanceKey, address],
         (oldUnstakedBalance) => {
@@ -36,9 +38,6 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
         [outstandingRewardsKey, address],
         () => BigNumber.from(0)
       );
-    },
-    onError(error: unknown) {
-      onError(formatTransactionError(error));
     },
   });
 
