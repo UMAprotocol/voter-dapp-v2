@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   Button,
   Dropdown,
@@ -50,7 +51,9 @@ export function VotesListItem({
     origin,
     options,
     isCommitted,
+    commitHash,
     isRevealed,
+    revealHash,
     decryptedVote,
     correctVote,
     voteNumber,
@@ -162,6 +165,27 @@ export function VotesListItem({
     return "transparent";
   }
 
+  function getRelevantTransactionLink(): ReactNode | string {
+    if (phase === "commit") {
+      return commitHash ? (
+        <Button
+          href={`https://goerli.etherscan.io/tx/${commitHash}`}
+          label={getCommittedOrRevealed()}
+        />
+      ) : (
+        getCommittedOrRevealed()
+      );
+    }
+    return revealHash ? (
+      <Button
+        href={`https://goerli.etherscan.io/tx/${revealHash}`}
+        label={getCommittedOrRevealed()}
+      />
+    ) : (
+      getCommittedOrRevealed()
+    );
+  }
+
   return (
     <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
       <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
@@ -247,7 +271,7 @@ export function VotesListItem({
                     } as CSSProperties
                   }
                 />{" "}
-                {getCommittedOrRevealed()}
+                {getRelevantTransactionLink()}
               </>
             </LoadingSkeleton>
           </VoteStatus>

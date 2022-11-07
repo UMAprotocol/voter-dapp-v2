@@ -121,7 +121,7 @@ export type DecryptedVotesByKeyT = Record<
   DecryptedVoteT | undefined
 >;
 
-export type VoteExistsByKeyT = Record<UniqueKeyT, boolean | undefined>;
+export type VoteExistsByKeyT = Record<UniqueKeyT, string | undefined>;
 
 export type SelectedVotesByKeyT = Record<UniqueKeyT, string | undefined>;
 

@@ -14,7 +14,9 @@ export type UserDataT = {
 
 export type UserVoteDataT = {
   isCommitted: boolean;
+  commitHash: string | undefined;
   isRevealed: boolean;
+  revealHash: string | undefined;
   encryptedVote: EncryptedVoteT | undefined;
   decryptedVote: DecryptedVoteT | undefined;
 };
