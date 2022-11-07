@@ -48,7 +48,7 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
         </Message>
       ) : (
         <Message>
-          Reveal phase starts in <Strong>{formattedTimeRemaining}</Strong>
+          Reveal phase starts in: <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       )}
       {isActive && (

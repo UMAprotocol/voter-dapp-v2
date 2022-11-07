@@ -59,7 +59,7 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
           </Message>
         ) : (
           <Message>
-            Commit phase starts in <Strong>{formattedTimeRemaining}</Strong>
+            Commit phase starts in: <Strong>{formattedTimeRemaining}</Strong>
           </Message>
         )}
       </InnerWrapper>
