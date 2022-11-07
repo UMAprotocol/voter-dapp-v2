@@ -32,7 +32,7 @@ const Wrapper = styled.div`
 
   @media ${tabletAndUnder} {
     gap: 5px;
-    height: calc(85px + 40px + 2 * 5px);
+    height: auto;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, 1fr);
