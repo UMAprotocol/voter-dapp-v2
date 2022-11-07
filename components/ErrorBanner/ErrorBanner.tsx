@@ -51,7 +51,7 @@ const ErrorMessageWrapper = styled.div`
 `;
 
 const ErrorMessage = styled.p`
-  max-width: 75vw;
+  max-width: min(75vw, 500px);
   font: var(--text-md);
 
   @media ${mobileAndUnder} {
