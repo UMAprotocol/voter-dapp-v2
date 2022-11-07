@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constant";
 import { useErrorContext } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
@@ -31,6 +32,7 @@ export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
 const Wrapper = styled.div`
   background: var(--red-500);
   min-height: 60px;
+  width: 100vw;
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -49,8 +51,12 @@ const ErrorMessageWrapper = styled.div`
 `;
 
 const ErrorMessage = styled.p`
-  max-width: 500px;
+  max-width: 75vw;
   font: var(--text-md);
+
+  @media ${mobileAndUnder} {
+    font: var(--text-xs);
+  }
 `;
 
 const IconWrapper = styled.div`
