@@ -1,4 +1,4 @@
-import { black, red500, tabletAndUnder, white } from "constant";
+import { black, grey100, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Commit from "public/assets/icons/commit.svg";
@@ -26,6 +26,10 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
       style={
         {
           "--position": isActive ? "relative" : "unset",
+          "--border-color":
+            status === "past" || status === "upcoming"
+              ? grey100
+              : "transparent",
         } as CSSProperties
       }
     >
@@ -70,6 +74,7 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
 
 const OuterWrapper = styled.div`
   position: var(--position);
+  border-bottom: 1px solid var(--border-color);
 `;
 
 const InnerWrapper = styled.div`
