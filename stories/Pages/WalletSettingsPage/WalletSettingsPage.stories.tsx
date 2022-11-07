@@ -34,11 +34,6 @@ interface StoryProps extends DelegationContextState, UserContextState {
 export default {
   title: "Pages/WalletSettingsPage/WalletSettingsPage",
   component: WalletSettingsPage,
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
-  },
   decorators: [
     (Story, { args }) => {
       const mockUserContextState: UserContextState = {

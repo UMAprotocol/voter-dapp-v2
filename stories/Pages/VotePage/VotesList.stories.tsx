@@ -30,11 +30,6 @@ export default {
       </div>
     ),
   ],
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile2",
-    },
-  },
 } as Meta<StoryProps>;
 
 const Template: Story<StoryProps> = (args) => {
