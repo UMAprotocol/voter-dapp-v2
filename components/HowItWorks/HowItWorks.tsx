@@ -1,5 +1,5 @@
 import { InfoBar, LoadingSkeleton } from "components";
-import { mobileAndUnder, tabletAndUnder } from "constant";
+import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
 import { usePanelContext, useStakingContext, useUserContext } from "hooks";
@@ -144,18 +144,14 @@ export function HowItWorks() {
 }
 
 const OuterWrapper = styled.section`
-  margin-inline: auto;
-  width: calc(100vw);
   background: var(--white);
-
-  @media ${mobileAndUnder} {
-    padding-inline: 10px;
-  }
 `;
 
 const InnerWrapper = styled.div`
   padding-inline: 45px;
   padding-block: 30px;
+  max-width: var(--page-width);
+  margin-inline: auto;
   div {
     margin-bottom: 5px;
   }
