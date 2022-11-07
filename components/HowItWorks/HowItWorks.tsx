@@ -60,11 +60,11 @@ export function HowItWorks() {
               <LoadingSkeleton isLoading={isLoading()} width={60}>
                 <Strong>{formatNumberForDisplay(stakedBalance)}</Strong>
               </LoadingSkeleton>{" "}
-              UMA tokens of{" "}
+              of your{" "}
               <LoadingSkeleton isLoading={isLoading()} width={60}>
                 <Strong>{formatNumberForDisplay(totalTokens())}</Strong>
               </LoadingSkeleton>{" "}
-              total tokens.
+              UMA tokens.
             </>
           }
           actionLabel="Stake/Unstake"
