@@ -32,7 +32,7 @@ export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
 const Wrapper = styled.div`
   background: var(--red-500);
   min-height: 60px;
-  width: 100vw;
+  max-width: 100vw;
   color: var(--white);
   display: flex;
   flex-direction: column;
