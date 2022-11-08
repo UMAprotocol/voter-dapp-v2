@@ -1,7 +1,7 @@
 import { discordLink, earlyRequestMagicNumber } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { checkIfIsPolymarket } from "helpers";
-import { ContentfulDataT, VoteMetaDataT } from "types";
+import { ContentfulDataT, TransactionHashT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -14,7 +14,7 @@ import { ContentfulDataT, VoteMetaDataT } from "types";
 export function getVoteMetaData(
   decodedIdentifier: string,
   decodedAncillaryData: string,
-  transactionHash: string,
+  transactionHash: TransactionHashT,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
   // rolled votes have no transaction hash — the value for `transactionHash` will be `"rolled"`
@@ -187,10 +187,10 @@ function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
   }
 }
 
-function makeVoteLinks(transactionHash: string, umipNumber?: number) {
+function makeVoteLinks(transactionHash: TransactionHashT, umipNumber?: number) {
   const links = [];
 
-  if (transactionHash !== "rolled") {
+  if (transactionHash !== "rolled" && transactionHash !== "v1") {
     links.push({
       label: "Vote transaction",
       href: `https://goerli.etherscan.io/tx/${transactionHash}`,

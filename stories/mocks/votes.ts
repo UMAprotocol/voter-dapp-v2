@@ -47,6 +47,7 @@ export const voteWithoutUserVote = {
   isGovernance: false,
   isRevealed: false,
   revealHash: undefined,
+  isV1: false,
   voteHistory: {
     uniqueKey: "0x1234567890",
     voted: false,
