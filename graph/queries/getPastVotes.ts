@@ -40,8 +40,8 @@ export async function getPastVotesV1() {
       time: Number(time),
       correctVote,
       ancillaryData,
-      // v1 votes do not have a price request index. we will use -1 to signify this and handle the case in view.
-      priceRequestIndex: BigNumber.from(-1),
+      priceRequestIndex: undefined,
+      isV1: true,
     };
   });
 }
@@ -81,6 +81,7 @@ export async function getPastVotesV2() {
         correctVote,
         ancillaryData,
         priceRequestIndex,
+        isV1: false,
       };
     }
   );
