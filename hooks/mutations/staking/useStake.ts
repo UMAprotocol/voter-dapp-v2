@@ -8,7 +8,7 @@ import { stake } from "web3";
 export function useStake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { onError, clearErrors } = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(stake, {
     onError,

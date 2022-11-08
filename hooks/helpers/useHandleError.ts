@@ -1,3 +1,4 @@
+import { errorFetchingVoteDataMessage } from "constant";
 import { formatTransactionError } from "helpers";
 import { useErrorContext } from "hooks";
 import { ErrorOriginT } from "types";
@@ -5,12 +6,14 @@ import { ErrorOriginT } from "types";
 interface Options {
   errorOrigin?: ErrorOriginT;
   isContractTransaction?: boolean;
+  isDataFetching?: boolean;
   customErrorMessage?: string;
 }
 export function useHandleError(options?: Options) {
   const {
     errorOrigin,
     isContractTransaction = true,
+    isDataFetching = false,
     customErrorMessage,
   } = options || {};
   const { addErrorMessage, clearErrorMessages } = useErrorContext(errorOrigin);
@@ -18,7 +21,9 @@ export function useHandleError(options?: Options) {
   function onError(error: unknown) {
     let message: string;
 
-    if (customErrorMessage) {
+    if (isDataFetching) {
+      message = errorFetchingVoteDataMessage;
+    } else if (customErrorMessage) {
       message = customErrorMessage;
     } else if (error instanceof Error) {
       message = isContractTransaction

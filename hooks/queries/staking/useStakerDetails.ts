@@ -14,7 +14,7 @@ export function useStakerDetails() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const status = getDelegationStatus();
   const delegatorAddress = getDelegatorAddress();

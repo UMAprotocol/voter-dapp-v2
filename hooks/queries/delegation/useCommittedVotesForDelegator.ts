@@ -14,7 +14,7 @@ export function useCommittedVotesForDelegator() {
   const { voting } = useContractsContext();
   const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const status = getDelegationStatus();
   const delegatorAddress = getDelegatorAddress();

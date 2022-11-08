@@ -13,7 +13,7 @@ function max(a: BigNumber, b: BigNumber) {
 export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { onError, clearErrors } = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(executeUnstake, {
     onError,

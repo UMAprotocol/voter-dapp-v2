@@ -8,7 +8,7 @@ import { approve } from "web3";
 export function useApprove(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { onError, clearErrors } = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(approve, {
     onError,

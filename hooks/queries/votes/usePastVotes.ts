@@ -5,7 +5,7 @@ import { useHandleError, useVoteTimingContext } from "hooks";
 
 export function usePastVotes() {
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery([pastVotesKey, roundId], () => getPastVotes(), {
     refetchInterval: (data) => (data ? false : 100),

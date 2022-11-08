@@ -8,7 +8,7 @@ import { withdrawRewards } from "web3";
 export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { onError, clearErrors } = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(withdrawRewards, {
     onError,

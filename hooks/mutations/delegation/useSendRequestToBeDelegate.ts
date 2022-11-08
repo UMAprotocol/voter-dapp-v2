@@ -6,7 +6,7 @@ import { setDelegate } from "web3";
 
 export function useSendRequestToBeDelegate(errorOrigin?: ErrorOriginT) {
   const { address } = useUserContext();
-  const { onError, clearErrors } = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation(setDelegate, {

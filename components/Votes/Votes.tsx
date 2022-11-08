@@ -38,7 +38,9 @@ export function Votes() {
   const { voting } = useContractsContext();
   const { getDelegationStatus } = useDelegationContext();
   const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
-  const { onError, clearErrors } = useHandleError(undefined, false);
+  const { onError, clearErrors } = useHandleError({
+    isContractTransaction: false,
+  });
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();

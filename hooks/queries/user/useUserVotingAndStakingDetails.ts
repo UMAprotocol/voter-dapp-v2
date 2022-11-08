@@ -6,7 +6,7 @@ import { useAccountDetails, useHandleError } from "hooks";
 
 export function useUserVotingAndStakingDetails() {
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [userDataKey, address],

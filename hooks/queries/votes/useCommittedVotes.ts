@@ -12,7 +12,7 @@ export function useCommittedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [committedVotesKey, address, roundId],

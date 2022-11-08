@@ -6,7 +6,7 @@ import { getDelegatorSetEvents } from "web3";
 export function useDelegatorSetEventsForDelegate() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [delegatorSetEventForDelegateKey, address],
