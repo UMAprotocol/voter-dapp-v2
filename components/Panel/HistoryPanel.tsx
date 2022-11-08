@@ -3,7 +3,6 @@ import { black, green, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
-import { VoteT } from "types";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
@@ -83,9 +82,7 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSpinner size={250} />
             ) : (
-              <VoteHistoryTable
-                votes={getPastVotes().sort(sortVotesByVoteNumber)}
-              />
+              <VoteHistoryTable votes={getPastVotes()} />
             )}
           </HistoryWrapper>
         </SectionWrapper>
@@ -93,10 +90,6 @@ export function HistoryPanel() {
       <PanelFooter />
     </PanelWrapper>
   );
-}
-
-function sortVotesByVoteNumber(a: VoteT, b: VoteT) {
-  return a.voteNumber.toNumber() - b.voteNumber.toNumber();
 }
 
 const AprWrapper = styled.div`
