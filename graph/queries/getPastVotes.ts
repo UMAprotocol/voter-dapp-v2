@@ -32,7 +32,7 @@ export async function getPastVotesV1() {
   return result?.priceRequests?.map(({ id, time, price, ancillaryData }) => {
     const identifier = getIdentifierFromPriceRequestId(id);
     const correctVote = Number(
-      formatVoteStringWithPrecision(parseEther(price), identifier)
+      formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
     );
 
     return {
