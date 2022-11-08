@@ -39,8 +39,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   try {
     decodedAncillaryData = decodeHexString(ancillaryData);
   } catch (e) {
-    decodedAncillaryData =
-      "The ancillary data for this request is malformed and could not be decoded.";
+    decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
   }
   const correctVote = priceRequest.correctVote;
   const uniqueKey = makeUniqueKeyForVote(
