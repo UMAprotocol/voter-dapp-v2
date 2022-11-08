@@ -1,8 +1,15 @@
 import { WalletIcon } from "components";
+import { truncateEthAddress } from "helpers";
 import { useUserContext } from "hooks";
-import styled from "styled-components";
-import { AllowedAction } from "./AllowedAction";
-import { Address, BarWrapper, Header, Text, WalletWrapper } from "./styles";
+import { AllowedActions } from "./AllowedActions";
+import {
+  Address,
+  BarWrapper,
+  Header,
+  Text,
+  TruncatedAddress,
+  WalletWrapper,
+} from "./styles";
 
 interface Props {
   status: "delegator" | "delegate" | "none";
@@ -21,29 +28,14 @@ export function ConnectedWallet({ status }: Props) {
         text info text info text info text info text info text info text info
         text{" "}
       </Text>
-      <_BarWrapper>
+      <BarWrapper>
         <WalletWrapper>
           <WalletIcon icon={walletIcon} />
           <Address>{address}</Address>
+          <TruncatedAddress>{truncateEthAddress(address)}</TruncatedAddress>
         </WalletWrapper>
-
-        {status === "delegate" ? (
-          <>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming & Restake</AllowedAction>
-          </>
-        ) : (
-          <>
-            <AllowedAction>Staking</AllowedAction>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming Rewards</AllowedAction>
-          </>
-        )}
-      </_BarWrapper>
+        <AllowedActions status={status} />
+      </BarWrapper>
     </>
   );
 }
-
-const _BarWrapper = styled(BarWrapper)`
-  padding-right: 160px;
-`;

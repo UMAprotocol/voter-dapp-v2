@@ -1,4 +1,4 @@
-import { phaseLengthMilliseconds } from "constant";
+import { phaseLengthMilliseconds, tabletAndUnder } from "constant";
 import { useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
@@ -67,4 +67,9 @@ export function VoteTimeline() {
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  @media ${tabletAndUnder} {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
 `;

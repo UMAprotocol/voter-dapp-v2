@@ -1,4 +1,5 @@
 import { AmountInput, Button, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
@@ -56,15 +57,21 @@ export function Unstake({
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
         <UnstakeStep>
-          <OneIcon />
+          <IconWrapper>
+            <OneIcon />
+          </IconWrapper>
           Unstake tokens
         </UnstakeStep>
         <UnstakeStep>
-          <TwoIcon />
+          <IconWrapper>
+            <TwoIcon />
+          </IconWrapper>
           Cool-off period of {unstakeCoolDownFormatted}
         </UnstakeStep>
         <UnstakeStep>
-          <ThreeIcon />
+          <IconWrapper>
+            <ThreeIcon />
+          </IconWrapper>
           Claim tokens
         </UnstakeStep>
       </HowItWorks>
@@ -84,7 +91,9 @@ export function Unstake({
             label="Unstake"
             onClick={() => requestUnstake(unstakeAmount)}
             width="100%"
-            disabled={!canUnstake(stakedBalance, pendingUnstake)}
+            disabled={
+              !canUnstake(stakedBalance, pendingUnstake) || unstakeAmount === ""
+            }
           />
         </>
       )}
@@ -111,6 +120,10 @@ export function Unstake({
 const Wrapper = styled.div`
   padding-top: 25px;
   padding-inline: 30px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const AmountInputWrapper = styled.div`
@@ -163,4 +176,9 @@ const ThreeIcon = styled(Three)`
   path {
     fill: var(--white);
   }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

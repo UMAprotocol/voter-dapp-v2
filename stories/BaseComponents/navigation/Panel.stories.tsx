@@ -260,27 +260,27 @@ VotePanelWithResults.args = {
   ...VotePanelWithoutResults.args,
   panelContent: {
     ...voteCommitted,
-    participation: [
-      { label: "Total Votes", value: 188077355.982231 },
-      { label: "Unique Commit Addresses", value: 100 },
-      { label: "Unique Reveal Addresses", value: 97 },
-    ],
+    participation: {
+      uniqueCommitAddresses: 100,
+      uniqueRevealAddresses: 100,
+      totalTokensVotedWith: 800000000.123,
+    },
     results: [
       {
-        label: "Devin Haney",
-        value: 1234,
+        vote: 500000,
+        tokensVotedWith: 1234,
       },
       {
-        label: "George Washington",
-        value: 5678,
+        vote: 20,
+        tokensVotedWith: 5678,
       },
       {
-        label: "Tie",
-        value: 500,
+        vote: 0.1,
+        tokensVotedWith: 500,
       },
       {
-        label: "Early Expiry",
-        value: 199,
+        vote: 2,
+        tokensVotedWith: 199,
       },
     ],
   },

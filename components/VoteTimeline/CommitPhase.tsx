@@ -1,5 +1,6 @@
-import { black, red500, white } from "constant";
+import { black, grey100, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
+import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT } from "types";
@@ -21,7 +22,17 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
   );
 
   return (
-    <OuterWrapper>
+    <OuterWrapper
+      style={
+        {
+          "--position": isActive ? "relative" : "unset",
+          "--border-color":
+            status === "past" || status === "upcoming"
+              ? grey100
+              : "transparent",
+        } as CSSProperties
+      }
+    >
       {status !== "active" && <ArrowBorder />}
       <InnerWrapper
         style={
@@ -48,16 +59,22 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
           </Message>
         ) : (
           <Message>
-            Commit phase starts in <Strong>{formattedTimeRemaining}</Strong>
+            Commit phase starts in: <Strong>{formattedTimeRemaining}</Strong>
           </Message>
         )}
       </InnerWrapper>
+      {isActive && (
+        <MobileActiveIndicatorWrapper>
+          <MobileActiveIndicator />
+        </MobileActiveIndicatorWrapper>
+      )}
     </OuterWrapper>
   );
 }
 
 const OuterWrapper = styled.div`
-  position: relative;
+  position: var(--position);
+  border-bottom: 1px solid var(--border-color);
 `;
 
 const InnerWrapper = styled.div`
@@ -70,6 +87,15 @@ const InnerWrapper = styled.div`
   color: var(--color);
   background-color: var(--background-color);
   clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0 100%, 0 0);
+
+  @media ${tabletAndUnder} {
+    height: unset;
+    gap: 10px;
+    padding: 15px;
+    clip-path: unset;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
 `;
 
 const Message = styled.p``;
@@ -97,8 +123,23 @@ const ArrowBorder = styled.div`
   background-color: var(--black);
   top: 0;
   left: 2px;
+
+  @media ${tabletAndUnder} {
+    display: none;
+  }
 `;
 
 const Strong = styled.strong`
   font-weight: 700;
+`;
+
+const MobileActiveIndicatorWrapper = styled.div`
+  display: none;
+  position: absolute;
+  left: 15px;
+  bottom: -12px;
+
+  @media ${tabletAndUnder} {
+    display: block;
+  }
 `;

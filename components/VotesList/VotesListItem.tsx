@@ -5,12 +5,12 @@ import {
   TextInput,
   Tooltip,
 } from "components";
-import { green, red500 } from "constant";
+import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
 import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
-import { useWalletContext } from "hooks";
+import { useWalletContext, useWindowSize } from "hooks";
 import Link from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
@@ -29,7 +29,7 @@ export interface Props {
   moreDetailsAction: () => void;
   isFetching: boolean;
 }
-export function VotesTableRow({
+export function VotesListItem({
   vote,
   phase,
   selectedVote,
@@ -39,6 +39,11 @@ export function VotesTableRow({
   isFetching,
 }: Props) {
   const { signer } = useWalletContext();
+  const { width } = useWindowSize();
+
+  if (!width) return null;
+
+  const isTabletAndUnder = width <= tabletMax;
 
   const {
     decodedIdentifier,
@@ -156,6 +161,11 @@ export function VotesTableRow({
     }
   }
 
+  function getBorderColor() {
+    if (activityStatus === "past" || phase === "reveal") return grey100;
+    return "transparent";
+  }
+
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
@@ -178,9 +188,15 @@ export function VotesTableRow({
   }
 
   return (
-    <Wrapper>
-      <VoteTitleOuterWrapper>
-        <VoteTitleWrapper>
+    <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
+      <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
+        <VoteTitleWrapper
+          style={
+            {
+              "--border-color": getBorderColor(),
+            } as CSSProperties
+          }
+        >
           <VoteIconWrapper>
             <Icon />
           </VoteIconWrapper>
@@ -209,7 +225,7 @@ export function VotesTableRow({
         </VoteTitleWrapper>
       </VoteTitleOuterWrapper>
       {showVoteInput() ? (
-        <VoteInput>
+        <VoteInput as={isTabletAndUnder ? "div" : "td"}>
           {options ? (
             <Dropdown
               label="Choose answer"
@@ -229,29 +245,26 @@ export function VotesTableRow({
         </VoteInput>
       ) : null}
       {showYourVote() ? (
-        <YourVote>
-          {isFetching ? (
-            <LoadingSkeleton width={100} height={22} />
-          ) : (
-            getYourVote()
-          )}
+        <YourVote as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Your vote</VoteLabel>{" "}
+          <LoadingSkeleton isLoading={isFetching} width={100}>
+            <VoteText voteText={getYourVote()} />
+          </LoadingSkeleton>
         </YourVote>
       ) : null}
       {showCorrectVote() ? (
-        <CorrectVote>
-          {isFetching ? (
-            <LoadingSkeleton width={100} height={22} />
-          ) : (
-            getCorrectVote()
-          )}
+        <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Correct vote</VoteLabel>{" "}
+          <LoadingSkeleton isLoading={isFetching} width={100}>
+            <VoteText voteText={getCorrectVote()} />
+          </LoadingSkeleton>
         </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
-        <VoteStatusWrapper>
+        <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {isFetching ? (
-              <LoadingSkeleton width={100} height={22} />
-            ) : (
+            <LoadingSkeleton isLoading={isFetching} width={100}>
               <>
                 <DotIcon
                   style={
@@ -262,11 +275,18 @@ export function VotesTableRow({
                 />{" "}
                 {getRelevantTransactionLink()}
               </>
-            )}
+            </LoadingSkeleton>
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}
-      <MoreDetailsWrapper>
+      <MoreDetailsWrapper
+        as={isTabletAndUnder ? "div" : "td"}
+        style={
+          {
+            "--border-color": getBorderColor(),
+          } as CSSProperties
+        }
+      >
         <MoreDetails>
           <Button label="More details" onClick={moreDetailsAction} />
         </MoreDetails>
@@ -275,18 +295,57 @@ export function VotesTableRow({
   );
 }
 
+function VoteText({ voteText }: { voteText: string | undefined }) {
+  if (!voteText) return <></>;
+
+  const maxVoteTextLength = 10;
+  if (voteText.length > maxVoteTextLength) {
+    return (
+      <Tooltip label={voteText}>
+        <VoteTextWrapper>
+          {voteText.slice(0, maxVoteTextLength)}...
+        </VoteTextWrapper>
+      </Tooltip>
+    );
+  }
+
+  return <span>{voteText}</span>;
+}
+
+const VoteTextWrapper = styled.span`
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
 const Wrapper = styled.tr`
   background: var(--white);
   height: 80px;
+
+  @media ${tabletAndUnder} {
+    height: auto;
+    display: grid;
+    gap: 12px;
+    align-items: left;
+    padding: 15px;
+    border-radius: 5px;
+  }
 `;
 
-const VoteTitleOuterWrapper = styled.td``;
+const VoteTitleOuterWrapper = styled.td`
+  width: 100%;
+`;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
   margin-left: 30px;
+
+  @media ${tabletAndUnder} {
+    margin-left: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+  }
 `;
 
 const VoteDetailsWrapper = styled.div``;
@@ -300,10 +359,18 @@ const VoteDetailsInnerWrapper = styled.div`
 const VoteIconWrapper = styled.div`
   width: 40px;
   height: 40px;
+
+  @media ${tabletAndUnder} {
+    display: none;
+  }
 `;
 
 const VoteTitle = styled.h3`
   font: var(--header-sm);
+
+  @media ${tabletAndUnder} {
+    margin-bottom: 5px;
+  }
 `;
 
 const VoteOrigin = styled.h4`
@@ -315,30 +382,67 @@ const VoteInput = styled.td``;
 
 const VoteOutputText = styled.td`
   font: var(--text-md);
+
+  @media ${tabletAndUnder} {
+    display: flex;
+    justify-content: space-between;
+  }
 `;
 
 const YourVote = styled(VoteOutputText)``;
 
 const CorrectVote = styled(VoteOutputText)`
   padding-left: 30px;
+
+  @media ${tabletAndUnder} {
+    padding-left: 0;
+  }
 `;
 
-const VoteStatusWrapper = styled.td``;
+const VoteLabel = styled.span`
+  display: none;
+
+  @media ${tabletAndUnder} {
+    display: inline;
+  }
+`;
+
+const VoteStatusWrapper = styled.td`
+  font: var(--text-md);
+
+  @media ${tabletAndUnder} {
+    display: flex;
+    justify-content: space-between;
+  }
+`;
 
 const VoteStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
   margin-left: 30px;
-  font: var(--text-md);
+
+  @media ${tabletAndUnder} {
+    margin-left: 0;
+  }
 `;
 
-const MoreDetailsWrapper = styled.td``;
+const MoreDetailsWrapper = styled.td`
+  @media ${tabletAndUnder} {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+  }
+`;
 
 const MoreDetails = styled.div`
   width: fit-content;
   margin-left: auto;
   margin-right: 30px;
+
+  @media ${tabletAndUnder} {
+    margin-left: unset;
+    margin-right: auto;
+  }
 `;
 
 const UMAIcon = styled(UMA)``;

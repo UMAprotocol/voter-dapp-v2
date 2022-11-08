@@ -9,6 +9,7 @@ const config: StorybookConfig = {
     "@storybook/addon-interactions",
     "storybook-addon-next",
     "storybook-addon-pseudo-states",
+    "storybook-mobile",
   ],
   staticDirs: ["../public"],
   framework: "@storybook/react",

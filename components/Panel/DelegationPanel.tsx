@@ -4,7 +4,8 @@ import {
   PanelErrorBanner,
   TextInput,
 } from "components";
-import { getAddress, isAddress } from "helpers";
+import { mobileAndUnder } from "constant";
+import { getAddress, isAddress, truncateEthAddress } from "helpers";
 import {
   useDelegationContext,
   useErrorContext,
@@ -104,17 +105,22 @@ export function DelegationPanel() {
         <PanelSectionText>Explanation of voting delegation</PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
-            <OneIcon />
+            <IconWrapper>
+              <OneIcon />
+            </IconWrapper>
             Add secondary wallet address text text
           </StepWrapper>
           <StepWrapper>
-            <TwoIcon />
+            <IconWrapper>
+              <TwoIcon />
+            </IconWrapper>
             Request has to be accepted in secondary wallet text text
           </StepWrapper>
           <StepWrapper>
-            <ThreeIcon />
-            You now have a secondary delegation wallet where you can vote text
-            text
+            <IconWrapper>
+              <ThreeIcon />
+            </IconWrapper>
+            You can now vote with your delegate wallet
           </StepWrapper>
         </StepsWrapper>
         {isLoading() ? (
@@ -143,10 +149,12 @@ export function DelegationPanel() {
               pendingRequests.map(({ delegate, transactionHash }) => (
                 <PendingRequestWrapper key={transactionHash}>
                   <AddressWrapper>
-                    <PendingRequestIcon />
+                    <IconWrapper>
+                      <PendingRequestIcon />
+                    </IconWrapper>
                     <PendingRequestDetailsWrapper>
                       <PendingRequestText>
-                        Request sent to {delegate}
+                        Request sent to {truncateEthAddress(delegate)}
                       </PendingRequestText>
                       <PendingRequestText>
                         Waiting for approval
@@ -208,6 +216,10 @@ const PendingRequestIcon = styled(Time)`
 const InnerWrapper = styled.div`
   padding-inline: 30px;
   padding-block: 20px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const StepsWrapper = styled.ul`
@@ -256,4 +268,9 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

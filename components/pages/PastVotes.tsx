@@ -5,9 +5,9 @@ import {
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
-  VotesTable,
+  VotesList,
+  VotesListItem,
   VotesTableHeadings,
-  VotesTableRow,
 } from "components";
 import { getEntriesForPage } from "helpers";
 import {
@@ -49,10 +49,10 @@ export function PastVotes() {
           ) : (
             <>
               <VotesTableWrapper>
-                <VotesTable
+                <VotesList
                   headings={<VotesTableHeadings activityStatus="past" />}
                   rows={votesToShow.map((vote) => (
-                    <VotesTableRow
+                    <VotesListItem
                       vote={vote}
                       phase={phase}
                       selectedVote={undefined}

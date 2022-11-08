@@ -1,4 +1,5 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
+import { mobileAndUnder } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import {
   useContractsContext,
@@ -54,14 +55,9 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <Strong>
-              {isLoading() ? (
-                <LoadingSkeleton variant="white" width={150} height={32} />
-              ) : (
-                formatNumberForDisplay(outstandingRewards)
-              )}
-            </Strong>{" "}
-            UMA
+            <LoadingSkeleton isLoading={isLoading()} variant="white">
+              <Strong>{formatNumberForDisplay(outstandingRewards)} UMA</Strong>
+            </LoadingSkeleton>{" "}
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>
@@ -113,6 +109,10 @@ const SectionsWrapper = styled.div``;
 const InnerWrapper = styled.div`
   padding-inline: 30px;
   padding-block: 20px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
 `;
 
 const RewardsWrapper = styled.div`

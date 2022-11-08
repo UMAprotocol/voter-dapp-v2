@@ -1,5 +1,6 @@
 import { useConnectWallet } from "@web3-onboard/react";
 import { Button, Nav, WalletIcon } from "components";
+import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
 import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
 import NextLink from "next/link";
@@ -94,6 +95,9 @@ export function MenuPanel() {
               <WalletWrapper>
                 <WalletIcon icon={walletIcon} />
                 <Address>{address}</Address>
+                <TruncatedAddress>
+                  {truncateEthAddress(address)}
+                </TruncatedAddress>
               </WalletWrapper>
               <Button
                 variant="secondary"
@@ -132,6 +136,10 @@ export function MenuPanel() {
                     <LinkedAddressIcon />
                   </LinkedAddressIconWrapper>
                   <Address>{otherWalletAddress}</Address>
+                  <TruncatedAddress>
+                    {otherWalletAddress &&
+                      truncateEthAddress(otherWalletAddress)}
+                  </TruncatedAddress>
                 </WalletWrapper>
               </>
             )}
@@ -140,7 +148,9 @@ export function MenuPanel() {
                 {pendingRequests.map(
                   ({ transactionHash, delegate, delegator }) => (
                     <PendingRequestWrapper key={transactionHash}>
-                      <PendingRequestIcon />
+                      <IconWrapper>
+                        <PendingRequestIcon />
+                      </IconWrapper>
                       <PendingRequestText>
                         <NextLink href="/wallet-settings" passHref>
                           <A>{pendingRequestLinkText}</A>
@@ -190,6 +200,11 @@ const Wrapper = styled.div`
   padding-inline: 30px;
   padding-top: 25px;
   padding-bottom: 15px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 20px;
+    padding-top: 20px;
+  }
 `;
 
 const AccountWrapper = styled(Wrapper)`
@@ -225,6 +240,18 @@ const Address = styled.p`
   font: var(--text-sm);
   margin-top: 10px;
   margin-bottom: 15px;
+
+  @media ${mobileAndUnder} {
+    display: none;
+  }
+`;
+
+const TruncatedAddress = styled(Address)`
+  display: none;
+
+  @media ${mobileAndUnder} {
+    display: block;
+  }
 `;
 
 const A = styled.a`
@@ -252,4 +279,9 @@ const ConnectedIndicator = styled.span`
 
 const PendingRequestIcon = styled(Time)`
   margin-top: 2px;
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

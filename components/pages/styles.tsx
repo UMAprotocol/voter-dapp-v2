@@ -1,15 +1,21 @@
+import { tabletAndUnder } from "constant";
 import styled from "styled-components";
 
 export const PageOuterWrapper = styled.div`
   background: var(--grey-100);
-  min-height: calc(100% - (var(--banner-height) + var(--header-height)));
+  min-height: var(--full-height);
 `;
 
 export const PageInnerWrapper = styled.div`
-  margin-inline: auto;
-  max-width: var(--desktop-max-width);
+  max-width: var(--page-width);
   padding-inline: 45px;
   padding-block: 45px;
+  margin-inline: auto;
+
+  @media ${tabletAndUnder} {
+    padding-inline: 0;
+    padding-block: 10px;
+  }
 `;
 
 export const Strong = styled.strong`
@@ -18,6 +24,7 @@ export const Strong = styled.strong`
 
 export const LoadingSpinnerWrapper = styled.div`
   width: 100%;
+  height: 100%;
   padding-top: 50px;
   display: grid;
   place-items: center;

@@ -51,6 +51,23 @@ const Th = styled.th`
   &:last-child {
     text-align: right;
   }
+
+  /* special media query only needed here for very small screens */
+  @media (max-width: 320px) {
+    --bar-width: 20%;
+    &:nth-child(1) {
+      width: 15%;
+    }
+    &:nth-child(2) {
+      width: var(--bar-width);
+    }
+    &:nth-child(3) {
+      width: var(--bar-width);
+    }
+    &:nth-child(4) {
+      width: var(--bar-width);
+    }
+  }
 `;
 
 const TheadTr = styled.tr`

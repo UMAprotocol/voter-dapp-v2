@@ -1,12 +1,15 @@
+import { truncateEthAddress } from "helpers";
 import Link from "public/assets/icons/link.svg";
 import styled from "styled-components";
-import { AllowedAction } from "./AllowedAction";
+import { AllowedActions } from "./AllowedActions";
 import {
+  Address,
   AddressWrapper,
   BarButtonSecondary,
   BarWrapper,
   Header,
   Text,
+  TruncatedAddress,
 } from "./styles";
 
 export function OtherWallet({
@@ -35,28 +38,24 @@ export function OtherWallet({
           <LinkedAddressIconWrapper>
             <LinkedAddressIcon />
           </LinkedAddressIconWrapper>
-          <Text>{address}</Text>
+          <Address>{address}</Address>
+          <TruncatedAddress>{truncateEthAddress(address)}</TruncatedAddress>
         </AddressWrapper>
-        {status === "delegate" ? (
-          <>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming & Restake</AllowedAction>
-          </>
-        ) : (
-          <>
-            <AllowedAction>Staking</AllowedAction>
-            <AllowedAction>Voting</AllowedAction>
-            <AllowedAction>Claiming Rewards</AllowedAction>
-          </>
-        )}
-        <BarButtonSecondary
-          label={`Remove ${status}`}
-          onClick={() => remove(address)}
-        />
+        <AllowedActions status={status} />
+        <ButtonWrapper>
+          <BarButtonSecondary
+            label={`Remove ${status}`}
+            onClick={() => remove(address)}
+          />
+        </ButtonWrapper>
       </BarWrapper>
     </>
   );
 }
+
+const ButtonWrapper = styled.div`
+  width: fit-content;
+`;
 
 const LinkedAddressIconWrapper = styled.div`
   width: 24px;

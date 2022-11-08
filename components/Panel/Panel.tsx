@@ -1,10 +1,11 @@
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
-import { black, desktopPanelWidth, white } from "constant";
-import { usePanelContext } from "hooks";
+import { black, white } from "constant";
+import { usePanelContext, usePanelWidth } from "hooks";
 import Close from "public/assets/icons/close.svg";
+import { CSSProperties } from "react";
 import { animated, useTransition } from "react-spring";
-import styled, { CSSProperties } from "styled-components";
+import styled from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
 import { DelegationPanel } from "./DelegationPanel";
 import { HistoryPanel } from "./HistoryPanel";
@@ -25,11 +26,12 @@ const panelTypeToPanelComponent = {
 
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
+  const panelWidth = usePanelWidth();
 
   const transitions = useTransition(panelOpen, {
-    from: { opacity: 0, right: -desktopPanelWidth },
+    from: { opacity: 0, right: -panelWidth },
     enter: { opacity: 0.75, right: 0 },
-    leave: { opacity: 0, right: -desktopPanelWidth },
+    leave: { opacity: 0, right: -panelWidth },
   });
 
   if (!panelType) return null;
@@ -52,7 +54,15 @@ export function Panel() {
                 ),
               }}
             >
-              <Content aria-labelledby="panel-title" style={{ right }}>
+              <Content
+                aria-labelledby="panel-title"
+                style={
+                  {
+                    "--right": right.to((value) => `${value}px`),
+                    "--panel-width": `${panelWidth}px`,
+                  } as CSSProperties
+                }
+              >
                 <PanelComponent content={panelContent} />
                 <CloseButton
                   onClick={() => closePanel()}
@@ -83,15 +93,16 @@ const Overlay = styled(AnimatedOverlay)`
 `;
 
 const Content = styled(AnimatedContent)`
-  width: var(--desktop-panel-width);
+  right: var(--right);
+  width: var(--panel-width);
   min-height: 100%;
   margin: 0;
   padding: 0;
   position: fixed;
   top: 0;
   bottom: 0;
-  overflow-y: scroll;
   background: var(--white);
+  overflow-y: scroll;
 `;
 
 const CloseButton = styled.button`

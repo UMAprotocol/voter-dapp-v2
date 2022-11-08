@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react";
-import { VotesTable } from "components";
+import { VotesList } from "components";
 import {
   Active as ActiveHeading,
   Past as PastHeading,
@@ -14,18 +14,18 @@ import {
   PastVoteDidNotVote,
   PastVoteDidVote,
   UpcomingVote,
-} from "./VoteTableRow.stories";
+} from "./VotesListItem.stories";
 
 interface StoryProps {
   headings: JSX.Element;
   rows: JSX.Element[];
 }
 export default {
-  title: "Pages/Vote Page/VotesTable",
-  component: VotesTable,
+  title: "Pages/Vote Page/VotesList",
+  component: VotesList,
   decorators: [
     (Story) => (
-      <div style={{ backgroundColor: "grey" }}>
+      <div style={{ backgroundColor: "var(--grey-100)" }}>
         <Story />
       </div>
     ),
@@ -33,7 +33,7 @@ export default {
 } as Meta<StoryProps>;
 
 const Template: Story<StoryProps> = (args) => {
-  return <VotesTable {...args} />;
+  return <VotesList {...args} />;
 };
 
 export const ActiveCommit = Template.bind({});

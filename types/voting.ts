@@ -1,6 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
-import { DropdownItemT, InputDataT, LinkT, UserVoteDataT } from "types";
+import { DropdownItemT, LinkT, UserVoteDataT } from "types";
 
 export type UniqueKeyT = string;
 
@@ -10,7 +10,8 @@ export type VoteT = PriceRequestT &
   UserVoteDataT &
   VoteMetaDataT &
   VoteContentfulDataT &
-  VoteResultT;
+  VoteParticipationT &
+  VoteResultsT;
 
 export type PriceRequestT = {
   // raw values
@@ -28,12 +29,33 @@ export type PriceRequestT = {
   isV1: boolean;
 };
 
+export type ParticipationT = {
+  uniqueCommitAddresses: number;
+  uniqueRevealAddresses: number;
+  totalTokensVotedWith: number;
+};
+
+export type VoteParticipationT = {
+  participation?: ParticipationT;
+};
+
+export type ResultsT = {
+  vote: number;
+  tokensVotedWith: number;
+}[];
+
+export type VoteResultsT = {
+  results?: ResultsT;
+};
+
 export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
   priceRequestIndex: BigNumber | undefined;
   correctVote?: number;
+  participation?: ParticipationT;
+  results?: ResultsT;
   isV1?: boolean;
 };
 
@@ -70,11 +92,6 @@ export type VoteMetaDataT = {
   links: LinkT[];
   options: DropdownItemT[] | undefined;
   isRolled: boolean;
-};
-
-export type VoteResultT = {
-  results?: InputDataT[];
-  participation?: InputDataT[];
 };
 
 export type VoteContentfulDataT = {

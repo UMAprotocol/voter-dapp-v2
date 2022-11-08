@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constant";
 import Dot from "public/assets/icons/dot.svg";
 import { ReactNode } from "react";
 import styled from "styled-components";
@@ -16,11 +17,11 @@ export function AllowedAction({ children }: { children: ReactNode }) {
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 `;
 
 const IconWrapper = styled.div`
-  margin-left: 25px;
+  margin-left: 5px;
 `;
 
 const Icon = styled(Dot)`
@@ -31,4 +32,8 @@ const Icon = styled(Dot)`
 
 const Label = styled.span`
   font: var(--text-sm);
+
+  @media ${mobileAndUnder} {
+    font: var(--text-xs);
+  }
 `;

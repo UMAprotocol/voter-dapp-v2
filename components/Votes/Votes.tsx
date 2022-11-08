@@ -1,8 +1,8 @@
 import {
   Button,
-  VotesTable,
+  VotesList,
+  VotesListItem,
   VotesTableHeadings,
-  VotesTableRow,
   VoteTimeline,
 } from "components";
 import { formatVotesToCommit } from "helpers";
@@ -146,10 +146,10 @@ export function Votes() {
       <Title>{determineTitle()}</Title>
       <VoteTimeline />
       <VotesTableWrapper>
-        <VotesTable
+        <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
           rows={determineVotesToShow().map((vote) => (
-            <VotesTableRow
+            <VotesListItem
               vote={vote}
               phase={phase}
               selectedVote={selectedVotes[vote.uniqueKey]}

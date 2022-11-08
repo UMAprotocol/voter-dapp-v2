@@ -42,6 +42,8 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
   }
   const correctVote = priceRequest.correctVote;
+  const participation = priceRequest.participation;
+  const results = priceRequest.results;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
     time,
@@ -59,6 +61,8 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     decodedIdentifier,
     decodedAncillaryData,
     correctVote,
+    participation,
+    results,
     uniqueKey,
     isV1,
   } as PriceRequestT;

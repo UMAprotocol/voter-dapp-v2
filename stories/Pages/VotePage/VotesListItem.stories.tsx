@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { VotesTableRow } from "components";
+import { VotesListItem } from "components";
 import {
   voteCommitted,
   voteCommittedButNotRevealed,
@@ -10,8 +10,8 @@ import {
 } from "stories/mocks/votes";
 
 export default {
-  title: "Pages/Vote Page/VotesTableRow",
-  component: VotesTableRow,
+  title: "Pages/Vote Page/VotesListItem",
+  component: VotesListItem,
   decorators: [
     (Story) => (
       <table style={{ width: 1100 }}>
@@ -19,10 +19,10 @@ export default {
       </table>
     ),
   ],
-} as ComponentMeta<typeof VotesTableRow>;
+} as ComponentMeta<typeof VotesListItem>;
 
-const Template: ComponentStory<typeof VotesTableRow> = (args) => (
-  <VotesTableRow {...args} />
+const Template: ComponentStory<typeof VotesListItem> = (args) => (
+  <VotesListItem {...args} />
 );
 
 const mockMoreDetailsAction = () => alert("More details clicked");

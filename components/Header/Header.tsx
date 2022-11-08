@@ -1,9 +1,16 @@
 import { Wallet } from "components";
+import {
+  green,
+  mobileAndUnder,
+  red100,
+  red500,
+  tabletAndUnder,
+} from "constant";
 import { useDelegationContext, usePanelContext } from "hooks";
 import NextLink from "next/link";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Logo from "public/assets/logo.svg";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
@@ -11,8 +18,18 @@ export function Header() {
   const { getDelegationStatus, getDelegationDataLoading } =
     useDelegationContext();
 
+  const status = getDelegationStatus();
   const showDelegationNotification =
-    !getDelegationDataLoading() && getDelegationStatus() === "delegate-pending";
+    !getDelegationDataLoading() &&
+    (status === "delegate" || status === "delegate-pending");
+  const isDelegate = status === "delegate";
+  const isDelegatePending = status === "delegate-pending";
+
+  const delegationNotificationStyle = {
+    "--color": isDelegate ? green : red500,
+    "--border-color": isDelegate ? "transparent" : red500,
+    "--background-color": isDelegate ? "transparent" : red100,
+  } as CSSProperties;
 
   function openMenuPanel() {
     openPanel("menu");
@@ -33,17 +50,25 @@ export function Header() {
         </HomeLinkAndPageDescriptionWrapper>
         <WalletAndMenuWrapper>
           {showDelegationNotification && (
-            <DelegationNotificationWrapper>
-              <DelegationNotificationIcon />
+            <DelegationNotificationWrapper style={delegationNotificationStyle}>
+              {isDelegatePending && (
+                <DelegationNotificationIconWrapper>
+                  <DelegationNotificationIcon />
+                </DelegationNotificationIconWrapper>
+              )}
               <DelegationNotificationText>
                 <NextLink href="/wallet-settings" passHref>
-                  <A>Received request</A>
-                </NextLink>{" "}
-                to be a delegate
+                  <>
+                    {isDelegatePending && <A>Received request</A>}
+                    {isDelegate && <A>Delegate connected</A>}
+                  </>
+                </NextLink>
               </DelegationNotificationText>
             </DelegationNotificationWrapper>
           )}
-          <Wallet />
+          <WalletWrapper>
+            <Wallet />
+          </WalletWrapper>
           <MenuButton onClick={openMenuPanel}>
             <MenuIconWrapper>
               <MenuIcon />
@@ -62,10 +87,22 @@ const DelegationNotificationWrapper = styled.div`
   padding-left: 15px;
   padding-right: 25px;
   font: var(--text-sm);
-  color: var(--red-500);
-  background: var(--red-100);
-  border: 1px solid var(--red-500);
+  color: var(--color);
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: 5px;
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+    gap: 5px;
+    font: var(--text-xs);
+  }
+`;
+
+const WalletWrapper = styled.div`
+  @media ${mobileAndUnder} {
+    display: none;
+  }
 `;
 
 const DelegationNotificationText = styled.p``;
@@ -73,14 +110,17 @@ const DelegationNotificationText = styled.p``;
 const OuterWrapper = styled.header``;
 
 const InnerWrapper = styled.div`
-  max-width: var(--desktop-max-width);
-  min-height: var(--header-height);
+  max-width: var(--page-width);
+  height: var(--header-height);
+  padding-inline: 45px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
   margin-inline: auto;
-  padding-inline: 45px;
+  @media ${tabletAndUnder} {
+    padding-inline: 0;
+  }
 `;
 
 const HomeLinkWrapper = styled.div`
@@ -101,6 +141,9 @@ const WalletAndMenuWrapper = styled.div`
 `;
 
 const PageDescription = styled.p`
+  @media ${mobileAndUnder} {
+    display: none;
+  }
   font-family: "Halyard Display";
   font-style: normal;
   font-weight: 300;
@@ -127,6 +170,11 @@ const DelegationNotificationIcon = styled(Time)`
 `;
 
 const A = styled.a`
-  color: var(--red-500);
+  color: inherit;
   text-decoration: underline;
+`;
+
+const DelegationNotificationIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
 `;

@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constant";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -19,11 +20,15 @@ const OuterWrapper = styled.div`
 `;
 
 const InnerWrapper = styled.div`
-  max-width: var(--desktop-max-width);
+  max-width: var(--page-width);
   height: var(--banner-height);
   display: flex;
   align-items: center;
   padding-left: 45px;
+  @media ${mobileAndUnder} {
+    max-width: unset;
+    padding: 15px;
+  }
   margin-inline: auto;
 `;
 

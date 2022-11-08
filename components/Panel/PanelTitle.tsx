@@ -1,3 +1,4 @@
+import { mobileAndUnder } from "constant";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
@@ -68,6 +69,11 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 20px;
   padding: 25px;
+
+  @media ${mobileAndUnder} {
+    gap: max(20px, 5%);
+    padding-inline: 15px;
+  }
 `;
 
 const Header = styled.h1`
@@ -87,6 +93,11 @@ const PolymarketIcon = styled(Polymarket)``;
 const TitleIconWrapper = styled.div`
   width: 40px;
   height: 40px;
+
+  @media ${mobileAndUnder} {
+    width: max(40px, 5%);
+    height: max(40px, 5%);
+  }
 `;
 
 const Strong = styled.strong`

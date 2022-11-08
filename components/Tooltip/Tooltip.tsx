@@ -9,7 +9,7 @@ interface Props {
   children: React.ReactElement;
   label: string;
 }
-export function Tooltip({ children, ...rest }: Props) {
+export function Tooltip({ children, label, ...rest }: Props) {
   const [trigger, tooltip, isVisible] = useTooltip();
 
   const transitions = useTransition(isVisible, {
@@ -24,13 +24,29 @@ export function Tooltip({ children, ...rest }: Props) {
       {cloneElement(children, trigger)}
       {transitions(
         (style, item) =>
-          item && <TooltipContent {...tooltip} {...rest} style={style} />
+          item && (
+            <TooltipContent
+              label={<LabelWrapper>{label}</LabelWrapper>}
+              {...tooltip}
+              {...rest}
+              style={style}
+            />
+          )
       )}
     </>
   );
 }
 
 const AnimatedTooltipContent = animated(TooltipPopup);
+
+const LabelWrapper = styled.div`
+  display: inline-block;
+  max-width: min(80vw, 300px);
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+`;
 
 const TooltipContent = styled(AnimatedTooltipContent)`
   padding: 20px;
