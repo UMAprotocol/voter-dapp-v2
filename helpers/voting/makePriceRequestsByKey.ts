@@ -1,6 +1,5 @@
+import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
-import { decodeHexString } from "helpers";
-import { makeUniqueKeyForVote } from "helpers";
 
 export function makePriceRequestsByKey(
   priceRequests: RawPriceRequestDataT[] | undefined
@@ -30,8 +29,19 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
   const voteNumber = priceRequest.priceRequestIndex;
-  const decodedIdentifier = decodeHexString(identifier);
-  const decodedAncillaryData = decodeHexString(ancillaryData);
+  let decodedIdentifier = "";
+  let decodedAncillaryData = "";
+  try {
+    decodedIdentifier = decodeHexString(identifier);
+  } catch (e) {
+    decodedIdentifier = "WARNING - INVALID IDENTIFIER";
+  }
+  try {
+    decodedAncillaryData = decodeHexString(ancillaryData);
+  } catch (e) {
+    decodedAncillaryData =
+      "The ancillary data for this request is malformed and could not be decoded.";
+  }
   const correctVote = priceRequest.correctVote;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
