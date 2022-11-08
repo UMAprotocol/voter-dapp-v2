@@ -8,10 +8,13 @@ export function useRevealVotes() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError, clearErrors } = useHandleError();
 
   const { mutate, isLoading } = useMutation(revealVotes, {
+    onError,
     onSuccess: (data, { votesToReveal }) => {
+      clearErrors();
+
       queryClient.setQueryData<VoteExistsByKeyT>(
         [revealedVotesKey, address, roundId],
         (oldRevealedVotes) => {
@@ -27,7 +30,6 @@ export function useRevealVotes() {
         }
       );
     },
-    onError,
   });
 
   return {

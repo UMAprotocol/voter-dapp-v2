@@ -7,7 +7,7 @@ import { getOutstandingRewards } from "web3";
 export function useOutstandingRewards() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [outstandingRewardsKey, address],

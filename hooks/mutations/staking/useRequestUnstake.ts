@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakeCoolDownKey } from "constant";
-import { formatTransactionError, getCanUnstakeTime } from "helpers";
+import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
@@ -8,10 +8,13 @@ import { requestUnstake } from "web3";
 export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
+    onError,
     onSuccess: (_data, { unstakeAmount }) => {
+      clearErrors();
+
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
         (oldStakerDetails) => {
@@ -42,9 +45,6 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
           };
         }
       );
-    },
-    onError(error: unknown) {
-      onError(formatTransactionError(error));
     },
   });
   return {

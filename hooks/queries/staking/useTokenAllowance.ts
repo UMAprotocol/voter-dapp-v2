@@ -7,7 +7,7 @@ import { getTokenAllowance } from "web3";
 export function useTokenAllowance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [tokenAllowanceKey, address],

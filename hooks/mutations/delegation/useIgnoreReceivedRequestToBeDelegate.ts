@@ -5,12 +5,14 @@ import { useHandleError, useUserContext } from "hooks";
 
 export function useIgnoreReceivedRequestToBeDelegate() {
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError, clearErrors } = useHandleError();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation(ignoreReceivedRequestToBeDelegate, {
     onError,
     onSuccess: (_data, { delegatorAddress }) => {
+      clearErrors();
+
       queryClient.setQueryData<string[]>(
         [ignoredRequestToBeDelegateAddressesKey, address],
         (oldIgnoredRequestToBeDelegateAddresses) => {

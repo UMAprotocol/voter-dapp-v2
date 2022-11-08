@@ -10,7 +10,7 @@ import { getUpcomingVotes } from "web3";
 export function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [upcomingVotesKey, roundId],

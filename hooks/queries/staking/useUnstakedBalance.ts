@@ -6,7 +6,7 @@ import { getUnstakedBalance } from "web3";
 export function useUnstakedBalance() {
   const { votingToken } = useContractsContext();
   const { address } = useAccountDetails();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [unstakedBalanceKey, address],

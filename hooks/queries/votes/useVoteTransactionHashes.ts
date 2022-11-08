@@ -11,7 +11,7 @@ import { getVoteTransactionHashes } from "web3";
 
 export function useVoteTransactionHashes() {
   const { voting } = useContractsContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
   const { data: activeVotes } = useActiveVotes();
   const {
     data: { upcomingVotes },
