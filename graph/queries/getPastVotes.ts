@@ -52,7 +52,7 @@ export async function getPastVotesV2() {
     {
       priceRequests(
         where: { isResolved: true }
-        orderBy: time
+        orderBy: requestIndex
         orderDirection: desc
       ) {
         id

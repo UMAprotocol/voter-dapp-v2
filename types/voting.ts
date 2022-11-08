@@ -34,11 +34,13 @@ export type RawPriceRequestDataT = {
   ancillaryData: string;
   priceRequestIndex: BigNumber | undefined;
   correctVote?: number;
-  isV1: boolean;
+  isV1?: boolean;
 };
 
+export type TransactionHashT = string | "rolled" | "v1";
+
 export type VoteTransactionDataT = {
-  transactionHash: string;
+  transactionHash: TransactionHashT;
 };
 
 export type VoteHistoryDataT = {

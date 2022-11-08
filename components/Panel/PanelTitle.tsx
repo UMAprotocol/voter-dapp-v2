@@ -48,12 +48,14 @@ function SubTitleText({
   voteNumber?: string;
   origin?: VoteOriginT;
 }) {
-  // vote number of -1 signifies this is a vote from previous contract which does not have this field
-  if (!voteNumber || !origin || voteNumber === "-1") return null;
-
   return (
     <>
-      {origin} | Vote number <Strong>#{voteNumber}</Strong>
+      {origin && origin} {origin && voteNumber && "|"}{" "}
+      {voteNumber && (
+        <>
+          Vote number <Strong>#{voteNumber}</Strong>
+        </>
+      )}
     </>
   );
 }
