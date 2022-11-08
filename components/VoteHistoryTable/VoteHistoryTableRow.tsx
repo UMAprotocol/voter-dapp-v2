@@ -1,3 +1,4 @@
+import { Tooltip } from "components/Tooltip/Tooltip";
 import { green, grey500, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { CSSProperties } from "react";
@@ -18,9 +19,15 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
   return (
     <Tr>
       <VoteNumberTd>
-        <VoteNumberButton onClick={onVoteClicked}>
-          #{formatNumberForDisplay(voteNumber, { isFormatEther: false })}
-        </VoteNumberButton>
+        {voteNumber ? (
+          <VoteNumberButton onClick={onVoteClicked}>
+            #{formatNumberForDisplay(voteNumber, { isFormatEther: false })}
+          </VoteNumberButton>
+        ) : (
+          <Tooltip label="This vote is from version one (previous version) of the voting contract. Sequential vote numbers were introduced in version two (current version).">
+            <VoteNumberV1>V1</VoteNumberV1>
+          </Tooltip>
+        )}
       </VoteNumberTd>
       <StakingTd>
         <Staking>
@@ -47,7 +54,6 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
 function getBarColor(value: boolean) {
   return value ? green : grey500;
 }
-
 const BarInnerWrapper = styled.div`
   padding-block: 4px;
   border-top: 1px solid var(--grey-500);
@@ -103,3 +109,11 @@ const Correctness = styled(BarInnerWrapper)`
 `;
 
 const Tr = styled.tr``;
+
+const VoteNumberV1 = styled.span`
+  font: var(--text-sm);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`;

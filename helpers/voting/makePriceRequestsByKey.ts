@@ -48,6 +48,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     time,
     ancillaryData
   );
+  const isV1 = priceRequest.isV1;
 
   return {
     time,
@@ -60,5 +61,6 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     decodedAncillaryData,
     correctVote,
     uniqueKey,
+    isV1,
   } as PriceRequestT;
 }

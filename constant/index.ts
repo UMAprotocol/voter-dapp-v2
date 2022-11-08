@@ -1,4 +1,4 @@
-export { graphEndpoint } from "./query/graphEndpoint";
+export { graphEndpoint, graphEndpointV1 } from "./query/graphEndpoint";
 export {
   activeVotesKey,
   balancesQueryKeys,
