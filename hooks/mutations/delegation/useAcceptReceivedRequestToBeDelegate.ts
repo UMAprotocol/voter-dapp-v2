@@ -5,16 +5,19 @@ import { setDelegator } from "web3";
 
 export function useAcceptReceivedRequestToBeDelegate() {
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError, clearErrors } = useHandleError();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading } = useMutation(setDelegator, {
     onError,
     onSuccess: (_data, { delegatorAddress }) => {
+      clearErrors();
+
       queryClient.setQueryData<string>(
         [voterFromDelegateKey, address],
         () => delegatorAddress
       );
+
       queryClient.setQueryData<string>(
         [delegateToStakerKey, address],
         () => address

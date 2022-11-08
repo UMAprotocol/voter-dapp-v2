@@ -17,7 +17,7 @@ export function useDecryptedVotes() {
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
   const { data: encryptedVotes } = useEncryptedVotes();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [decryptedVotesKey, encryptedVotes, address],

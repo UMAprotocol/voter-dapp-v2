@@ -24,13 +24,10 @@ export const formatBytes32String = ethers.utils.formatBytes32String;
 
 export const commify = ethers.utils.commify;
 
-export const formatTransactionError = (error: unknown): string | unknown => {
-  if (error instanceof Error) {
-    // ethers transactions put all call data and debug data between parens, so we will filter it out
-    const message = error.message.split("(")[0] || error.message;
-    return capitalizeFirstLetter(message);
-  }
-  return error;
+export const formatTransactionError = (error: Error) => {
+  // ethers transactions put all call data and debug data between parens, so we will filter it out
+  const message = error.message.split("(")[0] || error.message;
+  return capitalizeFirstLetter(message);
 };
 
 export const zeroAddress = ethers.constants.AddressZero;

@@ -29,8 +29,18 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
   const voteNumber = priceRequest.priceRequestIndex;
-  const decodedIdentifier = decodeHexString(identifier);
-  const decodedAncillaryData = decodeHexString(ancillaryData);
+  let decodedIdentifier = "";
+  let decodedAncillaryData = "";
+  try {
+    decodedIdentifier = decodeHexString(identifier);
+  } catch (e) {
+    decodedIdentifier = "WARNING - INVALID IDENTIFIER";
+  }
+  try {
+    decodedAncillaryData = decodeHexString(ancillaryData);
+  } catch (e) {
+    decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
+  }
   const correctVote = priceRequest.correctVote;
   const participation = priceRequest.participation;
   const results = priceRequest.results;
@@ -39,6 +49,7 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     time,
     ancillaryData
   );
+  const isV1 = priceRequest.isV1;
 
   return {
     time,
@@ -53,5 +64,6 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     participation,
     results,
     uniqueKey,
+    isV1,
   } as PriceRequestT;
 }

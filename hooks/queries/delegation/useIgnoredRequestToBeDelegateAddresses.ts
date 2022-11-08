@@ -5,7 +5,7 @@ import { getIgnoredRequestToBeDelegateAddresses } from "web3";
 
 export function useIgnoredRequestToBeDelegateAddresses() {
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [ignoredRequestToBeDelegateAddressesKey, address],

@@ -8,10 +8,13 @@ export function useCommitVotes() {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
-  const onError = useHandleError();
+  const { onError, clearErrors } = useHandleError();
 
   const { mutate, isLoading } = useMutation(commitVotes, {
+    onError,
     onSuccess: (data, { formattedVotes }) => {
+      clearErrors();
+
       queryClient.setQueryData<VoteExistsByKeyT>(
         [committedVotesKey, address, roundId],
         (oldCommittedVotes) => {
@@ -40,7 +43,6 @@ export function useCommitVotes() {
         }
       );
     },
-    onError,
   });
 
   return {

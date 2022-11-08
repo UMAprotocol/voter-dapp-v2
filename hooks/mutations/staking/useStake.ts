@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakerDetailsKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
-import { formatTransactionError } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
 import { stake } from "web3";
@@ -9,10 +8,13 @@ import { stake } from "web3";
 export function useStake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const onError = useHandleError(errorOrigin);
+  const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(stake, {
+    onError,
     onSuccess: (_data, { stakeAmount }) => {
+      clearErrors();
+
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
         (oldStakerDetails) => {
@@ -38,9 +40,6 @@ export function useStake(errorOrigin?: ErrorOriginT) {
           return newUnstakedBalance;
         }
       );
-    },
-    onError(error: unknown) {
-      onError(formatTransactionError(error));
     },
   });
   return {

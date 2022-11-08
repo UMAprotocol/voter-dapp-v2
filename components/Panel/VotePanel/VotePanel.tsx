@@ -54,7 +54,7 @@ export function VotePanel({ content }: Props) {
       <PanelTitle
         title={title ?? decodedIdentifier}
         origin={origin}
-        voteNumber={voteNumber.toString()}
+        voteNumber={voteNumber?.toString()}
       />
       {hasResults ? (
         <Tabs tabs={tabs} />

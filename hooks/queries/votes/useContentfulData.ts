@@ -51,7 +51,7 @@ export function useContentfulData() {
     data: { upcomingVotes },
   } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const adminProposalNumbersByKey: Record<UniqueKeyT, number> = {};
 

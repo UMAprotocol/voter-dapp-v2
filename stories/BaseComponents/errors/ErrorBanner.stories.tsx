@@ -2,7 +2,7 @@ import { Meta, Story } from "@storybook/react";
 import { Button, ErrorBanner, TextInput } from "components";
 import { ErrorProvider } from "contexts";
 import { useErrorContext } from "hooks";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default {
   title: "Base components/Errors/Error Banner",
@@ -14,9 +14,9 @@ export default {
       </ErrorProvider>
     ),
   ],
-} as Meta<{ errorMessages: ReactNode[] }>;
+} as Meta<{ errorMessages: string[] }>;
 
-const Template: Story<{ errorMessages: ReactNode[] }> = (args) => {
+const Template: Story<{ errorMessages: string[] }> = (args) => {
   const errorOrigin = "storybook";
   const { errorMessages } = args;
   const { addErrorMessage, removeErrorMessage, clearErrorMessages } =
@@ -76,15 +76,5 @@ MultipleOfTheSameErrorMessage.args = {
     "You seem to be offline. Please check your internet connection and try again.",
     "You seem to be offline. Please check your internet connection and try again.",
     "You seem to be offline. Please check your internet connection and try again.",
-  ],
-};
-
-export const CustomMarkup = Template.bind({});
-CustomMarkup.args = {
-  errorMessages: [
-    <>
-      You seem to be offline.{" "}
-      <strong>Please check your internet connection and try again.</strong>
-    </>,
   ],
 };

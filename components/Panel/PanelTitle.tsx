@@ -49,11 +49,14 @@ function SubTitleText({
   voteNumber?: string;
   origin?: VoteOriginT;
 }) {
-  if (!voteNumber || !origin) return null;
-
   return (
     <>
-      {origin} | Vote number <Strong>#{voteNumber}</Strong>
+      {origin && origin} {origin && voteNumber && "|"}{" "}
+      {voteNumber && (
+        <>
+          Vote number <Strong>#{voteNumber}</Strong>
+        </>
+      )}
     </>
   );
 }

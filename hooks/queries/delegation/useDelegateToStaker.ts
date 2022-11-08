@@ -15,7 +15,7 @@ export function useDelegateToStaker() {
     data: { delegate },
   } = useStakerDetails();
   const { address } = useUserContext();
-  const onError = useHandleError();
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [delegateToStakerKey, address],

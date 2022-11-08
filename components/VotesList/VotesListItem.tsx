@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import {
   Button,
   Dropdown,
@@ -17,6 +16,7 @@ import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMA from "public/assets/icons/uma.svg";
+import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT, VotePhaseT, VoteT } from "types";
 
@@ -58,6 +58,7 @@ export function VotesListItem({
     correctVote,
     voteNumber,
     isRolled,
+    isV1,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
@@ -202,7 +203,7 @@ export function VotesListItem({
           <VoteDetailsWrapper>
             <VoteTitle>{formatTitle(title)}</VoteTitle>
             <VoteDetailsInnerWrapper>
-              {isRolled ? (
+              {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
                   <RolledWrapper>
                     <RolledIconWrapper>
@@ -216,7 +217,8 @@ export function VotesListItem({
                 </Tooltip>
               ) : null}
               <VoteOrigin>
-                {origin} | Vote #{voteNumber.toString()}
+                {origin}{" "}
+                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>

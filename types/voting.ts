@@ -18,7 +18,7 @@ export type PriceRequestT = {
   time: number;
   identifier: string;
   ancillaryData: string;
-  voteNumber: BigNumber;
+  voteNumber: BigNumber | undefined;
   correctVote?: number;
   // computed values
   timeMilliseconds: number;
@@ -26,6 +26,7 @@ export type PriceRequestT = {
   decodedIdentifier: string;
   decodedAncillaryData: string;
   uniqueKey: UniqueKeyT;
+  isV1: boolean;
 };
 
 export type ParticipationT = {
@@ -51,14 +52,17 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-  priceRequestIndex: BigNumber;
+  priceRequestIndex: BigNumber | undefined;
   correctVote?: number;
   participation?: ParticipationT;
   results?: ResultsT;
+  isV1?: boolean;
 };
 
+export type TransactionHashT = string | "rolled" | "v1";
+
 export type VoteTransactionDataT = {
-  transactionHash: string;
+  transactionHash: TransactionHashT;
 };
 
 export type VoteHistoryDataT = {
