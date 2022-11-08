@@ -2,16 +2,25 @@ import { formatTransactionError } from "helpers";
 import { useErrorContext } from "hooks";
 import { ErrorOriginT } from "types";
 
-export function useHandleError(
-  errorOrigin?: ErrorOriginT,
-  isContractTransaction = true
-) {
+interface Options {
+  errorOrigin?: ErrorOriginT;
+  isContractTransaction?: boolean;
+  customErrorMessage?: string;
+}
+export function useHandleError(options?: Options) {
+  const {
+    errorOrigin,
+    isContractTransaction = true,
+    customErrorMessage,
+  } = options || {};
   const { addErrorMessage, clearErrorMessages } = useErrorContext(errorOrigin);
 
   function onError(error: unknown) {
     let message: string;
 
-    if (error instanceof Error) {
+    if (customErrorMessage) {
+      message = customErrorMessage;
+    } else if (error instanceof Error) {
       message = isContractTransaction
         ? formatTransactionError(error)
         : error.message;
