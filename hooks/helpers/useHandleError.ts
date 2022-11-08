@@ -1,4 +1,4 @@
-import { errorFetchingVoteDataMessage } from "constant";
+import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
 import { formatTransactionError } from "helpers";
 import { useErrorContext } from "hooks";
 import { ErrorOriginT } from "types";
@@ -16,9 +16,12 @@ export function useHandleError(options?: Options) {
     isDataFetching = false,
     customErrorMessage,
   } = options || {};
-  const { addErrorMessage, clearErrorMessages } = useErrorContext(errorOrigin);
+  const { addErrorMessage, clearErrorMessages, errorMessages } =
+    useErrorContext(errorOrigin);
 
   function onError(error: unknown) {
+    if (errorMessages.includes(wrongChainMessage)) return;
+
     let message: string;
 
     if (isDataFetching) {

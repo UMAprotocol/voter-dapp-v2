@@ -1,9 +1,10 @@
-import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { signingMessage } from "constant";
+import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
+import { signingMessage, wrongChainMessage } from "constant";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
 import {
   useContractsContext,
+  useErrorContext,
   usePanelContext,
   useUserContext,
   useWalletContext,
@@ -19,11 +20,27 @@ import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
+  const [{ connectedChain }, setChain] = useSetChain();
   const connectedWallets = useWallets();
   const { setProvider, setSigner, setSigningKeys } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
   const { openPanel } = usePanelContext();
   const { address, truncatedAddress } = useUserContext();
+  const { addErrorMessage, removeErrorMessage } = useErrorContext();
+
+  useEffect(() => {
+    if (!connectedChain) return;
+
+    void (async () => {
+      if (connectedChain.id !== "0x5") {
+        addErrorMessage(wrongChainMessage);
+        await setChain({ chainId: "0x5" });
+      } else {
+        removeErrorMessage(wrongChainMessage);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedChain?.id, setChain]);
 
   useEffect(() => {
     if (!connectedWallets.length) return;
