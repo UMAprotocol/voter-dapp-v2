@@ -1,14 +1,25 @@
 import { createContext, ReactNode, useState } from "react";
+import { ErrorOriginT } from "types";
+
+type ErrorMessagesT = Record<ErrorOriginT, string[]>;
 
 export interface ErrorContextState {
-  errorMessages: Record<string, ReactNode[]>;
-  addErrorMessage: (type: string, message: ReactNode) => void;
-  removeErrorMessage: (type: string, message: ReactNode) => void;
-  clearErrorMessages: (type: string) => void;
+  errorMessages: ErrorMessagesT;
+  addErrorMessage: (origin: ErrorOriginT, message: string) => void;
+  removeErrorMessage: (origin: ErrorOriginT, message: string) => void;
+  clearErrorMessages: (origin: ErrorOriginT) => void;
 }
 
 export const defaultErrorContextState: ErrorContextState = {
-  errorMessages: { default: [] },
+  errorMessages: {
+    default: [],
+    vote: [],
+    stake: [],
+    unstake: [],
+    claim: [],
+    delegation: [],
+    storybook: [],
+  },
   addErrorMessage: () => null,
   removeErrorMessage: () => null,
   clearErrorMessages: () => null,
@@ -19,29 +30,31 @@ export const ErrorContext = createContext<ErrorContextState>(
 );
 
 export function ErrorProvider({ children }: { children: ReactNode }) {
-  const [errorMessages, setErrorMessages] = useState<
-    Record<string, ReactNode[]>
-  >({});
+  const [errorMessages, setErrorMessages] = useState<ErrorMessagesT>(
+    defaultErrorContextState.errorMessages
+  );
 
-  function addErrorMessage(type: string, message: ReactNode) {
+  function addErrorMessage(origin: ErrorOriginT, message: string) {
+    if (!message) return;
+
     setErrorMessages((prev) => ({
       ...prev,
-      [type]: [...new Set([...(prev[type] || []), message])],
+      [origin]: [...new Set([...(prev[origin] || []), message])],
     }));
   }
 
-  function clearErrorMessages(type: string) {
+  function clearErrorMessages(origin: ErrorOriginT) {
     setErrorMessages((prev) => ({
       ...prev,
-      [type]: [],
+      [origin]: [],
     }));
   }
 
-  function removeErrorMessage(type: string, message: ReactNode) {
+  function removeErrorMessage(origin: ErrorOriginT, message: string) {
     setErrorMessages((prev) => ({
       ...prev,
-      [type]: prev[type]
-        ? prev[type].filter((prevMessage) => prevMessage !== message)
+      [origin]: prev[origin]
+        ? prev[origin].filter((prevMessage) => prevMessage !== message)
         : [],
     }));
   }
