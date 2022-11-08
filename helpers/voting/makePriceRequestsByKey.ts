@@ -1,6 +1,5 @@
+import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
-import { decodeHexString } from "helpers";
-import { makeUniqueKeyForVote } from "helpers";
 
 export function makePriceRequestsByKey(
   priceRequests: RawPriceRequestDataT[] | undefined
@@ -30,17 +29,17 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
   const voteNumber = priceRequest.priceRequestIndex;
-  const decodedIdentifier = decodeHexString(identifier);
-  let decodedAncillaryData = ancillaryData;
+  let decodedIdentifier = "";
+  let decodedAncillaryData = "";
   try {
-    // this will fail expecially with data from previous contracts. So catch and warn.
+    decodedIdentifier = decodeHexString(identifier);
+  } catch (e) {
+    decodedIdentifier = "WARNING - INVALID IDENTIFIER";
+  }
+  try {
     decodedAncillaryData = decodeHexString(ancillaryData);
-  } catch (err) {
-    console.warn(
-      "unable to format price request, ancillary data decode failed:",
-      err,
-      priceRequest
-    );
+  } catch (e) {
+    decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
   }
   const correctVote = priceRequest.correctVote;
   const uniqueKey = makeUniqueKeyForVote(
