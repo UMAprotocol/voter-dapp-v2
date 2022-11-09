@@ -1,10 +1,10 @@
-import Logo from "public/assets/icons/logo.svg";
+import NextLink from "next/link";
 import Discord from "public/assets/icons/discord.svg";
 import Discourse from "public/assets/icons/discourse.svg";
-import Twitter from "public/assets/icons/twitter.svg";
 import Github from "public/assets/icons/github.svg";
+import Logo from "public/assets/icons/logo.svg";
 import Message from "public/assets/icons/message.svg";
-import Link from "next/link";
+import Twitter from "public/assets/icons/twitter.svg";
 import styled from "styled-components";
 
 const socialLinks = [
@@ -36,12 +36,10 @@ export function PanelFooter() {
       <SocialsWrapper>
         <Socials>
           {socialLinks.map(({ href, Icon }) => (
-            <Link key={href} href={href} passHref>
-              <A target="_blank">
-                <SocialIconWrapper>
-                  <Icon />
-                </SocialIconWrapper>
-              </A>
+            <Link key={href} href={href} target="_blank">
+              <SocialIconWrapper>
+                <Icon />
+              </SocialIconWrapper>
             </Link>
           ))}
         </Socials>
@@ -76,7 +74,7 @@ const Socials = styled.div`
   gap: 32px;
 `;
 
-const A = styled.a``;
+const Link = styled(NextLink)``;
 
 const SocialIconWrapper = styled.div`
   width: 24px;
