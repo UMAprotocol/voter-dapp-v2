@@ -298,7 +298,7 @@ export function VotesListItem({
 function VoteText({ voteText }: { voteText: string | undefined }) {
   if (!voteText) return <></>;
 
-  const maxVoteTextLength = 10;
+  const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {
     return (
       <Tooltip label={voteText}>
