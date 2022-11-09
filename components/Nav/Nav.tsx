@@ -1,7 +1,7 @@
 import { red500 } from "constant";
 import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
@@ -41,10 +41,11 @@ export function Nav({ links }: Props) {
                 } as CSSProperties
               }
             >
-              <Link href={href} passHref>
-                <A target={isExternalLink(href) ? "_blank" : undefined}>
-                  {title}
-                </A>
+              <Link
+                href={href}
+                target={isExternalLink(href) ? "_blank" : undefined}
+              >
+                {title}
               </Link>
             </NavItem>
           ))}
@@ -64,7 +65,7 @@ const NavItems = styled.ul`
 
 const NavItem = styled.li``;
 
-const A = styled.a`
+const Link = styled(NextLink)`
   text-decoration: none;
   color: var(--black);
   height: 50px;

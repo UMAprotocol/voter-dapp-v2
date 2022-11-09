@@ -4,7 +4,7 @@ import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
 import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
 import NextLink from "next/link";
-import Link from "public/assets/icons/link.svg";
+import LinkedAddress from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
@@ -152,23 +152,21 @@ export function MenuPanel() {
                         <PendingRequestIcon />
                       </IconWrapper>
                       <PendingRequestText>
-                        <NextLink href="/wallet-settings" passHref>
-                          <A>{pendingRequestLinkText}</A>
-                        </NextLink>{" "}
+                        <Link href="/wallet-settings">
+                          {pendingRequestLinkText}
+                        </Link>{" "}
                         to be delegate {toOrFrom} address{" "}
-                        <NextLink
+                        <Link
                           href={`https://goerli.etherscan.io/address/${getPendingRequestAddress(
                             delegator,
                             delegate
                           )}`}
-                          passHref
+                          target="_blank"
                         >
-                          <A target="_blank">
-                            {truncateEthAddress(
-                              getPendingRequestAddress(delegator, delegate)
-                            )}
-                          </A>
-                        </NextLink>
+                          {truncateEthAddress(
+                            getPendingRequestAddress(delegator, delegate)
+                          )}
+                        </Link>
                       </PendingRequestText>
                     </PendingRequestWrapper>
                   )
@@ -254,7 +252,7 @@ const TruncatedAddress = styled(Address)`
   }
 `;
 
-const A = styled.a`
+const Link = styled(NextLink)`
   color: var(--red-500);
   text-decoration: none;
   &:hover {
@@ -267,7 +265,7 @@ const LinkedAddressIconWrapper = styled.div`
   height: 24px;
 `;
 
-const LinkedAddressIcon = styled(Link)`
+const LinkedAddressIcon = styled(LinkedAddress)`
   circle {
     fill: var(--black);
   }

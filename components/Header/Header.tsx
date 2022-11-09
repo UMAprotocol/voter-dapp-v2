@@ -40,11 +40,9 @@ export function Header() {
       <InnerWrapper>
         <HomeLinkAndPageDescriptionWrapper>
           <HomeLinkWrapper>
-            <NextLink href="/">
-              <HomeLink>
-                <LogoIcon />
-              </HomeLink>
-            </NextLink>
+            <HomeLink href="/">
+              <LogoIcon />
+            </HomeLink>
           </HomeLinkWrapper>
           <PageDescription>VOTING</PageDescription>
         </HomeLinkAndPageDescriptionWrapper>
@@ -127,7 +125,7 @@ const HomeLinkWrapper = styled.div`
   max-width: 90px;
 `;
 
-const HomeLink = styled.a``;
+const HomeLink = styled(NextLink)``;
 
 const HomeLinkAndPageDescriptionWrapper = styled.div`
   display: flex;

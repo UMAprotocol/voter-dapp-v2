@@ -11,7 +11,7 @@ import {
   getPrecisionForIdentifier,
 } from "helpers";
 import { useWalletContext, useWindowSize } from "hooks";
-import Link from "next/link";
+import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
@@ -210,9 +210,12 @@ export function VotesListItem({
                       <RolledIcon />
                     </RolledIconWrapper>
                     {/* todo: add link to explanation of rolled votes in the docs once its written */}
-                    <Link href="https://docs.umaproject.org" passHref>
-                      <RolledLink target="_blank">Rolled</RolledLink>
-                    </Link>
+                    <RolledLink
+                      href="https://docs.umaproject.org"
+                      target="_blank"
+                    >
+                      Rolled
+                    </RolledLink>
                   </RolledWrapper>
                 </Tooltip>
               ) : null}
@@ -468,7 +471,7 @@ const RolledIconWrapper = styled.div`
 
 const RolledIcon = styled(Rolled)``;
 
-const RolledLink = styled.a`
+const RolledLink = styled(NextLink)`
   font: var(--text-sm);
   color: var(--red-500);
   text-decoration: underline;

@@ -37,14 +37,12 @@ export function Notification({
       <TextWrapper>
         <Message>{message}</Message>
         {transactionHash && (
-          <NextLink
+          <Link
             href={`https://goerli.etherscan.io/tx/${transactionHash}`}
-            passHref
+            target="_blank"
           >
-            <A target="_blank" rel="noopener noreferrer">
-              View on Etherscan
-            </A>
-          </NextLink>
+            View on Etherscan
+          </Link>
         )}
       </TextWrapper>
       <CloseButton onClick={() => dismiss(id)}>
@@ -93,7 +91,7 @@ const TextWrapper = styled.div`
 
 const Message = styled.div``;
 
-const A = styled.a`
+const Link = styled(NextLink)`
   color: var(--red-500);
   text-decoration: none;
   &:hover {

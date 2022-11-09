@@ -160,12 +160,12 @@ export function DelegationPanel() {
                         Waiting for approval
                       </PendingRequestText>
                       <PendingRequestText>
-                        <NextLink
+                        <Link
                           href={`https://goerli.etherscan.io/tx/${transactionHash}`}
-                          passHref
+                          target="_blank"
                         >
-                          <A target="_blank">View Transaction</A>
-                        </NextLink>
+                          View Transaction
+                        </Link>
                       </PendingRequestText>
                     </PendingRequestDetailsWrapper>
                   </AddressWrapper>
@@ -262,7 +262,7 @@ export const AddressWrapper = styled.div`
   gap: 15px;
 `;
 
-const A = styled.a`
+const Link = styled(NextLink)`
   color: var(--red-500);
   text-decoration: none;
   &:hover {

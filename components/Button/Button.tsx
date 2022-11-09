@@ -1,6 +1,6 @@
 import { red100, red500, red600, white } from "constant";
 import { isExternalLink } from "helpers";
-import Link from "next/link";
+import NextLink from "next/link";
 import { ReactNode } from "react";
 import styled, { CSSProperties } from "styled-components";
 
@@ -135,15 +135,17 @@ interface LinkProps {
 }
 function _Link({ href, children, style }: LinkProps) {
   return (
-    <Link href={href} passHref>
-      <A style={style} target={isExternalLink(href) ? "_blank" : undefined}>
-        {children}
-      </A>
+    <Link
+      href={href}
+      style={style}
+      target={isExternalLink(href) ? "_blank" : undefined}
+    >
+      {children}
     </Link>
   );
 }
 
-const A = styled.a`
+const Link = styled(NextLink)`
   display: var(--display);
   place-items: var(--place-items);
   width: var(--width);
