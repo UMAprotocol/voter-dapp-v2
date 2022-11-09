@@ -152,7 +152,7 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
 }
 
 export function makeMockVotesWithHistory(args?: VoteHistoryMockArgsT) {
-  const votes = Array.from({ length: args?.length ?? 10 }, (_, i) => ({
+  const votes = Array.from({ length: args?.length ?? 100 }, (_, i) => ({
     ...(args?.vote ?? voteWithCorrectVoteWithUserVote),
     voteNumber: BigNumber.from(i + 100),
     uniqueKey: `${Math.random()}`,

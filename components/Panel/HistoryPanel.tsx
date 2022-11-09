@@ -1,5 +1,10 @@
-import { LoadingSkeleton, LoadingSpinner, VoteHistoryTable } from "components";
-import { black, green, red500 } from "constant";
+import {
+  LoadingSkeleton,
+  LoadingSpinner,
+  Pagination,
+  VoteHistoryTable,
+} from "components";
+import { black, green, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
@@ -15,6 +20,10 @@ export function HistoryPanel() {
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
+
+  const pastVotes = getPastVotes();
+  const numberOfPastVotes = pastVotes.length;
+
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
     : cumulativeCalculatedSlashPercentage?.gt(0)
@@ -79,6 +88,12 @@ export function HistoryPanel() {
             )}
           </HistoryWrapper>
         </SectionWrapper>
+        <PaginationWrapper>
+          <Pagination
+            paginateFor="voteHistoryPage"
+            numberOfEntries={numberOfPastVotes}
+          />
+        </PaginationWrapper>
       </SectionsWrapper>
       <PanelFooter />
     </PanelWrapper>
@@ -97,6 +112,10 @@ const AprWrapper = styled.div`
 const SectionWrapper = styled.div`
   margin-inline: 30px;
   margin-top: 15px;
+
+  @media ${mobileAndUnder} {
+    margin-inline: 15px;
+  }
 `;
 
 const SectionsWrapper = styled.div``;
@@ -118,6 +137,11 @@ const AprDetailsWrapper = styled.div`
   background: var(--white);
   color: var(--black);
   border-radius: 5px;
+`;
+
+const PaginationWrapper = styled.div`
+  margin-inline: 10px;
+  margin-top: 10px;
 `;
 
 const Text = styled.p`
