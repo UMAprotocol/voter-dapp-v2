@@ -131,14 +131,16 @@ export function VotesListItem({
   function getCorrectVote() {
     if (correctVote === undefined) return;
     const correctVoteAsString = correctVote.toFixed();
-
-    return (
-      findVoteInOptions(correctVoteAsString)?.label ??
-      formatVoteStringWithPrecision(correctVoteAsString, decodedIdentifier)
+    const formatted = formatVoteStringWithPrecision(
+      correctVoteAsString,
+      decodedIdentifier
     );
+
+    return findVoteInOptions(formatted)?.label ?? formatted;
   }
 
   function findVoteInOptions(value: string | undefined) {
+    console.log({ decodedIdentifier, options, value });
     return options?.find((option) => {
       return option.value === value;
     });
