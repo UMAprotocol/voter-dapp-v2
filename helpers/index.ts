@@ -11,7 +11,7 @@ export { handleNotifications } from "./util/handleNotifications";
 export { capitalizeFirstLetter, isExternalLink } from "./util/isExternalLink";
 export { logTruthy } from "./util/logTruthy";
 export { unixTimestampToDate } from "./util/unixTimestampToDate";
-export { checkIfIsPolymarket } from "./voting/checkIfIsPolymarket";
+export * from "./voting/polymarket";
 export {
   formatVotesToCommit,
   formatVotesToReveal,
