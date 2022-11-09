@@ -1,5 +1,4 @@
 import { loadingSkeletonOpacity100, white, whiteOpacity10 } from "constant";
-import { cloneElement } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
 
 interface Props {
@@ -27,10 +26,6 @@ export function LoadingSkeleton({
     "--height": getDimension(height),
   } as CSSProperties;
 
-  const placeholder = cloneElement(children, {
-    children: <Placeholder>INVISIBLE</Placeholder>,
-  });
-
   function getDimension(dimension: number | string | undefined) {
     if (dimension === undefined) return;
 
@@ -38,7 +33,9 @@ export function LoadingSkeleton({
   }
 
   return isLoading ? (
-    <Wrapper style={style}>{placeholder}</Wrapper>
+    <Wrapper style={style}>
+      <Placeholder>{children}</Placeholder>
+    </Wrapper>
   ) : (
     <>{children}</>
   );
