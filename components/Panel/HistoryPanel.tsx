@@ -50,7 +50,10 @@ export function HistoryPanel() {
                 variant="white"
                 width={60}
               >
-                <>{formatNumberForDisplay(cumulativeCalculatedSlash)}</>
+                <>
+                  Based on participation score:{" "}
+                  {formatNumberForDisplay(cumulativeCalculatedSlash)}
+                </>
               </LoadingSkeleton>
             </Text>
             <Text>
