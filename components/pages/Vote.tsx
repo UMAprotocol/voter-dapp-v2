@@ -13,7 +13,7 @@ import { LoadingSpinnerWrapper, Strong } from "./styles";
 export function Vote() {
   const { getUserIndependentIsLoading } = useVotesContext();
   return (
-    <Layout>
+    <Layout title="UMA | Voting dApp">
       <Banner>
         Stake, vote &amp; earn up to <Strong>30% APY</Strong>
       </Banner>

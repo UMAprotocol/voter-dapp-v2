@@ -94,11 +94,6 @@ export default class MyDocument extends Document {
             type="font/ttf"
             crossOrigin="anonymous"
           />
-          <meta charSet="utf-8" />
-          <meta
-            name="viewport"
-            content="initial-scale=1.0, width=device-width"
-          />
         </Head>
         <body>
           <Main />

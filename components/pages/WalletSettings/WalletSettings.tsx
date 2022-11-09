@@ -13,7 +13,7 @@ export function WalletSettings() {
   const { getDelegationDataLoading } = useDelegationContext();
 
   return (
-    <Layout>
+    <Layout title="UMA | Wallet Settings">
       <Banner>Wallet Settings</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>

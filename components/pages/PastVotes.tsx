@@ -38,7 +38,7 @@ export function PastVotes() {
   const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
 
   return (
-    <Layout>
+    <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
