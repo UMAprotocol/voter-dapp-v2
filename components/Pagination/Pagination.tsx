@@ -1,7 +1,7 @@
 import { Dropdown } from "components";
-import { grey800, white } from "constant";
+import { grey800, mobileAndUnder, mobileMax, white } from "constant";
 import { addOpacityToHsl } from "helpers";
-import { usePaginationContext } from "hooks";
+import { usePaginationContext, useWindowSize } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
 import styled from "styled-components";
@@ -22,11 +22,17 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
     lastPage,
     setResultsPerPage,
   } = usePaginationContext();
+  const { width } = useWindowSize();
+
+  if (!width) return <></>;
 
   const { pageNumber, resultsPerPage } = pageStates[paginateFor];
   const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
   const lastPageNumber = numberOfPages;
-  const defaultNumberOfButtons = 4;
+  const desktopNumberOfButtons = 4;
+  const mobileNumberOfButtons = 2;
+  const defaultNumberOfButtons =
+    width <= mobileMax ? mobileNumberOfButtons : desktopNumberOfButtons;
   const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
   const showFirstButton = hasMorePagesThanButtons;
   const showLastButton = hasMorePagesThanButtons;
@@ -148,6 +154,12 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media ${mobileAndUnder} {
+    flex-direction: column;
+    gap: 10px;
+    align-items: start;
+  }
 `;
 
 const ResultsPerPageWrapper = styled.div`

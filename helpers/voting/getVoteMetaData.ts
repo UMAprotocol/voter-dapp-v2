@@ -192,7 +192,7 @@ function makeVoteLinks(transactionHash: TransactionHashT, umipNumber?: number) {
 
   if (transactionHash !== "rolled" && transactionHash !== "v1") {
     links.push({
-      label: "Vote transaction",
+      label: "Request transaction",
       href: `https://goerli.etherscan.io/tx/${transactionHash}`,
     });
   }
