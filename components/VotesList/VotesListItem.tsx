@@ -267,7 +267,7 @@ export function VotesListItem({
         <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <LoadingSkeleton isLoading={isFetching} width={100}>
+            <LoadingSkeleton isLoading={isFetching} width={100} height={24}>
               <>
                 <DotIcon
                   style={
