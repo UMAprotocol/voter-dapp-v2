@@ -140,7 +140,6 @@ export function VotesListItem({
   }
 
   function findVoteInOptions(value: string | undefined) {
-    console.log({ decodedIdentifier, options, value });
     return options?.find((option) => {
       return option.value === value;
     });
@@ -252,7 +251,7 @@ export function VotesListItem({
       {showYourVote() ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Your vote</VoteLabel>{" "}
-          <LoadingSkeleton isLoading={isFetching} width={100}>
+          <LoadingSkeleton isLoading={true} width={100}>
             <VoteText voteText={getYourVote()} />
           </LoadingSkeleton>
         </YourVote>
