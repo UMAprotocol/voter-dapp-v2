@@ -13,7 +13,6 @@ import {
   useContractsContext,
   useDelegationContext,
   useHandleError,
-  useInitializeVoteTiming,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
@@ -45,8 +44,6 @@ export function Votes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
-
-  useInitializeVoteTiming();
 
   async function commitVotes() {
     if (!address) return;
