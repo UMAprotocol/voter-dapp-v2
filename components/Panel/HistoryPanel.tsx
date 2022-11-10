@@ -5,8 +5,8 @@ import {
   VoteHistoryTable,
 } from "components";
 import { black, green, mobileAndUnder, red500 } from "constant";
-import { formatNumberForDisplay } from "helpers";
-import { useUserContext, useVotesContext } from "hooks";
+import { formatNumberForDisplay, getEntriesForPage } from "helpers";
+import { usePaginationContext, useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -20,9 +20,15 @@ export function HistoryPanel() {
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
+  const {
+    pageStates: {
+      pastVotesPage: { resultsPerPage, pageNumber },
+    },
+  } = usePaginationContext();
 
   const pastVotes = getPastVotes();
   const numberOfPastVotes = pastVotes.length;
+  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -87,7 +93,7 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSpinner size={250} />
             ) : (
-              <VoteHistoryTable votes={getPastVotes()} />
+              <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
         </SectionWrapper>
