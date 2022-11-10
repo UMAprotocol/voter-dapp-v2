@@ -267,7 +267,7 @@ VotePanelWithResults.args = {
     },
     results: [
       {
-        vote: 500000,
+        vote: 50000000000,
         tokensVotedWith: 1234,
       },
       {
