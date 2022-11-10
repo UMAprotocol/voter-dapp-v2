@@ -25,9 +25,16 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
+  const shouldPluralize = formattedVotes.length > 1;
   return handleNotifications(tx, {
-    pending: `Revealing ${formattedVotes.length} votes...`,
-    success: `Revealed ${formattedVotes.length} votes`,
-    error: `Failed to reveal ${formattedVotes.length} votes`,
+    pending: `Revealing ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }...`,
+    success: `Revealed ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }`,
+    error: `Failed to reveal ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }`,
   });
 }
