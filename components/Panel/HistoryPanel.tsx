@@ -13,7 +13,7 @@ import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
-  const { getPastVotes, getIsFetching } = useVotesContext();
+  const { getPastVotes } = useVotesContext();
   const {
     apr,
     cumulativeCalculatedSlash,
@@ -37,7 +37,7 @@ export function HistoryPanel() {
     : red500;
 
   function isLoading() {
-    return getIsFetching() || userDataFetching;
+    return userDataFetching;
   }
 
   return (
@@ -96,13 +96,13 @@ export function HistoryPanel() {
               <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
+          <PaginationWrapper>
+            <Pagination
+              paginateFor="voteHistoryPage"
+              numberOfEntries={numberOfPastVotes}
+            />
+          </PaginationWrapper>
         </SectionWrapper>
-        <PaginationWrapper>
-          <Pagination
-            paginateFor="voteHistoryPage"
-            numberOfEntries={numberOfPastVotes}
-          />
-        </PaginationWrapper>
       </SectionsWrapper>
       <PanelFooter />
     </PanelWrapper>
@@ -149,7 +149,6 @@ const AprDetailsWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-inline: 10px;
   margin-top: 10px;
 `;
 
