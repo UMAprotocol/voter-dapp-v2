@@ -39,7 +39,7 @@ export function Details({
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
-        <Text>
+        <Text as="div">
           <ReactMarkdown
             components={{
               a: (props) => <A {...props} target="_blank" />,
