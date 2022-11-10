@@ -1,5 +1,6 @@
 export * from "./misc/errorMessages";
 export * from "./misc/siteMetaData";
+export * from "./misc/timeUnits";
 export * from "./query/graphEndpoint";
 export * from "./query/queryKeys";
 export * from "./styles/breakpoints";
