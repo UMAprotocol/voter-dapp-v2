@@ -22,7 +22,7 @@ export function HistoryPanel() {
   } = useUserContext();
   const {
     pageStates: {
-      pastVotesPage: { resultsPerPage, pageNumber },
+      voteHistoryPage: { resultsPerPage, pageNumber },
     },
   } = usePaginationContext();
 
