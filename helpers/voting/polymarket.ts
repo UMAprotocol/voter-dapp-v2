@@ -54,6 +54,10 @@ export function maybeMakePolymarketOptions(
         value: "0.5",
         secondaryLabel: "p3",
       },
+      {
+        label: "Custom",
+        value: "custom",
+      },
     ];
   }
 
@@ -81,6 +85,10 @@ export function maybeMakePolymarketOptions(
         label: "Early request",
         value: earlyRequestMagicNumber,
         secondaryLabel: "p4",
+      },
+      {
+        label: "Custom",
+        value: "custom",
       },
     ];
   }
