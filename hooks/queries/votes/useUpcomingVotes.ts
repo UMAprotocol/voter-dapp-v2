@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { upcomingVotesKey } from "constant";
+import { oneMinute, upcomingVotesKey } from "constant";
 import {
   useContractsContext,
   useHandleError,
@@ -16,7 +16,7 @@ export function useUpcomingVotes() {
     [upcomingVotesKey, roundId],
     () => getUpcomingVotes(voting, roundId),
     {
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: (data) => (data ? oneMinute : 100),
       initialData: {
         upcomingVotes: {},
         hasUpcomingVotes: false,
