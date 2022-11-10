@@ -3,6 +3,7 @@ import {
   computePercentages,
   DonutChart,
   PanelErrorBanner,
+  Tooltip,
 } from "components";
 import { mobileAndUnder } from "constant";
 import { usePanelWidth } from "hooks";
@@ -53,7 +54,7 @@ export function Result({ participation, results }: Props) {
               <LegendItem key={label}>
                 <LegendItemDot style={{ "--color": color } as CSSProperties} />
                 <LegendItemData>
-                  <LegendItemLabel>{label}</LegendItemLabel>
+                  <LegendItemLabel label={label} />
                   <Strong>{percent.toFixed(2)}%</Strong> ({value})
                 </LegendItemData>
               </LegendItem>
@@ -84,6 +85,17 @@ export function Result({ participation, results }: Props) {
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>
   );
+}
+
+function LegendItemLabel({ label }: { label: string }) {
+  if (label.length > 10) {
+    return (
+      <Tooltip label={label}>
+        <LegendItemLabelWrapper>{label.slice(0, 10)}...</LegendItemLabelWrapper>
+      </Tooltip>
+    );
+  }
+  return <LegendItemLabelWrapper>{label}</LegendItemLabelWrapper>;
 }
 
 const Wrapper = styled.div`
@@ -141,7 +153,7 @@ const LegendItemDot = styled.div`
   background: var(--color);
 `;
 
-const LegendItemLabel = styled.h3`
+const LegendItemLabelWrapper = styled.h3`
   font-weight: 500;
 `;
 

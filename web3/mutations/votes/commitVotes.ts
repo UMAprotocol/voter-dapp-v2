@@ -22,9 +22,16 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
+  const shouldPluralize = formattedVotes.length > 1;
   return handleNotifications(tx, {
-    pending: `Committing ${formattedVotes.length} votes...`,
-    success: `Committed ${formattedVotes.length} votes`,
-    error: `Failed to commit ${formattedVotes.length} votes`,
+    pending: `Committing ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }...`,
+    success: `Committed ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }`,
+    error: `Failed to commit ${formattedVotes.length} vote${
+      shouldPluralize ? "s" : ""
+    }`,
   });
 }

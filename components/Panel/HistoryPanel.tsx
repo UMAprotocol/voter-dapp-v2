@@ -5,24 +5,30 @@ import {
   VoteHistoryTable,
 } from "components";
 import { black, green, mobileAndUnder, red500 } from "constant";
-import { formatNumberForDisplay } from "helpers";
-import { useUserContext, useVotesContext } from "hooks";
+import { formatNumberForDisplay, getEntriesForPage } from "helpers";
+import { usePaginationContext, useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
-  const { getPastVotes, getIsFetching } = useVotesContext();
+  const { getPastVotes } = useVotesContext();
   const {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
+  const {
+    pageStates: {
+      voteHistoryPage: { resultsPerPage, pageNumber },
+    },
+  } = usePaginationContext();
 
   const pastVotes = getPastVotes();
   const numberOfPastVotes = pastVotes.length;
+  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -31,7 +37,7 @@ export function HistoryPanel() {
     : red500;
 
   function isLoading() {
-    return getIsFetching() || userDataFetching;
+    return userDataFetching;
   }
 
   return (
@@ -87,16 +93,16 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSpinner size={250} />
             ) : (
-              <VoteHistoryTable votes={getPastVotes()} />
+              <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
+          <PaginationWrapper>
+            <Pagination
+              paginateFor="voteHistoryPage"
+              numberOfEntries={numberOfPastVotes}
+            />
+          </PaginationWrapper>
         </SectionWrapper>
-        <PaginationWrapper>
-          <Pagination
-            paginateFor="voteHistoryPage"
-            numberOfEntries={numberOfPastVotes}
-          />
-        </PaginationWrapper>
       </SectionsWrapper>
       <PanelFooter />
     </PanelWrapper>
@@ -143,7 +149,6 @@ const AprDetailsWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-inline: 10px;
   margin-top: 10px;
 `;
 
