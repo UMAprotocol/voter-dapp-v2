@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { oneMinute, upcomingVotesKey } from "constant";
+import { upcomingVotesKey } from "constant";
 import {
   useContractsContext,
   useHandleError,
+  useNewVotesAdded,
   useVoteTimingContext,
 } from "hooks";
 import { getUpcomingVotes } from "web3";
@@ -10,13 +11,14 @@ import { getUpcomingVotes } from "web3";
 export function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
+  const newVotesAdded = useNewVotesAdded();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
-    [upcomingVotesKey, roundId],
+    [upcomingVotesKey, roundId, newVotesAdded],
     () => getUpcomingVotes(voting, roundId),
     {
-      refetchInterval: (data) => (data ? oneMinute : 100),
+      refetchInterval: (data) => (data ? false : 100),
       initialData: {
         upcomingVotes: {},
         hasUpcomingVotes: false,

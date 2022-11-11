@@ -27,9 +27,8 @@ export const ContractsContext = createContext<ContractsContextState>(
 );
 
 export function ContractsProvider({ children }: { children: ReactNode }) {
-  const [voting, setVoting] = useState<VotingV2Ethers>(defaultVoting);
-  const [votingToken, setVotingToken] =
-    useState<VotingTokenEthers>(defaultVotingToken);
+  const [voting, setVoting] = useState(defaultVoting);
+  const [votingToken, setVotingToken] = useState(defaultVotingToken);
 
   return (
     <ContractsContext.Provider

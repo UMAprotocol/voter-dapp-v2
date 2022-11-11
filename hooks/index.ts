@@ -53,6 +53,7 @@ export { useContentfulData } from "./queries/votes/useContentfulData";
 export { useDecryptedVotes } from "./queries/votes/useDecryptedVotes";
 export { useEncryptedVotes } from "./queries/votes/useEncryptedVotes";
 export { useHasActiveVotes } from "./queries/votes/useHasActiveVotes";
+export { useNewVotesAdded } from "./queries/votes/useNewVotesAdded";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
