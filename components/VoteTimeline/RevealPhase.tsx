@@ -27,7 +27,6 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
         {
           "--color": textColor,
           "--background-color": backgroundColor,
-          "--position": isActive ? "relative" : "unset",
         } as CSSProperties
       }
     >
@@ -61,7 +60,7 @@ export function RevealPhase({ phase, timeRemaining, status }: Props) {
 }
 
 const Wrapper = styled.div`
-  position: var(--position);
+  position: relative;
   height: 50px;
   display: flex;
   align-items: center;
@@ -101,6 +100,7 @@ const Strong = styled.strong`
 `;
 
 const MobileActiveIndicatorWrapper = styled.div`
+  z-index: 1;
   display: none;
   position: absolute;
   left: 15px;

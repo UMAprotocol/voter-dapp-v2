@@ -25,7 +25,6 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
     <OuterWrapper
       style={
         {
-          "--position": isActive ? "relative" : "unset",
           "--border-color":
             status === "past" || status === "upcoming"
               ? grey100
@@ -73,8 +72,12 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
 }
 
 const OuterWrapper = styled.div`
-  position: var(--position);
-  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  z-index: 1;
+
+  @media ${tabletAndUnder} {
+    border-bottom: 1px solid var(--border-color);
+  }
 `;
 
 const InnerWrapper = styled.div`

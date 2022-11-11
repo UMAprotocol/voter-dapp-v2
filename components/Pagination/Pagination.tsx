@@ -1,9 +1,10 @@
 import { Dropdown } from "components";
-import { grey800, mobileAndUnder, mobileMax, white } from "constant";
+import { grey800, mobileAndUnder, white } from "constant";
 import { addOpacityToHsl } from "helpers";
 import { usePaginationContext, useWindowSize } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT, PaginateForT } from "types";
 
@@ -23,25 +24,51 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
     setResultsPerPage,
   } = usePaginationContext();
   const { width } = useWindowSize();
+  const [wrapperWidth, setWrapperWidth] = useState(0);
+  const [buttonsWrapperWidth, setButtonsWrapperWidth] = useState(0);
 
-  if (!width) return <></>;
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const buttonsWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      setWrapperWidth(wrapperRef.current.offsetWidth);
+    }
+    if (buttonsWrapperRef.current) {
+      setButtonsWrapperWidth(buttonsWrapperRef.current.offsetWidth);
+    }
+  }, [buttonsWrapperRef, width]);
 
   const { pageNumber, resultsPerPage } = pageStates[paginateFor];
   const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
   const lastPageNumber = numberOfPages;
-  const desktopNumberOfButtons = 4;
-  const mobileNumberOfButtons = 2;
-  const defaultNumberOfButtons =
-    width <= mobileMax ? mobileNumberOfButtons : desktopNumberOfButtons;
+  const defaultNumberOfButtons = 4;
   const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
   const showFirstButton = hasMorePagesThanButtons;
   const showLastButton = hasMorePagesThanButtons;
-  const numberOfButtons = hasMorePagesThanButtons
-    ? defaultNumberOfButtons
-    : numberOfPages;
+  const numberOfButtons = getNumberOfButtons();
   const numbersPastMax = pageNumber - numberOfButtons;
-
   const buttonNumbers = makeButtonNumbers();
+
+  function getNumberOfButtons() {
+    if (wrapperWidth >= buttonsWrapperWidth) {
+      return hasMorePagesThanButtons ? defaultNumberOfButtons : numberOfPages;
+    }
+
+    const buttonWidth = 40;
+    const nextAndBackButtonsWidth = 2 * buttonWidth;
+    const firstAndLastButtonsWidth = 2 * buttonWidth;
+    const ellipsisWidth = 8;
+
+    const availableSpace =
+      wrapperWidth -
+      nextAndBackButtonsWidth -
+      (hasMorePagesThanButtons ? firstAndLastButtonsWidth + ellipsisWidth : 0);
+
+    const numberOfButtonsThatFit = Math.floor(availableSpace / buttonWidth);
+
+    return numberOfButtonsThatFit;
+  }
 
   function makeButtonNumbers() {
     if (!hasMorePagesThanButtons) {
@@ -95,7 +122,7 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   }
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <ResultsPerPageWrapper>
         <Dropdown
           items={resultsPerPageOptions}
@@ -106,7 +133,7 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
           borderColor={grey800}
         />
       </ResultsPerPageWrapper>
-      <ButtonsWrapper>
+      <ButtonsWrapper ref={buttonsWrapperRef}>
         {showFirstButton && (
           <PageButton
             onClick={_firstPage}
@@ -168,7 +195,7 @@ const ResultsPerPageWrapper = styled.div`
 
 const ButtonsWrapper = styled.div`
   display: flex;
-  gap: 8px;
+  gap: min(8px, 1vw);
 `;
 
 const BaseButton = styled.button`

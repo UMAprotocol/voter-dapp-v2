@@ -1,11 +1,12 @@
 import {
   Button,
+  Pagination,
   VotesList,
   VotesListItem,
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
-import { formatVotesToCommit } from "helpers";
+import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import {
   useAccountDetails,
   useCommittedVotesForDelegator,
@@ -13,6 +14,7 @@ import {
   useContractsContext,
   useDelegationContext,
   useHandleError,
+  usePaginationContext,
   usePanelContext,
   useRevealVotes,
   useVotesContext,
@@ -43,6 +45,11 @@ export function Votes() {
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
+  const {
+    pageStates: {
+      activeVotesPage: { resultsPerPage, pageNumber },
+    },
+  } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
   async function commitVotes() {
@@ -138,6 +145,11 @@ export function Votes() {
     }
   }
 
+  const votesToShow = getEntriesForPage(
+    pageNumber,
+    resultsPerPage,
+    determineVotesToShow()
+  );
   return (
     <>
       <Title>{determineTitle()}</Title>
@@ -145,7 +157,7 @@ export function Votes() {
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
-          rows={determineVotesToShow().map((vote) => (
+          rows={votesToShow.map((vote) => (
             <VotesListItem
               vote={vote}
               phase={phase}
@@ -173,6 +185,12 @@ export function Votes() {
           />
         </CommitVotesButtonWrapper>
       ) : null}
+      <PaginationWrapper>
+        <Pagination
+          paginateFor="activeVotesPage"
+          numberOfEntries={determineVotesToShow().length}
+        />
+      </PaginationWrapper>
     </>
   );
 }
@@ -195,4 +213,8 @@ const CommitVotesButtonWrapper = styled.div`
   button {
     text-transform: capitalize;
   }
+`;
+
+const PaginationWrapper = styled.div`
+  margin-top: 10px;
 `;

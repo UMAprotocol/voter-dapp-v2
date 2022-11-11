@@ -39,7 +39,7 @@ export function Details({
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
-        <Text>
+        <Text as="div">
           <ReactMarkdown
             components={{
               a: (props) => <A {...props} target="_blank" />,
@@ -129,7 +129,7 @@ export function Details({
 const Wrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
-  max-width: var(--panel-width);
+  width: calc(var(--panel-width) - 15px);
 
   @media ${mobileAndUnder} {
     padding-inline: 10px;
