@@ -26,6 +26,7 @@ export { Nav } from "./Nav/Nav";
 export { Notifications } from "./Notifications/Notifications";
 export { PastVotes } from "./pages/PastVotes";
 export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
+export { UpcomingVotes } from "./pages/UpcomingVotes";
 export { Vote } from "./pages/Vote";
 export { Wallets } from "./pages/WalletSettings/Wallets";
 export { WalletSettings } from "./pages/WalletSettings/WalletSettings";
