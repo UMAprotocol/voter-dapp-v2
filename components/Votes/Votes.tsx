@@ -174,7 +174,9 @@ export function Votes() {
     if (!hasStaked) {
       return (
         <Tooltip label={hasStakedMessage}>
-          <CommitRevealButton />
+          <span>
+            <CommitRevealButton />
+          </span>
         </Tooltip>
       );
     }
@@ -182,7 +184,9 @@ export function Votes() {
     if (phase === "reveal" && hasCommittedWithDelegator) {
       return (
         <Tooltip label={hasCommittedWithDelegatorMessage}>
-          <CommitRevealButton />
+          <span>
+            <CommitRevealButton />
+          </span>
         </Tooltip>
       );
     }
