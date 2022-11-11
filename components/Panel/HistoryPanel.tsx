@@ -96,12 +96,14 @@ export function HistoryPanel() {
               <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
-          <PaginationWrapper>
-            <Pagination
-              paginateFor="voteHistoryPage"
-              numberOfEntries={numberOfPastVotes}
-            />
-          </PaginationWrapper>
+          {numberOfPastVotes > 10 && (
+            <PaginationWrapper>
+              <Pagination
+                paginateFor="voteHistoryPage"
+                numberOfEntries={numberOfPastVotes}
+              />
+            </PaginationWrapper>
+          )}
         </SectionWrapper>
       </SectionsWrapper>
       <PanelFooter />

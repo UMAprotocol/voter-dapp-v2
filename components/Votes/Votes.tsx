@@ -185,12 +185,14 @@ export function Votes() {
           />
         </CommitVotesButtonWrapper>
       ) : null}
-      <PaginationWrapper>
-        <Pagination
-          paginateFor="activeVotesPage"
-          numberOfEntries={determineVotesToShow().length}
-        />
-      </PaginationWrapper>
+      {determineVotesToShow().length > 10 && (
+        <PaginationWrapper>
+          <Pagination
+            paginateFor="activeVotesPage"
+            numberOfEntries={determineVotesToShow().length}
+          />
+        </PaginationWrapper>
+      )}
     </>
   );
 }

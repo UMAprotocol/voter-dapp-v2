@@ -69,12 +69,14 @@ export function UpcomingVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              <PaginationWrapper>
-                <Pagination
-                  paginateFor="upcomingVotesPage"
-                  numberOfEntries={numberOfUpcomingVotes}
-                />
-              </PaginationWrapper>
+              {numberOfUpcomingVotes > 10 && (
+                <PaginationWrapper>
+                  <Pagination
+                    paginateFor="upcomingVotesPage"
+                    numberOfEntries={numberOfUpcomingVotes}
+                  />
+                </PaginationWrapper>
+              )}
             </>
           )}
         </PageInnerWrapper>
