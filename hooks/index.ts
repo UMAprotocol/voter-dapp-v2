@@ -39,7 +39,7 @@ export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/use
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
-export { useOutstandingRewards } from "./queries/staking/useOutstandingRewards";
+export { useOutstandingRewards } from "./queries/rewards/useOutstandingRewards";
 export { useStakerDetails } from "./queries/staking/useStakerDetails";
 export { useTokenAllowance } from "./queries/staking/useTokenAllowance";
 export { useUnstakeCoolDown } from "./queries/staking/useUnstakeCoolDown";
