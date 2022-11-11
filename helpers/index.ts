@@ -1,4 +1,5 @@
 export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./delegation/getIgnoredRequestToBeDelegateAddressesFromStorage";
+export { calculateOutstandingRewards } from "./rewards/calculateOutstandingRewards";
 export { getCanUnstakeTime } from "./staking/getCanUnstakeTime";
 export { addOpacityToHsl } from "./util/addOpacityToHsl";
 export * from "./util/formatNumber";

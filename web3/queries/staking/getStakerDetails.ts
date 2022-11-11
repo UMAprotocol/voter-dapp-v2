@@ -13,6 +13,7 @@ export async function getStakerDetails(
     pendingUnstake,
     unstakeRequestTime,
     delegate,
+    rewardsPaidPerToken,
   } = result ?? {};
   const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime) * 1000);
   const canUnstakeTime = getCanUnstakeTime(
@@ -26,5 +27,6 @@ export async function getStakerDetails(
     unstakeRequestTime: unstakeRequestTimeAsDate,
     canUnstakeTime,
     delegate,
+    rewardsPaidPerToken,
   };
 }

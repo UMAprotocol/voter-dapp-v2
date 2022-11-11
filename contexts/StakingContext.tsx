@@ -1,13 +1,16 @@
 import { BigNumber } from "ethers";
+import { calculateOutstandingRewards } from "helpers";
 import {
   useAccountDetails,
+  useInterval,
   useOutstandingRewards,
+  useRewardsCalculationInputs,
   useStakerDetails,
   useTokenAllowance,
   useUnstakeCoolDown,
   useUnstakedBalance,
 } from "hooks";
-import { createContext, ReactNode } from "react";
+import { createContext, ReactNode, useState } from "react";
 
 export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
@@ -41,7 +44,13 @@ export const StakingContext = createContext<StakingContextState>(
 
 export function StakingProvider({ children }: { children: ReactNode }) {
   const {
-    data: { stakedBalance, pendingUnstake, unstakeRequestTime, canUnstakeTime },
+    data: {
+      stakedBalance,
+      pendingUnstake,
+      unstakeRequestTime,
+      canUnstakeTime,
+      rewardsPaidPerToken,
+    },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails();
@@ -51,10 +60,20 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isFetching: unstakedBalanceFetching,
   } = useUnstakedBalance();
   const {
-    data: outstandingRewards,
+    data: outstandingRewardsFromContract,
     isLoading: outstandingRewardsLoading,
     isFetching: outstandingRewardsFetching,
   } = useOutstandingRewards();
+  const {
+    data: {
+      emissionRate,
+      rewardPerTokenStored,
+      lastUpdateTime,
+      cumulativeStake,
+    },
+    isLoading: rewardsCalculationInputsLoading,
+    isFetching: rewardsCalculationInputsFetching,
+  } = useRewardsCalculationInputs();
   const {
     data: tokenAllowance,
     isLoading: tokenAllowanceLoading,
@@ -66,6 +85,27 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: unstakeCoolDownLoading,
     isFetching: unstakeCoolDownFetching,
   } = useUnstakeCoolDown();
+  const [outstandingRewards, setOutstandingRewards] = useState(
+    BigNumber.from(0)
+  );
+
+  useInterval(() => {
+    updateOutstandingRewards();
+  }, 1000);
+
+  function updateOutstandingRewards() {
+    const calculatedOutstandingRewards = calculateOutstandingRewards({
+      outstandingRewardsFromContract,
+      stakedBalance,
+      rewardsPaidPerToken,
+      cumulativeStake,
+      rewardPerTokenStored,
+      lastUpdateTime,
+      emissionRate,
+    });
+
+    setOutstandingRewards(calculatedOutstandingRewards);
+  }
 
   function getStakingDataLoading() {
     if (!address) return false;
@@ -75,7 +115,8 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakedBalanceLoading ||
       outstandingRewardsLoading ||
       tokenAllowanceLoading ||
-      unstakeCoolDownLoading
+      unstakeCoolDownLoading ||
+      rewardsCalculationInputsLoading
     );
   }
 
@@ -87,7 +128,8 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakedBalanceFetching ||
       outstandingRewardsFetching ||
       tokenAllowanceFetching ||
-      unstakeCoolDownFetching
+      unstakeCoolDownFetching ||
+      rewardsCalculationInputsFetching
     );
   }
 

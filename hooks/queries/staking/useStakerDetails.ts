@@ -34,6 +34,7 @@ export function useStakerDetails() {
         unstakeRequestTime: new Date(0),
         canUnstakeTime: new Date(0),
         delegate: zeroAddress,
+        rewardsPaidPerToken: BigNumber.from(0),
       },
       onError,
     }

@@ -18,6 +18,7 @@ export { getDelegatorSetEvents } from "./queries/delegation/getDelegatorSetEvent
 export { getIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/getIgnoredRequestToBeDelegateAddresses";
 export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getOutstandingRewards } from "./queries/rewards/getOutstandingRewards";
+export { getRewardsCalculationInputs } from "./queries/rewards/getRewardsCalculationInputs";
 export { getStakerDetails } from "./queries/staking/getStakerDetails";
 export { getTokenAllowance } from "./queries/staking/getTokenAllowance";
 export { getUnstakeCoolDown } from "./queries/staking/getUnstakeCoolDown";
