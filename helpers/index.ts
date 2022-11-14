@@ -8,7 +8,7 @@ export { handleNotifications } from "./util/handleNotifications";
 export { logTruthy } from "./util/logTruthy";
 export * from "./util/misc";
 export { unixTimestampToDate } from "./util/unixTimestampToDate";
-export { checkIfIsPolymarket } from "./voting/checkIfIsPolymarket";
+export * from "./voting/polymarket";
 export * from "./voting/formatVotes";
 export { getVoteMetaData } from "./voting/getVoteMetaData";
 export { makePriceRequestsByKey } from "./voting/makePriceRequestsByKey";
