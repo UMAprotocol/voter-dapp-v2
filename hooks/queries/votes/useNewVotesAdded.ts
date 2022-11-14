@@ -13,6 +13,7 @@ export function useNewVotesAdded() {
     provider.on(filter, () => {
       setNewVotes((prev) => prev + 1);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider]);
 
   return newVotes;

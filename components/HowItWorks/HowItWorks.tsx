@@ -92,6 +92,7 @@ export function HowItWorks() {
               <LoadingSkeleton isLoading={isLoading()} width={60}>
                 <Strong>{formatNumberForDisplay(apr, { decimals: 1 })}%</Strong>
               </LoadingSkeleton>{" "}
+              APR
             </>
           }
           actionLabel="Vote history"
