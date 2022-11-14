@@ -16,6 +16,8 @@ import {
   useVotesContext,
   useVoteTimingContext,
 } from "hooks";
+import Image from "next/image";
+import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -35,6 +37,7 @@ export function UpcomingVotes() {
 
   const upcomingVotes = getUpcomingVotes();
   const numberOfUpcomingVotes = UpcomingVotes.length;
+  const hasUpcomingVotes = numberOfUpcomingVotes > 0;
   const votesToShow = getEntriesForPage(
     pageNumber,
     resultsPerPage,
@@ -52,30 +55,46 @@ export function UpcomingVotes() {
             </LoadingSpinnerWrapper>
           ) : (
             <>
-              <VotesTableWrapper>
-                <VotesList
-                  headings={<VotesTableHeadings activityStatus="upcoming" />}
-                  rows={votesToShow.map((vote) => (
-                    <VotesListItem
-                      vote={vote}
-                      phase={phase}
-                      selectedVote={undefined}
-                      selectVote={() => null}
-                      activityStatus="upcoming"
-                      moreDetailsAction={() => openPanel("vote", vote)}
-                      key={vote.uniqueKey}
-                      isFetching={getUserDependentIsFetching()}
+              {hasUpcomingVotes ? (
+                <>
+                  <VotesTableWrapper>
+                    <VotesList
+                      headings={
+                        <VotesTableHeadings activityStatus="upcoming" />
+                      }
+                      rows={votesToShow.map((vote) => (
+                        <VotesListItem
+                          vote={vote}
+                          phase={phase}
+                          selectedVote={undefined}
+                          selectVote={() => null}
+                          activityStatus="upcoming"
+                          moreDetailsAction={() => openPanel("vote", vote)}
+                          key={vote.uniqueKey}
+                          isFetching={getUserDependentIsFetching()}
+                        />
+                      ))}
                     />
-                  ))}
-                />
-              </VotesTableWrapper>
-              {numberOfUpcomingVotes > 10 && (
-                <PaginationWrapper>
-                  <Pagination
-                    paginateFor="upcomingVotesPage"
-                    numberOfEntries={numberOfUpcomingVotes}
+                  </VotesTableWrapper>
+                  {numberOfUpcomingVotes > 10 && (
+                    <PaginationWrapper>
+                      <Pagination
+                        paginateFor="upcomingVotesPage"
+                        numberOfEntries={numberOfUpcomingVotes}
+                      />
+                    </PaginationWrapper>
+                  )}
+                </>
+              ) : (
+                <NoVotesWrapper>
+                  <NoVotesMessage>No upcoming votes</NoVotesMessage>
+                  <Image
+                    src={noVotesIndicator}
+                    width={220}
+                    height={220}
+                    alt="No votes"
                   />
-                </PaginationWrapper>
+                </NoVotesWrapper>
               )}
             </>
           )}
@@ -91,4 +110,16 @@ const VotesTableWrapper = styled.div`
 
 const PaginationWrapper = styled.div`
   margin-top: 10px;
+`;
+
+const NoVotesWrapper = styled.div`
+  display: grid;
+  justify-items: center;
+  align-items: top;
+  gap: 40px;
+`;
+
+const NoVotesMessage = styled.h1`
+  font: var(--header-lg);
+  font-weight: 300;
 `;
