@@ -121,5 +121,7 @@ export function formatVoteStringWithPrecision(
   const identifierPrecision = BigNumber.from(
     getPrecisionForIdentifier(decodedIdentifier)
   ).toString();
-  return formatFixed(vote, identifierPrecision).toString();
+  const formatted = formatFixed(vote, identifierPrecision).toString();
+  // if the formatted number ends with .0, remove the .0
+  return formatted.endsWith(".0") ? formatted.slice(0, -2) : formatted;
 }

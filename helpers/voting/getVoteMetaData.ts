@@ -1,6 +1,6 @@
-import { discordLink, earlyRequestMagicNumber } from "constant";
+import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
-import { checkIfIsPolymarket } from "helpers";
+import { checkIfIsPolymarket, maybeMakePolymarketOptions } from "helpers";
 import { ContentfulDataT, TransactionHashT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -29,7 +29,7 @@ export function getVoteMetaData(
     const umipUrl = umipDataFromContentful?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
-    const options = makeVoteOptions("umip");
+    const options = makeUmipVoteOptions();
     return {
       title,
       description,
@@ -57,7 +57,9 @@ export function getVoteMetaData(
       ancillaryDataDescription ?? "No description was found for this request.";
     const links = makeVoteLinks(transactionHash);
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
-    const options = isYesNoQuery ? makeVoteOptions("yesNoQuery") : undefined;
+    const options = isYesNoQuery
+      ? maybeMakePolymarketOptions(decodedAncillaryData)
+      : undefined;
     return {
       title,
       description,
@@ -163,28 +165,11 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
   return asNumber;
 }
 
-function makeVoteOptions(voteType: "umip" | "yesNoQuery") {
-  const yesNoQueryVoteOptions = [
-    { label: "Yes", value: "0", secondaryLabel: "p1" },
-    { label: "No", value: "1", secondaryLabel: "p2" },
-    { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
-    {
-      label: "Early request",
-      value: earlyRequestMagicNumber,
-      secondaryLabel: "p4",
-    },
-  ];
-  const umipVoteOptions = [
+function makeUmipVoteOptions() {
+  return [
     { label: "Yes", value: "1" },
     { label: "No", value: "0" },
   ];
-
-  switch (voteType) {
-    case "umip":
-      return umipVoteOptions;
-    case "yesNoQuery":
-      return yesNoQueryVoteOptions;
-  }
 }
 
 function makeVoteLinks(transactionHash: TransactionHashT, umipNumber?: number) {
