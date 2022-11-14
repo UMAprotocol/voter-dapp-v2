@@ -16,9 +16,9 @@ import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMA from "public/assets/icons/uma.svg";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT, VotePhaseT, VoteT } from "types";
+import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
 
 export interface Props {
   vote: VoteT;
@@ -40,6 +40,7 @@ export function VotesListItem({
 }: Props) {
   const { signer } = useWalletContext();
   const { width } = useWindowSize();
+  const [isCustomInput, setIsCustomInput] = useState(false);
 
   if (!width) return null;
 
@@ -63,9 +64,12 @@ export function VotesListItem({
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
 
-  function formatTitle(title: string) {
-    if (title.length <= 45) return title;
-    return `${title.substring(0, 45)}...`;
+  function onSelectVote(option: DropdownItemT) {
+    if (option.value === "custom") {
+      setIsCustomInput(true);
+    } else {
+      selectVote(option.value.toString());
+    }
   }
 
   function getDecryptedVoteAsFormattedString() {
@@ -131,11 +135,12 @@ export function VotesListItem({
   function getCorrectVote() {
     if (correctVote === undefined) return;
     const correctVoteAsString = correctVote.toFixed();
-
-    return (
-      findVoteInOptions(correctVoteAsString)?.label ??
-      formatVoteStringWithPrecision(correctVoteAsString, decodedIdentifier)
+    const formatted = formatVoteStringWithPrecision(
+      correctVoteAsString,
+      decodedIdentifier
     );
+
+    return findVoteInOptions(formatted)?.label ?? formatted;
   }
 
   function findVoteInOptions(value: string | undefined) {
@@ -187,6 +192,11 @@ export function VotesListItem({
     );
   }
 
+  function formatTitle(title: string) {
+    if (title.length <= 45) return title;
+    return `${title.substring(0, 45)}...`;
+  }
+
   return (
     <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
       <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
@@ -229,12 +239,12 @@ export function VotesListItem({
       </VoteTitleOuterWrapper>
       {showVoteInput() ? (
         <VoteInput as={isTabletAndUnder ? "div" : "td"}>
-          {options ? (
+          {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
               items={options}
               selected={getExistingOrSelectedVoteFromOptions()}
-              onSelect={(option) => selectVote(option.value.toString())}
+              onSelect={onSelectVote}
             />
           ) : (
             <TextInput
