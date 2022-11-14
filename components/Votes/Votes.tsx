@@ -52,10 +52,25 @@ export function Votes() {
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
+  const isCommit = phase === "commit";
+  const isReveal = phase === "reveal";
   const hasStaked = stakedBalance?.gt(0) ?? false;
+  const hasSigner = !!signer;
   const hasCommittedWithDelegator =
     getDelegationStatus() === "delegate" &&
     Object.keys(committedVotesForDelegator).length > 0;
+  const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
+  const hasVotesToReveal = getVotesToReveal().length > 0;
+  const isButtonDisabled =
+    (isCommit && !canCommit()) || (isReveal && !canReveal());
+  const disabledButtonExplanation = getDisabledButtonExplanation();
+  const buttonLabel = isCommit ? "Commit Votes" : "Reveal Votes";
+  const buttonOnClick = isCommit ? commitVotes : revealVotes;
+  const votesToShow = getEntriesForPage(
+    pageNumber,
+    resultsPerPage,
+    determineVotesToShow()
+  );
 
   useInitializeVoteTiming();
 
@@ -121,20 +136,20 @@ export function Votes() {
 
   function canCommit() {
     return (
-      phase === "commit" &&
+      isCommit &&
+      hasVotesToCommit &&
       hasStaked &&
-      !!signer &&
-      !!Object.keys(selectedVotes).length &&
+      hasSigner &&
       !isCommittingVotes
     );
   }
 
   function canReveal() {
     return (
-      phase === "reveal" &&
+      isReveal &&
+      hasVotesToReveal &&
       hasStaked &&
       !hasCommittedWithDelegator &&
-      getVotesToReveal().length &&
       !isRevealingVotes
     );
   }
@@ -151,48 +166,49 @@ export function Votes() {
     }
   }
 
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    determineVotesToShow()
-  );
-
-  const CommitRevealButton = () => (
-    <Button
-      variant="primary"
-      label={`${phase} Votes`}
-      onClick={phase === "commit" ? commitVotes : revealVotes}
-      disabled={!(canCommit() || canReveal())}
-    />
-  );
-
-  const ButtonMaybeWithTooltip = () => {
+  function getDisabledButtonExplanation() {
+    const connectWalletToCommitVotesMessage =
+      "Connect your wallet to commit or reveal votes.";
+    const selectVotesToCommitMessage =
+      "Add your answers to some votes to commit.";
+    const didNotCommitSoCannotRevealMessage =
+      "You cannot reveal votes this round because you did not commit any votes.";
     const hasStakedMessage = "You must stake UMA to commit or reveal votes.";
     const hasCommittedWithDelegatorMessage =
       "You cannot reveal with a delegate wallet if you have already committed votes with your delegator wallet.";
+    const busyCommittingVotesMessage = "Committing votes...";
+    const busyRevealingVotesMessage = "Revealing votes...";
 
+    if (!hasSigner) {
+      return connectWalletToCommitVotesMessage;
+    }
     if (!hasStaked) {
-      return (
-        <Tooltip label={hasStakedMessage}>
-          <span>
-            <CommitRevealButton />
-          </span>
-        </Tooltip>
-      );
+      return hasStakedMessage;
     }
 
-    if (phase === "reveal" && hasCommittedWithDelegator) {
-      return (
-        <Tooltip label={hasCommittedWithDelegatorMessage}>
-          <span>
-            <CommitRevealButton />
-          </span>
-        </Tooltip>
-      );
+    if (isCommit) {
+      if (!hasVotesToCommit) {
+        return selectVotesToCommitMessage;
+      }
+      if (isCommittingVotes) {
+        return busyCommittingVotesMessage;
+      }
     }
 
-    return <CommitRevealButton />;
-  };
+    if (isReveal) {
+      if (hasCommittedWithDelegator) {
+        return hasCommittedWithDelegatorMessage;
+      }
+      if (!hasVotesToReveal) {
+        return didNotCommitSoCannotRevealMessage;
+      }
+      if (isRevealingVotes) {
+        return busyRevealingVotesMessage;
+      }
+    }
+
+    return "";
+  }
 
   return (
     <>
@@ -221,7 +237,24 @@ export function Votes() {
       </VotesTableWrapper>
       {getActivityStatus() === "active" ? (
         <CommitVotesButtonWrapper>
-          <ButtonMaybeWithTooltip />
+          {isButtonDisabled ? (
+            <Tooltip label={disabledButtonExplanation}>
+              <div>
+                <Button
+                  variant="primary"
+                  label={buttonLabel}
+                  onClick={buttonOnClick}
+                  disabled
+                />
+              </div>
+            </Tooltip>
+          ) : (
+            <Button
+              variant="primary"
+              label={buttonLabel}
+              onClick={buttonOnClick}
+            />
+          )}
         </CommitVotesButtonWrapper>
       ) : null}
       <PaginationWrapper>
