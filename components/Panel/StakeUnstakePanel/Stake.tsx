@@ -29,7 +29,7 @@ export function Stake({
   unstakeCoolDown,
   isDelegate,
 }: Props) {
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const unstakeCoolDownFormatted = unstakeCoolDown
     ? formatDuration({ seconds: unstakeCoolDown })
@@ -38,8 +38,8 @@ export function Stake({
   const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
 
   function isApprove() {
-    if (tokenAllowance === undefined || stakeAmount === "") return true;
-    const parsedStakeAmount = parseEtherSafe(stakeAmount);
+    if (tokenAllowance === undefined || inputAmount === "") return true;
+    const parsedStakeAmount = parseEtherSafe(inputAmount);
     if (parsedStakeAmount.eq(0)) return true;
     return parsedStakeAmount.gt(tokenAllowance);
   }
@@ -47,17 +47,25 @@ export function Stake({
   function isButtonDisabled() {
     return (
       !disclaimerChecked ||
-      stakeAmount === "" ||
-      parseEtherSafe(stakeAmount).eq(0)
+      inputAmount === "" ||
+      parseEtherSafe(inputAmount).eq(0)
     );
   }
 
   function onApprove() {
-    approve(MaxApproval);
+    approve(inputAmount);
   }
 
   function onStake() {
-    stake(stakeAmount, () => setStakeAmount(""));
+    stake(inputAmount, () => setInputAmount(""));
+  }
+
+  function onMax() {
+    if (isApprove()) {
+      setInputAmount(MaxApproval);
+    } else {
+      setInputAmount(formatEther(unstakedBalance ?? 0));
+    }
   }
 
   return (
@@ -76,9 +84,9 @@ export function Stake({
         <>
           <AmountInputWrapper>
             <AmountInput
-              value={stakeAmount}
-              onInput={setStakeAmount}
-              onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
+              value={inputAmount}
+              onInput={setInputAmount}
+              onMax={onMax}
               allowNegative={false}
             />
           </AmountInputWrapper>
