@@ -61,6 +61,7 @@ export { VotesListItem } from "./VotesList/VotesListItem";
 export type { Props } from "./VotesList/VotesListItem";
 export { VotesTableHeadings } from "./VotesList/VotesTableHeadings";
 export { CommitPhase } from "./VoteTimeline/CommitPhase";
+export { NextRoundStartsIn } from "./VoteTimeline/NextRoundStartsIn";
 export { RevealPhase } from "./VoteTimeline/RevealPhase";
 export { VoteTimeline } from "./VoteTimeline/VoteTimeline";
 export { Wallet } from "./Wallet/Wallet";

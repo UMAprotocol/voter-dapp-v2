@@ -153,7 +153,8 @@ export function Votes() {
   return (
     <>
       <Title>{determineTitle()}</Title>
-      <VoteTimeline />
+      {(getActivityStatus() === "active" ||
+        getActivityStatus() === "upcoming") && <VoteTimeline />}
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}

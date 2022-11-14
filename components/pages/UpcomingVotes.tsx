@@ -2,6 +2,7 @@ import {
   Banner,
   Layout,
   LoadingSpinner,
+  NextRoundStartsIn,
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
@@ -27,16 +28,15 @@ export function UpcomingVotes() {
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
-  const { phase } = useVoteTimingContext();
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const {
     pageStates: {
       upcomingVotesPage: { resultsPerPage, pageNumber },
     },
   } = usePaginationContext();
-
   const upcomingVotes = getUpcomingVotes();
-  const numberOfUpcomingVotes = UpcomingVotes.length;
+  const numberOfUpcomingVotes = upcomingVotes.length;
   const hasUpcomingVotes = numberOfUpcomingVotes > 0;
   const votesToShow = getEntriesForPage(
     pageNumber,
@@ -57,6 +57,10 @@ export function UpcomingVotes() {
             <>
               {hasUpcomingVotes ? (
                 <>
+                  <NextRoundStartsIn
+                    phase={phase}
+                    timeRemaining={millisecondsUntilPhaseEnds}
+                  />
                   <VotesTableWrapper>
                     <VotesList
                       headings={
