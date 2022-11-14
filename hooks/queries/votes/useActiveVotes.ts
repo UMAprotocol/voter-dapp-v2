@@ -11,7 +11,7 @@ import { getActiveVotes } from "web3";
 export function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
-  const { hasActiveVotes, hasUpcomingVotes } = useVotesContext();
+  const { hasActiveVotes, hasUpcomingVotes, upcomingVotes } = useVotesContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
@@ -22,6 +22,13 @@ export function useActiveVotes() {
         if (data === undefined) return 100;
 
         if (hasActiveVotes && Object.keys(data).length === 0) {
+          return 100;
+        }
+
+        if (
+          hasUpcomingVotes &&
+          Object.keys(data).length === Object.keys(upcomingVotes).length
+        ) {
           return 100;
         }
 
