@@ -1,5 +1,5 @@
+import { useHandleDecimalInput } from "hooks";
 import styled from "styled-components";
-import { useOnChange } from "hooks";
 import { Input, Wrapper } from "./Input";
 
 interface Props {
@@ -25,7 +25,12 @@ export function TextInput({
     type === "text" ? "text" : type === "number" ? "decimal" : "email";
   // treat numbers as text inputs
   const _type = type === "number" ? "text" : type;
-  const onChange = useOnChange(onInput, maxDecimals, allowNegative, _type);
+  const onChange = useHandleDecimalInput(
+    onInput,
+    maxDecimals,
+    allowNegative,
+    _type
+  );
 
   return (
     <_Wrapper aria-disabled={disabled}>
