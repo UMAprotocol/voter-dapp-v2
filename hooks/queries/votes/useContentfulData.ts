@@ -46,7 +46,9 @@ async function getContentfulData(
 }
 
 export function useContentfulData() {
-  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { activeVotes },
+  } = useActiveVotes();
   const {
     data: { upcomingVotes },
   } = useUpcomingVotes();
