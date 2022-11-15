@@ -1,4 +1,4 @@
-import { phaseLength, tabletAndUnder } from "constant";
+import { phaseLengthMilliseconds, tabletAndUnder } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import Commit from "public/assets/icons/commit.svg";
 import styled from "styled-components";
@@ -10,7 +10,9 @@ interface Props {
 
 export function NextRoundStartsIn({ phase, timeRemaining }: Props) {
   const millisecondsUntilRoundEnds =
-    phase === "commit" ? timeRemaining + phaseLength : timeRemaining;
+    phase === "commit"
+      ? timeRemaining + phaseLengthMilliseconds
+      : timeRemaining;
   const formattedTimeRemaining = formatDistanceToNowStrict(
     Date.now() + millisecondsUntilRoundEnds
   );
