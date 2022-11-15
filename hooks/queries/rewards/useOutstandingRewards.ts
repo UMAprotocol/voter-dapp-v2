@@ -13,7 +13,6 @@ export function useOutstandingRewards() {
     [outstandingRewardsKey, address],
     () => getOutstandingRewards(voting, address),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: BigNumber.from(0),
       onError,

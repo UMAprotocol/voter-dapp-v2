@@ -18,7 +18,7 @@ export function useActiveVotes() {
     {
       refetchInterval: (activeVotes) => {
         if (activeVotes === undefined) return 100;
-        return false;
+        return 1000;
       },
       initialData: {
         activeVotes: {},

@@ -12,7 +12,6 @@ export function useReceivedRequestsToBeDelegate() {
     [receivedRequestsToBeDelegateKey, address],
     () => getDelegateSetEvents(voting, address, "delegate"),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       onError,
     }

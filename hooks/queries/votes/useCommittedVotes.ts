@@ -18,7 +18,6 @@ export function useCommittedVotes() {
     [committedVotesKey, address, roundId],
     () => getCommittedVotes(voting, address, roundId),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: {},
       onError,

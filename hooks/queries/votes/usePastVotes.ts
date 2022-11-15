@@ -11,7 +11,7 @@ export function usePastVotes() {
     [pastVotesKey, roundId],
     () => getPastVotesAllVersions(),
     {
-      refetchInterval: (data) => (data ? oneMinute : 100),
+      refetchInterval: oneMinute,
       initialData: {},
       onError,
     }

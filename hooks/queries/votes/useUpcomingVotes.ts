@@ -18,7 +18,6 @@ export function useUpcomingVotes() {
     [upcomingVotesKey, roundId, newVotesAdded],
     () => getUpcomingVotes(voting, roundId),
     {
-      refetchInterval: (data) => (data ? false : 100),
       initialData: {
         upcomingVotes: {},
         hasUpcomingVotes: false,

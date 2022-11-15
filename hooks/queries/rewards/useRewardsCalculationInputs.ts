@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { rewardsCalculationInputsKey } from "constant";
+import { oneMinute, rewardsCalculationInputsKey } from "constant";
 import { BigNumber } from "ethers";
 import {
   useContractsContext,
@@ -26,7 +26,7 @@ export function useRewardsCalculationInputs() {
     ],
     () => getRewardsCalculationInputs(voting),
     {
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: oneMinute,
       enabled: !!address,
       initialData: {
         emissionRate: BigNumber.from(0),
