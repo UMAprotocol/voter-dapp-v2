@@ -1,5 +1,7 @@
 import { LoadingSkeleton, Tabs } from "components";
+import { maximumApprovalAmountString } from "constant";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
+import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
   useApprove,
   useContractsContext,
@@ -53,7 +55,10 @@ export function StakeUnstakePanel() {
   }
 
   function approve(approveAmountInput: string) {
-    const approveAmount = parseEtherSafe(approveAmountInput);
+    const approveAmount =
+      approveAmountInput === maximumApprovalAmountString
+        ? maximumApprovalAmount
+        : parseEtherSafe(approveAmountInput);
     approveMutation({ votingToken, approveAmount });
   }
 
