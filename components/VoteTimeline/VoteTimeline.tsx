@@ -14,7 +14,7 @@ export function VoteTimeline() {
   if (status === "past") return null;
 
   return (
-    <Wrapper>
+    <>
       {status === "upcoming" && (
         <NextRoundStartsIn
           phase={phase}
@@ -22,7 +22,7 @@ export function VoteTimeline() {
         />
       )}
       {status === "active" && (
-        <>
+        <Wrapper>
           <CommitPhase
             phase={phase}
             timeRemaining={millisecondsUntilPhaseEnds}
@@ -31,9 +31,9 @@ export function VoteTimeline() {
             phase={phase}
             timeRemaining={millisecondsUntilPhaseEnds}
           />
-        </>
+        </Wrapper>
       )}
-    </Wrapper>
+    </>
   );
 }
 
