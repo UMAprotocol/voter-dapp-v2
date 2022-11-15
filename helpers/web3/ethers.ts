@@ -35,3 +35,5 @@ export const zeroAddress = ethers.constants.AddressZero;
 export const getAddress = ethers.utils.getAddress;
 
 export const isAddress = ethers.utils.isAddress;
+
+export const maximumApprovalAmount = ethers.constants.MaxUint256;
