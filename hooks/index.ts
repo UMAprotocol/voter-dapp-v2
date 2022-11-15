@@ -14,7 +14,7 @@ export { useInitializeVoteTiming } from "./helpers/useInitializeVoteTiming";
 export { useInterval } from "./helpers/useInterval";
 export { useIsomorphicLayoutEffect } from "./helpers/useIsomorphicLayoutEffect";
 export { useMounted } from "./helpers/useMounted";
-export { useOnChange } from "./helpers/useOnChange";
+export { useHandleDecimalInput } from "./helpers/useHandleDecimalInput";
 export { usePanelWidth } from "./helpers/usePanelWidth";
 export { useWindowSize } from "./helpers/useWindowSize";
 export { useAcceptReceivedRequestToBeDelegate } from "./mutations/delegation/useAcceptReceivedRequestToBeDelegate";

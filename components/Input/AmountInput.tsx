@@ -1,7 +1,7 @@
 import { Button } from "components";
 import UmaToken from "public/assets/icons/uma-token.svg";
 import styled from "styled-components";
-import { useOnChange } from "hooks";
+import { useHandleDecimalInput } from "hooks";
 import { Input, Wrapper } from "./Input";
 
 interface Props {
@@ -22,7 +22,7 @@ export function AmountInput({
   allowNegative = true,
   maxDecimals = 18,
 }: Props) {
-  const onChange = useOnChange(onInput, maxDecimals, allowNegative);
+  const onChange = useHandleDecimalInput(onInput, maxDecimals, allowNegative);
 
   return (
     <_Wrapper aria-disabled={disabled}>
