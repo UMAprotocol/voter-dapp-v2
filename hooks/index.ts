@@ -36,6 +36,7 @@ export { useDelegateToStaker } from "./queries/delegation/useDelegateToStaker";
 export { useDelegatorSetEventsForDelegate } from "./queries/delegation/useDelegatorSetEventsForDelegate";
 export { useDelegatorSetEventsForDelegator } from "./queries/delegation/useDelegatorSetEventsForDelegator";
 export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/useIgnoredRequestToBeDelegateAddresses";
+export { useNewReceivedRequestsToBeDelegate } from "./queries/delegation/useNewReceivedRequestsToBeDelegate";
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
