@@ -6,29 +6,27 @@ import {
   useVotesContext,
   useVoteTimingContext,
 } from "hooks";
+import { useState } from "react";
 import { getActiveVotes } from "web3";
 
 export function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
-  const { hasActiveVotes, hasUpcomingVotes, upcomingVotes } = useVotesContext();
+  const { upcomingVotes } = useVotesContext();
   const { onError } = useHandleError({ isDataFetching: true });
+  const [numUpcomingVotes, setNumUpcomingVotes] = useState(0);
 
   const queryResult = useQuery(
-    [activeVotesKey, roundId, hasActiveVotes],
-    () => getActiveVotes(voting),
+    [activeVotesKey, roundId],
+    () => {
+      setNumUpcomingVotes(Object.keys(upcomingVotes).length);
+      return getActiveVotes(voting);
+    },
     {
-      refetchInterval: (data) => {
-        if (data === undefined) return 100;
+      refetchInterval: (activeVotes) => {
+        if (activeVotes === undefined) return 100;
 
-        if (hasActiveVotes && Object.keys(data).length === 0) {
-          return 100;
-        }
-
-        if (
-          hasUpcomingVotes &&
-          Object.keys(data).length === Object.keys(upcomingVotes).length
-        ) {
+        if (Object.keys(activeVotes).length !== numUpcomingVotes) {
           return 100;
         }
 
@@ -36,6 +34,9 @@ export function useActiveVotes() {
       },
       initialData: {},
       onError,
+      onSettled: () => {
+        setNumUpcomingVotes(0);
+      },
     }
   );
 
