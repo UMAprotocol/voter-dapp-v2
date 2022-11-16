@@ -1,4 +1,5 @@
 export * from "./misc/errorMessages";
+export * from "./misc/maximumApprovalAmountString";
 export * from "./misc/siteMetaData";
 export * from "./misc/timeUnits";
 export * from "./query/graphEndpoint";

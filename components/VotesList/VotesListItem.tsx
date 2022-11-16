@@ -16,7 +16,7 @@ import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMA from "public/assets/icons/uma.svg";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
 
@@ -41,11 +41,6 @@ export function VotesListItem({
   const { signer } = useWalletContext();
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
-
-  if (!width) return null;
-
-  const isTabletAndUnder = width <= tabletMax;
-
   const {
     decodedIdentifier,
     title,
@@ -63,6 +58,18 @@ export function VotesListItem({
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
+  const isTabletAndUnder = width && width <= tabletMax;
+
+  useEffect(() => {
+    if (!options) return;
+
+    // if options exist but the existing decrypted vote is not one from the list,
+    // then we must be using a custom input
+    if (!findVoteInOptions(getDecryptedVoteAsFormattedString())) {
+      setIsCustomInput(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options, decryptedVote]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {

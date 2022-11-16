@@ -1,7 +1,8 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
+import { maximumApprovalAmountString } from "constant";
 import formatDuration from "date-fns/formatDuration";
-import { BigNumber, constants } from "ethers";
+import { BigNumber } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
@@ -10,8 +11,6 @@ import {
   PanelSectionTitle,
   PanelWarningText,
 } from "../styles";
-
-const MaxApproval = formatEther(constants.MaxUint256);
 
 interface Props {
   tokenAllowance: BigNumber | undefined;
@@ -29,7 +28,7 @@ export function Stake({
   unstakeCoolDown,
   isDelegate,
 }: Props) {
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const unstakeCoolDownFormatted = unstakeCoolDown
     ? formatDuration({ seconds: unstakeCoolDown })
@@ -38,26 +37,37 @@ export function Stake({
   const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
 
   function isApprove() {
-    if (tokenAllowance === undefined || stakeAmount === "") return true;
-    const parsedStakeAmount = parseEtherSafe(stakeAmount);
-    if (parsedStakeAmount.eq(0)) return true;
+    if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
+    const parsedStakeAmount = parseEtherSafe(inputAmount);
     return parsedStakeAmount.gt(tokenAllowance);
   }
 
   function isButtonDisabled() {
+    if (inputAmount === maximumApprovalAmountString && disclaimerChecked)
+      return false;
+
     return (
       !disclaimerChecked ||
-      stakeAmount === "" ||
-      parseEtherSafe(stakeAmount).eq(0)
+      inputAmount === "" ||
+      parseEtherSafe(inputAmount).eq(0)
     );
   }
 
   function onApprove() {
-    approve(MaxApproval);
+    approve(inputAmount);
+    setInputAmount("");
   }
 
   function onStake() {
-    stake(stakeAmount, () => setStakeAmount(""));
+    stake(inputAmount, () => setInputAmount(""));
+  }
+
+  function onMax() {
+    if (isApprove()) {
+      setInputAmount(maximumApprovalAmountString);
+    } else {
+      setInputAmount(formatEther(unstakedBalance ?? 0));
+    }
   }
 
   return (
@@ -76,9 +86,9 @@ export function Stake({
         <>
           <AmountInputWrapper>
             <AmountInput
-              value={stakeAmount}
-              onInput={setStakeAmount}
-              onMax={() => setStakeAmount(formatEther(unstakedBalance ?? 0))}
+              value={inputAmount}
+              onInput={setInputAmount}
+              onMax={onMax}
               allowNegative={false}
             />
           </AmountInputWrapper>
