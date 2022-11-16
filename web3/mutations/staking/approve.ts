@@ -1,7 +1,11 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
 import { votingContractAddress } from "constant";
 import { BigNumber } from "ethers";
-import { formatNumberForDisplay, handleNotifications } from "helpers";
+import {
+  formatNumberForDisplay,
+  handleNotifications,
+  maximumApprovalAmount,
+} from "helpers";
 
 export async function approve({
   votingToken,
@@ -14,9 +18,14 @@ export async function approve({
     votingContractAddress,
     approveAmount
   );
+
+  const amountToDisplay = approveAmount.eq(maximumApprovalAmount)
+    ? "unlimited"
+    : formatNumberForDisplay(approveAmount);
+
   return handleNotifications(tx, {
-    pending: `Approving ${formatNumberForDisplay(approveAmount)} UMA...`,
-    success: `Approved ${formatNumberForDisplay(approveAmount)} UMA`,
-    error: `Failed to approve ${formatNumberForDisplay(approveAmount)} UMA`,
+    pending: `Approving ${amountToDisplay} UMA...`,
+    success: `Approved ${amountToDisplay} UMA`,
+    error: `Failed to approve ${amountToDisplay} UMA`,
   });
 }

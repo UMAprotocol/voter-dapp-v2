@@ -1,7 +1,8 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
+import { maximumApprovalAmountString } from "constant";
 import formatDuration from "date-fns/formatDuration";
-import { BigNumber, constants } from "ethers";
+import { BigNumber } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
 import { useState } from "react";
 import styled from "styled-components";
@@ -10,8 +11,6 @@ import {
   PanelSectionTitle,
   PanelWarningText,
 } from "../styles";
-
-const MaxApproval = formatEther(constants.MaxUint256);
 
 interface Props {
   tokenAllowance: BigNumber | undefined;
@@ -38,13 +37,15 @@ export function Stake({
   const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
 
   function isApprove() {
-    if (tokenAllowance === undefined || inputAmount === "") return true;
+    if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
     const parsedStakeAmount = parseEtherSafe(inputAmount);
-    if (parsedStakeAmount.eq(0)) return true;
     return parsedStakeAmount.gt(tokenAllowance);
   }
 
   function isButtonDisabled() {
+    if (inputAmount === maximumApprovalAmountString && disclaimerChecked)
+      return false;
+
     return (
       !disclaimerChecked ||
       inputAmount === "" ||
@@ -54,6 +55,7 @@ export function Stake({
 
   function onApprove() {
     approve(inputAmount);
+    setInputAmount("");
   }
 
   function onStake() {
@@ -62,7 +64,7 @@ export function Stake({
 
   function onMax() {
     if (isApprove()) {
-      setInputAmount(MaxApproval);
+      setInputAmount(maximumApprovalAmountString);
     } else {
       setInputAmount(formatEther(unstakedBalance ?? 0));
     }

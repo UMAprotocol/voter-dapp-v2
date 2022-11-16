@@ -1,7 +1,8 @@
+import { maximumApprovalAmountString } from "constant/misc/maximumApprovalAmountString";
 import { useErrorContext } from "hooks";
 import { ChangeEvent } from "react";
 
-export function useOnChange(
+export function useHandleDecimalInput(
   onInput: (value: string) => void,
   maxDecimals: number,
   allowNegative: boolean,
@@ -10,11 +11,15 @@ export function useOnChange(
   const { addErrorMessage, removeErrorMessage } = useErrorContext();
 
   return (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    let value = event.target.value;
 
     if (type !== "number") {
       onInput(value);
       return;
+    }
+
+    if (value.includes(maximumApprovalAmountString)) {
+      value = value.replace(maximumApprovalAmountString, "");
     }
 
     const decimalsErrorMessage = `Cannot have more than ${maxDecimals} decimals.`;

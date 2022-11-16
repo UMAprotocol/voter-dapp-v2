@@ -43,20 +43,7 @@ export {
   recoverPublicKey,
 } from "./web3/crypto";
 export { decodeHexString } from "./web3/decodeHexString";
-export {
-  commify,
-  formatBytes32String,
-  formatEther,
-  formatTransactionError,
-  getAddress,
-  isAddress,
-  parseEther,
-  parseEtherSafe,
-  randomBytes,
-  solidityKeccak256,
-  toUtf8String,
-  zeroAddress,
-} from "./web3/ethers";
+export * from "./web3/ethers";
 export {
   emitErrorEvent,
   emitPendingEvent,
