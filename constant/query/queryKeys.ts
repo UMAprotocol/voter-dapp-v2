@@ -19,13 +19,17 @@ export const unstakeCoolDownKey = "unstakeCoolDownKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation
-export const delegatorSetEventForDelegateKey = "delegatorSetEventForDelegateKey";
-export const delegatorSetEventsForDelegatorKey = "delegatorSetEventsForDelegatorKey";
-export const receivedRequestsToBeDelegateKey = "receivedRequestsToBeDelegateKey";
+export const delegatorSetEventForDelegateKey =
+  "delegatorSetEventForDelegateKey";
+export const delegatorSetEventsForDelegatorKey =
+  "delegatorSetEventsForDelegatorKey";
+export const receivedRequestsToBeDelegateKey =
+  "receivedRequestsToBeDelegateKey";
 export const sentRequestsToBeDelegateKey = "sentRequestsToBeDelegateKey";
 export const voterFromDelegateKey = "voterFromDelegateKey";
 export const delegateToStakerKey = "delegateToStakerKey";
-export const ignoredRequestToBeDelegateAddressesKey = "ignoredRequestToBeDelegateAddressesKey";
+export const ignoredRequestToBeDelegateAddressesKey =
+  "ignoredRequestToBeDelegateAddressesKey";
 export const committedVotesForDelegatorKey = "committedVotesForDelegatorKey";
 
 export const votingNotUserDependentQueryKeys = [
@@ -44,6 +48,14 @@ export const votingUserDependentQueryKeys = [
   contentfulDataKey,
 ];
 
-export const votingQueryKeys = [...votingNotUserDependentQueryKeys, ...votingUserDependentQueryKeys];
+export const votingQueryKeys = [
+  ...votingNotUserDependentQueryKeys,
+  ...votingUserDependentQueryKeys,
+];
 
-export const balancesQueryKeys = [tokenAllowanceKey, unstakedBalanceKey, outstandingRewardsKey, stakerDetailsKey];
+export const balancesQueryKeys = [
+  tokenAllowanceKey,
+  unstakedBalanceKey,
+  outstandingRewardsKey,
+  stakerDetailsKey,
+];

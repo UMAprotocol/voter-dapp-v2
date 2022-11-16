@@ -1,6 +1,7 @@
 import {
   Button,
   Pagination,
+  Tooltip,
   VotesList,
   VotesListItem,
   VotesTableHeadings,
@@ -13,11 +14,11 @@ import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  useHandleError,
   useInitializeVoteTiming,
   usePaginationContext,
   usePanelContext,
   useRevealVotes,
+  useStakingContext,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
@@ -38,11 +39,9 @@ export function Votes() {
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
   const { voting } = useContractsContext();
+  const { stakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
   const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
-  const { onError, clearErrors } = useHandleError({
-    isContractTransaction: false,
-  });
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
@@ -53,10 +52,30 @@ export function Votes() {
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
+  const isCommit = phase === "commit";
+  const isReveal = phase === "reveal";
+  const hasStaked = stakedBalance?.gt(0) ?? false;
+  const hasSigner = !!signer;
+  const hasCommittedWithDelegator =
+    getDelegationStatus() === "delegate" &&
+    Object.keys(committedVotesForDelegator).length > 0;
+  const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
+  const hasVotesToReveal = getVotesToReveal().length > 0;
+  const isButtonDisabled =
+    (isCommit && !canCommit()) || (isReveal && !canReveal());
+  const disabledButtonExplanation = getDisabledButtonExplanation();
+  const buttonLabel = isCommit ? "Commit Votes" : "Reveal Votes";
+  const buttonOnClick = isCommit ? commitVotes : revealVotes;
+  const votesToShow = getEntriesForPage(
+    pageNumber,
+    resultsPerPage,
+    determineVotesToShow()
+  );
+
   useInitializeVoteTiming();
 
   async function commitVotes() {
-    if (!address) return;
+    if (!address || !canCommit()) return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
@@ -80,15 +99,7 @@ export function Votes() {
   }
 
   function revealVotes() {
-    clearErrors();
-    const cannotRevealWhenDelegatorHasCommittedErrorMessage =
-      "Cannot reveal votes with delegate wallet when delegator has committed votes";
-    if (
-      getDelegationStatus() === "delegate" &&
-      Object.keys(committedVotesForDelegator).length > 0
-    ) {
-      onError(cannotRevealWhenDelegatorHasCommittedErrorMessage);
-    }
+    if (!address || !canReveal()) return;
 
     revealVotesMutation({
       voting,
@@ -125,15 +136,22 @@ export function Votes() {
 
   function canCommit() {
     return (
-      phase === "commit" &&
-      !!signer &&
-      !!Object.keys(selectedVotes).length &&
+      isCommit &&
+      hasVotesToCommit &&
+      hasStaked &&
+      hasSigner &&
       !isCommittingVotes
     );
   }
 
   function canReveal() {
-    return phase === "reveal" && getVotesToReveal().length && !isRevealingVotes;
+    return (
+      isReveal &&
+      hasVotesToReveal &&
+      hasStaked &&
+      !hasCommittedWithDelegator &&
+      !isRevealingVotes
+    );
   }
 
   function determineTitle() {
@@ -148,11 +166,50 @@ export function Votes() {
     }
   }
 
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    determineVotesToShow()
-  );
+  function getDisabledButtonExplanation() {
+    const connectWalletToCommitVotesMessage =
+      "Connect your wallet to commit or reveal votes.";
+    const selectVotesToCommitMessage =
+      "Add your answers to some votes to commit.";
+    const didNotCommitSoCannotRevealMessage =
+      "You cannot reveal votes this round because you did not commit any votes.";
+    const hasStakedMessage = "You must stake UMA to commit or reveal votes.";
+    const hasCommittedWithDelegatorMessage =
+      "You cannot reveal with a delegate wallet if you have already committed votes with your delegator wallet.";
+    const busyCommittingVotesMessage = "Committing votes...";
+    const busyRevealingVotesMessage = "Revealing votes...";
+
+    if (!hasSigner) {
+      return connectWalletToCommitVotesMessage;
+    }
+    if (!hasStaked) {
+      return hasStakedMessage;
+    }
+
+    if (isCommit) {
+      if (!hasVotesToCommit) {
+        return selectVotesToCommitMessage;
+      }
+      if (isCommittingVotes) {
+        return busyCommittingVotesMessage;
+      }
+    }
+
+    if (isReveal) {
+      if (hasCommittedWithDelegator) {
+        return hasCommittedWithDelegatorMessage;
+      }
+      if (!hasVotesToReveal) {
+        return didNotCommitSoCannotRevealMessage;
+      }
+      if (isRevealingVotes) {
+        return busyRevealingVotesMessage;
+      }
+    }
+
+    return "";
+  }
+
   return (
     <>
       <Title>{determineTitle()}</Title>
@@ -180,12 +237,24 @@ export function Votes() {
       </VotesTableWrapper>
       {getActivityStatus() === "active" ? (
         <CommitVotesButtonWrapper>
-          <Button
-            variant="primary"
-            label={`${phase} Votes`}
-            onClick={phase === "commit" ? commitVotes : revealVotes}
-            disabled={!(canCommit() || canReveal())}
-          />
+          {isButtonDisabled ? (
+            <Tooltip label={disabledButtonExplanation}>
+              <div>
+                <Button
+                  variant="primary"
+                  label={buttonLabel}
+                  onClick={buttonOnClick}
+                  disabled
+                />
+              </div>
+            </Tooltip>
+          ) : (
+            <Button
+              variant="primary"
+              label={buttonLabel}
+              onClick={buttonOnClick}
+            />
+          )}
         </CommitVotesButtonWrapper>
       ) : null}
       <PaginationWrapper>
