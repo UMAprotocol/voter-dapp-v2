@@ -1,5 +1,3 @@
-// On chain state to be updated every time there is a Staked or RequestedUnstake event
-
 import { BigNumber } from "ethers";
 import { oneEth } from "helpers/web3/ethers";
 
