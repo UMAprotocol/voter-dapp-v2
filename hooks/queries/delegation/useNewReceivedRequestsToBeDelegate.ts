@@ -8,15 +8,17 @@ export function useNewReceivedRequestsToBeDelegate() {
   const { provider } = useWalletContext();
   const { address } = useUserContext();
   const [newRequests, setNewRequests] = useState(0);
-  const filter = voting.filters.DelegateSet(null, address);
 
   useEffect(() => {
-    if (!provider) return;
+    if (!provider || !address) return;
+
+    const filter = voting.filters.DelegateSet(null, address);
+
     provider.on(filter, () => {
       setNewRequests((prev) => prev + 1);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider]);
+  }, [provider, address]);
 
   return newRequests;
 }

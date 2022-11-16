@@ -125,8 +125,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails();
 
-  console.log({ hasActiveVotes });
-
   function getUserDependentIsLoading() {
     if (!address) return false;
 

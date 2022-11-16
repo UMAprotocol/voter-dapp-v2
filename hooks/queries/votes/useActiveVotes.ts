@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { activeVotesKey } from "constant";
+import { activeVotesKey, oneSecond, phaseLengthMilliseconds } from "constant";
 import {
   useContractsContext,
   useHandleError,
@@ -11,15 +11,17 @@ export function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
+
+  const shouldRefetch =
+    phase === "commit" &&
+    phaseLengthMilliseconds - millisecondsUntilPhaseEnds < 30 * oneSecond;
 
   const queryResult = useQuery(
     [activeVotesKey, roundId],
     () => getActiveVotes(voting),
     {
-      refetchInterval: (activeVotes) => {
-        if (activeVotes === undefined) return 100;
-        return 1000;
-      },
+      refetchInterval: shouldRefetch ? 1000 : false,
       initialData: {
         activeVotes: {},
         hasActiveVotes: false,
