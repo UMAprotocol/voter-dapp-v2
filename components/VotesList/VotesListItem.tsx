@@ -181,19 +181,17 @@ export function VotesListItem({
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
-        <Button
-          href={`https://goerli.etherscan.io/tx/${commitHash}`}
-          label={getCommittedOrRevealed()}
-        />
+        <Link href={`https://goerli.etherscan.io/tx/${commitHash}`}>
+          {getCommittedOrRevealed()}
+        </Link>
       ) : (
         getCommittedOrRevealed()
       );
     }
     return revealHash ? (
-      <Button
-        href={`https://goerli.etherscan.io/tx/${revealHash}`}
-        label={getCommittedOrRevealed()}
-      />
+      <Link href={`https://goerli.etherscan.io/tx/${revealHash}`}>
+        {getCommittedOrRevealed()}
+      </Link>
     ) : (
       getCommittedOrRevealed()
     );
@@ -492,4 +490,13 @@ const RolledLink = styled(NextLink)`
   font: var(--text-sm);
   color: var(--red-500);
   text-decoration: underline;
+`;
+
+const Link = styled(NextLink)`
+  font: var(--text-md);
+  color: var(--black);
+  text-decoration: underline;
+  &:hover {
+    color: var(--black-opacity-50);
+  }
 `;
