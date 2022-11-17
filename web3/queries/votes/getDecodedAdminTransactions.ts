@@ -1,4 +1,4 @@
-import { DecodedAdminTransactionT } from "types";
+import { AdminTransactionT, DecodedAdminTransactionT } from "types";
 
 export async function getDecodedAdminTransactions(
   decodedIdentifiers: string[]
@@ -15,5 +15,18 @@ export async function getDecodedAdminTransactions(
     throw new Error("Error fetching decoded admin transactions");
   }
 
-  return response.json() as Promise<DecodedAdminTransactionT[]>;
+  const result = (await response.json()) as DecodedAdminTransactionT[];
+
+  const merged: AdminTransactionT[] = [];
+
+  result.forEach((decodedAdminTransaction, index) => {
+    const decodedIdentifier = decodedIdentifiers[index];
+
+    merged.push({
+      ...decodedAdminTransaction,
+      decodedIdentifier,
+    });
+  });
+
+  return merged;
 }

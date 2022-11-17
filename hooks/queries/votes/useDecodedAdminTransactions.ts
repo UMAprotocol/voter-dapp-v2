@@ -27,6 +27,7 @@ export function useDecodedAdminTransactions() {
       pastVotes,
     ],
     queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
+    initialData: [],
   });
 
   return queryResult;

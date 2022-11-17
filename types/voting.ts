@@ -11,7 +11,8 @@ export type VoteT = PriceRequestT &
   VoteMetaDataT &
   VoteContentfulDataT &
   VoteParticipationT &
-  VoteResultsT;
+  VoteResultsT &
+  VoteDecodedAdminTransactionT;
 
 export type PriceRequestT = {
   // raw values
@@ -189,4 +190,12 @@ export type DecodedAdminTransactionT = {
   decodedData: string;
   to: string;
   value: BigNumber;
+};
+
+export type AdminTransactionT = DecodedAdminTransactionT & {
+  decodedIdentifier: string;
+};
+
+export type VoteDecodedAdminTransactionT = {
+  decodedAdminTransaction: DecodedAdminTransactionT | undefined;
 };

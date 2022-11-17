@@ -5,6 +5,7 @@ import {
   useActiveVotes,
   useCommittedVotes,
   useContentfulData,
+  useDecodedAdminTransactions,
   useDecryptedVotes,
   useEncryptedVotes,
   useHasActiveVotes,
@@ -130,6 +131,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails();
+  const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
 
   function getUserDependentIsLoading() {
     if (!address) return false;
@@ -201,6 +203,20 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return "past";
   }
 
+  function getDecodedAdminTransactionForVote(decodedIdentifier: string) {
+    if (!decodedIdentifier.includes("Admin")) return;
+
+    const decodedAdminTransaction = decodedAdminTransactions.find(
+      (transaction) => transaction.decodedIdentifier === decodedIdentifier
+    );
+
+    if (!decodedAdminTransaction) return;
+
+    const { decodedIdentifier: _, ...rest } = decodedAdminTransaction;
+
+    return rest;
+  }
+
   function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       return {
@@ -221,6 +237,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           staking: false,
           slashAmount: BigNumber.from(0),
         },
+        decodedAdminTransaction: getDecodedAdminTransactionForVote(
+          vote.decodedIdentifier
+        ),
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
