@@ -13,6 +13,7 @@ import {
   useCommittedVotesForDelegator,
   useCommitVotes,
   useContractsContext,
+  useDecodedAdminTransactions,
   useDelegationContext,
   useInitializeVoteTiming,
   usePaginationContext,
@@ -51,6 +52,9 @@ export function Votes() {
     },
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const { data: stuff } = useDecodedAdminTransactions();
+
+  console.log({ stuff });
 
   const isCommit = phase === "commit";
   const isReveal = phase === "reveal";
