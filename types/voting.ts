@@ -183,3 +183,10 @@ export type RevealVotes = {
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
+
+export type DecodedAdminTransactionT = {
+  data: string;
+  decodedData: string;
+  to: string;
+  value: BigNumber;
+};

@@ -11,6 +11,14 @@ export function useDecodedAdminTransactions() {
     data: { upcomingVotes },
   } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
+  const governanceVoteIdentifiers = Object.entries({
+    ...activeVotes,
+    ...upcomingVotes,
+    ...pastVotes,
+  }).flatMap(([_id, { decodedIdentifier }]) => {
+    return decodedIdentifier.includes("Admin") ? decodedIdentifier : [];
+  });
+
   const queryResult = useQuery({
     queryKey: [
       decodedAdminTransactionsKey,
@@ -18,7 +26,7 @@ export function useDecodedAdminTransactions() {
       upcomingVotes,
       pastVotes,
     ],
-    queryFn: () => getDecodedAdminTransactions(),
+    queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
   });
 
   return queryResult;
