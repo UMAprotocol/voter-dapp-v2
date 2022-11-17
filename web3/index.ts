@@ -1,15 +1,15 @@
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
+export { removeDelegate } from "./mutations/delegation/removeDelegate";
+export { removeDelegator } from "./mutations/delegation/removeDelegator";
+export { setDelegate } from "./mutations/delegation/setDelegate";
+export { setDelegator } from "./mutations/delegation/setDelegator";
 export { approve } from "./mutations/staking/approve";
 export { executeUnstake } from "./mutations/staking/executeUnstake";
 export { requestUnstake } from "./mutations/staking/requestUnstake";
 export { stake } from "./mutations/staking/stake";
 export { withdrawAndRestake } from "./mutations/staking/withdrawAndRestake";
 export { withdrawRewards } from "./mutations/staking/withdrawRewards";
-export { removeDelegate } from "./mutations/delegation/removeDelegate";
-export { removeDelegator } from "./mutations/delegation/removeDelegator";
-export { setDelegate } from "./mutations/delegation/setDelegate";
-export { setDelegator } from "./mutations/delegation/setDelegator";
 export { commitVotes } from "./mutations/votes/commitVotes";
 export { revealVotes } from "./mutations/votes/revealVotes";
 export { getOutstandingRewards } from "./queries/balances/getOutstandingRewards";
@@ -24,6 +24,7 @@ export { getIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/get
 export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getActiveVotes } from "./queries/votes/getActiveVotes";
 export { getCommittedVotes } from "./queries/votes/getCommittedVotes";
+export { getDecodedAdminTransactions } from "./queries/votes/getDecodedAdminTransactions";
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { getHasActiveVotes } from "./queries/votes/getHasActiveVotes";
 export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
