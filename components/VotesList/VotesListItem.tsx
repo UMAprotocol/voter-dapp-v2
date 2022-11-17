@@ -65,7 +65,8 @@ export function VotesListItem({
 
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
-    if (!findVoteInOptions(getDecryptedVoteAsFormattedString())) {
+    const decryptedVote = getDecryptedVoteAsFormattedString();
+    if (decryptedVote && !findVoteInOptions(decryptedVote)) {
       setIsCustomInput(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
