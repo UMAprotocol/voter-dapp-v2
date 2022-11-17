@@ -91,7 +91,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
   useInterval(() => {
     updateOutstandingRewards();
-  }, 1000);
+  }, 100);
 
   function updateOutstandingRewards() {
     const calculatedOutstandingRewards = calculateOutstandingRewards({
