@@ -213,7 +213,16 @@ export function VotesListItem({
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle>{title}</VoteTitle>
+            <VoteTitle
+              style={
+                {
+                  "--title-max-width":
+                    activityStatus === "upcoming" ? "70vw" : "max(400px, 45vw)",
+                } as CSSProperties
+              }
+            >
+              {title}
+            </VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -382,7 +391,10 @@ const VoteIconWrapper = styled.div`
 
 const VoteTitle = styled.h3`
   font: var(--header-sm);
+  max-width: var(--title-max-width);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   @media ${tabletAndUnder} {
     margin-bottom: 5px;
@@ -401,7 +413,7 @@ const VoteInput = styled.td`
 
 const VoteOutputText = styled.td`
   font: var(--text-md);
-  min-width: calc(140px + 2.5vw);
+  min-width: calc(80px + 2.5vw);
   padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
