@@ -6,6 +6,7 @@ import {
   Tooltip,
 } from "components";
 import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
+import { format } from "date-fns";
 import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
@@ -55,6 +56,7 @@ export function VotesListItem({
     voteNumber,
     isRolled,
     isV1,
+    timeAsDate,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
@@ -237,7 +239,8 @@ export function VotesListItem({
               ) : null}
               <VoteOrigin>
                 {origin}{" "}
-                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`}
+                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`} |{" "}
+                {format(timeAsDate, "Pp")}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
