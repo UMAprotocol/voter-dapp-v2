@@ -199,11 +199,6 @@ export function VotesListItem({
     );
   }
 
-  function formatTitle(title: string) {
-    if (title.length <= 45) return title;
-    return `${title.substring(0, 45)}...`;
-  }
-
   return (
     <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
       <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
@@ -218,7 +213,7 @@ export function VotesListItem({
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle>{formatTitle(title)}</VoteTitle>
+            <VoteTitle>{title}</VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
