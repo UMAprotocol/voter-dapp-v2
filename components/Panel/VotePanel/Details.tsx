@@ -214,7 +214,7 @@ const VoteIcon = styled(Vote)`
 `;
 
 const VotingIcon = styled(Commit)`
-  * {
+  circle {
     fill: var(--red-500);
   }
 `;
