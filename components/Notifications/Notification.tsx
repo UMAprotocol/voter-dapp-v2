@@ -80,7 +80,7 @@ const IconWrapper = styled.div`
 const CheckIcon = styled(Check)`
   path {
     fill: var(--white);
-    stroke: var(--black);
+    stroke: var(--green);
   }
 `;
 
