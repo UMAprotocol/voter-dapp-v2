@@ -170,7 +170,7 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
     return {
       data: transaction.data,
       to: transaction.to,
-      value: transaction.value,
+      value: transaction.value.toString(),
       decodedData: _generateTransactionDataRecursive(
         _decodeData(transaction.data)
       ),

@@ -189,7 +189,7 @@ export type DecodedAdminTransactionT = {
   data: string;
   decodedData: string;
   to: string;
-  value: BigNumber;
+  value: string;
 };
 
 export type AdminTransactionT = DecodedAdminTransactionT & {
