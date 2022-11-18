@@ -347,14 +347,14 @@ const Wrapper = styled.tr`
 `;
 
 const VoteTitleOuterWrapper = styled.td`
-  width: 100%;
+  padding-left: 1vw;
+  padding-right: 2.5vw;
 `;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 30px;
+  gap: 1vw;
 
   @media ${tabletAndUnder} {
     margin-left: 0;
@@ -382,6 +382,7 @@ const VoteIconWrapper = styled.div`
 
 const VoteTitle = styled.h3`
   font: var(--header-sm);
+  overflow: hidden;
 
   @media ${tabletAndUnder} {
     margin-bottom: 5px;
@@ -393,10 +394,15 @@ const VoteOrigin = styled.h4`
   color: var(--black-opacity-50);
 `;
 
-const VoteInput = styled.td``;
+const VoteInput = styled.td`
+  min-width: calc(240px + 2.5vw);
+  padding-right: 2.5vw;
+`;
 
 const VoteOutputText = styled.td`
   font: var(--text-md);
+  min-width: calc(140px + 2.5vw);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -404,10 +410,12 @@ const VoteOutputText = styled.td`
   }
 `;
 
-const YourVote = styled(VoteOutputText)``;
+const YourVote = styled(VoteOutputText)`
+  white-space: nowrap;
+`;
 
 const CorrectVote = styled(VoteOutputText)`
-  padding-left: 30px;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     padding-left: 0;
@@ -424,6 +432,7 @@ const VoteLabel = styled.span`
 
 const VoteStatusWrapper = styled.td`
   font: var(--text-md);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -435,7 +444,8 @@ const VoteStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: 30px;
+  min-width: max-content;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     margin-left: 0;
@@ -443,6 +453,8 @@ const VoteStatus = styled.div`
 `;
 
 const MoreDetailsWrapper = styled.td`
+  padding-right: 2.5vw;
+
   @media ${tabletAndUnder} {
     padding-top: 10px;
     border-top: 1px solid var(--border-color);
@@ -452,7 +464,6 @@ const MoreDetailsWrapper = styled.td`
 const MoreDetails = styled.div`
   width: fit-content;
   margin-left: auto;
-  margin-right: 30px;
 
   @media ${tabletAndUnder} {
     margin-left: unset;
