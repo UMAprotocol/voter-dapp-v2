@@ -15,14 +15,8 @@ export function VotePanel({ content }: Props) {
   const {
     title,
     decodedIdentifier,
-    decodedAncillaryData,
     voteNumber,
-    description,
     origin,
-    options,
-    timeAsDate,
-    links,
-    discordLink,
     participation,
     results,
   } = content;
@@ -36,16 +30,7 @@ export function VotePanel({ content }: Props) {
     },
     {
       title: "Details",
-      content: (
-        <Details
-          description={description}
-          decodedAncillaryData={decodedAncillaryData}
-          options={options}
-          timeAsDate={timeAsDate}
-          links={links}
-          discordLink={discordLink}
-        />
-      ),
+      content: <Details {...content} />,
     },
   ];
 
@@ -56,18 +41,7 @@ export function VotePanel({ content }: Props) {
         origin={origin}
         voteNumber={voteNumber?.toString()}
       />
-      {hasResults ? (
-        <Tabs tabs={tabs} />
-      ) : (
-        <Details
-          description={description}
-          decodedAncillaryData={decodedAncillaryData}
-          options={options}
-          timeAsDate={timeAsDate}
-          links={links}
-          discordLink={discordLink}
-        />
-      )}
+      {hasResults ? <Tabs tabs={tabs} /> : <Details {...content} />}
       <PanelFooter />
     </PanelWrapper>
   );

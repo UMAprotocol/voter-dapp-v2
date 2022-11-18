@@ -3,6 +3,7 @@ import { mobileAndUnder } from "constant";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
+import Governance from "public/assets/icons/governance.svg";
 import Link from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Vote from "public/assets/icons/voting.svg";
@@ -19,6 +20,7 @@ type Props = Pick<
   | "timeAsDate"
   | "links"
   | "discordLink"
+  | "decodedAdminTransaction"
 >;
 export function Details({
   description,
@@ -27,6 +29,7 @@ export function Details({
   timeAsDate,
   links,
   discordLink,
+  decodedAdminTransaction,
 }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
@@ -49,15 +52,28 @@ export function Details({
           </ReactMarkdown>
         </Text>
       </SectionWrapper>
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <VoteIcon />
-          </IconWrapper>{" "}
-          Decoded ancillary data
-        </PanelSectionTitle>
-        <Text> {decodedAncillaryData} </Text>
-      </SectionWrapper>
+      {decodedAncillaryData !== "" && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <VoteIcon />
+            </IconWrapper>{" "}
+            Decoded ancillary data
+          </PanelSectionTitle>
+          <Text> {decodedAncillaryData} </Text>
+        </SectionWrapper>
+      )}
+      {decodedAdminTransaction && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <GovernanceIcon />
+            </IconWrapper>{" "}
+            Admin transaction data
+          </PanelSectionTitle>
+          <Pre>{decodedAdminTransaction.decodedData}</Pre>
+        </SectionWrapper>
+      )}
       {optionLabels && (
         <SectionWrapper>
           <PanelSectionTitle>
@@ -151,6 +167,12 @@ const Text = styled.p`
   }
 `;
 
+const Pre = styled.pre`
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`;
+
 const Timestamp = styled(Text)`
   display: flex;
   gap: 30px;
@@ -192,7 +214,16 @@ const VoteIcon = styled(Vote)`
 `;
 
 const VotingIcon = styled(Commit)`
+  * {
+    fill: var(--red-500);
+  }
+`;
+
+const GovernanceIcon = styled(Governance)`
   circle {
+    fill: var(--red-500);
+  }
+  path {
     fill: var(--red-500);
   }
 `;

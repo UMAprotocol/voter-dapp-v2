@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { decodedAdminTransactionsKey } from "constant";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import {
+  useActiveVotes,
+  useHandleError,
+  usePastVotes,
+  useUpcomingVotes,
+} from "hooks";
 import { getDecodedAdminTransactions } from "web3";
-import { useActiveVotes } from "./useActiveVotes";
-import { usePastVotes } from "./usePastVotes";
-import { useUpcomingVotes } from "./useUpcomingVotes";
 
 export function useDecodedAdminTransactions() {
   const { data: activeVotes } = useActiveVotes();
