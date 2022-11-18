@@ -199,3 +199,8 @@ export type AdminTransactionT = DecodedAdminTransactionT & {
 export type VoteDecodedAdminTransactionT = {
   decodedAdminTransaction: DecodedAdminTransactionT | undefined;
 };
+
+export type AdminTransactionByDecodedIdentifierT = Record<
+  string,
+  DecodedAdminTransactionT | undefined
+>;

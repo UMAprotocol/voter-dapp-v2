@@ -32,7 +32,7 @@ export function useDecodedAdminTransactions() {
       pastVotes,
     ],
     queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
-    initialData: [],
+    initialData: {},
     onError,
     onSuccess: clearErrors,
   });

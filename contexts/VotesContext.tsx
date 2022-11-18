@@ -203,20 +203,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return "past";
   }
 
-  function getDecodedAdminTransactionForVote(decodedIdentifier: string) {
-    if (!decodedIdentifier.includes("Admin")) return;
-
-    const decodedAdminTransaction = decodedAdminTransactions.find(
-      (transaction) => transaction.decodedIdentifier === decodedIdentifier
-    );
-
-    if (!decodedAdminTransaction) return;
-
-    const { decodedIdentifier: _, ...rest } = decodedAdminTransaction;
-
-    return rest;
-  }
-
   function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       return {
@@ -237,9 +223,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           staking: false,
           slashAmount: BigNumber.from(0),
         },
-        decodedAdminTransaction: getDecodedAdminTransactionForVote(
-          vote.decodedIdentifier
-        ),
+        decodedAdminTransaction:
+          decodedAdminTransactions[vote.decodedIdentifier],
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
