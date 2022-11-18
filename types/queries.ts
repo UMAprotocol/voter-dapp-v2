@@ -1,6 +1,5 @@
 export type PastVotesQuery = {
   priceRequests: {
-    id: string;
     identifier: {
       id: string;
     };
