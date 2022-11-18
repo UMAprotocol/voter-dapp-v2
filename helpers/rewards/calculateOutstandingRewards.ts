@@ -2,7 +2,6 @@ import { BigNumber } from "ethers";
 import { oneEth } from "helpers/web3/ethers";
 
 interface CalculationInputs {
-  outstandingRewardsFromContract: BigNumber;
   stakedBalance: BigNumber;
   rewardsPaidPerToken: BigNumber;
   cumulativeStake: BigNumber;
@@ -11,7 +10,6 @@ interface CalculationInputs {
   emissionRate: BigNumber;
 }
 export function calculateOutstandingRewards({
-  outstandingRewardsFromContract,
   stakedBalance,
   rewardsPaidPerToken,
   cumulativeStake,

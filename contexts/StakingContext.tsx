@@ -3,7 +3,6 @@ import { calculateOutstandingRewards } from "helpers";
 import {
   useAccountDetails,
   useInterval,
-  useOutstandingRewards,
   useRewardsCalculationInputs,
   useStakerDetails,
   useTokenAllowance,
@@ -60,11 +59,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isFetching: unstakedBalanceFetching,
   } = useUnstakedBalance();
   const {
-    data: outstandingRewardsFromContract,
-    isLoading: outstandingRewardsLoading,
-    isFetching: outstandingRewardsFetching,
-  } = useOutstandingRewards();
-  const {
     data: {
       emissionRate,
       rewardPerTokenStored,
@@ -95,7 +89,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
   function updateOutstandingRewards() {
     const calculatedOutstandingRewards = calculateOutstandingRewards({
-      outstandingRewardsFromContract,
       stakedBalance,
       rewardsPaidPerToken,
       cumulativeStake,
@@ -113,7 +106,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     return (
       stakerDetailsLoading ||
       unstakedBalanceLoading ||
-      outstandingRewardsLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
       rewardsCalculationInputsLoading
@@ -126,7 +118,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     return (
       stakerDetailsFetching ||
       unstakedBalanceFetching ||
-      outstandingRewardsFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
       rewardsCalculationInputsFetching

@@ -40,7 +40,6 @@ export { useNewReceivedRequestsToBeDelegate } from "./queries/delegation/useNewR
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
-export { useOutstandingRewards } from "./queries/rewards/useOutstandingRewards";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
 export { useStakerDetails } from "./queries/staking/useStakerDetails";
 export { useTokenAllowance } from "./queries/staking/useTokenAllowance";
