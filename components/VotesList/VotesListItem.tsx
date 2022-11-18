@@ -178,6 +178,17 @@ export function VotesListItem({
     return "transparent";
   }
 
+  function getTitleMaxWidth() {
+    if (activityStatus === "upcoming") return "70vw";
+    if (activityStatus === "active" && phase === "commit")
+      return "max(35vw, 320px)";
+    if (
+      (activityStatus === "active" && phase === "reveal") ||
+      activityStatus === "past"
+    )
+      return "max(400px, 45vw)";
+  }
+
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
@@ -216,8 +227,7 @@ export function VotesListItem({
             <VoteTitle
               style={
                 {
-                  "--title-max-width":
-                    activityStatus === "upcoming" ? "70vw" : "max(400px, 45vw)",
+                  "--title-max-width": getTitleMaxWidth(),
                 } as CSSProperties
               }
             >
@@ -358,6 +368,10 @@ const Wrapper = styled.tr`
 const VoteTitleOuterWrapper = styled.td`
   padding-left: 1vw;
   padding-right: 2.5vw;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+  }
 `;
 
 const VoteTitleWrapper = styled.div`
@@ -366,7 +380,7 @@ const VoteTitleWrapper = styled.div`
   gap: 1vw;
 
   @media ${tabletAndUnder} {
-    margin-left: 0;
+    gap: unset;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--border-color);
   }
@@ -397,6 +411,10 @@ const VoteTitle = styled.h3`
   text-overflow: ellipsis;
 
   @media ${tabletAndUnder} {
+    max-width: unset;
+    white-space: unset;
+    overflow: unset;
+    text-overflow: unset;
     margin-bottom: 5px;
   }
 `;
@@ -409,6 +427,11 @@ const VoteOrigin = styled.h4`
 const VoteInput = styled.td`
   min-width: calc(240px + 2.5vw);
   padding-right: 2.5vw;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+    min-width: unset;
+  }
 `;
 
 const VoteOutputText = styled.td`
