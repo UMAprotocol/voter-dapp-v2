@@ -19,31 +19,15 @@ export function calculateOutstandingRewards({
   lastUpdateTime,
   emissionRate,
 }: CalculationInputs) {
-  const currentTimeMs = BigNumber.from(Math.floor(Date.now()));
+  const currentTimeMs = BigNumber.from(Date.now());
+  const deltaTimeMs = currentTimeMs.sub(lastUpdateTime.mul(1000));
+  const emissionRateMs = emissionRate.div(1000);
 
   const rewardPerToken = cumulativeStake.eq(0)
     ? rewardPerTokenStored
-    : rewardPerTokenStored
-        .mul(1000)
-        .add(
-          currentTimeMs
-            .sub(lastUpdateTime.mul(1000))
-            .mul(emissionRate.mul(1000))
-            .mul(oneEth)
-            .div(cumulativeStake)
-        );
+    : rewardPerTokenStored.add(
+        deltaTimeMs.mul(emissionRateMs).mul(oneEth).div(cumulativeStake)
+      );
 
-  const result = outstandingRewardsFromContract.add(
-    stakedBalance
-      .mul(rewardPerToken.sub(rewardsPaidPerToken.mul(1000)))
-      .div(oneEth.mul(10))
-  );
-
-  console.log(
-    result.toString(),
-    outstandingRewardsFromContract.toString(),
-    result.eq(outstandingRewardsFromContract)
-  );
-
-  return result;
+  return stakedBalance.mul(rewardPerToken.sub(rewardsPaidPerToken)).div(oneEth);
 }
