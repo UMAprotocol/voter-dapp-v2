@@ -29,6 +29,7 @@ const Wrapper = styled.div`
   gap: 30px;
   align-items: center;
   background: var(--grey-100);
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     gap: 5px;
@@ -50,6 +51,8 @@ const Label = styled.h1`
   color: var(--white);
   background: var(--black);
   padding-inline: 15px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 
   @media ${tabletAndUnder} {
     width: 100%;
