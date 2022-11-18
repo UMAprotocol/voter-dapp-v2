@@ -111,7 +111,9 @@ export function HowItWorks() {
             <>
               You have{" "}
               <LoadingSkeleton isLoading={isLoading()} width={60}>
-                <Strong>{formatNumberForDisplay(outstandingRewards)}</Strong>
+                <Strong>
+                  {formatNumberForDisplay(outstandingRewards)} UMA
+                </Strong>
               </LoadingSkeleton>{" "}
               in unclaimed rewards
             </>
