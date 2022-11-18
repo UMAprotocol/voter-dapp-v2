@@ -1,5 +1,6 @@
 import { Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
+import { formatNumberForDisplay } from "helpers";
 import Chat from "public/assets/icons/chat.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
@@ -72,6 +73,12 @@ export function Details({
             Admin transaction data
           </PanelSectionTitle>
           <Pre>{decodedAdminTransaction.decodedData}</Pre>
+          {decodedAdminTransaction && !decodedAdminTransaction.value.eq(0) && (
+            <Text>
+              {formatNumberForDisplay(decodedAdminTransaction.value)} was sent
+              in this transaction.
+            </Text>
+          )}
         </SectionWrapper>
       )}
       {optionLabels && (
