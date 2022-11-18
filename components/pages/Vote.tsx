@@ -22,7 +22,7 @@ export function Vote() {
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner size={300} variant="black" />
+              <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <Votes />
