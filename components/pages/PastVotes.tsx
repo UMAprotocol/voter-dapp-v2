@@ -9,6 +9,7 @@ import {
   VotesListItem,
   VotesTableHeadings,
 } from "components";
+import { defaultResultsPerPage } from "constant";
 import { getEntriesForPage } from "helpers";
 import {
   usePaginationContext,
@@ -65,7 +66,7 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              {numberOfPastVotes > 20 && (
+              {numberOfPastVotes > defaultResultsPerPage && (
                 <PaginationWrapper>
                   <Pagination
                     paginateFor="pastVotesPage"

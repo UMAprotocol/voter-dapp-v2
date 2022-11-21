@@ -1,3 +1,4 @@
+export * from "./misc/defaultResultsPerPage";
 export * from "./misc/errorMessages";
 export * from "./misc/maximumApprovalAmountString";
 export * from "./misc/siteMetaData";

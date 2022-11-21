@@ -4,7 +4,13 @@ import {
   Pagination,
   VoteHistoryTable,
 } from "components";
-import { black, green, mobileAndUnder, red500 } from "constant";
+import {
+  black,
+  defaultResultsPerPage,
+  green,
+  mobileAndUnder,
+  red500,
+} from "constant";
 import { formatNumberForDisplay, getEntriesForPage } from "helpers";
 import { usePaginationContext, useUserContext, useVotesContext } from "hooks";
 import styled, { CSSProperties } from "styled-components";
@@ -96,7 +102,7 @@ export function HistoryPanel() {
               <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
-          {numberOfPastVotes > 20 && (
+          {numberOfPastVotes > defaultResultsPerPage && (
             <PaginationWrapper>
               <Pagination
                 paginateFor="voteHistoryPage"

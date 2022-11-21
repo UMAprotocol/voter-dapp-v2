@@ -10,6 +10,7 @@ import {
   VotesListItem,
   VotesTableHeadings,
 } from "components";
+import { defaultResultsPerPage } from "constant";
 import { getEntriesForPage } from "helpers";
 import {
   usePaginationContext,
@@ -51,7 +52,7 @@ export function UpcomingVotes() {
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner size={30} variant="black" />
+              <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -80,7 +81,7 @@ export function UpcomingVotes() {
                       ))}
                     />
                   </VotesTableWrapper>
-                  {numberOfUpcomingVotes > 20 && (
+                  {numberOfUpcomingVotes > defaultResultsPerPage && (
                     <PaginationWrapper>
                       <Pagination
                         paginateFor="upcomingVotesPage"

@@ -7,6 +7,7 @@ import {
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
+import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import {
   useAccountDetails,
@@ -255,7 +256,7 @@ export function Votes() {
           )}
         </CommitVotesButtonWrapper>
       ) : null}
-      {determineVotesToShow().length > 20 && (
+      {determineVotesToShow().length > defaultResultsPerPage && (
         <PaginationWrapper>
           <Pagination
             paginateFor="activeVotesPage"
