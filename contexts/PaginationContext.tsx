@@ -16,7 +16,7 @@ export interface PaginationContextState {
 
 export const defaultPageState = {
   pageNumber: 1,
-  resultsPerPage: 10,
+  resultsPerPage: 20,
 };
 
 export const defaultPageStates = {
