@@ -55,9 +55,14 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <LoadingSkeleton isLoading={isLoading()} variant="white">
-              <Strong>{formatNumberForDisplay(outstandingRewards)} UMA</Strong>
-            </LoadingSkeleton>{" "}
+            {isLoading() ? (
+              <LoadingSkeleton variant="white" />
+            ) : (
+              <Strong>
+                {formatNumberForDisplay(outstandingRewards)}{" "}
+                <TokenSymbol>UMA</TokenSymbol>
+              </Strong>
+            )}{" "}
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>
@@ -130,11 +135,14 @@ const RewardsHeader = styled.h2`
 `;
 
 const Rewards = styled.p`
+  width: 50%;
   font: var(--header-lg);
+  text-align: center;
+`;
+
+const TokenSymbol = styled.span`
+  font: inherit;
   font-weight: 300;
-  strong {
-    font-weight: 700;
-  }
 `;
 
 const ClaimAndStakeWrapper = styled.div`

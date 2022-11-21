@@ -289,36 +289,33 @@ export function VotesListItem({
       ) : null}
       {showYourVote() ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Your vote</VoteLabel>{" "}
-          <LoadingSkeleton isLoading={isFetching} width={100}>
-            <VoteText voteText={getYourVote()} />
-          </LoadingSkeleton>
+          <VoteLabel>Your vote</VoteLabel> <VoteText voteText={getYourVote()} />
         </YourVote>
       ) : null}
       {showCorrectVote() ? (
         <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Correct vote</VoteLabel>{" "}
-          <LoadingSkeleton isLoading={isFetching} width={100}>
-            <VoteText voteText={getCorrectVote()} />
-          </LoadingSkeleton>
+          <VoteText voteText={getCorrectVote()} />
         </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <LoadingSkeleton isLoading={isFetching} width={100} height={24}>
-              <>
-                <DotIcon
-                  style={
-                    {
-                      "--dot-color": getDotColor(),
-                    } as CSSProperties
-                  }
-                />{" "}
-                {getRelevantTransactionLink()}
-              </>
-            </LoadingSkeleton>
+            <>
+              <DotIcon
+                style={
+                  {
+                    "--dot-color": getDotColor(),
+                  } as CSSProperties
+                }
+              />{" "}
+              {isFetching ? (
+                <LoadingSkeleton width="8vw" />
+              ) : (
+                getRelevantTransactionLink()
+              )}
+            </>
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}
@@ -339,7 +336,7 @@ export function VotesListItem({
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <></>;
+  if (!voteText) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {

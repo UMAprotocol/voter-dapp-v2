@@ -46,37 +46,41 @@ export function HistoryPanel() {
       <SectionsWrapper>
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
-          <LoadingSkeleton isLoading={isLoading()} variant="white" width={100}>
-            <Apr>{`${formatNumberForDisplay(apr)}%`}</Apr>
-          </LoadingSkeleton>
+          <Apr>
+            {isLoading() ? (
+              <LoadingSkeleton variant="white" width="50%" />
+            ) : (
+              `${formatNumberForDisplay(apr)}%`
+            )}
+          </Apr>
           <AprDetailsWrapper>
             <Text>
-              <LoadingSkeleton
-                isLoading={isLoading()}
-                variant="white"
-                width={60}
-              >
-                <>
-                  Based on participation score:{" "}
-                  {formatNumberForDisplay(cumulativeCalculatedSlash)}
-                </>
-              </LoadingSkeleton>
+              <>
+                Based on participation score:{" "}
+                {isLoading() ? (
+                  <LoadingSkeleton width={40} />
+                ) : (
+                  formatNumberForDisplay(cumulativeCalculatedSlash)
+                )}
+              </>
             </Text>
             <Text>
               Your bonus/penalty ={" "}
-              <LoadingSkeleton isLoading={isLoading()} width={60}>
-                <BonusOrPenalty
-                  style={
-                    {
-                      "--color": bonusPenaltyHighlightColor,
-                    } as CSSProperties
-                  }
-                >
-                  {`${formatNumberForDisplay(
+              <BonusOrPenalty
+                style={
+                  {
+                    "--color": bonusPenaltyHighlightColor,
+                  } as CSSProperties
+                }
+              >
+                {isLoading() ? (
+                  <LoadingSkeleton width={40} />
+                ) : (
+                  `${formatNumberForDisplay(
                     cumulativeCalculatedSlashPercentage
-                  )}%`}
-                </BonusOrPenalty>
-              </LoadingSkeleton>
+                  )}%`
+                )}
+              </BonusOrPenalty>
             </Text>
           </AprDetailsWrapper>
         </AprWrapper>
@@ -96,7 +100,7 @@ export function HistoryPanel() {
               <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
-          {numberOfPastVotes > 10 && (
+          {!isLoading() && (
             <PaginationWrapper>
               <Pagination
                 paginateFor="voteHistoryPage"
@@ -136,6 +140,8 @@ const AprHeader = styled.h2`
 `;
 
 const Apr = styled.p`
+  width: 100%;
+  text-align: center;
   font: var(--header-lg);
   margin-bottom: 5px;
 `;
