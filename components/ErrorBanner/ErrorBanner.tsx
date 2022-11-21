@@ -48,6 +48,7 @@ const ErrorMessageWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
+  padding-block: 5px;
   &:not(:last-child) {
     margin-bottom: 5px;
   }
@@ -72,7 +73,7 @@ const CloseIcon = styled(Close)`
 `;
 const CloseButton = styled.button`
   position: absolute;
-  top: 4px;
+  top: 8px;
   right: 0;
   background: transparent;
   fill: var(--white);
