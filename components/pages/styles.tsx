@@ -8,7 +8,7 @@ export const PageOuterWrapper = styled.div`
 
 export const PageInnerWrapper = styled.div`
   max-width: var(--page-width);
-  padding-inline: 45px;
+  padding-inline: clamp(10px, 45px, 4vw);
   padding-block: 45px;
   margin-inline: auto;
 
