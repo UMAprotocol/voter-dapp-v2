@@ -147,7 +147,7 @@ const OuterWrapper = styled.section`
 `;
 
 const InnerWrapper = styled.div`
-  padding-inline: clamp(10px, 45px, 4vw);
+  padding-inline: var(--page-padding);
   padding-block: 30px;
   max-width: var(--page-width);
   margin-inline: auto;

@@ -24,7 +24,7 @@ const InnerWrapper = styled.div`
   height: var(--banner-height);
   display: flex;
   align-items: center;
-  padding-left: clamp(10px, 45px, 4vw);
+  padding-left: var(--page-padding);
   @media ${tabletAndUnder} {
     padding: 0;
   }
