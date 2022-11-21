@@ -68,12 +68,14 @@ const Wrapper = styled.div`
   font: var(--text-md);
   color: var(--color);
   background-color: var(--background-color);
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: unset;
     padding: 15px;
     gap: 10px;
     margin: unset;
+    border-radius: 0;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
   }
