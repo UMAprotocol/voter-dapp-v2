@@ -51,7 +51,7 @@ export function UpcomingVotes() {
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner size={300} variant="black" />
+              <LoadingSpinner size={30} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -80,7 +80,7 @@ export function UpcomingVotes() {
                       ))}
                     />
                   </VotesTableWrapper>
-                  {numberOfUpcomingVotes > 10 && (
+                  {numberOfUpcomingVotes > 20 && (
                     <PaginationWrapper>
                       <Pagination
                         paginateFor="upcomingVotesPage"

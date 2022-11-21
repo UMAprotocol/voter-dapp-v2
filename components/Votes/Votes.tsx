@@ -255,7 +255,7 @@ export function Votes() {
           )}
         </CommitVotesButtonWrapper>
       ) : null}
-      {determineVotesToShow().length > 10 && (
+      {determineVotesToShow().length > 20 && (
         <PaginationWrapper>
           <Pagination
             paginateFor="activeVotesPage"

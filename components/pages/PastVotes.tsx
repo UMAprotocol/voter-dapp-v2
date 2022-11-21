@@ -65,7 +65,7 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              {numberOfPastVotes > 10 && (
+              {numberOfPastVotes > 20 && (
                 <PaginationWrapper>
                   <Pagination
                     paginateFor="pastVotesPage"
