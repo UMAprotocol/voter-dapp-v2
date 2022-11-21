@@ -138,6 +138,7 @@ const Rewards = styled.p`
   width: 50%;
   font: var(--header-lg);
   text-align: center;
+  white-space: nowrap;
 `;
 
 const TokenSymbol = styled.span`
