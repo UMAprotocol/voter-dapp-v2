@@ -1,7 +1,6 @@
 import {
-  AdminTransactionByDecodedIdentifierT,
-  AdminTransactionT,
-  DecodedAdminTransactionT,
+  DecodedAdminTransactionsByIdentifierT,
+  DecodedAdminTransactionsT,
 } from "types";
 
 export async function getDecodedAdminTransactions(
@@ -19,28 +18,15 @@ export async function getDecodedAdminTransactions(
     throw new Error("Error fetching decoded admin transactions");
   }
 
-  const result = (await response.json()) as DecodedAdminTransactionT[];
+  const result = (await response.json()) as DecodedAdminTransactionsT[];
 
-  const merged: AdminTransactionT[] = [];
+  const decodedAdminTransactionsByIdentifier: DecodedAdminTransactionsByIdentifierT =
+    {};
 
-  // the resulting data is in the same order as the input
-  // so we add the identifiers back in to let us associate them
-  // with the correct vote
-  result.forEach((decodedAdminTransaction, index) => {
-    const decodedIdentifier = decodedIdentifiers[index];
-
-    merged.push({
-      ...decodedAdminTransaction,
-      decodedIdentifier,
-    });
+  result.forEach((decodedAdminTransactions) => {
+    decodedAdminTransactionsByIdentifier[decodedAdminTransactions.identifier] =
+      decodedAdminTransactions;
   });
 
-  // for efficient lookup, we transform the array into an object
-  // with the identifier as the key
-  return merged.reduce((acc, adminTransaction) => {
-    const { decodedIdentifier: _removed, ...withoutIdentifier } =
-      adminTransaction;
-    acc[adminTransaction.decodedIdentifier] = withoutIdentifier;
-    return acc;
-  }, {} as AdminTransactionByDecodedIdentifierT);
+  return decodedAdminTransactionsByIdentifier;
 }
