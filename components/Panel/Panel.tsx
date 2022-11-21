@@ -3,7 +3,7 @@ import "@reach/dialog/styles.css";
 import { black, white } from "constant";
 import { usePanelContext, usePanelWidth } from "hooks";
 import Close from "public/assets/icons/close.svg";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useRef } from "react";
 import { animated, useTransition } from "react-spring";
 import styled from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
@@ -27,6 +27,13 @@ const panelTypeToPanelComponent = {
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
   const panelWidth = usePanelWidth();
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (panelOpen) {
+      contentRef?.current?.scroll({ top: 0 });
+    }
+  }, [panelOpen]);
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0, right: -panelWidth },
@@ -55,6 +62,7 @@ export function Panel() {
               }}
             >
               <Content
+                ref={contentRef}
                 aria-labelledby="panel-title"
                 style={
                   {
