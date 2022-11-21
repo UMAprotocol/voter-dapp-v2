@@ -1,72 +1,63 @@
-import { loadingSkeletonOpacity100, white, whiteOpacity10 } from "constant";
-import styled, { CSSProperties, keyframes } from "styled-components";
+import {
+  loadingSkeletonOpacity10,
+  loadingSkeletonOpacity100,
+  white,
+  whiteOpacity10,
+} from "constant";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface Props {
-  children: JSX.Element;
-  isLoading: boolean;
-  height?: CSSProperties["height"];
-  width?: CSSProperties["width"];
   variant?: "grey" | "white";
+  count?: number;
+  baseColor?: string;
+  highlightColor?: string;
+  width?: string | number;
+  height?: string | number;
+  borderRadius?: string | number;
+  inline?: boolean;
+  duration?: number;
 }
 export function LoadingSkeleton({
-  children,
-  isLoading,
+  variant = "grey",
+  count,
+  baseColor,
+  highlightColor,
   width,
   height,
-  variant = "grey",
+  borderRadius,
+  inline,
+  duration,
 }: Props) {
-  const opaqueColor = variant === "grey" ? loadingSkeletonOpacity100 : white;
-  const semiTransparentColor =
-    variant === "grey" ? loadingSkeletonOpacity100 : whiteOpacity10;
+  const _borderRadius = borderRadius ?? "4px";
 
-  const style = {
-    "--opaque-color": opaqueColor,
-    "--semi-transparent-color": semiTransparentColor,
-    "--width": getDimension(width),
-    "--height": getDimension(height),
-  } as CSSProperties;
+  function getBaseColor() {
+    if (baseColor) return baseColor;
 
-  function getDimension(dimension: number | string | undefined) {
-    if (dimension === undefined) return;
+    if (variant === "grey") return loadingSkeletonOpacity10;
 
-    return typeof dimension === "number" ? `${dimension}px` : dimension;
+    return whiteOpacity10;
   }
 
-  return isLoading ? (
-    <Wrapper style={style}>
-      <Placeholder>{children}</Placeholder>
-    </Wrapper>
-  ) : (
-    <>{children}</>
+  function getHighlightColor() {
+    if (highlightColor) return highlightColor;
+
+    if (variant === "grey") return loadingSkeletonOpacity100;
+
+    return white;
+  }
+
+  return (
+    <SkeletonTheme
+      baseColor={getBaseColor()}
+      highlightColor={getHighlightColor()}
+      borderRadius={_borderRadius}
+      width={width}
+      height={height}
+      inline={inline}
+      duration={duration}
+    >
+      <Skeleton count={count} />
+    </SkeletonTheme>
   );
 }
-
-const shine = keyframes`
-  0% {
-    opacity: 0.1;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.1;
-  }
-`;
-
-const Placeholder = styled.span`
-  display: inline-block;
-  opacity: 0;
-`;
-
-const Wrapper = styled.span`
-  display: inline-block;
-  width: var(--width, 90%);
-  height: var(--height, 90%);
-  background: linear-gradient(
-    to right,
-    var(--opaque-color),
-    var(--semi-transparent-color) 100%
-  );
-  border-radius: 5px;
-  animation: ${shine} 3s linear infinite;
-`;
