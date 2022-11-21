@@ -363,6 +363,7 @@ const VoteTextWrapper = styled.span`
 const Wrapper = styled.tr`
   background: var(--white);
   height: 80px;
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: auto;
@@ -370,13 +371,13 @@ const Wrapper = styled.tr`
     gap: 12px;
     align-items: left;
     padding: 15px;
-    border-radius: 5px;
   }
 `;
 
 const VoteTitleOuterWrapper = styled.td`
   padding-left: 1vw;
   padding-right: 2.5vw;
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     padding: 0;
@@ -498,6 +499,7 @@ const VoteStatus = styled.div`
 
 const MoreDetailsWrapper = styled.td`
   padding-right: 2.5vw;
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     padding-top: 10px;
