@@ -13,6 +13,7 @@ import {
 } from "helpers";
 import { useWalletContext, useWindowSize } from "hooks";
 import NextLink from "next/link";
+import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
@@ -59,7 +60,7 @@ export function VotesListItem({
     timeAsDate,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
-  const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
+  const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
 
   useEffect(() => {
@@ -166,6 +167,12 @@ export function VotesListItem({
       if (!decryptedVote) return "Not committed";
       return isRevealed ? "Revealed" : "Not revealed";
     }
+  }
+
+  function getVoteIcon() {
+    if (origin === "Polymarket") return PolymarketIcon;
+    if (origin === "Across") return AcrossIcon;
+    return UMAIcon;
   }
 
   function getDotColor() {
@@ -509,6 +516,8 @@ const MoreDetails = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
 

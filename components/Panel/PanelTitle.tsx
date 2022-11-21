@@ -1,4 +1,5 @@
 import { mobileAndUnder } from "constant";
+import Across from "public/assets/icons/across.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
@@ -29,6 +30,12 @@ function TitleIcon({ origin }: { origin?: VoteOriginT }) {
       return (
         <TitleIconWrapper>
           <UMAIcon />
+        </TitleIconWrapper>
+      );
+    case "Across":
+      return (
+        <TitleIconWrapper>
+          <AcrossIcon />
         </TitleIconWrapper>
       );
     case "Polymarket":
@@ -87,6 +94,8 @@ const SubTitle = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
 
