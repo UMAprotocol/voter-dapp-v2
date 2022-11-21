@@ -97,7 +97,7 @@ export function HistoryPanel() {
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
             {isLoading() ? (
-              <LoadingSpinner size={250} />
+              <LoadingSpinner size={40} />
             ) : (
               <VoteHistoryTable votes={votesToShow} />
             )}
