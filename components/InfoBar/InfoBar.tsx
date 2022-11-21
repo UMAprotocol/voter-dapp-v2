@@ -57,6 +57,7 @@ const Label = styled.h1`
   @media ${tabletAndUnder} {
     width: 100%;
     height: 40px;
+    border-radius: 0;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
   }
