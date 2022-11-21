@@ -223,7 +223,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           staking: false,
           slashAmount: BigNumber.from(0),
         },
-        decodedAdminTransaction:
+        decodedAdminTransactions:
           decodedAdminTransactions[vote.decodedIdentifier],
         ...getVoteMetaData(
           vote.decodedIdentifier,
