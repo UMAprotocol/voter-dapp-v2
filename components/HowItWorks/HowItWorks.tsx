@@ -92,6 +92,7 @@ export function HowItWorks() {
               <LoadingSkeleton isLoading={isLoading()} width={60}>
                 <Strong>{formatNumberForDisplay(apr, { decimals: 1 })}%</Strong>
               </LoadingSkeleton>{" "}
+              APR
             </>
           }
           actionLabel="Vote history"
@@ -110,7 +111,9 @@ export function HowItWorks() {
             <>
               You have{" "}
               <LoadingSkeleton isLoading={isLoading()} width={60}>
-                <Strong>{formatNumberForDisplay(outstandingRewards)}</Strong>
+                <Strong>
+                  {formatNumberForDisplay(outstandingRewards)} UMA
+                </Strong>
               </LoadingSkeleton>{" "}
               in unclaimed rewards
             </>
@@ -128,7 +131,7 @@ const OuterWrapper = styled.section`
 `;
 
 const InnerWrapper = styled.div`
-  padding-inline: 45px;
+  padding-inline: clamp(10px, 45px, 4vw);
   padding-block: 30px;
   max-width: var(--page-width);
   margin-inline: auto;

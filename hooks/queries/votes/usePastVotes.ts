@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { pastVotesKey } from "constant";
+import { oneMinute, pastVotesKey } from "constant";
 import { getPastVotesAllVersions } from "graph";
 import { useHandleError, useVoteTimingContext } from "hooks";
 
@@ -11,7 +11,7 @@ export function usePastVotes() {
     [pastVotesKey, roundId],
     () => getPastVotesAllVersions(),
     {
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: oneMinute,
       initialData: {},
       onError,
     }

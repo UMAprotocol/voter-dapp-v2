@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { contentfulDataKey } from "constant";
+import { contentfulDataKey, oneMinute } from "constant";
 import * as contentful from "contentful";
 import {
   useActiveVotes,
@@ -46,7 +46,9 @@ async function getContentfulData(
 }
 
 export function useContentfulData() {
-  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { activeVotes },
+  } = useActiveVotes();
   const {
     data: { upcomingVotes },
   } = useUpcomingVotes();
@@ -70,7 +72,7 @@ export function useContentfulData() {
     [contentfulDataKey, activeVotes, upcomingVotes, pastVotes],
     () => getContentfulData(adminProposalNumbersByKey),
     {
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: oneMinute,
       initialData: {},
       onError,
     }

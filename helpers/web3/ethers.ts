@@ -36,4 +36,6 @@ export const getAddress = ethers.utils.getAddress;
 
 export const isAddress = ethers.utils.isAddress;
 
+export const oneEth = ethers.BigNumber.from("1000000000000000000");
+
 export const maximumApprovalAmount = ethers.constants.MaxUint256;

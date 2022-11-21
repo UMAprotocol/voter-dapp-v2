@@ -21,7 +21,6 @@ export function useDelegateToStaker() {
     [delegateToStakerKey, address],
     () => getDelegateToStaker(voting, delegate ?? zeroAddress),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       onError,
     }

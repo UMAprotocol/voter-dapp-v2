@@ -44,7 +44,7 @@ export function PastVotes() {
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner size={300} variant="black" />
+              <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -65,12 +65,14 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              <PaginationWrapper>
-                <Pagination
-                  paginateFor="pastVotesPage"
-                  numberOfEntries={numberOfPastVotes}
-                />
-              </PaginationWrapper>
+              {numberOfPastVotes > 10 && (
+                <PaginationWrapper>
+                  <Pagination
+                    paginateFor="pastVotesPage"
+                    numberOfEntries={numberOfPastVotes}
+                  />
+                </PaginationWrapper>
+              )}
             </>
           )}
         </PageInnerWrapper>

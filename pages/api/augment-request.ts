@@ -30,6 +30,7 @@ function constructOoUiLink(
   chainId: number,
   oracleType: string
 ) {
+  if (!txHash || !chainId || !oracleType) return null;
   return `https://oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${oracleType}`;
 }
 
@@ -161,6 +162,8 @@ async function getAugmentingRequestInformation(l1Requests: Request[]) {
         requestTransactions[index].chainId,
         requestTransactions[index].oracleType
       ),
+      originatingChainId: requestTransactions[index].chainId || null,
+      originatingOracleType: requestTransactions[index].oracleType || null,
     };
   });
 }

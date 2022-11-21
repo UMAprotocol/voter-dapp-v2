@@ -1,6 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { onlyOneRequestPerAddress, zeroAddress } from "helpers";
-import { getStakerDetails } from "../balances/getStakerDetails";
+import { getStakerDetails } from "../staking/getStakerDetails";
 
 export async function getDelegateSetEvents(
   voting: VotingV2Ethers,

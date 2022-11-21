@@ -1,18 +1,16 @@
-import { black, grey100, red500, tabletAndUnder, white } from "constant";
+import { black, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Commit from "public/assets/icons/commit.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT } from "types";
 
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
-  status: ActivityStatusT;
 }
-export function CommitPhase({ phase, timeRemaining, status }: Props) {
+export function CommitPhase({ phase, timeRemaining }: Props) {
   const isCommitPhase = phase === "commit";
-  const isActive = isCommitPhase && status === "active";
+  const isActive = isCommitPhase;
   const textColor = isActive ? white : black;
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
@@ -22,17 +20,7 @@ export function CommitPhase({ phase, timeRemaining, status }: Props) {
   );
 
   return (
-    <OuterWrapper
-      style={
-        {
-          "--border-color":
-            status === "past" || status === "upcoming"
-              ? grey100
-              : "transparent",
-        } as CSSProperties
-      }
-    >
-      {status !== "active" && <ArrowBorder />}
+    <OuterWrapper>
       <InnerWrapper
         style={
           {
@@ -112,23 +100,6 @@ const CommitIcon = styled(Commit)`
   * {
     stroke: var(--stroke-color);
     fill: var(--fill-color);
-  }
-`;
-
-// we can't have a border with a clip path,
-// so instead we create a separate element with the desired border as a background color,
-// and shift it over a bit to the right
-const ArrowBorder = styled.div`
-  position: absolute;
-  height: 50px;
-  width: 100%;
-  clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0 100%, 0 0);
-  background-color: var(--black);
-  top: 0;
-  left: 2px;
-
-  @media ${tabletAndUnder} {
-    display: none;
   }
 `;
 

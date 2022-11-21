@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { userDataKey } from "constant";
+import { oneMinute, userDataKey } from "constant";
 import { BigNumber } from "ethers";
 import { getUserData } from "graph";
 import { useAccountDetails, useHandleError } from "hooks";
@@ -13,7 +13,7 @@ export function useUserVotingAndStakingDetails() {
     () => getUserData(address),
     {
       enabled: !!address,
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: oneMinute,
       initialData: {
         apr: BigNumber.from(0),
         countReveals: BigNumber.from(0),
