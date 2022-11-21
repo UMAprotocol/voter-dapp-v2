@@ -289,5 +289,5 @@ const CommitVotesButtonWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-top: 30px;
+  margin-block: 30px;
 `;

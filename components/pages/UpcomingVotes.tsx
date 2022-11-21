@@ -114,7 +114,7 @@ const VotesTableWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-top: 10px;
+  margin-block: 30px;
 `;
 
 const NoVotesWrapper = styled.div`
