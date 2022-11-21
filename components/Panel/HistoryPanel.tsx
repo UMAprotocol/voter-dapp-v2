@@ -95,19 +95,19 @@ export function HistoryPanel() {
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
             {isLoading() ? (
-              <LoadingSpinner size={30} />
+              <LoadingSpinner size={250} />
             ) : (
-              <>
-                <VoteHistoryTable votes={votesToShow} />
-                <PaginationWrapper>
-                  <Pagination
-                    paginateFor="voteHistoryPage"
-                    numberOfEntries={numberOfPastVotes}
-                  />
-                </PaginationWrapper>
-              </>
+              <VoteHistoryTable votes={votesToShow} />
             )}
           </HistoryWrapper>
+          {!isLoading() && (
+            <PaginationWrapper>
+              <Pagination
+                paginateFor="voteHistoryPage"
+                numberOfEntries={numberOfPastVotes}
+              />
+            </PaginationWrapper>
+          )}
         </SectionWrapper>
       </SectionsWrapper>
       <PanelFooter />
