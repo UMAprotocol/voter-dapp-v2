@@ -38,6 +38,7 @@ const Wrapper = styled.div`
   font: var(--text-md);
   color: var(--black);
   background-color: var(--white);
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: unset;

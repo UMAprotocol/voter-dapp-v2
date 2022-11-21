@@ -78,12 +78,14 @@ const InnerWrapper = styled.div`
   color: var(--color);
   background-color: var(--background-color);
   clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0 100%, 0 0);
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: unset;
     gap: 10px;
     padding: 15px;
     clip-path: unset;
+    border-radius: 0;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
