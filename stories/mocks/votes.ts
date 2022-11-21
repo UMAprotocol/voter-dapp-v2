@@ -20,7 +20,7 @@ export const voteWithoutUserVote = {
   ancillaryData: "0x1234567890",
   decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
   decodedAncillaryData: "Test test test",
-  decodedAdminTransaction: undefined,
+  decodedAdminTransactions: undefined,
   uniqueKey: "0x1234567890",
   umipNumber: 20,
   encryptedVote: undefined,
