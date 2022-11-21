@@ -21,7 +21,7 @@ type Props = Pick<
   | "timeAsDate"
   | "links"
   | "discordLink"
-  | "decodedAdminTransaction"
+  | "decodedAdminTransactions"
 >;
 export function Details({
   description,
@@ -30,7 +30,7 @@ export function Details({
   timeAsDate,
   links,
   discordLink,
-  decodedAdminTransaction,
+  decodedAdminTransactions,
 }: Props) {
   const optionLabels = options?.map(({ label }) => label);
 
@@ -64,7 +64,7 @@ export function Details({
           <Text> {decodedAncillaryData} </Text>
         </SectionWrapper>
       )}
-      {decodedAdminTransaction && (
+      {decodedAdminTransactions?.transactions ? (
         <SectionWrapper>
           <PanelSectionTitle>
             <IconWrapper>
@@ -72,19 +72,21 @@ export function Details({
             </IconWrapper>{" "}
             Admin transaction data
           </PanelSectionTitle>
-          <Pre>{decodedAdminTransaction.decodedData}</Pre>
-          {decodedAdminTransaction.value !== "0" && (
-            <Text>
-              <>
-                {formatNumberForDisplay(
-                  parseEtherSafe(decodedAdminTransaction.value)
-                )}{" "}
-                was sent in this transaction.
-              </>
-            </Text>
-          )}
+          {decodedAdminTransactions.transactions.map((transaction) => (
+            <>
+              <Pre>{transaction.decodedData}</Pre>
+              {transaction.value !== "0" && (
+                <Text>
+                  <>
+                    {formatNumberForDisplay(parseEtherSafe(transaction.value))}{" "}
+                    was sent in this transaction.
+                  </>
+                </Text>
+              )}
+            </>
+          ))}
         </SectionWrapper>
-      )}
+      ) : null}
       {optionLabels && (
         <SectionWrapper>
           <PanelSectionTitle>
