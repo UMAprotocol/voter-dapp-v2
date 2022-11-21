@@ -13,7 +13,6 @@ export function useTokenAllowance() {
     [tokenAllowanceKey, address],
     () => getTokenAllowance(votingToken, address),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: BigNumber.from(0),
       onError,

@@ -6,7 +6,7 @@ import {
   PageOuterWrapper,
 } from "components";
 import { useDelegationContext } from "hooks";
-import styled from "styled-components";
+import { LoadingSpinnerWrapper } from "../styles";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {
@@ -19,7 +19,7 @@ export function WalletSettings() {
         <PageInnerWrapper>
           {getDelegationDataLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner variant="black" size={300} />
+              <LoadingSpinner variant="black" size={40} />
             </LoadingSpinnerWrapper>
           ) : (
             <Wallets />
@@ -29,10 +29,3 @@ export function WalletSettings() {
     </Layout>
   );
 }
-
-const LoadingSpinnerWrapper = styled.div`
-  padding-top: 50px;
-  height: 100%;
-  display: grid;
-  place-items: center;
-`;

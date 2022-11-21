@@ -26,7 +26,6 @@ export function useStakerDetails() {
     [stakerDetailsKey, address],
     () => getStakerDetails(voting, addressToQuery),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: {
         stakedBalance: BigNumber.from(0),
@@ -34,6 +33,7 @@ export function useStakerDetails() {
         unstakeRequestTime: new Date(0),
         canUnstakeTime: new Date(0),
         delegate: zeroAddress,
+        rewardsPaidPerToken: BigNumber.from(0),
       },
       onError,
     }

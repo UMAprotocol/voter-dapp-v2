@@ -3,6 +3,7 @@ import { upcomingVotesKey } from "constant";
 import {
   useContractsContext,
   useHandleError,
+  useNewVotesAdded,
   useVoteTimingContext,
 } from "hooks";
 import { getUpcomingVotes } from "web3";
@@ -10,15 +11,13 @@ import { getUpcomingVotes } from "web3";
 export function useUpcomingVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
+  const newVotesAdded = useNewVotesAdded();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
-    [upcomingVotesKey, roundId],
+    [upcomingVotesKey, roundId, newVotesAdded],
     () => getUpcomingVotes(voting, roundId),
     {
-      refetchInterval(data) {
-        return data ? false : 100;
-      },
       initialData: {
         upcomingVotes: {},
         hasUpcomingVotes: false,

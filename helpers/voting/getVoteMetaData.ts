@@ -29,7 +29,7 @@ export function getVoteMetaData(
     const umipUrl = umipDataFromContentful?.umipLink;
     const umipNumber = getUmipNumber(decodedIdentifier);
     const links = makeVoteLinks(transactionHash, umipNumber);
-    const options = makeUmipVoteOptions();
+    const options = makeVoteOptions();
     return {
       title,
       description,
@@ -39,6 +39,30 @@ export function getVoteMetaData(
       options,
       origin: "UMA",
       isGovernance: true,
+      discordLink,
+      isRolled,
+    };
+  }
+
+  const isAcross = decodedIdentifier === "ACROSS-V2";
+  if (isAcross) {
+    const title = "Across V2";
+    const description = `Across is an optimistic insured bridge that relies on a decentralized group of relayers to fulfill user deposit requests from EVM to EVM networks. Relayer funds are insured by liquidity providers in a single pool on Ethereum and refunds are processed via the UMA Optimistic Oracle. [Learn more.](https://docs.across.to/)`;
+    const umipUrl =
+      "https://github.com/UMAprotocol/UMIPs/blob/448375e1b9d2bd24dfd0627805ef6a7c2d72f74f/UMIPs/umip-157.md";
+    const umipNumber = 157;
+    const links = makeVoteLinks(transactionHash, umipNumber);
+    const options = makeVoteOptions();
+
+    return {
+      title,
+      description,
+      umipUrl,
+      umipNumber,
+      links,
+      options,
+      origin: "Across",
+      isGovernance: false,
       discordLink,
       isRolled,
     };
@@ -165,7 +189,7 @@ function getUmipNumber(umipOrAdmin: string | undefined) {
   return asNumber;
 }
 
-function makeUmipVoteOptions() {
+function makeVoteOptions() {
   return [
     { label: "Yes", value: "1" },
     { label: "No", value: "0" },

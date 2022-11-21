@@ -7,7 +7,8 @@ export const voteWithoutUserVote = {
   isCommitted: false,
   commitHash: undefined,
   isRolled: false,
-  title: "SuperUMAn DAO KPI Options funding proposal",
+  title:
+    "SuperUMAn DAO KPI Options funding proposal and a bunch of extra text that will presumably trigger an overflow",
   origin: "UMA" as const,
   description: "Some description",
   transactionHash: "0x1234567890",

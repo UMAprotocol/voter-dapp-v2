@@ -12,7 +12,6 @@ export function useUnstakedBalance() {
     [unstakedBalanceKey, address],
     () => getUnstakedBalance(votingToken, address),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       onError,
     }

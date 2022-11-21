@@ -13,6 +13,7 @@ import {
 } from "helpers";
 import { useWalletContext, useWindowSize } from "hooks";
 import NextLink from "next/link";
+import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
@@ -59,7 +60,7 @@ export function VotesListItem({
     timeAsDate,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
-  const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
+  const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
 
   useEffect(() => {
@@ -168,6 +169,12 @@ export function VotesListItem({
     }
   }
 
+  function getVoteIcon() {
+    if (origin === "Polymarket") return PolymarketIcon;
+    if (origin === "Across") return AcrossIcon;
+    return UMAIcon;
+  }
+
   function getDotColor() {
     if (phase === "commit") {
       return isCommitted ? green : red500;
@@ -179,6 +186,17 @@ export function VotesListItem({
   function getBorderColor() {
     if (activityStatus === "past" || phase === "reveal") return grey100;
     return "transparent";
+  }
+
+  function getTitleMaxWidth() {
+    if (activityStatus === "upcoming") return "70vw";
+    if (activityStatus === "active" && phase === "commit")
+      return "max(35vw, 320px)";
+    if (
+      (activityStatus === "active" && phase === "reveal") ||
+      activityStatus === "past"
+    )
+      return "max(400px, 45vw)";
   }
 
   function getRelevantTransactionLink(): ReactNode | string {
@@ -200,11 +218,6 @@ export function VotesListItem({
     );
   }
 
-  function formatTitle(title: string) {
-    if (title.length <= 45) return title;
-    return `${title.substring(0, 45)}...`;
-  }
-
   return (
     <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
       <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
@@ -219,7 +232,15 @@ export function VotesListItem({
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle>{formatTitle(title)}</VoteTitle>
+            <VoteTitle
+              style={
+                {
+                  "--title-max-width": getTitleMaxWidth(),
+                } as CSSProperties
+              }
+            >
+              {title}
+            </VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -290,7 +311,7 @@ export function VotesListItem({
                 }
               />{" "}
               {isFetching ? (
-                <LoadingSkeleton width={100} />
+                <LoadingSkeleton width="8vw" />
               ) : (
                 getRelevantTransactionLink()
               )}
@@ -315,7 +336,7 @@ export function VotesListItem({
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <LoadingSkeleton width={100} />;
+  if (!voteText) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {
@@ -351,17 +372,21 @@ const Wrapper = styled.tr`
 `;
 
 const VoteTitleOuterWrapper = styled.td`
-  width: 100%;
+  padding-left: 1vw;
+  padding-right: 2.5vw;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+  }
 `;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 30px;
+  gap: 1vw;
 
   @media ${tabletAndUnder} {
-    margin-left: 0;
+    gap: unset;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--border-color);
   }
@@ -386,8 +411,16 @@ const VoteIconWrapper = styled.div`
 
 const VoteTitle = styled.h3`
   font: var(--header-sm);
+  max-width: var(--title-max-width);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media ${tabletAndUnder} {
+    max-width: unset;
+    white-space: unset;
+    overflow: unset;
+    text-overflow: unset;
     margin-bottom: 5px;
   }
 `;
@@ -397,10 +430,20 @@ const VoteOrigin = styled.h4`
   color: var(--black-opacity-50);
 `;
 
-const VoteInput = styled.td``;
+const VoteInput = styled.td`
+  min-width: calc(240px + 2.5vw);
+  padding-right: 2.5vw;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+    min-width: unset;
+  }
+`;
 
 const VoteOutputText = styled.td`
   font: var(--text-md);
+  min-width: calc(80px + 2.5vw);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -408,10 +451,12 @@ const VoteOutputText = styled.td`
   }
 `;
 
-const YourVote = styled(VoteOutputText)``;
+const YourVote = styled(VoteOutputText)`
+  white-space: nowrap;
+`;
 
 const CorrectVote = styled(VoteOutputText)`
-  padding-left: 30px;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     padding-left: 0;
@@ -428,6 +473,7 @@ const VoteLabel = styled.span`
 
 const VoteStatusWrapper = styled.td`
   font: var(--text-md);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -439,7 +485,8 @@ const VoteStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: 30px;
+  min-width: max-content;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     margin-left: 0;
@@ -447,6 +494,8 @@ const VoteStatus = styled.div`
 `;
 
 const MoreDetailsWrapper = styled.td`
+  padding-right: 2.5vw;
+
   @media ${tabletAndUnder} {
     padding-top: 10px;
     border-top: 1px solid var(--border-color);
@@ -456,7 +505,6 @@ const MoreDetailsWrapper = styled.td`
 const MoreDetails = styled.div`
   width: fit-content;
   margin-left: auto;
-  margin-right: 30px;
 
   @media ${tabletAndUnder} {
     margin-left: unset;
@@ -465,6 +513,8 @@ const MoreDetails = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
 

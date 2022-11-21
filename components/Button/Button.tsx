@@ -191,6 +191,7 @@ const __Button = styled.button`
   border-radius: var(--border-radius);
   font: var(--text-md);
   font-size: var(--font-size);
+  white-space: nowrap;
 
   &:hover {
     &:not(:disabled) {

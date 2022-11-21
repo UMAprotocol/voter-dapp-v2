@@ -5,5 +5,10 @@ export async function getActiveVotes(votingContract: VotingV2Ethers) {
   const result = await votingContract.functions.getPendingRequests();
   const pendingRequests = result?.[0];
   const activeVotes = makePriceRequestsByKey(pendingRequests);
-  return activeVotes;
+  const hasActiveVotes = Object.keys(activeVotes).length > 0;
+
+  return {
+    hasActiveVotes,
+    activeVotes,
+  };
 }
