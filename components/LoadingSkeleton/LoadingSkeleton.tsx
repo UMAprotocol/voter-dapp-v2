@@ -25,12 +25,10 @@ export function LoadingSkeleton({
   highlightColor,
   width,
   height,
-  borderRadius,
-  inline,
+  borderRadius = 4,
+  inline = true,
   duration,
 }: Props) {
-  const _borderRadius = borderRadius ?? "4px";
-
   function getBaseColor() {
     if (baseColor) return baseColor;
 
@@ -51,7 +49,7 @@ export function LoadingSkeleton({
     <SkeletonTheme
       baseColor={getBaseColor()}
       highlightColor={getHighlightColor()}
-      borderRadius={_borderRadius}
+      borderRadius={borderRadius}
       width={width}
       height={height}
       inline={inline}
