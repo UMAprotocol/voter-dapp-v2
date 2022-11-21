@@ -155,25 +155,28 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
     ])
   ).flat();
 
-  const transactions = identifiers
-    .map(
-      (identifier) =>
-        events.find(
-          (event) =>
-            event?.args?.id.toString() ===
-            identifier.substring(identifier.indexOf(" ") + 1)
-        )?.args?.transactions || null
-    )
-    .flat();
+  const transactionSets = identifiers.map(
+    (identifier) =>
+      events.find(
+        (event) =>
+          event?.args?.id.toString() ===
+          identifier.substring(identifier.indexOf(" ") + 1)
+      )?.args?.transactions || null
+  );
 
-  return transactions.map((transaction) => {
+  return transactionSets.map((transactions, index) => {
     return {
-      data: transaction.data,
-      to: transaction.to,
-      value: transaction.value.toString(),
-      decodedData: _generateTransactionDataRecursive(
-        _decodeData(transaction.data)
-      ),
+      identifier: identifiers[index],
+      transactions: transactions.map((adminTransaction: any) => {
+        return {
+          data: adminTransaction.data,
+          to: adminTransaction.to,
+          value: adminTransaction.value.toString(),
+          decodedData: _generateTransactionDataRecursive(
+            _decodeData(adminTransaction.data)
+          ),
+        };
+      }),
     };
   });
 }
