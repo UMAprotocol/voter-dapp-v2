@@ -14,7 +14,6 @@ import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  useInitializeVoteTiming,
   usePaginationContext,
   usePanelContext,
   useRevealVotes,
@@ -71,8 +70,6 @@ export function Votes() {
     resultsPerPage,
     determineVotesToShow()
   );
-
-  useInitializeVoteTiming();
 
   async function commitVotes() {
     if (!address || !canCommit()) return;
@@ -213,7 +210,8 @@ export function Votes() {
   return (
     <>
       <Title>{determineTitle()}</Title>
-      <VoteTimeline />
+      {(getActivityStatus() === "active" ||
+        getActivityStatus() === "upcoming") && <VoteTimeline />}
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
@@ -257,12 +255,14 @@ export function Votes() {
           )}
         </CommitVotesButtonWrapper>
       ) : null}
-      <PaginationWrapper>
-        <Pagination
-          paginateFor="activeVotesPage"
-          numberOfEntries={determineVotesToShow().length}
-        />
-      </PaginationWrapper>
+      {determineVotesToShow().length > 10 && (
+        <PaginationWrapper>
+          <Pagination
+            paginateFor="activeVotesPage"
+            numberOfEntries={determineVotesToShow().length}
+          />
+        </PaginationWrapper>
+      )}
     </>
   );
 }

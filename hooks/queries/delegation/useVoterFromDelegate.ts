@@ -11,7 +11,6 @@ export function useVoterFromDelegate() {
     [voterFromDelegateKey, address],
     () => getVoterFromDelegate(voting, address),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
     }
   );

@@ -23,7 +23,6 @@ export function useDecryptedVotes() {
     [decryptedVotesKey, encryptedVotes, address],
     () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: {},
       onError,
