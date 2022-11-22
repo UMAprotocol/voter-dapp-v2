@@ -32,7 +32,14 @@ export function VotePanel({ content }: Props) {
   const tabs = [
     {
       title: "Result",
-      content: <Result participation={participation} results={results} />,
+      content: (
+        <Result
+          decodedIdentifier={decodedIdentifier}
+          participation={participation}
+          results={results}
+          options={options}
+        />
+      ),
     },
     {
       title: "Details",
