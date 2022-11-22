@@ -5,6 +5,7 @@ import {
   parseEtherSafe,
   truncateEthAddress,
 } from "helpers";
+import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
 import Commit from "public/assets/icons/commit.svg";
@@ -12,7 +13,6 @@ import Doc from "public/assets/icons/doc.svg";
 import Governance from "public/assets/icons/governance.svg";
 import LinkIcon from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
-import Vote from "public/assets/icons/voting.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
@@ -21,6 +21,7 @@ import { PanelSectionTitle } from "../styles";
 
 type Props = Pick<
   VoteT,
+  | "decodedIdentifier"
   | "description"
   | "decodedAncillaryData"
   | "options"
@@ -31,6 +32,7 @@ type Props = Pick<
 >;
 
 export function Details({
+  decodedIdentifier,
   description,
   decodedAncillaryData,
   options,
@@ -57,6 +59,10 @@ export function Details({
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
+        <Text>
+          <Strong>Identifier: </Strong>
+          {decodedIdentifier}
+        </Text>
         <Text as="div">
           <ReactMarkdown
             components={{
@@ -71,7 +77,7 @@ export function Details({
         <SectionWrapper>
           <PanelSectionTitle>
             <IconWrapper>
-              <VoteIcon />
+              <AncillaryDataIcon />
             </IconWrapper>{" "}
             Decoded ancillary data
           </PanelSectionTitle>
@@ -285,7 +291,7 @@ const DescriptionIcon = styled(Doc)`
   }
 `;
 
-const VoteIcon = styled(Vote)`
+const AncillaryDataIcon = styled(AncillaryData)`
   path {
     fill: var(--red-500);
   }
