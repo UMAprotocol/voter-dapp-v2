@@ -5,11 +5,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getAbi, getContractNames } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
-
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
-import { getContractNames, getAbi } from "@uma/contracts-node";
 import { constructContractOnChain } from "./_common";
 
 type AbiDecoder = typeof abiDecoder;
@@ -133,11 +132,7 @@ const _generateTransactionDataRecursive = function (
     });
   } else {
     // Pretty print:
-    readableTxData += `\n${JSON.stringify(
-      txnObj,
-      null,
-      4
-    )}`;
+    readableTxData += `\n${JSON.stringify(txnObj, null, 4)}`;
   }
   return readableTxData;
 };
