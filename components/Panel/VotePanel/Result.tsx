@@ -6,18 +6,26 @@ import {
   Tooltip,
 } from "components";
 import { mobileAndUnder } from "constant";
+import { formatVoteStringWithPrecision } from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ParticipationT, ResultsT } from "types";
+import { DropdownItemT, ParticipationT, ResultsT } from "types";
 import { PanelSectionText, PanelSectionTitle } from "../styles";
 
 interface Props {
   participation: ParticipationT | undefined;
   results: ResultsT | undefined;
+  options: DropdownItemT[] | undefined;
+  decodedIdentifier: string;
 }
-export function Result({ participation, results }: Props) {
+export function Result({
+  participation,
+  results,
+  options,
+  decodedIdentifier,
+}: Props) {
   const panelWidth = usePanelWidth();
 
   if (!participation || !results) return null;
@@ -25,12 +33,28 @@ export function Result({ participation, results }: Props) {
   const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
     participation;
 
-  const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => ({
-    label: vote.toFixed(),
-    value: tokensVotedWith,
-  }));
+  const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
+    const voteAsString = vote.toFixed();
+    const formatted = formatVoteStringWithPrecision(
+      voteAsString,
+      decodedIdentifier
+    );
+    const label = findVoteInOptions(formatted)?.label ?? formatted;
+    const value = tokensVotedWith;
+
+    return {
+      label,
+      value,
+    };
+  });
   const resultsWithPercentages = computePercentages(resultsWithLabels);
   const resultsWithColors = computeColors(resultsWithPercentages);
+
+  function findVoteInOptions(value: string | undefined) {
+    return options?.find((option) => {
+      return option.value === value;
+    });
+  }
 
   return (
     <Wrapper>
@@ -55,7 +79,7 @@ export function Result({ participation, results }: Props) {
                 <LegendItemDot style={{ "--color": color } as CSSProperties} />
                 <LegendItemData>
                   <LegendItemLabel label={label} />
-                  <Strong>{percent.toFixed(2)}%</Strong> ({value})
+                  <Strong>{(percent * 100).toFixed(2)}%</Strong> ({value})
                 </LegendItemData>
               </LegendItem>
             ))}
