@@ -9,7 +9,9 @@ import {
 import { getDecodedAdminTransactions } from "web3";
 
 export function useDecodedAdminTransactions() {
-  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { activeVotes },
+  } = useActiveVotes();
   const {
     data: { upcomingVotes },
   } = useUpcomingVotes();

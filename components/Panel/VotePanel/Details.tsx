@@ -1,13 +1,19 @@
 import { Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
-import { formatNumberForDisplay, parseEtherSafe } from "helpers";
+import {
+  formatNumberForDisplay,
+  parseEtherSafe,
+  truncateEthAddress,
+} from "helpers";
 import Chat from "public/assets/icons/chat.svg";
+import Chevron from "public/assets/icons/chevron.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
 import Governance from "public/assets/icons/governance.svg";
-import Link from "public/assets/icons/link.svg";
+import LinkIcon from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Vote from "public/assets/icons/voting.svg";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import { VoteT } from "types";
@@ -24,10 +30,6 @@ type Props = Pick<
   | "decodedAdminTransactions"
 >;
 
-function shortenAddress(to: string) {
-  return to.substr(0, 7) + "..." + to.substr(to.length - 7, to.length);
-}
-
 export function Details({
   description,
   decodedAncillaryData,
@@ -37,6 +39,13 @@ export function Details({
   discordLink,
   decodedAdminTransactions,
 }: Props) {
+  const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
+    useState(false);
+
+  function toggleShowDecodedAdminTransactions() {
+    setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
+  }
+
   const optionLabels = options?.map(({ label }) => label);
 
   return (
@@ -76,28 +85,48 @@ export function Details({
               <GovernanceIcon />
             </IconWrapper>{" "}
             Admin transaction data
+            <ToggleButton onClick={toggleShowDecodedAdminTransactions}>
+              {" "}
+              <ChevronIcon $isExpanded={showDecodedAdminTransactions} />
+            </ToggleButton>
           </PanelSectionTitle>
-          {decodedAdminTransactions.transactions.map((transaction, index) => (
+          {showDecodedAdminTransactions ? (
             <>
-              <Text>
-                <strong>
-                  Transaction #{index + 1} to{" "}
-                  <a href="https://etherscan.io/address/transaction.to">
-                    {shortenAddress(transaction.to)}
-                  </a>
-                </strong>
-              </Text>
-              <Pre>{transaction.decodedData}</Pre>
-              {transaction.value !== "0" && (
-                <Text>
+              {decodedAdminTransactions.transactions.map(
+                (transaction, index) => (
                   <>
-                    {formatNumberForDisplay(parseEtherSafe(transaction.value))}{" "}
-                    was sent in this transaction.
+                    <TransactionText>
+                      Transaction <Strong>#{index + 1}</Strong> to{" "}
+                      <A href="https://etherscan.io/address/transaction.to">
+                        {truncateEthAddress(transaction.to)}
+                      </A>
+                    </TransactionText>
+                    <Pre>{transaction.decodedData}</Pre>
+                    {transaction.value !== "0" && (
+                      <Text>
+                        <>
+                          {formatNumberForDisplay(
+                            parseEtherSafe(transaction.value)
+                          )}{" "}
+                          was sent in this transaction.
+                        </>
+                      </Text>
+                    )}
                   </>
-                </Text>
+                )
               )}
             </>
-          ))}
+          ) : (
+            <HiddenAdminTransactionsMessage
+              onClick={toggleShowDecodedAdminTransactions}
+            >
+              {decodedAdminTransactions.transactions.length} admin transaction
+              {decodedAdminTransactions.transactions.length !== 1
+                ? "s"
+                : ""}{" "}
+              hidden. Click to show.
+            </HiddenAdminTransactionsMessage>
+          )}
         </SectionWrapper>
       ) : null}
       {optionLabels && (
@@ -193,6 +222,29 @@ const Text = styled.p`
   }
 `;
 
+const TransactionText = styled(Text)`
+  margin-block: 15px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
+`;
+
+const ToggleButton = styled.button`
+  background: none;
+  border: none;
+  margin-left: auto;
+  margin-right: 5px;
+`;
+
+const HiddenAdminTransactionsMessage = styled.span`
+  font: var(--text-md);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const Pre = styled.pre`
   overflow-x: auto;
   white-space: pre-wrap;
@@ -261,13 +313,18 @@ const TimestampIcon = styled(Time)`
   }
 `;
 
-const LinksIcon = styled(Link)`
+const LinksIcon = styled(LinkIcon)`
   path {
     fill: var(--red-500);
   }
 `;
 
 const ChatIcon = styled(Chat)``;
+
+const ChevronIcon = styled(Chevron)<{ $isExpanded: boolean }>`
+  transform: rotate(${({ $isExpanded }) => ($isExpanded ? "0deg" : "180deg")});
+  transition: transform 0.2s ease-in-out;
+`;
 
 const DiscordLinkContent = styled.div`
   display: flex;
