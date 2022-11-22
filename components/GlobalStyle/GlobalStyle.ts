@@ -255,6 +255,7 @@ a:not([class]) {
     --mobile-banner-height: ${mobileBannerHeight}px;
     --desktop-banner-height: ${desktopBannerHeight}px;
     --page-width: var(--desktop-page-width);
+    --page-padding: clamp(10px, 45px, 4vw);
     --header-height: var(--desktop-header-height);
     --banner-height: var(--desktop-banner-height);
     @media ${tabletAndUnder} {

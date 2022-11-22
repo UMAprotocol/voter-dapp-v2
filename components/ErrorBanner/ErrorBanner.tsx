@@ -39,19 +39,22 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding-block: 15px;
+  padding-inline: var(--page-padding);
 `;
 
 const ErrorMessageWrapper = styled.div`
+  width: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
+  padding-block: 5px;
   &:not(:last-child) {
     margin-bottom: 5px;
   }
 `;
 
 const ErrorMessage = styled.p`
-  max-width: min(75vw, 500px);
   font: var(--text-md);
 
   @media ${mobileAndUnder} {
@@ -69,6 +72,9 @@ const CloseIcon = styled(Close)`
   }
 `;
 const CloseButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 0;
   background: transparent;
   fill: var(--white);
 `;

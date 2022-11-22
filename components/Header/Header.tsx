@@ -110,7 +110,7 @@ const OuterWrapper = styled.header``;
 const InnerWrapper = styled.div`
   max-width: var(--page-width);
   height: var(--header-height);
-  padding-inline: clamp(10px, 45px, 4vw);
+  padding-inline: var(--page-padding);
   display: flex;
   justify-content: space-between;
   align-items: center;
