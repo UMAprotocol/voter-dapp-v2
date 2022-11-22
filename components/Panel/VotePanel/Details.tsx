@@ -23,6 +23,7 @@ type Props = Pick<
   VoteT,
   | "decodedIdentifier"
   | "description"
+  | "ancillaryData"
   | "decodedAncillaryData"
   | "options"
   | "timeAsDate"
@@ -34,6 +35,7 @@ type Props = Pick<
 export function Details({
   decodedIdentifier,
   description,
+  ancillaryData,
   decodedAncillaryData,
   options,
   timeAsDate,
@@ -43,9 +45,14 @@ export function Details({
 }: Props) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
+  const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
 
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
+  }
+
+  function toggleShowRawAncillaryData() {
+    setShowRawAncillaryData(!showRawAncillaryData);
   }
 
   const optionLabels = options?.map(({ label }) => label);
@@ -73,17 +80,28 @@ export function Details({
           </ReactMarkdown>
         </Text>
       </SectionWrapper>
-      {decodedAncillaryData !== "" && (
-        <SectionWrapper>
-          <PanelSectionTitle>
-            <IconWrapper>
-              <AncillaryDataIcon />
-            </IconWrapper>{" "}
-            Decoded ancillary data
-          </PanelSectionTitle>
-          <Text> {decodedAncillaryData} </Text>
-        </SectionWrapper>
-      )}
+      <SectionWrapper>
+        <PanelSectionTitle>
+          <IconWrapper>
+            <AncillaryDataIcon />
+          </IconWrapper>{" "}
+          Decoded ancillary data{" "}
+          <ToggleText onClick={toggleShowRawAncillaryData}>
+            (view {showRawAncillaryData ? "decoded" : "raw"})
+          </ToggleText>
+        </PanelSectionTitle>
+        <Text>
+          {showRawAncillaryData ? (
+            <>{ancillaryData}</>
+          ) : (
+            <>
+              {decodedAncillaryData === ""
+                ? "The ancillary data for this request is blank."
+                : decodedAncillaryData}
+            </>
+          )}
+        </Text>
+      </SectionWrapper>
       {decodedAdminTransactions?.transactions ? (
         <SectionWrapper>
           <PanelSectionTitle>
@@ -123,15 +141,13 @@ export function Details({
               )}
             </>
           ) : (
-            <HiddenAdminTransactionsMessage
-              onClick={toggleShowDecodedAdminTransactions}
-            >
+            <ToggleText onClick={toggleShowDecodedAdminTransactions}>
               {decodedAdminTransactions.transactions.length} admin transaction
               {decodedAdminTransactions.transactions.length !== 1
                 ? "s"
                 : ""}{" "}
               hidden. Click to show.
-            </HiddenAdminTransactionsMessage>
+            </ToggleText>
           )}
         </SectionWrapper>
       ) : null}
@@ -243,7 +259,7 @@ const ToggleButton = styled.button`
   margin-right: 5px;
 `;
 
-const HiddenAdminTransactionsMessage = styled.span`
+const ToggleText = styled.span`
   font: var(--text-md);
   cursor: pointer;
   &:hover {
