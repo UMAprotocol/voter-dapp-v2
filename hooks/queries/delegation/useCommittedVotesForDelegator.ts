@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { committedVotesForDelegatorKey } from "constant";
+import { committedVotesForDelegatorKey, oneMinute } from "constant";
 import {
   useContractsContext,
   useDelegationContext,
@@ -23,7 +23,7 @@ export function useCommittedVotesForDelegator() {
     [committedVotesForDelegatorKey, address, delegatorAddress, roundId],
     () => getCommittedVotes(voting, delegatorAddress ?? address, roundId),
     {
-      refetchInterval: (data) => (data ? false : 100),
+      refetchInterval: status === "delegate" ? oneMinute : false,
       enabled: !!address && !!delegatorAddress && status === "delegate",
       initialData: {},
       onError,

@@ -1,4 +1,5 @@
-import { LoadingSkeleton, Tabs } from "components";
+import { Tabs } from "components";
+import { LoadingSkeleton } from "components";
 import { maximumApprovalAmountString } from "constant";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
@@ -122,19 +123,23 @@ export function StakeUnstakePanel() {
           <Balances>
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
-              <LoadingSkeleton isLoading={isLoading()} variant="white">
-                <BalanceAmount>
-                  {formatNumberForDisplay(stakedBalance)}
-                </BalanceAmount>
-              </LoadingSkeleton>
+              <BalanceAmount>
+                {isLoading() ? (
+                  <LoadingSkeleton variant="white" width="80%" />
+                ) : (
+                  formatNumberForDisplay(stakedBalance)
+                )}
+              </BalanceAmount>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
-              <LoadingSkeleton isLoading={isLoading()} variant="white">
-                <BalanceAmount>
-                  {formatNumberForDisplay(unstakedBalance)}
-                </BalanceAmount>
-              </LoadingSkeleton>
+              <BalanceAmount>
+                {isLoading() ? (
+                  <LoadingSkeleton variant="white" width="80%" />
+                ) : (
+                  formatNumberForDisplay(unstakedBalance)
+                )}
+              </BalanceAmount>
             </Balance>
           </Balances>
           {showCooldownTimer && (

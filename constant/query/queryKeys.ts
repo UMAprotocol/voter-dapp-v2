@@ -11,12 +11,14 @@ export const decryptedVotesKey = "decryptedVotesKey";
 export const committedVotesKey = "committedVotesKey";
 export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
-// balances
+// staking
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
-export const outstandingRewardsKey = "outstandingRewardsKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 export const unstakeCoolDownKey = "unstakeCoolDownKey";
+// rewards
+export const outstandingRewardsKey = "outstandingRewardsKey";
+export const rewardsCalculationInputsKey = "rewardsCalculationInputsKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation

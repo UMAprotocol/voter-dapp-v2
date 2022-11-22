@@ -1,3 +1,4 @@
+import { defaultResultsPerPage } from "constant";
 import { createContext, ReactNode, useState } from "react";
 import { PageStatesT, PaginateForT } from "types";
 
@@ -16,7 +17,7 @@ export interface PaginationContextState {
 
 export const defaultPageState = {
   pageNumber: 1,
-  resultsPerPage: 10,
+  resultsPerPage: defaultResultsPerPage,
 };
 
 export const defaultPageStates = {

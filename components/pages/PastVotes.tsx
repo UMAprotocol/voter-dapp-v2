@@ -9,6 +9,7 @@ import {
   VotesListItem,
   VotesTableHeadings,
 } from "components";
+import { defaultResultsPerPage } from "constant";
 import { getEntriesForPage } from "helpers";
 import {
   usePaginationContext,
@@ -44,7 +45,7 @@ export function PastVotes() {
         <PageInnerWrapper>
           {getUserIndependentIsLoading() ? (
             <LoadingSpinnerWrapper>
-              <LoadingSpinner size={300} variant="black" />
+              <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -65,12 +66,14 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              <PaginationWrapper>
-                <Pagination
-                  paginateFor="pastVotesPage"
-                  numberOfEntries={numberOfPastVotes}
-                />
-              </PaginationWrapper>
+              {numberOfPastVotes > defaultResultsPerPage && (
+                <PaginationWrapper>
+                  <Pagination
+                    paginateFor="pastVotesPage"
+                    numberOfEntries={numberOfPastVotes}
+                  />
+                </PaginationWrapper>
+              )}
             </>
           )}
         </PageInnerWrapper>
@@ -84,5 +87,5 @@ const VotesTableWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-top: 10px;
+  margin-block: 30px;
 `;

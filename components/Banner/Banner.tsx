@@ -1,4 +1,4 @@
-import { mobileAndUnder } from "constant";
+import { tabletAndUnder } from "constant";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -24,10 +24,9 @@ const InnerWrapper = styled.div`
   height: var(--banner-height);
   display: flex;
   align-items: center;
-  padding-left: 45px;
-  @media ${mobileAndUnder} {
-    max-width: unset;
-    padding: 15px;
+  padding-left: var(--page-padding);
+  @media ${tabletAndUnder} {
+    padding: 0;
   }
   margin-inline: auto;
 `;

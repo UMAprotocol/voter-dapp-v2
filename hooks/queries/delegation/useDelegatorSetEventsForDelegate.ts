@@ -12,7 +12,6 @@ export function useDelegatorSetEventsForDelegate() {
     [delegatorSetEventForDelegateKey, address],
     () => getDelegatorSetEvents(voting, address, "delegate"),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       onError,
     }

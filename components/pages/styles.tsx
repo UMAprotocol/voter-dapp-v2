@@ -8,7 +8,7 @@ export const PageOuterWrapper = styled.div`
 
 export const PageInnerWrapper = styled.div`
   max-width: var(--page-width);
-  padding-inline: 45px;
+  padding-inline: var(--page-padding);
   padding-block: 45px;
   margin-inline: auto;
 
@@ -25,7 +25,7 @@ export const Strong = styled.strong`
 export const LoadingSpinnerWrapper = styled.div`
   width: 100%;
   height: 100%;
-  padding-top: 50px;
+  padding-top: 30px;
   display: grid;
   place-items: center;
 `;

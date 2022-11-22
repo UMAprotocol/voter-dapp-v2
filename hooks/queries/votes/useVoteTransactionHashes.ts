@@ -12,7 +12,9 @@ import { getVoteTransactionHashes } from "web3";
 export function useVoteTransactionHashes() {
   const { voting } = useContractsContext();
   const { onError } = useHandleError({ isDataFetching: true });
-  const { data: activeVotes } = useActiveVotes();
+  const {
+    data: { activeVotes },
+  } = useActiveVotes();
   const {
     data: { upcomingVotes },
   } = useUpcomingVotes();
@@ -27,7 +29,6 @@ export function useVoteTransactionHashes() {
         ...pastVotes,
       }),
     {
-      refetchInterval: (data) => (data ? false : 100),
       initialData: {},
       onError,
     }

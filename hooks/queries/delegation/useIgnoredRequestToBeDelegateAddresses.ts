@@ -12,7 +12,6 @@ export function useIgnoredRequestToBeDelegateAddresses() {
     () => getIgnoredRequestToBeDelegateAddresses(address),
     {
       enabled: !!address,
-      refetchInterval: (data) => (data ? false : 100),
       onError,
     }
   );

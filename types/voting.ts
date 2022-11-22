@@ -137,7 +137,7 @@ export type VoteTimelineT = {
   phaseEnds: Date;
 };
 
-export type VoteOriginT = "UMA" | "Polymarket";
+export type VoteOriginT = "UMA" | "Polymarket" | "Across";
 
 export type SigningKey = {
   publicKey: string;

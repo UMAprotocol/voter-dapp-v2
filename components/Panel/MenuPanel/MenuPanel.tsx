@@ -32,6 +32,10 @@ export function MenuPanel() {
       href: "/past-votes",
     },
     {
+      title: "Upcoming Votes",
+      href: "/upcoming-votes",
+    },
+    {
       title: "Wallet Settings",
       href: "/wallet-settings",
     },

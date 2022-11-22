@@ -15,9 +15,7 @@ export default {
 } as ComponentMeta<typeof LoadingSkeleton>;
 
 const Template: ComponentStory<typeof LoadingSkeleton> = (args) => (
-  <LoadingSkeleton {...args} isLoading={true}>
-    <p>Test</p>
-  </LoadingSkeleton>
+  <LoadingSkeleton {...args} />
 );
 
 export const Default = Template.bind({});

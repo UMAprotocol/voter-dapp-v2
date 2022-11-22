@@ -18,7 +18,6 @@ export async function getPastVotesV1() {
         orderBy: time
         orderDirection: desc
       ) {
-        id
         identifier {
           id
         }
@@ -29,21 +28,23 @@ export async function getPastVotesV1() {
     }
   `;
   const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
-  return result?.priceRequests?.map(({ id, time, price, ancillaryData }) => {
-    const identifier = getIdentifierFromPriceRequestId(id);
-    const correctVote = Number(
-      formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
-    );
+  return result?.priceRequests?.map(
+    ({ identifier: { id }, time, price, ancillaryData }) => {
+      const identifier = formatBytes32String(id);
+      const correctVote = Number(
+        formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
+      );
 
-    return {
-      identifier,
-      time: Number(time),
-      correctVote,
-      ancillaryData,
-      priceRequestIndex: undefined,
-      isV1: true,
-    };
-  });
+      return {
+        identifier,
+        time: Number(time),
+        correctVote,
+        ancillaryData,
+        priceRequestIndex: undefined,
+        isV1: true,
+      };
+    }
+  );
 }
 
 export async function getPastVotesV2() {
@@ -55,7 +56,6 @@ export async function getPastVotesV2() {
         orderBy: requestIndex
         orderDirection: desc
       ) {
-        id
         identifier {
           id
         }
@@ -82,7 +82,7 @@ export async function getPastVotesV2() {
   const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
   return result?.priceRequests?.map(
     ({
-      id,
+      identifier: { id },
       time,
       price,
       ancillaryData,
@@ -91,7 +91,7 @@ export async function getPastVotesV2() {
       committedVotes,
       revealedVotes,
     }) => {
-      const identifier = getIdentifierFromPriceRequestId(id);
+      const identifier = formatBytes32String(id);
       const correctVote = Number(
         formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
       );
@@ -130,8 +130,4 @@ export async function getPastVotesAllVersions() {
   return makePriceRequestsByKey(
     (await Promise.all([getPastVotesV2(), getPastVotesV1()])).flat()
   );
-}
-
-function getIdentifierFromPriceRequestId(priceRequestId: string) {
-  return formatBytes32String(priceRequestId.split("-")[0]);
 }

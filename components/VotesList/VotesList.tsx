@@ -22,7 +22,6 @@ export function VotesList({ headings, rows }: Props) {
 }
 
 const Wrapper = styled.table`
-  table-layout: fixed;
   width: 100%;
   border-spacing: 0 5px;
 

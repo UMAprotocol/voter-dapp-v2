@@ -7,6 +7,7 @@ import {
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
+import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import {
   useAccountDetails,
@@ -14,7 +15,6 @@ import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  useInitializeVoteTiming,
   usePaginationContext,
   usePanelContext,
   useRevealVotes,
@@ -71,8 +71,6 @@ export function Votes() {
     resultsPerPage,
     determineVotesToShow()
   );
-
-  useInitializeVoteTiming();
 
   async function commitVotes() {
     if (!address || !canCommit()) return;
@@ -213,7 +211,8 @@ export function Votes() {
   return (
     <>
       <Title>{determineTitle()}</Title>
-      <VoteTimeline />
+      {(getActivityStatus() === "active" ||
+        getActivityStatus() === "upcoming") && <VoteTimeline />}
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
@@ -257,12 +256,14 @@ export function Votes() {
           )}
         </CommitVotesButtonWrapper>
       ) : null}
-      <PaginationWrapper>
-        <Pagination
-          paginateFor="activeVotesPage"
-          numberOfEntries={determineVotesToShow().length}
-        />
-      </PaginationWrapper>
+      {determineVotesToShow().length > defaultResultsPerPage && (
+        <PaginationWrapper>
+          <Pagination
+            paginateFor="activeVotesPage"
+            numberOfEntries={determineVotesToShow().length}
+          />
+        </PaginationWrapper>
+      )}
     </>
   );
 }
@@ -288,5 +289,5 @@ const CommitVotesButtonWrapper = styled.div`
 `;
 
 const PaginationWrapper = styled.div`
-  margin-top: 10px;
+  margin-block: 30px;
 `;

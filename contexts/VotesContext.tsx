@@ -8,7 +8,6 @@ import {
   useDecodedAdminTransactions,
   useDecryptedVotes,
   useEncryptedVotes,
-  useHasActiveVotes,
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
@@ -78,12 +77,7 @@ export const VotesContext = createContext<VotesContextState>(
 
 export function VotesProvider({ children }: { children: ReactNode }) {
   const {
-    data: hasActiveVotes,
-    isLoading: hasActiveVotesIsLoading,
-    isFetching: hasActiveVotesIsFetching,
-  } = useHasActiveVotes();
-  const {
-    data: activeVotes,
+    data: { activeVotes, hasActiveVotes },
     isLoading: activeVotesIsLoading,
     isFetching: activeVotesIsFetching,
   } = useActiveVotes();
@@ -147,7 +141,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   function getUserIndependentIsLoading() {
     return (
-      hasActiveVotesIsLoading ||
       activeVotesIsLoading ||
       upcomingVotesIsLoading ||
       pastVotesIsLoading ||
@@ -173,7 +166,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   function getUserIndependentIsFetching() {
     return (
-      hasActiveVotesIsFetching ||
       activeVotesIsFetching ||
       upcomingVotesIsFetching ||
       pastVotesIsFetching ||

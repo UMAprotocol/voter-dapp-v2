@@ -18,7 +18,6 @@ export function useRevealedVotes() {
     [revealedVotesKey, address, roundId],
     () => getRevealedVotes(voting, address, roundId),
     {
-      refetchInterval: (data) => (data ? false : 100),
       enabled: !!address,
       initialData: {},
       onError,

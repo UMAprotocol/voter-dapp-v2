@@ -6,12 +6,14 @@ import {
   Tooltip,
 } from "components";
 import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
+import { format } from "date-fns";
 import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
 import { useWalletContext, useWindowSize } from "hooks";
 import NextLink from "next/link";
+import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
@@ -55,9 +57,10 @@ export function VotesListItem({
     voteNumber,
     isRolled,
     isV1,
+    timeAsDate,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
-  const Icon = origin === "UMA" ? UMAIcon : PolymarketIcon;
+  const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
 
   useEffect(() => {
@@ -65,7 +68,8 @@ export function VotesListItem({
 
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
-    if (!findVoteInOptions(getDecryptedVoteAsFormattedString())) {
+    const decryptedVote = getDecryptedVoteAsFormattedString();
+    if (decryptedVote && !findVoteInOptions(decryptedVote)) {
       setIsCustomInput(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,6 +169,12 @@ export function VotesListItem({
     }
   }
 
+  function getVoteIcon() {
+    if (origin === "Polymarket") return PolymarketIcon;
+    if (origin === "Across") return AcrossIcon;
+    return UMAIcon;
+  }
+
   function getDotColor() {
     if (phase === "commit") {
       return isCommitted ? green : red500;
@@ -178,30 +188,34 @@ export function VotesListItem({
     return "transparent";
   }
 
+  function getTitleMaxWidth() {
+    if (activityStatus === "upcoming") return "70vw";
+    if (activityStatus === "active" && phase === "commit")
+      return "max(35vw, 320px)";
+    if (
+      (activityStatus === "active" && phase === "reveal") ||
+      activityStatus === "past"
+    )
+      return "max(400px, 45vw)";
+  }
+
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
-        <Button
-          href={`https://goerli.etherscan.io/tx/${commitHash}`}
-          label={getCommittedOrRevealed()}
-        />
+        <Link href={`https://goerli.etherscan.io/tx/${commitHash}`}>
+          {getCommittedOrRevealed()}
+        </Link>
       ) : (
         getCommittedOrRevealed()
       );
     }
     return revealHash ? (
-      <Button
-        href={`https://goerli.etherscan.io/tx/${revealHash}`}
-        label={getCommittedOrRevealed()}
-      />
+      <Link href={`https://goerli.etherscan.io/tx/${revealHash}`}>
+        {getCommittedOrRevealed()}
+      </Link>
     ) : (
       getCommittedOrRevealed()
     );
-  }
-
-  function formatTitle(title: string) {
-    if (title.length <= 45) return title;
-    return `${title.substring(0, 45)}...`;
   }
 
   return (
@@ -218,7 +232,15 @@ export function VotesListItem({
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle>{formatTitle(title)}</VoteTitle>
+            <VoteTitle
+              style={
+                {
+                  "--title-max-width": getTitleMaxWidth(),
+                } as CSSProperties
+              }
+            >
+              {title}
+            </VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -238,7 +260,8 @@ export function VotesListItem({
               ) : null}
               <VoteOrigin>
                 {origin}{" "}
-                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`}
+                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`} |{" "}
+                {format(timeAsDate, "Pp")}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
@@ -266,36 +289,33 @@ export function VotesListItem({
       ) : null}
       {showYourVote() ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Your vote</VoteLabel>{" "}
-          <LoadingSkeleton isLoading={isFetching} width={100}>
-            <VoteText voteText={getYourVote()} />
-          </LoadingSkeleton>
+          <VoteLabel>Your vote</VoteLabel> <VoteText voteText={getYourVote()} />
         </YourVote>
       ) : null}
       {showCorrectVote() ? (
         <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Correct vote</VoteLabel>{" "}
-          <LoadingSkeleton isLoading={isFetching} width={100}>
-            <VoteText voteText={getCorrectVote()} />
-          </LoadingSkeleton>
+          <VoteText voteText={getCorrectVote()} />
         </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
         <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <LoadingSkeleton isLoading={isFetching} width={100} height={24}>
-              <>
-                <DotIcon
-                  style={
-                    {
-                      "--dot-color": getDotColor(),
-                    } as CSSProperties
-                  }
-                />{" "}
-                {getRelevantTransactionLink()}
-              </>
-            </LoadingSkeleton>
+            <>
+              <DotIcon
+                style={
+                  {
+                    "--dot-color": getDotColor(),
+                  } as CSSProperties
+                }
+              />{" "}
+              {isFetching ? (
+                <LoadingSkeleton width="8vw" />
+              ) : (
+                getRelevantTransactionLink()
+              )}
+            </>
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}
@@ -316,7 +336,7 @@ export function VotesListItem({
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <></>;
+  if (!voteText) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {
@@ -340,6 +360,7 @@ const VoteTextWrapper = styled.span`
 const Wrapper = styled.tr`
   background: var(--white);
   height: 80px;
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: auto;
@@ -347,22 +368,26 @@ const Wrapper = styled.tr`
     gap: 12px;
     align-items: left;
     padding: 15px;
-    border-radius: 5px;
   }
 `;
 
 const VoteTitleOuterWrapper = styled.td`
-  width: 100%;
+  padding-left: 1vw;
+  padding-right: 2.5vw;
+  border-radius: 5px;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+  }
 `;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 30px;
+  gap: 1vw;
 
   @media ${tabletAndUnder} {
-    margin-left: 0;
+    gap: unset;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--border-color);
   }
@@ -387,8 +412,16 @@ const VoteIconWrapper = styled.div`
 
 const VoteTitle = styled.h3`
   font: var(--header-sm);
+  max-width: var(--title-max-width);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media ${tabletAndUnder} {
+    max-width: unset;
+    white-space: unset;
+    overflow: unset;
+    text-overflow: unset;
     margin-bottom: 5px;
   }
 `;
@@ -398,10 +431,20 @@ const VoteOrigin = styled.h4`
   color: var(--black-opacity-50);
 `;
 
-const VoteInput = styled.td``;
+const VoteInput = styled.td`
+  min-width: calc(240px + 2.5vw);
+  padding-right: 2.5vw;
+
+  @media ${tabletAndUnder} {
+    padding: 0;
+    min-width: unset;
+  }
+`;
 
 const VoteOutputText = styled.td`
   font: var(--text-md);
+  min-width: calc(80px + 2.5vw);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -409,10 +452,12 @@ const VoteOutputText = styled.td`
   }
 `;
 
-const YourVote = styled(VoteOutputText)``;
+const YourVote = styled(VoteOutputText)`
+  white-space: nowrap;
+`;
 
 const CorrectVote = styled(VoteOutputText)`
-  padding-left: 30px;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     padding-left: 0;
@@ -429,6 +474,7 @@ const VoteLabel = styled.span`
 
 const VoteStatusWrapper = styled.td`
   font: var(--text-md);
+  padding-right: 2.5vw;
 
   @media ${tabletAndUnder} {
     display: flex;
@@ -440,7 +486,8 @@ const VoteStatus = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: 30px;
+  min-width: max-content;
+  white-space: nowrap;
 
   @media ${tabletAndUnder} {
     margin-left: 0;
@@ -448,6 +495,9 @@ const VoteStatus = styled.div`
 `;
 
 const MoreDetailsWrapper = styled.td`
+  padding-right: 2.5vw;
+  border-radius: 5px;
+
   @media ${tabletAndUnder} {
     padding-top: 10px;
     border-top: 1px solid var(--border-color);
@@ -457,7 +507,6 @@ const MoreDetailsWrapper = styled.td`
 const MoreDetails = styled.div`
   width: fit-content;
   margin-left: auto;
-  margin-right: 30px;
 
   @media ${tabletAndUnder} {
     margin-left: unset;
@@ -466,6 +515,8 @@ const MoreDetails = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
 
@@ -492,4 +543,13 @@ const RolledLink = styled(NextLink)`
   font: var(--text-sm);
   color: var(--red-500);
   text-decoration: underline;
+`;
+
+const Link = styled(NextLink)`
+  font: var(--text-md);
+  color: var(--black);
+  text-decoration: underline;
+  &:hover {
+    color: var(--black-opacity-50);
+  }
 `;

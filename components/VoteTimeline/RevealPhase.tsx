@@ -3,16 +3,14 @@ import { formatDistanceToNowStrict } from "date-fns";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Reveal from "public/assets/icons/reveal.svg";
 import styled, { CSSProperties } from "styled-components";
-import { ActivityStatusT } from "types";
 
 interface Props {
   phase: "commit" | "reveal";
   timeRemaining: number;
-  status: ActivityStatusT;
 }
-export function RevealPhase({ phase, timeRemaining, status }: Props) {
+export function RevealPhase({ phase, timeRemaining }: Props) {
   const isRevealPhase = phase === "reveal";
-  const isActive = isRevealPhase && status === "active";
+  const isActive = isRevealPhase;
   const textColor = isActive ? white : black;
   const backgroundColor = isActive ? red500 : white;
   const iconStrokeColor = isActive ? red500 : white;
@@ -70,12 +68,14 @@ const Wrapper = styled.div`
   font: var(--text-md);
   color: var(--color);
   background-color: var(--background-color);
+  border-radius: 5px;
 
   @media ${tabletAndUnder} {
     height: unset;
     padding: 15px;
     gap: 10px;
     margin: unset;
+    border-radius: 0;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
   }

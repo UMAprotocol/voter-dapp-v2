@@ -30,14 +30,4 @@ const Wrapper = styled.tr``;
 const Heading = styled.th`
   text-align: left;
   font: var(--text-sm);
-  &:first-child {
-    width: 45%;
-    padding-left: 30px;
-  }
-  &:nth-child(2) {
-    width: 240px;
-  }
-  &:nth-child(3) {
-    padding-left: 30px;
-  }
 `;
