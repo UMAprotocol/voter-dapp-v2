@@ -162,6 +162,7 @@ export function StakeUnstakePanel() {
 
 const SectionsWrapper = styled.div``;
 const BalancesWrapper = styled.div`
+  min-height: var(--banner-height);
   background: var(--red-500);
   color: var(--white);
   padding-top: 25px;

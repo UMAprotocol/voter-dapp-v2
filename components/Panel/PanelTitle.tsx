@@ -69,6 +69,7 @@ function SubTitleText({
 }
 
 const Wrapper = styled.div`
+  min-height: var(--header-height);
   background: var(--black);
   color: var(--white);
   display: flex;
