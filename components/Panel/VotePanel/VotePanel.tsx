@@ -20,6 +20,7 @@ export function VotePanel({ content }: Props) {
     participation,
     results,
     isGovernance,
+    options,
   } = content;
 
   const hasResults = Boolean(results?.length);

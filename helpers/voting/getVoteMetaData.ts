@@ -26,15 +26,15 @@ export function getVoteMetaData(
     const description =
       umipDataFromContentful?.description ??
       "No description was found for this UMIP.";
-    const umipUrl = umipDataFromContentful?.umipLink;
-    const umipNumber = umipDataFromContentful?.number;
-    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
+    const umipOrUppUrl = umipDataFromContentful?.umipLink;
+    const umipOrUppNumber = getUmipOrUppNumberFromUrl(umipOrUppUrl);
+    const links = makeVoteLinks(transactionHash, umipOrUppNumber, umipOrUppUrl);
     const options = makeVoteOptions();
     return {
       title,
       description,
-      umipUrl,
-      umipNumber,
+      umipOrUppUrl,
+      umipOrUppNumber,
       links,
       options,
       origin: "UMA",
@@ -48,17 +48,17 @@ export function getVoteMetaData(
   if (isAcross) {
     const title = "Across V2";
     const description = `Across is an optimistic insured bridge that relies on a decentralized group of relayers to fulfill user deposit requests from EVM to EVM networks. Relayer funds are insured by liquidity providers in a single pool on Ethereum and refunds are processed via the UMA Optimistic Oracle. [Learn more.](https://docs.across.to/)`;
-    const umipUrl =
+    const umipOrUppUrl =
       "https://github.com/UMAprotocol/UMIPs/blob/448375e1b9d2bd24dfd0627805ef6a7c2d72f74f/UMIPs/umip-157.md";
-    const umipNumber = 157;
-    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
+    const umipOrUppNumber = "umip-157";
+    const links = makeVoteLinks(transactionHash, umipOrUppNumber, umipOrUppUrl);
     const options = makeVoteOptions();
 
     return {
       title,
       description,
-      umipUrl,
-      umipNumber,
+      umipOrUppUrl,
+      umipOrUppNumber,
       links,
       options,
       origin: "Across",
@@ -79,18 +79,22 @@ export function getVoteMetaData(
     const title = ancillaryDataTitle ?? decodedIdentifier;
     const description =
       ancillaryDataDescription ?? "No description was found for this request.";
-    const links = makeVoteLinks(transactionHash);
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
     const options = isYesNoQuery
       ? maybeMakePolymarketOptions(decodedAncillaryData)
       : undefined;
+    const umipOrUppNumber = isYesNoQuery ? "umip-107" : undefined;
+    const umipOrUppUrl = isYesNoQuery
+      ? "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-107.md"
+      : undefined;
+    const links = makeVoteLinks(transactionHash, umipOrUppNumber, umipOrUppUrl);
     return {
       title,
       description,
       links,
       options,
-      umipUrl: undefined,
-      umipNumber: undefined,
+      umipOrUppUrl,
+      umipOrUppNumber,
       origin: "Polymarket",
       isGovernance: false,
       discordLink,
@@ -105,14 +109,14 @@ export function getVoteMetaData(
   if (isApprovedIdentifier) {
     const title = identifierDetails.identifier;
     const description = identifierDetails.summary;
-    const umipUrl = identifierDetails.umipLink.url;
-    const umipNumber = Number(identifierDetails.umipLink.number);
-    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
+    const umipOrUppUrl = identifierDetails.umipLink.url;
+    const umipOrUppNumber = identifierDetails.umipLink.number;
+    const links = makeVoteLinks(transactionHash, umipOrUppNumber, umipOrUppUrl);
     return {
       title,
       description,
-      umipUrl,
-      umipNumber,
+      umipOrUppUrl,
+      umipOrUppNumber,
       links,
       options: undefined,
       origin: "UMA",
@@ -126,8 +130,8 @@ export function getVoteMetaData(
   return {
     title: decodedIdentifier,
     description: "No description found for this request.",
-    umipUrl: undefined,
-    umipNumber: undefined,
+    umipOrUppUrl: undefined,
+    umipOrUppNumber: undefined,
     links: makeVoteLinks(transactionHash),
     options: undefined,
     origin: "UMA",
@@ -187,8 +191,8 @@ function makeVoteOptions() {
 
 function makeVoteLinks(
   transactionHash: TransactionHashT,
-  umipNumber?: number,
-  umipUrl?: string
+  umipOrUppNumber?: string | undefined,
+  umipOrUppUrl?: string | undefined
 ) {
   const links = [];
 
@@ -199,12 +203,29 @@ function makeVoteLinks(
     });
   }
 
-  if (umipNumber && umipUrl) {
+  if (umipOrUppNumber && umipOrUppUrl) {
     links.push({
-      label: `UMIP ${umipNumber}`,
-      href: umipUrl,
+      label: umipOrUppNumber.toUpperCase(),
+      href: umipOrUppUrl,
     });
   }
 
   return links;
+}
+
+function getUmipOrUppNumberFromUrl(url: string | undefined) {
+  if (!url) return;
+
+  const isUmip = url.includes("UMIPs/umip");
+  const isUpp = url.includes("/UPPs/upp");
+
+  if (isUmip) {
+    const umipNumber = url.split("umip-")[1].split(".")[0];
+    return `umip-${umipNumber}`;
+  }
+
+  if (isUpp) {
+    const uppNumber = url.split("upp-")[1].split(".")[0];
+    return `upp-${uppNumber}`;
+  }
 }

@@ -19,19 +19,6 @@ import styled from "styled-components";
 import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 
-type Props = Pick<
-  VoteT,
-  | "decodedIdentifier"
-  | "description"
-  | "ancillaryData"
-  | "decodedAncillaryData"
-  | "options"
-  | "timeAsDate"
-  | "links"
-  | "discordLink"
-  | "decodedAdminTransactions"
->;
-
 export function Details({
   decodedIdentifier,
   description,
@@ -42,7 +29,7 @@ export function Details({
   links,
   discordLink,
   decodedAdminTransactions,
-}: Props) {
+}: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
@@ -121,7 +108,10 @@ export function Details({
                   <>
                     <TransactionText>
                       Transaction <Strong>#{index + 1}</Strong> to{" "}
-                      <A href={`https://etherscan.io/address/${to}`}>
+                      <A
+                        href={`https://etherscan.io/address/${to}`}
+                        target="_blank"
+                      >
                         {truncateEthAddress(to)}
                       </A>
                     </TransactionText>
