@@ -24,6 +24,7 @@ export { getUnstakeCoolDown } from "./queries/staking/getUnstakeCoolDown";
 export { getUnstakedBalance } from "./queries/staking/getUnstakedBalance";
 export { getActiveVotes } from "./queries/votes/getActiveVotes";
 export { getCommittedVotes } from "./queries/votes/getCommittedVotes";
+export { getDecodedAdminTransactions } from "./queries/votes/getDecodedAdminTransactions";
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { getUpcomingVotes } from "./queries/votes/getUpcomingVotes";

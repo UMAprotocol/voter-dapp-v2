@@ -5,6 +5,7 @@ import {
   useActiveVotes,
   useCommittedVotes,
   useContentfulData,
+  useDecodedAdminTransactions,
   useDecryptedVotes,
   useEncryptedVotes,
   usePastVotes,
@@ -124,6 +125,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails();
+  const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
 
   function getUserDependentIsLoading() {
     if (!address) return false;
@@ -213,6 +215,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           staking: false,
           slashAmount: BigNumber.from(0),
         },
+        decodedAdminTransactions:
+          decodedAdminTransactions[vote.decodedIdentifier],
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,

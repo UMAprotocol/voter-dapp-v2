@@ -4,6 +4,7 @@ export const activeVotesKey = "activeVotesKey";
 export const upcomingVotesKey = "upcomingVotesKey";
 export const pastVotesKey = "pastVotesKey";
 export const voteTransactionHashesKey = "voteTransactionHashesKey";
+export const decodedAdminTransactionsKey = "decodedAdminTransactionsKey";
 // voting - user dependent
 export const encryptedVotesKey = "encryptedVotesKey";
 export const decryptedVotesKey = "decryptedVotesKey";
@@ -33,31 +34,3 @@ export const delegateToStakerKey = "delegateToStakerKey";
 export const ignoredRequestToBeDelegateAddressesKey =
   "ignoredRequestToBeDelegateAddressesKey";
 export const committedVotesForDelegatorKey = "committedVotesForDelegatorKey";
-
-export const votingNotUserDependentQueryKeys = [
-  hasActiveVotesKey,
-  activeVotesKey,
-  upcomingVotesKey,
-  pastVotesKey,
-  voteTransactionHashesKey,
-];
-
-export const votingUserDependentQueryKeys = [
-  encryptedVotesKey,
-  decryptedVotesKey,
-  committedVotesKey,
-  revealedVotesKey,
-  contentfulDataKey,
-];
-
-export const votingQueryKeys = [
-  ...votingNotUserDependentQueryKeys,
-  ...votingUserDependentQueryKeys,
-];
-
-export const balancesQueryKeys = [
-  tokenAllowanceKey,
-  unstakedBalanceKey,
-  outstandingRewardsKey,
-  stakerDetailsKey,
-];
