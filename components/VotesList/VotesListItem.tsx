@@ -17,6 +17,7 @@ import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
+import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
 import { ReactNode, useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
@@ -57,6 +58,7 @@ export function VotesListItem({
     voteNumber,
     isRolled,
     isV1,
+    isGovernance,
     timeAsDate,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
@@ -172,6 +174,7 @@ export function VotesListItem({
   function getVoteIcon() {
     if (origin === "Polymarket") return PolymarketIcon;
     if (origin === "Across") return AcrossIcon;
+    if (origin === "UMA" && isGovernance) return UMAGovernanceIcon;
     return UMAIcon;
   }
 
@@ -515,6 +518,8 @@ const MoreDetails = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const UMAGovernanceIcon = styled(UMAGovernance)``;
 
 const AcrossIcon = styled(Across)``;
 
