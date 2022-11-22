@@ -117,22 +117,20 @@ export function Details({
           {showDecodedAdminTransactions ? (
             <>
               {decodedAdminTransactions.transactions.map(
-                (transaction, index) => (
+                ({ to, decodedData, value }, index) => (
                   <>
                     <TransactionText>
                       Transaction <Strong>#{index + 1}</Strong> to{" "}
-                      <A href="https://etherscan.io/address/transaction.to">
-                        {truncateEthAddress(transaction.to)}
+                      <A href={`https://etherscan.io/address/${to}`}>
+                        {truncateEthAddress(to)}
                       </A>
                     </TransactionText>
-                    <Pre>{transaction.decodedData}</Pre>
-                    {transaction.value !== "0" && (
+                    <Pre>{decodedData}</Pre>
+                    {value !== "0" && (
                       <Text>
                         <>
-                          {formatNumberForDisplay(
-                            parseEtherSafe(transaction.value)
-                          )}{" "}
-                          was sent in this transaction.
+                          {formatNumberForDisplay(parseEtherSafe(value))} was
+                          sent in this transaction.
                         </>
                       </Text>
                     )}
