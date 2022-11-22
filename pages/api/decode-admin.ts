@@ -5,11 +5,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getAbi, getContractNames } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
-
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
-import { getContractNames, getAbi } from "@uma/contracts-node";
 import { constructContractOnChain } from "./_common";
 
 type AbiDecoder = typeof abiDecoder;
@@ -105,7 +104,7 @@ const _generateTransactionDataRecursive = function (
     txnObj.name === "relayGovernance" &&
     txnObj?.params?.calls?.length > 0
   ) {
-    readableTxData += `Transaction is a cross-chain governance action proposal containing ${txnObj?.params?.calls?.length} transactions:\n`;
+    readableTxData += `Transaction is a cross-chain governance action containing ${txnObj?.params?.calls?.length} transactions:\n`;
     txnObj.params.calls.forEach((_txn: any) => {
       const decodedTxnData = _decodeData(_txn.data);
 
@@ -133,11 +132,7 @@ const _generateTransactionDataRecursive = function (
     });
   } else {
     // Pretty print:
-    readableTxData += `\nNested transactions: \n${JSON.stringify(
-      txnObj,
-      null,
-      4
-    )}`;
+    readableTxData += `\n${JSON.stringify(txnObj, null, 4)}`;
   }
   return readableTxData;
 };
@@ -155,25 +150,28 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
     ])
   ).flat();
 
-  const transactions = identifiers
-    .map(
-      (identifier) =>
-        events.find(
-          (event) =>
-            event?.args?.id.toString() ===
-            identifier.substring(identifier.indexOf(" ") + 1)
-        )?.args?.transactions || null
-    )
-    .flat();
+  const transactionSets = identifiers.map(
+    (identifier) =>
+      events.find(
+        (event) =>
+          event?.args?.id.toString() ===
+          identifier.substring(identifier.indexOf(" ") + 1)
+      )?.args?.transactions || null
+  );
 
-  return transactions.map((transaction) => {
+  return transactionSets.map((transactions, index) => {
     return {
-      data: transaction.data,
-      to: transaction.to,
-      value: transaction.value,
-      decodedData: _generateTransactionDataRecursive(
-        _decodeData(transaction.data)
-      ),
+      identifier: identifiers[index],
+      transactions: transactions.map((adminTransaction: any) => {
+        return {
+          data: adminTransaction.data,
+          to: adminTransaction.to,
+          value: adminTransaction.value.toString(),
+          decodedData: _generateTransactionDataRecursive(
+            _decodeData(adminTransaction.data)
+          ),
+        };
+      }),
     };
   });
 }

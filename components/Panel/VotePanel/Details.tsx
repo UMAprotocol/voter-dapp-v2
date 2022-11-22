@@ -1,11 +1,19 @@
 import { Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
+import {
+  formatNumberForDisplay,
+  parseEtherSafe,
+  truncateEthAddress,
+} from "helpers";
+import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
+import Chevron from "public/assets/icons/chevron.svg";
 import Commit from "public/assets/icons/commit.svg";
 import Doc from "public/assets/icons/doc.svg";
-import Link from "public/assets/icons/link.svg";
+import Governance from "public/assets/icons/governance.svg";
+import LinkIcon from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
-import Vote from "public/assets/icons/voting.svg";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import { VoteT } from "types";
@@ -13,21 +21,40 @@ import { PanelSectionTitle } from "../styles";
 
 type Props = Pick<
   VoteT,
+  | "decodedIdentifier"
   | "description"
+  | "ancillaryData"
   | "decodedAncillaryData"
   | "options"
   | "timeAsDate"
   | "links"
   | "discordLink"
+  | "decodedAdminTransactions"
 >;
+
 export function Details({
+  decodedIdentifier,
   description,
+  ancillaryData,
   decodedAncillaryData,
   options,
   timeAsDate,
   links,
   discordLink,
+  decodedAdminTransactions,
 }: Props) {
+  const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
+    useState(false);
+  const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
+
+  function toggleShowDecodedAdminTransactions() {
+    setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
+  }
+
+  function toggleShowRawAncillaryData() {
+    setShowRawAncillaryData(!showRawAncillaryData);
+  }
+
   const optionLabels = options?.map(({ label }) => label);
 
   return (
@@ -39,6 +66,10 @@ export function Details({
           </IconWrapper>{" "}
           Description
         </PanelSectionTitle>
+        <Text>
+          <Strong>Identifier: </Strong>
+          {decodedIdentifier}
+        </Text>
         <Text as="div">
           <ReactMarkdown
             components={{
@@ -52,12 +83,72 @@ export function Details({
       <SectionWrapper>
         <PanelSectionTitle>
           <IconWrapper>
-            <VoteIcon />
+            <AncillaryDataIcon />
           </IconWrapper>{" "}
-          Decoded ancillary data
+          Decoded ancillary data{" "}
+          <ToggleText onClick={toggleShowRawAncillaryData}>
+            (view {showRawAncillaryData ? "decoded" : "raw"})
+          </ToggleText>
         </PanelSectionTitle>
-        <Text> {decodedAncillaryData} </Text>
+        <Text>
+          {showRawAncillaryData ? (
+            <>{ancillaryData}</>
+          ) : (
+            <>
+              {decodedAncillaryData === ""
+                ? "The ancillary data for this request is blank."
+                : decodedAncillaryData}
+            </>
+          )}
+        </Text>
       </SectionWrapper>
+      {decodedAdminTransactions?.transactions ? (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <GovernanceIcon />
+            </IconWrapper>{" "}
+            Admin transaction data
+            <ToggleButton onClick={toggleShowDecodedAdminTransactions}>
+              {" "}
+              <ChevronIcon $isExpanded={showDecodedAdminTransactions} />
+            </ToggleButton>
+          </PanelSectionTitle>
+          {showDecodedAdminTransactions ? (
+            <>
+              {decodedAdminTransactions.transactions.map(
+                ({ to, decodedData, value }, index) => (
+                  <>
+                    <TransactionText>
+                      Transaction <Strong>#{index + 1}</Strong> to{" "}
+                      <A href={`https://etherscan.io/address/${to}`}>
+                        {truncateEthAddress(to)}
+                      </A>
+                    </TransactionText>
+                    <Pre>{decodedData}</Pre>
+                    {value !== "0" && (
+                      <Text>
+                        <>
+                          {formatNumberForDisplay(parseEtherSafe(value))} was
+                          sent in this transaction.
+                        </>
+                      </Text>
+                    )}
+                  </>
+                )
+              )}
+            </>
+          ) : (
+            <ToggleText onClick={toggleShowDecodedAdminTransactions}>
+              {decodedAdminTransactions.transactions.length} admin transaction
+              {decodedAdminTransactions.transactions.length !== 1
+                ? "s"
+                : ""}{" "}
+              hidden. Click to show.
+            </ToggleText>
+          )}
+        </SectionWrapper>
+      ) : null}
       {optionLabels && (
         <SectionWrapper>
           <PanelSectionTitle>
@@ -151,6 +242,35 @@ const Text = styled.p`
   }
 `;
 
+const TransactionText = styled(Text)`
+  margin-block: 15px;
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
+`;
+
+const ToggleButton = styled.button`
+  background: none;
+  border: none;
+  margin-left: auto;
+  margin-right: 5px;
+`;
+
+const ToggleText = styled.span`
+  font: var(--text-md);
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const Pre = styled.pre`
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`;
+
 const Timestamp = styled(Text)`
   display: flex;
   gap: 30px;
@@ -185,7 +305,7 @@ const DescriptionIcon = styled(Doc)`
   }
 `;
 
-const VoteIcon = styled(Vote)`
+const AncillaryDataIcon = styled(AncillaryData)`
   path {
     fill: var(--red-500);
   }
@@ -197,6 +317,15 @@ const VotingIcon = styled(Commit)`
   }
 `;
 
+const GovernanceIcon = styled(Governance)`
+  circle {
+    fill: var(--red-500);
+  }
+  path {
+    fill: var(--red-500);
+  }
+`;
+
 const TimestampIcon = styled(Time)`
   path {
     stroke: var(--white);
@@ -204,13 +333,18 @@ const TimestampIcon = styled(Time)`
   }
 `;
 
-const LinksIcon = styled(Link)`
+const LinksIcon = styled(LinkIcon)`
   path {
     fill: var(--red-500);
   }
 `;
 
 const ChatIcon = styled(Chat)``;
+
+const ChevronIcon = styled(Chevron)<{ $isExpanded: boolean }>`
+  transform: rotate(${({ $isExpanded }) => ($isExpanded ? "0deg" : "180deg")});
+  transition: transform 0.2s ease-in-out;
+`;
 
 const DiscordLinkContent = styled.div`
   display: flex;

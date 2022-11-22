@@ -11,7 +11,8 @@ export type VoteT = PriceRequestT &
   VoteMetaDataT &
   VoteContentfulDataT &
   VoteParticipationT &
-  VoteResultsT;
+  VoteResultsT &
+  VoteDecodedAdminTransactionsT;
 
 export type PriceRequestT = {
   // raw values
@@ -183,3 +184,24 @@ export type RevealVotes = {
 };
 
 export type ActivityStatusT = "active" | "upcoming" | "past";
+
+export type DecodedAdminTransactionsT = {
+  identifier: string;
+  transactions: DecodedAdminTransactionDataT[];
+};
+
+export type DecodedAdminTransactionDataT = {
+  data: string;
+  decodedData: string;
+  to: string;
+  value: string;
+};
+
+export type DecodedAdminTransactionsByIdentifierT = Record<
+  string,
+  DecodedAdminTransactionsT
+>;
+
+export type VoteDecodedAdminTransactionsT = {
+  decodedAdminTransactions: DecodedAdminTransactionsT | undefined;
+};
