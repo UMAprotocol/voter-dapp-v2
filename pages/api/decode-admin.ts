@@ -105,7 +105,7 @@ const _generateTransactionDataRecursive = function (
     txnObj.name === "relayGovernance" &&
     txnObj?.params?.calls?.length > 0
   ) {
-    readableTxData += `Transaction is a cross-chain governance action proposal containing ${txnObj?.params?.calls?.length} transactions:\n`;
+    readableTxData += `Transaction is a cross-chain governance action containing ${txnObj?.params?.calls?.length} transactions:\n`;
     txnObj.params.calls.forEach((_txn: any) => {
       const decodedTxnData = _decodeData(_txn.data);
 
@@ -133,7 +133,7 @@ const _generateTransactionDataRecursive = function (
     });
   } else {
     // Pretty print:
-    readableTxData += `\nNested transactions: \n${JSON.stringify(
+    readableTxData += `\n${JSON.stringify(
       txnObj,
       null,
       4

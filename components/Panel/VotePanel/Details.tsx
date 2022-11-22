@@ -23,6 +23,11 @@ type Props = Pick<
   | "discordLink"
   | "decodedAdminTransactions"
 >;
+
+function shortenAddress(to: string) {
+  return to.substr(0, 7) + "..." + to.substr(to.length - 7, to.length);
+}
+
 export function Details({
   description,
   decodedAncillaryData,
@@ -72,8 +77,16 @@ export function Details({
             </IconWrapper>{" "}
             Admin transaction data
           </PanelSectionTitle>
-          {decodedAdminTransactions.transactions.map((transaction) => (
+          {decodedAdminTransactions.transactions.map((transaction, index) => (
             <>
+              <Text>
+                <strong>
+                  Transaction #{index + 1} to{" "}
+                  <a href="https://etherscan.io/address/transaction.to">
+                    {shortenAddress(transaction.to)}
+                  </a>
+                </strong>
+              </Text>
               <Pre>{transaction.decodedData}</Pre>
               {transaction.value !== "0" && (
                 <Text>
