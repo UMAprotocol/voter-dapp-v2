@@ -13,7 +13,9 @@ export const voteWithoutUserVote = {
   description: "Some description",
   transactionHash: "0x1234567890",
   voteNumber: BigNumber.from(123),
-  umipUrl: "https://uma.io",
+  umipOrUppUrl:
+    "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-1.md",
+  umipOrUppNumber: "umip-1",
   timeAsDate: sub(new Date(), { days: 1 }),
   time: sub(new Date(), { days: 1 }).getTime() / 1000,
   timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),

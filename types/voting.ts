@@ -85,8 +85,8 @@ export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
 export type VoteMetaDataT = {
   title: string;
   description: string;
-  umipUrl: string | undefined;
-  umipNumber: number | undefined;
+  umipOrUppUrl: string | undefined;
+  umipOrUppNumber: string | undefined;
   origin: VoteOriginT;
   isGovernance: boolean;
   discordLink: string;
