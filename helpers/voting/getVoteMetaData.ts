@@ -27,8 +27,8 @@ export function getVoteMetaData(
       umipDataFromContentful?.description ??
       "No description was found for this UMIP.";
     const umipUrl = umipDataFromContentful?.umipLink;
-    const umipNumber = getUmipNumber(decodedIdentifier);
-    const links = makeVoteLinks(transactionHash, umipNumber);
+    const umipNumber = umipDataFromContentful?.number;
+    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
     const options = makeVoteOptions();
     return {
       title,
@@ -51,7 +51,7 @@ export function getVoteMetaData(
     const umipUrl =
       "https://github.com/UMAprotocol/UMIPs/blob/448375e1b9d2bd24dfd0627805ef6a7c2d72f74f/UMIPs/umip-157.md";
     const umipNumber = 157;
-    const links = makeVoteLinks(transactionHash, umipNumber);
+    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
     const options = makeVoteOptions();
 
     return {
@@ -106,8 +106,8 @@ export function getVoteMetaData(
     const title = identifierDetails.identifier;
     const description = identifierDetails.summary;
     const umipUrl = identifierDetails.umipLink.url;
-    const umipNumber = getUmipNumber(identifierDetails.umipLink.number);
-    const links = makeVoteLinks(transactionHash, umipNumber);
+    const umipNumber = Number(identifierDetails.umipLink.number);
+    const links = makeVoteLinks(transactionHash, umipNumber, umipUrl);
     return {
       title,
       description,
@@ -178,17 +178,6 @@ function getDescriptionFromAncillaryData(
   );
 }
 
-function getUmipNumber(umipOrAdmin: string | undefined) {
-  if (!umipOrAdmin) return undefined;
-
-  const [, numberAsString] = umipOrAdmin.split(" ");
-
-  const asNumber = Number(numberAsString);
-  if (isNaN(asNumber)) return undefined;
-
-  return asNumber;
-}
-
 function makeVoteOptions() {
   return [
     { label: "Yes", value: "1" },
@@ -196,7 +185,11 @@ function makeVoteOptions() {
   ];
 }
 
-function makeVoteLinks(transactionHash: TransactionHashT, umipNumber?: number) {
+function makeVoteLinks(
+  transactionHash: TransactionHashT,
+  umipNumber?: number,
+  umipUrl?: string
+) {
   const links = [];
 
   if (transactionHash !== "rolled" && transactionHash !== "v1") {
@@ -206,10 +199,10 @@ function makeVoteLinks(transactionHash: TransactionHashT, umipNumber?: number) {
     });
   }
 
-  if (umipNumber) {
+  if (umipNumber && umipUrl) {
     links.push({
       label: `UMIP ${umipNumber}`,
-      href: `https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-${umipNumber}.md`,
+      href: umipUrl,
     });
   }
 
