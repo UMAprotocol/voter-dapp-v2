@@ -29,7 +29,7 @@ async function generatePastRewardRetrievalTx(voterAddress: string) {
     );
   });
 
-  let revealsGroupedByRoundId: any = {};
+  const revealsGroupedByRoundId: any = {};
 
   filteredVoteRevealEvents.forEach((voteRevealed) => {
     const roundId = voteRevealed?.args?.roundId.toString() || "";
