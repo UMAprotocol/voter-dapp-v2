@@ -121,7 +121,7 @@ const InnerWrapper = styled.div`
 `;
 
 const RewardsWrapper = styled.div`
-  height: 120px;
+  min-height: var(--banner-height);
   display: flex;
   flex-direction: column;
   align-items: center;

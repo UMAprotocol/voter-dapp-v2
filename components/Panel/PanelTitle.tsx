@@ -1,6 +1,7 @@
 import { mobileAndUnder } from "constant";
 import Across from "public/assets/icons/across.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
+import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
 import { VoteOriginT } from "types";
@@ -8,12 +9,13 @@ import { VoteOriginT } from "types";
 interface Props {
   title: string;
   origin?: VoteOriginT;
+  isGovernance?: boolean;
   voteNumber?: string;
 }
-export function PanelTitle({ title, origin, voteNumber }: Props) {
+export function PanelTitle({ title, origin, isGovernance, voteNumber }: Props) {
   return (
     <Wrapper>
-      <TitleIcon origin={origin} />
+      <TitleIcon origin={origin} isGovernance={isGovernance} />
       <Header id="panel-title">
         {title}
         <SubTitle>
@@ -24,14 +26,28 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
   );
 }
 
-function TitleIcon({ origin }: { origin?: VoteOriginT }) {
+function TitleIcon({
+  origin,
+  isGovernance,
+}: {
+  origin?: VoteOriginT;
+  isGovernance?: boolean;
+}) {
   switch (origin) {
     case "UMA":
-      return (
-        <TitleIconWrapper>
-          <UMAIcon />
-        </TitleIconWrapper>
-      );
+      if (isGovernance) {
+        return (
+          <TitleIconWrapper>
+            <UMAGovernanceIcon />
+          </TitleIconWrapper>
+        );
+      } else {
+        return (
+          <TitleIconWrapper>
+            <UMAIcon />
+          </TitleIconWrapper>
+        );
+      }
     case "Across":
       return (
         <TitleIconWrapper>
@@ -69,6 +85,7 @@ function SubTitleText({
 }
 
 const Wrapper = styled.div`
+  min-height: var(--header-height);
   background: var(--black);
   color: var(--white);
   display: flex;
@@ -94,6 +111,8 @@ const SubTitle = styled.div`
 `;
 
 const UMAIcon = styled(UMA)``;
+
+const UMAGovernanceIcon = styled(UMAGovernance)``;
 
 const AcrossIcon = styled(Across)``;
 

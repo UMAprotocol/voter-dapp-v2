@@ -25,6 +25,7 @@ export function VotePanel({ content }: Props) {
     discordLink,
     participation,
     results,
+    isGovernance,
   } = content;
 
   const hasResults = Boolean(results?.length);
@@ -32,7 +33,14 @@ export function VotePanel({ content }: Props) {
   const tabs = [
     {
       title: "Result",
-      content: <Result participation={participation} results={results} />,
+      content: (
+        <Result
+          decodedIdentifier={decodedIdentifier}
+          participation={participation}
+          results={results}
+          options={options}
+        />
+      ),
     },
     {
       title: "Details",
@@ -54,6 +62,7 @@ export function VotePanel({ content }: Props) {
       <PanelTitle
         title={title ?? decodedIdentifier}
         origin={origin}
+        isGovernance={isGovernance}
         voteNumber={voteNumber?.toString()}
       />
       {hasResults ? (

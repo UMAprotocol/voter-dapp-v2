@@ -210,7 +210,7 @@ const Wrapper = styled.div`
 `;
 
 const AccountWrapper = styled(Wrapper)`
-  min-height: 160px;
+  min-height: calc(var(--banner-height) + var(--header-height));
 `;
 
 const SecondaryWrapper = styled(Wrapper)`
