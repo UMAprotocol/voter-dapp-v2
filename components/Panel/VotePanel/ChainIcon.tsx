@@ -1,37 +1,34 @@
+import { supportedChains } from "constant";
 import Arbitrum from "public/assets/icons/arbitrum.svg";
+import Avalanche from "public/assets/icons/avax.svg";
+import Boba from "public/assets/icons/boba.svg";
 import Ethereum from "public/assets/icons/ethereum.svg";
+import Gnosis from "public/assets/icons/gnosis.svg";
 import Optimism from "public/assets/icons/optimism.svg";
 import Polygon from "public/assets/icons/polygon.svg";
+import SX from "public/assets/icons/sx.svg";
 import styled from "styled-components";
+import { SupportedChainIds } from "types";
 
-export function ChainIcon({ chainId }: { chainId: number | undefined }) {
+export function ChainIcon({
+  chainId,
+}: {
+  chainId: SupportedChainIds | undefined;
+}) {
+  if (!chainId) return null;
+
   const icons = {
-    Ethereum: EthereumIcon,
-    Optimism: OptimismIcon,
-    Arbitrum: ArbitrumIcon,
-    Polygon: PolygonIcon,
+    1: EthereumIcon,
+    10: OptimismIcon,
+    100: GnosisIcon,
+    137: PolygonIcon,
+    288: BobaIcon,
+    416: SXIcon,
+    43114: AvalancheIcon,
+    42161: ArbitrumIcon,
   };
-
-  const chainName = getChainName();
-
-  const Icon = chainName ? icons[chainName] : null;
-
-  function getChainName() {
-    switch (chainId) {
-      case 1:
-        return "Ethereum";
-      case 10:
-        return "Optimism";
-      case 137:
-        return "Polygon";
-      case 42161:
-        return "Arbitrum";
-      default:
-        return undefined;
-    }
-  }
-
-  if (!Icon) return null;
+  const chainName = supportedChains[chainId];
+  const Icon = icons[chainId];
 
   return (
     <Wrapper>
@@ -70,3 +67,11 @@ const OptimismIcon = styled(Optimism)``;
 const PolygonIcon = styled(Polygon)``;
 
 const ArbitrumIcon = styled(Arbitrum)``;
+
+const GnosisIcon = styled(Gnosis)``;
+
+const BobaIcon = styled(Boba)``;
+
+const SXIcon = styled(SX)``;
+
+const AvalancheIcon = styled(Avalanche)``;

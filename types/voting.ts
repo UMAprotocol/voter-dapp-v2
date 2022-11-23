@@ -1,6 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { DropdownItemT, LinkT, UserVoteDataT } from "types";
+import { supportedChains } from "constant";
 
 export type UniqueKeyT = string;
 
@@ -198,7 +199,7 @@ export type VoteDecodedAdminTransactionsT = {
   decodedAdminTransactions: DecodedAdminTransactionsT | undefined;
 };
 
-export type SupportedChainIds = 1 | 5 | 10 | 137 | 42161;
+export type SupportedChainIds = keyof typeof supportedChains;
 
 export type NodeUrl = string;
 
