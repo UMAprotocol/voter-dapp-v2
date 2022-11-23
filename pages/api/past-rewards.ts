@@ -8,8 +8,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { constructContractOnChain } from "./_common";
 
-async function generatePastRewardRetrievalTx(voterAddress: string) {
-  const votingV1 = await constructContractOnChain(1, "Voting");
+async function generatePastRewardTx(voterAddress: string, chainId: number) {
+  const votingV1 = await constructContractOnChain(chainId, "Voting");
 
   const [voteRevealEvents, rewardsRetrievedEvents] = await Promise.all([
     votingV1.queryFilter(votingV1.filters.VoteRevealed(voterAddress)),
@@ -29,7 +29,7 @@ async function generatePastRewardRetrievalTx(voterAddress: string) {
     );
   });
 
-  const revealsGroupedByRoundId: any = {};
+  const groupedReveals: any = {};
 
   filteredVoteRevealEvents.forEach((voteRevealed) => {
     const roundId = voteRevealed?.args?.roundId.toString() || "";
@@ -39,33 +39,37 @@ async function generatePastRewardRetrievalTx(voterAddress: string) {
       ancillaryData: voteRevealed?.args?.ancillaryData,
     };
 
-    if (!revealsGroupedByRoundId || !revealsGroupedByRoundId[roundId])
-      revealsGroupedByRoundId[roundId] = [voteProps];
-    else revealsGroupedByRoundId[roundId].push(voteProps);
+    if (!groupedReveals || !groupedReveals[roundId])
+      groupedReveals[roundId] = [voteProps];
+    else groupedReveals[roundId].push(voteProps);
   });
 
-  return await constructMultiCallPayload(revealsGroupedByRoundId, voterAddress);
+  return await constructMultiCall(groupedReveals, voterAddress, chainId);
 }
 
-async function constructMultiCallPayload(
+async function constructMultiCall(
   unclaimedVotes: {
     [roundId: string]: [
       { identifier: string; time: string; ancillaryData: string }
     ];
   },
-  voterAddress: string
+  voterAddress: string,
+  chainId: number
 ) {
-  const votingV2 = await constructContractOnChain(5, "VotingV2");
+  const votingV2 = await constructContractOnChain(chainId, "VotingV2");
   const retrieveFragment = votingV2.interface.getFunction(
     "retrieveRewardsOnMigratedVotingContract(address,uint256,(bytes32,uint256,bytes)[])"
   );
 
-  let multiCallPayload = "";
+  let multiCallPayload: any = [];
 
   Object.keys(unclaimedVotes).forEach((roundId) => {
-    multiCallPayload += votingV2.interface.encodeFunctionData(
-      retrieveFragment,
-      [voterAddress, roundId, unclaimedVotes[roundId]]
+    multiCallPayload.push(
+      votingV2.interface.encodeFunctionData(retrieveFragment, [
+        voterAddress,
+        roundId,
+        unclaimedVotes[roundId],
+      ])
     );
   });
   return multiCallPayload;
@@ -79,12 +83,12 @@ export default async function handler(
 
   try {
     const body = request.body;
-    ["account"].forEach((requiredKey) => {
+    ["account", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
         throw "Missing key in req body! required: account";
     });
-    const multiCallTxData = await generatePastRewardRetrievalTx(body.account);
-    response.status(200).send(multiCallTxData);
+    const multiCallTx = await generatePastRewardTx(body.account, body.chainId);
+    response.status(200).send(multiCallTx);
   } catch (e) {
     console.error(e);
     response.status(500).send({
