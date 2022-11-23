@@ -30,7 +30,6 @@ function constructOoUiLink(
 }
 
 function castOracleNameForOOUi(oracleType: string) {
-  console.log("oracleType", oracleType);
   switch (oracleType) {
     case "OptimisticOracle":
       return "Optimistic";
