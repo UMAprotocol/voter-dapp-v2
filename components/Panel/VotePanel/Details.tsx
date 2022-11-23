@@ -19,6 +19,7 @@ import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 import { LinkT, VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
+import { ChainIcon } from "./ChainIcon";
 
 export function Details({
   decodedIdentifier,
@@ -54,6 +55,9 @@ export function Details({
   return (
     <Wrapper>
       <SectionWrapper>
+        <RequestInfoIcons>
+          <ChainIcon chainId={augmentedData?.originatingChainId} />
+        </RequestInfoIcons>
         <PanelSectionTitle>
           <IconWrapper>
             <DescriptionIcon />
@@ -355,4 +359,12 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const RequestInfoIcons = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 15px;
 `;

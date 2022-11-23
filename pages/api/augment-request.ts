@@ -113,9 +113,9 @@ async function getRequestTxFromL1RequestInformation(
           foundOoRequestTx.chainId = ooChainIds[ooChainId];
           foundOoRequestTx.oracleType = ooRequest.oracleType;
         }
-        ooRequestTxs.push(foundOoRequestTx);
       });
     });
+    ooRequestTxs.push(foundOoRequestTx);
   });
   return ooRequestTxs;
 }

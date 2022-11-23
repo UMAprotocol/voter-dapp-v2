@@ -22,7 +22,6 @@ import UMA from "public/assets/icons/uma.svg";
 import { ReactNode, useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
-
 export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
