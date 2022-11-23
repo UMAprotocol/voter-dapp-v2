@@ -44,6 +44,8 @@ async function generatePastRewardTx(voterAddress: string, chainId: number) {
     else groupedReveals[roundId].push(voteProps);
   });
 
+  if (Object.keys(groupedReveals).length === 0) return [];
+
   return await constructMultiCall(groupedReveals, voterAddress, chainId);
 }
 

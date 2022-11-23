@@ -22,7 +22,8 @@ export async function constructContractOnChain(
   chainId: number,
   contractName: any
 ) {
-  let contractAddress = await getAddress(contractName, chainId);
+  // let contractAddress = await getAddress(contractName, chainId); // uncomment me once we've done a release.
+  let contractAddress = "";
   if (chainId == 5) {
     if (contractName === "Voting")
       contractAddress = "0x9f444346FD853084158ce9cfa7e062BaBd51a577";
