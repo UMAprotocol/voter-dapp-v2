@@ -91,7 +91,7 @@ export default async function handler(
     };
     ["account", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
-        throw "Missing key in req body! required: account";
+        throw `Missing key in req body! required: ${requiredKey}`;
     });
     const multiCallTx = await generatePastRewardTx(body.account, body.chainId);
     response.status(200).send(multiCallTx);
