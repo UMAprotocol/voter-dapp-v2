@@ -2,6 +2,7 @@ import { Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import {
   formatNumberForDisplay,
+  makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
 } from "helpers";
@@ -16,8 +17,10 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { VoteT } from "types";
+import { LinkT, VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
+import { ChainIcon } from "./ChainIcon";
+import { OoTypeIcon } from "./OoTypeIcon";
 
 export function Details({
   decodedIdentifier,
@@ -26,9 +29,10 @@ export function Details({
   decodedAncillaryData,
   options,
   timeAsDate,
-  links,
   discordLink,
   decodedAdminTransactions,
+  umipOrUppLink,
+  augmentedData,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -42,11 +46,30 @@ export function Details({
     setShowRawAncillaryData(!showRawAncillaryData);
   }
 
+  function makeOoRequestLink() {
+    if (!augmentedData?.ooRequestUrl) return;
+
+    return {
+      href: augmentedData.ooRequestUrl,
+      label: "Optimistic Oracle UI",
+    };
+  }
+
   const optionLabels = options?.map(({ label }) => label);
+
+  const links = [
+    umipOrUppLink,
+    makeTransactionHashLink(augmentedData?.l1RequestTxHash, false),
+    makeOoRequestLink(),
+  ].filter((link): link is LinkT => !!link);
 
   return (
     <Wrapper>
       <SectionWrapper>
+        <RequestInfoIcons>
+          <ChainIcon chainId={augmentedData?.originatingChainId} />
+          <OoTypeIcon ooType={augmentedData?.originatingOracleType} />
+        </RequestInfoIcons>
         <PanelSectionTitle>
           <IconWrapper>
             <DescriptionIcon />
@@ -348,4 +371,12 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const RequestInfoIcons = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 15px;
 `;

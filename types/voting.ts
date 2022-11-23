@@ -1,18 +1,19 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { DropdownItemT, LinkT, UserVoteDataT } from "types";
+import { supportedChains } from "constant";
 
 export type UniqueKeyT = string;
 
 export type VoteT = PriceRequestT &
   VoteHistoryDataT &
-  VoteTransactionDataT &
   UserVoteDataT &
   VoteMetaDataT &
   VoteContentfulDataT &
   VoteParticipationT &
   VoteResultsT &
-  VoteDecodedAdminTransactionsT;
+  VoteDecodedAdminTransactionsT &
+  VoteAugmentedDataT;
 
 export type PriceRequestT = {
   // raw values
@@ -60,12 +61,6 @@ export type RawPriceRequestDataT = {
   isV1?: boolean;
 };
 
-export type TransactionHashT = string | "rolled" | "v1";
-
-export type VoteTransactionDataT = {
-  transactionHash: TransactionHashT;
-};
-
 export type VoteHistoryDataT = {
   voteHistory: VoteHistoryT;
 };
@@ -85,14 +80,12 @@ export type PriceRequestByKeyT = Record<UniqueKeyT, PriceRequestT>;
 export type VoteMetaDataT = {
   title: string;
   description: string;
-  umipOrUppUrl: string | undefined;
+  umipOrUppLink: LinkT | undefined;
   umipOrUppNumber: string | undefined;
   origin: VoteOriginT;
   isGovernance: boolean;
   discordLink: string;
-  links: LinkT[];
   options: DropdownItemT[] | undefined;
-  isRolled: boolean;
 };
 
 export type VoteContentfulDataT = {
@@ -205,3 +198,37 @@ export type DecodedAdminTransactionsByIdentifierT = Record<
 export type VoteDecodedAdminTransactionsT = {
   decodedAdminTransactions: DecodedAdminTransactionsT | undefined;
 };
+
+export type SupportedChainIds = keyof typeof supportedChains;
+
+export type SupportedChainIdsWithGoerli = SupportedChainIds | 5;
+
+export type NodeUrl = string;
+
+export type NodeUrls = Record<SupportedChainIdsWithGoerli, NodeUrl>;
+
+export type IdentifierAndTimeStampT = {
+  identifier: string;
+  time: number;
+};
+
+export type OracleTypeT =
+  | "OptimisticOracle"
+  | "OptimisticOracleV2"
+  | "SkinnyOptimisticOracle";
+
+export type AugmentedVoteDataT = {
+  l1RequestTxHash: string;
+  uniqueKey: UniqueKeyT;
+  ooRequestUrl: string | undefined;
+  originatingChainId: SupportedChainIds | undefined;
+  originatingOracleType: OracleTypeT | undefined;
+};
+
+export type VoteAugmentedDataT = {
+  augmentedData: AugmentedVoteDataT | undefined;
+};
+
+export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
+
+export type TransactionHashT = string | "rolled";
