@@ -1,62 +1,56 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+import {
+  OptimisticOracleEthers,
+  OptimisticOracleV2Ethers,
+  SkinnyOptimisticOracleEthers,
+  VotingEthers,
+} from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
-
-import { Contract } from "ethers";
+import { OracleTypeT, PriceRequestT, SupportedChainIds } from "types";
 import { constructContractOnChain, getNodeUrls } from "./_common";
 
-interface Request {
-  identifier: string;
-  time: number;
-}
-
-enum OptimisticOracleType {
+enum OracleType {
   OptimisticOracle,
   OptimisticOracleV2,
   SkinnyOptimisticOracle,
 }
 
 function getOoChainIds() {
-  return Object.keys(getNodeUrls()).map((z) => Number(z));
+  return Object.keys(getNodeUrls()).map(Number) as SupportedChainIds[];
 }
 
 function constructOoUiLink(
-  txHash: string,
-  chainId: number,
-  oracleType: string
+  txHash: string | undefined,
+  chainId: SupportedChainIds | undefined,
+  oracleType: OracleTypeT | undefined
 ) {
-  if (!txHash || !chainId || !oracleType) return null;
+  if (!txHash || !chainId || !oracleType) return;
   return `https://oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${oracleType}`;
 }
 
-async function constructOptimisticOraclesByChain(
-  chainId: number
-): Promise<(Contract | null)[]> {
-  const optimisticOracle = await constructContractOnChain(
+async function constructOptimisticOraclesByChain(chainId: SupportedChainIds) {
+  const optimisticOracle = (await constructContractOnChain(
     chainId,
     "OptimisticOracle"
-  );
-  const optimisticOracleV2 = await constructContractOnChain(
+  )) as OptimisticOracleEthers;
+  const optimisticOracleV2 = (await constructContractOnChain(
     chainId,
     "OptimisticOracleV2"
-  );
+  )) as OptimisticOracleV2Ethers;
 
   // Only mainnet has a SkinnyOptimisticOracle so only construct it here. All other chains of interest have OOv1 and V2.
   const skinnyOptimisticOracle =
     chainId == 1
-      ? await constructContractOnChain(chainId, "SkinnyOptimisticOracle")
+      ? ((await constructContractOnChain(
+          chainId,
+          "SkinnyOptimisticOracle"
+        )) as SkinnyOptimisticOracleEthers)
       : null;
   return [optimisticOracle, optimisticOracleV2, skinnyOptimisticOracle];
 }
 
 async function getOptimisticOraclePriceRequestEventsByChainId(
-  chainId: number
-): Promise<any[]> {
+  chainId: SupportedChainIds
+) {
   const chainOptimisticOracles = await constructOptimisticOraclesByChain(
     chainId
   );
@@ -77,7 +71,7 @@ async function getOptimisticOraclePriceRequestEventsByChainId(
               transactionHash: ooRequest.transactionHash,
               identifier: ooRequest?.args?.identifier,
               time: Number(ooRequest?.args?.timestamp),
-              oracleType: OptimisticOracleType[index],
+              oracleType: OracleType[index] as OracleTypeT,
             };
           })
         : [];
@@ -85,11 +79,15 @@ async function getOptimisticOraclePriceRequestEventsByChainId(
     .flat();
 }
 
+type OoTransactionT = {
+  requestTransactionHash: string | undefined;
+  chainId: SupportedChainIds | undefined;
+  oracleType: OracleTypeT | undefined;
+};
+
 async function getRequestTxFromL1RequestInformation(
-  l1Requests: Request[]
-): Promise<
-  { requestTransactionHash: string; chainId: number; oracleType: any }[]
-> {
+  l1Requests: PriceRequestT[]
+) {
   const ooChainIds = getOoChainIds();
 
   const chainOoRequests = await Promise.all(
@@ -97,13 +95,13 @@ async function getRequestTxFromL1RequestInformation(
       getOptimisticOraclePriceRequestEventsByChainId(chainId)
     )
   );
-  const ooRequestTxs: {
-    requestTransactionHash: string;
-    chainId: number;
-    oracleType: any;
-  }[] = [];
+  const ooRequestTxs: (OoTransactionT | undefined)[] = [];
   l1Requests.forEach((l1Request) => {
-    let foundOoTx = { requestTransactionHash: "", chainId: 0, oracleType: "" };
+    const foundOoRequestTx: OoTransactionT = {
+      requestTransactionHash: undefined,
+      chainId: undefined,
+      oracleType: undefined,
+    };
     chainOoRequests.forEach((_, ooChainId) => {
       chainOoRequests[ooChainId].forEach((ooRequest) => {
         if (
@@ -111,22 +109,22 @@ async function getRequestTxFromL1RequestInformation(
             ooRequest.identifier.toLowerCase() &&
           l1Request.time == ooRequest.time
         ) {
-          foundOoTx = {
-            requestTransactionHash: ooRequest.transactionHash,
-            chainId: ooChainIds[ooChainId],
-            oracleType: ooRequest.oracleType,
-          };
-          return;
+          foundOoRequestTx.requestTransactionHash = ooRequest.transactionHash;
+          foundOoRequestTx.chainId = ooChainIds[ooChainId];
+          foundOoRequestTx.oracleType = ooRequest.oracleType;
         }
       });
     });
-    ooRequestTxs.push(foundOoTx);
+    ooRequestTxs.push(foundOoRequestTx);
   });
   return ooRequestTxs;
 }
 
-async function getAugmentingRequestInformation(l1Requests: Request[]) {
-  const votingV1 = await constructContractOnChain(1, "Voting");
+async function getAugmentingRequestInformation(l1Requests: PriceRequestT[]) {
+  const votingV1 = (await constructContractOnChain(
+    1,
+    "Voting"
+  )) as VotingEthers;
   // todo: add voting v2 when released.
   // const votingV2 = await constructContractOnChain(1, "VotingV2");
   const l1RequestEvents = (
@@ -137,33 +135,37 @@ async function getAugmentingRequestInformation(l1Requests: Request[]) {
   ).flat();
 
   const l1RequestTxHashes = l1Requests.map((l1Request) => {
-    return (
+    const l1RequestTxHash =
       l1RequestEvents.find((event) => {
         if (
           l1Request.identifier.toLowerCase() ==
-            event?.args?.identifier.toLowerCase() &&
-          l1Request.time == event?.args?.time
+            event.args?.identifier?.toLowerCase() &&
+          event.args.time.eq(l1Request.time)
         ) {
           return true;
         } else return false;
-      })?.transactionHash ?? "rolled"
-    );
+      })?.transactionHash ?? "rolled";
+    return {
+      uniqueKey: l1Request.uniqueKey,
+      l1RequestTxHash,
+    };
   });
 
   const requestTransactions = await getRequestTxFromL1RequestInformation(
     l1Requests
   );
 
-  return l1RequestTxHashes.map((l1RequestTxHash, index) => {
+  return l1RequestTxHashes.map(({ l1RequestTxHash, uniqueKey }, index) => {
     return {
       l1RequestTxHash,
+      uniqueKey,
       ooRequestUrl: constructOoUiLink(
-        requestTransactions[index].requestTransactionHash,
-        requestTransactions[index].chainId,
-        requestTransactions[index].oracleType
+        requestTransactions[index]?.requestTransactionHash,
+        requestTransactions[index]?.chainId,
+        requestTransactions[index]?.oracleType
       ),
-      originatingChainId: requestTransactions[index].chainId || null,
-      originatingOracleType: requestTransactions[index].oracleType || null,
+      originatingChainId: requestTransactions[index]?.chainId,
+      originatingOracleType: requestTransactions[index]?.oracleType,
     };
   });
 }
@@ -175,7 +177,7 @@ export default async function handler(
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
-    const body = request.body;
+    const body = request.body as { l1Requests: PriceRequestT[] };
     ["l1Requests"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
         throw "Missing key in req body! required: l1Requests";
