@@ -24,7 +24,21 @@ function constructOoUiLink(
   oracleType: OracleTypeT | undefined
 ) {
   if (!txHash || !chainId || !oracleType) return;
-  return `https://oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${oracleType}`;
+  return `https://oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
+    oracleType
+  )}`;
+}
+
+function castOracleNameForOOUi(oracleType: string) {
+  console.log("oracleType", oracleType);
+  switch (oracleType) {
+    case "OptimisticOracle":
+      return "Optimistic";
+    case "OptimisticOracleV2":
+      return "OptimisticV2";
+    case "SkinnyOptimisticOracle":
+      return "Skinny";
+  }
 }
 
 async function constructOptimisticOraclesByChain(chainId: SupportedChainIds) {
@@ -164,7 +178,8 @@ async function getAugmentingRequestInformation(l1Requests: PriceRequestT[]) {
         requestTransactions[index]?.chainId,
         requestTransactions[index]?.oracleType
       ),
-      originatingChainTxHash: requestTransactions[index]?.requestTransactionHash,
+      originatingChainTxHash:
+        requestTransactions[index]?.requestTransactionHash,
       originatingChainId: requestTransactions[index]?.chainId,
       originatingOracleType: requestTransactions[index]?.oracleType,
     };
