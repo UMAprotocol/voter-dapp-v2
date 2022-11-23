@@ -83,7 +83,7 @@ function transactionsWithS(value: number) {
   return `containing ${value} transaction${value === 1 ? "" : "s"}`;
 }
 
-function getNameFromChainId(value: number) {
+function getNameFromChainId(value: string) {
   switch (value) {
     case "1":
       return "Mainnet";
