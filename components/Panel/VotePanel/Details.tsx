@@ -2,6 +2,7 @@ import { Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import {
   formatNumberForDisplay,
+  makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
 } from "helpers";
@@ -16,7 +17,7 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { VoteT } from "types";
+import { LinkT, VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 
 export function Details({
@@ -26,9 +27,10 @@ export function Details({
   decodedAncillaryData,
   options,
   timeAsDate,
-  links,
   discordLink,
   decodedAdminTransactions,
+  umipOrUppLink,
+  augmentedData,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -43,6 +45,11 @@ export function Details({
   }
 
   const optionLabels = options?.map(({ label }) => label);
+
+  const links = [
+    umipOrUppLink,
+    makeTransactionHashLink(augmentedData?.l1RequestTxHash, false),
+  ].filter((link): link is LinkT => !!link);
 
   return (
     <Wrapper>

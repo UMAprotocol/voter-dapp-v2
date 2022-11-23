@@ -56,14 +56,15 @@ export function VotesListItem({
     decryptedVote,
     correctVote,
     voteNumber,
-    isRolled,
     isV1,
     isGovernance,
     timeAsDate,
+    augmentedData,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
+  const isRolled = augmentedData?.l1RequestTxHash === "rolled";
 
   useEffect(() => {
     if (!options) return;
