@@ -162,6 +162,7 @@ async function getAugmentingRequestInformation(l1Requests: Request[]) {
         requestTransactions[index].chainId,
         requestTransactions[index].oracleType
       ),
+      originatingChainTxHash: requestTransactions[index].requestTransactionHash,
       originatingChainId: requestTransactions[index].chainId || null,
       originatingOracleType: requestTransactions[index].oracleType || null,
     };
