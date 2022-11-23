@@ -20,6 +20,7 @@ import styled from "styled-components";
 import { LinkT, VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
+import { OoTypeIcon } from "./OoTypeIcon";
 
 export function Details({
   decodedIdentifier,
@@ -57,6 +58,7 @@ export function Details({
       <SectionWrapper>
         <RequestInfoIcons>
           <ChainIcon chainId={augmentedData?.originatingChainId} />
+          <OoTypeIcon ooType={augmentedData?.originatingOracleType} />
         </RequestInfoIcons>
         <PanelSectionTitle>
           <IconWrapper>
