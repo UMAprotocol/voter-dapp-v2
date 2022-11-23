@@ -3,6 +3,7 @@ import { getVoteMetaData } from "helpers";
 import {
   useAccountDetails,
   useActiveVotes,
+  useAugmentedVoteData,
   useCommittedVotes,
   useContentfulData,
   useDecodedAdminTransactions,
@@ -12,7 +13,6 @@ import {
   useRevealedVotes,
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
-  useVoteTransactionHashes,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 import {
@@ -92,11 +92,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isFetching: pastVotesIsFetching,
   } = usePastVotes();
   const {
-    data: transactionHashes,
-    isLoading: transactionHashesIsLoading,
-    isFetching: transactionHashesIsFetching,
-  } = useVoteTransactionHashes();
-  const {
     data: contentfulData,
     isLoading: contentfulDataIsLoading,
     isFetching: contentfulDataIsFetching,
@@ -126,6 +121,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails();
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
+  const { data: augmentedData } = useAugmentedVoteData();
 
   function getUserDependentIsLoading() {
     if (!address) return false;
@@ -140,12 +136,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getUserIndependentIsLoading() {
-    return (
-      activeVotesIsLoading ||
-      upcomingVotesIsLoading ||
-      pastVotesIsLoading ||
-      transactionHashesIsLoading
-    );
+    return activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
   }
 
   function getIsLoading() {
@@ -166,10 +157,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   function getUserIndependentIsFetching() {
     return (
-      activeVotesIsFetching ||
-      upcomingVotesIsFetching ||
-      pastVotesIsFetching ||
-      transactionHashesIsFetching
+      activeVotesIsFetching || upcomingVotesIsFetching || pastVotesIsFetching
     );
   }
 
@@ -207,7 +195,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         encryptedVote: encryptedVotes[uniqueKey],
         decryptedVote: decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
-        transactionHash: transactionHashes[uniqueKey],
+        augmentedData: augmentedData[uniqueKey],
         voteHistory: voteHistoryByKey[uniqueKey] ?? {
           uniqueKey,
           voted: false,
@@ -220,7 +208,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
-          transactionHashes[uniqueKey],
           contentfulData[uniqueKey]
         ),
       };
