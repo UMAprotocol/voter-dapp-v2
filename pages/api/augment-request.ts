@@ -29,7 +29,7 @@ function constructOoUiLink(
   )}`;
 }
 
-function castOracleNameForOOUi(oracleType: string) {
+function castOracleNameForOOUi(oracleType: string): string {
   switch (oracleType) {
     case "OptimisticOracle":
       return "Optimistic";
@@ -37,6 +37,8 @@ function castOracleNameForOOUi(oracleType: string) {
       return "OptimisticV2";
     case "SkinnyOptimisticOracle":
       return "Skinny";
+    default:
+      return "";
   }
 }
 
