@@ -7,7 +7,7 @@
 
 import { Contract, ethers } from "ethers";
 
-import { getAbi, getAddress } from "@uma/contracts-node";
+import { getAbi } from "@uma/contracts-node";
 
 export function getProviderByChainId(chainId: number) {
   return new ethers.providers.JsonRpcBatchProvider(getNodeUrls()[chainId]);
