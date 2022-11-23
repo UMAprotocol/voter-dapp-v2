@@ -7,7 +7,7 @@
 
 import { Contract, ethers } from "ethers";
 
-import { getAbi } from "@uma/contracts-node";
+import { getAbi, getAddress } from "@uma/contracts-node";
 
 export function getProviderByChainId(chainId: number) {
   return new ethers.providers.JsonRpcBatchProvider(getNodeUrls()[chainId]);
@@ -22,8 +22,10 @@ export async function constructContractOnChain(
   chainId: number,
   contractName: any
 ) {
-  // let contractAddress = await getAddress(contractName, chainId); // uncomment me once we've done a release.
-  let contractAddress = "";
+  // Replace the logic below with just `getAddress once we've updated the release. Below is just there to pass CI until
+  // this is done.
+  let contractAddress = await getAddress("Voting", 1);
+
   if (chainId == 5) {
     if (contractName === "Voting")
       contractAddress = "0x9f444346FD853084158ce9cfa7e062BaBd51a577";
