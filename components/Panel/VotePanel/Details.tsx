@@ -46,11 +46,21 @@ export function Details({
     setShowRawAncillaryData(!showRawAncillaryData);
   }
 
+  function makeOoRequestLink() {
+    if (!augmentedData?.ooRequestUrl) return;
+
+    return {
+      href: augmentedData.ooRequestUrl,
+      label: "Optimistic Oracle UI",
+    };
+  }
+
   const optionLabels = options?.map(({ label }) => label);
 
   const links = [
     umipOrUppLink,
     makeTransactionHashLink(augmentedData?.l1RequestTxHash, false),
+    makeOoRequestLink(),
   ].filter((link): link is LinkT => !!link);
 
   return (
