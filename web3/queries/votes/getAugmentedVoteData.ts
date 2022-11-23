@@ -19,8 +19,6 @@ export async function getAugmentedVoteData(priceRequests: PriceRequestByKeyT) {
 
   const result = (await response.json()) as AugmentedVoteDataT[];
 
-  console.log(result);
-
   const byKey: AugmentedVoteDataByKeyT = {};
 
   result.forEach((augmentedData) => {
