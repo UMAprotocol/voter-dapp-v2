@@ -164,9 +164,9 @@ async function getAugmentingRequestInformation(l1Requests: PriceRequestT[]) {
         requestTransactions[index]?.chainId,
         requestTransactions[index]?.oracleType
       ),
-      originatingChainTxHash: requestTransactions[index].requestTransactionHash,
-      originatingChainId: requestTransactions[index].chainId,
-      originatingOracleType: requestTransactions[index].oracleType,
+      originatingChainTxHash: requestTransactions[index]?.requestTransactionHash,
+      originatingChainId: requestTransactions[index]?.chainId,
+      originatingOracleType: requestTransactions[index]?.oracleType,
     };
   });
 }
