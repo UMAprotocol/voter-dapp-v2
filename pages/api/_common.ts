@@ -1,26 +1,25 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Contract, ethers } from "ethers";
-
 import { getAbi, getAddress } from "@uma/contracts-node";
+import { Contract, ethers } from "ethers";
+import { NodeUrls, SupportedChainIds } from "types";
 
-export function getProviderByChainId(chainId: number) {
+type GetAddressParams = Parameters<typeof getAddress>;
+
+type GetAbiParams = Parameters<typeof getAbi>;
+
+type ContractName = GetAddressParams[0] & GetAbiParams[0];
+
+export function getProviderByChainId(chainId: SupportedChainIds) {
   return new ethers.providers.JsonRpcBatchProvider(getNodeUrls()[chainId]);
 }
 
-export function getNodeUrls(): { [key: string]: string } {
+export function getNodeUrls() {
   if (!process.env.NODE_URLS) throw Error("NODE_URLS env variable not set!");
-  return JSON.parse(process.env.NODE_URLS);
+  return JSON.parse(process.env.NODE_URLS) as NodeUrls;
 }
 
 export async function constructContractOnChain(
-  chainId: number,
-  contractName: any
+  chainId: SupportedChainIds,
+  contractName: ContractName
 ) {
   console.log(
     "getting",
