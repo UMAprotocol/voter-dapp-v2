@@ -6,16 +6,15 @@ import { VoteT } from "types";
 export const voteWithoutUserVote = {
   isCommitted: false,
   commitHash: undefined,
-  isRolled: false,
   title:
     "SuperUMAn DAO KPI Options funding proposal and a bunch of extra text that will presumably trigger an overflow",
   origin: "UMA" as const,
   description: "Some description",
-  transactionHash: "0x1234567890",
   voteNumber: BigNumber.from(123),
   umipOrUppUrl:
     "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-1.md",
   umipOrUppNumber: "umip-1",
+  umipOrUppLink: undefined,
   timeAsDate: sub(new Date(), { days: 1 }),
   time: sub(new Date(), { days: 1 }).getTime() / 1000,
   timeMilliseconds: sub(new Date(), { days: 1 }).getTime(),
@@ -24,6 +23,7 @@ export const voteWithoutUserVote = {
   decodedIdentifier: "SuperUMAn DAO KPI Options funding proposal",
   decodedAncillaryData: "Test test test",
   decodedAdminTransactions: undefined,
+  augmentedData: undefined,
   uniqueKey: "0x1234567890",
   umipNumber: 20,
   encryptedVote: undefined,
