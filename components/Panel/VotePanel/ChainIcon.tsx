@@ -41,6 +41,7 @@ export function ChainIcon({
 }
 
 const Wrapper = styled.div`
+  height: 35px;
   width: max-content;
   display: flex;
   align-items: center;
