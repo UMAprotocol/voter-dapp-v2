@@ -21,25 +21,15 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(executeUnstake, {
     onError,
-    onSuccess: () => {
+    onSuccess: (_contractReceipt, { pendingUnstake }) => {
       clearErrors();
 
       queryClient.setQueryData<BigNumber>(
         [unstakedBalanceKey, address],
         (oldUnstakedBalance) => {
-          const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>([
-            stakerDetailsKey,
-          ]);
+          if (oldUnstakedBalance === undefined) return;
 
-          if (
-            oldStakerDetails === undefined ||
-            oldUnstakedBalance === undefined
-          )
-            return;
-
-          const newUnstakedBalance = oldUnstakedBalance.add(
-            oldStakerDetails.pendingUnstake
-          );
+          const newUnstakedBalance = oldUnstakedBalance.add(pendingUnstake);
 
           return newUnstakedBalance;
         }
@@ -48,16 +38,11 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
       queryClient.setQueryData<BigNumber>(
         [stakedBalanceKey, address],
         (oldStakedBalance) => {
-          const oldStakerDetails = queryClient.getQueryData<StakerDetailsT>([
-            stakerDetailsKey,
-          ]);
-
-          if (oldStakedBalance === undefined || oldStakerDetails === undefined)
-            return;
+          if (oldStakedBalance === undefined) return;
 
           const newStakedBalance = max(
             BigNumber.from(0),
-            oldStakedBalance.sub(oldStakerDetails.pendingUnstake)
+            oldStakedBalance.sub(pendingUnstake)
           );
 
           return newStakedBalance;
@@ -66,16 +51,15 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
 
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
-        (oldStakerDetails) => {
-          if (!oldStakerDetails) return;
-
-          return {
-            ...oldStakerDetails,
-            pendingUnstake: BigNumber.from(0),
-            canUnstakeTime: undefined,
-            unstakeRequestTime: undefined,
-          };
-        }
+        (oldStakerDetails) =>
+          oldStakerDetails
+            ? {
+                ...oldStakerDetails,
+                pendingUnstake: BigNumber.from(0),
+                canUnstakeTime: undefined,
+                unstakeRequestTime: undefined,
+              }
+            : undefined
       );
     },
   });

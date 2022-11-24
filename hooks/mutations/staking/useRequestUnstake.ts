@@ -17,7 +17,7 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
     onError,
-    onSuccess: (_data, { unstakeAmount }) => {
+    onSuccess: (_contractReceipt, { unstakeAmount }) => {
       clearErrors();
 
       queryClient.setQueryData<BigNumber>(
@@ -25,9 +25,9 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
         (oldStakedBalance) => {
           if (oldStakedBalance === undefined) return;
 
-          const newUnstakedBalance = oldStakedBalance.sub(unstakeAmount);
+          const newStakedBalance = oldStakedBalance.sub(unstakeAmount);
 
-          return newUnstakedBalance;
+          return newStakedBalance;
         }
       );
 
@@ -36,15 +36,11 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
         (oldStakerDetails) => {
           if (oldStakerDetails === undefined) return;
 
-          const unstakeCoolDown = queryClient.getQueryData<{
-            unstakeCoolDown: number;
-          }>([unstakeCoolDownKey]);
+          const unstakeCoolDown = queryClient.getQueryData<BigNumber>([
+            unstakeCoolDownKey,
+          ]);
 
-          if (
-            unstakeCoolDown === undefined ||
-            unstakeCoolDown.unstakeCoolDown === undefined
-          )
-            return;
+          if (unstakeCoolDown === undefined) return;
 
           return {
             ...oldStakerDetails,
@@ -52,7 +48,7 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
             unstakeRequestTime: new Date(),
             canUnstakeTime: getCanUnstakeTime(
               new Date(),
-              unstakeCoolDown.unstakeCoolDown
+              unstakeCoolDown.toNumber()
             ),
           };
         }

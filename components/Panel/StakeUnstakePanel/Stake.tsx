@@ -15,7 +15,7 @@ import {
 interface Props {
   tokenAllowance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
-  unstakeCoolDown: number | undefined;
+  unstakeCoolDown: BigNumber | undefined;
   isDelegate: boolean;
   approve: (approveAmount: string) => void;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
@@ -31,7 +31,7 @@ export function Stake({
   const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const unstakeCoolDownFormatted = unstakeCoolDown
-    ? formatDuration({ seconds: unstakeCoolDown })
+    ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
     : "0 seconds";
 
   const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
