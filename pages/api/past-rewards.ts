@@ -1,15 +1,21 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { VotingEthers } from "@uma/contracts-frontend";
 import { NextApiRequest, NextApiResponse } from "next";
+import { SupportedChainIdsWithGoerli } from "types";
 import { constructContractOnChain } from "./_common";
 
-async function generatePastRewardRetrievalTx(voterAddress: string) {
-  const votingV1 = await constructContractOnChain(1, "Voting");
+type GroupedReveals = Record<
+  string,
+  { identifier: string; time: string; ancillaryData: string }[]
+>;
+
+async function generatePastRewardTx(
+  voterAddress: string,
+  chainId: SupportedChainIdsWithGoerli
+) {
+  const votingV1 = (await constructContractOnChain(
+    chainId,
+    "Voting"
+  )) as VotingEthers;
 
   const [voteRevealEvents, rewardsRetrievedEvents] = await Promise.all([
     votingV1.queryFilter(votingV1.filters.VoteRevealed(voterAddress)),
@@ -29,7 +35,7 @@ async function generatePastRewardRetrievalTx(voterAddress: string) {
     );
   });
 
-  const revealsGroupedByRoundId: any = {};
+  const groupedReveals: GroupedReveals = {};
 
   filteredVoteRevealEvents.forEach((voteRevealed) => {
     const roundId = voteRevealed?.args?.roundId.toString() || "";
@@ -39,33 +45,34 @@ async function generatePastRewardRetrievalTx(voterAddress: string) {
       ancillaryData: voteRevealed?.args?.ancillaryData,
     };
 
-    if (!revealsGroupedByRoundId || !revealsGroupedByRoundId[roundId])
-      revealsGroupedByRoundId[roundId] = [voteProps];
-    else revealsGroupedByRoundId[roundId].push(voteProps);
+    if (!groupedReveals[roundId]) groupedReveals[roundId] = [voteProps];
+    else groupedReveals[roundId].push(voteProps);
   });
 
-  return await constructMultiCallPayload(revealsGroupedByRoundId, voterAddress);
+  if (Object.keys(groupedReveals).length === 0) return [];
+
+  return await constructMultiCall(groupedReveals, voterAddress, chainId);
 }
 
-async function constructMultiCallPayload(
-  unclaimedVotes: {
-    [roundId: string]: [
-      { identifier: string; time: string; ancillaryData: string }
-    ];
-  },
-  voterAddress: string
+async function constructMultiCall(
+  unclaimedVotes: GroupedReveals,
+  voterAddress: string,
+  chainId: SupportedChainIdsWithGoerli
 ) {
-  const votingV2 = await constructContractOnChain(5, "VotingV2");
+  const votingV2 = await constructContractOnChain(chainId, "VotingV2");
   const retrieveFragment = votingV2.interface.getFunction(
     "retrieveRewardsOnMigratedVotingContract(address,uint256,(bytes32,uint256,bytes)[])"
   );
 
-  let multiCallPayload = "";
+  const multiCallPayload: string[] = [];
 
   Object.keys(unclaimedVotes).forEach((roundId) => {
-    multiCallPayload += votingV2.interface.encodeFunctionData(
-      retrieveFragment,
-      [voterAddress, roundId, unclaimedVotes[roundId]]
+    multiCallPayload.push(
+      votingV2.interface.encodeFunctionData(retrieveFragment, [
+        voterAddress,
+        roundId,
+        unclaimedVotes[roundId],
+      ])
     );
   });
   return multiCallPayload;
@@ -78,13 +85,16 @@ export default async function handler(
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
-    const body = request.body;
-    ["account"].forEach((requiredKey) => {
+    const body = request.body as {
+      account: string;
+      chainId: SupportedChainIdsWithGoerli;
+    };
+    ["account", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
-        throw "Missing key in req body! required: account";
+        throw `Missing key in req body! required: ${requiredKey}`;
     });
-    const multiCallTxData = await generatePastRewardRetrievalTx(body.account);
-    response.status(200).send(multiCallTxData);
+    const multiCallTx = await generatePastRewardTx(body.account, body.chainId);
+    response.status(200).send(multiCallTx);
   } catch (e) {
     console.error(e);
     response.status(500).send({
