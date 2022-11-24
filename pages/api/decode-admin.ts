@@ -79,13 +79,38 @@ function _decodeData(data: any) {
   return TransactionDataDecoder.getInstance().decodeTransaction(data);
 }
 
+function transactionsWithS(value: number) {
+  return `containing ${value} transaction${value === 1 ? "" : "s"}`;
+}
+
+function getNameFromChainId(value: string) {
+  switch (value) {
+    case "1":
+      return "Mainnet";
+    case "10":
+      return "Optimism";
+    case "100":
+      return "xDai";
+    case "137":
+      return "Polygon";
+    case "288":
+      return "Boba";
+    case "42161":
+      return "Arbitrum";
+    default:
+      return "Unknown";
+  }
+}
+
 const _generateTransactionDataRecursive = function (
   txnObj: any,
   readableTxData = ""
 ) {
   // If transaction is a proposal then recursively print out its transactions
   if (txnObj.name === "propose" && txnObj.params.transactions.length > 0) {
-    readableTxData += `Transaction is a proposal containing ${txnObj.params.transactions.length} transactions:\n`;
+    readableTxData +=
+      `Transaction is a proposal ` +
+      `${transactionsWithS(txnObj.params.transactions.length)}\n`;
     txnObj.params.transactions.forEach((_txn: any) => {
       const decodedTxnData = _decodeData(_txn.data);
 
@@ -104,7 +129,10 @@ const _generateTransactionDataRecursive = function (
     txnObj.name === "relayGovernance" &&
     txnObj?.params?.calls?.length > 0
   ) {
-    readableTxData += `Transaction is a cross-chain governance action containing ${txnObj?.params?.calls?.length} transactions:\n`;
+    readableTxData +=
+      `Transaction is a ${getNameFromChainId(txnObj?.params?.chainId)} ` +
+      `cross-chain ${transactionsWithS(txnObj?.params?.calls?.length)} \n`;
+
     txnObj.params.calls.forEach((_txn: any) => {
       const decodedTxnData = _decodeData(_txn.data);
 
@@ -122,7 +150,9 @@ const _generateTransactionDataRecursive = function (
     });
     // Multicall
   } else if (txnObj.name === "aggregate" && txnObj?.params?.calls?.length > 0) {
-    readableTxData += `Transaction is a multicall transaction containing ${txnObj.params.calls.length} transactions:\n`;
+    readableTxData +=
+      `Transaction is multicall ` +
+      `${transactionsWithS(txnObj.params.calls.length)}\n`;
     txnObj.params.calls.forEach((_call: any) => {
       const decodedTxnData = _decodeData(_call.callData);
       readableTxData = _generateTransactionDataRecursive(
@@ -166,6 +196,7 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
         return {
           data: adminTransaction.data,
           to: adminTransaction.to,
+          toName: adminTransaction.data.contractName,
           value: adminTransaction.value.toString(),
           decodedData: _generateTransactionDataRecursive(
             _decodeData(adminTransaction.data)
