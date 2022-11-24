@@ -20,6 +20,7 @@ export const unstakeCoolDownKey = "unstakeCoolDownKey";
 // rewards
 export const outstandingRewardsKey = "outstandingRewardsKey";
 export const rewardsCalculationInputsKey = "rewardsCalculationInputsKey";
+export const v1RewardsMulticallPayloadsKey = "v1RewardsMulticallPayloadsKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation
