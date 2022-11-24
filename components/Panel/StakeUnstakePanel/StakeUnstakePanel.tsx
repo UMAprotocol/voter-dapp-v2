@@ -81,7 +81,13 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmountInput: string) {
-    const unstakeAmount = parseEtherSafe(unstakeAmountInput);
+    if (!stakedBalance) return;
+    const parsedUnstakeAmountInput = parseEtherSafe(unstakeAmountInput);
+    // with lots of decimal places the casting from string input to BigNumber can cause the amount to be slightly off when using the staked balance as the max
+    // make sure the parsed unstake amount is not greater than the staked balance or the contract will revert
+    const unstakeAmount = parsedUnstakeAmountInput.gt(stakedBalance)
+      ? stakedBalance
+      : parsedUnstakeAmountInput;
     requestUnstakeMutation({ voting, unstakeAmount });
   }
 
