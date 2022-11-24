@@ -1,6 +1,6 @@
 import { VotingEthers } from "@uma/contracts-frontend";
 import { NextApiRequest, NextApiResponse } from "next";
-import { SupportedChainIdsWithGoerli } from "types";
+import { MainnetOrGoerli } from "types";
 import { constructContractOnChain } from "./_common";
 
 type GroupedReveals = Record<
@@ -10,7 +10,7 @@ type GroupedReveals = Record<
 
 async function generatePastRewardTx(
   voterAddress: string,
-  chainId: SupportedChainIdsWithGoerli
+  chainId: MainnetOrGoerli
 ) {
   const votingV1 = (await constructContractOnChain(
     chainId,
@@ -57,7 +57,7 @@ async function generatePastRewardTx(
 async function constructMultiCall(
   unclaimedVotes: GroupedReveals,
   voterAddress: string,
-  chainId: SupportedChainIdsWithGoerli
+  chainId: MainnetOrGoerli
 ) {
   const votingV2 = await constructContractOnChain(chainId, "VotingV2");
   const retrieveFragment = votingV2.interface.getFunction(
@@ -86,14 +86,14 @@ export default async function handler(
 
   try {
     const body = request.body as {
-      account: string;
-      chainId: SupportedChainIdsWithGoerli;
+      address: string;
+      chainId: MainnetOrGoerli;
     };
-    ["account", "chainId"].forEach((requiredKey) => {
+    ["address", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
         throw `Missing key in req body! required: ${requiredKey}`;
     });
-    const multiCallTx = await generatePastRewardTx(body.account, body.chainId);
+    const multiCallTx = await generatePastRewardTx(body.address, body.chainId);
     response.status(200).send(multiCallTx);
   } catch (e) {
     console.error(e);

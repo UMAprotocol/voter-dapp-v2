@@ -203,6 +203,8 @@ export type SupportedChainIds = keyof typeof supportedChains;
 
 export type SupportedChainIdsWithGoerli = SupportedChainIds | 5;
 
+export type MainnetOrGoerli = 1 | 5;
+
 export type NodeUrl = string;
 
 export type NodeUrls = Record<SupportedChainIdsWithGoerli, NodeUrl>;
