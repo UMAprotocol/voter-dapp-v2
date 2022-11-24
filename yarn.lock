@@ -4715,10 +4715,10 @@
   resolved "https://registry.npmjs.org/@uma/contracts-frontend/-/contracts-frontend-0.3.16.tgz"
   integrity sha512-ekbh7A5pas6hsBwbYNl60U5n2Ul3b+ipEaxgMKqJYQwZcUqiX9i6JoI1LuBWkWG+X7hI85ryg0uJdctzPBKIug==
 
-"@uma/contracts-node@^0.3.16":
-  version "0.3.16"
-  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.3.16.tgz#2d496340260a48649f33e8a00c8549f52a5db546"
-  integrity sha512-oYLKlxdFnG0VnFrZIBqps/QclO9o6/tweNoI+M/8oaNkdqEzkS4zDEg2DzcLmkdfFbQKFOQFDgYc6xZ8DPvHZQ==
+"@uma/contracts-node@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.4.4.tgz#09958ea07b406b470f5b7e66d9053960ea4aa1ac"
+  integrity sha512-xUmDWp7pLQjkr88WFY8b28ljzLmX/w9HVv0Lk6wjMJC0GEy+ygREsUUojvqdquC3atKx6yz0Q7kXeb9E3IfZQw==
 
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"
