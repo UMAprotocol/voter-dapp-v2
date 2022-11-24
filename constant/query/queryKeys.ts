@@ -14,6 +14,7 @@ export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
 // staking
 export const tokenAllowanceKey = "tokenAllowanceKey";
+export const stakedBalanceKey = "stakedBalanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 export const unstakeCoolDownKey = "unstakeCoolDownKey";

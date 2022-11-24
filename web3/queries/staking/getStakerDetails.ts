@@ -8,13 +8,8 @@ export async function getStakerDetails(
 ) {
   const result = await votingContract.voterStakes(address);
   const { unstakeCoolDown } = await getUnstakeCoolDown(votingContract);
-  const {
-    stake: stakedBalance,
-    pendingUnstake,
-    unstakeRequestTime,
-    delegate,
-    rewardsPaidPerToken,
-  } = result ?? {};
+  const { pendingUnstake, unstakeRequestTime, delegate, rewardsPaidPerToken } =
+    result ?? {};
   const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime) * 1000);
   const canUnstakeTime = getCanUnstakeTime(
     unstakeRequestTimeAsDate,
@@ -22,7 +17,6 @@ export async function getStakerDetails(
   );
 
   return {
-    stakedBalance,
     pendingUnstake,
     unstakeRequestTime: unstakeRequestTimeAsDate,
     canUnstakeTime,

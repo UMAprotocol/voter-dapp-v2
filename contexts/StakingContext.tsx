@@ -4,6 +4,7 @@ import {
   useAccountDetails,
   useInterval,
   useRewardsCalculationInputs,
+  useStakedBalance,
   useStakerDetails,
   useTokenAllowance,
   useUnstakeCoolDown,
@@ -44,7 +45,6 @@ export const StakingContext = createContext<StakingContextState>(
 export function StakingProvider({ children }: { children: ReactNode }) {
   const {
     data: {
-      stakedBalance,
       pendingUnstake,
       unstakeRequestTime,
       canUnstakeTime,
@@ -53,6 +53,11 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails();
+  const {
+    data: stakedBalance,
+    isLoading: stakedBalanceLoading,
+    isFetching: stakedBalanceFetching,
+  } = useStakedBalance();
   const {
     data: unstakedBalance,
     isLoading: unstakedBalanceLoading,
@@ -105,6 +110,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
     return (
       stakerDetailsLoading ||
+      stakedBalanceLoading ||
       unstakedBalanceLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
@@ -117,6 +123,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
     return (
       stakerDetailsFetching ||
+      stakedBalanceFetching ||
       unstakedBalanceFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||

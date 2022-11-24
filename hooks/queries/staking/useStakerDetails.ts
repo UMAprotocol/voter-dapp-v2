@@ -28,7 +28,6 @@ export function useStakerDetails() {
     {
       enabled: !!address,
       initialData: {
-        stakedBalance: BigNumber.from(0),
         pendingUnstake: BigNumber.from(0),
         unstakeRequestTime: new Date(0),
         canUnstakeTime: new Date(0),
