@@ -20,7 +20,8 @@ export interface StakingContextState {
   tokenAllowance: BigNumber | undefined;
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
-  unstakeCoolDown: number | undefined;
+  unstakeCoolDown: BigNumber | undefined;
+  resetOutstandingRewards: () => void;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
 }
@@ -34,6 +35,7 @@ export const defaultStakingContextState: StakingContextState = {
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
+  resetOutstandingRewards: () => null,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
 };
@@ -80,7 +82,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   } = useTokenAllowance();
   const { address } = useAccountDetails();
   const {
-    data: { unstakeCoolDown },
+    data: unstakeCoolDown,
     isLoading: unstakeCoolDownLoading,
     isFetching: unstakeCoolDownFetching,
   } = useUnstakeCoolDown();
@@ -103,6 +105,10 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     });
 
     setOutstandingRewards(calculatedOutstandingRewards);
+  }
+
+  function resetOutstandingRewards() {
+    setOutstandingRewards(BigNumber.from(0));
   }
 
   function getStakingDataLoading() {
@@ -142,6 +148,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
+        resetOutstandingRewards,
         getStakingDataLoading,
         getStakingDataFetching,
       }}

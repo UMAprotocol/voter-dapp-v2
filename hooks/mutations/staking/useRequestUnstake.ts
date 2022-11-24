@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey, unstakeCoolDownKey } from "constant";
+import {
+  stakedBalanceKey,
+  stakerDetailsKey,
+  unstakeCoolDownKey,
+} from "constant";
+import { BigNumber } from "ethers";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
@@ -14,6 +19,17 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
     onError,
     onSuccess: (_data, { unstakeAmount }) => {
       clearErrors();
+
+      queryClient.setQueryData<BigNumber>(
+        [stakedBalanceKey, address],
+        (oldStakedBalance) => {
+          if (oldStakedBalance === undefined) return;
+
+          const newUnstakedBalance = oldStakedBalance.sub(unstakeAmount);
+
+          return newUnstakedBalance;
+        }
+      );
 
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
@@ -30,12 +46,8 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
           )
             return;
 
-          const newUnstakedBalance =
-            oldStakerDetails.stakedBalance.sub(unstakeAmount);
-
           return {
             ...oldStakerDetails,
-            stakedBalance: newUnstakedBalance,
             pendingUnstake: unstakeAmount,
             unstakeRequestTime: new Date(),
             canUnstakeTime: getCanUnstakeTime(
