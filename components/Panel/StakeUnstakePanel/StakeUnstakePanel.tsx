@@ -1,5 +1,6 @@
 import { LoadingSkeleton, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
+import { parseEther } from "helpers";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
@@ -63,13 +64,7 @@ export function StakeUnstakePanel() {
   }
 
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
-    if (!unstakedBalance) return;
-    const parsedStakeAmountInput = parseEtherSafe(stakeAmountInput);
-    // with lots of decimal places the casting from string input to BigNumber can cause the amount to be slightly off when using the unstaked balance as the max
-    // make sure the parsed stake amount is not greater than the unstaked balance or the contract will revert
-    const stakeAmount = parsedStakeAmountInput.gt(unstakedBalance)
-      ? unstakedBalance
-      : parsedStakeAmountInput;
+    const stakeAmount = parseEther(stakeAmountInput);
     stakeMutation(
       { voting, stakeAmount },
       {
@@ -81,13 +76,7 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmountInput: string) {
-    if (!stakedBalance) return;
-    const parsedUnstakeAmountInput = parseEtherSafe(unstakeAmountInput);
-    // with lots of decimal places the casting from string input to BigNumber can cause the amount to be slightly off when using the staked balance as the max
-    // make sure the parsed unstake amount is not greater than the staked balance or the contract will revert
-    const unstakeAmount = parsedUnstakeAmountInput.gt(stakedBalance)
-      ? stakedBalance
-      : parsedUnstakeAmountInput;
+    const unstakeAmount = parseEther(unstakeAmountInput);
     requestUnstakeMutation({ voting, unstakeAmount });
   }
 
