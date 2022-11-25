@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { outstandingRewardsKey, stakerDetailsKey } from "constant";
+import { stakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
-import { ErrorOriginT, StakerDetailsT } from "types";
+import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
+import { ErrorOriginT } from "types";
 import { withdrawAndRestake } from "web3";
 
 export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
+  const { outstandingRewards, resetOutstandingRewards } = useStakingContext();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(withdrawAndRestake, {
@@ -15,33 +16,22 @@ export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
     onSuccess: () => {
       clearErrors();
 
-      queryClient.setQueryData<StakerDetailsT>(
-        [stakerDetailsKey, address],
-        (oldStakerDetails) => {
-          const outstandingRewards = queryClient.getQueryData<BigNumber>([
-            outstandingRewardsKey,
-          ]);
-
+      queryClient.setQueryData<BigNumber>(
+        [stakedBalanceKey, address],
+        (oldStakedBalance) => {
           if (
             outstandingRewards === undefined ||
-            oldStakerDetails === undefined
+            oldStakedBalance === undefined
           )
             return;
 
-          const newStakedBalance =
-            oldStakerDetails.stakedBalance.add(outstandingRewards);
+          const newStakedBalance = oldStakedBalance.add(outstandingRewards);
 
-          return {
-            ...oldStakerDetails,
-            stakedBalance: newStakedBalance,
-          };
+          return newStakedBalance;
         }
       );
 
-      queryClient.setQueryData<BigNumber>(
-        [outstandingRewardsKey, address],
-        () => BigNumber.from(0)
-      );
+      resetOutstandingRewards();
     },
   });
   return {

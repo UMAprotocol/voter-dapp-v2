@@ -7,22 +7,16 @@ export async function getStakerDetails(
   address: string
 ) {
   const result = await votingContract.voterStakes(address);
-  const { unstakeCoolDown } = await getUnstakeCoolDown(votingContract);
-  const {
-    stake: stakedBalance,
-    pendingUnstake,
-    unstakeRequestTime,
-    delegate,
-    rewardsPaidPerToken,
-  } = result ?? {};
+  const unstakeCoolDown = await getUnstakeCoolDown(votingContract);
+  const { pendingUnstake, unstakeRequestTime, delegate, rewardsPaidPerToken } =
+    result ?? {};
   const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime) * 1000);
   const canUnstakeTime = getCanUnstakeTime(
     unstakeRequestTimeAsDate,
-    unstakeCoolDown
+    unstakeCoolDown.toNumber()
   );
 
   return {
-    stakedBalance,
     pendingUnstake,
     unstakeRequestTime: unstakeRequestTimeAsDate,
     canUnstakeTime,

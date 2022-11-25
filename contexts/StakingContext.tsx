@@ -4,6 +4,7 @@ import {
   useAccountDetails,
   useInterval,
   useRewardsCalculationInputs,
+  useStakedBalance,
   useStakerDetails,
   useTokenAllowance,
   useUnstakeCoolDown,
@@ -19,7 +20,8 @@ export interface StakingContextState {
   tokenAllowance: BigNumber | undefined;
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
-  unstakeCoolDown: number | undefined;
+  unstakeCoolDown: BigNumber | undefined;
+  resetOutstandingRewards: () => void;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
 }
@@ -33,6 +35,7 @@ export const defaultStakingContextState: StakingContextState = {
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
+  resetOutstandingRewards: () => null,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
 };
@@ -44,7 +47,6 @@ export const StakingContext = createContext<StakingContextState>(
 export function StakingProvider({ children }: { children: ReactNode }) {
   const {
     data: {
-      stakedBalance,
       pendingUnstake,
       unstakeRequestTime,
       canUnstakeTime,
@@ -53,6 +55,11 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails();
+  const {
+    data: stakedBalance,
+    isLoading: stakedBalanceLoading,
+    isFetching: stakedBalanceFetching,
+  } = useStakedBalance();
   const {
     data: unstakedBalance,
     isLoading: unstakedBalanceLoading,
@@ -75,7 +82,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   } = useTokenAllowance();
   const { address } = useAccountDetails();
   const {
-    data: { unstakeCoolDown },
+    data: unstakeCoolDown,
     isLoading: unstakeCoolDownLoading,
     isFetching: unstakeCoolDownFetching,
   } = useUnstakeCoolDown();
@@ -100,11 +107,16 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     setOutstandingRewards(calculatedOutstandingRewards);
   }
 
+  function resetOutstandingRewards() {
+    setOutstandingRewards(BigNumber.from(0));
+  }
+
   function getStakingDataLoading() {
     if (!address) return false;
 
     return (
       stakerDetailsLoading ||
+      stakedBalanceLoading ||
       unstakedBalanceLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
@@ -117,6 +129,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
     return (
       stakerDetailsFetching ||
+      stakedBalanceFetching ||
       unstakedBalanceFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
@@ -135,6 +148,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
+        resetOutstandingRewards,
         getStakingDataLoading,
         getStakingDataFetching,
       }}

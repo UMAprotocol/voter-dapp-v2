@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakerDetailsKey, unstakeCoolDownKey } from "constant";
+import {
+  stakedBalanceKey,
+  stakerDetailsKey,
+  unstakeCoolDownKey,
+} from "constant";
+import { BigNumber } from "ethers";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
@@ -12,35 +17,38 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
 
   const { mutate, isLoading } = useMutation(requestUnstake, {
     onError,
-    onSuccess: (_data, { unstakeAmount }) => {
+    onSuccess: (_contractReceipt, { unstakeAmount }) => {
       clearErrors();
+
+      queryClient.setQueryData<BigNumber>(
+        [stakedBalanceKey, address],
+        (oldStakedBalance) => {
+          if (oldStakedBalance === undefined) return;
+
+          const newStakedBalance = oldStakedBalance.sub(unstakeAmount);
+
+          return newStakedBalance;
+        }
+      );
 
       queryClient.setQueryData<StakerDetailsT>(
         [stakerDetailsKey, address],
         (oldStakerDetails) => {
           if (oldStakerDetails === undefined) return;
 
-          const unstakeCoolDown = queryClient.getQueryData<{
-            unstakeCoolDown: number;
-          }>([unstakeCoolDownKey]);
+          const unstakeCoolDown = queryClient.getQueryData<BigNumber>([
+            unstakeCoolDownKey,
+          ]);
 
-          if (
-            unstakeCoolDown === undefined ||
-            unstakeCoolDown.unstakeCoolDown === undefined
-          )
-            return;
-
-          const newUnstakedBalance =
-            oldStakerDetails.stakedBalance.sub(unstakeAmount);
+          if (unstakeCoolDown === undefined) return;
 
           return {
             ...oldStakerDetails,
-            stakedBalance: newUnstakedBalance,
             pendingUnstake: unstakeAmount,
             unstakeRequestTime: new Date(),
             canUnstakeTime: getCanUnstakeTime(
               new Date(),
-              unstakeCoolDown.unstakeCoolDown
+              unstakeCoolDown.toNumber()
             ),
           };
         }

@@ -18,7 +18,7 @@ import {
 interface Props {
   stakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
-  unstakeCoolDown: number | undefined;
+  unstakeCoolDown: BigNumber | undefined;
   canClaim: boolean;
   isDelegate: boolean;
   requestUnstake: (unstakeAmount: string) => void;
@@ -35,7 +35,7 @@ export function Unstake({
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const unstakeCoolDownFormatted = unstakeCoolDown
-    ? formatDuration({ seconds: unstakeCoolDown })
+    ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
     : "0 seconds";
 
   function canUnstake(
