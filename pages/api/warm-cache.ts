@@ -7,12 +7,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { constructContractOnChain } from "./_common";
+import { constructContract } from "./_common";
 
 async function warmAugmentedDataCache() {
-  const votingV1 = await constructContractOnChain(1, "Voting");
+  const votingV1 = await constructContract(1, "Voting");
   // todo: add voting v2 when released.
-  // const votingV2 = await constructContractOnChain(1, "VotingV2");
+  // const votingV2 = await constructContract(1, "VotingV2");
   const l1RequestEvents = (
     await Promise.all([
       votingV1.queryFilter(votingV1.filters.PriceRequestAdded()),

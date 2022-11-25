@@ -6,7 +6,7 @@ import {
 } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
 import { OracleTypeT, PriceRequestT, SupportedChainIds } from "types";
-import { constructContractOnChain, getNodeUrls } from "./_common";
+import { constructContract, getNodeUrls } from "./_common";
 
 enum OracleType {
   OptimisticOracle,
@@ -43,11 +43,11 @@ function castOracleNameForOOUi(oracleType: string): string {
 }
 
 async function constructOptimisticOraclesByChain(chainId: SupportedChainIds) {
-  const optimisticOracle = (await constructContractOnChain(
+  const optimisticOracle = (await constructContract(
     chainId,
     "OptimisticOracle"
   )) as OptimisticOracleEthers;
-  const optimisticOracleV2 = (await constructContractOnChain(
+  const optimisticOracleV2 = (await constructContract(
     chainId,
     "OptimisticOracleV2"
   )) as OptimisticOracleV2Ethers;
@@ -55,7 +55,7 @@ async function constructOptimisticOraclesByChain(chainId: SupportedChainIds) {
   // Only mainnet has a SkinnyOptimisticOracle so only construct it here. All other chains of interest have OOv1 and V2.
   const skinnyOptimisticOracle =
     chainId == 1
-      ? ((await constructContractOnChain(
+      ? ((await constructContract(
           chainId,
           "SkinnyOptimisticOracle"
         )) as SkinnyOptimisticOracleEthers)
@@ -136,12 +136,9 @@ async function getRequestTxFromL1RequestInformation(
 }
 
 async function getAugmentingRequestInformation(l1Requests: PriceRequestT[]) {
-  const votingV1 = (await constructContractOnChain(
-    1,
-    "Voting"
-  )) as VotingEthers;
+  const votingV1 = (await constructContract(1, "Voting")) as VotingEthers;
   // todo: add voting v2 when released.
-  // const votingV2 = await constructContractOnChain(1, "VotingV2");
+  // const votingV2 = await constructContract(1, "VotingV2");
   const l1RequestEvents = (
     await Promise.all([
       votingV1.queryFilter(votingV1.filters.PriceRequestAdded()),
