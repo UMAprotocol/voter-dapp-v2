@@ -136,10 +136,7 @@ async function getRequestTxFromL1RequestInformation(
 }
 
 async function getAugmentingRequestInformation(l1Requests: PriceRequestT[]) {
-  const votingV1 = (await constructContract(
-    1,
-    "Voting"
-  )) as VotingEthers;
+  const votingV1 = (await constructContract(1, "Voting")) as VotingEthers;
   // todo: add voting v2 when released.
   // const votingV2 = await constructContract(1, "VotingV2");
   const l1RequestEvents = (
