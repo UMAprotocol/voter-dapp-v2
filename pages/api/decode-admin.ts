@@ -9,7 +9,7 @@ import { getAbi, getContractNames } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
-import { constructContractOnChain } from "./_common";
+import { constructContract } from "./_common";
 
 type AbiDecoder = typeof abiDecoder;
 
@@ -168,10 +168,10 @@ const _generateTransactionDataRecursive = function (
 };
 
 async function generateReadableAdminTransactionData(identifiers: string[]) {
-  const governorV1 = await constructContractOnChain(1, "Governor");
+  const governorV1 = await constructContract(1, "Governor");
 
   // TODO: to enable decoding of v2 transactions we simply need to uncomment this.
-  // const governorV2 = constructContractOnChain(1, "GovernorV2");
+  // const governorV2 = constructContract(1, "GovernorV2");
 
   const events = (
     await Promise.all([

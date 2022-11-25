@@ -17,7 +17,7 @@ export function getNodeUrls() {
   return JSON.parse(process.env.NODE_URLS) as NodeUrls;
 }
 
-export async function constructContractOnChain(
+export async function constructContract(
   chainId: SupportedChainIdsWithGoerli,
   contractName: ContractName
 ) {
