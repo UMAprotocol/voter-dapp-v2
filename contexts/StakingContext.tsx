@@ -9,7 +9,9 @@ import {
   useUnstakeCoolDown,
   useUnstakedBalance,
 } from "hooks";
+import { useV1Rewards } from "hooks/queries/rewards/useV1Rewards";
 import { createContext, ReactNode, useState } from "react";
+import { V1RewardsT } from "types";
 
 export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
@@ -20,6 +22,7 @@ export interface StakingContextState {
   unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: number | undefined;
+  v1Rewards: V1RewardsT | undefined;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
 }
@@ -33,6 +36,7 @@ export const defaultStakingContextState: StakingContextState = {
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
+  v1Rewards: undefined,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
 };
@@ -79,6 +83,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: unstakeCoolDownLoading,
     isFetching: unstakeCoolDownFetching,
   } = useUnstakeCoolDown();
+  const { data: v1Rewards } = useV1Rewards();
   const [outstandingRewards, setOutstandingRewards] = useState(
     BigNumber.from(0)
   );
@@ -135,6 +140,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
+        v1Rewards,
         getStakingDataLoading,
         getStakingDataFetching,
       }}
