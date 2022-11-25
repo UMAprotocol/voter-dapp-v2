@@ -1,7 +1,8 @@
-import { VotingEthers } from "@uma/contracts-frontend";
+import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
+import { BigNumber, ethers } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import { MainnetOrGoerli } from "types";
-import { constructContractOnChain } from "./_common";
+import { constructContract } from "./_common";
 
 type GroupedReveals = Record<
   string,
@@ -11,11 +12,8 @@ type GroupedReveals = Record<
 async function generatePastRewardTx(
   voterAddress: string,
   chainId: MainnetOrGoerli
-) {
-  const votingV1 = (await constructContractOnChain(
-    chainId,
-    "Voting"
-  )) as VotingEthers;
+): Promise<{ multiCallPayload: string[]; totalRewards: string }> {
+  const votingV1 = (await constructContract(chainId, "Voting")) as VotingEthers;
 
   const [voteRevealEvents, rewardsRetrievedEvents] = await Promise.all([
     votingV1.queryFilter(votingV1.filters.VoteRevealed(voterAddress)),
@@ -49,17 +47,21 @@ async function generatePastRewardTx(
     else groupedReveals[roundId].push(voteProps);
   });
 
-  if (Object.keys(groupedReveals).length === 0) return [];
+  if (Object.keys(groupedReveals).length === 0)
+    return { multiCallPayload: [], totalRewards: "0" };
 
-  return await constructMultiCall(groupedReveals, voterAddress, chainId);
+  return constructMultiCall(groupedReveals, voterAddress, chainId);
 }
 
 async function constructMultiCall(
   unclaimedVotes: GroupedReveals,
   voterAddress: string,
   chainId: MainnetOrGoerli
-) {
-  const votingV2 = await constructContractOnChain(chainId, "VotingV2");
+): Promise<{ multiCallPayload: string[]; totalRewards: string }> {
+  const votingV2 = (await constructContract(
+    chainId,
+    "VotingV2"
+  )) as VotingV2Ethers;
   const retrieveFragment = votingV2.interface.getFunction(
     "retrieveRewardsOnMigratedVotingContract(address,uint256,(bytes32,uint256,bytes)[])"
   );
@@ -68,6 +70,7 @@ async function constructMultiCall(
 
   Object.keys(unclaimedVotes).forEach((roundId) => {
     multiCallPayload.push(
+      // @ts-expect-error - ethers types are incorrect for this function.
       votingV2.interface.encodeFunctionData(retrieveFragment, [
         voterAddress,
         roundId,
@@ -75,7 +78,19 @@ async function constructMultiCall(
       ])
     );
   });
-  return multiCallPayload;
+
+  try {
+    const totalRewards = (await votingV2.callStatic.multicall(multiCallPayload))
+      .map((reward: string) => ethers.BigNumber.from(reward))
+      .reduce(
+        (a: BigNumber, b: BigNumber) => a.add(b),
+        ethers.BigNumber.from(0)
+      )
+      .toString();
+    return { multiCallPayload, totalRewards };
+  } catch (error) {
+    return { multiCallPayload: [], totalRewards: "0" };
+  }
 }
 
 export default async function handler(
