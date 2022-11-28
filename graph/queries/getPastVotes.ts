@@ -24,23 +24,58 @@ export async function getPastVotesV1() {
         price
         time
         ancillaryData
+        latestRound {
+          totalVotesRevealed
+          groups {
+            price
+            totalVoteAmount
+          }
+        }
+        committedVotes {
+          id
+        }
+        revealedVotes {
+          id
+        }
       }
     }
   `;
   const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
   return result?.priceRequests?.map(
-    ({ identifier: { id }, time, price, ancillaryData }) => {
+    ({
+      identifier: { id },
+      time,
+      price,
+      ancillaryData,
+      latestRound,
+      committedVotes,
+      revealedVotes,
+    }) => {
       const identifier = formatBytes32String(id);
       const correctVote = Number(
         formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
       );
+      const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+      const participation = {
+        uniqueCommitAddresses: revealedVotes.length,
+        uniqueRevealAddresses: committedVotes.length,
+        totalTokensVotedWith,
+      };
 
+      const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
+        vote: Number(
+          formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
+        ),
+        tokensVotedWith: Number(totalVoteAmount),
+      }));
       return {
         identifier,
         time: Number(time),
         correctVote,
         ancillaryData,
         priceRequestIndex: undefined,
+        participation,
+        results,
         isV1: true,
       };
     }
