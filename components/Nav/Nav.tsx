@@ -3,6 +3,7 @@ import { isExternalLink } from "helpers";
 import { usePanelContext } from "hooks";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import ExternalLinkIcon from "public/assets/icons/external-link.svg";
 import { ReactNode, useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
 
@@ -46,6 +47,7 @@ export function Nav({ links }: Props) {
                 target={isExternalLink(href) ? "_blank" : undefined}
               >
                 {title}
+                {isExternalLink(href) && <ExternalLinkIcon />}
               </Link>
             </NavItem>
           ))}
@@ -71,7 +73,8 @@ const Link = styled(NextLink)`
   height: 50px;
   display: flex;
   align-items: center;
-  padding-left: 30px;
+  justify-content: space-between;
+  padding-inline: 30px;
   background: var(--white);
   border-left: 3px solid var(--border-left-color);
   border-bottom: 1px solid var(--grey-50);
