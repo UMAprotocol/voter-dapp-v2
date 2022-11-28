@@ -1,3 +1,4 @@
+import { EthersErrorLink } from "components";
 import { useErrorContext } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
@@ -20,7 +21,9 @@ export function PanelErrorBanner({
       </IconWrapper>
       <InnerWrapper>
         {errorMessages.map((message) => (
-          <ErrorMessage key={message?.toString()}>{message}</ErrorMessage>
+          <ErrorMessage key={message?.toString()}>
+            <EthersErrorLink errorMessage={message} />
+          </ErrorMessage>
         ))}
       </InnerWrapper>
       <CloseButton onClick={() => clearErrorMessages()}>
