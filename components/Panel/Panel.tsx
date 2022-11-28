@@ -99,8 +99,6 @@ export function Panel() {
 const AnimatedOverlay = animated.div;
 
 const Overlay = styled(AnimatedOverlay)`
-  background: var(--black-opacity-75);
-  opacity: var(--opacity);
   position: fixed;
   top: 0;
   left: 0;
