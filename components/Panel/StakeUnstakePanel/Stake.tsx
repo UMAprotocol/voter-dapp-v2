@@ -47,6 +47,7 @@ export function Stake({
       return false;
 
     return (
+      unstakedBalance?.eq(0) ||
       !disclaimerChecked ||
       inputAmount === "" ||
       parseEtherSafe(inputAmount).eq(0)
