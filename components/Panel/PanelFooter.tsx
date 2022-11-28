@@ -10,23 +10,23 @@ import styled from "styled-components";
 const socialLinks = [
   {
     Icon: Discord,
-    href: "https://tododiscord.com",
+    href: "https://discord.com/invite/jsb9XQJ",
   },
   {
     Icon: Twitter,
-    href: "https://todotwitter.com",
+    href: "https://twitter.com/umaprotocol",
   },
   {
     Icon: Github,
-    href: "https://todogithub.com",
+    href: "https://github.com/UMAprotocol",
   },
   {
     Icon: Discourse,
-    href: "https://tododiscourse.com",
+    href: "https://discourse.umaproject.org",
   },
   {
     Icon: Message,
-    href: "https://todomessage.com",
+    href: "mailto:hello@umaproject.org",
   },
 ];
 
