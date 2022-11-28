@@ -60,15 +60,13 @@ export function Details({
   const links = [
     umipOrUppLink,
     makeTransactionHashLink(
-      "Mainnet request transaction",
+      "Ethereum DVM request",
       augmentedData?.l1RequestTxHash,
       false
     ),
     augmentedData?.originatingChainId
       ? makeTransactionHashLink(
-          `${
-            supportedChains[augmentedData.originatingChainId]
-          } request transaction`,
+          `${supportedChains[augmentedData.originatingChainId]} DVM request`,
           augmentedData.originatingChainTxHash,
           false
         )
