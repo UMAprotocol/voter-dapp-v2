@@ -10,7 +10,7 @@ export interface PanelContextState {
 }
 
 export const defaultPanelContextState = {
-  panelType: null,
+  panelType: "menu" as const,
   panelContent: null,
   panelOpen: false,
   openPanel: () => null,
@@ -22,7 +22,7 @@ export const PanelContext = createContext<PanelContextState>(
 );
 
 export function PanelProvider({ children }: { children: ReactNode }) {
-  const [panelType, setPanelType] = useState<PanelTypeT>(null);
+  const [panelType, setPanelType] = useState<PanelTypeT>("menu");
   const [panelContent, setPanelContent] = useState<PanelContentT | undefined>(
     null
   );
