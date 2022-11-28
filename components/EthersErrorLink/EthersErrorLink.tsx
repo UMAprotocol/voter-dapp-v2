@@ -13,7 +13,10 @@ export function EthersErrorLink({ errorMessage }: { errorMessage: string }) {
 
   return (
     <span>
-      {firstPart}. <Link href={link}>Learn more.</Link>
+      {firstPart}.{" "}
+      <Link href={link} target="_blank">
+        Learn more.
+      </Link>
     </span>
   );
 }
