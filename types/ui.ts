@@ -21,8 +21,7 @@ export type PanelTypeT =
   | "stake"
   | "history"
   | "remind"
-  | "delegation"
-  | null;
+  | "delegation";
 
 export type VotePanelContentT = VoteT;
 
