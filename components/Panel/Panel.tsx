@@ -1,4 +1,3 @@
-import "@reach/dialog/styles.css";
 import { black, white } from "constant";
 import { usePanelContext, usePanelWidth } from "hooks";
 import Close from "public/assets/icons/close.svg";
