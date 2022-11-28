@@ -221,6 +221,7 @@ export type AugmentedVoteDataT = {
   l1RequestTxHash: string;
   uniqueKey: UniqueKeyT;
   ooRequestUrl: string | undefined;
+  originatingChainTxHash: string | undefined;
   originatingChainId: SupportedChainIds | undefined;
   originatingOracleType: OracleTypeT | undefined;
 };

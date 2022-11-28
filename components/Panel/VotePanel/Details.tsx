@@ -1,5 +1,5 @@
 import { Button, PanelErrorBanner } from "components";
-import { mobileAndUnder } from "constant";
+import { mobileAndUnder, supportedChains } from "constant";
 import {
   formatNumberForDisplay,
   makeTransactionHashLink,
@@ -59,7 +59,20 @@ export function Details({
 
   const links = [
     umipOrUppLink,
-    makeTransactionHashLink(augmentedData?.l1RequestTxHash, false),
+    makeTransactionHashLink(
+      "Mainnet request transaction",
+      augmentedData?.l1RequestTxHash,
+      false
+    ),
+    augmentedData?.originatingChainId
+      ? makeTransactionHashLink(
+          `${
+            supportedChains[augmentedData.originatingChainId]
+          } request transaction`,
+          augmentedData.originatingChainTxHash,
+          false
+        )
+      : false,
     makeOoRequestLink(),
   ].filter((link): link is LinkT => !!link);
 
