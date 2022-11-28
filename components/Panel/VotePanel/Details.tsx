@@ -64,7 +64,8 @@ export function Details({
       augmentedData?.l1RequestTxHash,
       false
     ),
-    augmentedData?.originatingChainId
+    // only show if the originating chain id is not ethereum
+    augmentedData?.originatingChainId && augmentedData?.originatingChainId !== 1
       ? makeTransactionHashLink(
           `${supportedChains[augmentedData.originatingChainId]} DVM request`,
           augmentedData.originatingChainTxHash,
