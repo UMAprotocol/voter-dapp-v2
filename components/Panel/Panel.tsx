@@ -1,9 +1,9 @@
-import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
 import { black, white } from "constant";
 import { usePanelContext, usePanelWidth } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import { CSSProperties, useEffect, useRef } from "react";
+import { FocusOn } from "react-focus-on";
 import { animated, useTransition } from "react-spring";
 import styled from "styled-components";
 import { ClaimPanel } from "./ClaimPanel";
@@ -29,19 +29,17 @@ export function Panel() {
   const panelWidth = usePanelWidth();
   const contentRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (panelOpen) {
-      contentRef?.current?.scroll({ top: 0 });
-    }
-  }, [panelOpen]);
-
   const transitions = useTransition(panelOpen, {
-    from: { opacity: 0, right: -panelWidth },
-    enter: { opacity: 0.75, right: 0 },
-    leave: { opacity: 0, right: -panelWidth },
+    from: { opacity: 0 },
+    enter: { opacity: 0.75 },
+    leave: { opacity: 0 },
   });
 
-  if (!panelType) return null;
+  useEffect(() => {
+    if (panelOpen) {
+      contentRef?.current?.scrollTo({ top: 0 });
+    }
+  }, [panelOpen]);
 
   const PanelComponent = panelTypeToPanelComponent[panelType];
 
@@ -51,57 +49,72 @@ export function Panel() {
   return (
     <>
       {transitions(
-        ({ opacity, right }, isOpen) =>
+        ({ opacity }, isOpen) =>
           isOpen && (
             <Overlay
-              onDismiss={() => closePanel(true)}
+              onClick={() => closePanel()}
               style={{
                 backgroundColor: opacity.to(
                   (value) => `hsla(280, 4%, 15%, ${value})`
                 ),
               }}
-            >
-              <Content
-                ref={contentRef}
-                aria-labelledby="panel-title"
-                style={
-                  {
-                    "--right": right.to((value) => `${value}px`),
-                    "--panel-width": `${panelWidth}px`,
-                  } as CSSProperties
-                }
-              >
-                <PanelComponent content={panelContent} />
-                <CloseButton
-                  onClick={() => closePanel()}
-                  style={
-                    {
-                      "--fill": closeButtonColor,
-                    } as CSSProperties
-                  }
-                >
-                  <IconWrapper>
-                    <CloseIcon />
-                  </IconWrapper>
-                </CloseButton>
-              </Content>
-            </Overlay>
+            ></Overlay>
           )
       )}
+      <FocusOn
+        enabled={panelOpen}
+        onClickOutside={() => closePanel()}
+        onEscapeKey={() => closePanel()}
+        preventScrollOnFocus={true}
+      >
+        <Content
+          ref={contentRef}
+          role="dialog"
+          aria-labelledby="panel-title"
+          style={
+            {
+              "--right": `${panelOpen ? 0 : panelWidth}px`,
+              "--panel-width": `${panelWidth}px`,
+            } as CSSProperties
+          }
+        >
+          <PanelComponent content={panelContent} />
+          <CloseButton
+            onClick={() => closePanel()}
+            style={
+              {
+                "--fill": closeButtonColor,
+              } as CSSProperties
+            }
+          >
+            <IconWrapper>
+              <CloseIcon />
+            </IconWrapper>
+          </CloseButton>
+        </Content>
+      </FocusOn>
     </>
   );
 }
 
-const AnimatedOverlay = animated(DialogOverlay);
-
-const AnimatedContent = animated(DialogContent);
+const AnimatedOverlay = animated.div;
 
 const Overlay = styled(AnimatedOverlay)`
+  background: var(--black-opacity-75);
+  opacity: var(--opacity);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
   overflow-x: hidden;
 `;
 
-const Content = styled(AnimatedContent)`
-  right: var(--right);
+const Content = styled.div`
+  right: 0;
+  transform: translateX(var(--right));
   width: var(--panel-width);
   min-height: 100%;
   margin: 0;
@@ -111,6 +124,7 @@ const Content = styled(AnimatedContent)`
   bottom: 0;
   background: var(--white);
   overflow-y: scroll;
+  transition: transform 400ms;
 `;
 
 const CloseButton = styled.button`
