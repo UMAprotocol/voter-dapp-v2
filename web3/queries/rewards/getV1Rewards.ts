@@ -2,7 +2,6 @@ import { BigNumber } from "ethers";
 import { MainnetOrGoerli } from "types";
 
 export async function getV1Rewards(address: string, chainId: MainnetOrGoerli) {
-  console.log("getV1Rewards", address, chainId);
   const response = await fetch("/api/past-rewards", {
     method: "POST",
     headers: {
