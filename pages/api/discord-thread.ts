@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { OracleTypeT, PriceRequestT, SupportedChainIds } from "types";
+import { PriceRequestT } from "types";
 
 const evidenceRationalChannelId = "964000735073284127";
 
