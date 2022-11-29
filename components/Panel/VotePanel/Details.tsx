@@ -1,5 +1,5 @@
 import { Button, PanelErrorBanner } from "components";
-import { mobileAndUnder } from "constant";
+import { mobileAndUnder, supportedChains } from "constant";
 import {
   formatNumberForDisplay,
   makeTransactionHashLink,
@@ -59,7 +59,19 @@ export function Details({
 
   const links = [
     umipOrUppLink,
-    makeTransactionHashLink(augmentedData?.l1RequestTxHash, false),
+    makeTransactionHashLink(
+      "Ethereum DVM request",
+      augmentedData?.l1RequestTxHash,
+      false
+    ),
+    // only show if the originating chain id is not ethereum
+    augmentedData?.originatingChainId && augmentedData?.originatingChainId !== 1
+      ? makeTransactionHashLink(
+          `${supportedChains[augmentedData.originatingChainId]} DVM request`,
+          augmentedData.originatingChainTxHash,
+          false
+        )
+      : false,
     makeOoRequestLink(),
   ].filter((link): link is LinkT => !!link);
 

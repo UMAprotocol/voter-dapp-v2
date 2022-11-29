@@ -10,13 +10,13 @@ export function OoTypeIcon({ ooType }: { ooType: OracleTypeT | undefined }) {
   function getOracleTypeDisplayName() {
     switch (ooType) {
       case "OptimisticOracle":
-        return "OO v1";
+        return "Optimistic Oracle v1";
       case "OptimisticOracleV2":
-        return "OO v2";
+        return "Optimistic Oracle v2";
       case "SkinnyOptimisticOracle":
-        return "Skinny OO";
+        return "Skinny Optimistic Oracle";
       default:
-        return "OO v1";
+        return "Optimistic Oracle v1";
     }
   }
 
