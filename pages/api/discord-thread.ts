@@ -53,14 +53,14 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
 
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
-  let timeToThread: { [key: string]: string } = {};
+  const timeToThread: { [key: string]: string } = {};
   threadMsg.forEach((message: any) => {
     const time = extractValidateTimestamp(message.content);
     if (time) timeToThread[time.toString()] = message.thread.id;
   });
 
   // Associate the threadId with each timestamp provided in the payload.
-  let requestsToThread: { [key: string]: string } = {};
+  const requestsToThread: { [key: string]: string } = {};
   l1Requests.forEach((l1Request: PriceRequestT) => {
     const time = l1Request.time.toString();
     if (timeToThread[time]) requestsToThread[time] = timeToThread[time];
@@ -70,7 +70,7 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
   // For each request that has an associated thread construct a discord thread
   // fetch to get that threads messages. Push these into an array of promises
   // so that we can fetch them all in one go.
-  let promises = [];
+  const promises = [];
   for (const time in requestsToThread) {
     if (requestsToThread[time] !== "")
       promises.push(getDiscordMessages(requestsToThread[time]));
@@ -80,7 +80,7 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
 
   // Finally, process the results by traversing each request and the associated
   // thread to construct the final data structure with minimal data.
-  let processedResults: {
+  const processedResults: {
     identifier: string;
     time: number;
     thread: {
