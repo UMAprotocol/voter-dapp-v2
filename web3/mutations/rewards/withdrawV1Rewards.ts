@@ -2,7 +2,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, handleNotifications } from "helpers";
 
-export async function claimV1Rewards({
+export async function withdrawV1Rewards({
   voting,
   totalRewards,
   multicallPayload,
@@ -14,11 +14,11 @@ export async function claimV1Rewards({
   const tx = await voting.functions.multicall(multicallPayload);
 
   return handleNotifications(tx, {
-    pending: `Claiming ${formatNumberForDisplay(
+    pending: `Withdrawing ${formatNumberForDisplay(
       totalRewards
     )} UMA v1 rewards...`,
-    success: `Claimed ${formatNumberForDisplay(totalRewards)} UMA v1 rewards`,
-    error: `Failed to claim ${formatNumberForDisplay(
+    success: `Withdrew ${formatNumberForDisplay(totalRewards)} UMA v1 rewards`,
+    error: `Failed to withdraw ${formatNumberForDisplay(
       totalRewards
     )} UMA v1 rewards`,
   });

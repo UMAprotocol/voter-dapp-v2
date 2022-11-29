@@ -8,7 +8,7 @@ import {
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
-import { useClaimV1Rewards } from "hooks/mutations/rewards/useClaimV1Rewards";
+import { useWithdrawV1Rewards } from "hooks/mutations/rewards/useWithdrawV1Rewards";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -27,8 +27,8 @@ export function ClaimPanel() {
     useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } =
     useWithdrawAndRestake("claim");
-  const { claimV1RewardsMutation, isClaimingV1Rewards } =
-    useClaimV1Rewards("claim");
+  const { withdrawV1RewardsMutation, isWithdrawingV1Rewards } =
+    useWithdrawV1Rewards("claim");
   const { outstandingRewards, getStakingDataFetching, v1Rewards } =
     useStakingContext();
   const isDelegate = getDelegationStatus() === "delegate";
@@ -46,14 +46,14 @@ export function ClaimPanel() {
     withdrawAndRestakeMutation({ voting, outstandingRewards });
   }
 
-  function claimV1Rewards() {
+  function withdrawV1Rewards() {
     if (!v1Rewards) return;
 
     const { totalRewards, multicallPayload } = v1Rewards;
 
     if (totalRewards.eq(0) || multicallPayload.length === 0) return;
 
-    claimV1RewardsMutation({ voting, totalRewards, multicallPayload });
+    withdrawV1RewardsMutation({ voting, totalRewards, multicallPayload });
   }
 
   function isLoading() {
@@ -84,8 +84,8 @@ export function ClaimPanel() {
             <V1RewardsWrapper>
               <V1Rewards
                 totalRewards={v1Rewards.totalRewards}
-                onClaim={claimV1Rewards}
-                isClaiming={isClaimingV1Rewards}
+                onClaim={withdrawV1Rewards}
+                isClaiming={isWithdrawingV1Rewards}
               />
             </V1RewardsWrapper>
           )}

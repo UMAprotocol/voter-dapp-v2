@@ -5,14 +5,14 @@ import { BigNumber } from "ethers";
 import { useUserContext } from "hooks/contexts/useUserContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
 import { ErrorOriginT, V1RewardsT } from "types";
-import { claimV1Rewards } from "web3";
+import { withdrawV1Rewards } from "web3";
 
-export function useClaimV1Rewards(errorOrigin: ErrorOriginT) {
+export function useWithdrawV1Rewards(errorOrigin: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useUserContext();
   const [{ connectedChain }] = useSetChain();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
-  const { mutate, isLoading } = useMutation(claimV1Rewards, {
+  const { mutate, isLoading } = useMutation(withdrawV1Rewards, {
     onError,
     onSuccess: (_receipt, { totalRewards }) => {
       clearErrors();
@@ -37,7 +37,7 @@ export function useClaimV1Rewards(errorOrigin: ErrorOriginT) {
   });
 
   return {
-    claimV1RewardsMutation: mutate,
-    isClaimingV1Rewards: isLoading,
+    withdrawV1RewardsMutation: mutate,
+    isWithdrawingV1Rewards: isLoading,
   };
 }
