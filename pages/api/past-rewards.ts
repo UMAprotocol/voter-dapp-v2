@@ -107,11 +107,8 @@ export default async function handler(
       if (!Object.keys(body).includes(requiredKey))
         throw `Missing key in req body! required: ${requiredKey}`;
     });
-    const multicallTx = await generatePastRewardTx(
-      "0x86b3c05f9e2B5cA3AeC65e9DC611Bd7584316DE4",
-      5
-    );
-    console.log("multicallTx", multicallTx);
+    const { address, chainId } = body;
+    const multicallTx = await generatePastRewardTx(address, chainId);
     response.status(200).send(multicallTx);
   } catch (e) {
     console.error(e);
