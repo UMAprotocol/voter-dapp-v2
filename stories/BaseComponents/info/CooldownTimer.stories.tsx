@@ -33,14 +33,14 @@ export const InCooldown = Template.bind({});
 InCooldown.args = {
   cooldownEnds: add(new Date(), { hours: 1, minutes: 10 }),
   pendingUnstake: BigNumber.from(100),
-  canClaim: false,
-  onClaim: () => alert("Yay rewards!"),
+  isReadyToUnstake: false,
+  onExecuteUnstake: () => alert("Yay rewards!"),
 };
 
-export const ReadyToClaim = Template.bind({});
-ReadyToClaim.args = {
+export const ReadyToUnstake = Template.bind({});
+ReadyToUnstake.args = {
   cooldownEnds: null,
   pendingUnstake: BigNumber.from(100),
-  canClaim: true,
-  onClaim: () => alert("Yay rewards!"),
+  isReadyToUnstake: true,
+  onExecuteUnstake: () => alert("Yay rewards!"),
 };

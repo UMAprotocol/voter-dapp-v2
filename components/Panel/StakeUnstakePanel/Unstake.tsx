@@ -19,7 +19,7 @@ interface Props {
   stakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
   unstakeCoolDown: number | undefined;
-  canClaim: boolean;
+  isReadyToUnstake: boolean;
   isDelegate: boolean;
   requestUnstake: (unstakeAmount: string) => void;
 }
@@ -28,7 +28,7 @@ export function Unstake({
   pendingUnstake,
   requestUnstake,
   unstakeCoolDown,
-  canClaim,
+  isReadyToUnstake,
   isDelegate,
 }: Props) {
   const { phase } = useVoteTimingContext();
@@ -38,13 +38,13 @@ export function Unstake({
     ? formatDuration({ seconds: unstakeCoolDown })
     : "0 seconds";
 
-  function canUnstake(
+  function canRequestUnstake(
     stakedBalance: BigNumber | undefined,
     pendingUnstake: BigNumber | undefined
   ) {
     if (stakedBalance === undefined || pendingUnstake === undefined)
       return false;
-    return !canClaim && stakedBalance.gt(0) && pendingUnstake.eq(0);
+    return !isReadyToUnstake && stakedBalance.gt(0) && pendingUnstake.eq(0);
   }
 
   return (
@@ -83,7 +83,7 @@ export function Unstake({
               onInput={setUnstakeAmount}
               allowNegative={false}
               onMax={() => setUnstakeAmount(formatEther(stakedBalance ?? 0))}
-              disabled={!canUnstake(stakedBalance, pendingUnstake)}
+              disabled={!canRequestUnstake(stakedBalance, pendingUnstake)}
             />
           </AmountInputWrapper>
           <Button
@@ -92,18 +92,19 @@ export function Unstake({
             onClick={() => requestUnstake(unstakeAmount)}
             width="100%"
             disabled={
-              !canUnstake(stakedBalance, pendingUnstake) || unstakeAmount === ""
+              !canRequestUnstake(stakedBalance, pendingUnstake) ||
+              unstakeAmount === ""
             }
           />
         </>
       )}
       <PanelErrorBanner errorOrigin="unstake" />
-      {!canClaim && phase === "reveal" && hasActiveVotes && (
+      {!isReadyToUnstake && phase === "reveal" && hasActiveVotes && (
         <PanelWarningText>
           Cannot request unstake in active reveal phase
         </PanelWarningText>
       )}
-      {canClaim && (
+      {isReadyToUnstake && (
         <PanelWarningText>
           Cannot request to unstake until you claim unstaked tokens
         </PanelWarningText>

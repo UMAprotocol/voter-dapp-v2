@@ -1,5 +1,4 @@
-import { Tabs } from "components";
-import { LoadingSkeleton } from "components";
+import { LoadingSkeleton, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
@@ -40,10 +39,10 @@ export function StakeUnstakePanel() {
     useExecuteUnstake("unstake");
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
-  const hasClaimableTokens = pendingUnstake?.gt(0) ?? false;
-  const canClaim = !hasCooldownTimeRemaining && hasClaimableTokens;
+  const hasPendingUnstake = pendingUnstake?.gt(0) ?? false;
+  const isReadyToUnstake = !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
-    canClaim || (hasCooldownTimeRemaining && hasClaimableTokens);
+    isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
   const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
@@ -108,7 +107,7 @@ export function StakeUnstakePanel() {
           pendingUnstake={pendingUnstake}
           requestUnstake={requestUnstake}
           unstakeCoolDown={unstakeCoolDown}
-          canClaim={canClaim}
+          isReadyToUnstake={isReadyToUnstake}
           isDelegate={isDelegate}
         />
       ),
@@ -147,8 +146,8 @@ export function StakeUnstakePanel() {
               <CooldownTimer
                 cooldownEnds={cooldownEnds}
                 pendingUnstake={pendingUnstake}
-                canClaim={canClaim}
-                onClaim={executeUnstake}
+                isReadyToUnstake={isReadyToUnstake}
+                onExecuteUnstake={executeUnstake}
               />
             </CooldownTimerWrapper>
           )}
