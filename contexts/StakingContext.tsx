@@ -9,8 +9,8 @@ import {
   useTokenAllowance,
   useUnstakeCoolDown,
   useUnstakedBalance,
+  useV1Rewards,
 } from "hooks";
-import { useV1Rewards } from "hooks/queries/rewards/useV1Rewards";
 import { createContext, ReactNode, useState } from "react";
 import { V1RewardsT } from "types";
 

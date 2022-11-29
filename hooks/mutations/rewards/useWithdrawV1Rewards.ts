@@ -2,8 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSetChain } from "@web3-onboard/react";
 import { unstakedBalanceKey, v1RewardsKey } from "constant";
 import { BigNumber } from "ethers";
-import { useUserContext } from "hooks/contexts/useUserContext";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useHandleError, useUserContext } from "hooks";
 import { ErrorOriginT, V1RewardsT } from "types";
 import { withdrawV1Rewards } from "web3";
 

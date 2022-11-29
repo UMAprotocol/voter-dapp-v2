@@ -7,8 +7,8 @@ import {
   useStakingContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
+  useWithdrawV1Rewards,
 } from "hooks";
-import { useWithdrawV1Rewards } from "hooks/mutations/rewards/useWithdrawV1Rewards";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -84,8 +84,8 @@ export function ClaimPanel() {
             <V1RewardsWrapper>
               <V1Rewards
                 totalRewards={v1Rewards.totalRewards}
-                onClaim={withdrawV1Rewards}
-                isClaiming={isWithdrawingV1Rewards}
+                onWithdraw={withdrawV1Rewards}
+                isWithdrawing={isWithdrawingV1Rewards}
               />
             </V1RewardsWrapper>
           )}

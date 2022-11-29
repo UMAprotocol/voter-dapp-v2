@@ -2,10 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetChain } from "@web3-onboard/react";
 import { v1RewardsKey } from "constant";
 import { BigNumber } from "ethers";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useAccountDetails, useHandleError } from "hooks";
 import { MainnetOrGoerli } from "types";
 import { getV1Rewards } from "web3";
-import { useAccountDetails } from "../user/useAccountDetails";
 
 export function useV1Rewards() {
   const { address } = useAccountDetails();

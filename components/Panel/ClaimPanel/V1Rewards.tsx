@@ -6,10 +6,10 @@ import styled from "styled-components";
 
 interface Props {
   totalRewards: BigNumber;
-  onClaim: () => void;
-  isClaiming: boolean;
+  onWithdraw: () => void;
+  isWithdrawing: boolean;
 }
-export function V1Rewards({ totalRewards, onClaim, isClaiming }: Props) {
+export function V1Rewards({ totalRewards, onWithdraw, isWithdrawing }: Props) {
   return (
     <Wrapper>
       <IconWrapper>
@@ -18,7 +18,7 @@ export function V1Rewards({ totalRewards, onClaim, isClaiming }: Props) {
       <AmountDescriptionWrapper>
         <Amount>
           <Strong>
-            {isClaiming ? (
+            {isWithdrawing ? (
               <LoadingSkeleton width={50} />
             ) : (
               formatNumberForDisplay(totalRewards)
@@ -28,15 +28,15 @@ export function V1Rewards({ totalRewards, onClaim, isClaiming }: Props) {
         </Amount>{" "}
         <Description>from v1 ready to claim</Description>
       </AmountDescriptionWrapper>
-      <ClaimButtonWrapper>
+      <WithdrawButtonWrapper>
         <Button
           variant="primary"
           label="Claim to wallet"
-          onClick={onClaim}
+          onClick={onWithdraw}
           width={150}
           height={35}
         />
-      </ClaimButtonWrapper>
+      </WithdrawButtonWrapper>
     </Wrapper>
   );
 }
@@ -69,7 +69,7 @@ const IconWrapper = styled.div`
 
 const BellIcon = styled(Bell)``;
 
-const ClaimButtonWrapper = styled.div`
+const WithdrawButtonWrapper = styled.div`
   margin-left: auto;
 `;
 
