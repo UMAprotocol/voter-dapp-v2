@@ -8,15 +8,17 @@ import {
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
+import { useClaimV1Rewards } from "hooks/mutations/rewards/useClaimV1Rewards";
 import styled from "styled-components";
-import { PanelFooter } from "./PanelFooter";
-import { PanelTitle } from "./PanelTitle";
+import { PanelFooter } from "../PanelFooter";
+import { PanelTitle } from "../PanelTitle";
 import {
   PanelSectionText,
   PanelSectionTitle,
   PanelWarningText,
   PanelWrapper,
-} from "./styles";
+} from "../styles";
+import { V1Rewards } from "./V1Rewards";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
@@ -25,8 +27,12 @@ export function ClaimPanel() {
     useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } =
     useWithdrawAndRestake("claim");
-  const { outstandingRewards, getStakingDataFetching } = useStakingContext();
+  const { claimV1RewardsMutation, isClaimingV1Rewards } =
+    useClaimV1Rewards("claim");
+  const { outstandingRewards, getStakingDataFetching, v1Rewards } =
+    useStakingContext();
   const isDelegate = getDelegationStatus() === "delegate";
+  const showV1Rewards = !!v1Rewards && v1Rewards.totalRewards.gt(0);
 
   function withdrawRewards() {
     if (!outstandingRewards) return;
@@ -38,6 +44,16 @@ export function ClaimPanel() {
     if (!outstandingRewards) return;
 
     withdrawAndRestakeMutation({ voting, outstandingRewards });
+  }
+
+  function claimV1Rewards() {
+    if (!v1Rewards) return;
+
+    const { totalRewards, multicallPayload } = v1Rewards;
+
+    if (totalRewards.eq(0) || multicallPayload.length === 0) return;
+
+    claimV1RewardsMutation({ voting, totalRewards, multicallPayload });
   }
 
   function isLoading() {
@@ -64,6 +80,15 @@ export function ClaimPanel() {
               </Strong>
             )}{" "}
           </Rewards>
+          {showV1Rewards && (
+            <V1RewardsWrapper>
+              <V1Rewards
+                totalRewards={v1Rewards.totalRewards}
+                onClaim={claimV1Rewards}
+                isClaiming={isClaimingV1Rewards}
+              />
+            </V1RewardsWrapper>
+          )}
         </RewardsWrapper>
         <InnerWrapper>
           <ClaimAndStakeWrapper>
@@ -126,6 +151,7 @@ const RewardsWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-block: 20px;
   background: var(--red-500);
   color: var(--white);
 `;
@@ -153,6 +179,10 @@ const ClaimAndStakeWrapper = styled.div`
 `;
 
 const ClaimToWalletWrapper = styled.div``;
+
+const V1RewardsWrapper = styled.div`
+  margin-top: 20px;
+`;
 
 const Strong = styled.strong`
   font-weight: 700;

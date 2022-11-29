@@ -6,7 +6,7 @@ import Close from "public/assets/icons/close.svg";
 import { CSSProperties, useEffect, useRef } from "react";
 import { animated, useTransition } from "react-spring";
 import styled from "styled-components";
-import { ClaimPanel } from "./ClaimPanel";
+import { ClaimPanel } from "./ClaimPanel/ClaimPanel";
 import { DelegationPanel } from "./DelegationPanel";
 import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";

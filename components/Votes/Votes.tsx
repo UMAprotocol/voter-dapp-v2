@@ -39,7 +39,7 @@ export function Votes() {
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
   const { voting } = useContractsContext();
-  const { stakedBalance, v1Rewards } = useStakingContext();
+  const { stakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
   const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
@@ -71,8 +71,6 @@ export function Votes() {
     resultsPerPage,
     determineVotesToShow()
   );
-
-  console.log("inVotes", v1Rewards);
 
   async function commitVotes() {
     if (!address || !canCommit()) return;
