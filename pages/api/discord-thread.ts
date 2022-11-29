@@ -76,12 +76,12 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
   // thread to construct the final data structure with minimal data.
   let processedResults: {
     identifier: string;
-    timestamp: number;
+    time: number;
     thread: {
       message: string;
       sender: string;
       senderPicture: string;
-      timestamp: string;
+      time: string;
     }[];
   }[] = [];
   threadMessages.forEach((thread: any, index: number) => {
@@ -89,19 +89,17 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
     if (thread)
       processedThread = thread
         .filter((message: any) => message.content != "")
-        .map((message: any) => {
+        .map((msg: any) => {
           return {
-            message: message.content,
-            sender: message.author.username,
-            senderPicture: discordPhoto(
-              message.author.id,
-              message.author.avatar
-            ),
+            message: msg.content,
+            sender: msg.author.username,
+            senderPicture: discordPhoto(msg.author.id, msg.author.avatar),
+            time: msg.timestamp,
           };
         });
     processedResults.push({
       identifier: l1Requests[index].identifier,
-      timestamp: l1Requests[index].time,
+      time: l1Requests[index].time,
       thread: processedThread.reverse(),
     });
   });
