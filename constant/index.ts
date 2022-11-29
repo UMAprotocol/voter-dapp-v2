@@ -15,5 +15,6 @@ export * from "./voting/earlyRequestMagicNumber";
 export * from "./voting/voteTiming";
 export * from "./web3/addresses";
 export * from "./web3/deployBlocks";
+export * from "./web3/ethersErrorCodes";
 export * from "./web3/signingMessage";
 export * from "./web3/supportedChains";

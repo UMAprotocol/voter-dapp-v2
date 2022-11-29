@@ -20,6 +20,7 @@ export { getIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/get
 export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
 export { getRewardsCalculationInputs } from "./queries/rewards/getRewardsCalculationInputs";
 export { getV1Rewards } from "./queries/rewards/getV1Rewards";
+export { getStakedBalance } from "./queries/staking/getStakedBalance";
 export { getStakerDetails } from "./queries/staking/getStakerDetails";
 export { getTokenAllowance } from "./queries/staking/getTokenAllowance";
 export { getUnstakeCoolDown } from "./queries/staking/getUnstakeCoolDown";

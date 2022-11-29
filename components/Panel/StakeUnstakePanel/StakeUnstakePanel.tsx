@@ -1,5 +1,6 @@
 import { LoadingSkeleton, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
+import { parseEther } from "helpers";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
@@ -63,7 +64,7 @@ export function StakeUnstakePanel() {
   }
 
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
-    const stakeAmount = parseEtherSafe(stakeAmountInput);
+    const stakeAmount = parseEther(stakeAmountInput);
     stakeMutation(
       { voting, stakeAmount },
       {
@@ -75,7 +76,7 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmountInput: string) {
-    const unstakeAmount = parseEtherSafe(unstakeAmountInput);
+    const unstakeAmount = parseEther(unstakeAmountInput);
     requestUnstakeMutation({ voting, unstakeAmount });
   }
 

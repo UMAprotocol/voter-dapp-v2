@@ -41,6 +41,7 @@ export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceive
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
+export { useStakedBalance } from "./queries/staking/useStakedBalance";
 export { useStakerDetails } from "./queries/staking/useStakerDetails";
 export { useTokenAllowance } from "./queries/staking/useTokenAllowance";
 export { useUnstakeCoolDown } from "./queries/staking/useUnstakeCoolDown";

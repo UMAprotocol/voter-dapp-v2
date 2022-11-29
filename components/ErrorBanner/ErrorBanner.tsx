@@ -1,3 +1,4 @@
+import { EthersErrorLink } from "components";
 import { mobileAndUnder } from "constant";
 import { useErrorContext } from "hooks";
 import Close from "public/assets/icons/close.svg";
@@ -17,7 +18,9 @@ export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
           <IconWrapper>
             <Warning />
           </IconWrapper>
-          <ErrorMessage>{message}</ErrorMessage>
+          <ErrorMessage>
+            <EthersErrorLink errorMessage={message} />
+          </ErrorMessage>
           <CloseButton onClick={() => removeErrorMessage(message)}>
             <IconWrapper>
               <CloseIcon />

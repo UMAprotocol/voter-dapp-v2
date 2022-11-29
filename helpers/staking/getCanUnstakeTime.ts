@@ -5,7 +5,7 @@ const defaultUnstakeCoolDown = 7 * 24 * 60 * 60;
 
 export function getCanUnstakeTime(
   unstakeRequestTimeAsDate: Date,
-  unstakeCooldownS = defaultUnstakeCoolDown
+  unstakeCoolDown = defaultUnstakeCoolDown
 ) {
-  return addSeconds(unstakeRequestTimeAsDate, unstakeCooldownS);
+  return addSeconds(unstakeRequestTimeAsDate, unstakeCoolDown);
 }

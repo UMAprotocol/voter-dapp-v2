@@ -1,9 +1,7 @@
 // voting - not user dependent
-export const hasActiveVotesKey = "hasActiveVotesKey";
 export const activeVotesKey = "activeVotesKey";
 export const upcomingVotesKey = "upcomingVotesKey";
 export const pastVotesKey = "pastVotesKey";
-export const voteTransactionHashesKey = "voteTransactionHashesKey";
 export const decodedAdminTransactionsKey = "decodedAdminTransactionsKey";
 export const augmentedVoteDataKey = "augmentedVoteDataKey";
 // voting - user dependent
@@ -14,11 +12,11 @@ export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
 // staking
 export const tokenAllowanceKey = "tokenAllowanceKey";
+export const stakedBalanceKey = "stakedBalanceKey";
 export const unstakedBalanceKey = "unstakedBalanceKey";
 export const stakerDetailsKey = "stakerDetailsKey";
 export const unstakeCoolDownKey = "unstakeCoolDownKey";
 // rewards
-export const outstandingRewardsKey = "outstandingRewardsKey";
 export const rewardsCalculationInputsKey = "rewardsCalculationInputsKey";
 export const v1RewardsKey = "v1RewardsKey";
 // user

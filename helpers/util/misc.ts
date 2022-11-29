@@ -5,12 +5,13 @@ export function capitalizeFirstLetter(str: string) {
 }
 
 export function makeTransactionHashLink(
+  label: string,
   transactionHash: string | undefined,
   isGoerli = true
 ) {
   if (!transactionHash) return;
   return {
-    label: "Request transaction",
+    label,
     href: `https://${
       isGoerli ? "goerli." : ""
     }etherscan.io/tx/${transactionHash}`,
