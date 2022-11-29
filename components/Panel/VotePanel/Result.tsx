@@ -6,7 +6,7 @@ import {
   Tooltip,
 } from "components";
 import { mobileAndUnder } from "constant";
-import { formatVoteStringWithPrecision } from "helpers";
+import { formatVoteStringWithPrecision, truncateDecimals } from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
@@ -79,7 +79,8 @@ export function Result({
                 <LegendItemDot style={{ "--color": color } as CSSProperties} />
                 <LegendItemData>
                   <LegendItemLabel label={label} />
-                  <Strong>{(percent * 100).toFixed(2)}%</Strong> ({value})
+                  <Strong>{(percent * 100).toFixed(2)}%</Strong> (
+                  {value ? truncateDecimals(value, 2) : 0})
                 </LegendItemData>
               </LegendItem>
             ))}
@@ -103,7 +104,11 @@ export function Result({
         </ParticipationItem>
         <ParticipationItem>
           <span>Total tokens voted with</span>
-          <Strong>{totalTokensVotedWith}</Strong>
+          <Strong>
+            {totalTokensVotedWith
+              ? truncateDecimals(totalTokensVotedWith, 2)
+              : 0}
+          </Strong>
         </ParticipationItem>
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />

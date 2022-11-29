@@ -11,9 +11,9 @@ export function formatNumberForDisplay(
   return truncateDecimals(commify(_number), decimals);
 }
 
-export function truncateDecimals(number: string, decimals: number) {
-  const [whole, decimal] = number.split(".");
-  if (!decimal) return number;
+export function truncateDecimals(number: string | number, decimals: number) {
+  const [whole, decimal] = number.toString().split(".");
+  if (!decimal) return number.toString();
   if (decimals === 0) return whole.toString();
   return `${whole}.${decimal.slice(0, decimals)}`;
 }
