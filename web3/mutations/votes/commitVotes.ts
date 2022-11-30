@@ -4,6 +4,28 @@ import { CommitVotes } from "types";
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;
 
+  if (formattedVotes.length === 1) {
+    const vote = formattedVotes[0];
+
+    if (!vote) return;
+
+    const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
+
+    const tx = await voting.functions.commitAndEmitEncryptedVote(
+      identifier,
+      time,
+      ancillaryData,
+      hash,
+      encryptedVote
+    );
+
+    return handleNotifications(tx, {
+      pending: `Committing 1 vote...`,
+      success: `Committed 1 vote`,
+      error: `Failed to commit 1 vote`,
+    });
+  }
+
   const commitVoteFunctionFragment = voting.interface.getFunction(
     "commitAndEmitEncryptedVote(bytes32,uint256,bytes,bytes32,bytes)"
   );
@@ -22,16 +44,9 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
-  const shouldPluralize = formattedVotes.length > 1;
   return handleNotifications(tx, {
-    pending: `Committing ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }...`,
-    success: `Committed ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }`,
-    error: `Failed to commit ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }`,
+    pending: `Committing ${formattedVotes.length} votes...`,
+    success: `Committed ${formattedVotes.length} votes`,
+    error: `Failed to commit ${formattedVotes.length} votes`,
   });
 }
