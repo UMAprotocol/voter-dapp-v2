@@ -205,7 +205,10 @@ export function VotesListItem({
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
-        <Link href={`https://goerli.etherscan.io/tx/${commitHash}`}>
+        <Link
+          href={`https://goerli.etherscan.io/tx/${commitHash}`}
+          target="_blank"
+        >
           {getCommittedOrRevealed()}
         </Link>
       ) : (
@@ -213,7 +216,10 @@ export function VotesListItem({
       );
     }
     return revealHash ? (
-      <Link href={`https://goerli.etherscan.io/tx/${revealHash}`}>
+      <Link
+        href={`https://goerli.etherscan.io/tx/${revealHash}`}
+        target="_blank"
+      >
         {getCommittedOrRevealed()}
       </Link>
     ) : (
