@@ -1,4 +1,5 @@
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
+export { createVotingV1ContractInstance } from "./contracts/createVotingV1ContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
 export { removeDelegate } from "./mutations/delegation/removeDelegate";
 export { removeDelegator } from "./mutations/delegation/removeDelegator";
