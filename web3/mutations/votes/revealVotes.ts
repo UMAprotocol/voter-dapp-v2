@@ -3,7 +3,30 @@ import { RevealVotes } from "types";
 
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
+
   if (!formattedVotes.length) return;
+
+  if (formattedVotes.length === 1) {
+    const vote = formattedVotes[0];
+
+    if (!vote) return;
+
+    const { identifier, time, price, ancillaryData, salt } = vote;
+
+    const tx = await voting.functions.revealVote(
+      identifier,
+      time,
+      price,
+      ancillaryData,
+      salt
+    );
+
+    return handleNotifications(tx, {
+      pending: `Revealing 1 vote...`,
+      success: `Revealed 1 vote`,
+      error: `Failed to reveal 1 vote`,
+    });
+  }
 
   const revealVoteFunctionFragment = voting.interface.getFunction(
     "revealVote(bytes32,uint256,int256,bytes,int256)"
@@ -25,16 +48,10 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
-  const shouldPluralize = formattedVotes.length > 1;
+
   return handleNotifications(tx, {
-    pending: `Revealing ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }...`,
-    success: `Revealed ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }`,
-    error: `Failed to reveal ${formattedVotes.length} vote${
-      shouldPluralize ? "s" : ""
-    }`,
+    pending: `Revealing ${formattedVotes.length} votes...`,
+    success: `Revealed ${formattedVotes.length} votes`,
+    error: `Failed to reveal ${formattedVotes.length} votes`,
   });
 }

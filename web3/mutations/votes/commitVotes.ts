@@ -44,6 +44,7 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   });
 
   const tx = await voting.functions.multicall(calldata);
+
   return handleNotifications(tx, {
     pending: `Committing ${formattedVotes.length} votes...`,
     success: `Committed ${formattedVotes.length} votes`,
