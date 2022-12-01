@@ -1,3 +1,3 @@
-export { ClaimPanel } from "./ClaimPanel/ClaimPanel";
+export { ClaimPanel } from "./ClaimPanel";
 export { Panel } from "./Panel";
 export { VotePanel } from "./VotePanel";

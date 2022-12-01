@@ -5,7 +5,8 @@ import { CSSProperties, useEffect, useRef } from "react";
 import { FocusOn } from "react-focus-on";
 import { animated, useTransition } from "react-spring";
 import styled from "styled-components";
-import { ClaimPanel } from "./ClaimPanel/ClaimPanel";
+import { ClaimPanel } from "./ClaimPanel";
+import { ClaimV1Panel } from "./ClaimV1Panel";
 import { DelegationPanel } from "./DelegationPanel";
 import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";
@@ -16,6 +17,7 @@ import { VotePanel } from "./VotePanel";
 const panelTypeToPanelComponent = {
   menu: MenuPanel,
   claim: ClaimPanel,
+  claimV1: ClaimV1Panel,
   vote: VotePanel,
   stake: StakeUnstakePanel,
   remind: RemindMePanel,

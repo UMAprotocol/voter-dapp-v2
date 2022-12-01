@@ -7,18 +7,16 @@ import {
   useStakingContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
-  useWithdrawV1Rewards,
 } from "hooks";
 import styled from "styled-components";
-import { PanelFooter } from "../PanelFooter";
-import { PanelTitle } from "../PanelTitle";
+import { PanelFooter } from "./PanelFooter";
+import { PanelTitle } from "./PanelTitle";
 import {
   PanelSectionText,
   PanelSectionTitle,
   PanelWarningText,
   PanelWrapper,
-} from "../styles";
-import { V1Rewards } from "./V1Rewards";
+} from "./styles";
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
@@ -27,12 +25,8 @@ export function ClaimPanel() {
     useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } =
     useWithdrawAndRestake("claim");
-  const { withdrawV1RewardsMutation, isWithdrawingV1Rewards } =
-    useWithdrawV1Rewards("claim");
-  const { outstandingRewards, getStakingDataFetching, v1Rewards } =
-    useStakingContext();
+  const { outstandingRewards, getStakingDataFetching } = useStakingContext();
   const isDelegate = getDelegationStatus() === "delegate";
-  const showV1Rewards = !!v1Rewards && v1Rewards.totalRewards.gt(0);
 
   function withdrawRewards() {
     if (!outstandingRewards) return;
@@ -44,16 +38,6 @@ export function ClaimPanel() {
     if (!outstandingRewards) return;
 
     withdrawAndRestakeMutation({ voting, outstandingRewards });
-  }
-
-  function withdrawV1Rewards() {
-    if (!v1Rewards) return;
-
-    const { totalRewards, multicallPayload } = v1Rewards;
-
-    if (totalRewards.eq(0) || multicallPayload.length === 0) return;
-
-    withdrawV1RewardsMutation({ voting, totalRewards, multicallPayload });
   }
 
   function isLoading() {
@@ -80,15 +64,6 @@ export function ClaimPanel() {
               </Strong>
             )}{" "}
           </Rewards>
-          {showV1Rewards && (
-            <V1RewardsWrapper>
-              <V1Rewards
-                totalRewards={v1Rewards.totalRewards}
-                onWithdraw={withdrawV1Rewards}
-                isWithdrawing={isWithdrawingV1Rewards}
-              />
-            </V1RewardsWrapper>
-          )}
         </RewardsWrapper>
         <InnerWrapper>
           <ClaimAndStakeWrapper>
@@ -179,10 +154,6 @@ const ClaimAndStakeWrapper = styled.div`
 `;
 
 const ClaimToWalletWrapper = styled.div``;
-
-const V1RewardsWrapper = styled.div`
-  margin-top: 20px;
-`;
 
 const Strong = styled.strong`
   font-weight: 700;

@@ -49,8 +49,8 @@ export function Header() {
     openPanel("menu");
   }
 
-  function openClaimPanel() {
-    openPanel("claim");
+  function openClaimV1Panel() {
+    openPanel("claimV1");
   }
 
   return (
@@ -95,12 +95,12 @@ export function Header() {
                   {formatNumberForDisplay(v1Rewards?.totalRewards)}
                 </Strong>{" "}
                 UMA from v1{" "}
-                <OpenClaimPanelButton onClick={openClaimPanel}>
+                <OpenClaimPanelButton onClick={openClaimV1Panel}>
                   ready to claim
                 </OpenClaimPanelButton>
               </NotificationText>
               <MobileNotificationText>
-                <OpenClaimPanelButton onClick={openClaimPanel}>
+                <OpenClaimPanelButton onClick={openClaimV1Panel}>
                   Rewards
                 </OpenClaimPanelButton>
               </MobileNotificationText>
