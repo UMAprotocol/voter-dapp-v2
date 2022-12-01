@@ -11,7 +11,6 @@ import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import {
   useAccountDetails,
-  useCommittedVotesForDelegator,
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
@@ -39,9 +38,8 @@ export function Votes() {
   const { address } = useAccountDetails();
   const { signer, signingKeys } = useWalletContext();
   const { voting } = useContractsContext();
-  const { stakedBalance } = useStakingContext();
+  const { stakedBalance, delegatorStakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
-  const { data: committedVotesForDelegator } = useCommittedVotesForDelegator();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
@@ -55,10 +53,8 @@ export function Votes() {
   const isCommit = phase === "commit";
   const isReveal = phase === "reveal";
   const hasStaked = stakedBalance?.gt(0) ?? false;
+  const hasDelegatorStaked = delegatorStakedBalance?.gt(0) ?? false;
   const hasSigner = !!signer;
-  const hasCommittedWithDelegator =
-    getDelegationStatus() === "delegate" &&
-    Object.keys(committedVotesForDelegator).length > 0;
   const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
   const hasVotesToReveal = getVotesToReveal().length > 0;
   const isButtonDisabled =
@@ -104,11 +100,13 @@ export function Votes() {
       votesToReveal: getVotesToReveal(),
     });
   }
-
   function getVotesToReveal() {
     return getActiveVotes().filter(
       (vote) =>
-        vote.isCommitted && !!vote.decryptedVote && vote.isRevealed === false
+        vote.isCommitted &&
+        !!vote.decryptedVote &&
+        vote.isRevealed === false &&
+        vote.canReveal
     );
   }
 
@@ -133,6 +131,9 @@ export function Votes() {
   }
 
   function canCommit() {
+    if (getDelegationStatus() === "delegate") {
+      return canCommitAsDelegate();
+    }
     return (
       isCommit &&
       hasVotesToCommit &&
@@ -141,15 +142,18 @@ export function Votes() {
       !isCommittingVotes
     );
   }
+  function canCommitAsDelegate() {
+    return (
+      isCommit &&
+      hasVotesToCommit &&
+      hasSigner &&
+      !isCommittingVotes &&
+      hasDelegatorStaked
+    );
+  }
 
   function canReveal() {
-    return (
-      isReveal &&
-      hasVotesToReveal &&
-      hasStaked &&
-      !hasCommittedWithDelegator &&
-      !isRevealingVotes
-    );
+    return isReveal && hasVotesToReveal && !isRevealingVotes;
   }
 
   function determineTitle() {
@@ -172,8 +176,6 @@ export function Votes() {
     const didNotCommitSoCannotRevealMessage =
       "You cannot reveal votes this round because you did not commit any votes.";
     const hasStakedMessage = "You must stake UMA to commit or reveal votes.";
-    const hasCommittedWithDelegatorMessage =
-      "You cannot reveal with a delegate wallet if you have already committed votes with your delegator wallet.";
     const busyCommittingVotesMessage = "Committing votes...";
     const busyRevealingVotesMessage = "Revealing votes...";
 
@@ -194,9 +196,6 @@ export function Votes() {
     }
 
     if (isReveal) {
-      if (hasCommittedWithDelegator) {
-        return hasCommittedWithDelegatorMessage;
-      }
       if (!hasVotesToReveal) {
         return didNotCommitSoCannotRevealMessage;
       }

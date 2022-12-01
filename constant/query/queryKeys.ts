@@ -8,6 +8,7 @@ export const augmentedVoteDataKey = "augmentedVoteDataKey";
 export const encryptedVotesKey = "encryptedVotesKey";
 export const decryptedVotesKey = "decryptedVotesKey";
 export const committedVotesKey = "committedVotesKey";
+export const committedVotesKeyByCaller = "committedVotesKeyByCaller";
 export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
 // staking

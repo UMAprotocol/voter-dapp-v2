@@ -50,6 +50,7 @@ export const voteWithoutUserVote = {
   discordLink: "https://www.todo.com",
   isGovernance: false,
   isRevealed: false,
+  canReveal: true,
   revealHash: undefined,
   isV1: false,
   voteHistory: {
