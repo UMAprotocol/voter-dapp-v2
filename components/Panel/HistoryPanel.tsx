@@ -19,7 +19,7 @@ import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
-  const { getPastVotes } = useVotesContext();
+  const { getPastVotesV2 } = useVotesContext();
   const {
     apr,
     cumulativeCalculatedSlash,
@@ -32,7 +32,7 @@ export function HistoryPanel() {
     },
   } = usePaginationContext();
 
-  const pastVotes = getPastVotes();
+  const pastVotes = getPastVotesV2();
   const numberOfPastVotes = pastVotes.length;
   const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
 
