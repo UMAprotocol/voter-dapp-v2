@@ -1,6 +1,6 @@
 import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
-import { formatNumberForDisplay } from "helpers";
+import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
   useContractsContext,
   useDelegationContext,
@@ -17,6 +17,9 @@ import {
   PanelWarningText,
   PanelWrapper,
 } from "./styles";
+
+// amounts below this will show up in the UI as effectively 0, so we should disable claiming to be consistent
+const minimumAmountClaimable = parseEtherSafe(".01");
 
 export function ClaimPanel() {
   const { voting } = useContractsContext();
@@ -77,6 +80,10 @@ export function ClaimPanel() {
               width="100%"
               height={45}
               label="Claim and Stake"
+              disabled={
+                !outstandingRewards ||
+                outstandingRewards.lt(minimumAmountClaimable)
+              }
               onClick={withdrawAndRestake}
             />
           </ClaimAndStakeWrapper>
@@ -97,6 +104,10 @@ export function ClaimPanel() {
                 width="100%"
                 height={45}
                 label="Claim to Wallet"
+                disabled={
+                  !outstandingRewards ||
+                  outstandingRewards.lt(minimumAmountClaimable)
+                }
                 onClick={withdrawRewards}
               />
             )}
