@@ -107,6 +107,7 @@ const Overlay = styled(AnimatedOverlay)`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  z-index: 1;
 `;
 
 const Content = styled.div`
@@ -122,6 +123,7 @@ const Content = styled.div`
   background: var(--white);
   overflow-y: scroll;
   transition: transform 400ms;
+  z-index: 1;
 `;
 
 const CloseButton = styled.button`

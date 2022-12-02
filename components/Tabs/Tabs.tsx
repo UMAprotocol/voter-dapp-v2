@@ -1,10 +1,4 @@
-import {
-  Tab as ReachTab,
-  TabList as ReachTabList,
-  TabPanel as ReachTabPanel,
-  TabPanels as ReachTabPanels,
-  Tabs as ReachTabs,
-} from "@reach/tabs";
+import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
@@ -13,50 +7,50 @@ type Tab = {
   content: ReactNode;
 };
 
-interface Props {
-  tabs: Tab[];
-}
-export function Tabs({ tabs }: Props) {
+export function Tabs({ tabs }: { tabs: Tab[] }) {
   return (
-    <TabsWrapper>
-      <TabList>
+    <TabsRoot>
+      <TabsList>
         {tabs.map(({ title }) => (
-          <Tab key={title}>{title}</Tab>
+          <TabsTrigger key={title} value={title}>
+            {title}
+          </TabsTrigger>
         ))}
-      </TabList>
-      <TabPanels>
-        {tabs.map(({ content, title }) => (
-          <TabPanel key={title}>{content}</TabPanel>
-        ))}
-      </TabPanels>
-    </TabsWrapper>
+      </TabsList>
+      {tabs.map(({ content, title }) => (
+        <TabsContent value={title} key={title}>
+          {content}
+        </TabsContent>
+      ))}
+    </TabsRoot>
   );
 }
-const TabsWrapper = styled(ReachTabs)``;
 
-const TabList = styled(ReachTabList)`
-  width: 100%;
+const TabsRoot = styled(Root)``;
+
+const TabsList = styled(List)`
   height: 45px;
   display: flex;
   align-items: center;
   gap: 50px;
   padding-left: 30px;
   background: var(--grey-50);
+`;
 
-  [data-selected] {
+const TabsTrigger = styled(Trigger)`
+  height: 100%;
+  padding-bottom: 3px;
+  background: transparent;
+  font: var(--text-md);
+  &[data-state="active"] {
+    padding-bottom: 0;
     border-bottom: 3px solid var(--red-500);
   }
 `;
 
-const Tab = styled(ReachTab)`
-  height: 100%;
+const TabsContent = styled(Content)`
   background: transparent;
   color: var(--black);
   font: var(--text-md);
-  padding-inline: 3px;
-  border-bottom: 3px solid transparent;
+  cursor: unset;
 `;
-
-const TabPanels = styled(ReachTabPanels)``;
-
-const TabPanel = styled(ReachTabPanel)``;
