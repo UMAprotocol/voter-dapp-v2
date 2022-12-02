@@ -264,6 +264,8 @@ export function VotesListItem({
     ...getCellWidths(),
   } as CSSProperties;
 
+  if (!width) return null;
+
   return (
     <Wrapper
       as={isTabletAndUnder ? "div" : "tr"}
