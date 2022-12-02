@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { augmentedVoteDataKey } from "constant";
-import { useHandleError } from "hooks/helpers/useHandleError";
 import { getAugmentedVoteData } from "web3";
 import { useActiveVotes } from "./useActiveVotes";
 import { usePastVotes } from "./usePastVotes";
@@ -14,7 +13,6 @@ export function useAugmentedVoteData() {
     data: { upcomingVotes },
   } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
 
   const allVotes = { ...activeVotes, ...upcomingVotes, ...pastVotes };
 
@@ -22,8 +20,6 @@ export function useAugmentedVoteData() {
     queryKey: [augmentedVoteDataKey, activeVotes, upcomingVotes, pastVotes],
     queryFn: () => getAugmentedVoteData(allVotes),
     initialData: {},
-    onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;

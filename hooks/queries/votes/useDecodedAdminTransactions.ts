@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { decodedAdminTransactionsKey } from "constant";
-import {
-  useActiveVotes,
-  useHandleError,
-  usePastVotes,
-  useUpcomingVotes,
-} from "hooks";
+import { useActiveVotes, usePastVotes, useUpcomingVotes } from "hooks";
 import { getDecodedAdminTransactions } from "web3";
 
 export function useDecodedAdminTransactions() {
@@ -16,7 +11,6 @@ export function useDecodedAdminTransactions() {
     data: { upcomingVotes },
   } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
 
   const governanceVoteIdentifiers = Object.entries({
     ...activeVotes,
@@ -35,8 +29,6 @@ export function useDecodedAdminTransactions() {
     ],
     queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
     initialData: {},
-    onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;
