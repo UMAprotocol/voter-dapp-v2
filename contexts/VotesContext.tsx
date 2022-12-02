@@ -39,6 +39,7 @@ export interface VotesContextState {
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
   getPastVotes: () => VoteT[];
+  getPastVotesV2: () => VoteT[];
   getActivityStatus: () => ActivityStatusT;
   getUserDependentIsLoading: () => boolean;
   getUserIndependentIsLoading: () => boolean;
@@ -62,6 +63,7 @@ export const defaultVotesContextState: VotesContextState = {
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
   getPastVotes: () => [],
+  getPastVotesV2: () => [],
   getActivityStatus: () => "past",
   getUserDependentIsLoading: () => false,
   getUserIndependentIsLoading: () => false,
@@ -177,6 +179,10 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return getVotesWithData(pastVotes);
   }
 
+  function getPastVotesV2() {
+    return getVotesWithData(pastVotes).filter((vote) => !vote.isV1);
+  }
+
   function getActivityStatus() {
     if (hasActiveVotes) return "active";
     if (hasUpcomingVotes) return "upcoming";
@@ -230,6 +236,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         getActiveVotes,
         getUpcomingVotes,
         getPastVotes,
+        getPastVotesV2,
         getActivityStatus,
         getUserDependentIsLoading,
         getUserIndependentIsLoading,
