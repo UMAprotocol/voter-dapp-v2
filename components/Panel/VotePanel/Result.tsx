@@ -177,6 +177,7 @@ const LegendItem = styled.li`
 const LegendItemDot = styled.div`
   width: 15px;
   height: 15px;
+  aspect-ratio: 1/1;
   margin-top: 6px;
   border-radius: 50%;
   background: var(--color);
