@@ -311,20 +311,20 @@ export function VotesListItem({
         <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <>
-              <DotIcon
-                style={
-                  {
-                    "--dot-color": getDotColor(),
-                  } as CSSProperties
-                }
-              />{" "}
-              {isFetching ? (
-                <LoadingSkeleton width="8vw" />
-              ) : (
-                getRelevantTransactionLink()
-              )}
-            </>
+            {isFetching ? (
+              <LoadingSkeleton width="8vw" />
+            ) : (
+              <>
+                <DotIcon
+                  style={
+                    {
+                      "--dot-color": getDotColor(),
+                    } as CSSProperties
+                  }
+                />{" "}
+                {getRelevantTransactionLink()}
+              </>
+            )}
           </VoteStatus>
         </VoteStatusWrapper>
       ) : null}
