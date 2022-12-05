@@ -4,7 +4,18 @@ import React from "react";
 import "styles/fonts.css";
 import { GlobalStyle } from "../components/GlobalStyle";
 import { Panel } from "../components/Panel/Panel";
-import { ContractsProvider, DelegationProvider, ErrorProvider, PaginationProvider, PanelProvider, StakingProvider, UserProvider, VotesProvider, VoteTimingProvider, WalletProvider } from "../contexts";
+import {
+  ContractsProvider,
+  DelegationProvider,
+  ErrorProvider,
+  PaginationProvider,
+  PanelProvider,
+  StakingProvider,
+  UserProvider,
+  VotesProvider,
+  VoteTimingProvider,
+  WalletProvider,
+} from "../contexts";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -20,27 +31,28 @@ const queryClient = new QueryClient();
 
 addDecorator((Story) => (
   <ErrorProvider>
-      <VoteTimingProvider>
-        <WalletProvider>
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <ContractsProvider>
-                <StakingProvider>
+    <VoteTimingProvider>
+      <WalletProvider>
+        <QueryClientProvider client={queryClient}>
+          <UserProvider>
+            <ContractsProvider>
+              <StakingProvider>
+                <PaginationProvider>
                   <DelegationProvider>
                     <VotesProvider>
-                    <PanelProvider>
-                      <PaginationProvider />
+                      <PanelProvider>
                         <GlobalStyle />
                         <Story />
                         <Panel />
                       </PanelProvider>
                     </VotesProvider>
                   </DelegationProvider>
-                </StakingProvider>
-              </ContractsProvider>
-            </UserProvider>
-          </QueryClientProvider>
-        </WalletProvider>
-      </VoteTimingProvider>
-    </ErrorProvider>
+                </PaginationProvider>
+              </StakingProvider>
+            </ContractsProvider>
+          </UserProvider>
+        </QueryClientProvider>
+      </WalletProvider>
+    </VoteTimingProvider>
+  </ErrorProvider>
 ));
