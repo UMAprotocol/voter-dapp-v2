@@ -31,3 +31,4 @@ export { getDecodedAdminTransactions } from "./queries/votes/getDecodedAdminTran
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { getUpcomingVotes } from "./queries/votes/getUpcomingVotes";
+export { getCommittedVotesByCaller } from "./queries/votes/getCommittedVotesByCaller";

@@ -21,7 +21,7 @@ export function useCommittedVotesForDelegator() {
 
   const queryResult = useQuery(
     [committedVotesForDelegatorKey, address, delegatorAddress, roundId],
-    () => getCommittedVotes(voting, delegatorAddress ?? address, roundId),
+    () => getCommittedVotes(voting, delegatorAddress!, roundId),
     {
       refetchInterval: status === "delegate" ? oneMinute : false,
       enabled: !!address && !!delegatorAddress && status === "delegate",

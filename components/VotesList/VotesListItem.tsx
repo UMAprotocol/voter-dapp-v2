@@ -60,6 +60,7 @@ export function VotesListItem({
     isGovernance,
     timeAsDate,
     augmentedData,
+    canReveal,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
@@ -174,7 +175,8 @@ export function VotesListItem({
     if (phase === "commit") {
       return isCommitted ? "Committed" : "Not committed";
     } else {
-      if (!decryptedVote) return "Not committed";
+      if (!isCommitted) return "Not committed";
+      if (!decryptedVote || !canReveal) return "Unable to reveal";
       return isRevealed ? "Revealed" : "Not revealed";
     }
   }
