@@ -1,25 +1,31 @@
-import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import { EncryptedVotesByKeyT } from "types";
 
 export async function getEncryptedVotes(
   votingContract: VotingV2Ethers,
-  address: string,
-  roundId: number
+  votingV1Contract: VotingEthers,
+  address: string
 ) {
-  const filter = votingContract.filters.EncryptedVote(
-    address,
-    roundId,
-    null,
-    null,
-    null,
-    null
-  );
-  const result = await votingContract.queryFilter(filter);
+  const v1Filter = votingV1Contract.filters.EncryptedVote(address);
+  const v1Result = await votingV1Contract.queryFilter(v1Filter);
 
-  const eventData = result?.map(({ args }) => args);
+  const v2Filter = votingContract.filters.EncryptedVote(address);
+  const v2Result = await votingContract.queryFilter(v2Filter);
+
+  const v1EventData = v1Result?.map(({ args }) => args);
+  const v2EventData = v2Result?.map(({ args }) => args);
+
   const encryptedVotes: EncryptedVotesByKeyT = {};
-  eventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
+
+  v1EventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
+    const decodedIdentifier = decodeHexString(identifier);
+    encryptedVotes[
+      makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
+    ] = encryptedVote;
+  });
+
+  v2EventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
     const decodedIdentifier = decodeHexString(identifier);
     encryptedVotes[
       makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)

@@ -10,12 +10,14 @@ import {
   useUnstakeCoolDown,
   useUnstakedBalance,
   useV1Rewards,
+  useDelegatorStakedBalance,
 } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import { V1RewardsT } from "types";
 
 export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
+  delegatorStakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
   outstandingRewards: BigNumber | undefined;
@@ -31,6 +33,7 @@ export interface StakingContextState {
 
 export const defaultStakingContextState: StakingContextState = {
   stakedBalance: undefined,
+  delegatorStakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
   outstandingRewards: undefined,
@@ -64,6 +67,11 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: stakedBalanceLoading,
     isFetching: stakedBalanceFetching,
   } = useStakedBalance();
+  const {
+    data: delegatorStakedBalance,
+    isLoading: delegatorStakedBalanceLoading,
+    isFetching: delegatorStakedBalanceFetching,
+  } = useDelegatorStakedBalance();
   const {
     data: unstakedBalance,
     isLoading: unstakedBalanceLoading,
@@ -125,7 +133,8 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakedBalanceLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
-      rewardsCalculationInputsLoading
+      rewardsCalculationInputsLoading ||
+      delegatorStakedBalanceLoading
     );
   }
 
@@ -138,7 +147,8 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakedBalanceFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
-      rewardsCalculationInputsFetching
+      rewardsCalculationInputsFetching ||
+      delegatorStakedBalanceFetching
     );
   }
 
@@ -146,6 +156,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     <StakingContext.Provider
       value={{
         stakedBalance,
+        delegatorStakedBalance,
         unstakedBalance,
         pendingUnstake,
         unstakeCoolDown,

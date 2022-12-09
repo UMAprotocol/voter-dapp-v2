@@ -42,57 +42,73 @@ export const PaginationContext = createContext<PaginationContextState>(
 );
 
 export function PaginationProvider({ children }: { children: ReactNode }) {
-  const [pageStates, setPageStates] = useState<PageStatesT>(defaultPageStates);
+  const [activeVotesPage, setActiveVotesPage] = useState({
+    ...defaultPageState,
+  });
+  const [upcomingVotesPage, setUpcomingVotesPage] = useState({
+    ...defaultPageState,
+  });
+  const [pastVotesPage, setPastVotesPage] = useState({ ...defaultPageState });
+  const [voteHistoryPage, setVoteHistoryPage] = useState({
+    ...defaultPageState,
+  });
+  const pageStates = {
+    activeVotesPage,
+    upcomingVotesPage,
+    pastVotesPage,
+    voteHistoryPage,
+  };
+
+  const setterFunctions = {
+    activeVotesPage: setActiveVotesPage,
+    upcomingVotesPage: setUpcomingVotesPage,
+    pastVotesPage: setPastVotesPage,
+    voteHistoryPage: setVoteHistoryPage,
+  };
 
   function goToPage(paginateFor: PaginateForT, number: number) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].pageNumber = number;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      pageNumber: number,
+    }));
   }
 
   function nextPage(paginateFor: PaginateForT) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].pageNumber += 1;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      pageNumber: prevState.pageNumber + 1,
+    }));
   }
 
   function previousPage(paginateFor: PaginateForT) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].pageNumber -= 1;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      pageNumber: prevState.pageNumber - 1,
+    }));
   }
 
   function setResultsPerPage(
     paginateFor: PaginateForT,
     resultsPerPage: number
   ) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].resultsPerPage = resultsPerPage;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      resultsPerPage,
+    }));
   }
 
   function firstPage(paginateFor: PaginateForT) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].pageNumber = 1;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      pageNumber: 1,
+    }));
   }
 
   function lastPage(paginateFor: PaginateForT, lastPageNumber: number) {
-    setPageStates((prev) => {
-      const newState = { ...prev };
-      newState[paginateFor].pageNumber = lastPageNumber;
-      return newState;
-    });
+    setterFunctions[paginateFor]((prevState) => ({
+      ...prevState,
+      pageNumber: lastPageNumber,
+    }));
   }
 
   return (

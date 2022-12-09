@@ -19,8 +19,8 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
-import { ReactNode, useEffect, useState } from "react";
-import styled, { CSSProperties } from "styled-components";
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
 export interface Props {
   vote: VoteT;
@@ -43,6 +43,7 @@ export function VotesListItem({
   const { signer } = useWalletContext();
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
+  const [wrapperWidth, setWrapperWidth] = useState(0);
   const {
     decodedIdentifier,
     title,
@@ -59,11 +60,13 @@ export function VotesListItem({
     isGovernance,
     timeAsDate,
     augmentedData,
+    canReveal,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
   const isRolled = augmentedData?.l1RequestTxHash === "rolled";
+  const wrapperRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
     if (!options) return;
@@ -76,6 +79,12 @@ export function VotesListItem({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options, decryptedVote]);
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      setWrapperWidth(wrapperRef.current.offsetWidth);
+    }
+  }, [wrapperRef.current?.offsetWidth]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
@@ -166,7 +175,8 @@ export function VotesListItem({
     if (phase === "commit") {
       return isCommitted ? "Committed" : "Not committed";
     } else {
-      if (!decryptedVote) return "Not committed";
+      if (!isCommitted) return "Not committed";
+      if (!decryptedVote || !canReveal) return "Unable to reveal";
       return isRevealed ? "Revealed" : "Not revealed";
     }
   }
@@ -191,21 +201,51 @@ export function VotesListItem({
     return "transparent";
   }
 
-  function getTitleMaxWidth() {
-    if (activityStatus === "upcoming") return "70vw";
-    if (activityStatus === "active" && phase === "commit")
-      return "max(35vw, 320px)";
-    if (
-      (activityStatus === "active" && phase === "reveal") ||
-      activityStatus === "past"
-    )
-      return "max(400px, 45vw)";
+  function getCellWidths() {
+    const baseCellWidths = {
+      "--title-cell-width": `${0.5 * wrapperWidth}px`,
+      "--input-cell-width": `${0.2 * wrapperWidth}px`,
+      "--output-cell-width": "auto",
+      "--status-cell-width": "auto",
+      "--more-details-cell-width": "auto",
+    };
+
+    const commitCellWidths = baseCellWidths;
+
+    const revealCellWidths = {
+      ...baseCellWidths,
+      "--title-cell-width": `${0.6 * wrapperWidth}px`,
+    };
+
+    const upcomingCellWidths = {
+      ...baseCellWidths,
+      "--title-cell-width": `${0.8 * wrapperWidth}px`,
+    };
+
+    const pastCellWidths = {
+      ...baseCellWidths,
+      "--title-cell-width": `${0.6 * wrapperWidth}px`,
+    };
+
+    if (activityStatus === "active") {
+      if (phase === "commit") return commitCellWidths;
+      if (phase === "reveal") return revealCellWidths;
+    }
+
+    if (activityStatus === "upcoming") return upcomingCellWidths;
+
+    if (activityStatus === "past") return pastCellWidths;
+
+    return baseCellWidths;
   }
 
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
-        <Link href={`https://goerli.etherscan.io/tx/${commitHash}`}>
+        <Link
+          href={`https://goerli.etherscan.io/tx/${commitHash}`}
+          target="_blank"
+        >
           {getCommittedOrRevealed()}
         </Link>
       ) : (
@@ -213,7 +253,10 @@ export function VotesListItem({
       );
     }
     return revealHash ? (
-      <Link href={`https://goerli.etherscan.io/tx/${revealHash}`}>
+      <Link
+        href={`https://goerli.etherscan.io/tx/${revealHash}`}
+        target="_blank"
+      >
         {getCommittedOrRevealed()}
       </Link>
     ) : (
@@ -221,29 +264,29 @@ export function VotesListItem({
     );
   }
 
+  const style = {
+    "--border-color": getBorderColor(),
+    "--dot-color": getDotColor(),
+    "--cell-padding": "1.5vw",
+    "--title-icon-size": "40px",
+    ...getCellWidths(),
+  } as CSSProperties;
+
+  if (!width) return null;
+
   return (
-    <Wrapper as={isTabletAndUnder ? "div" : "tr"}>
-      <VoteTitleOuterWrapper as={isTabletAndUnder ? "div" : "td"}>
-        <VoteTitleWrapper
-          style={
-            {
-              "--border-color": getBorderColor(),
-            } as CSSProperties
-          }
-        >
+    <Wrapper
+      as={isTabletAndUnder ? "div" : "tr"}
+      style={style}
+      ref={wrapperRef}
+    >
+      <VoteTitleCell as={isTabletAndUnder ? "div" : "td"}>
+        <VoteTitleWrapper>
           <VoteIconWrapper>
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle
-              style={
-                {
-                  "--title-max-width": getTitleMaxWidth(),
-                } as CSSProperties
-              }
-            >
-              {title}
-            </VoteTitle>
+            <VoteTitle>{title}</VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -269,9 +312,9 @@ export function VotesListItem({
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
         </VoteTitleWrapper>
-      </VoteTitleOuterWrapper>
+      </VoteTitleCell>
       {showVoteInput() ? (
-        <VoteInput as={isTabletAndUnder ? "div" : "td"}>
+        <VoteInputCell as={isTabletAndUnder ? "div" : "td"}>
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -288,7 +331,7 @@ export function VotesListItem({
               disabled={!signer}
             />
           )}
-        </VoteInput>
+        </VoteInputCell>
       ) : null}
       {showYourVote() ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
@@ -302,38 +345,31 @@ export function VotesListItem({
         </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
-        <VoteStatusWrapper as={isTabletAndUnder ? "div" : "td"}>
+        <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <>
-              <DotIcon
-                style={
-                  {
-                    "--dot-color": getDotColor(),
-                  } as CSSProperties
-                }
-              />{" "}
-              {isFetching ? (
-                <LoadingSkeleton width="8vw" />
-              ) : (
-                getRelevantTransactionLink()
-              )}
-            </>
+            {isFetching ? (
+              <LoadingSkeleton width="8vw" />
+            ) : (
+              <>
+                <DotIcon
+                  style={
+                    {
+                      "--dot-color": getDotColor(),
+                    } as CSSProperties
+                  }
+                />{" "}
+                {getRelevantTransactionLink()}
+              </>
+            )}
           </VoteStatus>
-        </VoteStatusWrapper>
+        </VoteStatusCell>
       ) : null}
-      <MoreDetailsWrapper
-        as={isTabletAndUnder ? "div" : "td"}
-        style={
-          {
-            "--border-color": getBorderColor(),
-          } as CSSProperties
-        }
-      >
+      <MoreDetailsCell as={isTabletAndUnder ? "div" : "td"}>
         <MoreDetails>
           <Button label="More details" onClick={moreDetailsAction} />
         </MoreDetails>
-      </MoreDetailsWrapper>
+      </MoreDetailsCell>
     </Wrapper>
   );
 }
@@ -374,20 +410,69 @@ const Wrapper = styled.tr`
   }
 `;
 
-const VoteTitleOuterWrapper = styled.td`
-  padding-left: 1vw;
-  padding-right: 2.5vw;
-  border-radius: 5px;
+const VoteTitleCell = styled.td`
+  width: var(--title-cell-width);
+  padding-left: var(--cell-padding);
+  padding-right: var(--cell-padding);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  @media ${tabletAndUnder} {
+    width: 100%;
+    padding: 0;
+  }
+`;
+
+const VoteInputCell = styled.td`
+  width: var(--input-cell-width);
+  padding-right: var(--cell-padding);
 
   @media ${tabletAndUnder} {
     padding: 0;
+    min-width: unset;
+  }
+`;
+
+const VoteOutputCell = styled.td`
+  width: var(--output-cell-width);
+  padding-right: var(--cell-padding);
+  font: var(--text-md);
+
+  @media ${tabletAndUnder} {
+    display: flex;
+    justify-content: space-between;
+  }
+`;
+
+const VoteStatusCell = styled.td`
+  width: var(--status-cell-width);
+  padding-right: var(--cell-padding);
+  padding-left: var(--cell-padding);
+
+  font: var(--text-md);
+
+  @media ${tabletAndUnder} {
+    display: flex;
+    justify-content: space-between;
+  }
+`;
+
+const MoreDetailsCell = styled.td`
+  width: var(--more-details-cell-width);
+  padding-right: var(--cell-padding);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  @media ${tabletAndUnder} {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
   }
 `;
 
 const VoteTitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 1vw;
+  gap: var(--cell-padding);
 
   @media ${tabletAndUnder} {
     gap: unset;
@@ -396,26 +481,11 @@ const VoteTitleWrapper = styled.div`
   }
 `;
 
-const VoteDetailsWrapper = styled.div``;
-
-const VoteDetailsInnerWrapper = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-`;
-
-const VoteIconWrapper = styled.div`
-  width: 40px;
-  height: 40px;
-
-  @media ${tabletAndUnder} {
-    display: none;
-  }
-`;
-
 const VoteTitle = styled.h3`
   font: var(--header-sm);
-  max-width: var(--title-max-width);
+  max-width: calc(
+    var(--title-cell-width) - var(--title-icon-size) - 3 * var(--cell-padding)
+  );
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -429,37 +499,33 @@ const VoteTitle = styled.h3`
   }
 `;
 
+const VoteDetailsWrapper = styled.div``;
+
+const VoteDetailsInnerWrapper = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+`;
+
+const VoteIconWrapper = styled.div`
+  width: var(--title-icon-size);
+  height: var(--title-icon-size);
+
+  @media ${tabletAndUnder} {
+    display: none;
+  }
+`;
+
 const VoteOrigin = styled.h4`
   font: var(--text-xs);
   color: var(--black-opacity-50);
 `;
 
-const VoteInput = styled.td`
-  min-width: calc(240px + 2.5vw);
-  padding-right: 2.5vw;
-
-  @media ${tabletAndUnder} {
-    padding: 0;
-    min-width: unset;
-  }
-`;
-
-const VoteOutputText = styled.td`
-  font: var(--text-md);
-  min-width: calc(80px + 2.5vw);
-  padding-right: 2.5vw;
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
-
-const YourVote = styled(VoteOutputText)`
+const YourVote = styled(VoteOutputCell)`
   white-space: nowrap;
 `;
 
-const CorrectVote = styled(VoteOutputText)`
+const CorrectVote = styled(VoteOutputCell)`
   white-space: nowrap;
 
   @media ${tabletAndUnder} {
@@ -475,16 +541,6 @@ const VoteLabel = styled.span`
   }
 `;
 
-const VoteStatusWrapper = styled.td`
-  font: var(--text-md);
-  padding-right: 2.5vw;
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
-
 const VoteStatus = styled.div`
   display: flex;
   align-items: center;
@@ -494,16 +550,6 @@ const VoteStatus = styled.div`
 
   @media ${tabletAndUnder} {
     margin-left: 0;
-  }
-`;
-
-const MoreDetailsWrapper = styled.td`
-  padding-right: 2.5vw;
-  border-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    padding-top: 10px;
-    border-top: 1px solid var(--border-color);
   }
 `;
 

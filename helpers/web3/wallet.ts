@@ -1,6 +1,6 @@
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
 import { ethers } from "ethers";
-import { truncateEthAddress } from "helpers";
+import { getAddress, truncateEthAddress } from "helpers";
 
 export function handleDisconnectWallet(
   wallet: WalletState | null,
@@ -18,7 +18,7 @@ export function handleDisconnectWallet(
 export function getAccountDetails(connectedWallets?: WalletState[]) {
   const connectedWallet = connectedWallets?.[0];
   const account = connectedWallet?.accounts[0];
-  const address = account?.address ?? "";
+  const address = account?.address ? getAddress(account.address) : "";
   const truncatedAddress = address ? truncateEthAddress(address) : undefined;
 
   return {

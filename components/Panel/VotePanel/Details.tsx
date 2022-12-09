@@ -28,6 +28,7 @@ export function Details({
   ancillaryData,
   decodedAncillaryData,
   options,
+  time,
   timeAsDate,
   discordLink,
   decodedAdminTransactions,
@@ -200,7 +201,7 @@ export function Details({
           <span>UTC</span> <span>{timeAsDate.toUTCString()}</span>
         </Timestamp>
         <Timestamp>
-          <span>UNIX</span> <span>{timeAsDate.getTime()}</span>
+          <span>UNIX</span> <span>{time}</span>
         </Timestamp>
       </SectionWrapper>
       {links.length > 0 ? (

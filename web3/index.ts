@@ -1,4 +1,5 @@
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
+export { createVotingV1ContractInstance } from "./contracts/createVotingV1ContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
 export { removeDelegate } from "./mutations/delegation/removeDelegate";
 export { removeDelegator } from "./mutations/delegation/removeDelegator";
@@ -32,3 +33,4 @@ export { getDecodedAdminTransactions } from "./queries/votes/getDecodedAdminTran
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { getUpcomingVotes } from "./queries/votes/getUpcomingVotes";
+export { getCommittedVotesByCaller } from "./queries/votes/getCommittedVotesByCaller";

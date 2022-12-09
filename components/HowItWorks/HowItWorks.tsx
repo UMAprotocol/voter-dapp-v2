@@ -123,7 +123,7 @@ export function HowItWorks() {
           }
           content={
             <>
-              You have{" "}
+              Your unclaimed UMA rewards:{" "}
               <Strong>
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
@@ -131,7 +131,6 @@ export function HowItWorks() {
                   formatNumberForDisplay(outstandingRewards, { decimals: 3 })
                 )}
               </Strong>{" "}
-              in unclaimed rewards
             </>
           }
           actionLabel="Claim"

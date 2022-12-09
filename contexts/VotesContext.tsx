@@ -5,6 +5,7 @@ import {
   useActiveVotes,
   useAugmentedVoteData,
   useCommittedVotes,
+  useCommittedVotesByCaller,
   useContentfulData,
   useDecodedAdminTransactions,
   useDecryptedVotes,
@@ -13,6 +14,7 @@ import {
   useRevealedVotes,
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
+  useCommittedVotesForDelegator,
 } from "hooks";
 import { createContext, ReactNode } from "react";
 import {
@@ -39,6 +41,7 @@ export interface VotesContextState {
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
   getPastVotes: () => VoteT[];
+  getPastVotesV2: () => VoteT[];
   getActivityStatus: () => ActivityStatusT;
   getUserDependentIsLoading: () => boolean;
   getUserIndependentIsLoading: () => boolean;
@@ -62,6 +65,7 @@ export const defaultVotesContextState: VotesContextState = {
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
   getPastVotes: () => [],
+  getPastVotesV2: () => [],
   getActivityStatus: () => "past",
   getUserDependentIsLoading: () => false,
   getUserIndependentIsLoading: () => false,
@@ -102,6 +106,16 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isFetching: committedVotesIsFetching,
   } = useCommittedVotes();
   const {
+    data: committedVotesByCaller,
+    isLoading: committedVotesByCallerIsLoading,
+    isFetching: committedVotesByCallerIsFetching,
+  } = useCommittedVotesByCaller();
+  const {
+    data: committedVotesForDelegator,
+    isLoading: committedVotesForDelegatorIsLoading,
+    isFetching: committedVotesByForDelegatorFetching,
+  } = useCommittedVotesForDelegator();
+  const {
     data: revealedVotes,
     isLoading: revealedVotesIsLoading,
     isFetching: revealedVotesIsFetching,
@@ -129,6 +143,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return (
       contentfulDataIsLoading ||
       committedVotesIsLoading ||
+      committedVotesByCallerIsLoading ||
+      committedVotesForDelegatorIsLoading ||
       revealedVotesIsLoading ||
       encryptedVotesIsLoading ||
       decryptedVotesIsLoading
@@ -149,6 +165,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return (
       contentfulDataIsFetching ||
       committedVotesIsFetching ||
+      committedVotesByCallerIsFetching ||
+      committedVotesByForDelegatorFetching ||
       revealedVotesIsFetching ||
       encryptedVotesIsFetching ||
       decryptedVotesIsFetching
@@ -177,20 +195,49 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return getVotesWithData(pastVotes);
   }
 
+  function getPastVotesV2() {
+    return getVotesWithData(pastVotes).filter((vote) => !vote.isV1);
+  }
+
   function getActivityStatus() {
     if (hasActiveVotes) return "active";
     if (hasUpcomingVotes) return "upcoming";
     return "past";
   }
 
+  // This function tells you if your current logged in account can reveal this vote, ie the commit was cast by your current account.
+  // This is important in the case where a delegate or delegator could have committed, this will determine if the account can reveal.
+  function getCanReveal(uniqueKey: string): boolean {
+    // This uses subtle logic to know if the current account was the committer.
+    // for a regular wallet, they will always be both the voter and the caller but never the delegator.
+    // for a delegator who committed, they will always be both voter and caller but not delegator, same as regular wallet.
+    // for a delegate who committed, they will never be the voter, but will be the caller and have a vote by the delegator
+    return (
+      // this table finds all votes as the voter for the current account
+      (!!committedVotes[uniqueKey] &&
+        // this table finds all votes as the caller for the current account
+        !!committedVotesByCaller[uniqueKey] &&
+        // this table will look up your delagate if you are a delegator and find votes with them as the voter
+        !committedVotesForDelegator[uniqueKey]) ||
+      (!committedVotes[uniqueKey] &&
+        !!committedVotesByCaller[uniqueKey] &&
+        !!committedVotesForDelegator[uniqueKey])
+    );
+  }
   function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       return {
         ...vote,
         uniqueKey,
-        isCommitted: committedVotes[uniqueKey] ? true : false,
-        commitHash: committedVotes[uniqueKey],
+        isCommitted:
+          committedVotes[uniqueKey] || committedVotesForDelegator[uniqueKey]
+            ? true
+            : false,
+        commitHash:
+          committedVotes[uniqueKey] || committedVotesForDelegator[uniqueKey],
         isRevealed: revealedVotes[uniqueKey] ? true : false,
+        // tells you if you can possibily reveal this vote, it does not check all conditions (ie in reveal phase, etc)
+        canReveal: getCanReveal(uniqueKey),
         revealHash: revealedVotes[uniqueKey],
         encryptedVote: encryptedVotes[uniqueKey],
         decryptedVote: decryptedVotes[uniqueKey],
@@ -230,6 +277,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         getActiveVotes,
         getUpcomingVotes,
         getPastVotes,
+        getPastVotesV2,
         getActivityStatus,
         getUserDependentIsLoading,
         getUserIndependentIsLoading,

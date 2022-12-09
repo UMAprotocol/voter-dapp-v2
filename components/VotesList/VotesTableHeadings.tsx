@@ -17,9 +17,7 @@ export function VotesTableHeadings({ activityStatus }: Props) {
   return (
     <Wrapper>
       {headings.map((heading) => (
-        <Heading scope="col" key={heading}>
-          {heading}
-        </Heading>
+        <Heading key={heading}>{heading}</Heading>
       ))}
     </Wrapper>
   );
