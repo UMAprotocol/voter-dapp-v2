@@ -3,6 +3,7 @@ import { calculateOutstandingRewards } from "helpers";
 import {
   useAccountDetails,
   useInterval,
+  useOutstandingRewards,
   useRewardsCalculationInputs,
   useStakedBalance,
   useStakerDetails,
@@ -77,12 +78,17 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     data: {
       emissionRate,
       rewardPerTokenStored,
-      lastUpdateTime,
       cumulativeStake,
+      updateTime,
     },
     isLoading: rewardsCalculationInputsLoading,
     isFetching: rewardsCalculationInputsFetching,
   } = useRewardsCalculationInputs();
+  const {
+    data: outstandingRewardsFromContract,
+    isLoading: outstandingRewardsLoading,
+    isFetching: outstandingRewardsFetching,
+  } = useOutstandingRewards();
   const {
     data: tokenAllowance,
     isLoading: tokenAllowanceLoading,
@@ -104,11 +110,12 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
   function updateOutstandingRewards() {
     const calculatedOutstandingRewards = calculateOutstandingRewards({
+      outstandingRewardsFromContract,
       stakedBalance,
       rewardsPaidPerToken,
       cumulativeStake,
       rewardPerTokenStored,
-      lastUpdateTime,
+      updateTime,
       emissionRate,
     });
 
@@ -126,6 +133,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       stakerDetailsLoading ||
       stakedBalanceLoading ||
       unstakedBalanceLoading ||
+      outstandingRewardsLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
       rewardsCalculationInputsLoading ||
@@ -140,6 +148,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       stakerDetailsFetching ||
       stakedBalanceFetching ||
       unstakedBalanceFetching ||
+      outstandingRewardsFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
       rewardsCalculationInputsFetching ||

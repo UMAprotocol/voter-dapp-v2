@@ -12,7 +12,7 @@ import { getRewardsCalculationInputs } from "web3";
 export function useRewardsCalculationInputs() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
-  const { stakedBalance, unstakedBalance, pendingUnstake } =
+  const { stakedBalance, unstakedBalance, pendingUnstake, updateTime } =
     useStakingContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
@@ -23,6 +23,7 @@ export function useRewardsCalculationInputs() {
       stakedBalance,
       unstakedBalance,
       pendingUnstake,
+      updateTime,
     ],
     () => getRewardsCalculationInputs(voting),
     {
@@ -31,8 +32,8 @@ export function useRewardsCalculationInputs() {
       initialData: {
         emissionRate: BigNumber.from(0),
         rewardPerTokenStored: BigNumber.from(0),
-        lastUpdateTime: BigNumber.from(0),
         cumulativeStake: BigNumber.from(0),
+        updateTime: BigNumber.from(0),
       },
       onError,
     }
