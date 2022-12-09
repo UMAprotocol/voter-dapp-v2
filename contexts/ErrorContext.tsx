@@ -17,6 +17,7 @@ export const defaultErrorContextState: ErrorContextState = {
     stake: [],
     unstake: [],
     claim: [],
+    claimV1: [],
     delegation: [],
     storybook: [],
   },

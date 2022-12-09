@@ -8,20 +8,22 @@ import styled from "styled-components";
 interface Props {
   cooldownEnds: Date | null | undefined;
   pendingUnstake: BigNumber | undefined;
-  canClaim: boolean;
-  onClaim: () => void;
+  isReadyToUnstake: boolean;
+  onExecuteUnstake: () => void;
 }
 export function CooldownTimer({
   cooldownEnds,
   pendingUnstake,
-  canClaim,
-  onClaim,
+  isReadyToUnstake,
+  onExecuteUnstake,
 }: Props) {
   const formattedCooldownEnds =
     cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
   const cooldownDescription = "in cooldown period";
-  const claimDescription = "ready to claim";
-  const description = canClaim ? claimDescription : cooldownDescription;
+  const unstakeDescription = "ready to unstake";
+  const description = isReadyToUnstake
+    ? unstakeDescription
+    : cooldownDescription;
 
   return (
     <Wrapper>
@@ -34,16 +36,16 @@ export function CooldownTimer({
         </Amount>{" "}
         <Description>{description}</Description>
       </AmountDescriptionWrapper>
-      {canClaim ? (
-        <ClaimButtonWrapper>
+      {isReadyToUnstake ? (
+        <UnstakeButtonWrapper>
           <Button
             variant="primary"
-            label="Claim tokens"
-            onClick={onClaim}
+            label="Unstake tokens"
+            onClick={onExecuteUnstake}
             width={150}
             height={35}
           />
-        </ClaimButtonWrapper>
+        </UnstakeButtonWrapper>
       ) : (
         <TimeRemaining>{formattedCooldownEnds} left</TimeRemaining>
       )}
@@ -85,7 +87,7 @@ const IconWrapper = styled.div`
 
 const TimeIcon = styled(Time)``;
 
-const ClaimButtonWrapper = styled.div`
+const UnstakeButtonWrapper = styled.div`
   margin-left: auto;
 `;
 

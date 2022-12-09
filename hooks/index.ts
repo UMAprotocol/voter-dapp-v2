@@ -23,12 +23,13 @@ export { useIgnoreReceivedRequestToBeDelegate } from "./mutations/delegation/use
 export { useSendRequestToBeDelegate } from "./mutations/delegation/useSendRequestToBeDelegate";
 export { useTerminateRelationshipWithDelegate } from "./mutations/delegation/useTerminateRelationshipWithDelegate";
 export { useTerminateRelationshipWithDelegator } from "./mutations/delegation/useTerminateRelationshipWithDelegator";
+export { useWithdrawAndRestake } from "./mutations/rewards/useWithdrawAndRestake";
+export { useWithdrawRewards } from "./mutations/rewards/useWithdrawRewards";
+export { useWithdrawV1Rewards } from "./mutations/rewards/useWithdrawV1Rewards";
 export { useApprove } from "./mutations/staking/useApprove";
 export { useExecuteUnstake } from "./mutations/staking/useExecuteUnstake";
 export { useRequestUnstake } from "./mutations/staking/useRequestUnstake";
 export { useStake } from "./mutations/staking/useStake";
-export { useWithdrawAndRestake } from "./mutations/staking/useWithdrawAndRestake";
-export { useWithdrawRewards } from "./mutations/staking/useWithdrawRewards";
 export { useCommitVotes } from "./mutations/votes/useCommitVotes";
 export { useRevealVotes } from "./mutations/votes/useRevealVotes";
 export { useDelegateToStaker } from "./queries/delegation/useDelegateToStaker";
@@ -40,6 +41,7 @@ export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceive
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
+export { useV1Rewards } from "./queries/rewards/useV1Rewards";
 export { useStakedBalance } from "./queries/staking/useStakedBalance";
 export { useStakerDetails } from "./queries/staking/useStakerDetails";
 export { useTokenAllowance } from "./queries/staking/useTokenAllowance";

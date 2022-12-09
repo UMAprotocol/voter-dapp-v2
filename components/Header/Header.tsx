@@ -6,8 +6,14 @@ import {
   red500,
   tabletAndUnder,
 } from "constant";
-import { useDelegationContext, usePanelContext } from "hooks";
+import { formatNumberForDisplay } from "helpers";
+import {
+  useDelegationContext,
+  usePanelContext,
+  useStakingContext,
+} from "hooks";
 import NextLink from "next/link";
+import Bell from "public/assets/icons/bell.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Logo from "public/assets/logo.svg";
 import styled, { CSSProperties } from "styled-components";
@@ -17,11 +23,13 @@ export function Header() {
   const { openPanel } = usePanelContext();
   const { getDelegationStatus, getDelegationDataLoading } =
     useDelegationContext();
+  const { v1Rewards } = useStakingContext();
 
   const status = getDelegationStatus();
   const showDelegationNotification =
     !getDelegationDataLoading() &&
     (status === "delegate" || status === "delegate-pending");
+  const showV1RewardsNotification = v1Rewards?.totalRewards.gt(0);
   const isDelegate = status === "delegate";
   const isDelegatePending = status === "delegate-pending";
 
@@ -31,8 +39,18 @@ export function Header() {
     "--background-color": isDelegate ? "transparent" : red100,
   } as CSSProperties;
 
+  const v1RewardsNotificationStyle = {
+    "--color": red500,
+    "--border-color": red500,
+    "--background-color": red100,
+  } as CSSProperties;
+
   function openMenuPanel() {
     openPanel("menu");
+  }
+
+  function openClaimV1Panel() {
+    openPanel("claimV1");
   }
 
   return (
@@ -48,21 +66,45 @@ export function Header() {
         </HomeLinkAndPageDescriptionWrapper>
         <WalletAndMenuWrapper>
           {showDelegationNotification && (
-            <DelegationNotificationWrapper style={delegationNotificationStyle}>
+            <NotificationWrapper style={delegationNotificationStyle}>
               {isDelegatePending && (
-                <DelegationNotificationIconWrapper>
-                  <DelegationNotificationIcon />
-                </DelegationNotificationIconWrapper>
+                <NotificationIconWrapper>
+                  <DelegateRequestNotificationIcon />
+                </NotificationIconWrapper>
               )}
-              <DelegationNotificationText>
-                <NextLink href="/wallet-settings" passHref>
+              <NotificationText>
+                <Link href="/wallet-settings">
                   <>
-                    {isDelegatePending && <A>Received request</A>}
-                    {isDelegate && <A>Delegate connected</A>}
+                    {isDelegatePending && "Received delegate request"}
+                    {isDelegate && "Delegate connected"}
                   </>
-                </NextLink>
-              </DelegationNotificationText>
-            </DelegationNotificationWrapper>
+                </Link>
+              </NotificationText>
+              <MobileNotificationText>
+                <Link href="/wallet-settings">Delegate</Link>
+              </MobileNotificationText>
+            </NotificationWrapper>
+          )}
+          {showV1RewardsNotification && (
+            <NotificationWrapper style={v1RewardsNotificationStyle}>
+              <NotificationIconWrapper>
+                <V1RewardsNotificationIcon />
+              </NotificationIconWrapper>
+              <NotificationText>
+                <Strong>
+                  {formatNumberForDisplay(v1Rewards?.totalRewards)}
+                </Strong>{" "}
+                UMA from v1{" "}
+                <OpenClaimPanelButton onClick={openClaimV1Panel}>
+                  ready to claim
+                </OpenClaimPanelButton>
+              </NotificationText>
+              <MobileNotificationText>
+                <OpenClaimPanelButton onClick={openClaimV1Panel}>
+                  Rewards
+                </OpenClaimPanelButton>
+              </MobileNotificationText>
+            </NotificationWrapper>
           )}
           <WalletWrapper>
             <Wallet />
@@ -78,7 +120,8 @@ export function Header() {
   );
 }
 
-const DelegationNotificationWrapper = styled.div`
+const NotificationWrapper = styled.div`
+  height: 40px;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -91,7 +134,8 @@ const DelegationNotificationWrapper = styled.div`
   border-radius: 5px;
 
   @media ${mobileAndUnder} {
-    padding-inline: 10px;
+    height: fit-content;
+    padding: 5px;
     gap: 5px;
     font: var(--text-xs);
   }
@@ -103,7 +147,18 @@ const WalletWrapper = styled.div`
   }
 `;
 
-const DelegationNotificationText = styled.p``;
+const NotificationText = styled.p`
+  @media ${tabletAndUnder} {
+    display: none;
+  }
+`;
+
+const MobileNotificationText = styled(NotificationText)`
+  display: none;
+  @media ${tabletAndUnder} {
+    display: block;
+  }
+`;
 
 const OuterWrapper = styled.header``;
 
@@ -135,7 +190,12 @@ const HomeLinkAndPageDescriptionWrapper = styled.div`
 
 const WalletAndMenuWrapper = styled.div`
   display: flex;
+  align-items: center;
   gap: 25px;
+
+  @media ${mobileAndUnder} {
+    gap: 15px;
+  }
 `;
 
 const PageDescription = styled.p`
@@ -163,16 +223,33 @@ const MenuIconWrapper = styled.div`
   height: 40px;
 `;
 
-const DelegationNotificationIcon = styled(Time)`
-  margin-top: 2px;
+const Strong = styled.strong`
+  font-weight: 700;
 `;
 
-const A = styled.a`
+const DelegateRequestNotificationIcon = styled(Time)``;
+
+const V1RewardsNotificationIcon = styled(Bell)``;
+
+const Link = styled(NextLink)`
   color: inherit;
   text-decoration: underline;
 `;
 
-const DelegationNotificationIconWrapper = styled.div`
+const OpenClaimPanelButton = styled.button`
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: none;
+  text-decoration: underline;
+`;
+
+const NotificationIconWrapper = styled.div`
   width: 24px;
   height: 24px;
+
+  @media ${mobileAndUnder} {
+    width: 10px;
+    height: 10px;
+  }
 `;

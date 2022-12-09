@@ -17,6 +17,7 @@ export type DropdownItemT = InputDataT & {
 export type PanelTypeT =
   | "menu"
   | "claim"
+  | "claimV1"
   | "vote"
   | "stake"
   | "history"
@@ -46,5 +47,6 @@ export type ErrorOriginT =
   | "stake"
   | "unstake"
   | "claim"
+  | "claimV1"
   | "delegation"
   | "storybook";
