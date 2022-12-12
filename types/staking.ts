@@ -6,3 +6,8 @@ export type StakerDetailsT = {
   unstakeRequestTime: Date | undefined;
   delegate: string;
 };
+
+export type V1RewardsT = {
+  multicallPayload: string[];
+  totalRewards: BigNumber;
+};

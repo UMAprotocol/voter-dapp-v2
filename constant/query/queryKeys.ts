@@ -19,6 +19,7 @@ export const stakerDetailsKey = "stakerDetailsKey";
 export const unstakeCoolDownKey = "unstakeCoolDownKey";
 // rewards
 export const rewardsCalculationInputsKey = "rewardsCalculationInputsKey";
+export const v1RewardsKey = "v1RewardsKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation

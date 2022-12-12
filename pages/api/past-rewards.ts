@@ -1,7 +1,7 @@
 import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber, ethers } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
-import { SupportedChainIdsWithGoerli } from "types";
+import { MainnetOrGoerli } from "types";
 import { constructContract } from "./_common";
 
 type GroupedReveals = Record<
@@ -11,8 +11,8 @@ type GroupedReveals = Record<
 
 async function generatePastRewardTx(
   voterAddress: string,
-  chainId: SupportedChainIdsWithGoerli
-): Promise<{ multiCallPayload: string[]; totalRewards: string }> {
+  chainId: MainnetOrGoerli
+): Promise<{ multicallPayload: string[]; totalRewards: string }> {
   const votingV1 = (await constructContract(chainId, "Voting")) as VotingEthers;
 
   const [voteRevealEvents, rewardsRetrievedEvents] = await Promise.all([
@@ -48,16 +48,16 @@ async function generatePastRewardTx(
   });
 
   if (Object.keys(groupedReveals).length === 0)
-    return { multiCallPayload: [], totalRewards: "0" };
+    return { multicallPayload: [], totalRewards: "0" };
 
-  return constructMultiCall(groupedReveals, voterAddress, chainId);
+  return constructMulticall(groupedReveals, voterAddress, chainId);
 }
 
-async function constructMultiCall(
+async function constructMulticall(
   unclaimedVotes: GroupedReveals,
   voterAddress: string,
-  chainId: SupportedChainIdsWithGoerli
-): Promise<{ multiCallPayload: string[]; totalRewards: string }> {
+  chainId: MainnetOrGoerli
+): Promise<{ multicallPayload: string[]; totalRewards: string }> {
   const votingV2 = (await constructContract(
     chainId,
     "VotingV2"
@@ -66,10 +66,10 @@ async function constructMultiCall(
     "retrieveRewardsOnMigratedVotingContract(address,uint256,(bytes32,uint256,bytes)[])"
   );
 
-  const multiCallPayload: string[] = [];
+  const multicallPayload: string[] = [];
 
   Object.keys(unclaimedVotes).forEach((roundId) => {
-    multiCallPayload.push(
+    multicallPayload.push(
       // @ts-expect-error - ethers types are incorrect for this function.
       votingV2.interface.encodeFunctionData(retrieveFragment, [
         voterAddress,
@@ -80,16 +80,16 @@ async function constructMultiCall(
   });
 
   try {
-    const totalRewards = (await votingV2.callStatic.multicall(multiCallPayload))
+    const totalRewards = (await votingV2.callStatic.multicall(multicallPayload))
       .map((reward: string) => ethers.BigNumber.from(reward))
       .reduce(
         (a: BigNumber, b: BigNumber) => a.add(b),
         ethers.BigNumber.from(0)
       )
       .toString();
-    return { multiCallPayload, totalRewards };
+    return { multicallPayload, totalRewards };
   } catch (error) {
-    return { multiCallPayload: [], totalRewards: "0" };
+    return { multicallPayload: [], totalRewards: "0" };
   }
 }
 
@@ -98,22 +98,22 @@ export default async function handler(
   response: NextApiResponse
 ) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
-
   try {
     const body = request.body as {
-      account: string;
-      chainId: SupportedChainIdsWithGoerli;
+      address: string;
+      chainId: MainnetOrGoerli;
     };
-    ["account", "chainId"].forEach((requiredKey) => {
+    ["address", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
         throw `Missing key in req body! required: ${requiredKey}`;
     });
-    const multiCallTx = await generatePastRewardTx(body.account, body.chainId);
-    response.status(200).send(multiCallTx);
+    const { address, chainId } = body;
+    const multicallTx = await generatePastRewardTx(address, chainId);
+    response.status(200).send(multicallTx);
   } catch (e) {
     console.error(e);
     response.status(500).send({
-      message: "Error in generating multiCall tx",
+      message: "Error in generating multicall tx",
       error: e instanceof Error ? e.message : e,
     });
   }
