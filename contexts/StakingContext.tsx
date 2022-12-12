@@ -165,6 +165,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         delegatorStakedBalance,
         unstakedBalance,
         pendingUnstake,
+        updateTime,
         unstakeCoolDown,
         outstandingRewards,
         tokenAllowance,
