@@ -21,6 +21,7 @@ export interface StakingContextState {
   delegatorStakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
+  updateTime: BigNumber | undefined;
   outstandingRewards: BigNumber | undefined;
   tokenAllowance: BigNumber | undefined;
   unstakeRequestTime: Date | undefined;
@@ -37,6 +38,7 @@ export const defaultStakingContextState: StakingContextState = {
   delegatorStakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
+  updateTime: undefined,
   outstandingRewards: undefined,
   tokenAllowance: undefined,
   unstakeRequestTime: undefined,
@@ -79,12 +81,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isFetching: unstakedBalanceFetching,
   } = useUnstakedBalance();
   const {
-    data: {
-      emissionRate,
-      rewardPerTokenStored,
-      cumulativeStake,
-      updateTime,
-    },
+    data: { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime },
     isLoading: rewardsCalculationInputsLoading,
     isFetching: rewardsCalculationInputsFetching,
   } = useRewardsCalculationInputs();
