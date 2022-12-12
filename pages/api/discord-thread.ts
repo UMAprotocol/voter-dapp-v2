@@ -16,6 +16,8 @@ export async function discordRequest(
 ) {
   const url = "https://discord.com/api/v10/" + endpoint;
   if (options.body) options.body = JSON.stringify(options.body);
+  if (!process.env.DISCORD_TOKEN)
+    throw Error("DISCORD_TOKEN env variable not set!");
   const res = await fetch(url, {
     headers: {
       Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
