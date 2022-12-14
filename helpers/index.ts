@@ -23,3 +23,4 @@ export { initOnboard } from "./web3/initOnboard";
 export { truncateEthAddress } from "./web3/truncateEthAddress";
 export * from "./web3/wallet";
 export * from "./config";
+export * from "./web3/signing";

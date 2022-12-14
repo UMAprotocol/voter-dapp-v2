@@ -1,8 +1,9 @@
 import { OnboardAPI } from "@web3-onboard/core";
 import { ethers } from "ethers";
-import { initOnboard } from "helpers";
+import { initOnboard, getSavedSigningKeys } from "helpers";
 import { createContext, ReactNode, useState } from "react";
 import { SigningKeys } from "types";
+import { useSign } from "hooks";
 
 export interface WalletContextState {
   onboard: OnboardAPI | null;
@@ -13,6 +14,8 @@ export interface WalletContextState {
   setSigner: (signer: ethers.Signer | null) => void;
   signingKeys: SigningKeys;
   setSigningKeys: (signingKeys: SigningKeys) => void;
+  sign: () => void;
+  isSigning: boolean;
 }
 
 export const defaultWalletContextState = {
@@ -24,6 +27,8 @@ export const defaultWalletContextState = {
   setSigner: () => null,
   signingKeys: {},
   setSigningKeys: () => null,
+  sign: () => null,
+  isSigning: false,
 };
 
 export const WalletContext = createContext<WalletContextState>(
@@ -35,7 +40,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [provider, setProvider] =
     useState<ethers.providers.Web3Provider | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
-  const [signingKeys, setSigningKeys] = useState<SigningKeys>({});
+  const [signingKeys, setSigningKeys] = useState<SigningKeys>(
+    getSavedSigningKeys()
+  );
+
+  const { mutate: sign, isLoading: isSigning } = useSign(
+    signer,
+    setSigningKeys
+  );
 
   return (
     <WalletContext.Provider
@@ -48,6 +60,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setSigner,
         signingKeys,
         setSigningKeys,
+        sign,
+        isSigning,
       }}
     >
       {children}
