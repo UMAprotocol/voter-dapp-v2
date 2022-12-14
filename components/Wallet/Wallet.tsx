@@ -1,7 +1,6 @@
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
-import { signingMessage, wrongChainMessage } from "constant";
+import { wrongChainMessage } from "constant";
 import { ethers } from "ethers";
-import { derivePrivateKey, recoverPublicKey } from "helpers";
 import {
   useContractsContext,
   useErrorContext,
@@ -11,7 +10,6 @@ import {
 } from "hooks";
 import { useEffect } from "react";
 import styled from "styled-components";
-import { SigningKey, SigningKeys } from "types";
 import {
   createVotingContractInstance,
   createVotingTokenContractInstance,
@@ -22,10 +20,10 @@ export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const [{ connectedChain }, setChain] = useSetChain();
   const connectedWallets = useWallets();
-  const { setProvider, setSigner, setSigningKeys } = useWalletContext();
+  const { setProvider, setSigner } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
   const { openPanel } = usePanelContext();
-  const { address, truncatedAddress } = useUserContext();
+  const { truncatedAddress } = useUserContext();
   const { addErrorMessage, removeErrorMessage } = useErrorContext();
 
   useEffect(() => {
@@ -84,51 +82,16 @@ export function Wallet() {
     } else {
       // After this is set you can use the provider to sign or transact
       const provider = new ethers.providers.Web3Provider(wallet.provider);
-      setProvider(provider);
       const signer = provider.getSigner();
+
+      setProvider(provider);
       setSigner(signer);
       // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
       setVoting(createVotingContractInstance(signer));
       setVotingToken(createVotingTokenContractInstance(signer));
-      void (async () => {
-        const savedSigningKeys = getSavedSigningKeys();
-        if (savedSigningKeys[address]) {
-          setSigningKeys(savedSigningKeys);
-        } else {
-          const newSigningKey = await makeSigningKey(signer, signingMessage);
-          const newSigningKeys = {
-            ...savedSigningKeys,
-            [address]: newSigningKey,
-          };
-          setSigningKeys(newSigningKeys);
-          saveSigningKeys(newSigningKeys);
-        }
-      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
-
-  async function makeSigningKey(signer: ethers.Signer, message: string) {
-    const signedMessage = await signer.signMessage(message);
-    const privateKey = derivePrivateKey(signedMessage);
-    const publicKey = recoverPublicKey(privateKey);
-    return {
-      privateKey,
-      publicKey,
-      signedMessage,
-    } as SigningKey;
-  }
-
-  function saveSigningKeys(newSigningKeys: SigningKeys) {
-    localStorage.setItem("signingKeys", JSON.stringify(newSigningKeys));
-  }
-
-  function getSavedSigningKeys() {
-    const savedSigningKeys = localStorage.getItem("signingKeys");
-    return savedSigningKeys
-      ? (JSON.parse(savedSigningKeys) as SigningKeys)
-      : {};
-  }
 
   function openMenuPanel() {
     openPanel("menu");
