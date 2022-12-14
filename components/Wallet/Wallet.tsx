@@ -78,6 +78,9 @@ export function Wallet() {
   useEffect(() => {
     if (!wallet?.provider) {
       setProvider(null);
+      setSigner(null);
+      setVoting(createVotingContractInstance());
+      setVotingToken(createVotingTokenContractInstance());
     } else {
       // After this is set you can use the provider to sign or transact
       const provider = new ethers.providers.Web3Provider(wallet.provider);
