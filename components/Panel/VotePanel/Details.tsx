@@ -295,6 +295,7 @@ const Pre = styled.pre`
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
+  word-break: break-all;
 `;
 
 const Timestamp = styled(Text)`

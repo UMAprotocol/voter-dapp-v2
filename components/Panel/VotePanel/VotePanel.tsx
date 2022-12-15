@@ -4,6 +4,7 @@ import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
+import { Discussion } from "./Discussion";
 import { Result } from "./Result";
 
 interface Props {
@@ -40,6 +41,10 @@ export function VotePanel({ content }: Props) {
     {
       title: "Details",
       content: <Details {...content} />,
+    },
+    {
+      title: "Discussion",
+      content: <Discussion {...content} />,
     },
   ];
 
