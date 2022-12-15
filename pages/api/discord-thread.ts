@@ -1,32 +1,11 @@
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { NextApiRequest, NextApiResponse } from "next";
-import { PriceRequestT } from "types";
-
-interface RawMessage {
-  content: string;
-  author: {
-    username: string;
-    id: string;
-    avatar: string;
-  };
-  timestamp: string;
-  thread: { id: string };
-}
-
-type RawThread = RawMessage[];
-
-interface ProcessedMessage {
-  message: string;
-  sender: string;
-  senderPicture: string | null;
-  time: string;
-}
-
-interface ProcessedThread {
-  identifier: string;
-  time: number;
-  thread: ProcessedMessage[];
-}
+import {
+  DiscordMessageT,
+  DiscordThreadT,
+  PriceRequestT,
+  RawDiscordThreadT,
+} from "types";
 
 export async function discordRequest(endpoint: string) {
   const url = "https://discord.com/api/v10/" + endpoint;
@@ -40,7 +19,7 @@ export async function discordRequest(endpoint: string) {
     },
   });
 
-  return (await res.json()) as RawThread;
+  return (await res.json()) as RawDiscordThreadT;
 }
 
 export async function getDiscordMessages(threadId: string) {
@@ -94,9 +73,9 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
 
   // Finally, process the results by traversing each request and the associated
   // thread to construct the final data structure with minimal data.
-  const processedResults: ProcessedThread[] = [];
+  const processedResults: DiscordThreadT[] = [];
   threadMessages.forEach((messages, index) => {
-    let processedMessages: ProcessedMessage[] = [];
+    let processedMessages: DiscordMessageT[] = [];
     if (messages)
       processedMessages = messages
         .filter((message) => message.content != "")
