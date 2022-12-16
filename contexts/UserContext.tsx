@@ -1,13 +1,9 @@
 import { WalletState } from "@web3-onboard/core";
 import { Account } from "@web3-onboard/core/dist/types";
 import { BigNumber } from "ethers";
-import {
-  useAccountDetails,
-  useUserVotingAndStakingDetails,
-  useWalletContext,
-} from "hooks";
+import { useAccountDetails, useUserVotingAndStakingDetails } from "hooks";
 import { createContext, ReactNode } from "react";
-import { VoteHistoryByKeyT, SigningKey } from "types";
+import { VoteHistoryByKeyT } from "types";
 
 export interface UserContextState {
   connectedWallet: WalletState | undefined;
@@ -25,8 +21,6 @@ export interface UserContextState {
   voteHistoryByKey: VoteHistoryByKeyT | undefined;
   userDataLoading: boolean;
   userDataFetching: boolean;
-  signingKey: SigningKey | undefined;
-  hasSigningKey: boolean;
 }
 
 export const defaultUserContextState: UserContextState = {
@@ -45,8 +39,6 @@ export const defaultUserContextState: UserContextState = {
   voteHistoryByKey: {},
   userDataLoading: false,
   userDataFetching: false,
-  signingKey: undefined,
-  hasSigningKey: false,
 };
 
 export const UserContext = createContext<UserContextState>(
@@ -56,8 +48,6 @@ export const UserContext = createContext<UserContextState>(
 export function UserProvider({ children }: { children: ReactNode }) {
   const { connectedWallet, account, address, truncatedAddress } =
     useAccountDetails();
-  const { signingKeys } = useWalletContext();
-
   const {
     data: {
       apr,
@@ -74,7 +64,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   } = useUserVotingAndStakingDetails();
 
   const walletIcon = connectedWallet?.icon;
-  const signingKey = signingKeys[address];
 
   return (
     <UserContext.Provider
@@ -94,8 +83,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         voteHistoryByKey,
         userDataLoading,
         userDataFetching,
-        signingKey,
-        hasSigningKey: !!signingKey,
       }}
     >
       {children}

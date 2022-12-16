@@ -57,7 +57,6 @@ export async function formatVotesToCommit({
         selectedVote,
         decodedIdentifier
       );
-
       // the hash must be created with exactly these values in exactly this order
       const hash = makeVoteHash(
         price,

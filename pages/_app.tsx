@@ -24,8 +24,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ErrorProvider>
       <NotificationsProvider>
         <VoteTimingProvider>
-          <QueryClientProvider client={queryClient}>
-            <WalletProvider>
+          <WalletProvider>
+            <QueryClientProvider client={queryClient}>
               <UserProvider>
                 <ContractsProvider>
                   <PaginationProvider>
@@ -45,8 +45,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </ContractsProvider>
                 <ReactQueryDevtools />
               </UserProvider>
-            </WalletProvider>
-          </QueryClientProvider>
+            </QueryClientProvider>
+          </WalletProvider>
         </VoteTimingProvider>
       </NotificationsProvider>
     </ErrorProvider>
