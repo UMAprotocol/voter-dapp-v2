@@ -17,7 +17,7 @@ import {
   createVotingTokenContractInstance,
 } from "web3";
 import { WalletIcon } from "./WalletIcon";
-import { appConfig } from "helpers/config";
+import { config } from "helpers/config";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
@@ -98,7 +98,7 @@ export function Wallet() {
         } else {
           const newSigningKey = await makeSigningKey(
             signer,
-            appConfig.signingMessage
+            config.signingMessage
           );
           const newSigningKeys = {
             ...savedSigningKeys,

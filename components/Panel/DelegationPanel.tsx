@@ -22,6 +22,7 @@ import styled, { css } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
+import { config } from "helpers/config";
 
 export function DelegationPanel() {
   const { closePanel } = usePanelContext();
@@ -161,7 +162,7 @@ export function DelegationPanel() {
                       </PendingRequestText>
                       <PendingRequestText>
                         <Link
-                          href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+                          href={config.makeTransactionHashLink(transactionHash)}
                           target="_blank"
                         >
                           View Transaction

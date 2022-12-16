@@ -1,4 +1,4 @@
-import { appConfig } from "helpers/config";
+import { config } from "helpers/config";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 import {
@@ -9,7 +9,7 @@ import {
 } from "helpers";
 import { PastVotesQuery } from "types";
 
-const { graphEndpoint, graphEndpointV1 } = appConfig;
+const { graphEndpoint, graphEndpointV1 } = config;
 
 export async function getPastVotesV1() {
   const endpoint = graphEndpointV1;

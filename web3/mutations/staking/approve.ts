@@ -5,8 +5,8 @@ import {
   handleNotifications,
   maximumApprovalAmount,
 } from "helpers";
-import { appConfig } from "helpers/config";
-const { votingContractAddress } = appConfig;
+import { config } from "helpers/config";
+const { votingContractAddress } = config;
 
 export async function approve({
   votingToken,
