@@ -1,9 +1,10 @@
 import { ethers } from "ethers";
 import { SigningKeys, SigningKey } from "types";
-import { signingMessage } from "constant";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
+import { config } from "helpers/config";
 
 type Signer = ethers.Signer;
+const { signingMessage } = config;
 
 export async function sign(signer: Signer): Promise<SigningKeys> {
   const address = await signer.getAddress();

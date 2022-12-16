@@ -15,7 +15,6 @@ import {
   createVotingTokenContractInstance,
 } from "web3";
 import { WalletIcon } from "./WalletIcon";
-import { config } from "helpers/config";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();

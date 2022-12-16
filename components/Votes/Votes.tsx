@@ -70,7 +70,7 @@ export function Votes() {
   function calculateActionStatus(): ActionStatus {
     const actionConfig: ActionStatus = {
       hidden: true,
-      tooltip: "",
+      tooltip: undefined,
       label: "",
       onClick: () => undefined,
       disabled: true,
@@ -91,7 +91,6 @@ export function Votes() {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = "Connect Wallet";
-      actionConfig.tooltip = "Connect your wallet to commit or reveal votes.";
       actionConfig.onClick = () => connect();
 
       if (isConnectingWallet) {
@@ -124,7 +123,6 @@ export function Votes() {
       }
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
-        actionConfig.tooltip = "You must first sign before you can commit.";
         actionConfig.onClick = () => sign();
         actionConfig.disabled = false;
 
@@ -152,7 +150,6 @@ export function Votes() {
       actionConfig.label = "Reveal";
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
-        actionConfig.tooltip = "You must first sign before you can reveal.";
         actionConfig.onClick = () => sign();
         actionConfig.disabled = false;
         if (isSigning) {
