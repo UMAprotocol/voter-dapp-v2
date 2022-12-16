@@ -1,14 +1,17 @@
 import { VotingEthers__factory } from "@uma/contracts-frontend";
-import { votingV1ContractAddress } from "constant";
 import { ethers } from "ethers";
+import { appConfig } from "helpers/config";
 
 export function createVotingV1ContractInstance(signer?: ethers.Signer) {
   if (!signer) {
     const provider = new ethers.providers.InfuraProvider(
       "goerli",
-      process.env.NEXT_PUBLIC_INFURA_ID
+      appConfig.infuraId
     );
-    signer = new ethers.VoidSigner(votingV1ContractAddress, provider);
+    signer = new ethers.VoidSigner(appConfig.votingV1ContractAddress, provider);
   }
-  return VotingEthers__factory.connect(votingV1ContractAddress, signer);
+  return VotingEthers__factory.connect(
+    appConfig.votingV1ContractAddress,
+    signer
+  );
 }

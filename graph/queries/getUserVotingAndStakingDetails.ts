@@ -1,4 +1,3 @@
-import { graphEndpoint } from "constant";
 import request, { gql } from "graphql-request";
 import { bigNumberFromFloatString } from "helpers";
 import {
@@ -7,6 +6,8 @@ import {
   VoteHistoryByKeyT,
   VoteHistoryT,
 } from "types";
+import { appConfig } from "helpers/config";
+const { graphEndpoint } = appConfig;
 
 export async function getUserVotingAndStakingDetails(
   address: string | undefined

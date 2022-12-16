@@ -3,13 +3,11 @@ import injectedModule from "@web3-onboard/injected-wallets";
 import { init } from "@web3-onboard/react";
 import walletConnectModule from "@web3-onboard/walletconnect";
 import { logo } from "public/assets/logo";
+import { appConfig } from "helpers/config";
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
 const gnosis = gnosisModule();
-
-const blocknativeDappId = process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID ?? "";
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID ?? "";
 
 export const initOnboard = init({
   wallets: [injected, walletConnect, gnosis],
@@ -18,13 +16,13 @@ export const initOnboard = init({
       id: "0x1",
       token: "ETH",
       label: "Ethereum",
-      rpcUrl: `https://mainnet.infura.io/v3/${infuraId}`,
+      rpcUrl: `https://mainnet.infura.io/v3/${appConfig.infuraId}`,
     },
     {
       id: "0x5",
       token: "GOR",
       label: "Görli",
-      rpcUrl: `https://goerli.infura.io/v3/${infuraId}`,
+      rpcUrl: `https://goerli.infura.io/v3/${appConfig.infuraId}`,
     },
   ],
   appMetadata: {
@@ -36,7 +34,7 @@ export const initOnboard = init({
       { name: "MetaMask", url: "https://metamask.io" },
     ],
   },
-  apiKey: blocknativeDappId,
+  apiKey: appConfig.blocknativeDappId,
   notify: {
     enabled: false,
   },
