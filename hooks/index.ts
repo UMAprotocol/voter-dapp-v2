@@ -64,3 +64,4 @@ export { useDelegatorStakedBalance } from "./queries/staking/useDelegatorStakedB
 export { useCommittedVotes } from "./queries/votes/useCommittedVotes";
 export { useCommittedVotesByCaller } from "./queries/votes/useCommittedVotesByCaller";
 export { useCommittedVotesForDelegator } from "./queries/delegation/useCommittedVotesForDelegator";
+export { useSign } from "./helpers/useSign";
