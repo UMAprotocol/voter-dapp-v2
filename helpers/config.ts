@@ -4,12 +4,11 @@ import * as ss from "superstruct";
 // and give them information as to which env was missing. We don't want the app to run without required variables.
 // This would also be a great place to document what each env does and how to find it.
 const Env = ss.object({
-  NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS_GOERLI: ss.string(),
   NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_GRAPH_ENDPOINT_V1: ss.string(),
   NEXT_PUBLIC_GRAPH_ENDPOINT: ss.string(),
-  NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS_GOERLI: ss.string(),
-  NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS_GOERLI: ss.string(),
+  NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS: ss.string(),
+  NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID: ss.string(),
   NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.string(),
   NEXT_PUBLIC_INFURA_ID: ss.string(),
@@ -18,8 +17,9 @@ const Env = ss.object({
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.string(),
   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.string(),
   // optional envs
-  NEXT_PUBLIC_GOERLI_DEPLOY_BLOCK: ss.optional(ss.string()),
+  NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
+  NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -27,19 +27,16 @@ export type Env = ss.Infer<typeof Env>;
 // the case, we could just check process.env directly, but that wont work on the front end.
 export const env = ss.create(
   {
-    NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS_GOERLI:
-      process.env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS_GOERLI,
     NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS:
       process.env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
     NEXT_PUBLIC_GRAPH_ENDPOINT_V1: process.env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     NEXT_PUBLIC_SIGNING_MESSAGE: process.env.NEXT_PUBLIC_SIGNING_MESSAGE,
     NEXT_PUBLIC_GRAPH_ENDPOINT: process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,
-    NEXT_PUBLIC_GOERLI_DEPLOY_BLOCK:
-      process.env.NEXT_PUBLIC_GOERLI_DEPLOY_BLOCK,
-    NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS_GOERLI:
-      process.env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS_GOERLI,
-    NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS_GOERLI:
-      process.env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS_GOERLI,
+    NEXT_PUBLIC_DEPLOY_BLOCK: process.env.NEXT_PUBLIC_DEPLOY_BLOCK,
+    NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS:
+      process.env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
+    NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS:
+      process.env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID:
       process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
     NEXT_PUBLIC_THE_GRAPH_API_KEY: process.env.NEXT_PUBLIC_THE_GRAPH_API_KEY,
@@ -50,6 +47,7 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN:
       process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+    NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
   },
   Env
 );
@@ -66,7 +64,8 @@ const AppConfig = ss.object({
   graphEndpointV1: ss.string(),
   graphEndpoint: ss.string(),
   signingMessage: ss.string(),
-  goerliDeployBlock: ss.number(),
+  deployBlock: ss.number(),
+  chainId: ss.number(),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -78,17 +77,72 @@ export const appConfig = ss.create(
   {
     blocknativeDappId: env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
     infuraId: env.NEXT_PUBLIC_INFURA_ID,
-    votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS_GOERLI,
-    votingTokenContractAddress:
-      env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS_GOERLI,
-    votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS_GOERLI,
+    votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
+    votingTokenContractAddress: env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
+    votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
     space: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     accessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     graphEndpointV1: env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
-    goerliDeployBlock: Number(env.NEXT_PUBLIC_GOERLI_DEPLOY_BLOCK ?? "0"),
+    deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
+    chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
   },
   AppConfig
 );
+
+export type ChainConstants = {
+  chainId: number;
+  infuraName: string;
+  properName: string;
+  makeTransactionHashLink: (transactionHash: string) => string;
+  onboardConfig: {
+    id: string;
+    token: string;
+    label: string;
+    rpcUrl: string;
+  };
+};
+export type ChainConstantsList = ChainConstants[];
+
+export const chainConstantsList: ChainConstantsList = [
+  {
+    chainId: 1,
+    infuraName: "homestead",
+    properName: "Mainnet",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://etherscan.io/tx/${transactionHash}`,
+    onboardConfig: {
+      id: "0x1",
+      token: "ETH",
+      label: "Ethereum",
+      rpcUrl: `https://mainnet.infura.io/v3/${appConfig.infuraId}`,
+    },
+  },
+  {
+    chainId: 5,
+    infuraName: "goerli",
+    properName: "Görli",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://goerli.etherscan.io/tx/${transactionHash}`,
+    onboardConfig: {
+      id: "0x5",
+      token: "GOR",
+      label: "Görli",
+      rpcUrl: `https://goerli.infura.io/v3/${appConfig.infuraId}`,
+    },
+  },
+];
+export const chainConstants = chainConstantsList.find(
+  ({ chainId }) => chainId === appConfig.chainId
+);
+if (chainConstants == undefined)
+  throw new Error(
+    `Unable to find chain constants for chain Id ${appConfig.chainId}`
+  );
+
+export const config: ChainConstants & AppConfig = {
+  ...chainConstants,
+  ...appConfig,
+};

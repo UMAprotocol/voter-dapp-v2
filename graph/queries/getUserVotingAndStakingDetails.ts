@@ -6,8 +6,8 @@ import {
   VoteHistoryByKeyT,
   VoteHistoryT,
 } from "types";
-import { appConfig } from "helpers/config";
-const { graphEndpoint } = appConfig;
+import { config } from "helpers/config";
+const { graphEndpoint } = config;
 
 export async function getUserVotingAndStakingDetails(
   address: string | undefined

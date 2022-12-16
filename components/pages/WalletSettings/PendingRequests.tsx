@@ -12,6 +12,7 @@ import {
   Header,
   Text,
 } from "./styles";
+import { config } from "helpers/config";
 
 export function PendingRequests({
   requestType,
@@ -105,7 +106,7 @@ export function PendingRequests({
             <Text>
               Waiting for approval |{" "}
               <NextLink
-                href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+                href={config.makeTransactionHashLink(transactionHash)}
                 passHref
               >
                 <A target="_blank">View Transaction</A>

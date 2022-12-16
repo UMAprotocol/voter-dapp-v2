@@ -9,6 +9,7 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
+import { config } from "helpers/config";
 
 export function MenuPanel() {
   const [_wallets, connect, disconnect] = useConnectWallet();
@@ -161,10 +162,9 @@ export function MenuPanel() {
                         </Link>{" "}
                         to be delegate {toOrFrom} address{" "}
                         <Link
-                          href={`https://goerli.etherscan.io/address/${getPendingRequestAddress(
-                            delegator,
-                            delegate
-                          )}`}
+                          href={config.makeTransactionHashLink(
+                            getPendingRequestAddress(delegator, delegate)
+                          )}
                           target="_blank"
                         >
                           {truncateEthAddress(

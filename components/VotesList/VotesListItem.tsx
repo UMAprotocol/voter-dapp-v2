@@ -22,6 +22,7 @@ import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
+import { config } from "helpers/config";
 export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
@@ -242,10 +243,7 @@ export function VotesListItem({
   function getRelevantTransactionLink(): ReactNode | string {
     if (phase === "commit") {
       return commitHash ? (
-        <Link
-          href={`https://goerli.etherscan.io/tx/${commitHash}`}
-          target="_blank"
-        >
+        <Link href={config.makeTransactionHashLink(commitHash)} target="_blank">
           {getCommittedOrRevealed()}
         </Link>
       ) : (
@@ -253,10 +251,7 @@ export function VotesListItem({
       );
     }
     return revealHash ? (
-      <Link
-        href={`https://goerli.etherscan.io/tx/${revealHash}`}
-        target="_blank"
-      >
+      <Link href={config.makeTransactionHashLink(revealHash)} target="_blank">
         {getCommittedOrRevealed()}
       </Link>
     ) : (

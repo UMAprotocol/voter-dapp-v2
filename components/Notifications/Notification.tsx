@@ -5,6 +5,7 @@ import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 import { NotificationT, UniqueIdT } from "types";
+import { config } from "helpers/config";
 
 export function Notification({
   message,
@@ -38,7 +39,7 @@ export function Notification({
         <Message>{message}</Message>
         {transactionHash && (
           <Link
-            href={`https://goerli.etherscan.io/tx/${transactionHash}`}
+            href={config.makeTransactionHashLink(transactionHash)}
             target="_blank"
           >
             View on Etherscan

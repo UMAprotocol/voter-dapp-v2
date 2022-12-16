@@ -62,15 +62,13 @@ export function Details({
     umipOrUppLink,
     makeTransactionHashLink(
       "Ethereum DVM request",
-      augmentedData?.l1RequestTxHash,
-      false
+      augmentedData?.l1RequestTxHash
     ),
     // only show if the originating chain id is not ethereum
     augmentedData?.originatingChainId && augmentedData?.originatingChainId !== 1
       ? makeTransactionHashLink(
           `${supportedChains[augmentedData.originatingChainId]} DVM request`,
-          augmentedData.originatingChainTxHash,
-          false
+          augmentedData.originatingChainTxHash
         )
       : false,
     makeOoRequestLink(),
