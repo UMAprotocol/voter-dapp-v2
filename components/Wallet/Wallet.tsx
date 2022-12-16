@@ -1,5 +1,5 @@
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
-import { signingMessage, wrongChainMessage } from "constant";
+import { wrongChainMessage } from "constant";
 import { ethers } from "ethers";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
 import {
@@ -17,6 +17,7 @@ import {
   createVotingTokenContractInstance,
 } from "web3";
 import { WalletIcon } from "./WalletIcon";
+import { appConfig } from "helpers/config";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
@@ -95,7 +96,10 @@ export function Wallet() {
         if (savedSigningKeys[address]) {
           setSigningKeys(savedSigningKeys);
         } else {
-          const newSigningKey = await makeSigningKey(signer, signingMessage);
+          const newSigningKey = await makeSigningKey(
+            signer,
+            appConfig.signingMessage
+          );
           const newSigningKeys = {
             ...savedSigningKeys,
             [address]: newSigningKey,

@@ -1,9 +1,9 @@
 import { VotingTokenEthers__factory } from "@uma/contracts-frontend";
-import { votingTokenContractAddress } from "constant";
 import { ethers } from "ethers";
+import { appConfig } from "helpers/config";
 
 export function createVotingTokenContractInstance(signer?: ethers.Signer) {
-  const address = votingTokenContractAddress;
+  const address = appConfig.votingTokenContractAddress;
   if (!signer) {
     const provider = new ethers.providers.InfuraProvider(
       "goerli",

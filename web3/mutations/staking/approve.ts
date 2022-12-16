@@ -1,11 +1,12 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
-import { votingContractAddress } from "constant";
 import { BigNumber } from "ethers";
 import {
   formatNumberForDisplay,
   handleNotifications,
   maximumApprovalAmount,
 } from "helpers";
+import { appConfig } from "helpers/config";
+const { votingContractAddress } = appConfig;
 
 export async function approve({
   votingToken,

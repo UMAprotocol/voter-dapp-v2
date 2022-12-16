@@ -1,5 +1,7 @@
 import { VotingTokenEthers } from "@uma/contracts-frontend";
-import { votingContractAddress } from "constant";
+
+import { appConfig } from "helpers/config";
+const { votingContractAddress } = appConfig;
 
 export async function getTokenAllowance(
   votingTokenContract: VotingTokenEthers,

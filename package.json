@@ -41,7 +41,8 @@
     "react-loading-skeleton": "^3.1.0",
     "react-markdown": "^8.0.3",
     "react-spring": "^9.5.5",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.5",
+    "superstruct": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
