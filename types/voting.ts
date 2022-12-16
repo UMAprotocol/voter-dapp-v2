@@ -1,7 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
+import { supportedChains } from "constant";
 import { BigNumber } from "ethers";
 import { DropdownItemT, LinkT, UserVoteDataT } from "types";
-import { supportedChains } from "constant";
 
 export type UniqueKeyT = string;
 
@@ -235,3 +235,29 @@ export type VoteAugmentedDataT = {
 export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
 
 export type TransactionHashT = string | "rolled";
+
+export type RawDiscordMessageT = {
+  content: string;
+  author: {
+    username: string;
+    id: string;
+    avatar: string;
+  };
+  timestamp: string;
+  thread: { id: string };
+};
+
+export type RawDiscordThreadT = RawDiscordMessageT[];
+
+export type DiscordMessageT = {
+  message: string;
+  sender: string;
+  senderPicture: string | null;
+  time: string;
+};
+
+export type DiscordThreadT = {
+  identifier: string;
+  time: number;
+  thread: DiscordMessageT[];
+};

@@ -1,34 +1,25 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { NextApiRequest, NextApiResponse } from "next";
-import { PriceRequestT } from "types";
+import {
+  DiscordMessageT,
+  DiscordThreadT,
+  PriceRequestT,
+  RawDiscordThreadT,
+} from "types";
 
-const evidenceRationalChannelId = "964000735073284127";
-
-export async function discordRequest(
-  endpoint: string,
-  options: any = { method: "GET" }
-) {
+export async function discordRequest(endpoint: string) {
   const url = "https://discord.com/api/v10/" + endpoint;
-  if (options.body) options.body = JSON.stringify(options.body);
-  if (!process.env.DISCORD_TOKEN)
-    throw Error("DISCORD_TOKEN env variable not set!");
+  if (discordToken === "") throw Error("DISCORD_TOKEN env variable not set!");
   const res = await fetch(url, {
     headers: {
-      Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
+      Authorization: `Bot ${discordToken}`,
       "Content-Type": "application/json; charset=UTF-8",
       "User-Agent":
         "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
     },
-    ...options,
   });
 
-  return await res.json();
+  return (await res.json()) as RawDiscordThreadT;
 }
 
 export async function getDiscordMessages(threadId: string) {
@@ -51,12 +42,12 @@ function extractValidateTimestamp(msg: string) {
 
 async function fetchDiscordData(l1Requests: PriceRequestT[]) {
   // First, fetch all messages in the evidence rational channel.
-  const threadMsg = await getDiscordMessages(evidenceRationalChannelId);
+  const threadMsg = await getDiscordMessages(evidenceRationalDiscordChannelId);
 
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
   const timeToThread: { [key: string]: string } = {};
-  threadMsg.forEach((message: any) => {
+  threadMsg.forEach((message) => {
     const time = extractValidateTimestamp(message.content);
     if (time) timeToThread[time.toString()] = message.thread.id;
   });
@@ -82,22 +73,13 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
 
   // Finally, process the results by traversing each request and the associated
   // thread to construct the final data structure with minimal data.
-  const processedResults: {
-    identifier: string;
-    time: number;
-    thread: {
-      message: string;
-      sender: string;
-      senderPicture: string;
-      time: string;
-    }[];
-  }[] = [];
-  threadMessages.forEach((thread: any, index: number) => {
-    let processedThread = [];
-    if (thread)
-      processedThread = thread
-        .filter((message: any) => message.content != "")
-        .map((msg: any) => {
+  const processedResults: DiscordThreadT[] = [];
+  threadMessages.forEach((messages, index) => {
+    let processedMessages: DiscordMessageT[] = [];
+    if (messages)
+      processedMessages = messages
+        .filter((message) => message.content != "")
+        .map((msg) => {
           return {
             message: msg.content,
             sender: msg.author.username,
@@ -108,7 +90,7 @@ async function fetchDiscordData(l1Requests: PriceRequestT[]) {
     processedResults.push({
       identifier: l1Requests[index].identifier,
       time: l1Requests[index].time,
-      thread: processedThread.reverse(),
+      thread: processedMessages.reverse(),
     });
   });
 
@@ -132,7 +114,7 @@ export default async function handler(
   } catch (e) {
     console.error(e);
     response.status(500).send({
-      message: "Error in generating multiCall tx",
+      message: "Error fetching discord thread data",
       error: e instanceof Error ? e.message : e,
     });
   }
