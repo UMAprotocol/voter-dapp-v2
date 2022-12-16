@@ -1,12 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { decryptedVotesKey } from "constant";
 import { decryptMessage } from "helpers";
-import {
-  useAccountDetails,
-  useEncryptedVotes,
-  useHandleError,
-  useWalletContext,
-} from "hooks";
+import { useEncryptedVotes, useHandleError, useUserContext } from "hooks";
 import {
   DecryptedVotesByKeyT,
   DecryptedVoteT,
@@ -14,14 +9,13 @@ import {
 } from "types";
 
 export function useDecryptedVotes() {
-  const { address } = useAccountDetails();
-  const { signingKeys } = useWalletContext();
+  const { address, signingKey } = useUserContext();
   const { data: encryptedVotes } = useEncryptedVotes();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [decryptedVotesKey, encryptedVotes, address],
-    () => decryptVotes(signingKeys[address]?.privateKey, encryptedVotes),
+    () => decryptVotes(signingKey?.privateKey, encryptedVotes),
     {
       enabled: !!address,
       initialData: {},

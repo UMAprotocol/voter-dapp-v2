@@ -7,10 +7,10 @@ import {
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
+import { useConnectWallet } from "@web3-onboard/react";
 import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import {
-  useAccountDetails,
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
@@ -21,6 +21,7 @@ import {
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
+  useUserContext,
 } from "hooks";
 import { useState } from "react";
 import styled from "styled-components";
@@ -34,9 +35,10 @@ export function Votes() {
     getActivityStatus,
     getUserDependentIsFetching,
   } = useVotesContext();
+  const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { phase, roundId } = useVoteTimingContext();
-  const { address } = useAccountDetails();
-  const { signer, signingKeys } = useWalletContext();
+  const { address, hasSigningKey } = useUserContext();
+  const { signer, signingKeys, sign, isSigning } = useWalletContext();
   const { voting } = useContractsContext();
   const { stakedBalance, delegatorStakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
@@ -50,26 +52,133 @@ export function Votes() {
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
-  const isCommit = phase === "commit";
-  const isReveal = phase === "reveal";
-  const hasStaked = stakedBalance?.gt(0) ?? false;
-  const hasDelegatorStaked = delegatorStakedBalance?.gt(0) ?? false;
-  const hasSigner = !!signer;
-  const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
-  const hasVotesToReveal = getVotesToReveal().length > 0;
-  const isButtonDisabled =
-    (isCommit && !canCommit()) || (isReveal && !canReveal());
-  const disabledButtonExplanation = getDisabledButtonExplanation();
-  const buttonLabel = isCommit ? "Commit Votes" : "Reveal Votes";
-  const buttonOnClick = isCommit ? commitVotes : revealVotes;
   const votesToShow = getEntriesForPage(
     pageNumber,
     resultsPerPage,
     determineVotesToShow()
   );
+  const actionStatus = calculateActionStatus();
+  type ActionStatus = {
+    tooltip?: string;
+    label: string;
+    onClick: () => any;
+    disabled?: boolean;
+    hidden?: boolean;
+    canCommit: boolean;
+    canReveal: boolean;
+  };
+  function calculateActionStatus(): ActionStatus {
+    const actionConfig: ActionStatus = {
+      hidden: true,
+      tooltip: undefined,
+      label: "",
+      onClick: () => undefined,
+      disabled: true,
+      canCommit: false,
+      canReveal: false,
+    };
 
+    const isCommit = phase === "commit";
+    const isReveal = phase === "reveal";
+    const hasStaked = stakedBalance?.gt(0) ?? false;
+    const hasDelegatorStaked = delegatorStakedBalance?.gt(0) ?? false;
+    const isDelegate = getDelegationStatus() === "delegate";
+    const hasSigner = !!signer;
+    const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
+    const hasVotesToReveal = getVotesToReveal().length > 0;
+
+    if (!hasSigner || !address) {
+      actionConfig.hidden = false;
+      actionConfig.disabled = false;
+      actionConfig.label = "Connect Wallet";
+      actionConfig.onClick = () => connect();
+
+      if (isConnectingWallet) {
+        actionConfig.disabled = true;
+      }
+      return actionConfig;
+    }
+    if (isCommit) {
+      actionConfig.label = "Commit";
+      actionConfig.hidden = false;
+      if (isCommittingVotes) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "Committing votes in progress...";
+        return actionConfig;
+      }
+      if (isDelegate) {
+        if (!hasDelegatorStaked) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "You cannot commit because your delegator has no UMA Staked.";
+          return actionConfig;
+        }
+      } else {
+        if (!hasStaked) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "You cannot commit because you have no UMA Staked.";
+          return actionConfig;
+        }
+      }
+      if (!hasSigningKey) {
+        actionConfig.label = "Sign";
+        actionConfig.onClick = () => sign();
+        actionConfig.disabled = false;
+
+        if (isSigning) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "Confirm the request for a signature in your wallet software.";
+          return actionConfig;
+        }
+        return actionConfig;
+      }
+      if (!hasVotesToCommit) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip =
+          "You must enter your votes before you can continue.";
+        return actionConfig;
+      }
+      actionConfig.canCommit = true;
+      actionConfig.disabled = false;
+      actionConfig.onClick = () => commitVotes();
+      return actionConfig;
+    }
+    if (isReveal) {
+      actionConfig.hidden = false;
+      actionConfig.label = "Reveal";
+      if (!hasSigningKey) {
+        actionConfig.label = "Sign";
+        actionConfig.onClick = () => sign();
+        actionConfig.disabled = false;
+        if (isSigning) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "Confirm the request for a signature in your wallet software.";
+          return actionConfig;
+        }
+        return actionConfig;
+      }
+      if (isRevealingVotes) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "Revealing votes in progress...";
+        return actionConfig;
+      }
+      if (!hasVotesToReveal) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "You have no votes to reveal.";
+        return actionConfig;
+      }
+      actionConfig.canReveal = true;
+      actionConfig.disabled = false;
+      actionConfig.onClick = () => revealVotes();
+      return actionConfig;
+    }
+    return actionConfig;
+  }
   async function commitVotes() {
-    if (!address || !canCommit()) return;
+    if (!actionStatus.canCommit) return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
@@ -93,13 +202,14 @@ export function Votes() {
   }
 
   function revealVotes() {
-    if (!address || !canReveal()) return;
+    if (!actionStatus.canReveal) return;
 
     revealVotesMutation({
       voting,
       votesToReveal: getVotesToReveal(),
     });
   }
+
   function getVotesToReveal() {
     return getActiveVotes().filter(
       (vote) =>
@@ -130,32 +240,6 @@ export function Votes() {
     }
   }
 
-  function canCommit() {
-    if (getDelegationStatus() === "delegate") {
-      return canCommitAsDelegate();
-    }
-    return (
-      isCommit &&
-      hasVotesToCommit &&
-      hasStaked &&
-      hasSigner &&
-      !isCommittingVotes
-    );
-  }
-  function canCommitAsDelegate() {
-    return (
-      isCommit &&
-      hasVotesToCommit &&
-      hasSigner &&
-      !isCommittingVotes &&
-      hasDelegatorStaked
-    );
-  }
-
-  function canReveal() {
-    return isReveal && hasVotesToReveal && !isRevealingVotes;
-  }
-
   function determineTitle() {
     const status = getActivityStatus();
     switch (status) {
@@ -166,45 +250,6 @@ export function Votes() {
       default:
         return "Past votes:";
     }
-  }
-
-  function getDisabledButtonExplanation() {
-    const connectWalletToCommitVotesMessage =
-      "Connect your wallet to commit or reveal votes.";
-    const selectVotesToCommitMessage =
-      "Add your answers to some votes to commit.";
-    const didNotCommitSoCannotRevealMessage =
-      "You cannot reveal votes this round because you did not commit any votes.";
-    const hasStakedMessage = "You must stake UMA to commit or reveal votes.";
-    const busyCommittingVotesMessage = "Committing votes...";
-    const busyRevealingVotesMessage = "Revealing votes...";
-
-    if (!hasSigner) {
-      return connectWalletToCommitVotesMessage;
-    }
-    if (!hasStaked) {
-      return hasStakedMessage;
-    }
-
-    if (isCommit) {
-      if (!hasVotesToCommit) {
-        return selectVotesToCommitMessage;
-      }
-      if (isCommittingVotes) {
-        return busyCommittingVotesMessage;
-      }
-    }
-
-    if (isReveal) {
-      if (!hasVotesToReveal) {
-        return didNotCommitSoCannotRevealMessage;
-      }
-      if (isRevealingVotes) {
-        return busyRevealingVotesMessage;
-      }
-    }
-
-    return "";
   }
 
   return (
@@ -235,24 +280,27 @@ export function Votes() {
       </VotesTableWrapper>
       {getActivityStatus() === "active" ? (
         <CommitVotesButtonWrapper>
-          {isButtonDisabled ? (
-            <Tooltip label={disabledButtonExplanation}>
-              <div>
-                <Button
-                  variant="primary"
-                  label={buttonLabel}
-                  onClick={buttonOnClick}
-                  disabled
-                />
-              </div>
-            </Tooltip>
-          ) : (
-            <Button
-              variant="primary"
-              label={buttonLabel}
-              onClick={buttonOnClick}
-            />
-          )}
+          {!actionStatus.hidden ? (
+            actionStatus.tooltip ? (
+              <Tooltip label={actionStatus.tooltip}>
+                <div>
+                  <Button
+                    variant="primary"
+                    label={actionStatus.label}
+                    onClick={actionStatus.onClick}
+                    disabled={actionStatus.disabled}
+                  />
+                </div>
+              </Tooltip>
+            ) : (
+              <Button
+                variant="primary"
+                label={actionStatus.label}
+                onClick={actionStatus.onClick}
+                disabled={actionStatus.disabled}
+              />
+            )
+          ) : null}
         </CommitVotesButtonWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
