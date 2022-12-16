@@ -15,10 +15,11 @@ import {
   createVotingTokenContractInstance,
 } from "web3";
 import { WalletIcon } from "./WalletIcon";
+import { config } from "helpers/config";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
-  const [{ connectedChain }, setChain] = useSetChain();
+  const [{ connectedChain }] = useSetChain();
   const connectedWallets = useWallets();
   const { setProvider, setSigner } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
@@ -28,17 +29,13 @@ export function Wallet() {
 
   useEffect(() => {
     if (!connectedChain) return;
-
-    void (async () => {
-      if (connectedChain.id !== "0x5") {
-        addErrorMessage(wrongChainMessage);
-        await setChain({ chainId: "0x5" });
-      } else {
-        removeErrorMessage(wrongChainMessage);
-      }
-    })();
+    if (connectedChain.id !== config.onboardConfig.id) {
+      addErrorMessage(wrongChainMessage);
+    } else {
+      removeErrorMessage(wrongChainMessage);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectedChain?.id, setChain]);
+  }, [connectedChain?.id]);
 
   useEffect(() => {
     if (!connectedWallets.length) return;

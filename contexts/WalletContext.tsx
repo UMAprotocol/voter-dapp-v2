@@ -1,9 +1,11 @@
 import { OnboardAPI } from "@web3-onboard/core";
+import { useSetChain } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { initOnboard, getSavedSigningKeys } from "helpers";
 import { createContext, ReactNode, useState } from "react";
 import { SigningKeys } from "types";
 import { useSign } from "hooks";
+import { config } from "helpers/config";
 
 export interface WalletContextState {
   onboard: OnboardAPI | null;
@@ -16,6 +18,9 @@ export interface WalletContextState {
   setSigningKeys: (signingKeys: SigningKeys) => void;
   sign: () => void;
   isSigning: boolean;
+  connectedChainId: number | undefined;
+  isSettingChain: boolean;
+  setCorrectChain: () => void;
 }
 
 export const defaultWalletContextState = {
@@ -29,6 +34,9 @@ export const defaultWalletContextState = {
   setSigningKeys: () => null,
   sign: () => null,
   isSigning: false,
+  connectedChainId: undefined,
+  isSettingChain: false,
+  setCorrectChain: () => undefined,
 };
 
 export const WalletContext = createContext<WalletContextState>(
@@ -43,12 +51,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [signingKeys, setSigningKeys] = useState<SigningKeys>(
     getSavedSigningKeys()
   );
+  const [{ connectedChain, settingChain: isSettingChain }, setChain] =
+    useSetChain();
 
   const { mutate: sign, isLoading: isSigning } = useSign(
     signer,
     setSigningKeys
   );
-
+  function setCorrectChain() {
+    setChain({ chainId: config.onboardConfig.id }).catch((err) =>
+      console.error("Error Setting Chain:", err)
+    );
+  }
+  const connectedChainId = connectedChain
+    ? parseInt(connectedChain.id)
+    : undefined;
   return (
     <WalletContext.Provider
       value={{
@@ -62,6 +79,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setSigningKeys,
         sign,
         isSigning,
+        connectedChainId,
+        setCorrectChain,
+        isSettingChain,
       }}
     >
       {children}
