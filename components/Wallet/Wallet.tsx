@@ -129,9 +129,12 @@ const Wrapper = styled.div`
   justify-content: center;
   padding-inline: 15px;
   font: var(--text-md);
-  color: var(--black);
-  background-color: var(--grey-50);
+  color: var(--white);
+  background-color: var(--red-500);
   border-radius: 5px;
+  &:hover {
+    background-color: var(--red-600);
+  }
 `;
 
 const WalletButtonWrapper = styled.div``;
