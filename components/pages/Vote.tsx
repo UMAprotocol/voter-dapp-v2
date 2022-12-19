@@ -7,15 +7,20 @@ import {
   PageOuterWrapper,
   Votes,
 } from "components";
-import { useVotesContext } from "hooks";
 import { LoadingSpinnerWrapper, Strong } from "./styles";
+import { useGlobals, useVotesContext } from "hooks";
+import { truncateDecimals } from "helpers";
 
 export function Vote() {
+  const {
+    data: { annualPercentageReturn },
+  } = useGlobals();
   const { getUserIndependentIsLoading } = useVotesContext();
   return (
     <Layout title="UMA | Voting dApp">
       <Banner>
-        Stake, vote &amp; earn up to <Strong>30% APY</Strong>
+        Stake, vote &amp; earn up to{" "}
+        <Strong>{truncateDecimals(annualPercentageReturn, 0) || 0}% APR</Strong>
       </Banner>
       <PageOuterWrapper>
         <HowItWorks />

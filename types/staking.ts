@@ -11,3 +11,9 @@ export type V1RewardsT = {
   multicallPayload: string[];
   totalRewards: BigNumber;
 };
+
+export type SubgraphGlobals = {
+  global: {
+    annualPercentageReturn: number;
+  };
+};
