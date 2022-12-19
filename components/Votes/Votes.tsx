@@ -26,6 +26,7 @@ import {
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
+import { config } from "helpers/config";
 
 export function Votes() {
   const {
@@ -37,8 +38,15 @@ export function Votes() {
   } = useVotesContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { phase, roundId } = useVoteTimingContext();
-  const { address, hasSigningKey } = useUserContext();
-  const { signer, signingKeys, sign, isSigning } = useWalletContext();
+  const { address, hasSigningKey, correctChainConnected } = useUserContext();
+  const {
+    signer,
+    signingKeys,
+    sign,
+    isSigning,
+    setCorrectChain,
+    isSettingChain,
+  } = useWalletContext();
   const { voting } = useContractsContext();
   const { stakedBalance, delegatorStakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
@@ -94,6 +102,17 @@ export function Votes() {
       actionConfig.onClick = () => connect();
 
       if (isConnectingWallet) {
+        actionConfig.disabled = true;
+      }
+      return actionConfig;
+    }
+    if (!correctChainConnected) {
+      actionConfig.hidden = false;
+      actionConfig.disabled = false;
+      actionConfig.label = `Switch To ${config.properName}`;
+      actionConfig.onClick = () => setCorrectChain();
+
+      if (isSettingChain) {
         actionConfig.disabled = true;
       }
       return actionConfig;

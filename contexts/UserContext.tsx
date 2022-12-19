@@ -8,6 +8,7 @@ import {
 } from "hooks";
 import { createContext, ReactNode } from "react";
 import { VoteHistoryByKeyT, SigningKey } from "types";
+import { config } from "helpers/config";
 
 export interface UserContextState {
   connectedWallet: WalletState | undefined;
@@ -27,6 +28,7 @@ export interface UserContextState {
   userDataFetching: boolean;
   signingKey: SigningKey | undefined;
   hasSigningKey: boolean;
+  correctChainConnected: boolean;
 }
 
 export const defaultUserContextState: UserContextState = {
@@ -47,6 +49,7 @@ export const defaultUserContextState: UserContextState = {
   userDataFetching: false,
   signingKey: undefined,
   hasSigningKey: false,
+  correctChainConnected: true,
 };
 
 export const UserContext = createContext<UserContextState>(
@@ -56,7 +59,7 @@ export const UserContext = createContext<UserContextState>(
 export function UserProvider({ children }: { children: ReactNode }) {
   const { connectedWallet, account, address, truncatedAddress } =
     useAccountDetails();
-  const { signingKeys } = useWalletContext();
+  const { signingKeys, connectedChainId } = useWalletContext();
 
   const {
     data: {
@@ -75,6 +78,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const walletIcon = connectedWallet?.icon;
   const signingKey = signingKeys[address];
+  const correctChainConnected = connectedChainId === config.chainId;
 
   return (
     <UserContext.Provider
@@ -96,6 +100,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         userDataFetching,
         signingKey,
         hasSigningKey: !!signingKey,
+        correctChainConnected,
       }}
     >
       {children}
