@@ -19,6 +19,7 @@ export function ChainIcon({
 
   const icons = {
     1: EthereumIcon,
+    5: EthereumIcon,
     10: OptimismIcon,
     100: GnosisIcon,
     137: PolygonIcon,
@@ -27,8 +28,10 @@ export function ChainIcon({
     43114: AvalancheIcon,
     42161: ArbitrumIcon,
   };
+
   const chainName = supportedChains[chainId];
   const Icon = icons[chainId];
+  if (!Icon || !chainName) return null;
 
   return (
     <Wrapper>
