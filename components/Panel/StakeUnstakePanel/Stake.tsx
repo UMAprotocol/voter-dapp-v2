@@ -80,8 +80,8 @@ export function Stake({
       </PanelSectionText>
       {isDelegate ? (
         <PanelWarningText>
-          You are currently delegating your vote. You will need to undelegate
-          your vote before you can stake.
+          You are currently a delegate. Staking is controlled by the delegator,
+          you must request to undelegate before you can access staking.
         </PanelWarningText>
       ) : (
         <>
