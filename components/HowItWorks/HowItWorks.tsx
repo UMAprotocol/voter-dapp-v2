@@ -17,7 +17,8 @@ export function HowItWorks() {
     getStakingDataFetching,
     pendingUnstake,
   } = useStakingContext();
-  const { countReveals, apr, userDataFetching } = useUserContext();
+  const { countWrongVotes, countCorrectVotes, apr, userDataFetching } =
+    useUserContext();
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -39,6 +40,12 @@ export function HowItWorks() {
 
   function isLoading() {
     return getStakingDataFetching() || userDataFetching;
+  }
+
+  function getTotalVotes() {
+    return (countWrongVotes || BigNumber.from(0)).add(
+      countCorrectVotes || BigNumber.from(0)
+    );
   }
 
   return (
@@ -94,11 +101,12 @@ export function HowItWorks() {
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
                 ) : (
-                  formatNumberForDisplay(countReveals, { decimals: 0 })
+                  formatNumberForDisplay(getTotalVotes(), { decimals: 0 })
                 )}
               </Strong>{" "}
-              vote{countReveals?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"}
-              , and are earning{" "}
+              vote
+              {getTotalVotes()?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"},
+              and are earning{" "}
               <Strong>
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
