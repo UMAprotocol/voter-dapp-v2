@@ -104,7 +104,7 @@ export function Wallet() {
           </WalletButton>
         </WalletButtonWrapper>
       ) : (
-        <WalletButtonWrapper>
+        <WalletButtonPrimaryWrapper>
           <WalletButton
             onClick={() => {
               void connect();
@@ -112,7 +112,7 @@ export function Wallet() {
           >
             {connecting ? "Connecting..." : "Connect wallet"}
           </WalletButton>
-        </WalletButtonWrapper>
+        </WalletButtonPrimaryWrapper>
       )}
     </Wrapper>
   );
@@ -124,17 +124,21 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-inline: 15px;
   font: var(--text-md);
+  color: var(--black);
+  background-color: var(--grey-50);
+  border-radius: 5px;
+`;
+
+const WalletButtonWrapper = styled.div``;
+
+const WalletButtonPrimaryWrapper = styled(Wrapper)`
   color: var(--white);
   background-color: var(--red-500);
-  border-radius: 5px;
   &:hover {
     background-color: var(--red-600);
   }
 `;
-
-const WalletButtonWrapper = styled.div``;
 
 const WalletButton = styled.button`
   background: none;
