@@ -92,9 +92,7 @@ export function HistoryPanel() {
         </AprWrapper>
         <SectionWrapper>
           <PanelSectionText>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Reprehenderit enim voluptate rem perferendis numquam, consequuntur
-            sapiente nesciunt laudantium quibusdam pariatur. Do this.
+            All voters receive a continuous emissions reward simply for being staked, but a voters performance in each vote round is used in determining "reallocation" amounts. If a voter misses or gets a vote wrong, they will lose a small portion of their stake. Conversely, if a voter votes correctly in a round, they will receive a pro-rata share of the reallocated stake from incorrect voters. For more information on vote history and how APY is calculated, refer here.
           </PanelSectionText>
         </SectionWrapper>
         <SectionWrapper>
