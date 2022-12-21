@@ -11,7 +11,7 @@ export function AddDelegate() {
       <Text>
         Explanation of how this works Lorem ipsum dolor sit amet consectetur,
         adipisicing elit. Ea ratione nobis reiciendis, aliquid quidem nulla
-        veniam quasi eos ab error?
+        veniam quasi eos ab error? Do this.
       </Text>
       <BarWrapper>
         <BarText>No delegate wallet connected</BarText>

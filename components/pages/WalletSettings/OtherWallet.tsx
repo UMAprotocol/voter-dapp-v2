@@ -25,8 +25,8 @@ export function OtherWallet({
 
   const text =
     status === "delegate"
-      ? "Explanation of secondary wallet when secondary is delegate."
-      : "Explanation of secondary wallet when secondary is delegator.";
+      ? "Explanation of secondary wallet when secondary is delegate. Do this."
+      : "Explanation of secondary wallet when secondary is delegator. Do this.";
 
   return (
     <>

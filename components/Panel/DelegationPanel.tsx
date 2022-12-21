@@ -109,19 +109,19 @@ export function DelegationPanel() {
             <IconWrapper>
               <OneIcon />
             </IconWrapper>
-            Add secondary wallet address text text
+            Add secondary wallet address text text. Do this.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
               <TwoIcon />
             </IconWrapper>
-            Request has to be accepted in secondary wallet text text
+            Request has to be accepted in secondary wallet text text. Do this.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
               <ThreeIcon />
             </IconWrapper>
-            You can now vote with your delegate wallet
+            You can now vote with your delegate wallet. Do this.
           </StepWrapper>
         </StepsWrapper>
         {isLoading() ? (
