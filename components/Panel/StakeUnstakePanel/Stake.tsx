@@ -34,7 +34,7 @@ export function Stake({
     ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
     : "0 seconds";
 
-  const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
+  const disclaimer = `I understand that Staked tokens cannot be claimed until ${unstakeCoolDownFormatted} after unstaking.`;
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
@@ -76,7 +76,7 @@ export function Stake({
       <PanelSectionTitle>Stake</PanelSectionTitle>
       <PanelSectionText>
         Staked tokens can be used to vote and earn rewards. Staked tokens cannot
-        be transferred for {unstakeCoolDownFormatted} after unstaking.
+        be claimed until {unstakeCoolDownFormatted} after unstaking.
       </PanelSectionText>
       {isDelegate ? (
         <PanelWarningText>

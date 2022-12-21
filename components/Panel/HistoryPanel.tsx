@@ -94,7 +94,7 @@ export function HistoryPanel() {
           <PanelSectionText>
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
             Reprehenderit enim voluptate rem perferendis numquam, consequuntur
-            sapiente nesciunt laudantium quibusdam pariatur.
+            sapiente nesciunt laudantium quibusdam pariatur. Do this.
           </PanelSectionText>
         </SectionWrapper>
         <SectionWrapper>
