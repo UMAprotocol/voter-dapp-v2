@@ -66,3 +66,4 @@ export { useCommittedVotesByCaller } from "./queries/votes/useCommittedVotesByCa
 export { useCommittedVotesForDelegator } from "./queries/delegation/useCommittedVotesForDelegator";
 export { useSign } from "./helpers/useSign";
 export { useGlobals } from "./queries/rewards/useGlobals";
+export { useDiscordThread } from "./queries/discord/useDiscordThread";

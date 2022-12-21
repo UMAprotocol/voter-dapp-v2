@@ -2,6 +2,7 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { supportedChains } from "constant";
 import { BigNumber } from "ethers";
 import { DropdownItemT, LinkT, UserVoteDataT } from "types";
+import * as ss from "superstruct";
 
 export type UniqueKeyT = string;
 
@@ -245,19 +246,52 @@ export type RawDiscordMessageT = {
   };
   timestamp: string;
   thread: { id: string };
+  attachments: {
+    id: string;
+    filename: string;
+    size: number;
+    url: string;
+    proxy_url: string;
+    width?: number;
+    height?: number;
+    content_type: string;
+  }[];
+  embeds: {
+    type: string;
+    url: string;
+    title: string;
+    description: string;
+  }[];
+  mentions: {
+    id: string;
+    username: string;
+    avatar: string;
+    discriminator: string;
+  }[];
 };
 
 export type RawDiscordThreadT = RawDiscordMessageT[];
 
-export type DiscordMessageT = {
-  message: string;
-  sender: string;
-  senderPicture: string | null;
-  time: string;
-};
+export const DiscordMessageT = ss.object({
+  message: ss.string(),
+  sender: ss.string(),
+  senderPicture: ss.optional(ss.string()),
+  time: ss.number(),
+});
+export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 
-export type DiscordThreadT = {
-  identifier: string;
-  time: number;
-  thread: DiscordMessageT[];
-};
+export const DiscordThreadT = ss.object({
+  identifier: ss.string(),
+  time: ss.number(),
+  thread: ss.array(DiscordMessageT),
+});
+export type DiscordThreadT = ss.Infer<typeof DiscordThreadT>;
+
+export const DiscordThreadsT = ss.array(DiscordThreadT);
+export type DiscordThreadsT = ss.Infer<typeof DiscordThreadsT>;
+
+export const L1Request = ss.object({
+  time: ss.number(),
+  identifier: ss.string(),
+});
+export type L1Request = ss.Infer<typeof L1Request>;
