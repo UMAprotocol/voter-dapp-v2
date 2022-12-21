@@ -50,9 +50,7 @@ Here's my rationale lorem ipsum so I vote 1.`,
     <Wrapper>
       <Disclaimer>
         <Text>
-          <Strong>Note:</Strong> These discussions are from Discord and are not
-          the opinions of UMA. Please vote independently based on your belief
-          about the truth lorem ipsum dolor.
+          <Strong>Note:</Strong> These discussions are from the UMA Discord. They do not reflect the opinion of Risk Labs or any other entity.
         </Text>
       </Disclaimer>
       <TitleSectionWrapper>
