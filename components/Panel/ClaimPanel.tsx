@@ -72,8 +72,7 @@ export function ClaimPanel() {
           <ClaimAndStakeWrapper>
             <PanelSectionTitle>Claim and Stake</PanelSectionTitle>
             <PanelSectionText>
-              Earn even more rewards by claiming and automatically stake/lock
-              these rewards text TODO. Do this.
+              Compound your UMA by claiming and automatically staking your rewards.
             </PanelSectionText>
             <Button
               variant="primary"
@@ -90,8 +89,7 @@ export function ClaimPanel() {
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
             <PanelSectionText>
-              By claiming to your wallet you will not earn rewards text text but
-              this could be an option for tax reasons text TODO. Do this.
+              UMA claimed to your wallet will not earn additional rewards unless staked.
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
