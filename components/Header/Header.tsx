@@ -73,12 +73,16 @@ export function Header() {
                 </NotificationIconWrapper>
               )}
               <NotificationText>
-                <Link href="/wallet-settings">
+                {isDelegatePending && (
+                  <Link href="/wallet-settings">Received delegate request</Link>
+                )}
+                {isDelegate && (
                   <>
-                    {isDelegatePending && "Received delegate request"}
-                    {isDelegate && "Delegate connected"}
+                    <Dot />
+                    &nbsp;&nbsp;Connected as{" "}
+                    <Link href="/wallet-settings">delegate wallet</Link>
                   </>
-                </Link>
+                )}
               </NotificationText>
               <MobileNotificationText>
                 <Link href="/wallet-settings">Delegate</Link>
@@ -252,4 +256,12 @@ const NotificationIconWrapper = styled.div`
     width: 10px;
     height: 10px;
   }
+`;
+
+const Dot = styled.div`
+  height: 8px;
+  width: 8px;
+  background-color: ${green};
+  border-radius: 50%;
+  display: inline-block;
 `;
