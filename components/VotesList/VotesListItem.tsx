@@ -31,6 +31,8 @@ export interface Props {
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
+  setDirty?: (dirty: boolean) => void;
+  isDirty?: boolean;
 }
 export function VotesListItem({
   vote,
@@ -40,6 +42,8 @@ export function VotesListItem({
   activityStatus,
   moreDetailsAction,
   isFetching,
+  setDirty,
+  isDirty = false,
 }: Props) {
   const { signer } = useWalletContext();
   const { width } = useWindowSize();
@@ -86,6 +90,11 @@ export function VotesListItem({
       setWrapperWidth(wrapperRef.current.offsetWidth);
     }
   }, [wrapperRef.current?.offsetWidth]);
+
+  useEffect(() => {
+    const dirty = isDirtyCheck();
+    if (setDirty && dirty !== isDirty) setDirty(dirty);
+  }, [selectedVote, setDirty, isDirty, isDirtyCheck]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
@@ -259,6 +268,17 @@ export function VotesListItem({
     );
   }
 
+  // Function returns true if the input exist and has changed from our committed value, false otherwise
+  function isDirtyCheck(): boolean {
+    if (phase !== "commit") return false;
+    const existingVote = getDecryptedVoteAsFormattedString();
+    if (!existingVote) return false;
+    // this happens if you clear the vote inputs, selected vote normally
+    // would be "" if editing. dirty = false if we clear inputs.
+    if (selectedVote === undefined) return false;
+    return selectedVote !== existingVote;
+  }
+
   const style = {
     "--border-color": getBorderColor(),
     "--dot-color": getDotColor(),
@@ -355,6 +375,7 @@ export function VotesListItem({
                   }
                 />{" "}
                 {getRelevantTransactionLink()}
+                {isDirty ? "*" : ""}
               </>
             )}
           </VoteStatus>
