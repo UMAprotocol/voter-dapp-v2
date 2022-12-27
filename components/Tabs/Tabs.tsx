@@ -7,9 +7,15 @@ type Tab = {
   content: ReactNode;
 };
 
-export function Tabs({ tabs }: { tabs: Tab[] }) {
+export function Tabs({
+  tabs,
+  defaultValue,
+}: {
+  tabs: Tab[];
+  defaultValue: string;
+}) {
   return (
-    <TabsRoot>
+    <TabsRoot defaultValue={defaultValue}>
       <TabsList>
         {tabs.map(({ title }) => (
           <TabsTrigger key={title} value={title}>

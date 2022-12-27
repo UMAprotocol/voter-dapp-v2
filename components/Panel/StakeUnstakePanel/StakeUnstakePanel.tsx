@@ -153,7 +153,7 @@ export function StakeUnstakePanel() {
             </CooldownTimerWrapper>
           )}
         </BalancesWrapper>
-        <Tabs tabs={tabs} />
+        <Tabs tabs={tabs} defaultValue={"Stake"} />
       </SectionsWrapper>
       <PanelFooter />
     </PanelWrapper>
