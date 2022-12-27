@@ -8,7 +8,9 @@ export const parseEther = ethers.utils.parseEther;
 // This catches any potential errors form parsing an unknown string value, returns 0 if error happens.
 export function parseEtherSafe(value: string, decimals = 18): ethers.BigNumber {
   try {
-    return ethers.utils.parseUnits(Number(value).toFixed(decimals), decimals);
+    // previously we were casting this to number, and using tofixed. this does not work because casting to
+    // number may change the value. this was affecting the "max" button when decimals of user was very long.
+    return ethers.utils.parseUnits(value, decimals);
   } catch (err) {
     return ethers.BigNumber.from(0);
   }

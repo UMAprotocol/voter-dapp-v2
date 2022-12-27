@@ -45,12 +45,12 @@ export function Stake({
   function isButtonDisabled() {
     if (inputAmount === maximumApprovalAmountString && disclaimerChecked)
       return false;
-
     return (
       unstakedBalance?.eq(0) ||
       !disclaimerChecked ||
       inputAmount === "" ||
-      parseEtherSafe(inputAmount).eq(0)
+      parseEtherSafe(inputAmount).eq(0) ||
+      parseEtherSafe(inputAmount).gt(unstakedBalance)
     );
   }
 
