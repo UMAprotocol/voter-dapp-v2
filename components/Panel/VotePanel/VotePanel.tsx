@@ -56,7 +56,11 @@ export function VotePanel({ content }: Props) {
         isGovernance={isGovernance}
         voteNumber={voteNumber?.toString()}
       />
-      {hasResults ? <Tabs tabs={tabs} /> : <Details {...content} />}
+      {hasResults ? (
+        <Tabs tabs={tabs} defaultValue="Result" />
+      ) : (
+        <Details {...content} />
+      )}
       <PanelFooter />
     </PanelWrapper>
   );
