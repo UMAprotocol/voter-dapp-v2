@@ -6,7 +6,7 @@ import {
   useUserVotingAndStakingDetails,
   useWalletContext,
 } from "hooks";
-import { createContext, ReactNode } from "react";
+import { createContext, ReactNode, useState } from "react";
 import { VoteHistoryByKeyT, SigningKey } from "types";
 import { config } from "helpers/config";
 
@@ -29,6 +29,7 @@ export interface UserContextState {
   signingKey: SigningKey | undefined;
   hasSigningKey: boolean;
   correctChainConnected: boolean;
+  setAddressOverride: (address?: string) => void;
 }
 
 export const defaultUserContextState: UserContextState = {
@@ -50,6 +51,7 @@ export const defaultUserContextState: UserContextState = {
   signingKey: undefined,
   hasSigningKey: false,
   correctChainConnected: true,
+  setAddressOverride: () => undefined,
 };
 
 export const UserContext = createContext<UserContextState>(
@@ -59,6 +61,9 @@ export const UserContext = createContext<UserContextState>(
 export function UserProvider({ children }: { children: ReactNode }) {
   const { connectedWallet, account, address, truncatedAddress } =
     useAccountDetails();
+  const [addressOverride, setAddressOverride] = useState<string | undefined>(
+    undefined
+  );
   const { signingKeys, connectedChainId } = useWalletContext();
 
   const {
@@ -74,7 +79,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     },
     isLoading: userDataLoading,
     isFetching: userDataFetching,
-  } = useUserVotingAndStakingDetails();
+  } = useUserVotingAndStakingDetails(addressOverride);
 
   const walletIcon = connectedWallet?.icon;
   const signingKey = signingKeys[address];
@@ -101,6 +106,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         signingKey,
         hasSigningKey: !!signingKey,
         correctChainConnected,
+        setAddressOverride,
       }}
     >
       {children}

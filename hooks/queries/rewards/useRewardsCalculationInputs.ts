@@ -9,12 +9,13 @@ import {
 } from "hooks";
 import { getRewardsCalculationInputs } from "web3";
 
-export function useRewardsCalculationInputs() {
+export function useRewardsCalculationInputs(addressOverride?: string) {
   const { voting } = useContractsContext();
-  const { address } = useUserContext();
+  const { address: defaultAddress } = useUserContext();
   const { stakedBalance, unstakedBalance, pendingUnstake, updateTime } =
     useStakingContext();
   const { onError } = useHandleError({ isDataFetching: true });
+  const address = addressOverride || defaultAddress;
 
   const queryResult = useQuery(
     [

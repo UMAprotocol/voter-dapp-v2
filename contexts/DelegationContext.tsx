@@ -350,7 +350,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       },
     });
   }
-
   return (
     <DelegationContext.Provider
       value={{

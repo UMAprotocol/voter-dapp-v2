@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Wallet } from "components";
 import {
   green,
@@ -11,6 +12,8 @@ import {
   useDelegationContext,
   usePanelContext,
   useStakingContext,
+  useUserContext,
+  useVotesContext,
 } from "hooks";
 import NextLink from "next/link";
 import Bell from "public/assets/icons/bell.svg";
@@ -21,9 +24,38 @@ import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus, getDelegationDataLoading } =
+  const { getDelegationStatus, getDelegationDataLoading, getDelegatorAddress } =
     useDelegationContext();
-  const { v1Rewards } = useStakingContext();
+
+  // theres a feature now to set the override address for various contexts. This allows us to query data based
+  // on an arbitrary address, in all cases though this is based on the delegate/ delegator relationship. if we
+  // are a delegate, we need to query various things based on the delegator address.
+  const { v1Rewards, setAddressOverride: setStakingAddressOverride } =
+    useStakingContext();
+  const { setAddressOverride: setUserContextAddress } = useUserContext();
+  const { setAddressOverride: setVotesAddressOverride } = useVotesContext();
+
+  useEffect(() => {
+    if (getDelegationStatus() === "delegate") {
+      const address = getDelegatorAddress();
+      // these contexts have special logic to allow certain queries based on a different address, in this case
+      // its the delegator address, so we can get things like stake/unstake balance, vote history and other data.
+      setStakingAddressOverride(address);
+      setUserContextAddress(address);
+      setVotesAddressOverride(address);
+    } else {
+      // by default the address will be the current wallet connected
+      setStakingAddressOverride(undefined);
+      setUserContextAddress(undefined);
+      setVotesAddressOverride(undefined);
+    }
+  }, [
+    getDelegatorAddress(),
+    getDelegationStatus(),
+    setUserContextAddress,
+    setStakingAddressOverride,
+    setVotesAddressOverride,
+  ]);
 
   const status = getDelegationStatus();
   const showDelegationNotification =

@@ -50,7 +50,7 @@ export function Stake({
       !disclaimerChecked ||
       inputAmount === "" ||
       parseEtherSafe(inputAmount).eq(0) ||
-      parseEtherSafe(inputAmount).gt(unstakedBalance)
+      (unstakedBalance ? parseEtherSafe(inputAmount).gt(unstakedBalance) : true)
     );
   }
 

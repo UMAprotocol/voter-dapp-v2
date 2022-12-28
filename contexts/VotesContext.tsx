@@ -16,7 +16,7 @@ import {
   useUserVotingAndStakingDetails,
   useCommittedVotesForDelegator,
 } from "hooks";
-import { createContext, ReactNode } from "react";
+import { createContext, ReactNode, useState } from "react";
 import {
   ActivityStatusT,
   ContentfulDataByKeyT,
@@ -49,6 +49,7 @@ export interface VotesContextState {
   getUserDependentIsFetching: () => boolean;
   getUserIndependentIsFetching: () => boolean;
   getIsFetching: () => boolean;
+  setAddressOverride: (address?: string) => void;
 }
 
 export const defaultVotesContextState: VotesContextState = {
@@ -73,6 +74,7 @@ export const defaultVotesContextState: VotesContextState = {
   getUserDependentIsFetching: () => false,
   getUserIndependentIsFetching: () => false,
   getIsFetching: () => false,
+  setAddressOverride: () => undefined,
 };
 
 export const VotesContext = createContext<VotesContextState>(
@@ -80,6 +82,9 @@ export const VotesContext = createContext<VotesContextState>(
 );
 
 export function VotesProvider({ children }: { children: ReactNode }) {
+  const [addressOverride, setAddressOverride] = useState<string | undefined>(
+    undefined
+  );
   const {
     data: { activeVotes, hasActiveVotes },
     isLoading: activeVotesIsLoading,
@@ -133,7 +138,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { address } = useAccountDetails();
   const {
     data: { voteHistoryByKey },
-  } = useUserVotingAndStakingDetails();
+  } = useUserVotingAndStakingDetails(addressOverride);
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
   const { data: augmentedData } = useAugmentedVoteData();
 
@@ -285,6 +290,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         getUserDependentIsFetching,
         getUserIndependentIsFetching,
         getIsFetching,
+        setAddressOverride,
       }}
     >
       {children}

@@ -48,7 +48,7 @@ export function Votes() {
     isSettingChain,
   } = useWalletContext();
   const { voting } = useContractsContext();
-  const { stakedBalance, delegatorStakedBalance } = useStakingContext();
+  const { stakedBalance } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
@@ -89,7 +89,6 @@ export function Votes() {
     const isCommit = phase === "commit";
     const isReveal = phase === "reveal";
     const hasStaked = stakedBalance?.gt(0) ?? false;
-    const hasDelegatorStaked = delegatorStakedBalance?.gt(0) ?? false;
     const isDelegate = getDelegationStatus() === "delegate";
     const hasSigner = !!signer;
     const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
@@ -126,7 +125,7 @@ export function Votes() {
         return actionConfig;
       }
       if (isDelegate) {
-        if (!hasDelegatorStaked) {
+        if (!hasStaked) {
           actionConfig.disabled = true;
           actionConfig.tooltip =
             "You cannot commit because your delegator has no UMA Staked.";

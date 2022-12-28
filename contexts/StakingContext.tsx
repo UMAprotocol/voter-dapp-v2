@@ -11,14 +11,12 @@ import {
   useUnstakeCoolDown,
   useUnstakedBalance,
   useV1Rewards,
-  useDelegatorStakedBalance,
 } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import { V1RewardsT } from "types";
 
 export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
-  delegatorStakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
   updateTime: BigNumber | undefined;
@@ -31,11 +29,11 @@ export interface StakingContextState {
   resetOutstandingRewards: () => void;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
+  setAddressOverride: (address?: string) => void;
 }
 
 export const defaultStakingContextState: StakingContextState = {
   stakedBalance: undefined,
-  delegatorStakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
   updateTime: undefined,
@@ -48,6 +46,7 @@ export const defaultStakingContextState: StakingContextState = {
   v1Rewards: undefined,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
+  setAddressOverride: () => undefined,
 };
 
 export const StakingContext = createContext<StakingContextState>(
@@ -55,6 +54,12 @@ export const StakingContext = createContext<StakingContextState>(
 );
 
 export function StakingProvider({ children }: { children: ReactNode }) {
+  const { address: defaultAddress } = useAccountDetails();
+  const [addressOverride, setAddressOverride] = useState<string | undefined>(
+    undefined
+  );
+  const address = addressOverride || defaultAddress;
+
   const {
     data: {
       pendingUnstake,
@@ -64,38 +69,32 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
-  } = useStakerDetails();
+  } = useStakerDetails(address);
   const {
     data: stakedBalance,
     isLoading: stakedBalanceLoading,
     isFetching: stakedBalanceFetching,
-  } = useStakedBalance();
-  const {
-    data: delegatorStakedBalance,
-    isLoading: delegatorStakedBalanceLoading,
-    isFetching: delegatorStakedBalanceFetching,
-  } = useDelegatorStakedBalance();
+  } = useStakedBalance(address);
   const {
     data: unstakedBalance,
     isLoading: unstakedBalanceLoading,
     isFetching: unstakedBalanceFetching,
-  } = useUnstakedBalance();
+  } = useUnstakedBalance(address);
   const {
     data: { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime },
     isLoading: rewardsCalculationInputsLoading,
     isFetching: rewardsCalculationInputsFetching,
-  } = useRewardsCalculationInputs();
+  } = useRewardsCalculationInputs(address);
   const {
     data: outstandingRewardsFromContract,
     isLoading: outstandingRewardsLoading,
     isFetching: outstandingRewardsFetching,
-  } = useOutstandingRewards();
+  } = useOutstandingRewards(address);
   const {
     data: tokenAllowance,
     isLoading: tokenAllowanceLoading,
     isFetching: tokenAllowanceFetching,
   } = useTokenAllowance();
-  const { address } = useAccountDetails();
   const {
     data: unstakeCoolDown,
     isLoading: unstakeCoolDownLoading,
@@ -138,8 +137,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       outstandingRewardsLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
-      rewardsCalculationInputsLoading ||
-      delegatorStakedBalanceLoading
+      rewardsCalculationInputsLoading
     );
   }
 
@@ -153,8 +151,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       outstandingRewardsFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
-      rewardsCalculationInputsFetching ||
-      delegatorStakedBalanceFetching
+      rewardsCalculationInputsFetching
     );
   }
 
@@ -162,7 +159,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     <StakingContext.Provider
       value={{
         stakedBalance,
-        delegatorStakedBalance,
         unstakedBalance,
         pendingUnstake,
         updateTime,
@@ -175,6 +171,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         v1Rewards,
         getStakingDataLoading,
         getStakingDataFetching,
+        setAddressOverride,
       }}
     >
       {children}
