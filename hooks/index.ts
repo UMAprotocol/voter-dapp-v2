@@ -65,3 +65,4 @@ export { useCommittedVotes } from "./queries/votes/useCommittedVotes";
 export { useCommittedVotesByCaller } from "./queries/votes/useCommittedVotesByCaller";
 export { useCommittedVotesForDelegator } from "./queries/delegation/useCommittedVotesForDelegator";
 export { useSign } from "./helpers/useSign";
+export { useGlobals } from "./queries/rewards/useGlobals";

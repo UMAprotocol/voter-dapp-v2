@@ -15,7 +15,10 @@ export function truncateDecimals(number: string | number, decimals: number) {
   const [whole, decimal] = number.toString().split(".");
   if (!decimal) return number.toString();
   if (decimals === 0) return whole.toString();
-  return `${whole}.${decimal.slice(0, decimals)}`;
+  const truncated = decimal.slice(0, decimals);
+  // if the truncated value is just 0, return the whole number
+  if (Number(truncated) === 0) return whole.toString();
+  return `${whole}.${truncated}`;
 }
 
 export function bigNumberFromFloatString(value: string | undefined) {
