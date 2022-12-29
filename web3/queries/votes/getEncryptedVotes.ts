@@ -24,7 +24,6 @@ export async function getEncryptedVotes(
       makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
     ] = encryptedVote;
   });
-
   v2EventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
     const decodedIdentifier = decodeHexString(identifier);
     encryptedVotes[

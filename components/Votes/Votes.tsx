@@ -59,7 +59,11 @@ export function Votes() {
     },
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
 
+  function isDirty(): boolean {
+    return dirtyInputs.some((x) => x);
+  }
   const votesToShow = getEntriesForPage(
     pageNumber,
     resultsPerPage,
@@ -91,7 +95,20 @@ export function Votes() {
     const hasStaked = stakedBalance?.gt(0) ?? false;
     const isDelegate = getDelegationStatus() === "delegate";
     const hasSigner = !!signer;
-    const hasVotesToCommit = Object.keys(selectedVotes).length > 0;
+    const votesToShow = determineVotesToShow();
+    const hasPreviouslyCommitted =
+      votesToShow.filter((vote) => vote.decryptedVote).length > 0;
+    // counting how many votes we have edited with commitable values ( non empty )
+    const selectedVotesCount = Object.values(selectedVotes).filter(
+      (x) => x
+    ).length;
+    // check if we have votes to commit by seeing there are more than 1 and its dirty
+    const hasVotesToCommit =
+      selectedVotesCount > 0
+        ? hasPreviouslyCommitted
+          ? isDirty()
+          : true
+        : false;
     const hasVotesToReveal = getVotesToReveal().length > 0;
 
     if (!hasSigner || !address) {
@@ -269,7 +286,6 @@ export function Votes() {
         return "Past votes:";
     }
   }
-
   return (
     <>
       <Title>{determineTitle()}</Title>
@@ -278,7 +294,7 @@ export function Votes() {
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
-          rows={votesToShow.map((vote) => (
+          rows={votesToShow.map((vote, index) => (
             <VotesListItem
               vote={vote}
               phase={phase}
@@ -287,6 +303,13 @@ export function Votes() {
               activityStatus={getActivityStatus()}
               moreDetailsAction={() => openVotePanel(vote)}
               key={vote.uniqueKey}
+              isDirty={dirtyInputs[index]}
+              setDirty={(dirty: boolean) => {
+                setDirtyInput((inputs) => {
+                  inputs[index] = dirty;
+                  return [...inputs];
+                });
+              }}
               isFetching={
                 getUserDependentIsFetching() ||
                 isCommittingVotes ||
@@ -298,6 +321,16 @@ export function Votes() {
       </VotesTableWrapper>
       {getActivityStatus() === "active" ? (
         <CommitVotesButtonWrapper>
+          {isDirty() ? (
+            <>
+              <Button
+                variant="secondary"
+                label="Reset Changes"
+                onClick={() => setSelectedVotes({})}
+              />
+              <ButtonSpacer />
+            </>
+          ) : undefined}
           {!actionStatus.hidden ? (
             actionStatus.tooltip ? (
               <Tooltip label={actionStatus.tooltip}>
@@ -355,4 +388,8 @@ const CommitVotesButtonWrapper = styled.div`
 
 const PaginationWrapper = styled.div`
   margin-block: 30px;
+`;
+
+const ButtonSpacer = styled.div`
+  width: 10px;
 `;
