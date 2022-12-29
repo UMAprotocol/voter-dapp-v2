@@ -4,9 +4,10 @@ import { BigNumber } from "ethers";
 import { getUserData } from "graph";
 import { useAccountDetails, useHandleError } from "hooks";
 
-export function useUserVotingAndStakingDetails() {
-  const { address } = useAccountDetails();
+export function useUserVotingAndStakingDetails(addressOverride?: string) {
+  const { address: defaultAddress } = useAccountDetails();
   const { onError } = useHandleError({ isDataFetching: true });
+  const address = addressOverride || defaultAddress;
 
   const queryResult = useQuery(
     [userDataKey, address],

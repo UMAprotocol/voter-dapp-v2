@@ -6,16 +6,19 @@ import { useHandleError } from "hooks/helpers/useHandleError";
 import { getStakedBalance } from "web3";
 import { useAccountDetails } from "../user/useAccountDetails";
 
-export function useStakedBalance() {
+const initialData = BigNumber.from(0);
+
+export function useStakedBalance(addressOverride?: string) {
   const { voting } = useContractsContext();
-  const { address } = useAccountDetails();
+  const { address: defaultAddress } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const address = addressOverride || defaultAddress;
 
   const queryResult = useQuery({
     queryKey: [stakedBalanceKey, address],
-    queryFn: () => getStakedBalance(voting, address),
+    queryFn: () => (address ? getStakedBalance(voting, address) : initialData),
     enabled: !!address,
-    initialData: BigNumber.from(0),
+    initialData,
     onError,
     onSuccess: clearErrors,
   });
