@@ -4,6 +4,8 @@ import { SubgraphGlobals } from "types";
 const { graphEndpoint } = config;
 
 export async function getGlobals() {
+  if (!graphEndpoint) throw new Error("V2 subgraph is disabled");
+
   const query = gql`
     {
       global(id: "global") {

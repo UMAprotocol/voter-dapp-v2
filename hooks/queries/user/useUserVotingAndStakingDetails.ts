@@ -3,6 +3,7 @@ import { oneMinute, userDataKey } from "constant";
 import { BigNumber } from "ethers";
 import { getUserData } from "graph";
 import { useAccountDetails, useHandleError } from "hooks";
+import { config } from "helpers/config";
 
 export function useUserVotingAndStakingDetails(addressOverride?: string) {
   const { address: defaultAddress } = useAccountDetails();
@@ -13,7 +14,7 @@ export function useUserVotingAndStakingDetails(addressOverride?: string) {
     [userDataKey, address],
     () => getUserData(address),
     {
-      enabled: !!address,
+      enabled: !!address && config.graphV2Enabled,
       refetchInterval: oneMinute,
       initialData: {
         apr: BigNumber.from(0),

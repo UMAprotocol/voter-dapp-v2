@@ -8,18 +8,23 @@ import {
   useUpcomingVotes,
 } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";
+import { config } from "helpers/config";
 
-const space = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID ?? "";
-const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN ?? "";
+const { contentfulSpace, contentfulAccessToken } = config;
 
-const contentfulClient = contentful.createClient({
-  space,
-  accessToken,
-});
+const contentfulClient =
+  contentfulSpace && contentfulAccessToken
+    ? contentful.createClient({
+        space: contentfulSpace,
+        accessToken: contentfulAccessToken,
+      })
+    : undefined;
 
 async function getContentfulData(
   adminProposalNumbersByKey: Record<UniqueKeyT, number>
 ) {
+  if (!contentfulClient) throw new Error("Contentful API not available");
+
   const adminProposalNumbers = Object.values(adminProposalNumbersByKey);
   if (adminProposalNumbers.length === 0) return {};
 
@@ -73,6 +78,7 @@ export function useContentfulData() {
     () => getContentfulData(adminProposalNumbersByKey),
     {
       refetchInterval: oneMinute,
+      enabled: !!contentfulClient,
       initialData: {},
       onError,
     }

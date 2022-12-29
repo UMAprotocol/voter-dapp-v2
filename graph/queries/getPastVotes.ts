@@ -13,6 +13,8 @@ const { graphEndpoint, graphEndpointV1 } = config;
 
 export async function getPastVotesV1() {
   const endpoint = graphEndpointV1;
+  if (!endpoint) throw new Error("V1 subgraph is disabled");
+
   const pastVotesQuery = gql`
     {
       priceRequests(
@@ -86,6 +88,7 @@ export async function getPastVotesV1() {
 
 export async function getPastVotesV2() {
   const endpoint = graphEndpoint;
+  if (!endpoint) throw new Error("V2 subgraph is disabled");
   const pastVotesQuery = gql`
     {
       priceRequests(
