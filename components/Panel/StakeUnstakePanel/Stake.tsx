@@ -18,6 +18,7 @@ interface Props {
   unstakeCoolDown: BigNumber | undefined;
   isDelegate: boolean;
   approve: (approveAmount: string) => void;
+  isApproving: boolean;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
 }
 export function Stake({
@@ -27,6 +28,7 @@ export function Stake({
   stake,
   unstakeCoolDown,
   isDelegate,
+  isApproving,
 }: Props) {
   const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
@@ -43,6 +45,7 @@ export function Stake({
   }
 
   function isButtonDisabled() {
+    if (isApproving) return true;
     if (inputAmount === maximumApprovalAmountString && disclaimerChecked)
       return false;
     return (
@@ -56,7 +59,7 @@ export function Stake({
 
   function onApprove() {
     approve(inputAmount);
-    setInputAmount("");
+    if (inputAmount === maximumApprovalAmountString) setInputAmount("");
   }
 
   function onStake() {
