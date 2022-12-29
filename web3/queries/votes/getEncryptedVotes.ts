@@ -5,7 +5,8 @@ import { EncryptedVotesByKeyT } from "types";
 export async function getEncryptedVotes(
   votingContract: VotingV2Ethers,
   votingV1Contract: VotingEthers,
-  address: string
+  address: string,
+  findRoundId?: number
 ) {
   const v1Filter = votingV1Contract.filters.EncryptedVote(address);
   const v1Result = await votingV1Contract.queryFilter(v1Filter);
@@ -14,7 +15,9 @@ export async function getEncryptedVotes(
   const v2Result = await votingContract.queryFilter(v2Filter);
 
   const v1EventData = v1Result?.map(({ args }) => args);
-  const v2EventData = v2Result?.map(({ args }) => args);
+  const v2EventData = v2Result
+    ?.map(({ args }) => args)
+    .filter(({ roundId }) => (findRoundId ? roundId.eq(findRoundId) : true));
 
   const encryptedVotes: EncryptedVotesByKeyT = {};
 

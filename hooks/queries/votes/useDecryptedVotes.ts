@@ -8,9 +8,9 @@ import {
   EncryptedVotesByKeyT,
 } from "types";
 
-export function useDecryptedVotes() {
+export function useDecryptedVotes(roundId?: number) {
   const { address, signingKey } = useUserContext();
-  const { data: encryptedVotes } = useEncryptedVotes();
+  const { data: encryptedVotes } = useEncryptedVotes(roundId);
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
