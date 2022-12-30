@@ -15,6 +15,7 @@ import {
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
   useCommittedVotesForDelegator,
+  useVoteTimingContext,
 } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import {
@@ -37,6 +38,7 @@ export interface VotesContextState {
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
+  decryptedPastVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
@@ -62,6 +64,7 @@ export const defaultVotesContextState: VotesContextState = {
   revealedVotes: {},
   encryptedVotes: {},
   decryptedVotes: {},
+  decryptedPastVotes: {},
   contentfulData: {},
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
@@ -85,6 +88,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const [addressOverride, setAddressOverride] = useState<string | undefined>(
     undefined
   );
+  const { roundId } = useVoteTimingContext();
   const {
     data: { activeVotes, hasActiveVotes },
     isLoading: activeVotesIsLoading,
@@ -134,6 +138,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     data: decryptedVotes,
     isLoading: decryptedVotesIsLoading,
     isFetching: decryptedVotesIsFetching,
+  } = useDecryptedVotes(roundId);
+  const {
+    data: decryptedPastVotes,
+    isLoading: decryptedPastVotesIsLoading,
+    isFetching: decryptedPastVotesIsFetching,
   } = useDecryptedVotes();
   const { address } = useAccountDetails();
   const {
@@ -141,7 +150,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   } = useUserVotingAndStakingDetails(addressOverride);
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
   const { data: augmentedData } = useAugmentedVoteData();
-
   function getUserDependentIsLoading() {
     if (!address) return false;
 
@@ -152,7 +160,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       committedVotesForDelegatorIsLoading ||
       revealedVotesIsLoading ||
       encryptedVotesIsLoading ||
-      decryptedVotesIsLoading
+      decryptedVotesIsLoading ||
+      decryptedPastVotesIsLoading
     );
   }
 
@@ -174,7 +183,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       committedVotesByForDelegatorFetching ||
       revealedVotesIsFetching ||
       encryptedVotesIsFetching ||
-      decryptedVotesIsFetching
+      decryptedVotesIsFetching ||
+      decryptedPastVotesIsFetching
     );
   }
 
@@ -189,19 +199,21 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getActiveVotes() {
-    return getVotesWithData(activeVotes);
+    return getVotesWithData(activeVotes, decryptedVotes);
   }
 
   function getUpcomingVotes() {
-    return getVotesWithData(upcomingVotes);
+    return getVotesWithData(upcomingVotes, decryptedVotes);
   }
 
   function getPastVotes() {
-    return getVotesWithData(pastVotes);
+    return getVotesWithData(pastVotes, decryptedPastVotes);
   }
 
   function getPastVotesV2() {
-    return getVotesWithData(pastVotes).filter((vote) => !vote.isV1);
+    return getVotesWithData(pastVotes, decryptedPastVotes).filter(
+      (vote) => !vote.isV1
+    );
   }
 
   function getActivityStatus() {
@@ -229,7 +241,10 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         !!committedVotesForDelegator[uniqueKey])
     );
   }
-  function getVotesWithData(priceRequests: PriceRequestByKeyT): VoteT[] {
+  function getVotesWithData(
+    priceRequests: PriceRequestByKeyT,
+    decryptedVotes: DecryptedVotesByKeyT
+  ): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       return {
         ...vote,
@@ -278,6 +293,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         revealedVotes,
         encryptedVotes,
         decryptedVotes,
+        decryptedPastVotes,
         contentfulData,
         getActiveVotes,
         getUpcomingVotes,
