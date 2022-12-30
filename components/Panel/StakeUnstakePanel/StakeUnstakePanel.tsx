@@ -32,7 +32,7 @@ export function StakeUnstakePanel() {
     unstakeCoolDown,
   } = useStakingContext();
   const { getDelegationStatus } = useDelegationContext();
-  const { approveMutation } = useApprove("stake");
+  const { approveMutation, isApproving } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } =
     useRequestUnstake("unstake");
@@ -94,6 +94,7 @@ export function StakeUnstakePanel() {
           tokenAllowance={tokenAllowance}
           unstakedBalance={unstakedBalance}
           approve={approve}
+          isApproving={isApproving}
           stake={stake}
           unstakeCoolDown={unstakeCoolDown}
           isDelegate={isDelegate}
