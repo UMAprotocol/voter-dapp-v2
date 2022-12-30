@@ -1,14 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { stakedBalanceKey } from "constant";
+import {
+  stakedBalanceKey,
+  outstandingRewardsKey,
+  rewardsCalculationInputsKey,
+} from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
-import { ErrorOriginT } from "types";
+import { ErrorOriginT, RewardCalculationT } from "types";
 import { withdrawAndRestake } from "web3";
 
 export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { outstandingRewards, resetOutstandingRewards } = useStakingContext();
+  const { outstandingRewards } = useStakingContext();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(withdrawAndRestake, {
@@ -19,6 +23,27 @@ export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
       queryClient.setQueryData<BigNumber>(
         [stakedBalanceKey, address],
         (oldStakedBalance) => {
+          // change outstanding rewards from contract to 0
+          queryClient.setQueryData<BigNumber>(
+            [outstandingRewardsKey, address],
+            () => {
+              return BigNumber.from(0);
+            }
+          );
+
+          queryClient.setQueryData<RewardCalculationT>(
+            [rewardsCalculationInputsKey, address],
+            (previous) => {
+              return {
+                emissionRate: BigNumber.from(0),
+                rewardPerTokenStored: BigNumber.from(0),
+                cumulativeStake: BigNumber.from(0),
+                ...previous,
+                updateTime: BigNumber.from(Date.now()),
+              };
+            }
+          );
+
           if (
             outstandingRewards === undefined ||
             oldStakedBalance === undefined
@@ -30,10 +55,9 @@ export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
           return newStakedBalance;
         }
       );
-
-      resetOutstandingRewards();
     },
   });
+
   return {
     withdrawAndRestakeMutation: mutate,
     isWithdrawingAndRestaking: isLoading,

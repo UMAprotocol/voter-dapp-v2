@@ -26,7 +26,6 @@ export interface StakingContextState {
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: BigNumber | undefined;
   v1Rewards: V1RewardsT | undefined;
-  resetOutstandingRewards: () => void;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
   setAddressOverride: (address?: string) => void;
@@ -42,7 +41,6 @@ export const defaultStakingContextState: StakingContextState = {
   unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
-  resetOutstandingRewards: () => null,
   v1Rewards: undefined,
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
@@ -123,10 +121,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     setOutstandingRewards(calculatedOutstandingRewards);
   }
 
-  function resetOutstandingRewards() {
-    setOutstandingRewards(BigNumber.from(0));
-  }
-
   function getStakingDataLoading() {
     if (!address) return false;
 
@@ -167,7 +161,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         tokenAllowance,
         unstakeRequestTime,
         canUnstakeTime,
-        resetOutstandingRewards,
         v1Rewards,
         getStakingDataLoading,
         getStakingDataFetching,

@@ -12,6 +12,13 @@ export type V1RewardsT = {
   totalRewards: BigNumber;
 };
 
+export type RewardCalculationT = {
+  emissionRate: BigNumber;
+  rewardPerTokenStored: BigNumber;
+  cumulativeStake: BigNumber;
+  updateTime: BigNumber;
+};
+
 export type SubgraphGlobals = {
   global: {
     annualPercentageReturn: number;

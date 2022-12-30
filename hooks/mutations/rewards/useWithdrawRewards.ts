@@ -1,14 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { unstakedBalanceKey } from "constant";
+import {
+  unstakedBalanceKey,
+  outstandingRewardsKey,
+  rewardsCalculationInputsKey,
+} from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
-import { ErrorOriginT } from "types";
+import { ErrorOriginT, RewardCalculationT } from "types";
 import { withdrawRewards } from "web3";
 
 export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();
   const { address } = useAccountDetails();
-  const { outstandingRewards, resetOutstandingRewards } = useStakingContext();
+  const { outstandingRewards } = useStakingContext();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation(withdrawRewards, {
@@ -19,6 +23,25 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
       queryClient.setQueryData<BigNumber>(
         [unstakedBalanceKey, address],
         (oldUnstakedBalance) => {
+          // change outstanding rewards from contract to 0
+          queryClient.setQueryData<BigNumber>(
+            [outstandingRewardsKey, address],
+            () => BigNumber.from(0)
+          );
+          // change our update time to calculate the correct new rewards based on amount staked
+          // this happens every minute on an interval
+          queryClient.setQueryData<RewardCalculationT>(
+            [rewardsCalculationInputsKey, address],
+            (previous) => {
+              return {
+                emissionRate: BigNumber.from(0),
+                rewardPerTokenStored: BigNumber.from(0),
+                cumulativeStake: BigNumber.from(0),
+                ...previous,
+                updateTime: BigNumber.from(Date.now()),
+              };
+            }
+          );
           if (
             oldUnstakedBalance === undefined ||
             outstandingRewards === undefined
@@ -26,12 +49,9 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
             return;
 
           const newUnstakedBalance = oldUnstakedBalance.add(outstandingRewards);
-
           return newUnstakedBalance;
         }
       );
-
-      resetOutstandingRewards();
     },
   });
 
