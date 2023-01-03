@@ -34,11 +34,7 @@ export function Result({
     participation;
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
-    const voteAsString = vote.toFixed();
-    const formatted = formatVoteStringWithPrecision(
-      voteAsString,
-      decodedIdentifier
-    );
+    const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
     const label = findVoteInOptions(formatted)?.label ?? formatted;
     const value = tokensVotedWith;
 

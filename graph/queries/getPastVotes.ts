@@ -1,12 +1,7 @@
 import { config } from "helpers/config";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
-import {
-  formatBytes32String,
-  formatVoteStringWithPrecision,
-  makePriceRequestsByKey,
-  parseEtherSafe,
-} from "helpers";
+import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { PastVotesQuery } from "types";
 
 const { graphEndpoint, graphEndpointV1 } = config;
@@ -54,9 +49,7 @@ export async function getPastVotesV1() {
       revealedVotes,
     }) => {
       const identifier = formatBytes32String(id);
-      const correctVote = Number(
-        formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
-      );
+      const correctVote = price;
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
         uniqueCommitAddresses: revealedVotes.length,
@@ -65,9 +58,7 @@ export async function getPastVotesV1() {
       };
 
       const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
-        vote: Number(
-          formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
-        ),
+        vote: price,
         tokensVotedWith: Number(totalVoteAmount),
       }));
       return {
@@ -129,9 +120,7 @@ export async function getPastVotesV2() {
       revealedVotes,
     }) => {
       const identifier = formatBytes32String(id);
-      const correctVote = Number(
-        formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
-      );
+      const correctVote = price;
       const priceRequestIndex = BigNumber.from(requestIndex);
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
@@ -140,9 +129,7 @@ export async function getPastVotesV2() {
         totalTokensVotedWith,
       };
       const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
-        vote: Number(
-          formatVoteStringWithPrecision(parseEtherSafe(price), identifier)
-        ),
+        vote: price,
         tokensVotedWith: Number(totalVoteAmount),
       }));
       return {

@@ -1,5 +1,11 @@
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
-import { PriceRequestByKeyT, PriceRequestT, RawPriceRequestDataT } from "types";
+import {
+  PriceRequestByKeyT,
+  PriceRequestT,
+  RawPriceRequestDataT,
+  VoteParticipationT,
+  VoteResultsT,
+} from "types";
 
 export function makePriceRequestsByKey(
   priceRequests: RawPriceRequestDataT[] | undefined
@@ -22,7 +28,9 @@ function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
     .filter((priceRequest): priceRequest is PriceRequestT => !!priceRequest);
 }
 
-function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
+function formatPriceRequest(
+  priceRequest: RawPriceRequestDataT
+): PriceRequestT & VoteParticipationT & VoteResultsT {
   const time = Number(priceRequest.time);
   const timeMilliseconds = time * 1000;
   const timeAsDate = new Date(timeMilliseconds);
@@ -42,14 +50,21 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
   }
   const correctVote = priceRequest.correctVote;
-  const participation = priceRequest.participation;
+  const participation = {
+    uniqueCommitAddresses:
+      priceRequest?.participation?.uniqueCommitAddresses || 0,
+    uniqueRevealAddresses:
+      priceRequest?.participation?.uniqueRevealAddresses || 0,
+    totalTokensVotedWith:
+      priceRequest?.participation?.totalTokensVotedWith || 0,
+  };
   const results = priceRequest.results;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
     time,
     ancillaryData
   );
-  const isV1 = priceRequest.isV1;
+  const isV1 = priceRequest.isV1 ? true : false;
 
   return {
     time,
@@ -65,5 +80,5 @@ function formatPriceRequest(priceRequest: RawPriceRequestDataT) {
     results,
     uniqueKey,
     isV1,
-  } as PriceRequestT;
+  };
 }
