@@ -97,12 +97,12 @@ export const voteRevealed = {
 
 export const voteWithCorrectVoteWithoutUserVote = {
   ...voteWithoutUserVote,
-  correctVote: 0,
+  correctVote: "0",
 };
 
 export const voteWithCorrectVoteWithUserVote = {
   ...voteWithUserVote,
-  correctVote: 0,
+  correctVote: "0",
 };
 
 export function makeVoteWithHistory(

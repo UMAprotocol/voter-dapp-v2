@@ -267,19 +267,19 @@ VotePanelWithResults.args = {
     },
     results: [
       {
-        vote: 50000000000,
+        vote: "50000000000",
         tokensVotedWith: 1234,
       },
       {
-        vote: 20,
+        vote: "20",
         tokensVotedWith: 5678,
       },
       {
-        vote: 0.1,
+        vote: "10",
         tokensVotedWith: 500,
       },
       {
-        vote: 2,
+        vote: "2",
         tokensVotedWith: 199,
       },
     ],

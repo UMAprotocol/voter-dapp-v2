@@ -92,9 +92,19 @@ export function VotesListItem({
   }, [wrapperRef.current?.offsetWidth]);
 
   useEffect(() => {
+    // Function returns true if the input exist and has changed from our committed value, false otherwise
+    function isDirtyCheck(): boolean {
+      if (phase !== "commit") return false;
+      const existingVote = getDecryptedVoteAsFormattedString();
+      if (!existingVote) return false;
+      // this happens if you clear the vote inputs, selected vote normally
+      // would be "" if editing. dirty = false if we clear inputs.
+      if (selectedVote === undefined) return false;
+      return selectedVote !== existingVote;
+    }
     const dirty = isDirtyCheck();
     if (setDirty && dirty !== isDirty) setDirty(dirty);
-  }, [selectedVote, setDirty, isDirty, isDirtyCheck]);
+  }, [selectedVote, setDirty, isDirty]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
@@ -166,9 +176,8 @@ export function VotesListItem({
 
   function getCorrectVote() {
     if (correctVote === undefined) return;
-    const correctVoteAsString = correctVote.toFixed();
     const formatted = formatVoteStringWithPrecision(
-      correctVoteAsString,
+      correctVote,
       decodedIdentifier
     );
 
@@ -266,17 +275,6 @@ export function VotesListItem({
     ) : (
       getCommittedOrRevealed()
     );
-  }
-
-  // Function returns true if the input exist and has changed from our committed value, false otherwise
-  function isDirtyCheck(): boolean {
-    if (phase !== "commit") return false;
-    const existingVote = getDecryptedVoteAsFormattedString();
-    if (!existingVote) return false;
-    // this happens if you clear the vote inputs, selected vote normally
-    // would be "" if editing. dirty = false if we clear inputs.
-    if (selectedVote === undefined) return false;
-    return selectedVote !== existingVote;
   }
 
   const style = {

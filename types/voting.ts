@@ -22,7 +22,7 @@ export type PriceRequestT = {
   identifier: string;
   ancillaryData: string;
   voteNumber: BigNumber | undefined;
-  correctVote?: number;
+  correctVote?: string;
   // computed values
   timeMilliseconds: number;
   timeAsDate: Date;
@@ -43,7 +43,7 @@ export type VoteParticipationT = {
 };
 
 export type ResultsT = {
-  vote: number;
+  vote: string;
   tokensVotedWith: number;
 }[];
 
@@ -56,7 +56,7 @@ export type RawPriceRequestDataT = {
   identifier: string;
   ancillaryData: string;
   priceRequestIndex: BigNumber | undefined;
-  correctVote?: number;
+  correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
   isV1?: boolean;
