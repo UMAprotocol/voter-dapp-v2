@@ -57,6 +57,10 @@ export function Details({
   }
 
   const optionLabels = options?.map(({ label }) => label);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const chainName: string | undefined = augmentedData?.originatingChainId
+    ? supportedChains[augmentedData.originatingChainId]
+    : undefined;
 
   const links = [
     umipOrUppLink,
@@ -65,9 +69,11 @@ export function Details({
       augmentedData?.l1RequestTxHash
     ),
     // only show if the originating chain id is not ethereum
-    augmentedData?.originatingChainId && augmentedData?.originatingChainId !== 1
+    augmentedData?.originatingChainId &&
+    augmentedData?.originatingChainId !== 1 &&
+    chainName
       ? makeTransactionHashLink(
-          `${supportedChains[augmentedData.originatingChainId]} DVM request`,
+          `${chainName} DVM request`,
           augmentedData.originatingChainTxHash
         )
       : false,
