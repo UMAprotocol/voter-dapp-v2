@@ -5,18 +5,18 @@ import * as ss from "superstruct";
 // This would also be a great place to document what each env does and how to find it.
 const Env = ss.object({
   NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS: ss.string(),
-  NEXT_PUBLIC_GRAPH_ENDPOINT_V1: ss.string(),
-  NEXT_PUBLIC_GRAPH_ENDPOINT: ss.string(),
   NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID: ss.string(),
-  NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.string(),
   NEXT_PUBLIC_INFURA_ID: ss.string(),
   NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
   NEXT_PUBLIC_CURRENT_ENV: ss.string(),
-  NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.string(),
-  NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.string(),
   // optional envs
+  NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
+  NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
+  NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.optional(ss.string()),
+  NEXT_PUBLIC_GRAPH_ENDPOINT_V1: ss.optional(ss.string()),
+  NEXT_PUBLIC_GRAPH_ENDPOINT: ss.optional(ss.string()),
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
   NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
@@ -58,14 +58,17 @@ const AppConfig = ss.object({
   votingContractAddress: ss.string(),
   votingTokenContractAddress: ss.string(),
   votingV1ContractAddress: ss.string(),
-  space: ss.string(),
-  accessToken: ss.string(),
   blocknativeDappId: ss.string(),
-  graphEndpointV1: ss.string(),
-  graphEndpoint: ss.string(),
   signingMessage: ss.string(),
   deployBlock: ss.number(),
   chainId: ss.number(),
+  graphEndpointV1: ss.optional(ss.string()),
+  graphEndpoint: ss.optional(ss.string()),
+  contentfulSpace: ss.optional(ss.string()),
+  contentfulAccessToken: ss.optional(ss.string()),
+  graphV1Enabled: ss.defaulted(ss.boolean(), false),
+  graphV2Enabled: ss.defaulted(ss.boolean(), false),
+  contentfulEnabled: ss.defaulted(ss.boolean(), false),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -80,14 +83,19 @@ export const appConfig = ss.create(
     votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     votingTokenContractAddress: env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
     votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
-    space: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-    accessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+    contentfulSpace: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    contentfulAccessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     graphEndpointV1: env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
     deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
     chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
+    graphV1Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
+    graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
+    contentfulEnabled:
+      !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
+      !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
   },
   AppConfig
 );

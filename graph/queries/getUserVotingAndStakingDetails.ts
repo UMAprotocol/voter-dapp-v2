@@ -12,6 +12,8 @@ const { graphEndpoint } = config;
 export async function getUserVotingAndStakingDetails(
   address: string | undefined
 ) {
+  if (!graphEndpoint) throw new Error("V2 subgraph is disabled");
+
   const userDataQuery = gql`
     {
       users(where: { address: "${address}" }) {
