@@ -1,4 +1,4 @@
-import { ErrorBanner, Header } from "components";
+import { ErrorBanner, Header, MigrationBanner } from "components";
 import { useInitializeVoteTiming } from "hooks";
 import { ReactNode } from "react";
 import styled from "styled-components";
@@ -15,6 +15,7 @@ export function Layout({ children, title }: Props) {
     <>
       <Meta title={title} />
       <Main>
+        <MigrationBanner />
         <ErrorBanner />
         <Header />
         {children}
