@@ -461,7 +461,6 @@ const VoteOutputCell = styled.td`
 const VoteStatusCell = styled.td`
   width: var(--status-cell-width);
   padding-right: var(--cell-padding);
-  padding-left: var(--cell-padding);
 
   font: var(--text-md);
 
