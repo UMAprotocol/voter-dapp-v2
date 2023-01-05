@@ -17,10 +17,11 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { LinkT, VoteT } from "types";
+import { LinkT, VoteT, SupportedChainIds } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
+import { config } from "helpers/config";
 
 export function Details({
   decodedIdentifier,
@@ -57,28 +58,19 @@ export function Details({
   }
 
   const optionLabels = options?.map(({ label }) => label);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const chainName: string | undefined = augmentedData?.originatingChainId
-    ? supportedChains[augmentedData.originatingChainId]
-    : undefined;
+  const chainId: SupportedChainIds =
+    augmentedData?.originatingChainId ?? config.chainId;
+  const chainName = supportedChains[chainId];
 
   const links = [
     umipOrUppLink,
     augmentedData?.l1RequestTxHash !== "rolled"
       ? makeTransactionHashLink(
-          "Ethereum DVM request",
-          augmentedData?.l1RequestTxHash
+          `${chainName} DVM request`,
+          augmentedData?.originatingChainTxHash,
+          chainId
         )
       : undefined,
-    // only show if the originating chain id is not ethereum
-    augmentedData?.originatingChainId &&
-    augmentedData?.originatingChainId !== 1 &&
-    chainName
-      ? makeTransactionHashLink(
-          `${chainName} DVM request`,
-          augmentedData.originatingChainTxHash
-        )
-      : false,
     makeOoRequestLink(),
   ].filter((link): link is LinkT => !!link);
 
