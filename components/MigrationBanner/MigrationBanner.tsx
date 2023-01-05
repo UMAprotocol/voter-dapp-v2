@@ -4,10 +4,13 @@ import NextLink from "next/link";
 import Close from "public/assets/icons/close.svg";
 import Logo from "public/assets/icons/uma-2.svg";
 import styled, { CSSProperties } from "styled-components";
-import { useLocalStorage } from "usehooks-ts";
+import { useIsClient, useLocalStorage } from "usehooks-ts";
 
 export function MigrationBanner() {
   const [show, setShow] = useLocalStorage("show-migration-banner", true);
+  const isClient = useIsClient();
+
+  if (!isClient) return null;
 
   function close() {
     setShow(false);
