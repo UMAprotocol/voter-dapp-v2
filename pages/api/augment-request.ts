@@ -9,6 +9,7 @@ import {
   ContractName,
 } from "./_common";
 import * as ss from "superstruct";
+import { BigNumber } from "ethers";
 
 const debug = !!process.env.DEBUG;
 
@@ -113,7 +114,10 @@ async function getVotingPriceRequestAdded(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         identifier: event?.args?.identifier,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        time: event?.args?.time?.toNumber(),
+        time:
+          event?.args?.time instanceof BigNumber
+            ? event?.args?.time?.toNumber()
+            : event?.args?.time,
         contractType,
         chainId,
       },
@@ -161,7 +165,10 @@ async function getOracleRequestPrices(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         identifier: event?.args?.identifier,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        time: event?.args?.timestamp,
+        time:
+          event?.args?.timestamp instanceof BigNumber
+            ? event?.args?.timestamp?.toNumber()
+            : event?.args?.timestamp,
         contractType,
         chainId,
       },
