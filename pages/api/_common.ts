@@ -36,8 +36,8 @@ export function isSupportedChainId(
   return chainId in supportedChains;
 }
 
-// add block start times here, can also convert this to envs somehow. this is used for augmented request evnets
-// and can be used in other places as well to optimize event calls.
+// add block start times here, perhaps we can allow this to be configured through environment variables eventually.
+// this is used for augmented request events and can be used in other places as well to optimize event calls.
 export const fromBlocks: Record<string, Record<number | string, number>> = {
   OptimisticOracle: {
     1: 0,
