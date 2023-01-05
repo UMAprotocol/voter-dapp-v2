@@ -4821,15 +4821,15 @@
     "@typescript-eslint/types" "5.38.1"
     eslint-visitor-keys "^3.3.0"
 
-"@uma/contracts-frontend@^0.3.16":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@uma/contracts-frontend/-/contracts-frontend-0.3.16.tgz"
-  integrity sha512-ekbh7A5pas6hsBwbYNl60U5n2Ul3b+ipEaxgMKqJYQwZcUqiX9i6JoI1LuBWkWG+X7hI85ryg0uJdctzPBKIug==
+"@uma/contracts-frontend@^0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-frontend/-/contracts-frontend-0.4.6.tgz#470d5fd2fd3b7fd2a622d4d56989a7b98915ca12"
+  integrity sha512-DOdZCEjNJFhVnXI0ufOT6aBMWHK4GglTseYHCRSi8qIGCqblNc2cwehz0bpnbowv7441JVN7QxEy0LsmHeMcFw==
 
-"@uma/contracts-node@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.4.4.tgz#09958ea07b406b470f5b7e66d9053960ea4aa1ac"
-  integrity sha512-xUmDWp7pLQjkr88WFY8b28ljzLmX/w9HVv0Lk6wjMJC0GEy+ygREsUUojvqdquC3atKx6yz0Q7kXeb9E3IfZQw==
+"@uma/contracts-node@^0.4.6":
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.4.6.tgz#e0638eab28ab7b5808088fec347f53377b284f3d"
+  integrity sha512-B8g5rw7ZnV3D2z12HBUTLtFO1ylGp2KqBphrOEmR1IfxULn1rYdy3e5H5yMxSEVq/nNgwQMrU+JnMSGXO7GTSQ==
 
 "@walletconnect/browser-utils@^1.8.0":
   version "1.8.0"

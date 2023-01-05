@@ -19,8 +19,7 @@ type OracleType = Extract<
 >;
 type VotingType = Extract<ContractName, "Voting" | "VotingV2">;
 
-// TODO: enable voting v2 when its ready
-const EnabledVoting: VotingType[] = ["Voting"];
+const EnabledVoting: VotingType[] = ["Voting", "VotingV2"];
 const EnabledOracles: OracleType[] = [
   "OptimisticOracle",
   "OptimisticOracleV2",
@@ -63,7 +62,8 @@ function constructOoUiLink(
 ) {
   if (!txHash || !chainId || !oracleType) return;
   if (!isSupportedChainId(chainId)) return;
-  return `https://oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
+  const subDomain = Number(chainId) === 5 ? "testnet." : "";
+  return `https://${subDomain}oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
     oracleType
   )}`;
 }
@@ -248,7 +248,7 @@ export default async function handler(
     const result = await augmentRequests(body);
     response.status(200).send(result);
   } catch (e) {
-    debug && console.error(e);
+    if (debug) console.error(e);
     response.status(500).send({
       message: "Error in fetching augmented information",
       error: e instanceof Error ? e.message : e,
