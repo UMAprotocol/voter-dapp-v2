@@ -3,7 +3,7 @@ import { mobileAndUnder, tabletAndUnder } from "constant";
 import NextLink from "next/link";
 import Close from "public/assets/icons/close.svg";
 import Logo from "public/assets/icons/uma-2.svg";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 import { useLocalStorage } from "usehooks-ts";
 
 export function MigrationBanner() {
@@ -13,10 +13,16 @@ export function MigrationBanner() {
     setShow(false);
   }
 
-  if (!show) return null;
+  const height = show ? 60 : 0;
 
   return (
-    <OuterWrapper>
+    <OuterWrapper
+      style={
+        {
+          "--height": `${height}px`,
+        } as CSSProperties
+      }
+    >
       <InnerWrapper>
         <LogoIcon />
         <Text>
@@ -49,11 +55,12 @@ export function MigrationBanner() {
 }
 
 const OuterWrapper = styled.div`
-  --height: 60px;
   height: var(--height);
   background: var(--black);
   display: grid;
   align-items: center;
+  transition: height 0.2s;
+  overflow: hidden;
 `;
 
 const InnerWrapper = styled.div`
