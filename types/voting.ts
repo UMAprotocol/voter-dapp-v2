@@ -202,13 +202,11 @@ export type VoteDecodedAdminTransactionsT = {
 
 export type SupportedChainIds = keyof typeof supportedChains;
 
-export type SupportedChainIdsWithGoerli = SupportedChainIds | 5;
-
 export type MainnetOrGoerli = 1 | 5;
 
 export type NodeUrl = string;
 
-export type NodeUrls = Record<SupportedChainIdsWithGoerli, NodeUrl>;
+export type NodeUrls = Record<SupportedChainIds, NodeUrl>;
 
 export type IdentifierAndTimeStampT = {
   identifier: string;
