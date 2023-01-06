@@ -1,5 +1,7 @@
+import { useConnectWallet } from "@web3-onboard/react";
 import {
   Button,
+  IconWrapper,
   Pagination,
   Tooltip,
   VotesList,
@@ -7,9 +9,9 @@ import {
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
-import { useConnectWallet } from "@web3-onboard/react";
 import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
+import { config } from "helpers/config";
 import {
   useCommitVotes,
   useContractsContext,
@@ -18,15 +20,15 @@ import {
   usePanelContext,
   useRevealVotes,
   useStakingContext,
+  useUserContext,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
-  useUserContext,
 } from "hooks";
+import Warning from "public/assets/icons/warning.svg";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
-import { config } from "helpers/config";
 
 export function Votes() {
   const {
@@ -212,6 +214,10 @@ export function Votes() {
     }
     return actionConfig;
   }
+
+  const signatureExplanationText =
+    "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.";
+
   async function commitVotes() {
     if (!actionStatus.canCommit) return;
 
@@ -352,6 +358,16 @@ export function Votes() {
               />
             )
           ) : null}
+          {actionStatus.label === "Sign" && (
+            <Tooltip label={signatureExplanationText}>
+              <SignatureExplanation>
+                <IconWrapper width={20} height={20}>
+                  <WarningIcon />
+                </IconWrapper>
+                Why do I need to sign?
+              </SignatureExplanation>
+            </Tooltip>
+          )}
         </CommitVotesButtonWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
@@ -377,12 +393,27 @@ const Title = styled.h1`
 
 const CommitVotesButtonWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: end;
+  flex-direction: column;
+  align-items: end;
+  justify-content: center;
+  gap: 15px;
   margin-top: 30px;
 
   button {
     text-transform: capitalize;
+  }
+`;
+
+const SignatureExplanation = styled.p`
+  display: flex;
+  gap: 15px;
+  font: var(--text-md);
+`;
+
+const WarningIcon = styled(Warning)`
+  path {
+    stroke: var(--black);
+    fill: transparent;
   }
 `;
 
