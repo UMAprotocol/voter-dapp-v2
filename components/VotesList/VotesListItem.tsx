@@ -72,6 +72,7 @@ export function VotesListItem({
   const isTabletAndUnder = width && width <= tabletMax;
   const isRolled = augmentedData?.l1RequestTxHash === "rolled";
   const wrapperRef = useRef<HTMLTableRowElement>(null);
+  const existingVote = getDecryptedVoteAsFormattedString();
 
   useEffect(() => {
     if (!options) return;
@@ -95,7 +96,6 @@ export function VotesListItem({
     // Function returns true if the input exist and has changed from our committed value, false otherwise
     function isDirtyCheck(): boolean {
       if (phase !== "commit") return false;
-      const existingVote = getDecryptedVoteAsFormattedString();
       if (!existingVote) return false;
       // this happens if you clear the vote inputs, selected vote normally
       // would be "" if editing. dirty = false if we clear inputs.
@@ -104,7 +104,7 @@ export function VotesListItem({
     }
     const dirty = isDirtyCheck();
     if (setDirty && dirty !== isDirty) setDirty(dirty);
-  }, [selectedVote, setDirty, isDirty]);
+  }, [selectedVote, setDirty, isDirty, existingVote, phase]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {

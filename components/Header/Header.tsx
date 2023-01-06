@@ -34,10 +34,12 @@ export function Header() {
     useStakingContext();
   const { setAddressOverride: setUserContextAddress } = useUserContext();
   const { setAddressOverride: setVotesAddressOverride } = useVotesContext();
+  const delegationStatus = getDelegationStatus();
+  const delegatorAddress = getDelegatorAddress();
 
   useEffect(() => {
-    if (getDelegationStatus() === "delegate") {
-      const address = getDelegatorAddress();
+    if (delegationStatus === "delegate") {
+      const address = delegatorAddress;
       // these contexts have special logic to allow certain queries based on a different address, in this case
       // its the delegator address, so we can get things like stake/unstake balance, vote history and other data.
       setStakingAddressOverride(address);
@@ -50,8 +52,8 @@ export function Header() {
       setVotesAddressOverride(undefined);
     }
   }, [
-    getDelegatorAddress(),
-    getDelegationStatus(),
+    delegationStatus,
+    delegatorAddress,
     setUserContextAddress,
     setStakingAddressOverride,
     setVotesAddressOverride,
