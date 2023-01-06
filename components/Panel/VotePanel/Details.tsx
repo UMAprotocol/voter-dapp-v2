@@ -64,10 +64,12 @@ export function Details({
 
   const links = [
     umipOrUppLink,
-    makeTransactionHashLink(
-      "Ethereum DVM request",
-      augmentedData?.l1RequestTxHash
-    ),
+    augmentedData?.l1RequestTxHash !== "rolled"
+      ? makeTransactionHashLink(
+          "Ethereum DVM request",
+          augmentedData?.l1RequestTxHash
+        )
+      : undefined,
     // only show if the originating chain id is not ethereum
     augmentedData?.originatingChainId &&
     augmentedData?.originatingChainId !== 1 &&

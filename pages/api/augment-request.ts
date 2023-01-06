@@ -110,7 +110,7 @@ async function getVotingPriceRequestAdded(
     ss.create(
       {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        transactionHash: event?.transactionHash || "rolled",
+        transactionHash: event?.transactionHash,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         identifier: event?.args?.identifier,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -225,7 +225,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       ] || {};
     return {
       ...l1Request,
-      l1RequestTxHash: votingPriceRequestEvent.transactionHash,
+      l1RequestTxHash: votingPriceRequestEvent.transactionHash ?? "rolled",
       ooRequestUrl: constructOoUiLink(
         oracleRequestPriceEvent.transactionHash,
         oracleRequestPriceEvent.chainId,
