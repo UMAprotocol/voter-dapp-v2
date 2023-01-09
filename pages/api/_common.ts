@@ -1,12 +1,13 @@
 import { getAbi, getAddress } from "@uma/contracts-node";
 import { Contract, ethers } from "ethers";
 import { NodeUrls, SupportedChainIdsWithGoerli } from "types";
+import { supportedChains } from "constant";
 
 type GetAddressParams = Parameters<typeof getAddress>;
 
 type GetAbiParams = Parameters<typeof getAbi>;
 
-type ContractName = GetAddressParams[0] & GetAbiParams[0];
+export type ContractName = GetAddressParams[0] & GetAbiParams[0];
 
 export function getProviderByChainId(chainId: SupportedChainIdsWithGoerli) {
   return new ethers.providers.JsonRpcBatchProvider(getNodeUrls()[chainId]);
@@ -26,4 +27,44 @@ export async function constructContract(
     getAbi(contractName),
     getProviderByChainId(chainId)
   );
+}
+
+export function isSupportedChainId(
+  chainId: string | number | undefined
+): chainId is SupportedChainIdsWithGoerli {
+  if (chainId === undefined) return false;
+  return chainId in supportedChains;
+}
+
+// add block start times here, perhaps we can allow this to be configured through environment variables eventually.
+// this is used for augmented request events and can be used in other places as well to optimize event calls.
+export const fromBlocks: Record<string, Record<number | string, number>> = {
+  OptimisticOracle: {
+    1: 0,
+    5: 0,
+  },
+  OptimisticOracleV2: {
+    1: 0,
+    5: 0,
+  },
+  SkinnyOptimisticOracle: {
+    1: 0,
+    5: 0,
+  },
+  VotingV2: {
+    1: 0,
+    5: 0,
+  },
+  Voting: {
+    1: 0,
+    5: 0,
+  },
+};
+
+export function getFromBlock(
+  oracleType: string,
+  chainId: number,
+  fallbackFromBlock = 0
+): number {
+  return fromBlocks?.[oracleType]?.[chainId] || fallbackFromBlock;
 }

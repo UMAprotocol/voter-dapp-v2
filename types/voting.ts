@@ -220,6 +220,24 @@ export type OracleTypeT =
   | "OptimisticOracleV2"
   | "SkinnyOptimisticOracle";
 
+export const AugmentedVoteDataResponseT = ss.object({
+  uniqueKey: ss.string(),
+  time: ss.number(),
+  identifier: ss.string(),
+  l1RequestTxHash: ss.optional(ss.string()),
+  ooRequestUrl: ss.optional(ss.string()),
+  originatingChainTxHash: ss.optional(ss.string()),
+  originatingChainId: ss.optional(ss.number()),
+  originatingOracleType: ss.optional(ss.string()),
+});
+export type AugmentedVoteDataResponseT = ss.Infer<
+  typeof AugmentedVoteDataResponseT
+>;
+
+export type VoteAugmentedDataT = {
+  augmentedData: AugmentedVoteDataT | undefined;
+};
+
 export type AugmentedVoteDataT = {
   l1RequestTxHash: string;
   uniqueKey: UniqueKeyT;
@@ -227,10 +245,6 @@ export type AugmentedVoteDataT = {
   originatingChainTxHash: string | undefined;
   originatingChainId: SupportedChainIds | undefined;
   originatingOracleType: OracleTypeT | undefined;
-};
-
-export type VoteAugmentedDataT = {
-  augmentedData: AugmentedVoteDataT | undefined;
 };
 
 export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
