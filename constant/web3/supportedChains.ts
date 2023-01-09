@@ -9,3 +9,16 @@ export const supportedChains = {
   43114: "Avalanche",
   42161: "Arbitrum",
 };
+
+export function getOracleProperName(oracleType:string):string{
+  switch (oracleType) {
+    case "OptimisticOracle":
+      return "Optimistic Oracle";
+    case "OptimisticOracleV2":
+      return "Optimistic Oracle V2";
+    case "SkinnyOptimisticOracle":
+      return "Skinny Optimistic Oracle";
+    default:
+      return oracleType;
+  }
+}
