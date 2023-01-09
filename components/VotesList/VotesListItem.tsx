@@ -31,6 +31,7 @@ export interface Props {
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
+  delegationStatus?: string;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
@@ -44,6 +45,7 @@ export function VotesListItem({
   isFetching,
   setDirty,
   isDirty = false,
+  delegationStatus,
 }: Props) {
   const { signer } = useWalletContext();
   const { width } = useWindowSize();
@@ -164,6 +166,9 @@ export function VotesListItem({
   }
 
   function getYourVote() {
+    if (!decryptedVote && isCommitted) {
+      return "Unknown";
+    }
     if (!decryptedVote) return "Did not vote";
     return (
       findVoteInOptions(getDecryptedVoteAsFormattedString())?.label ??
@@ -192,10 +197,27 @@ export function VotesListItem({
 
   function getCommittedOrRevealed() {
     if (phase === "commit") {
+      if (isCommitted && !decryptedVote) {
+        if (delegationStatus === "delegator") {
+          return "Committed by Delegate";
+        } else if (delegationStatus === "delegate") {
+          return "Committed by Delegator";
+        } else {
+          return "Decrypt Error";
+        }
+      }
       return isCommitted ? "Committed" : "Not committed";
     } else {
       if (!isCommitted) return "Not committed";
-      if (!decryptedVote || !canReveal) return "Unable to reveal";
+      if (!decryptedVote || !canReveal) {
+        if (delegationStatus === "delegator") {
+          return "Delegate Must Reveal";
+        } else if (delegationStatus === "delegate") {
+          return "Delegator Must Reveal";
+        } else {
+          return "Unable to reveal";
+        }
+      }
       return isRevealed ? "Revealed" : "Not revealed";
     }
   }

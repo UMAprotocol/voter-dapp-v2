@@ -96,8 +96,9 @@ export function Votes() {
     const isDelegate = getDelegationStatus() === "delegate";
     const hasSigner = !!signer;
     const votesToShow = determineVotesToShow();
-    const hasPreviouslyCommitted =
-      votesToShow.filter((vote) => vote.decryptedVote).length > 0;
+    const hasPreviouslyCommittedAll =
+      votesToShow.filter((vote) => vote.decryptedVote).length ===
+      votesToShow.length;
     // counting how many votes we have edited with commitable values ( non empty )
     const selectedVotesCount = Object.values(selectedVotes).filter(
       (x) => x
@@ -105,7 +106,7 @@ export function Votes() {
     // check if we have votes to commit by seeing there are more than 1 and its dirty
     const hasVotesToCommit =
       selectedVotesCount > 0
-        ? hasPreviouslyCommitted
+        ? hasPreviouslyCommittedAll
           ? isDirty()
           : true
         : false;
@@ -307,6 +308,7 @@ export function Votes() {
               activityStatus={getActivityStatus()}
               moreDetailsAction={() => openVotePanel(vote)}
               key={vote.uniqueKey}
+              delegationStatus={getDelegationStatus()}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {
