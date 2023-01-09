@@ -75,6 +75,7 @@ export function Votes() {
   type ActionStatus = {
     tooltip?: string;
     label: string;
+    infoText?: { label: string; tooltip: string };
     onClick: () => any;
     disabled?: boolean;
     hidden?: boolean;
@@ -86,6 +87,7 @@ export function Votes() {
       hidden: true,
       tooltip: undefined,
       label: "",
+      infoText: undefined,
       onClick: () => undefined,
       disabled: true,
       canCommit: false,
@@ -188,6 +190,11 @@ export function Votes() {
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
         actionConfig.disabled = false;
         if (isSigning) {
           actionConfig.disabled = true;
@@ -214,9 +221,6 @@ export function Votes() {
     }
     return actionConfig;
   }
-
-  const signatureExplanationText =
-    "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.";
 
   async function commitVotes() {
     if (!actionStatus.canCommit) return;
@@ -358,16 +362,16 @@ export function Votes() {
               />
             )
           ) : null}
-          {actionStatus.label === "Sign" && (
-            <Tooltip label={signatureExplanationText}>
-              <SignatureExplanation>
+          {actionStatus.infoText ? (
+            <Tooltip label={actionStatus.infoText.tooltip}>
+              <InfoText>
                 <IconWrapper width={20} height={20}>
                   <WarningIcon />
                 </IconWrapper>
-                Why do I need to sign?
-              </SignatureExplanation>
+                {actionStatus.infoText.label}
+              </InfoText>
             </Tooltip>
-          )}
+          ) : null}
         </CommitVotesButtonWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
@@ -404,7 +408,7 @@ const CommitVotesButtonWrapper = styled.div`
   }
 `;
 
-const SignatureExplanation = styled.p`
+const InfoText = styled.p`
   display: flex;
   gap: 15px;
   font: var(--text-md);
