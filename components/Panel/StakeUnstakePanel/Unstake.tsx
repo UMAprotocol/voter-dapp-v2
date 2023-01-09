@@ -99,11 +99,14 @@ export function Unstake({
         </>
       )}
       <PanelErrorBanner errorOrigin="unstake" />
-      {!isReadyToUnstake && phase === "reveal" && hasActiveVotes && (
-        <PanelWarningText>
-          Cannot request unstake in active reveal phase
-        </PanelWarningText>
-      )}
+      {!isReadyToUnstake &&
+        phase === "reveal" &&
+        hasActiveVotes &&
+        !isDelegate && (
+          <PanelWarningText>
+            Cannot request unstake in active reveal phase
+          </PanelWarningText>
+        )}
       {isReadyToUnstake && (
         <PanelWarningText>
           Cannot request to unstake until you claim unstaked tokens

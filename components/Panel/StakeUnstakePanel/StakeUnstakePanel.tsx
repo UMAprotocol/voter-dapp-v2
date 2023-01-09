@@ -41,10 +41,11 @@ export function StakeUnstakePanel() {
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasPendingUnstake = pendingUnstake?.gt(0) ?? false;
-  const isReadyToUnstake = !hasCooldownTimeRemaining && hasPendingUnstake;
+  const isDelegate = getDelegationStatus() === "delegate";
+  const isReadyToUnstake =
+    !isDelegate && !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
     isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
-  const isDelegate = getDelegationStatus() === "delegate";
 
   function isLoading() {
     return (
