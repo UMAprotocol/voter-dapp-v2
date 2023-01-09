@@ -73,7 +73,7 @@ export function Votes() {
   type ActionStatus = {
     tooltip?: string;
     label: string;
-    onClick: () => any;
+    onClick: () => void;
     disabled?: boolean;
     hidden?: boolean;
     canCommit: boolean;
@@ -115,7 +115,9 @@ export function Votes() {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = "Connect Wallet";
-      actionConfig.onClick = () => connect();
+      actionConfig.onClick = () => {
+        connect().catch(console.error);
+      };
 
       if (isConnectingWallet) {
         actionConfig.disabled = true;
@@ -177,7 +179,9 @@ export function Votes() {
       }
       actionConfig.canCommit = true;
       actionConfig.disabled = false;
-      actionConfig.onClick = () => commitVotes();
+      actionConfig.onClick = () => {
+        commitVotes().catch(console.error);
+      };
       return actionConfig;
     }
     if (isReveal) {
