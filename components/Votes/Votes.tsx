@@ -30,7 +30,7 @@ import { config } from "helpers/config";
 
 export function Votes() {
   const {
-    getActiveVotes,
+    getActiveVotesPrioritized,
     getUpcomingVotes,
     getPastVotes,
     getActivityStatus,
@@ -221,7 +221,7 @@ export function Votes() {
     if (!actionStatus.canCommit) return;
 
     const formattedVotes = await formatVotesToCommit({
-      votes: getActiveVotes(),
+      votes: getActiveVotesPrioritized(),
       selectedVotes,
       roundId,
       address,
@@ -251,7 +251,7 @@ export function Votes() {
   }
 
   function getVotesToReveal() {
-    return getActiveVotes().filter(
+    return getActiveVotesPrioritized().filter(
       (vote) =>
         vote.isCommitted &&
         !!vote.decryptedVote &&
@@ -272,7 +272,7 @@ export function Votes() {
     const status = getActivityStatus();
     switch (status) {
       case "active":
-        return getActiveVotes();
+        return getActiveVotesPrioritized();
       case "upcoming":
         return getUpcomingVotes();
       case "past":

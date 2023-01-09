@@ -41,6 +41,7 @@ export interface VotesContextState {
   decryptedPastVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
+  getActiveVotesPrioritized: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
   getPastVotes: () => VoteT[];
   getPastVotesV2: () => VoteT[];
@@ -67,6 +68,7 @@ export const defaultVotesContextState: VotesContextState = {
   decryptedPastVotes: {},
   contentfulData: {},
   getActiveVotes: () => [],
+  getActiveVotesPrioritized: () => [],
   getUpcomingVotes: () => [],
   getPastVotes: () => [],
   getPastVotesV2: () => [],
@@ -201,6 +203,28 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   function getActiveVotes() {
     return getVotesWithData(activeVotes, decryptedVotes);
   }
+  // Prioritizes spam deletion proposal votes before all other votes, then by vote number and timestamp ascending
+  function getActiveVotesPrioritized() {
+    const votes = getActiveVotes();
+    return votes.sort((a, b) => {
+      if (
+        a.decodedIdentifier === "SpamDeletionProposal" &&
+        b.decodedIdentifier !== "SpamDeletionProposal"
+      ) {
+        return -1;
+      }
+      if (
+        b.decodedIdentifier === "SpamDeletionProposal" &&
+        a.decodedIdentifier !== "SpamDeletionProposal"
+      ) {
+        return 1;
+      }
+      if (a.voteNumber && b.voteNumber) {
+        return a.voteNumber.lt(b.voteNumber) ? -1 : 1;
+      }
+      return a.time - b.time;
+    });
+  }
 
   function getUpcomingVotes() {
     return getVotesWithData(upcomingVotes, decryptedVotes);
@@ -296,6 +320,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         decryptedPastVotes,
         contentfulData,
         getActiveVotes,
+        getActiveVotesPrioritized,
         getUpcomingVotes,
         getPastVotes,
         getPastVotesV2,

@@ -37,6 +37,7 @@ export function PastVotes() {
   const pastVotes = getPastVotes();
   const numberOfPastVotes = pastVotes.length;
   const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
+  console.log(pastVotes);
 
   return (
     <Layout title="UMA | Past Votes">
