@@ -4,6 +4,7 @@ import {
   AugmentedVoteDataResponseT,
   PriceRequestByKeyT,
 } from "types";
+import { config } from "helpers/config";
 
 const ErrorT = ss.object({
   message: ss.string(),
@@ -12,7 +13,7 @@ const ErrorT = ss.object({
 
 export async function getAugmentedVoteData(
   priceRequests: PriceRequestByKeyT,
-  chainId = 1
+  chainId: number = config.chainId
 ): Promise<AugmentedVoteDataByKeyT> {
   const response = await fetch("/api/augment-request", {
     method: "POST",
@@ -39,6 +40,7 @@ export async function getAugmentedVoteData(
     ss.array(AugmentedVoteDataResponseT)
   );
 
+  const init: Record<string, AugmentedVoteDataResponseT> = {};
   return result.reduce((byKey, augmentedData: AugmentedVoteDataResponseT) => {
     const key = augmentedData.uniqueKey;
     byKey[key] = {
@@ -49,5 +51,5 @@ export async function getAugmentedVoteData(
     // this still needs to be casted because superstruct isnt validating the enumerated data such as
     // chain id and oracle type which are stricter in typescript. this should prevent compile issues even though
     // its not ideal
-  }, {} as Record<string, AugmentedVoteDataResponseT>) as AugmentedVoteDataByKeyT;
+  }, init) as AugmentedVoteDataByKeyT;
 }
