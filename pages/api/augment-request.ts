@@ -1,6 +1,6 @@
 import assert from "assert";
 import { NextApiRequest, NextApiResponse } from "next";
-import { SupportedChainIdsWithGoerli } from "types";
+import { SupportedChainIds } from "types";
 import {
   constructContract,
   getNodeUrls,
@@ -13,7 +13,6 @@ import { BigNumber } from "ethers";
 
 const debug = !!process.env.DEBUG;
 
-type SupportedChainIds = SupportedChainIdsWithGoerli;
 type OracleType = Extract<
   ContractName,
   "OptimisticOracle" | "OptimisticOracleV2" | "SkinnyOptimisticOracle"

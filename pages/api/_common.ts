@@ -1,6 +1,6 @@
 import { getAbi, getAddress } from "@uma/contracts-node";
 import { Contract, ethers } from "ethers";
-import { NodeUrls, SupportedChainIdsWithGoerli } from "types";
+import { NodeUrls, SupportedChainIds } from "types";
 import { supportedChains } from "constant";
 
 type GetAddressParams = Parameters<typeof getAddress>;
@@ -9,7 +9,7 @@ type GetAbiParams = Parameters<typeof getAbi>;
 
 export type ContractName = GetAddressParams[0] & GetAbiParams[0];
 
-export function getProviderByChainId(chainId: SupportedChainIdsWithGoerli) {
+export function getProviderByChainId(chainId: SupportedChainIds) {
   return new ethers.providers.JsonRpcBatchProvider(getNodeUrls()[chainId]);
 }
 
@@ -19,7 +19,7 @@ export function getNodeUrls() {
 }
 
 export async function constructContract(
-  chainId: SupportedChainIdsWithGoerli,
+  chainId: SupportedChainIds,
   contractName: ContractName
 ) {
   return new Contract(
@@ -31,7 +31,7 @@ export async function constructContract(
 
 export function isSupportedChainId(
   chainId: string | number | undefined
-): chainId is SupportedChainIdsWithGoerli {
+): chainId is SupportedChainIds {
   if (chainId === undefined) return false;
   return chainId in supportedChains;
 }
