@@ -1,4 +1,5 @@
 import * as ss from "superstruct";
+import { SupportedChainIds } from "types";
 
 // we want to create a raw type for the env, so we can alert the developer immediately when something does not exist
 // and give them information as to which env was missing. We don't want the app to run without required variables.
@@ -101,7 +102,7 @@ export const appConfig = ss.create(
 );
 
 export type ChainConstants = {
-  chainId: number;
+  chainId: SupportedChainIds;
   infuraName: string;
   properName: string;
   makeTransactionHashLink: (transactionHash: string) => string;
@@ -114,11 +115,14 @@ export type ChainConstants = {
 };
 export type ChainConstantsList = ChainConstants[];
 
+// we need to have information about other chains, not only to run as a primary chain, but
+// in order to create links/assets for linking to other chains, which we need for some requests.
+// if a chain in the UI isnt supported it probably needs to be added here first.
 export const chainConstantsList: ChainConstantsList = [
   {
     chainId: 1,
     infuraName: "homestead",
-    properName: "Mainnet",
+    properName: "Ethereum",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://etherscan.io/tx/${transactionHash}`,
     onboardConfig: {
@@ -141,6 +145,20 @@ export const chainConstantsList: ChainConstantsList = [
       rpcUrl: `https://goerli.infura.io/v3/${appConfig.infuraId}`,
     },
   },
+  {
+    chainId: 137,
+    infuraName: "Polygon",
+    properName: "Polygon",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://polygonscan.com/tx/${transactionHash}`,
+    // this may or may not work, but we shouldnt ever need to use this
+    onboardConfig: {
+      id: "0x137",
+      token: "MATIC",
+      label: "Polygon",
+      rpcUrl: `https://polygon.infura.io/v3/${appConfig.infuraId}`,
+    },
+  },
 ];
 export const chainConstants = chainConstantsList.find(
   ({ chainId }) => chainId === appConfig.chainId
@@ -150,7 +168,7 @@ if (chainConstants == undefined)
     `Unable to find chain constants for chain Id ${appConfig.chainId}`
   );
 
-export const config: ChainConstants & AppConfig = {
-  ...chainConstants,
+export const config: AppConfig & ChainConstants = {
   ...appConfig,
+  ...chainConstants,
 };
