@@ -1,5 +1,5 @@
 import { Button, PanelErrorBanner } from "components";
-import { mobileAndUnder, supportedChains } from "constant";
+import { mobileAndUnder, supportedChains, getOracleProperName } from "constant";
 import {
   formatNumberForDisplay,
   makeTransactionHashLink,
@@ -17,7 +17,7 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { LinkT, VoteT, SupportedChainIds } from "types";
+import { LinkT, VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
@@ -58,17 +58,27 @@ export function Details({
   }
 
   const optionLabels = options?.map(({ label }) => label);
-  const chainId: SupportedChainIds =
-    augmentedData?.originatingChainId ?? config.chainId;
-  const chainName = supportedChains[chainId];
-
   const links = [
     umipOrUppLink,
+    augmentedData?.l1RequestTxHash &&
     augmentedData?.l1RequestTxHash !== "rolled"
       ? makeTransactionHashLink(
-          `${chainName} DVM request`,
-          augmentedData?.originatingChainTxHash,
-          chainId
+          `${config.properName} DVM request`,
+          augmentedData?.l1RequestTxHash,
+          config.chainId
+        )
+      : undefined,
+    augmentedData?.originatingChainTxHash &&
+    augmentedData.originatingChainId &&
+    augmentedData.originatingOracleType
+      ? makeTransactionHashLink(
+          `${
+            supportedChains[augmentedData.originatingChainId]
+          } ${getOracleProperName(
+            augmentedData.originatingOracleType
+          )} Request`,
+          augmentedData.originatingChainTxHash,
+          augmentedData.originatingChainId
         )
       : undefined,
     makeOoRequestLink(),
