@@ -214,7 +214,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
   const requestPriceTable = createLookupTable(requestPriceEvents);
 
   return l1Requests.map((l1Request) => {
-    const votingPriceRequestEvent =
+    const votingRequestEvent =
       votingPriceRequestTable?.[l1Request.identifier.toLowerCase()]?.[
         l1Request.time
       ] || {};
@@ -224,7 +224,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       ] || {};
     return {
       ...l1Request,
-      l1RequestTxHash: votingPriceRequestEvent.transactionHash ?? "rolled",
+      l1RequestTxHash: votingRequestEvent.transactionHash,
       ooRequestUrl: constructOoUiLink(
         oracleRequestPriceEvent.transactionHash,
         oracleRequestPriceEvent.chainId,
