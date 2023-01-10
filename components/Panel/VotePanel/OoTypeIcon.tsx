@@ -1,24 +1,12 @@
 import OptimisticOracle from "public/assets/icons/optimistic-oracle.svg";
 import styled from "styled-components";
 import { OracleTypeT } from "types";
+import { getOracleTypeDisplayName } from "constant";
 
 export function OoTypeIcon({ ooType }: { ooType: OracleTypeT | undefined }) {
   if (!ooType) return null;
 
-  const displayName = getOracleTypeDisplayName();
-
-  function getOracleTypeDisplayName() {
-    switch (ooType) {
-      case "OptimisticOracle":
-        return "Optimistic Oracle v1";
-      case "OptimisticOracleV2":
-        return "Optimistic Oracle v2";
-      case "SkinnyOptimisticOracle":
-        return "Skinny Optimistic Oracle";
-      default:
-        return "Optimistic Oracle v1";
-    }
-  }
+  const displayName = getOracleTypeDisplayName(ooType);
 
   return (
     <Wrapper>

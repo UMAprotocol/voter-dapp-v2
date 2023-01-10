@@ -1,5 +1,9 @@
 import { Button, PanelErrorBanner } from "components";
-import { mobileAndUnder, supportedChains, getOracleProperName } from "constant";
+import {
+  mobileAndUnder,
+  supportedChains,
+  getOracleTypeDisplayName,
+} from "constant";
 import {
   formatNumberForDisplay,
   makeTransactionHashLink,
@@ -74,7 +78,7 @@ export function Details({
       ? makeTransactionHashLink(
           `${
             supportedChains[augmentedData.originatingChainId]
-          } ${getOracleProperName(
+          } ${getOracleTypeDisplayName(
             augmentedData.originatingOracleType
           )} Request`,
           augmentedData.originatingChainTxHash,
