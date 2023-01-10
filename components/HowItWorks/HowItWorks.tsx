@@ -80,10 +80,10 @@ export function HowItWorks() {
                       : ""
                   }
                 >
-                  <>
+                  <span>
                     <Link href="/wallet-settings">Your delegator</Link> is
                     staking
-                  </>
+                  </span>
                 </Tooltip>
               ) : (
                 "You are staking"
