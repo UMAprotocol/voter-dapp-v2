@@ -84,7 +84,7 @@ export async function getPastVotesV2() {
     {
       priceRequests(
         where: { isResolved: true }
-        orderBy: requestIndex
+        orderBy: resolvedPriceRequestIndex
         orderDirection: desc
       ) {
         identifier {
@@ -93,7 +93,7 @@ export async function getPastVotesV2() {
         price
         time
         ancillaryData
-        requestIndex
+        resolvedPriceRequestIndex
         latestRound {
           totalVotesRevealed
           groups {
@@ -117,14 +117,14 @@ export async function getPastVotesV2() {
       time,
       price,
       ancillaryData,
-      requestIndex,
+      resolvedPriceRequestIndex,
       latestRound,
       committedVotes,
       revealedVotes,
     }) => {
       const identifier = formatBytes32String(id);
       const correctVote = price;
-      const priceRequestIndex = BigNumber.from(requestIndex);
+      const priceRequestIndex = BigNumber.from(resolvedPriceRequestIndex);
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
         uniqueCommitAddresses: revealedVotes.length,
