@@ -1,5 +1,7 @@
+import { useConnectWallet } from "@web3-onboard/react";
 import {
   Button,
+  IconWrapper,
   Pagination,
   Tooltip,
   VotesList,
@@ -7,9 +9,9 @@ import {
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
-import { useConnectWallet } from "@web3-onboard/react";
 import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
+import { config } from "helpers/config";
 import {
   useCommitVotes,
   useContractsContext,
@@ -18,15 +20,15 @@ import {
   usePanelContext,
   useRevealVotes,
   useStakingContext,
+  useUserContext,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
-  useUserContext,
 } from "hooks";
+import Warning from "public/assets/icons/warning.svg";
 import { useState } from "react";
 import styled from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
-import { config } from "helpers/config";
 
 export function Votes() {
   const {
@@ -73,6 +75,7 @@ export function Votes() {
   type ActionStatus = {
     tooltip?: string;
     label: string;
+    infoText?: { label: string; tooltip: string };
     onClick: () => void;
     disabled?: boolean;
     hidden?: boolean;
@@ -84,6 +87,7 @@ export function Votes() {
       hidden: true,
       tooltip: undefined,
       label: "",
+      infoText: undefined,
       onClick: () => undefined,
       disabled: true,
       canCommit: false,
@@ -191,6 +195,11 @@ export function Votes() {
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
         actionConfig.disabled = false;
         if (isSigning) {
           actionConfig.disabled = true;
@@ -217,6 +226,7 @@ export function Votes() {
     }
     return actionConfig;
   }
+
   async function commitVotes() {
     if (!actionStatus.canCommit) return;
 
@@ -358,6 +368,16 @@ export function Votes() {
               />
             )
           ) : null}
+          {actionStatus.infoText ? (
+            <Tooltip label={actionStatus.infoText.tooltip}>
+              <InfoText>
+                <IconWrapper width={20} height={20}>
+                  <WarningIcon />
+                </IconWrapper>
+                {actionStatus.infoText.label}
+              </InfoText>
+            </Tooltip>
+          ) : null}
         </CommitVotesButtonWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
@@ -383,12 +403,27 @@ const Title = styled.h1`
 
 const CommitVotesButtonWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: end;
+  flex-direction: column;
+  align-items: end;
+  justify-content: center;
+  gap: 15px;
   margin-top: 30px;
 
   button {
     text-transform: capitalize;
+  }
+`;
+
+const InfoText = styled.p`
+  display: flex;
+  gap: 15px;
+  font: var(--text-md);
+`;
+
+const WarningIcon = styled(Warning)`
+  path {
+    stroke: var(--black);
+    fill: transparent;
   }
 `;
 
