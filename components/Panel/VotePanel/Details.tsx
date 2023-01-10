@@ -17,10 +17,11 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { LinkT, VoteT } from "types";
+import { LinkT, VoteT, SupportedChainIds } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
+import { config } from "helpers/config";
 
 export function Details({
   decodedIdentifier,
@@ -57,20 +58,19 @@ export function Details({
   }
 
   const optionLabels = options?.map(({ label }) => label);
+  const chainId: SupportedChainIds =
+    augmentedData?.originatingChainId ?? config.chainId;
+  const chainName = supportedChains[chainId];
 
   const links = [
     umipOrUppLink,
-    makeTransactionHashLink(
-      "Ethereum DVM request",
-      augmentedData?.l1RequestTxHash
-    ),
-    // only show if the originating chain id is not ethereum
-    augmentedData?.originatingChainId && augmentedData?.originatingChainId !== 1
+    augmentedData?.l1RequestTxHash !== "rolled"
       ? makeTransactionHashLink(
-          `${supportedChains[augmentedData.originatingChainId]} DVM request`,
-          augmentedData.originatingChainTxHash
+          `${chainName} DVM request`,
+          augmentedData?.originatingChainTxHash,
+          chainId
         )
-      : false,
+      : undefined,
     makeOoRequestLink(),
   ].filter((link): link is LinkT => !!link);
 

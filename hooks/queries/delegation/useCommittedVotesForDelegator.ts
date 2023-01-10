@@ -8,6 +8,7 @@ import {
   useVoteTimingContext,
 } from "hooks";
 import { getCommittedVotes } from "web3";
+import { VoteExistsByKeyT } from "types";
 
 export function useCommittedVotesForDelegator() {
   const { address } = useUserContext();
@@ -21,7 +22,10 @@ export function useCommittedVotesForDelegator() {
 
   const queryResult = useQuery(
     [committedVotesForDelegatorKey, address, delegatorAddress, roundId],
-    () => getCommittedVotes(voting, delegatorAddress!, roundId),
+    async (): Promise<VoteExistsByKeyT> =>
+      delegatorAddress
+        ? getCommittedVotes(voting, delegatorAddress, roundId)
+        : {},
     {
       refetchInterval: status === "delegate" ? oneMinute : false,
       enabled: !!address && !!delegatorAddress && status === "delegate",

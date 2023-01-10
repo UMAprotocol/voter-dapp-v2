@@ -1,5 +1,6 @@
 export const supportedChains = {
   1: "Ethereum",
+  5: "Görli",
   10: "Optimism",
   100: "Gnosis",
   137: "Polygon",

@@ -76,7 +76,7 @@ export function Votes() {
     tooltip?: string;
     label: string;
     infoText?: { label: string; tooltip: string };
-    onClick: () => any;
+    onClick: () => void;
     disabled?: boolean;
     hidden?: boolean;
     canCommit: boolean;
@@ -100,8 +100,9 @@ export function Votes() {
     const isDelegate = getDelegationStatus() === "delegate";
     const hasSigner = !!signer;
     const votesToShow = determineVotesToShow();
-    const hasPreviouslyCommitted =
-      votesToShow.filter((vote) => vote.decryptedVote).length > 0;
+    const hasPreviouslyCommittedAll =
+      votesToShow.filter((vote) => vote.decryptedVote).length ===
+      votesToShow.length;
     // counting how many votes we have edited with commitable values ( non empty )
     const selectedVotesCount = Object.values(selectedVotes).filter(
       (x) => x
@@ -109,7 +110,7 @@ export function Votes() {
     // check if we have votes to commit by seeing there are more than 1 and its dirty
     const hasVotesToCommit =
       selectedVotesCount > 0
-        ? hasPreviouslyCommitted
+        ? hasPreviouslyCommittedAll
           ? isDirty()
           : true
         : false;
@@ -119,7 +120,9 @@ export function Votes() {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = "Connect Wallet";
-      actionConfig.onClick = () => connect();
+      actionConfig.onClick = () => {
+        connect().catch(console.error);
+      };
 
       if (isConnectingWallet) {
         actionConfig.disabled = true;
@@ -181,7 +184,9 @@ export function Votes() {
       }
       actionConfig.canCommit = true;
       actionConfig.disabled = false;
-      actionConfig.onClick = () => commitVotes();
+      actionConfig.onClick = () => {
+        commitVotes().catch(console.error);
+      };
       return actionConfig;
     }
     if (isReveal) {
@@ -313,6 +318,7 @@ export function Votes() {
               activityStatus={getActivityStatus()}
               moreDetailsAction={() => openVotePanel(vote)}
               key={vote.uniqueKey}
+              delegationStatus={getDelegationStatus()}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {
