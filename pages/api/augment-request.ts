@@ -96,13 +96,13 @@ function createLookupTable<Event extends { time: number; identifier: string }>(
   }, table);
 }
 
-async function getVotingPriceRequestAdded(
+async function getVotingRequestAdded(
   contractType: VotingType,
   chainId: SupportedChainIds
 ): Promise<CommonEventData[]> {
   const contract = await constructContract(chainId, contractType);
   const events = await contract.queryFilter(
-    contract.filters.PriceRequestAdded(),
+    contract.filters.RequestAdded(),
     getFromBlock(contractType as string, chainId as number)
   );
   return events.map((event) =>
@@ -131,9 +131,7 @@ async function getManyVotingPriceRequestAdded(
 ): Promise<CommonEventData[]> {
   const requests = contractTypes
     .map((contractType) =>
-      chainIds.map((chainId) =>
-        getVotingPriceRequestAdded(contractType, chainId)
-      )
+      chainIds.map((chainId) => getVotingRequestAdded(contractType, chainId))
     )
     .flat();
   return (await Promise.allSettled(requests))

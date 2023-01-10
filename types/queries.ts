@@ -6,7 +6,7 @@ export type PastVotesQuery = {
     time: string;
     price: string;
     ancillaryData: string;
-    requestIndex: string;
+    resolvedPriceRequestIndex: string;
     latestRound: {
       totalVotesRevealed: string;
       groups: {
