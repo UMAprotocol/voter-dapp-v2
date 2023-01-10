@@ -1,12 +1,18 @@
-import { InfoBar, LoadingSkeleton } from "components";
+import { InfoBar, LoadingSkeleton, Tooltip } from "components";
 import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
-import { usePanelContext, useStakingContext, useUserContext } from "hooks";
+import {
+  usePanelContext,
+  useStakingContext,
+  useUserContext,
+  useDelegationContext,
+} from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
 import styled from "styled-components";
+import NextLink from "next/link";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
@@ -19,6 +25,9 @@ export function HowItWorks() {
   } = useStakingContext();
   const { countWrongVotes, countCorrectVotes, apr, userDataFetching } =
     useUserContext();
+  const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
+  const isDelegate = getDelegationStatus() === "delegate";
+  const delegatorAddress = getDelegatorAddress();
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -63,7 +72,22 @@ export function HowItWorks() {
           }
           content={
             <>
-              You are staking{" "}
+              {isDelegate ? (
+                <Tooltip
+                  label={
+                    delegatorAddress
+                      ? `Delegator address ${delegatorAddress}`
+                      : ""
+                  }
+                >
+                  <span>
+                    <Link href="/wallet-settings">Your delegator</Link> is
+                    staking
+                  </span>
+                </Tooltip>
+              ) : (
+                "You are staking"
+              )}{" "}
               <Strong>
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
@@ -71,7 +95,7 @@ export function HowItWorks() {
                   formatNumberForDisplay(stakedBalance)
                 )}
               </Strong>{" "}
-              of your{" "}
+              {isDelegate ? "of their" : "of your"}{" "}
               <Strong>
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
@@ -180,4 +204,9 @@ const IconWrapper = styled.div`
   width: 24px;
   height: 24px;
   padding-top: 2px;
+`;
+
+const Link = styled(NextLink)`
+  color: inherit;
+  text-decoration: underline;
 `;
