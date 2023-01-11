@@ -36,7 +36,7 @@ export function Stake({
     ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
     : "0 seconds";
 
-  const disclaimer = `I understand that Staked tokens cannot be transferred for ${unstakeCoolDownFormatted} after unstaking.`;
+  const disclaimer = `I understand that tokens cannot be claimed until ${unstakeCoolDownFormatted} after an unstaking request is submitted.`;
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
