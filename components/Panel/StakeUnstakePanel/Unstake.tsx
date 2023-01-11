@@ -51,8 +51,8 @@ export function Unstake({
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off
-        period and you wont be able to collect rewards text text
+        After unstaking tokens, you must wait {unstakeCoolDownFormatted} before
+        you can claim your unstaked tokens.
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>

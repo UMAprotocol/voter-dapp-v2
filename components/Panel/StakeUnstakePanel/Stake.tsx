@@ -84,7 +84,7 @@ export function Stake({
       {isDelegate ? (
         <PanelWarningText>
           You are currently a delegate. Staking is controlled by the delegator,
-          you must request to undelegate before you can access staking.
+          so you must request to undelegate before you can access staking.
         </PanelWarningText>
       ) : (
         <>
