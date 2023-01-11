@@ -26,7 +26,7 @@ export function ConnectedWallet({ status }: Props) {
       <Text>
         A Delegator is a wallet that has chosen to delegate away its voting
         power to another party. Delegators can only delegate to one other
-        address.
+        address{" "}
       </Text>
       <BarWrapper>
         <WalletWrapper>
