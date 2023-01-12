@@ -17,7 +17,7 @@
     "baseUrl": "."
   },
   "include": ["custom-next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["next-env.d.ts","node_modules"],
+  "exclude": ["next-env.d.ts","node_modules","cypress"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"
