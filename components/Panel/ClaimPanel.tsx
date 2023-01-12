@@ -72,8 +72,8 @@ export function ClaimPanel() {
           <ClaimAndStakeWrapper>
             <PanelSectionTitle>Claim and Stake</PanelSectionTitle>
             <PanelSectionText>
-              Compound your UMA by claiming and automatically staking your
-              rewards
+              Compound your UMA by claiming and re-staking your
+              rewards.
             </PanelSectionText>
             <Button
               variant="primary"
@@ -95,8 +95,8 @@ export function ClaimPanel() {
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
-                Delegated wallets can only claim and restake. Claiming to your
-                wallet from a delegated voting wallet is not allowed.
+                Delegated wallets can only claim and restake. You cannot claim to your
+                wallet from a delegated voting wallet. TO DO: Check the accuracy of this.
               </PanelWarningText>
             ) : (
               <Button
