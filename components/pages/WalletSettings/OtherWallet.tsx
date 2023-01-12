@@ -25,8 +25,8 @@ export function OtherWallet({
 
   const text =
     status === "delegate"
-      ? "A Delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, but cannot claim, stake or unstake tokens. A delegate can only be a delegate for a single delegator."
-      : "A Delegator is a wallet that has chosen to delegate away its voting power to another party. Delegators can only delegate to one other address. Once done, delegators can no longer commit or reveal votes, but can still claim rewards and stake/unstake tokens.";
+      ? "A delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, but cannot claim, stake or unstake tokens. A delegate can only be a delegate for a single delegator."
+      : "A delegator is a wallet that has chosen to delegate away its voting power to another party. Delegators can only delegate to one other address. Once done, delegators can no longer commit or reveal votes, but can still claim rewards and stake/unstake tokens.";
 
   return (
     <>
