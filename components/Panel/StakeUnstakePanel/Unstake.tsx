@@ -55,7 +55,6 @@ export function Unstake({
       !isRequestingUnstake
     );
   }
-  console.log({ isReadyToUnstake });
 
   return (
     <Wrapper>
