@@ -104,17 +104,17 @@ export function Unstake({
         hasActiveVotes &&
         !isDelegate && (
           <PanelWarningText>
-            Cannot request unstake in active reveal phase
+            You cannot request to unstake during an active reveal phase.
           </PanelWarningText>
         )}
       {isReadyToUnstake && (
         <PanelWarningText>
-          Cannot request to unstake until you claim unstaked tokens
+          You cannot request to unstake until you claim unstaked tokens.
         </PanelWarningText>
       )}
       {isDelegate && (
         <PanelWarningText>
-          Cannot request to unstake while you are a delegate
+          You cannot request to unstake while you are a delegate.
         </PanelWarningText>
       )}
     </Wrapper>
