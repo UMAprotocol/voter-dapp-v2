@@ -78,8 +78,9 @@ export function Stake({
     <Wrapper>
       <PanelSectionTitle>Stake</PanelSectionTitle>
       <PanelSectionText>
-        Staked tokens are used to vote and earn rewards. Staked tokens cannot
-        be claimed until {unstakeCoolDownFormatted} after an unstaking request is submitted.
+        Staked tokens are used to vote and earn rewards. Staked tokens cannot be
+        claimed until {unstakeCoolDownFormatted} after an unstaking request is
+        submitted.
       </PanelSectionText>
       {isDelegate ? (
         <PanelWarningText>
