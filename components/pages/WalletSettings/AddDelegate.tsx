@@ -16,7 +16,7 @@ export function AddDelegate() {
         only be a delegate for a single delegator.
       </Text>
       <BarWrapper>
-        <BarText>No delegate wallet connected</BarText>
+        <BarText>No delegate wallet selected</BarText>
         <Button
           variant="primary"
           label="Add delegate wallet"

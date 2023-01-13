@@ -103,7 +103,7 @@ export function DelegationPanel() {
       <PanelTitle title="Add delegate wallet" />
       <InnerWrapper>
         <PanelSectionTitle>Delegation</PanelSectionTitle>
-        <PanelSectionText>Explanation of voting delegation</PanelSectionText>
+        <PanelSectionText>Explanation of voting delegation. TO DO: add explanation</PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
             <IconWrapper>
