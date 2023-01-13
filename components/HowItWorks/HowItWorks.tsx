@@ -137,7 +137,7 @@ export function HowItWorks() {
                 ) : (
                   formatNumberForDisplay(apr, { decimals: 1 })
                 )}
-                % APR
+                % APR.
               </Strong>{" "}
             </>
           }
@@ -155,7 +155,7 @@ export function HowItWorks() {
           }
           content={
             <>
-              Your unclaimed UMA rewards:{" "}
+              You have{" "}
               <Strong>
                 {isLoading() ? (
                   <LoadingSkeleton width={50} />
@@ -163,6 +163,7 @@ export function HowItWorks() {
                   formatNumberForDisplay(outstandingRewards, { decimals: 3 })
                 )}
               </Strong>{" "}
+              unclaimed UMA rewards.
             </>
           }
           actionLabel="Claim"
