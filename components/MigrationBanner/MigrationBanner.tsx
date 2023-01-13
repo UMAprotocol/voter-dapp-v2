@@ -31,19 +31,19 @@ export function MigrationBanner() {
         <Text>
           Welcome to the UMA 2.0 voting app. Read our{" "}
           <Link href="https://todo.com" target="_blank">
-            migration and staking instructions here
+            migration and staking instructions here.
           </Link>
         </Text>
         <TabletText>
           Welcome to UMA 2.0. Read the{" "}
           <Link href="https://todo.com" target="_blank">
-            migration and staking instructions
+            migration and staking instructions.
           </Link>
         </TabletText>
         <MobileText>
           Welcome! Learn how to{" "}
           <Link href="https://todo.com" target="_blank">
-            migrate and stake
+            migrate and stake.
           </Link>
         </MobileText>
 
