@@ -51,8 +51,8 @@ export function Unstake({
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        After submitting an unstake request, you must wait {unstakeCoolDownFormatted} before
-        you can claim your unstaked tokens.
+        After submitting an unstake request, you must wait{" "}
+        {unstakeCoolDownFormatted} before you can claim your unstaked tokens.
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
@@ -109,7 +109,8 @@ export function Unstake({
         )}
       {isReadyToUnstake && (
         <PanelWarningText>
-          You cannot request to unstake until you claim your previously unstaked tokens.
+          You cannot request to unstake until you claim your previously unstaked
+          tokens.
         </PanelWarningText>
       )}
       {isDelegate && (
