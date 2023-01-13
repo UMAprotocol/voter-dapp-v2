@@ -72,7 +72,7 @@ export function ClaimPanel() {
           <ClaimAndStakeWrapper>
             <PanelSectionTitle>Claim and Stake</PanelSectionTitle>
             <PanelSectionText>
-              Compound your UMA by claiming and re-staking your rewards.
+              Compound your UMA by claiming and restaking your rewards.
             </PanelSectionText>
             <Button
               variant="primary"
