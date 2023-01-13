@@ -292,7 +292,7 @@ const NotificationIconWrapper = styled.div`
   }
 `;
 
-const Dot = styled.div`
+const Dot = styled.span`
   height: 8px;
   width: 8px;
   background-color: ${green};

@@ -9,5 +9,5 @@ export function IconWrapper({
   height?: number;
   children: ReactNode;
 }) {
-  return <div style={{ width, height }}>{children}</div>;
+  return <span style={{ width, height }}>{children}</span>;
 }
