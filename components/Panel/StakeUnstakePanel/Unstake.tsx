@@ -22,6 +22,8 @@ interface Props {
   isReadyToUnstake: boolean;
   isDelegate: boolean;
   requestUnstake: (unstakeAmount: string) => void;
+  hasCooldownTimeRemaining: boolean;
+  isRequestingUnstake: boolean;
 }
 export function Unstake({
   stakedBalance,
@@ -30,6 +32,8 @@ export function Unstake({
   unstakeCoolDown,
   isReadyToUnstake,
   isDelegate,
+  hasCooldownTimeRemaining,
+  isRequestingUnstake,
 }: Props) {
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
@@ -44,7 +48,12 @@ export function Unstake({
   ) {
     if (stakedBalance === undefined || pendingUnstake === undefined)
       return false;
-    return !isReadyToUnstake && stakedBalance.gt(0) && pendingUnstake.eq(0);
+    return (
+      !isReadyToUnstake &&
+      stakedBalance.gt(0) &&
+      pendingUnstake.eq(0) &&
+      !isRequestingUnstake
+    );
   }
 
   return (
@@ -107,7 +116,7 @@ export function Unstake({
             Cannot request unstake in active reveal phase
           </PanelWarningText>
         )}
-      {isReadyToUnstake && (
+      {(isReadyToUnstake || hasCooldownTimeRemaining) && (
         <PanelWarningText>
           Cannot request to unstake until you claim unstaked tokens
         </PanelWarningText>
