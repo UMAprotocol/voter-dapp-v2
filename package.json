@@ -11,7 +11,8 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "chromatic": "npx chromatic --project-token=9e9ed15fd825",
-    "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts"
+    "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts",
+    "cypress:run": "cypress run e2e"
   },
   "dependencies": {
     "@radix-ui/react-tabs": "^1.0.1",
@@ -73,6 +74,7 @@
     "buffer": "^6.0.3",
     "chromatic": "^6.9.0",
     "crypto-browserify": "^3.12.0",
+    "cypress": "^12.3.0",
     "eslint": "8.23.1",
     "eslint-config-next": "13.0.2",
     "eslint-config-prettier": "^8.5.0",
