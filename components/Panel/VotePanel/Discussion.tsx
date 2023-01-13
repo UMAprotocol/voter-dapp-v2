@@ -3,7 +3,7 @@ import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { addOpacityToHsl } from "helpers";
 import NextImage from "next/image";
-import Message from "public/assets/icons/message.svg";
+import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
 import { VoteT } from "types";
@@ -188,7 +188,7 @@ const Disclaimer = styled.div`
   margin-bottom: 25px;
 `;
 
-const MessageIcon = styled(Message)`
+const MessageIcon = styled(Discord)`
   path {
     fill: var(--red-500);
   }
