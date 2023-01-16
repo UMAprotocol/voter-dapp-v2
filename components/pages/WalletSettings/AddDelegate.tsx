@@ -9,12 +9,14 @@ export function AddDelegate() {
     <>
       <Header>Delegate wallet</Header>
       <Text>
-        Explanation of how this works Lorem ipsum dolor sit amet consectetur,
-        adipisicing elit. Ea ratione nobis reiciendis, aliquid quidem nulla
-        veniam quasi eos ab error?
+        A delegate is a wallet that has been chosen to vote on behalf of another
+        party. If acting as a delegate, a delegate can no longer vote for
+        themselves. Delegates can commit & reveal votes on behalf of a
+        delegator, but cannot claim, stake or unstake tokens. A delegate can
+        only be a delegate for a single delegator.
       </Text>
       <BarWrapper>
-        <BarText>No delegate wallet connected</BarText>
+        <BarText>No delegate wallet selected</BarText>
         <Button
           variant="primary"
           label="Add delegate wallet"

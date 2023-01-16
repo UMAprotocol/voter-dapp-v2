@@ -19,9 +19,9 @@ export function Discussion({ identifier, time }: VoteT) {
     <Wrapper>
       <Disclaimer>
         <Text>
-          <Strong>Note:</Strong> These discussions are from Discord and are not
-          the opinions of UMA. Please vote independently based on your belief
-          about the truth lorem ipsum dolor.
+          <Strong>Note:</Strong> These discussions are from the UMA Protocol
+          Discord. They do not reflect the opinion of Risk Labs or any other
+          entity.
         </Text>
       </Disclaimer>
       <TitleSectionWrapper>

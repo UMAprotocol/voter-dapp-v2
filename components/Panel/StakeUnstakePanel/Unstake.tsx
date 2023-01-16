@@ -51,8 +51,8 @@ export function Unstake({
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off
-        period and you wont be able to collect rewards text text
+        After submitting an unstake request, you must wait{" "}
+        {unstakeCoolDownFormatted} before you can claim your unstaked tokens.
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
@@ -66,7 +66,7 @@ export function Unstake({
           <IconWrapper>
             <TwoIcon />
           </IconWrapper>
-          Cool-off period of {unstakeCoolDownFormatted}
+          Wait {unstakeCoolDownFormatted}
         </UnstakeStep>
         <UnstakeStep>
           <IconWrapper>
@@ -104,17 +104,18 @@ export function Unstake({
         hasActiveVotes &&
         !isDelegate && (
           <PanelWarningText>
-            Cannot request unstake in active reveal phase
+            You cannot request to unstake during an active reveal phase.
           </PanelWarningText>
         )}
       {isReadyToUnstake && (
         <PanelWarningText>
-          Cannot request to unstake until you claim unstaked tokens
+          You cannot request to unstake until you claim your previously unstaked
+          tokens.
         </PanelWarningText>
       )}
       {isDelegate && (
         <PanelWarningText>
-          Cannot request to unstake while you are a delegate
+          You cannot request to unstake while you are a delegate.
         </PanelWarningText>
       )}
     </Wrapper>

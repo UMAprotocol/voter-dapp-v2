@@ -19,7 +19,7 @@ export function CooldownTimer({
 }: Props) {
   const formattedCooldownEnds =
     cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
-  const cooldownDescription = "in cooldown period";
+  const cooldownDescription = "being unstaked";
   const unstakeDescription = "ready to unstake";
   const description = isReadyToUnstake
     ? unstakeDescription
