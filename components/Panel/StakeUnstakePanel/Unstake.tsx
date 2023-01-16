@@ -55,6 +55,7 @@ export function Unstake({
       !isRequestingUnstake
     );
   }
+  console.log({ isReadyToUnstake });
 
   return (
     <Wrapper>
@@ -116,9 +117,15 @@ export function Unstake({
             Cannot request unstake in active reveal phase
           </PanelWarningText>
         )}
-      {(isReadyToUnstake || hasCooldownTimeRemaining) && (
+      {isReadyToUnstake && !hasCooldownTimeRemaining && (
         <PanelWarningText>
           Cannot request to unstake until you claim unstaked tokens
+        </PanelWarningText>
+      )}
+      {!isReadyToUnstake && hasCooldownTimeRemaining && (
+        <PanelWarningText>
+          You cannot request to unstake additional tokens until you wait for
+          your previous unstake request to complete.
         </PanelWarningText>
       )}
       {isDelegate && (
