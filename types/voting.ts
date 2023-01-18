@@ -21,7 +21,7 @@ export type PriceRequestT = {
   time: number;
   identifier: string;
   ancillaryData: string;
-  voteNumber: BigNumber | undefined;
+  voteNumber?: BigNumber;
   correctVote?: string;
   // computed values
   timeMilliseconds: number;
