@@ -55,7 +55,7 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-  priceRequestIndex?: BigNumber;
+  lastVotingRound?: number;
   correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
