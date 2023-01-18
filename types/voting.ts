@@ -227,7 +227,6 @@ export const AugmentedVoteDataResponseT = ss.object({
   time: ss.number(),
   identifier: ss.string(),
   l1RequestTxHash: ss.optional(ss.string()),
-  rollCount: ss.defaulted(ss.number(), 0),
   ooRequestUrl: ss.optional(ss.string()),
   originatingChainTxHash: ss.optional(ss.string()),
   originatingChainId: ss.optional(ss.number()),
