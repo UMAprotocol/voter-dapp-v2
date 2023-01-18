@@ -71,6 +71,10 @@ function formatPriceRequest(
     ancillaryData
   );
   const isV1 = priceRequest.isV1 ? true : false;
+  const isGovernance = priceRequest.isGovernance
+    ? true
+    : priceRequest.isGovernance;
+  const rollCount = priceRequest.rollCount || 0;
 
   return {
     time,
@@ -86,5 +90,7 @@ function formatPriceRequest(
     results,
     uniqueKey,
     isV1,
+    isGovernance,
+    rollCount,
   };
 }

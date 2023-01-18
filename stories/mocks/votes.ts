@@ -60,6 +60,7 @@ export const voteWithoutUserVote = {
     staking: false,
     slashAmount: BigNumber.from(0),
   },
+  rollCount: 0,
 };
 
 export const userVote = {

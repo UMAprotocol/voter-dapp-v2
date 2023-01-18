@@ -30,6 +30,8 @@ export type PriceRequestT = {
   decodedAncillaryData: string;
   uniqueKey: UniqueKeyT;
   isV1: boolean;
+  isGovernance?: boolean;
+  rollCount: number;
 };
 
 export type ParticipationT = {
@@ -249,7 +251,7 @@ export type AugmentedVoteDataT = {
 
 export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
 
-export type TransactionHashT = string | "rolled";
+export type TransactionHashT = string;
 
 export type RawDiscordMessageT = {
   content: string;

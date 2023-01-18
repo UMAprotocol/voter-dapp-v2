@@ -94,6 +94,8 @@ export async function getPastVotesV2() {
         time
         ancillaryData
         resolvedPriceRequestIndex
+        isGovernance
+        rollCount
         latestRound {
           totalVotesRevealed
           groups {
