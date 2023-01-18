@@ -102,7 +102,9 @@ async function getVotingRequestAdded(
 ): Promise<CommonEventData[]> {
   const contract = await constructContract(chainId, contractType);
   const events = await contract.queryFilter(
-    contract.filters.RequestAdded(),
+    contract.filters.RequestAdded
+      ? contract.filters.RequestAdded()
+      : contract.filters.PriceRequestAdded(),
     getFromBlock(contractType as string, chainId as number)
   );
   return events.map((event) =>

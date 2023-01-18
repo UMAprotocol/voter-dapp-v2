@@ -55,11 +55,13 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-  priceRequestIndex: BigNumber | undefined;
+  lastVotingRound?: number;
   correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
   isV1?: boolean;
+  rollCount?: number;
+  isGovernance?: boolean;
 };
 
 export type VoteHistoryDataT = {
