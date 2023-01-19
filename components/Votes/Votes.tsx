@@ -335,6 +335,11 @@ export function Votes() {
           ))}
         />
       </VotesTableWrapper>
+      {isDirty() ? (
+        <RecommittingVotesMessage>
+          * Changes to committed votes need to be re-committed
+        </RecommittingVotesMessage>
+      ) : null}
       {getActivityStatus() === "active" ? (
         <ButtonWrapper>
           {isDirty() ? (
@@ -431,9 +436,7 @@ const Title = styled.h1`
 
 const ButtonWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: end;
-  justify-content: center;
+  justify-content: end;
   gap: 15px;
   margin-top: 30px;
 
@@ -468,4 +471,11 @@ const Divider = styled.div`
   margin-top: 45px;
   margin-bottom: 45px;
   background: var(--black-opacity-25);
+`;
+
+const RecommittingVotesMessage = styled.p`
+  width: fit-content;
+  font: var(--text-sm);
+  margin-left: auto;
+  margin-top: 10px;
 `;
