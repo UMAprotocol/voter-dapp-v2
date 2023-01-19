@@ -436,9 +436,7 @@ const Title = styled.h1`
 
 const ButtonWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: end;
-  justify-content: center;
+  justify-content: end;
   gap: 15px;
   margin-top: 30px;
 
