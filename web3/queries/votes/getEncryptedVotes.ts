@@ -17,7 +17,7 @@ export async function getEncryptedVotes(
   const v1EventData = v1Result?.map(({ args }) => args);
   const v2EventData = v2Result
     ?.map(({ args }) => args)
-    .filter(({ roundId }) => (findRoundId ? roundId.eq(findRoundId) : true));
+    .filter(({ roundId }) => (findRoundId ? roundId === findRoundId : true));
 
   const encryptedVotes: EncryptedVotesByKeyT = {};
 

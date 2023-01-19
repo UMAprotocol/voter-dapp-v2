@@ -16,7 +16,7 @@ async function warmAugmentedDataCache() {
   const l1RequestEvents = (
     await Promise.all([
       votingV1.queryFilter(votingV1.filters.PriceRequestAdded()),
-      // votingV2.queryFilter(votingV2.filters.PriceRequestAdded())
+      // votingV2.queryFilter(votingV2.filters.RequestAdded())
     ])
   ).flat();
 

@@ -30,6 +30,8 @@ export type PriceRequestT = {
   decodedAncillaryData: string;
   uniqueKey: UniqueKeyT;
   isV1: boolean;
+  isGovernance?: boolean;
+  rollCount: number;
 };
 
 export type ParticipationT = {
@@ -55,11 +57,13 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-  priceRequestIndex: BigNumber | undefined;
+  lastVotingRound?: number;
   correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
   isV1?: boolean;
+  rollCount?: number;
+  isGovernance?: boolean;
 };
 
 export type VoteHistoryDataT = {
@@ -247,7 +251,7 @@ export type AugmentedVoteDataT = {
 
 export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
 
-export type TransactionHashT = string | "rolled";
+export type TransactionHashT = string;
 
 export type RawDiscordMessageT = {
   content: string;

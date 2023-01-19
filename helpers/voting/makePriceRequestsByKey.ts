@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import {
   PriceRequestByKeyT,
@@ -31,12 +32,17 @@ function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
 function formatPriceRequest(
   priceRequest: RawPriceRequestDataT
 ): PriceRequestT & VoteParticipationT & VoteResultsT {
-  const time = Number(priceRequest.time);
+  const time =
+    priceRequest.time instanceof BigNumber
+      ? priceRequest.time.toNumber()
+      : priceRequest.time;
   const timeMilliseconds = time * 1000;
   const timeAsDate = new Date(timeMilliseconds);
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
-  const voteNumber = priceRequest.priceRequestIndex;
+  const voteNumber = priceRequest.lastVotingRound
+    ? BigNumber.from(priceRequest.lastVotingRound)
+    : undefined;
   let decodedIdentifier = "";
   let decodedAncillaryData = "";
   try {
@@ -65,6 +71,10 @@ function formatPriceRequest(
     ancillaryData
   );
   const isV1 = priceRequest.isV1 ? true : false;
+  const isGovernance = priceRequest.isGovernance
+    ? true
+    : priceRequest.isGovernance;
+  const rollCount = priceRequest.rollCount || 0;
 
   return {
     time,
@@ -80,5 +90,7 @@ function formatPriceRequest(
     results,
     uniqueKey,
     isV1,
+    isGovernance,
+    rollCount,
   };
 }

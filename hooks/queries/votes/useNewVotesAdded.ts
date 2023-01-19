@@ -6,7 +6,7 @@ export function useNewVotesAdded() {
   const { voting } = useContractsContext();
   const { provider } = useWalletContext();
   const [newVotes, setNewVotes] = useState(0);
-  const filter = voting.filters.PriceRequestAdded(null, null, null);
+  const filter = voting.filters.RequestAdded(null, null, null);
 
   useEffect(() => {
     if (!provider) return;
