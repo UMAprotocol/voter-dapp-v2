@@ -62,7 +62,7 @@ export function VotesListItem({
     revealHash,
     decryptedVote,
     correctVote,
-    voteNumber,
+    resolvedPriceRequestIndex,
     isV1,
     isGovernance,
     timeAsDate,
@@ -340,8 +340,10 @@ export function VotesListItem({
               ) : null}
               <VoteOrigin>
                 {origin}{" "}
-                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`} |{" "}
-                {format(timeAsDate, "Pp")}
+                {!isV1 &&
+                  resolvedPriceRequestIndex &&
+                  `| Vote #${resolvedPriceRequestIndex}`}{" "}
+                | {format(timeAsDate, "Pp")}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>

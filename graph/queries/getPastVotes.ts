@@ -1,5 +1,4 @@
 import { config } from "helpers/config";
-import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { PastVotesQuery } from "types";
@@ -126,7 +125,6 @@ export async function getPastVotesV2() {
     }) => {
       const identifier = formatBytes32String(id);
       const correctVote = price;
-      const priceRequestIndex = BigNumber.from(resolvedPriceRequestIndex);
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
         uniqueCommitAddresses: revealedVotes.length,
@@ -142,7 +140,7 @@ export async function getPastVotesV2() {
         time: Number(time),
         correctVote,
         ancillaryData,
-        priceRequestIndex,
+        resolvedPriceRequestIndex,
         isV1: false,
         participation,
         results,

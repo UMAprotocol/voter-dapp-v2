@@ -16,7 +16,7 @@ export function VotePanel({ content }: Props) {
   const {
     title,
     decodedIdentifier,
-    voteNumber,
+    resolvedPriceRequestIndex,
     origin,
     participation,
     results,
@@ -54,7 +54,7 @@ export function VotePanel({ content }: Props) {
         title={title ?? decodedIdentifier}
         origin={origin}
         isGovernance={isGovernance}
-        voteNumber={voteNumber?.toString()}
+        voteNumber={resolvedPriceRequestIndex}
       />
       {hasResults ? (
         <Tabs tabs={tabs} defaultValue="Result" />

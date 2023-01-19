@@ -11,7 +11,7 @@ interface Props {
 }
 export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
   const {
-    voteNumber,
+    resolvedPriceRequestIndex,
     voteHistory: { voted, correctness, staking, slashAmount },
   } = vote;
   const scoreColor = slashAmount.lt(0) ? red500 : green;
@@ -19,9 +19,9 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
   return (
     <Tr>
       <VoteNumberTd>
-        {voteNumber ? (
+        {resolvedPriceRequestIndex ? (
           <VoteNumberButton onClick={onVoteClicked}>
-            #{formatNumberForDisplay(voteNumber, { isFormatEther: false })}
+            #{resolvedPriceRequestIndex}
           </VoteNumberButton>
         ) : (
           <Tooltip label="This vote is from version one (previous version) of the voting contract. Sequential vote numbers were introduced in version two (current version).">

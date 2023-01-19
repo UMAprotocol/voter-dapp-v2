@@ -21,7 +21,6 @@ export type PriceRequestT = {
   time: number;
   identifier: string;
   ancillaryData: string;
-  voteNumber?: BigNumber;
   correctVote?: string;
   // computed values
   timeMilliseconds: number;
@@ -32,6 +31,7 @@ export type PriceRequestT = {
   isV1: boolean;
   isGovernance?: boolean;
   rollCount: number;
+  resolvedPriceRequestIndex?: string;
 };
 
 export type ParticipationT = {
@@ -64,6 +64,7 @@ export type RawPriceRequestDataT = {
   isV1?: boolean;
   rollCount?: number;
   isGovernance?: boolean;
+  resolvedPriceRequestIndex?: string;
 };
 
 export type VoteHistoryDataT = {
