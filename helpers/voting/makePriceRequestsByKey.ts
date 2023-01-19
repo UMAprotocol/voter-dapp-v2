@@ -40,9 +40,6 @@ function formatPriceRequest(
   const timeAsDate = new Date(timeMilliseconds);
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
-  const voteNumber = priceRequest.lastVotingRound
-    ? BigNumber.from(priceRequest.lastVotingRound)
-    : undefined;
   let decodedIdentifier = "";
   let decodedAncillaryData = "";
   try {
@@ -80,7 +77,6 @@ function formatPriceRequest(
     time,
     identifier,
     ancillaryData,
-    voteNumber,
     timeMilliseconds,
     timeAsDate,
     decodedIdentifier,
