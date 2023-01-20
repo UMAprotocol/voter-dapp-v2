@@ -72,6 +72,7 @@ function formatPriceRequest(
     ? true
     : priceRequest.isGovernance;
   const rollCount = priceRequest.rollCount || 0;
+  const resolvedPriceRequestIndex = priceRequest.resolvedPriceRequestIndex;
 
   return {
     time,
@@ -81,6 +82,7 @@ function formatPriceRequest(
     timeAsDate,
     decodedIdentifier,
     decodedAncillaryData,
+    resolvedPriceRequestIndex,
     correctVote,
     participation,
     results,
