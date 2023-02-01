@@ -210,9 +210,17 @@ export function VotesListItem({
       if (!isCommitted) return "Not committed";
       if (!decryptedVote || !canReveal) {
         if (delegationStatus === "delegator") {
-          return "Delegate Must Reveal";
+          if (isRevealed) {
+            return "Delegate Revealed";
+          } else {
+            return "Delegate Must Reveal";
+          }
         } else if (delegationStatus === "delegate") {
-          return "Delegator Must Reveal";
+          if (isRevealed) {
+            return "Delegator Revealed";
+          } else {
+            return "Delegator Must Reveal";
+          }
         } else {
           return "Unable to reveal";
         }
