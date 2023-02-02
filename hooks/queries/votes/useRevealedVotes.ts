@@ -8,11 +8,12 @@ import {
 } from "hooks";
 import { getRevealedVotes } from "web3";
 
-export function useRevealedVotes() {
+export function useRevealedVotes(addressOverride?: string) {
   const { voting } = useContractsContext();
-  const { address } = useAccountDetails();
+  const { address: myAddress } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
+  const address = addressOverride ?? myAddress;
 
   const queryResult = useQuery(
     [revealedVotesKey, address, roundId],

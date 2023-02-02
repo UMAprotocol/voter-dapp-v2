@@ -85,6 +85,7 @@ export const VotesContext = createContext<VotesContextState>(
 );
 
 export function VotesProvider({ children }: { children: ReactNode }) {
+  // usually you can add this extra address as your delegator if you are a delegate.
   const [addressOverride, setAddressOverride] = useState<string | undefined>(
     undefined
   );
@@ -128,7 +129,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     data: revealedVotes,
     isLoading: revealedVotesIsLoading,
     isFetching: revealedVotesIsFetching,
-  } = useRevealedVotes();
+    // if we are a delegate we need to override to our delegators address
+  } = useRevealedVotes(addressOverride);
   const {
     data: encryptedVotes,
     isLoading: encryptedVotesIsLoading,
