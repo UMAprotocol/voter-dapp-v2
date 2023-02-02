@@ -211,15 +211,15 @@ export function VotesListItem({
       if (!decryptedVote || !canReveal) {
         if (delegationStatus === "delegator") {
           if (isRevealed) {
-            return "Delegate Revealed";
+            return "Delegate revealed";
           } else {
-            return "Delegate Must Reveal";
+            return "Delegate must reveal";
           }
         } else if (delegationStatus === "delegate") {
           if (isRevealed) {
-            return "Delegator Revealed";
+            return "Delegator revealed";
           } else {
-            return "Delegator Must Reveal";
+            return "Delegator must reveal";
           }
         } else {
           return "Unable to reveal";
