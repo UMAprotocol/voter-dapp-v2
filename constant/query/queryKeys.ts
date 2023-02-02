@@ -4,7 +4,7 @@ export const upcomingVotesKey = "upcomingVotesKey";
 export const pastVotesKey = "pastVotesKey";
 export const decodedAdminTransactionsKey = "decodedAdminTransactionsKey";
 export const augmentedVoteDataKey = "augmentedVoteDataKey";
-export const discordThreadKey = "discordThreadKey";
+export const voteDiscussionKey = "voteDiscussionKey";
 // voting - user dependent
 export const encryptedVotesKey = "encryptedVotesKey";
 export const decryptedVotesKey = "decryptedVotesKey";

@@ -1,17 +1,17 @@
 import { createContext, ReactNode, useState } from "react";
-import { PanelContentT, PanelTypeT } from "types";
+import { PanelTypeT, VoteT } from "types";
 
 export interface PanelContextState {
   panelType: PanelTypeT;
-  panelContent: PanelContentT | undefined;
+  panelContent: VoteT | undefined;
   panelOpen: boolean;
-  openPanel: (panelType: PanelTypeT, panelContent?: PanelContentT) => void;
+  openPanel: (panelType: PanelTypeT, panelContent?: VoteT) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
 }
 
 export const defaultPanelContextState = {
   panelType: "menu" as const,
-  panelContent: null,
+  panelContent: undefined,
   panelOpen: false,
   openPanel: () => null,
   closePanel: () => null,
@@ -23,15 +23,13 @@ export const PanelContext = createContext<PanelContextState>(
 
 export function PanelProvider({ children }: { children: ReactNode }) {
   const [panelType, setPanelType] = useState<PanelTypeT>("menu");
-  const [panelContent, setPanelContent] = useState<PanelContentT | undefined>(
-    null
-  );
+  const [panelContent, setPanelContent] = useState<VoteT | undefined>();
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [previousPanelData, setPreviousPanelData] = useState<
-    { panelType: PanelTypeT; panelContent: PanelContentT | undefined }[]
+    { panelType: PanelTypeT; panelContent: VoteT | undefined }[]
   >([]);
 
-  function openPanel(panelType: PanelTypeT, panelContent?: PanelContentT) {
+  function openPanel(panelType: PanelTypeT, panelContent?: VoteT) {
     setPanelType(panelType);
     setPanelContent(panelContent);
     setPanelOpen(true);
@@ -55,10 +53,7 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  function pushPanelDataOntoStack(
-    panelType: PanelTypeT,
-    panelContent?: PanelContentT
-  ) {
+  function pushPanelDataOntoStack(panelType: PanelTypeT, panelContent?: VoteT) {
     setPreviousPanelData((prev) => {
       return [...prev, { panelType, panelContent }];
     });
