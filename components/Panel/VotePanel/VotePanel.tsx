@@ -64,9 +64,7 @@ export function VotePanel({ content }: Props) {
       });
     }
 
-    return (
-      <Tabs tabs={tabs} defaultValue={hasResults ? "Results" : "Details"} />
-    );
+    return <Tabs tabs={tabs} />;
   }
 
   return (
