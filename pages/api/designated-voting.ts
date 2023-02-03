@@ -42,7 +42,7 @@ async function accountHasDesignatedVoting(account: string) {
     return { message: "", designatedVotingContract: "" };
   return {
     message: `Connected account ${
-      ownerIndex ? "owns" : "is a voter on"
+      ownerIndex !== -1 ? "owns" : "is a voter on"
     } a designated voting contract`,
     designatedVotingContract:
       designatedVotingContracts[Math.max(ownerIndex, votingIndex)],
