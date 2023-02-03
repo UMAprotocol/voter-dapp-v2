@@ -66,7 +66,7 @@ export default async function handler(
   } catch (e) {
     console.error(e);
     response.status(500).send({
-      message: "Error in decoding admin call",
+      message: "Error in decoding designated voting target address",
       error: e instanceof Error ? e.message : e,
     });
   }
