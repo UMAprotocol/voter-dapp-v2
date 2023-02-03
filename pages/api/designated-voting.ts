@@ -35,7 +35,7 @@ const designatedVotingContracts = [
   "0x61D62B3d530ab8174DBfAdE1675D856C5C5c9Fcd",
 ];
 
-async function accountHasDesignatedVoting(account: string) {
+function accountHasDesignatedVoting(account: string) {
   const ownerIndex = designatedVotingOwners.indexOf(account);
   const votingIndex = designatedVotingVoters.indexOf(account);
   if (ownerIndex === -1 && votingIndex === -1)
@@ -61,7 +61,7 @@ export default async function handler(
       if (!Object.keys(body).includes(requiredKey))
         throw "Missing key in req body! required: account";
     });
-    const readableTxData = await accountHasDesignatedVoting(body.account);
+    const readableTxData = accountHasDesignatedVoting(body.account);
     response.status(200).send(readableTxData);
   } catch (e) {
     console.error(e);
