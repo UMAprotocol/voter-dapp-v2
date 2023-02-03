@@ -73,7 +73,7 @@ function concatenateAttachments(
   const concat: string[] = [];
   attachments.forEach((attachment, index) => {
     concat.push(
-      `[Link ${index + 1}](${attachment.proxy_url || attachment.url})`
+      `[Link ${index + 1}](${attachment.url || attachment.proxy_url})`
     );
   });
 
