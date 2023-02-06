@@ -1,9 +1,9 @@
 import * as ss from "superstruct";
-import { DiscordThreadT, L1Request } from "types";
+import { VoteDiscussionT, L1Request } from "types";
 
-export async function getDiscordThread(
+export async function getVoteDiscussion(
   l1Request: L1Request
-): Promise<DiscordThreadT> {
+): Promise<VoteDiscussionT> {
   const response = await fetch("/api/discord-thread", {
     method: "POST",
     headers: {
@@ -15,5 +15,5 @@ export async function getDiscordThread(
   if (!response.ok) {
     throw new Error("Getting discord threads failed with unknown error");
   }
-  return ss.create(await response.json(), DiscordThreadT);
+  return ss.create(await response.json(), VoteDiscussionT);
 }

@@ -297,15 +297,12 @@ export const DiscordMessageT = ss.object({
 });
 export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 
-export const DiscordThreadT = ss.object({
+export const VoteDiscussionT = ss.object({
   identifier: ss.string(),
   time: ss.number(),
   thread: ss.array(DiscordMessageT),
 });
-export type DiscordThreadT = ss.Infer<typeof DiscordThreadT>;
-
-export const DiscordThreadsT = ss.array(DiscordThreadT);
-export type DiscordThreadsT = ss.Infer<typeof DiscordThreadsT>;
+export type VoteDiscussionT = ss.Infer<typeof VoteDiscussionT>;
 
 export const L1Request = ss.object({
   time: ss.number(),

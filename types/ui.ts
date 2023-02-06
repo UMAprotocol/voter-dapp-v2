@@ -1,5 +1,3 @@
-import { VoteT } from "types";
-
 export type InputDataT = {
   value: string | number;
   label: string;
@@ -23,10 +21,6 @@ export type PanelTypeT =
   | "history"
   | "remind"
   | "delegation";
-
-export type VotePanelContentT = VoteT;
-
-export type PanelContentT = VotePanelContentT | null;
 
 export type PaginateForT =
   | "activeVotesPage"

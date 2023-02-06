@@ -1,5 +1,6 @@
 import { Tabs } from "components";
-import { PanelContentT } from "types";
+import { useVoteDiscussion } from "hooks";
+import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
 import { PanelWrapper } from "../styles";
@@ -8,12 +9,12 @@ import { Discussion } from "./Discussion";
 import { Result } from "./Result";
 
 interface Props {
-  content: PanelContentT | undefined;
+  content: VoteT;
 }
 export function VotePanel({ content }: Props) {
-  if (!content) return null;
-
   const {
+    identifier,
+    time,
     title,
     decodedIdentifier,
     resolvedPriceRequestIndex,
@@ -24,29 +25,49 @@ export function VotePanel({ content }: Props) {
     options,
   } = content;
 
-  const hasResults = Boolean(results?.length);
+  const { data: discussion, isFetching: discussionLoading } = useVoteDiscussion(
+    {
+      identifier,
+      time,
+    }
+  );
 
-  const tabs = [
-    {
-      title: "Result",
-      content: (
-        <Result
-          decodedIdentifier={decodedIdentifier}
-          participation={participation}
-          results={results}
-          options={options}
-        />
-      ),
-    },
-    {
-      title: "Details",
-      content: <Details {...content} />,
-    },
-    {
-      title: "Discussion",
-      content: <Discussion {...content} />,
-    },
-  ];
+  function makeTabs() {
+    const hasResults = Boolean(results?.length);
+
+    const tabs = [
+      {
+        title: "Details",
+        content: <Details {...content} />,
+      },
+      {
+        title: "Discussion",
+        content: (
+          <Discussion discussion={discussion} loading={discussionLoading} />
+        ),
+      },
+    ];
+
+    // add result tab if there are results
+    // and make it the first tab
+    if (hasResults) {
+      tabs.unshift({
+        title: "Result",
+        content: (
+          <Result
+            decodedIdentifier={decodedIdentifier}
+            participation={participation}
+            results={results}
+            options={options}
+          />
+        ),
+      });
+    }
+
+    return (
+      <Tabs tabs={tabs} defaultValue={hasResults ? "Result" : "Discussion"} />
+    );
+  }
 
   return (
     <PanelWrapper>
@@ -56,11 +77,7 @@ export function VotePanel({ content }: Props) {
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />
-      {hasResults ? (
-        <Tabs tabs={tabs} defaultValue="Result" />
-      ) : (
-        <Details {...content} />
-      )}
+      {makeTabs()}
       <PanelFooter />
     </PanelWrapper>
   );

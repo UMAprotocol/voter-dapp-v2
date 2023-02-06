@@ -12,7 +12,7 @@ export function Tabs({
   defaultValue,
 }: {
   tabs: Tab[];
-  defaultValue: string;
+  defaultValue?: string;
 }) {
   return (
     <TabsRoot defaultValue={defaultValue}>
