@@ -49,6 +49,8 @@ function accountHasDesignatedVoting(account: string) {
   };
 }
 
+// next.js requires async functions
+// eslint-disable-next-line @typescript-eslint/require-await
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
