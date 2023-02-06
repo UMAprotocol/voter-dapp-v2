@@ -112,6 +112,8 @@ export function StakeUnstakePanel() {
           unstakeCoolDown={unstakeCoolDown}
           isReadyToUnstake={isReadyToUnstake}
           isDelegate={isDelegate}
+          hasCooldownTimeRemaining={hasCooldownTimeRemaining}
+          isRequestingUnstake={isRequestingUnstake}
         />
       ),
     },

@@ -1,27 +1,28 @@
-import { Button } from "components";
+import { Button, LoadingSpinner } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { addOpacityToHsl } from "helpers";
 import NextImage from "next/image";
-import Message from "public/assets/icons/message.svg";
+import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
-import { VoteT } from "types";
+import { VoteDiscussionT } from "types";
 import { PanelSectionTitle } from "../styles";
-import { useDiscordThread } from "hooks";
 
-export function Discussion({ identifier, time }: VoteT) {
-  const { data: thread = { thread: [] } } = useDiscordThread({
-    identifier,
-    time,
-  });
+interface Props {
+  discussion: VoteDiscussionT;
+  loading: boolean;
+}
+export function Discussion({ discussion, loading }: Props) {
+  const hasThread = Boolean(discussion?.thread?.length);
+
   return (
     <Wrapper>
       <Disclaimer>
         <Text>
-          <Strong>Note:</Strong> These discussions are from Discord and are not
-          the opinions of UMA. Please vote independently based on your belief
-          about the truth lorem ipsum dolor.
+          <Strong>Note:</Strong> These discussions are from the UMA Protocol
+          Discord. They do not reflect the opinion of Risk Labs or any other
+          entity.
         </Text>
       </Disclaimer>
       <TitleSectionWrapper>
@@ -32,42 +33,60 @@ export function Discussion({ identifier, time }: VoteT) {
           Discussion
         </PanelSectionTitle>
       </TitleSectionWrapper>
-      {thread.thread.map(({ message, sender, senderPicture, time }) => (
-        <SectionWrapper key={time}>
-          <MessageWrapper>
-            <ImageWrapper>
-              {senderPicture ? (
-                <Image
-                  src={senderPicture}
-                  alt="Discord user avatar"
-                  width={20}
-                  height={20}
-                />
-              ) : null}
-            </ImageWrapper>
-            <MessageContentWrapper>
-              <SenderWrapper>
-                <Sender>
-                  <Strong>{sender}</Strong>
-                </Sender>{" "}
-                <Time>{format(new Date(Number(time) * 1000), "Pp")}</Time>
-              </SenderWrapper>
-              <MessageTextWrapper>
-                <ReactMarkdown
-                  components={{
-                    a: (props) => <A {...props} target="_blank" />,
-                    p: (props) => <Text {...props} />,
-                    pre: (props) => <Pre {...props} />,
-                    code: (props) => <Code {...props} />,
-                  }}
-                >
-                  {message}
-                </ReactMarkdown>
-              </MessageTextWrapper>
-            </MessageContentWrapper>
-          </MessageWrapper>
-        </SectionWrapper>
-      ))}
+      {loading ? (
+        <LoadingSpinnerWrapper>
+          <LoadingSpinner size={40} variant="black" />
+        </LoadingSpinnerWrapper>
+      ) : (
+        <>
+          {hasThread ? (
+            <>
+              {discussion.thread.map(
+                ({ message, sender, senderPicture, time }) => (
+                  <SectionWrapper key={time}>
+                    <MessageWrapper>
+                      <ImageWrapper>
+                        {senderPicture ? (
+                          <Image
+                            src={senderPicture}
+                            alt="Discord user avatar"
+                            width={20}
+                            height={20}
+                          />
+                        ) : null}
+                      </ImageWrapper>
+                      <MessageContentWrapper>
+                        <SenderWrapper>
+                          <Sender>
+                            <Strong>{sender}</Strong>
+                          </Sender>{" "}
+                          <Time>
+                            {format(new Date(Number(time) * 1000), "Pp")}
+                          </Time>
+                        </SenderWrapper>
+                        <MessageTextWrapper>
+                          <ReactMarkdown
+                            components={{
+                              a: (props) => <A {...props} target="_blank" />,
+                              p: (props) => <MessageText {...props} />,
+                              pre: (props) => <Pre {...props} />,
+                              code: (props) => <Code {...props} />,
+                            }}
+                          >
+                            {message}
+                          </ReactMarkdown>
+                        </MessageTextWrapper>
+                      </MessageContentWrapper>
+                    </MessageWrapper>
+                  </SectionWrapper>
+                )
+              )}
+            </>
+          ) : (
+            <Text>No discussion found for this vote.</Text>
+          )}
+        </>
+      )}
       <DiscordLinkButtonWrapper>
         <Button
           variant="primary"
@@ -83,6 +102,7 @@ export function Discussion({ identifier, time }: VoteT) {
 const Wrapper = styled.div`
   margin-top: 20px;
   padding-inline: 30px;
+  width: calc(var(--panel-width) - 15px);
 
   @media ${mobileAndUnder} {
     padding-inline: 10px;
@@ -132,11 +152,15 @@ const handleWordBreak = css`
 `;
 
 const Text = styled.p`
-  ${handleWordBreak}
   font: var(--text-md);
   &:not(:last-child) {
     margin-bottom: 15px;
   }
+`;
+
+const MessageText = styled(Text)`
+  word-wrap: break-word;
+  word-break: break-word;
 `;
 
 const codeStyle = css`
@@ -188,7 +212,7 @@ const Disclaimer = styled.div`
   margin-bottom: 25px;
 `;
 
-const MessageIcon = styled(Message)`
+const MessageIcon = styled(Discord)`
   path {
     fill: var(--red-500);
   }
@@ -201,4 +225,10 @@ const IconWrapper = styled.div`
 
 const DiscordLinkButtonWrapper = styled.div`
   margin-top: 35px;
+`;
+
+const LoadingSpinnerWrapper = styled.div`
+  height: 100px;
+  display: grid;
+  place-items: center;
 `;

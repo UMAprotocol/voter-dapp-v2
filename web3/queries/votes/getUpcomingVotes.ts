@@ -8,12 +8,10 @@ export async function getUpcomingVotes(
   voting: VotingV2Ethers,
   roundId: number
 ) {
-  const filter = voting.filters.PriceRequestAdded(null, null, null);
+  const filter = voting.filters.RequestAdded(null, null, null);
   const result = await voting.queryFilter(filter, deployBlock);
   const eventData = result?.map(({ args }) => args);
-  const onlyUpcoming = eventData?.filter(
-    (event) => event.roundId.toNumber() > roundId
-  );
+  const onlyUpcoming = eventData?.filter((event) => event.roundId > roundId);
   const upcomingVotes = makePriceRequestsByKey(onlyUpcoming);
   const hasUpcomingVotes = Object.keys(upcomingVotes).length > 0;
 

@@ -62,20 +62,19 @@ export function VotesListItem({
     revealHash,
     decryptedVote,
     correctVote,
-    voteNumber,
+    resolvedPriceRequestIndex,
     isV1,
     isGovernance,
     timeAsDate,
-    augmentedData,
     canReveal,
+    rollCount,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
   const isTabletAndUnder = width && width <= tabletMax;
-  const isRolled = augmentedData?.l1RequestTxHash === "rolled";
+  const isRolled = rollCount > 0;
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
-
   useEffect(() => {
     if (!options) return;
 
@@ -211,9 +210,17 @@ export function VotesListItem({
       if (!isCommitted) return "Not committed";
       if (!decryptedVote || !canReveal) {
         if (delegationStatus === "delegator") {
-          return "Delegate Must Reveal";
+          if (isRevealed) {
+            return "Delegate revealed";
+          } else {
+            return "Delegate must reveal";
+          }
         } else if (delegationStatus === "delegate") {
-          return "Delegator Must Reveal";
+          if (isRevealed) {
+            return "Delegator revealed";
+          } else {
+            return "Delegator must reveal";
+          }
         } else {
           return "Unable to reveal";
         }
@@ -334,15 +341,17 @@ export function VotesListItem({
                       href="https://docs.umaproject.org"
                       target="_blank"
                     >
-                      Rolled
+                      Roll #{rollCount}
                     </RolledLink>
                   </RolledWrapper>
                 </Tooltip>
               ) : null}
               <VoteOrigin>
                 {origin}{" "}
-                {!isV1 && voteNumber && `| Vote #${voteNumber.toString()}`} |{" "}
-                {format(timeAsDate, "Pp")}
+                {!isV1 &&
+                  resolvedPriceRequestIndex &&
+                  `| Vote #${resolvedPriceRequestIndex}`}{" "}
+                | {format(timeAsDate, "Pp")}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>

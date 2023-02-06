@@ -3,7 +3,7 @@ import Discord from "public/assets/icons/discord.svg";
 import Discourse from "public/assets/icons/discourse.svg";
 import Github from "public/assets/icons/github.svg";
 import Logo from "public/assets/icons/logo.svg";
-import Message from "public/assets/icons/message.svg";
+import Medium from "public/assets/icons/medium.svg";
 import Twitter from "public/assets/icons/twitter.svg";
 import styled from "styled-components";
 
@@ -21,12 +21,12 @@ const socialLinks = [
     href: "https://github.com/UMAprotocol",
   },
   {
-    Icon: Discourse,
-    href: "https://discourse.umaproject.org",
+    Icon: Medium,
+    href: "https://medium.com/uma-project",
   },
   {
-    Icon: Message,
-    href: "mailto:hello@umaproject.org",
+    Icon: Discourse,
+    href: "https://discourse.umaproject.org",
   },
 ];
 

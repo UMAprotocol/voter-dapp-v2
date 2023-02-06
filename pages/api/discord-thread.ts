@@ -1,7 +1,7 @@
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { NextApiRequest, NextApiResponse } from "next";
 import {
-  DiscordThreadT,
+  VoteDiscussionT,
   RawDiscordThreadT,
   DiscordMessageT,
   RawDiscordMessageT,
@@ -73,7 +73,7 @@ function concatenateAttachments(
   const concat: string[] = [];
   attachments.forEach((attachment, index) => {
     concat.push(
-      `[Link ${index + 1}](${attachment.proxy_url || attachment.url})`
+      `[Link ${index + 1}](${attachment.url || attachment.proxy_url})`
     );
   });
 
@@ -91,7 +91,7 @@ function extractValidateTimestamp(msg: string) {
 
 async function fetchDiscordThread(
   l1Request: L1Request
-): Promise<DiscordThreadT> {
+): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
   const threadMsg = await getDiscordMessages(evidenceRationalDiscordChannelId);
   // Then, extract the timestamp from each message and for each timestamp relate
@@ -140,10 +140,10 @@ export default async function handler(
 
   try {
     const body = ss.create(request.body, DiscordThreadRequestBody);
-    const discordMessages: DiscordThreadT = await fetchDiscordThread(
+    const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
     );
-    response.status(200).send(discordMessages);
+    response.status(200).send(voteDiscussion);
   } catch (e) {
     console.error(e);
     response.status(500).send({

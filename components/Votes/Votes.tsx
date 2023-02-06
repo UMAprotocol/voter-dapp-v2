@@ -335,8 +335,13 @@ export function Votes() {
           ))}
         />
       </VotesTableWrapper>
+      {isDirty() ? (
+        <RecommittingVotesMessage>
+          * Changes to committed votes need to be re-committed
+        </RecommittingVotesMessage>
+      ) : null}
       {getActivityStatus() === "active" ? (
-        <CommitVotesButtonWrapper>
+        <ButtonWrapper>
           {isDirty() ? (
             <>
               <Button
@@ -378,7 +383,7 @@ export function Votes() {
               </InfoText>
             </Tooltip>
           ) : null}
-        </CommitVotesButtonWrapper>
+        </ButtonWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
         <PaginationWrapper>
@@ -387,6 +392,34 @@ export function Votes() {
             numberOfEntries={determineVotesToShow().length}
           />
         </PaginationWrapper>
+      )}
+      {getPastVotes().length > 0 && getActivityStatus() !== "past" && (
+        <>
+          <Divider />
+          <Title>Recent past votes:</Title>
+          <VotesTableWrapper>
+            <VotesList
+              headings={<VotesTableHeadings activityStatus="past" />}
+              rows={getPastVotes()
+                .slice(0, 3)
+                .map((vote) => (
+                  <VotesListItem
+                    vote={vote}
+                    phase={phase}
+                    selectedVote={undefined}
+                    selectVote={() => null}
+                    activityStatus="past"
+                    moreDetailsAction={() => openPanel("vote", vote)}
+                    key={vote.uniqueKey}
+                    isFetching={getUserDependentIsFetching()}
+                  />
+                ))}
+            />
+          </VotesTableWrapper>
+          <ButtonWrapper>
+            <Button label="See all" href="/past-votes" variant="primary" />
+          </ButtonWrapper>
+        </>
       )}
     </>
   );
@@ -401,11 +434,9 @@ const Title = styled.h1`
   margin-bottom: 20px;
 `;
 
-const CommitVotesButtonWrapper = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: end;
-  justify-content: center;
+  justify-content: end;
   gap: 15px;
   margin-top: 30px;
 
@@ -433,4 +464,18 @@ const PaginationWrapper = styled.div`
 
 const ButtonSpacer = styled.div`
   width: 10px;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  margin-top: 45px;
+  margin-bottom: 45px;
+  background: var(--black-opacity-25);
+`;
+
+const RecommittingVotesMessage = styled.p`
+  width: fit-content;
+  font: var(--text-sm);
+  margin-left: auto;
+  margin-top: 10px;
 `;

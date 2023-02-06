@@ -36,3 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 build-storybook.log
 storybook-static
+
+cypress/videos
+cypress/screenshots

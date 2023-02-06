@@ -22,6 +22,8 @@ interface Props {
   isReadyToUnstake: boolean;
   isDelegate: boolean;
   requestUnstake: (unstakeAmount: string) => void;
+  hasCooldownTimeRemaining: boolean;
+  isRequestingUnstake: boolean;
 }
 export function Unstake({
   stakedBalance,
@@ -30,6 +32,8 @@ export function Unstake({
   unstakeCoolDown,
   isReadyToUnstake,
   isDelegate,
+  hasCooldownTimeRemaining,
+  isRequestingUnstake,
 }: Props) {
   const { phase } = useVoteTimingContext();
   const { hasActiveVotes } = useVotesContext();
@@ -44,15 +48,20 @@ export function Unstake({
   ) {
     if (stakedBalance === undefined || pendingUnstake === undefined)
       return false;
-    return !isReadyToUnstake && stakedBalance.gt(0) && pendingUnstake.eq(0);
+    return (
+      !isReadyToUnstake &&
+      stakedBalance.gt(0) &&
+      pendingUnstake.eq(0) &&
+      !isRequestingUnstake
+    );
   }
 
   return (
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
       <PanelSectionText>
-        When you unstake tokens there is a {unstakeCoolDownFormatted} cool off
-        period and you wont be able to collect rewards text text
+        After submitting an unstake request, you must wait{" "}
+        {unstakeCoolDownFormatted} before you can claim your unstaked tokens.
       </PanelSectionText>
       <HowItWorks>
         <HowItWorksTitle>How it works</HowItWorksTitle>
@@ -66,7 +75,7 @@ export function Unstake({
           <IconWrapper>
             <TwoIcon />
           </IconWrapper>
-          Cool-off period of {unstakeCoolDownFormatted}
+          Wait {unstakeCoolDownFormatted}
         </UnstakeStep>
         <UnstakeStep>
           <IconWrapper>
@@ -104,17 +113,24 @@ export function Unstake({
         hasActiveVotes &&
         !isDelegate && (
           <PanelWarningText>
-            Cannot request unstake in active reveal phase
+            You cannot request to unstake during an active reveal phase.
           </PanelWarningText>
         )}
-      {isReadyToUnstake && (
+      {isReadyToUnstake && !hasCooldownTimeRemaining && (
         <PanelWarningText>
-          Cannot request to unstake until you claim unstaked tokens
+          You cannot request to unstake until you claim your previously unstaked
+          tokens.
+        </PanelWarningText>
+      )}
+      {!isReadyToUnstake && hasCooldownTimeRemaining && (
+        <PanelWarningText>
+          You cannot request to unstake additional tokens until you wait for
+          your previous unstake request to complete.
         </PanelWarningText>
       )}
       {isDelegate && (
         <PanelWarningText>
-          Cannot request to unstake while you are a delegate
+          You cannot request to unstake while you are a delegate.
         </PanelWarningText>
       )}
     </Wrapper>

@@ -21,7 +21,6 @@ export type PriceRequestT = {
   time: number;
   identifier: string;
   ancillaryData: string;
-  voteNumber: BigNumber | undefined;
   correctVote?: string;
   // computed values
   timeMilliseconds: number;
@@ -30,6 +29,9 @@ export type PriceRequestT = {
   decodedAncillaryData: string;
   uniqueKey: UniqueKeyT;
   isV1: boolean;
+  isGovernance?: boolean;
+  rollCount: number;
+  resolvedPriceRequestIndex?: string;
 };
 
 export type ParticipationT = {
@@ -55,11 +57,14 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
-  priceRequestIndex: BigNumber | undefined;
+  lastVotingRound?: number;
   correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
   isV1?: boolean;
+  rollCount?: number;
+  isGovernance?: boolean;
+  resolvedPriceRequestIndex?: string;
 };
 
 export type VoteHistoryDataT = {
@@ -247,7 +252,7 @@ export type AugmentedVoteDataT = {
 
 export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
 
-export type TransactionHashT = string | "rolled";
+export type TransactionHashT = string;
 
 export type RawDiscordMessageT = {
   content: string;
@@ -292,15 +297,12 @@ export const DiscordMessageT = ss.object({
 });
 export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 
-export const DiscordThreadT = ss.object({
+export const VoteDiscussionT = ss.object({
   identifier: ss.string(),
   time: ss.number(),
   thread: ss.array(DiscordMessageT),
 });
-export type DiscordThreadT = ss.Infer<typeof DiscordThreadT>;
-
-export const DiscordThreadsT = ss.array(DiscordThreadT);
-export type DiscordThreadsT = ss.Infer<typeof DiscordThreadsT>;
+export type VoteDiscussionT = ss.Infer<typeof VoteDiscussionT>;
 
 export const L1Request = ss.object({
   time: ss.number(),

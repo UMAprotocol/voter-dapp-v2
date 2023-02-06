@@ -14,17 +14,6 @@ import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { VotePanel } from "./VotePanel";
 
-const panelTypeToPanelComponent = {
-  menu: MenuPanel,
-  claim: ClaimPanel,
-  claimV1: ClaimV1Panel,
-  vote: VotePanel,
-  stake: StakeUnstakePanel,
-  remind: RemindMePanel,
-  history: HistoryPanel,
-  delegation: DelegationPanel,
-};
-
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
   const panelWidth = usePanelWidth();
@@ -42,10 +31,25 @@ export function Panel() {
     }
   }, [panelOpen]);
 
-  const PanelComponent = panelTypeToPanelComponent[panelType];
-
   const isMenu = panelType === "menu";
   const closeButtonColor = isMenu ? black : white;
+
+  function getPanelComponent() {
+    const panelTypeToPanelComponent = {
+      // vote panel is meaningless without vote as content
+      // the component does not accept undefined content
+      vote: panelContent ? <VotePanel content={panelContent} /> : null,
+      menu: <MenuPanel />,
+      claim: <ClaimPanel />,
+      claimV1: <ClaimV1Panel />,
+      stake: <StakeUnstakePanel />,
+      remind: <RemindMePanel />,
+      history: <HistoryPanel />,
+      delegation: <DelegationPanel />,
+    };
+
+    return panelTypeToPanelComponent[panelType];
+  }
 
   return (
     <>
@@ -79,7 +83,7 @@ export function Panel() {
             } as CSSProperties
           }
         >
-          <PanelComponent content={panelContent} />
+          {getPanelComponent()}
           <CloseButton
             onClick={() => closePanel()}
             style={

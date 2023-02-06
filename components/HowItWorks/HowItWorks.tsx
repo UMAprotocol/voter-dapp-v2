@@ -137,7 +137,7 @@ export function HowItWorks() {
                 ) : (
                   formatNumberForDisplay(apr, { decimals: 1 })
                 )}
-                % APR
+                % APR.
               </Strong>{" "}
             </>
           }

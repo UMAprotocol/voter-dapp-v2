@@ -1,8 +1,8 @@
 import { LoadingSpinner } from "components/LoadingSpinner";
 import NextLink from "next/link";
-import Check from "public/assets/icons/check.svg";
+import Success from "public/assets/icons/success.svg";
 import Close from "public/assets/icons/close.svg";
-import Warning from "public/assets/icons/warning.svg";
+import Failure from "public/assets/icons/failure.svg";
 import styled from "styled-components";
 import { NotificationT, UniqueIdT } from "types";
 import { config } from "helpers/config";
@@ -26,12 +26,12 @@ export function Notification({
         {type === "pending" && <LoadingSpinner variant="black" size={32} />}
         {type === "error" && (
           <IconWrapper>
-            <Warning />
+            <Failure />
           </IconWrapper>
         )}
         {type === "success" && (
           <IconWrapper>
-            <CheckIcon />
+            <SuccessIcon />
           </IconWrapper>
         )}
       </IndicatorWrapper>
@@ -78,7 +78,7 @@ const IconWrapper = styled.div`
   height: 32px;
 `;
 
-const CheckIcon = styled(Check)`
+const SuccessIcon = styled(Success)`
   path {
     fill: var(--white);
     stroke: var(--green);
