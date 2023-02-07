@@ -1,9 +1,7 @@
-import { addDecorator } from "@storybook/react";
+import { Decorator } from "@storybook/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import "styles/fonts.css";
 import { GlobalStyle } from "../components/GlobalStyle";
-import { Panel } from "../components/Panel/Panel";
 import {
   ContractsProvider,
   DelegationProvider,
@@ -16,6 +14,7 @@ import {
   VoteTimingProvider,
   WalletProvider,
 } from "../contexts";
+import "../styles/fonts.css";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -29,30 +28,31 @@ export const parameters = {
 
 const queryClient = new QueryClient();
 
-addDecorator((Story) => (
-  <ErrorProvider>
-    <VoteTimingProvider>
-      <WalletProvider>
-        <QueryClientProvider client={queryClient}>
-          <UserProvider>
-            <ContractsProvider>
-              <StakingProvider>
-                <PaginationProvider>
-                  <DelegationProvider>
-                    <VotesProvider>
-                      <PanelProvider>
-                        <GlobalStyle />
-                        <Story />
-                        <Panel />
-                      </PanelProvider>
-                    </VotesProvider>
-                  </DelegationProvider>
-                </PaginationProvider>
-              </StakingProvider>
-            </ContractsProvider>
-          </UserProvider>
-        </QueryClientProvider>
-      </WalletProvider>
-    </VoteTimingProvider>
-  </ErrorProvider>
-));
+export const decorators: Decorator[] = [
+  (Story) => (
+    <ErrorProvider>
+      <QueryClientProvider client={queryClient}>
+        <VoteTimingProvider>
+          <WalletProvider>
+            <UserProvider>
+              <ContractsProvider>
+                <StakingProvider>
+                  <PaginationProvider>
+                    <DelegationProvider>
+                      <VotesProvider>
+                        <PanelProvider>
+                          <GlobalStyle />
+                          <Story />
+                        </PanelProvider>
+                      </VotesProvider>
+                    </DelegationProvider>
+                  </PaginationProvider>
+                </StakingProvider>
+              </ContractsProvider>
+            </UserProvider>
+          </WalletProvider>
+        </VoteTimingProvider>
+      </QueryClientProvider>
+    </ErrorProvider>
+  ),
+];

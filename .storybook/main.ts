@@ -1,18 +1,22 @@
-import type { StorybookConfig } from "@storybook/react/types";
+import type { StorybookConfig } from "@storybook/nextjs";
 import webpack from "webpack";
-
 const config: StorybookConfig = {
-  stories: ["../stories/**/*.stories.mdx", "../stories/**/*.stories.@(js|jsx|ts|tsx)"],
+  stories: [
+    "../stories/**/*.stories.mdx",
+    "../stories/**/*.stories.@(js|jsx|ts|tsx)",
+  ],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    "storybook-addon-next",
     "storybook-addon-pseudo-states",
     "storybook-mobile",
   ],
   staticDirs: ["../public"],
-  framework: "@storybook/react",
+  framework: {
+    name: "@storybook/nextjs",
+    options: {},
+  },
   core: {
     builder: "@storybook/builder-webpack5",
   },
@@ -23,7 +27,6 @@ const config: StorybookConfig = {
       if (!rule || rule === "...") return;
       if (rule.test instanceof RegExp) return rule.test.test(".svg");
     });
-
     if (imageRule && imageRule !== "...") {
       imageRule.exclude = /\.svg$/;
     }
@@ -32,14 +35,6 @@ const config: StorybookConfig = {
     config?.module?.rules?.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
-    });
-
-    // solves the issue where storybook doesn't allow `"type": "module"` in dependency's package.json
-    config?.module?.rules?.push({
-      test: /\.js/,
-      resolve: {
-        fullySpecified: false,
-      },
     });
 
     if (!config.resolve?.fallback) return config;
@@ -60,9 +55,11 @@ const config: StorybookConfig = {
         Buffer: ["buffer", "Buffer"],
       }),
     ]);
-
     return config;
+  },
+  docs: {
+    autodocs: true,
   },
 };
 
-module.exports = config;
+export default config;
