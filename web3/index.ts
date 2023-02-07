@@ -19,7 +19,7 @@ export { getDelegateToStaker } from "./queries/delegation/getDelegateToStaker";
 export { getDelegatorSetEvents } from "./queries/delegation/getDelegatorSetEvents";
 export { getIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/getIgnoredRequestToBeDelegateAddresses";
 export { getVoterFromDelegate } from "./queries/delegation/getVoterFromDelegate";
-export { getVoteDiscussion } from "./queries/votes/getVoteDiscussion";
+export { getIsOldDesignatedVotingAccount } from "./queries/rewards/getIsOldDesignatedVotingAccount";
 export { getOutstandingRewards } from "./queries/rewards/getOutstandingRewards";
 export { getRewardsCalculationInputs } from "./queries/rewards/getRewardsCalculationInputs";
 export { getV1Rewards } from "./queries/rewards/getV1Rewards";
@@ -36,3 +36,4 @@ export { getDecodedAdminTransactions } from "./queries/votes/getDecodedAdminTran
 export { getEncryptedVotes } from "./queries/votes/getEncryptedVotes";
 export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { getUpcomingVotes } from "./queries/votes/getUpcomingVotes";
+export { getVoteDiscussion } from "./queries/votes/getVoteDiscussion";

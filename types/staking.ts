@@ -24,3 +24,9 @@ export type SubgraphGlobals = {
     annualPercentageReturn: number;
   };
 };
+
+export type OldDesignatedVotingAccountT = {
+  isOldDesignatedVotingAccount: boolean;
+  message: string;
+  designatedVotingContract: string;
+};

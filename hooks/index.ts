@@ -42,7 +42,6 @@ export { useNewReceivedRequestsToBeDelegate } from "./queries/delegation/useNewR
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
-export { useVoteDiscussion } from "./queries/votes/useVoteDiscussion";
 export { useGlobals } from "./queries/rewards/useGlobals";
 export { useOutstandingRewards } from "./queries/rewards/useOutstandingRewards";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
@@ -63,7 +62,9 @@ export { useContentfulData } from "./queries/votes/useContentfulData";
 export { useDecodedAdminTransactions } from "./queries/votes/useDecodedAdminTransactions";
 export { useDecryptedVotes } from "./queries/votes/useDecryptedVotes";
 export { useEncryptedVotes } from "./queries/votes/useEncryptedVotes";
+export { useIsOldDesignatedVotingAccount } from "./queries/rewards/useIsOldDesignatedVotingAccount";
 export { useNewVotesAdded } from "./queries/votes/useNewVotesAdded";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
+export { useVoteDiscussion } from "./queries/votes/useVoteDiscussion";
