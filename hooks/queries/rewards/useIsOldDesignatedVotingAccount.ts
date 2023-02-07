@@ -9,7 +9,7 @@ export function useIsOldDesignatedVotingAccount() {
 
   const queryResult = useQuery({
     queryKey: [isOldDesignatedVotingAccountKey, address],
-    queryFn: () => getIsOldDesignatedVotingAccount("0x718648C8c531F91b528A7757dD2bE813c3940608"),
+    queryFn: () => getIsOldDesignatedVotingAccount(address),
     initialData: {
       isOldDesignatedVotingAccount: false,
       message: "",
