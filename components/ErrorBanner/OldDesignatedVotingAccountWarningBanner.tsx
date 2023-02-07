@@ -44,7 +44,7 @@ export function OldDesignatedVotingAccountWarningBanner() {
         <ErrorMessage>
           {message}:{" "}
           <Link
-            href={`https://etherscan.io/contract/${designatedVotingContract}`}
+            href={`https://etherscan.io/address/${designatedVotingContract}`}
             target="_blank"
           >
             {designatedVotingContract}
