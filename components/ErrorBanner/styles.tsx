@@ -27,6 +27,10 @@ export const ErrorMessageWrapper = styled.div`
   &:not(:last-child) {
     margin-bottom: 5px;
   }
+
+  @media ${tabletAndUnder} {
+    padding-inline: 0;
+  }
 `;
 
 export const ErrorMessage = styled.p`

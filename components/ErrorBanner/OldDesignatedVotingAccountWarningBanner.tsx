@@ -49,6 +49,13 @@ export function OldDesignatedVotingAccountWarningBanner() {
           >
             {designatedVotingContract}
           </Link>
+          .
+          <br />
+          Please{" "}
+          <Link href="https://discord.com/invite/jsb9XQJ" target="_blank">
+            contact us on Discord
+          </Link>{" "}
+          for migration instructions.
         </ErrorMessage>
         <CloseButton onClick={close}>
           <IconWrapper>
