@@ -12,6 +12,7 @@ export {
 } from "./DonutChart/helpers";
 export { Dropdown } from "./Dropdown/Dropdown";
 export { ErrorBanner } from "./ErrorBanner/ErrorBanner";
+export { OldDesignatedVotingAccountWarningBanner } from "./ErrorBanner/OldDesignatedVotingAccountWarningBanner";
 export { EthersErrorLink } from "./EthersErrorLink/EthersErrorLink";
 export { GlobalStyle } from "./GlobalStyle/GlobalStyle";
 export { Header } from "./Header/Header";
