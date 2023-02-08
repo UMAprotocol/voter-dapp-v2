@@ -22,6 +22,8 @@ export const unstakeCoolDownKey = "unstakeCoolDownKey";
 export const rewardsCalculationInputsKey = "rewardsCalculationInputsKey";
 export const v1RewardsKey = "v1RewardsKey";
 export const outstandingRewardsKey = "outstandingRewardsKey";
+export const isOldDesignatedVotingAccountKey =
+  "isOldDesignatedVotingAccountKey";
 // user
 export const userDataKey = "userDataKey";
 // delegation

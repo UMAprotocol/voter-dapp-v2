@@ -12,8 +12,9 @@ import {
   useUnstakedBalance,
   useV1Rewards,
 } from "hooks";
+import { useIsOldDesignatedVotingAccount } from "hooks/queries/rewards/useIsOldDesignatedVotingAccount";
 import { createContext, ReactNode, useState } from "react";
-import { V1RewardsT } from "types";
+import { OldDesignatedVotingAccountT, V1RewardsT } from "types";
 
 export interface StakingContextState {
   stakedBalance: BigNumber | undefined;
@@ -26,6 +27,7 @@ export interface StakingContextState {
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: BigNumber | undefined;
   v1Rewards: V1RewardsT | undefined;
+  oldDesignatedVotingAccount: OldDesignatedVotingAccountT;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
   setAddressOverride: (address?: string) => void;
@@ -42,6 +44,11 @@ export const defaultStakingContextState: StakingContextState = {
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
   v1Rewards: undefined,
+  oldDesignatedVotingAccount: {
+    isOldDesignatedVotingAccount: false,
+    message: "",
+    designatedVotingContract: "",
+  },
   getStakingDataLoading: () => false,
   getStakingDataFetching: () => false,
   setAddressOverride: () => undefined,
@@ -102,6 +109,8 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   const [outstandingRewards, setOutstandingRewards] = useState(
     BigNumber.from(0)
   );
+  const { data: oldDesignatedVotingAccount } =
+    useIsOldDesignatedVotingAccount();
 
   useInterval(() => {
     updateOutstandingRewards();
@@ -162,6 +171,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         unstakeRequestTime,
         canUnstakeTime,
         v1Rewards,
+        oldDesignatedVotingAccount,
         getStakingDataLoading,
         getStakingDataFetching,
         setAddressOverride,

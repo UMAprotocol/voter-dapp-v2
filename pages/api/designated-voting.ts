@@ -1,12 +1,5 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { NextApiRequest, NextApiResponse } from "next";
+import { create, object, string } from "superstruct";
 
 const designatedVotingOwners = [
   "0x718648C8c531F91b528A7757dD2bE813c3940608",
@@ -56,9 +49,9 @@ export default async function handler(
   response: NextApiResponse
 ) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
-
+  const accountRequestBody = object({ account: string() });
   try {
-    const body = request.body;
+    const body = create(request.body, accountRequestBody);
     ["account"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))
         throw "Missing key in req body! required: account";
