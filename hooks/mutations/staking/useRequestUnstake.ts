@@ -45,7 +45,6 @@ export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
           return {
             ...oldStakerDetails,
             pendingUnstake: unstakeAmount,
-            unstakeRequestTime: new Date(),
             canUnstakeTime: getCanUnstakeTime(
               new Date(),
               unstakeCoolDown.toNumber()

@@ -57,7 +57,6 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
                 ...oldStakerDetails,
                 pendingUnstake: BigNumber.from(0),
                 canUnstakeTime: undefined,
-                unstakeRequestTime: undefined,
               }
             : undefined
       );
