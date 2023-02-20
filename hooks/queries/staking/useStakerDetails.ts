@@ -7,7 +7,6 @@ import { getStakerDetails } from "web3";
 
 const initialData = {
   pendingUnstake: BigNumber.from(0),
-  unstakeRequestTime: new Date(0),
   canUnstakeTime: new Date(0),
   delegate: zeroAddress,
   rewardsPaidPerToken: BigNumber.from(0),

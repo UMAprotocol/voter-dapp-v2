@@ -1,24 +1,16 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { getCanUnstakeTime } from "helpers";
-import { getUnstakeCoolDown } from "./getUnstakeCoolDown";
 
 export async function getStakerDetails(
   votingContract: VotingV2Ethers,
   address: string
 ) {
   const result = await votingContract.voterStakes(address);
-  const unstakeCoolDown = await getUnstakeCoolDown(votingContract);
-  const { pendingUnstake, unstakeRequestTime, delegate, rewardsPaidPerToken } =
+  const { pendingUnstake, unstakeTime, delegate, rewardsPaidPerToken } =
     result ?? {};
-  const unstakeRequestTimeAsDate = new Date(Number(unstakeRequestTime) * 1000);
-  const canUnstakeTime = getCanUnstakeTime(
-    unstakeRequestTimeAsDate,
-    unstakeCoolDown.toNumber()
-  );
+  const canUnstakeTime = new Date(Number(unstakeTime) * 1000);
 
   return {
     pendingUnstake,
-    unstakeRequestTime: unstakeRequestTimeAsDate,
     canUnstakeTime,
     delegate,
     rewardsPaidPerToken,

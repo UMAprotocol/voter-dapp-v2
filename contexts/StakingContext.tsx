@@ -23,7 +23,6 @@ export interface StakingContextState {
   updateTime: BigNumber | undefined;
   outstandingRewards: BigNumber | undefined;
   tokenAllowance: BigNumber | undefined;
-  unstakeRequestTime: Date | undefined;
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: BigNumber | undefined;
   v1Rewards: V1RewardsT | undefined;
@@ -40,7 +39,6 @@ export const defaultStakingContextState: StakingContextState = {
   updateTime: undefined,
   outstandingRewards: undefined,
   tokenAllowance: undefined,
-  unstakeRequestTime: undefined,
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
   v1Rewards: undefined,
@@ -66,12 +64,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   const address = addressOverride || defaultAddress;
 
   const {
-    data: {
-      pendingUnstake,
-      unstakeRequestTime,
-      canUnstakeTime,
-      rewardsPaidPerToken,
-    },
+    data: { pendingUnstake, canUnstakeTime, rewardsPaidPerToken },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails(address);
@@ -168,7 +161,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
         unstakeCoolDown,
         outstandingRewards,
         tokenAllowance,
-        unstakeRequestTime,
         canUnstakeTime,
         v1Rewards,
         oldDesignatedVotingAccount,
