@@ -20,7 +20,7 @@ export function CooldownTimer({
   const formattedCooldownEnds =
     cooldownEnds && formatDistanceToNowStrict(cooldownEnds);
   const cooldownDescription = "being unstaked";
-  const unstakeDescription = "ready to unstake";
+  const unstakeDescription = "ready to claim";
   const description = isReadyToUnstake
     ? unstakeDescription
     : cooldownDescription;
@@ -40,7 +40,7 @@ export function CooldownTimer({
         <UnstakeButtonWrapper>
           <Button
             variant="primary"
-            label="Unstake tokens"
+            label="Claim unstaked tokens"
             onClick={onExecuteUnstake}
             width={150}
             height={35}
