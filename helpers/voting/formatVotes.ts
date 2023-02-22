@@ -28,16 +28,16 @@ export async function formatVotesToCommit({
   selectedVotes,
   roundId,
   address,
-  signingKeys,
+  signingKey,
 }: FormatVotesToCommit) {
   // the user's address is called `account` for legacy reasons
   const account = address;
   // we just need a random number to make the hash
   const salt = getRandomSignedInt().toString();
   // we created this key when the user signed the message when first connecting their wallet
-  const signingPublicKey = signingKeys[address].publicKey;
+  const signingPublicKey = signingKey.publicKey;
   // this should have been saved in local storage when the user connected their wallet
-  const hasSignedMessage = Boolean(signingKeys[address].signedMessage);
+  const hasSignedMessage = Boolean(signingKey.signedMessage);
   if (!hasSignedMessage) {
     throw new Error(
       "You must sign the message to commit votes. Please re-connect your wallet and try again."

@@ -164,7 +164,7 @@ export type FormatVotesToCommit = {
   selectedVotes: SelectedVotesByKeyT;
   roundId: number;
   address: string;
-  signingKeys: SigningKeys;
+  signingKey: SigningKey;
 };
 
 export type VoteFormattedToCommitT = VoteT & {

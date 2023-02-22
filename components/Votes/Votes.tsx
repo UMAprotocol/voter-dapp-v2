@@ -40,18 +40,13 @@ export function Votes() {
   } = useVotesContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { phase, roundId } = useVoteTimingContext();
-  const { address, hasSigningKey, correctChainConnected } = useUserContext();
-  const {
-    signer,
-    signingKeys,
-    sign,
-    isSigning,
-    setCorrectChain,
-    isSettingChain,
-  } = useWalletContext();
+  const { address, hasSigningKey, correctChainConnected, signingKey } =
+    useUserContext();
+  const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
+    useWalletContext();
   const { voting } = useContractsContext();
   const { stakedBalance } = useStakingContext();
-  const { getDelegationStatus } = useDelegationContext();
+  const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
@@ -62,6 +57,8 @@ export function Votes() {
   } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const isDelegate = getDelegationStatus() === "delegate";
+  const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -97,8 +94,8 @@ export function Votes() {
     const isCommit = phase === "commit";
     const isReveal = phase === "reveal";
     const hasStaked = stakedBalance?.gt(0) ?? false;
-    const isDelegate = getDelegationStatus() === "delegate";
     const hasSigner = !!signer;
+
     const votesToShow = determineVotesToShow();
     const hasPreviouslyCommittedAll =
       votesToShow.filter((vote) => vote.decryptedVote).length ===
@@ -228,16 +225,15 @@ export function Votes() {
   }
 
   async function commitVotes() {
-    if (!actionStatus.canCommit) return;
+    if (!actionStatus.canCommit || !signingKey) return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
       selectedVotes,
       roundId,
-      address,
-      signingKeys,
+      address: delegatorAddress ? delegatorAddress : address,
+      signingKey,
     });
-
     commitVotesMutation(
       {
         voting,
