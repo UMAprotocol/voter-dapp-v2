@@ -104,20 +104,21 @@ export function DelegationPanel() {
       <InnerWrapper>
         <PanelSectionTitle>Delegation</PanelSectionTitle>
         <PanelSectionText>
-          For more information about vote delegation, please refer here.
+          For more information about vote delegation, please refer here. TO DO:
+          Add docs link.
         </PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
             <IconWrapper>
               <OneIcon />
             </IconWrapper>
-            Requet an address to be your delegate.
+            Request an address to be your delegate.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
               <TwoIcon />
             </IconWrapper>
-            The selected delegate wallet must accept the delegation request.
+            The selected delegate must accept the delegation request.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
