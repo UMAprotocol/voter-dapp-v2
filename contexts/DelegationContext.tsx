@@ -297,9 +297,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     cancelSentRequestToBeDelegateMutation({
       voting,
       notificationMessages: {
-        pending: "Cancelling request to be delegate...",
-        success: "Successfully cancelled request to be delegate",
-        error: "Failed to cancel request to be delegate",
+        pending: "Cancelling request to delegate...",
+        success: "Successfully cancelled request to delegate",
+        error: "Failed to cancel request to delegate",
       },
     });
   }

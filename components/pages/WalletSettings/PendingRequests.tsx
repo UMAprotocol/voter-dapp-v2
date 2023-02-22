@@ -69,7 +69,7 @@ export function PendingRequests({
         {" "}
         {isSentRequestToBeDelegate
           ? "Once accepted, requested addresses will become your voting delegate."
-          : "received requests to be delegate"}{" "}
+          : "Accept a request to become a delegate."}{" "}
       </Text>
       {_pendingRequests?.map(({ delegate, delegator, transactionHash }) => (
         <BarWrapper

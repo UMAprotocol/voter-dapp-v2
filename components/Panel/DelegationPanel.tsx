@@ -161,7 +161,7 @@ export function DelegationPanel() {
                         Request sent to {truncateEthAddress(delegate)}
                       </PendingRequestText>
                       <PendingRequestText>
-                        Waiting for approval
+                        Waiting for approval.
                       </PendingRequestText>
                       <PendingRequestText>
                         <Link
