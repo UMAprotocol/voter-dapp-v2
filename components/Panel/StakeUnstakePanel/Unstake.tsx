@@ -130,7 +130,7 @@ export function Unstake({
       )}
       {isDelegate && (
         <PanelWarningText>
-          You cannot request to unstake while you are a delegate.
+          You cannot request to unstake as a delegate.
         </PanelWarningText>
       )}
     </Wrapper>
