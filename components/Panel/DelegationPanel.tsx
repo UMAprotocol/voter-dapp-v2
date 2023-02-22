@@ -104,26 +104,26 @@ export function DelegationPanel() {
       <InnerWrapper>
         <PanelSectionTitle>Delegation</PanelSectionTitle>
         <PanelSectionText>
-          Explanation of voting delegation. TO DO: add explanation
+          For more information about vote delegation, please refer here.
         </PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
             <IconWrapper>
               <OneIcon />
             </IconWrapper>
-            Add secondary wallet address text text
+            Requet an address to be your delegate.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
               <TwoIcon />
             </IconWrapper>
-            Request has to be accepted in secondary wallet text text
+            The selected delegate wallet must accept the delegation request.
           </StepWrapper>
           <StepWrapper>
             <IconWrapper>
               <ThreeIcon />
             </IconWrapper>
-            You can now vote with your delegate wallet
+            After acceptance, the delegate can vote on your behalf.
           </StepWrapper>
         </StepsWrapper>
         {isLoading() ? (
