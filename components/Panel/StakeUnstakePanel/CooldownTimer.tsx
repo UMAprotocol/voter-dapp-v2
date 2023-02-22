@@ -40,7 +40,7 @@ export function CooldownTimer({
         <UnstakeButtonWrapper>
           <Button
             variant="primary"
-            label="Claim unstaked tokens"
+            label="Claim tokens"
             onClick={onExecuteUnstake}
             width={150}
             height={35}
