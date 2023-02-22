@@ -89,8 +89,8 @@ export function ClaimPanel() {
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
             <PanelSectionText>
-              UMA claimed to your wallet will not earn additional rewards unless
-              staked.
+              You will not be able to vote or earn rewards with UMA claimed to
+              your wallet.
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
