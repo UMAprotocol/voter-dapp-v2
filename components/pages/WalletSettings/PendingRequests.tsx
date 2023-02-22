@@ -62,13 +62,13 @@ export function PendingRequests({
       <Header>
         Pending{" "}
         {isSentRequestToBeDelegate
-          ? "sent requests to be delegate"
-          : "received requests to be delegate"}
+          ? "sent delegation requests"
+          : "received requests to be a delegate"}
       </Header>
       <Text>
-        Explanation of{" "}
+        {" "}
         {isSentRequestToBeDelegate
-          ? "sent requests to be delegate"
+          ? "Once accepted, requested addresses will become your voting delegate."
           : "received requests to be delegate"}{" "}
         requests
       </Text>
