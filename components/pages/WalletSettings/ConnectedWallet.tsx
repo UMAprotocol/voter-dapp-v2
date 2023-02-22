@@ -25,8 +25,7 @@ export function ConnectedWallet({ status }: Props) {
       </Header>
       <Text>
         A delegator is a wallet that has chosen to delegate its voting power to
-        another party. Delegators can only delegate to one other address, the
-        delegate, at a time.
+        another party. Delegators can only delegate to one address at a time.
       </Text>
       <BarWrapper>
         <WalletWrapper>
