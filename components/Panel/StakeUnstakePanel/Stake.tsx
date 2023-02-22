@@ -85,7 +85,8 @@ export function Stake({
       {isDelegate ? (
         <PanelWarningText>
           You are currently a delegate. Staking is controlled by the delegator.
-          You must stop being a delegate if you wish to access staking with this wallet.
+          You must stop being a delegate if you wish to access staking with this
+          wallet.
         </PanelWarningText>
       ) : (
         <>
