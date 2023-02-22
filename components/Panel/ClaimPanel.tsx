@@ -94,9 +94,8 @@ export function ClaimPanel() {
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
-                Delegated wallets can only claim and restake. You cannot claim
-                to your wallet from a delegated voting wallet. TO DO: Check the
-                accuracy of this.
+                Delegate wallets can only claim and restake. You cannot claim
+                delegator rewards to your own wallet as a delegate.
               </PanelWarningText>
             ) : (
               <Button
