@@ -99,6 +99,7 @@ export function HistoryPanel() {
             a voter votes correctly in a round, they will receive a pro-rata
             share of the reallocated stake from incorrect voters. For more
             information on vote history and how APY is calculated, refer here.
+            TO DO ADD Documentation Link.
           </PanelSectionText>
         </SectionWrapper>
         <SectionWrapper>
