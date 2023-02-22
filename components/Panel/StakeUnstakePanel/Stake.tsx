@@ -36,7 +36,7 @@ export function Stake({
     ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
     : "0 seconds";
 
-  const disclaimer = `I understand that once staked, I will not be able to reclaim my tokens until ${unstakeCoolDownFormatted} after an unstaking request is submitted.`;
+  const disclaimer = `I understand that once staked, I will not be able to reclaim my tokens until ${unstakeCoolDownFormatted} after my unstaking request is submitted.`;
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
@@ -84,8 +84,9 @@ export function Stake({
       </PanelSectionText>
       {isDelegate ? (
         <PanelWarningText>
-          You are currently a delegate. Staking is controlled by the delegator,
-          so you must request to undelegate before you can access staking.
+          You are currently a delegate. Staking is controlled by the delegator.
+          You must stop being a delegate if you wish to access staking with this
+          wallet.
         </PanelWarningText>
       ) : (
         <>

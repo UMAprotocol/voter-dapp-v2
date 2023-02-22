@@ -81,7 +81,7 @@ export function Unstake({
           <IconWrapper>
             <ThreeIcon />
           </IconWrapper>
-          Claim tokens
+          Claim unstaked tokens
         </UnstakeStep>
       </HowItWorks>
       {!isDelegate && (phase === "commit" || !hasActiveVotes) && (
@@ -124,13 +124,13 @@ export function Unstake({
       )}
       {!isReadyToUnstake && hasCooldownTimeRemaining && (
         <PanelWarningText>
-          You cannot request to unstake additional tokens until you wait for
-          your previous unstake request to complete.
+          You cannot request to unstake additional tokens until your previous
+          unstake request is completed.
         </PanelWarningText>
       )}
       {isDelegate && (
         <PanelWarningText>
-          You cannot request to unstake while you are a delegate.
+          You cannot request to unstake as a delegate.
         </PanelWarningText>
       )}
     </Wrapper>

@@ -89,14 +89,13 @@ export function ClaimPanel() {
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
             <PanelSectionText>
-              UMA claimed to your wallet will not earn additional rewards unless
-              staked.
+              You will not be able to vote or earn rewards with UMA claimed to
+              your wallet.
             </PanelSectionText>
             {isDelegate ? (
               <PanelWarningText>
-                Delegated wallets can only claim and restake. You cannot claim
-                to your wallet from a delegated voting wallet. TO DO: Check the
-                accuracy of this.
+                Delegate wallets can only claim and restake. You cannot claim
+                delegator rewards to your own wallet as a delegate.
               </PanelWarningText>
             ) : (
               <Button

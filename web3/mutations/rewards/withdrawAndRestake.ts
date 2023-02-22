@@ -11,13 +11,13 @@ export async function withdrawAndRestake({
 }) {
   const tx = await voting.functions.withdrawAndRestake();
   return handleNotifications(tx, {
-    pending: `Withdrawing and restaking ${formatNumberForDisplay(
+    pending: `Claiming and restaking ${formatNumberForDisplay(
       outstandingRewards
     )} UMA...`,
-    success: `Withdrew and restaked ${formatNumberForDisplay(
+    success: `Claimed and restaked ${formatNumberForDisplay(
       outstandingRewards
     )} UMA`,
-    error: `Failed to withdraw and restake ${formatNumberForDisplay(
+    error: `Failed to claim and restake ${formatNumberForDisplay(
       outstandingRewards
     )} UMA`,
   });

@@ -55,7 +55,7 @@ export function OldDesignatedVotingAccountWarningBanner() {
           <Link href="https://discord.com/invite/jsb9XQJ" target="_blank">
             contact us on Discord
           </Link>{" "}
-          for migration instructions.
+          for assistance with migration.
         </ErrorMessage>
         <CloseButton onClick={close}>
           <IconWrapper>

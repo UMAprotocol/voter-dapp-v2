@@ -160,7 +160,7 @@ export function MenuPanel() {
                         <Link href="/wallet-settings">
                           {pendingRequestLinkText}
                         </Link>{" "}
-                        to be delegate {toOrFrom} address{" "}
+                        to be a delegate {toOrFrom} address{" "}
                         <Link
                           href={config.makeTransactionHashLink(
                             getPendingRequestAddress(delegator, delegate)
