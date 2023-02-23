@@ -107,8 +107,9 @@ export function PendingRequests({
               <NextLink
                 href={config.makeTransactionHashLink(transactionHash)}
                 passHref
+                target="_blank"
               >
-                <A target="_blank">View Transaction</A>
+                <A>View Transaction</A>
               </NextLink>
             </Text>
           </WaitingForApprovalWrapper>

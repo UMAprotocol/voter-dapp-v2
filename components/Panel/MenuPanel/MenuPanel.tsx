@@ -162,7 +162,7 @@ export function MenuPanel() {
                         </Link>{" "}
                         to be a delegate {toOrFrom} address{" "}
                         <Link
-                          href={config.makeTransactionHashLink(
+                          href={config.makeAddressLink(
                             getPendingRequestAddress(delegator, delegate)
                           )}
                           target="_blank"
