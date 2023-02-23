@@ -180,14 +180,16 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
     ])
   ).flat();
 
-  const transactionSets = identifiers.map(
-    (identifier) =>
-      events.find(
-        (event) =>
-          event?.args?.id.toString() ===
-          identifier.substring(identifier.indexOf(" ") + 1)
-      )?.args?.transactions || null
-  );
+  const transactionSets = identifiers
+    .map(
+      (identifier) =>
+        events.find(
+          (event) =>
+            event?.args?.id.toString() ===
+            identifier.substring(identifier.indexOf(" ") + 1)
+        )?.args?.transactions || null
+    )
+    .filter(Boolean);
 
   return transactionSets.map((transactions, index) => {
     return {
