@@ -106,6 +106,7 @@ export type ChainConstants = {
   infuraName: string;
   properName: string;
   makeTransactionHashLink: (transactionHash: string) => string;
+  makeAddressLink: (address: string) => string;
   onboardConfig: {
     id: string;
     token: string;
@@ -125,6 +126,8 @@ export const chainConstantsList: ChainConstantsList = [
     properName: "Ethereum",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://etherscan.io/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://etherscan.io/address/${address}`,
     onboardConfig: {
       id: "0x1",
       token: "ETH",
@@ -138,6 +141,8 @@ export const chainConstantsList: ChainConstantsList = [
     properName: "Görli",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://goerli.etherscan.io/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://goerli.etherscan.io/address/${address}`,
     onboardConfig: {
       id: "0x5",
       token: "GOR",
@@ -151,6 +156,8 @@ export const chainConstantsList: ChainConstantsList = [
     properName: "Polygon",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://polygonscan.com/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://polygonscan.etherscan.io/address/${address}`,
     // this may or may not work, but we shouldnt ever need to use this
     onboardConfig: {
       id: "0x137",
