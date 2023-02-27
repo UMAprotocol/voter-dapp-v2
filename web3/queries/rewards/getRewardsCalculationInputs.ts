@@ -1,19 +1,23 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { BigNumber } from "ethers";
 
 export async function getRewardsCalculationInputs(voting: VotingV2Ethers) {
-  const [emissionRate, rewardPerTokenStored, cumulativeStake, updateTime] =
-    await Promise.all([
-      voting.emissionRate(),
-      voting.rewardPerTokenStored(),
-      voting.cumulativeStake(),
-      BigNumber.from(Date.now()),
-    ]);
+  const [
+    emissionRate,
+    rewardPerTokenStored,
+    cumulativeStake,
+    updateTimeSeconds,
+  ] = await Promise.all([
+    voting.emissionRate(),
+    voting.rewardPerTokenStored(),
+    voting.cumulativeStake(),
+    voting.getCurrentTime(),
+  ]);
 
   return {
     emissionRate,
     rewardPerTokenStored,
     cumulativeStake,
-    updateTime,
+    updateTimeSeconds,
+    updateTime: updateTimeSeconds.mul(1000),
   };
 }
