@@ -163,6 +163,11 @@ export function Votes() {
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
         actionConfig.disabled = false;
 
         if (isSigning) {
@@ -337,38 +342,7 @@ export function Votes() {
         </RecommittingVotesMessage>
       ) : null}
       {getActivityStatus() === "active" ? (
-        <ButtonWrapper>
-          {isDirty() ? (
-            <>
-              <Button
-                variant="secondary"
-                label="Reset Changes"
-                onClick={() => setSelectedVotes({})}
-              />
-              <ButtonSpacer />
-            </>
-          ) : undefined}
-          {!actionStatus.hidden ? (
-            actionStatus.tooltip ? (
-              <Tooltip label={actionStatus.tooltip}>
-                <div>
-                  <Button
-                    variant="primary"
-                    label={actionStatus.label}
-                    onClick={actionStatus.onClick}
-                    disabled={actionStatus.disabled}
-                  />
-                </div>
-              </Tooltip>
-            ) : (
-              <Button
-                variant="primary"
-                label={actionStatus.label}
-                onClick={actionStatus.onClick}
-                disabled={actionStatus.disabled}
-              />
-            )
-          ) : null}
+        <ButtonOuterWrapper>
           {actionStatus.infoText ? (
             <Tooltip label={actionStatus.infoText.tooltip}>
               <InfoText>
@@ -379,7 +353,40 @@ export function Votes() {
               </InfoText>
             </Tooltip>
           ) : null}
-        </ButtonWrapper>
+          <ButtonInnerWrapper>
+            {isDirty() ? (
+              <>
+                <Button
+                  variant="secondary"
+                  label="Reset Changes"
+                  onClick={() => setSelectedVotes({})}
+                />
+                <ButtonSpacer />
+              </>
+            ) : undefined}
+            {!actionStatus.hidden ? (
+              actionStatus.tooltip ? (
+                <Tooltip label={actionStatus.tooltip}>
+                  <div>
+                    <Button
+                      variant="primary"
+                      label={actionStatus.label}
+                      onClick={actionStatus.onClick}
+                      disabled={actionStatus.disabled}
+                    />
+                  </div>
+                </Tooltip>
+              ) : (
+                <Button
+                  variant="primary"
+                  label={actionStatus.label}
+                  onClick={actionStatus.onClick}
+                  disabled={actionStatus.disabled}
+                />
+              )
+            ) : null}
+          </ButtonInnerWrapper>
+        </ButtonOuterWrapper>
       ) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
         <PaginationWrapper>
@@ -412,9 +419,9 @@ export function Votes() {
                 ))}
             />
           </VotesTableWrapper>
-          <ButtonWrapper>
+          <ButtonInnerWrapper>
             <Button label="See all" href="/past-votes" variant="primary" />
-          </ButtonWrapper>
+          </ButtonInnerWrapper>
         </>
       )}
     </>
@@ -430,11 +437,14 @@ const Title = styled.h1`
   margin-bottom: 20px;
 `;
 
-const ButtonWrapper = styled.div`
+const ButtonOuterWrapper = styled.div`
+  margin-top: 30px;
+`;
+
+const ButtonInnerWrapper = styled.div`
   display: flex;
   justify-content: end;
   gap: 15px;
-  margin-top: 30px;
 
   button {
     text-transform: capitalize;
@@ -444,6 +454,9 @@ const ButtonWrapper = styled.div`
 const InfoText = styled.p`
   display: flex;
   gap: 15px;
+  width: fit-content;
+  margin-left: auto;
+  margin-bottom: 15px;
   font: var(--text-md);
 `;
 
