@@ -106,6 +106,7 @@ const _generateTransactionDataRecursive = function (
   txnObj: any,
   readableTxData = ""
 ) {
+  if (!txnObj) return readableTxData;
   // If transaction is a proposal then recursively print out its transactions
   if (txnObj.name === "propose" && txnObj.params.transactions.length > 0) {
     readableTxData +=
@@ -155,6 +156,7 @@ const _generateTransactionDataRecursive = function (
       `${transactionsWithS(txnObj.params.calls.length)}\n`;
     txnObj.params.calls.forEach((_call: any) => {
       const decodedTxnData = _decodeData(_call.callData);
+
       readableTxData = _generateTransactionDataRecursive(
         { ...decodedTxnData, to: _call.target, value: "0" },
         readableTxData
