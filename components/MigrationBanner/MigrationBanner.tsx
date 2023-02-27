@@ -82,10 +82,15 @@ const InnerWrapper = styled.div`
 
 const LogoIcon = styled(Logo)`
   margin-right: var(--page-padding);
+  width: clamp(3.5rem, calc(2.08rem + 7.6vw), 4.69rem);
+  @media ${mobileAndUnder} {
+    margin-right: clamp(0.25rem, calc(-0.05rem + 1.6vw), 0.5rem);
+  }
 `;
 
 const Text = styled.p`
   font: var(--text-md);
+  font-size: clamp(0.75rem, calc(0.45rem + 1.6vw), 1rem);
   color: var(--white);
   @media ${tabletAndUnder} {
     display: none;
