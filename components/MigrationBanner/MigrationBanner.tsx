@@ -35,15 +35,15 @@ export function MigrationBanner() {
           </Link>
         </Text>
         <TabletText>
-          Welcome to UMA 2.0. Read the{" "}
+          Welcome to UMA 2.0. Learn now to{" "}
           <Link href="https://todo.com" target="_blank">
-            migration and staking instructions.
+            migrate and stake.
           </Link>
         </TabletText>
         <MobileText>
-          Welcome! Learn how to{" "}
+          Welcome to UMA 2.0.{" "}
           <Link href="https://todo.com" target="_blank">
-            migrate and stake.
+            Migrate now.
           </Link>
         </MobileText>
 
