@@ -304,6 +304,7 @@ const ToggleText = styled.span`
 `;
 
 const Pre = styled.pre`
+  font-size: 12px;
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
