@@ -77,11 +77,13 @@ export function Stake({
   return (
     <Wrapper>
       <PanelSectionTitle>Stake</PanelSectionTitle>
-      <PanelSectionText>
-        Staked tokens are used to vote and earn rewards. Staked tokens cannot be
-        claimed until {unstakeCoolDownFormatted} after an unstaking request is
-        submitted.
-      </PanelSectionText>
+      {!isDelegate && (
+        <PanelSectionText>
+          Staked tokens are used to vote and earn rewards. Staked tokens cannot
+          be claimed until {unstakeCoolDownFormatted} after an unstaking request
+          is submitted.
+        </PanelSectionText>
+      )}
       {isDelegate ? (
         <PanelWarningText>
           You are currently a delegate. Staking is controlled by the delegator.

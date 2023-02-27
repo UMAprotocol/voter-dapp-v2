@@ -88,10 +88,12 @@ export function ClaimPanel() {
           </ClaimAndStakeWrapper>
           <ClaimToWalletWrapper>
             <PanelSectionTitle>Claim to Wallet</PanelSectionTitle>
-            <PanelSectionText>
-              You will not be able to vote or earn rewards with UMA claimed to
-              your wallet.
-            </PanelSectionText>
+            {!isDelegate && (
+              <PanelSectionText>
+                You will not be able to vote or earn rewards with UMA claimed to
+                your wallet.
+              </PanelSectionText>
+            )}
             {isDelegate ? (
               <PanelWarningText>
                 Delegate wallets can only claim and restake. You cannot claim
