@@ -58,6 +58,7 @@ export function Votes() {
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const isDelegate = getDelegationStatus() === "delegate";
+  const isDelegator = getDelegationStatus() === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
 
   function isDirty(): boolean {
@@ -112,6 +113,15 @@ export function Votes() {
           : true
         : false;
     const hasVotesToReveal = getVotesToReveal().length > 0;
+    // the current account is editing a previoulsy committed value from antoher account, either delegate or delegator
+    const isEditingUnknownVote =
+      votesToShow.filter((vote) => {
+        return (
+          vote.commitHash &&
+          !vote.decryptedVote &&
+          selectedVotes[vote.uniqueKey]
+        );
+      }).length > 0;
 
     if (!hasSigner || !address) {
       actionConfig.hidden = false;
@@ -137,9 +147,17 @@ export function Votes() {
       }
       return actionConfig;
     }
+
     if (isCommit) {
       actionConfig.label = "Commit";
       actionConfig.hidden = false;
+      if (isEditingUnknownVote && (isDelegate || isDelegator)) {
+        const otherAccount = isDelegate ? "delegator" : "delegate";
+        actionConfig.infoText = {
+          label: `Editing ${otherAccount}'s vote.`,
+          tooltip: `Your ${otherAccount} has already commited a vote for you, there is no need to re-vote on this account. Only do this if you want to change the vote or change which account can reveal, otherwise you will waste gas.`,
+        };
+      }
       if (isCommittingVotes) {
         actionConfig.disabled = true;
         actionConfig.tooltip = "Committing votes in progress...";
