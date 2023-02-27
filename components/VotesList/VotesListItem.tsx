@@ -5,7 +5,14 @@ import {
   TextInput,
   Tooltip,
 } from "components";
-import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
+import {
+  green,
+  grey100,
+  red500,
+  tabletAndUnder,
+  tabletMax,
+  isEarlyVote,
+} from "constant";
 import { format } from "date-fns";
 import {
   formatVoteStringWithPrecision,
@@ -81,7 +88,7 @@ export function VotesListItem({
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
     const decryptedVote = getDecryptedVoteAsFormattedString();
-    if (decryptedVote && !findVoteInOptions(decryptedVote)) {
+    if (decryptedVote && !findVoteInOptionsDetectEarlyVote(decryptedVote)) {
       setIsCustomInput(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,7 +177,8 @@ export function VotesListItem({
     }
     if (!decryptedVote) return "Did not vote";
     return (
-      findVoteInOptions(getDecryptedVoteAsFormattedString())?.label ??
+      findVoteInOptionsDetectEarlyVote(getDecryptedVoteAsFormattedString())
+        ?.label ??
       formatVoteStringWithPrecision(
         decryptedVote?.price?.toString(),
         decodedIdentifier
@@ -185,13 +193,17 @@ export function VotesListItem({
       decodedIdentifier
     );
 
-    return findVoteInOptions(formatted)?.label ?? formatted;
+    return findVoteInOptionsDetectEarlyVote(formatted)?.label ?? formatted;
   }
 
   function findVoteInOptions(value: string | undefined) {
     return options?.find((option) => {
       return option.value === value;
     });
+  }
+  function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
+    if (isEarlyVote(value)) return { label: "Early request" };
+    return findVoteInOptions(value);
   }
 
   function getCommittedOrRevealed() {
