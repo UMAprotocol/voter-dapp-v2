@@ -85,6 +85,12 @@ Upcoming.args = {
     voteWithoutUserVote,
     voteWithoutUserVote,
   ],
+  pastVotes: [
+    voteWithCorrectVoteWithUserVote,
+    voteWithCorrectVoteWithoutUserVote,
+    voteWithCorrectVoteWithUserVote,
+    voteWithCorrectVoteWithoutUserVote,
+  ],
 };
 
 export const Past = Template.bind({});

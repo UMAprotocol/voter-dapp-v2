@@ -27,7 +27,7 @@ import {
 } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
 import { useState } from "react";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
@@ -400,7 +400,13 @@ export function Votes() {
         <>
           <Divider />
           <Title>Recent past votes:</Title>
-          <VotesTableWrapper>
+          <VotesTableWrapper
+            style={
+              {
+                "--margin-top": "0px",
+              } as CSSProperties
+            }
+          >
             <VotesList
               headings={<VotesTableHeadings activityStatus="past" />}
               rows={getPastVotes()
@@ -429,7 +435,7 @@ export function Votes() {
 }
 
 const VotesTableWrapper = styled.div`
-  margin-top: 35px;
+  margin-top: var(--margin-top, 35px);
 `;
 
 const Title = styled.h1`
