@@ -7,10 +7,12 @@ import {
 } from "components";
 import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
 import { format } from "date-fns";
+import { enCA } from "date-fns/locale";
 import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
+import { config } from "helpers/config";
 import { useWalletContext, useWindowSize } from "hooks";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
@@ -22,7 +24,6 @@ import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
-import { config } from "helpers/config";
 export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
@@ -351,7 +352,10 @@ export function VotesListItem({
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
                   `| Vote #${resolvedPriceRequestIndex}`}{" "}
-                | {format(timeAsDate, "Pp")}
+                |{" "}
+                {format(timeAsDate, "Pp", {
+                  locale: enCA,
+                })}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
