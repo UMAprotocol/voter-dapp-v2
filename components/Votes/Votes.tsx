@@ -163,6 +163,11 @@ export function Votes() {
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
         actionConfig.disabled = false;
 
         if (isSigning) {
