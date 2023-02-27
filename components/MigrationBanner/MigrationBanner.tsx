@@ -35,15 +35,15 @@ export function MigrationBanner() {
           </Link>
         </Text>
         <TabletText>
-          Welcome to UMA 2.0. Read the{" "}
+          Welcome to UMA 2.0. Learn now to{" "}
           <Link href="https://todo.com" target="_blank">
-            migration and staking instructions.
+            migrate and stake.
           </Link>
         </TabletText>
         <MobileText>
-          Welcome! Learn how to{" "}
+          Welcome to UMA 2.0.{" "}
           <Link href="https://todo.com" target="_blank">
-            migrate and stake.
+            Migrate now.
           </Link>
         </MobileText>
 
@@ -82,10 +82,15 @@ const InnerWrapper = styled.div`
 
 const LogoIcon = styled(Logo)`
   margin-right: var(--page-padding);
+  width: clamp(3.5rem, calc(2.08rem + 7.6vw), 4.69rem);
+  @media ${mobileAndUnder} {
+    margin-right: clamp(0.25rem, calc(-0.05rem + 1.6vw), 0.5rem);
+  }
 `;
 
 const Text = styled.p`
   font: var(--text-md);
+  font-size: clamp(0.75rem, calc(0.45rem + 1.6vw), 1rem);
   color: var(--white);
   @media ${tabletAndUnder} {
     display: none;
