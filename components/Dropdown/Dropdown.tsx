@@ -86,6 +86,8 @@ const Wrapper = styled(Menu)``;
 
 const ToggleButton = styled(MenuButton)`
   width: 100%;
+  max-width: 510px;
+  min-width: 224px;
   height: 40px;
   display: flex;
   align-items: center;
