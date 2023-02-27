@@ -5,7 +5,7 @@ import {
   PanelErrorBanner,
   Tooltip,
 } from "components";
-import { mobileAndUnder } from "constant";
+import { mobileAndUnder, isEarlyVote } from "constant";
 import { formatVoteStringWithPrecision, truncateDecimals } from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
@@ -35,7 +35,8 @@ export function Result({
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
-    const label = findVoteInOptions(formatted)?.label ?? formatted;
+    const label =
+      findVoteInOptionsDetectEarlyVote(formatted)?.label ?? formatted;
     const value = tokensVotedWith;
 
     return {
@@ -50,6 +51,10 @@ export function Result({
     return options?.find((option) => {
       return option.value === value;
     });
+  }
+  function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
+    if (isEarlyVote(value)) return { label: "Early request" };
+    return findVoteInOptions(value);
   }
 
   return (
