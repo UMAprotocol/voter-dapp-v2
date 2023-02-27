@@ -21,6 +21,7 @@ export function useRewardsCalculationInputs(addressOverride?: string) {
         rewardPerTokenStored: BigNumber.from(0),
         cumulativeStake: BigNumber.from(0),
         updateTime: BigNumber.from(Date.now()),
+        updateTimeSeconds: BigNumber.from(Math.floor(Date.now() / 1000)),
       },
       onError,
     }
