@@ -1,5 +1,6 @@
 import { AmountInput, Button, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
+import { intervalToDuration } from "date-fns";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
@@ -39,7 +40,12 @@ export function Unstake({
   const { hasActiveVotes } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const unstakeCoolDownFormatted = unstakeCoolDown
-    ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
+    ? formatDuration(
+        intervalToDuration({
+          start: 0,
+          end: unstakeCoolDown.toNumber() * 1000,
+        })
+      )
     : "0 seconds";
 
   function canRequestUnstake(
