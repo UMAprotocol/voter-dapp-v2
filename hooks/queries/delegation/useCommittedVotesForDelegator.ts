@@ -6,12 +6,14 @@ import {
   useHandleError,
   useUserContext,
   useVoteTimingContext,
+  useWalletContext,
 } from "hooks";
-import { getCommittedVotes } from "web3";
 import { VoteExistsByKeyT } from "types";
+import { getCommittedVotes } from "web3";
 
 export function useCommittedVotesForDelegator() {
   const { address } = useUserContext();
+  const { isWrongChain } = useWalletContext();
   const { voting } = useContractsContext();
   const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
   const { roundId } = useVoteTimingContext();
@@ -28,7 +30,11 @@ export function useCommittedVotesForDelegator() {
         : {},
     {
       refetchInterval: status === "delegate" ? oneMinute : false,
-      enabled: !!address && !!delegatorAddress && status === "delegate",
+      enabled:
+        !!address &&
+        !isWrongChain &&
+        !!delegatorAddress &&
+        status === "delegate",
       initialData: {},
       onError,
     }

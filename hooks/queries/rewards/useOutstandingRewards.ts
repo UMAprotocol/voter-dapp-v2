@@ -1,12 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { outstandingRewardsKey } from "constant";
 import { BigNumber } from "ethers";
-import { useContractsContext, useHandleError, useUserContext } from "hooks";
+import {
+  useContractsContext,
+  useHandleError,
+  useUserContext,
+  useWalletContext,
+} from "hooks";
 import { getOutstandingRewards } from "web3";
 
 export function useOutstandingRewards(addressOverride?: string) {
   const { voting } = useContractsContext();
   const { address: defaultAddress } = useUserContext();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
@@ -14,7 +20,7 @@ export function useOutstandingRewards(addressOverride?: string) {
     [outstandingRewardsKey, address],
     () => getOutstandingRewards(voting, address),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       initialData: BigNumber.from(0),
       onError,
     }

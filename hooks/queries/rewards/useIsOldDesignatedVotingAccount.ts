@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { isOldDesignatedVotingAccountKey } from "constant";
-import { useAccountDetails, useHandleError } from "hooks";
+import { useAccountDetails, useHandleError, useWalletContext } from "hooks";
 import { getIsOldDesignatedVotingAccount } from "web3";
 
 export function useIsOldDesignatedVotingAccount() {
   const { address } = useAccountDetails();
+  const { isWrongChain } = useWalletContext();
   const { onError, clearErrors } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
@@ -15,7 +16,7 @@ export function useIsOldDesignatedVotingAccount() {
       message: "",
       designatedVotingContract: "",
     },
-    enabled: !!address,
+    enabled: !!address && !isWrongChain,
     onError,
     onSuccess: clearErrors,
   });

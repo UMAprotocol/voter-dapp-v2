@@ -6,6 +6,7 @@ import {
   useHandleError,
   useStakerDetails,
   useUserContext,
+  useWalletContext,
 } from "hooks";
 import { getDelegateToStaker } from "web3";
 
@@ -15,13 +16,14 @@ export function useDelegateToStaker() {
     data: { delegate },
   } = useStakerDetails();
   const { address } = useUserContext();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [delegateToStakerKey, address],
     () => getDelegateToStaker(voting, delegate ?? zeroAddress),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       onError,
     }
   );
