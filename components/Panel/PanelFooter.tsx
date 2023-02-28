@@ -26,7 +26,7 @@ const socialLinks = [
   },
   {
     Icon: Discourse,
-    href: "https://discourse.umaproject.org",
+    href: "https://discourse.uma.xyz",
   },
 ];
 

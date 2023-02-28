@@ -32,11 +32,11 @@ Default.args = {
     },
     {
       title: "Optimistic Oracle",
-      href: "https://oracle.umaproject.org",
+      href: "https://oracle.uma.xyz",
     },
     {
       title: "Docs",
-      href: "https://docs.umaproject.org",
+      href: "https://docs.uma.xyz",
     },
   ],
 };

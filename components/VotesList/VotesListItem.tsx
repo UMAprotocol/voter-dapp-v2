@@ -8,10 +8,10 @@ import {
 import {
   green,
   grey100,
+  isEarlyVote,
   red500,
   tabletAndUnder,
   tabletMax,
-  isEarlyVote,
 } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
@@ -350,10 +350,7 @@ export function VotesListItem({
                       <RolledIcon />
                     </RolledIconWrapper>
                     {/* todo: add link to explanation of rolled votes in the docs once its written */}
-                    <RolledLink
-                      href="https://docs.umaproject.org"
-                      target="_blank"
-                    >
+                    <RolledLink href="https://docs.uma.xyz" target="_blank">
                       Roll #{rollCount}
                     </RolledLink>
                   </RolledWrapper>
