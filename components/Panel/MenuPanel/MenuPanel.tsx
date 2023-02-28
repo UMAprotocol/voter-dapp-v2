@@ -48,6 +48,10 @@ export function MenuPanel() {
       title: "Docs",
       href: "https://docs.uma.xyz",
     },
+    {
+      title: "Projects",
+      href: "https://projects.uma.xyz",
+    },
   ];
 
   const _links = connectedWallet
