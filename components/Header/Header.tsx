@@ -62,15 +62,18 @@ export function Header() {
   const status = getDelegationStatus();
   const showDelegationNotification =
     !getDelegationDataLoading() &&
-    (status === "delegate" || status === "delegate-pending");
+    (status === "delegate" ||
+      status === "delegate-pending" ||
+      status === "delegator");
   const showV1RewardsNotification = v1Rewards?.totalRewards.gt(0);
   const isDelegate = status === "delegate";
+  const isDelegator = status === "delegator";
   const isDelegatePending = status === "delegate-pending";
 
   const delegationNotificationStyle = {
-    "--color": isDelegate ? green : red500,
-    "--border-color": isDelegate ? "transparent" : red500,
-    "--background-color": isDelegate ? "transparent" : red100,
+    "--color": isDelegate || isDelegator ? green : red500,
+    "--border-color": isDelegate || isDelegator ? "transparent" : red500,
+    "--background-color": isDelegate || isDelegator ? "transparent" : red100,
   } as CSSProperties;
 
   const v1RewardsNotificationStyle = {
@@ -113,8 +116,15 @@ export function Header() {
                 {isDelegate && (
                   <>
                     <Dot />
-                    &nbsp;&nbsp;Connected as{" "}
+                    Connected as{" "}
                     <Link href="/wallet-settings">delegate wallet</Link>
+                  </>
+                )}
+                {isDelegator && (
+                  <>
+                    <Dot />
+                    Connected as{" "}
+                    <Link href="/wallet-settings">delegator wallet</Link>
                   </>
                 )}
               </NotificationText>
@@ -295,7 +305,8 @@ const NotificationIconWrapper = styled.div`
 const Dot = styled.span`
   height: 8px;
   width: 8px;
-  background-color: ${green};
+  margin-right: 8px;
+  background-color: var(--color);
   border-radius: 50%;
   display: inline-block;
 `;
