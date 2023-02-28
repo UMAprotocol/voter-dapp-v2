@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { oneMinute, userDataKey } from "constant";
 import { BigNumber } from "ethers";
 import { getUserData } from "graph";
-import { useAccountDetails, useHandleError } from "hooks";
 import { config } from "helpers/config";
+import { useAccountDetails, useHandleError, useWalletContext } from "hooks";
 
 export function useUserVotingAndStakingDetails(addressOverride?: string) {
   const { address: defaultAddress } = useAccountDetails();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
@@ -14,7 +15,7 @@ export function useUserVotingAndStakingDetails(addressOverride?: string) {
     [userDataKey, address],
     () => getUserData(address),
     {
-      enabled: !!address && config.graphV2Enabled,
+      enabled: !!address && !isWrongChain && config.graphV2Enabled,
       refetchInterval: oneMinute,
       initialData: {
         apr: BigNumber.from(0),

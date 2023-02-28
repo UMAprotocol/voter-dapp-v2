@@ -5,12 +5,14 @@ import {
   useHandleError,
   useNewReceivedRequestsToBeDelegate,
   useUserContext,
+  useWalletContext,
 } from "hooks";
 import { getDelegateSetEvents } from "web3";
 
 export function useReceivedRequestsToBeDelegate() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const newRequests = useNewReceivedRequestsToBeDelegate();
 
@@ -18,7 +20,7 @@ export function useReceivedRequestsToBeDelegate() {
     [receivedRequestsToBeDelegateKey, address, newRequests],
     () => getDelegateSetEvents(voting, address, "delegate"),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       onError,
     }
   );

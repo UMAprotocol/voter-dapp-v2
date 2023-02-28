@@ -1,14 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { unstakedBalanceKey } from "constant";
-import { useAccountDetails, useContractsContext, useHandleError } from "hooks";
-import { getUnstakedBalance } from "web3";
 import { BigNumber } from "ethers";
+import {
+  useAccountDetails,
+  useContractsContext,
+  useHandleError,
+  useWalletContext,
+} from "hooks";
+import { getUnstakedBalance } from "web3";
 
 const initialData = BigNumber.from(0);
 
 export function useUnstakedBalance(addressOverride?: string) {
   const { votingToken } = useContractsContext();
   const { address: defaultAddress } = useAccountDetails();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
@@ -16,7 +22,7 @@ export function useUnstakedBalance(addressOverride?: string) {
     [unstakedBalanceKey, address],
     () => (address ? getUnstakedBalance(votingToken, address) : initialData),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       onError,
       initialData,
     }

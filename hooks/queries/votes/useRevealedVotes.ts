@@ -5,12 +5,14 @@ import {
   useContractsContext,
   useHandleError,
   useVoteTimingContext,
+  useWalletContext,
 } from "hooks";
 import { getRevealedVotes } from "web3";
 
 export function useRevealedVotes(addressOverride?: string) {
   const { voting } = useContractsContext();
   const { address: myAddress } = useAccountDetails();
+  const { isWrongChain } = useWalletContext();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride ?? myAddress;
@@ -19,7 +21,7 @@ export function useRevealedVotes(addressOverride?: string) {
     [revealedVotesKey, address, roundId],
     () => getRevealedVotes(voting, address, roundId),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       initialData: {},
       onError,
     }

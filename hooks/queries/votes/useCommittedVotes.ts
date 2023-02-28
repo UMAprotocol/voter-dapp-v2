@@ -5,12 +5,14 @@ import {
   useContractsContext,
   useHandleError,
   useVoteTimingContext,
+  useWalletContext,
 } from "hooks";
 import { getCommittedVotes } from "web3";
 
 export function useCommittedVotes() {
   const { voting } = useContractsContext();
   const { address } = useAccountDetails();
+  const { isWrongChain } = useWalletContext();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
@@ -18,7 +20,7 @@ export function useCommittedVotes() {
     [committedVotesKey, address, roundId],
     () => getCommittedVotes(voting, address, roundId),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
       initialData: {},
       onError,
     }

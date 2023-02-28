@@ -1,17 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { voterFromDelegateKey } from "constant";
-import { useContractsContext, useUserContext } from "hooks";
+import { useContractsContext, useUserContext, useWalletContext } from "hooks";
 import { getVoterFromDelegate } from "web3";
 
 export function useVoterFromDelegate() {
   const { voting } = useContractsContext();
   const { address } = useUserContext();
+  const { isWrongChain } = useWalletContext();
 
   const queryResult = useQuery(
     [voterFromDelegateKey, address],
     () => getVoterFromDelegate(voting, address),
     {
-      enabled: !!address,
+      enabled: !!address && !isWrongChain,
     }
   );
 

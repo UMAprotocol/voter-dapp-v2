@@ -1,9 +1,7 @@
-import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
-import { wrongChainMessage } from "constant";
+import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import {
   useContractsContext,
-  useErrorContext,
   usePanelContext,
   useUserContext,
   useWalletContext,
@@ -15,27 +13,14 @@ import {
   createVotingTokenContractInstance,
 } from "web3";
 import { WalletIcon } from "./WalletIcon";
-import { config } from "helpers/config";
 
 export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
-  const [{ connectedChain }] = useSetChain();
   const connectedWallets = useWallets();
-  const { setProvider, setSigner } = useWalletContext();
+  const { setProvider, setSigner, isWrongChain } = useWalletContext();
   const { setVoting, setVotingToken } = useContractsContext();
   const { openPanel } = usePanelContext();
   const { truncatedAddress } = useUserContext();
-  const { addErrorMessage, removeErrorMessage } = useErrorContext();
-
-  useEffect(() => {
-    if (!connectedChain) return;
-    if (connectedChain.id !== config.onboardConfig.id) {
-      addErrorMessage(wrongChainMessage);
-    } else {
-      removeErrorMessage(wrongChainMessage);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectedChain?.id]);
 
   useEffect(() => {
     if (!connectedWallets.length) return;
@@ -71,7 +56,7 @@ export function Wallet() {
   }, [connect]);
 
   useEffect(() => {
-    if (!wallet?.provider) {
+    if (!wallet?.provider || isWrongChain) {
       setProvider(null);
       setSigner(null);
       setVoting(createVotingContractInstance());
@@ -88,7 +73,7 @@ export function Wallet() {
       setVotingToken(createVotingTokenContractInstance(signer));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+  }, [wallet, isWrongChain]);
 
   function openMenuPanel() {
     openPanel("menu");
