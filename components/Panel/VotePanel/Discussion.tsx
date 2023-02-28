@@ -1,6 +1,7 @@
 import { Button, LoadingSpinner } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
+import { enCA } from "date-fns/locale";
 import { addOpacityToHsl } from "helpers";
 import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
@@ -61,7 +62,12 @@ export function Discussion({ discussion, loading }: Props) {
                             <Strong>{sender}</Strong>
                           </Sender>{" "}
                           <Time>
-                            {format(new Date(Number(time) * 1000), "Pp")}
+                            {format(new Date(Number(time) * 1000), "Pp", {
+                              // en-CA is the only locale that uses the correct
+                              // format for the date
+                              // yyyy-mm-dd
+                              locale: enCA,
+                            })}
                           </Time>
                         </SenderWrapper>
                         <MessageTextWrapper>
