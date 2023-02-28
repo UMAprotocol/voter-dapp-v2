@@ -45,7 +45,7 @@ export function PanelFooter() {
         </Socials>
       </SocialsWrapper>
       <PoweredByWrapper>
-        <PoweredBy>
+        <PoweredBy href="https://uma.xyz" target="_blank">
           Powered by
           <UmaIconWrapper>
             <Logo />
@@ -86,12 +86,17 @@ const PoweredByWrapper = styled.div`
   justify-content: center;
 `;
 
-const PoweredBy = styled.p`
+const PoweredBy = styled(NextLink)`
   display: flex;
   align-items: center;
   gap: 4px;
   color: var(--red-500);
   font: var(--text-xs);
+  text-decoration: none;
+  transition: opacity 0.2s;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const UmaIconWrapper = styled.span`
