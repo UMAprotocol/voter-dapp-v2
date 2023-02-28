@@ -59,31 +59,36 @@ export function Unstake({
   return (
     <Wrapper>
       <PanelSectionTitle>Unstake</PanelSectionTitle>
-      <PanelSectionText>
-        After submitting an unstake request, you must wait{" "}
-        {unstakeCoolDownFormatted} before you can claim your unstaked tokens.
-      </PanelSectionText>
-      <HowItWorks>
-        <HowItWorksTitle>How it works</HowItWorksTitle>
-        <UnstakeStep>
-          <IconWrapper>
-            <OneIcon />
-          </IconWrapper>
-          Unstake tokens
-        </UnstakeStep>
-        <UnstakeStep>
-          <IconWrapper>
-            <TwoIcon />
-          </IconWrapper>
-          Wait {unstakeCoolDownFormatted}
-        </UnstakeStep>
-        <UnstakeStep>
-          <IconWrapper>
-            <ThreeIcon />
-          </IconWrapper>
-          Claim unstaked tokens
-        </UnstakeStep>
-      </HowItWorks>
+      {!isDelegate && (
+        <>
+          <PanelSectionText>
+            After submitting an unstake request, you must wait{" "}
+            {unstakeCoolDownFormatted} before you can claim your unstaked
+            tokens.
+          </PanelSectionText>
+          <HowItWorks>
+            <HowItWorksTitle>How it works</HowItWorksTitle>
+            <UnstakeStep>
+              <IconWrapper>
+                <OneIcon />
+              </IconWrapper>
+              Unstake tokens
+            </UnstakeStep>
+            <UnstakeStep>
+              <IconWrapper>
+                <TwoIcon />
+              </IconWrapper>
+              Wait {unstakeCoolDownFormatted}
+            </UnstakeStep>
+            <UnstakeStep>
+              <IconWrapper>
+                <ThreeIcon />
+              </IconWrapper>
+              Claim unstaked tokens
+            </UnstakeStep>
+          </HowItWorks>
+        </>
+      )}
       {!isDelegate && (phase === "commit" || !hasActiveVotes) && (
         <>
           <AmountInputWrapper>
