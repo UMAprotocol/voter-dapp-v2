@@ -1,5 +1,6 @@
 import { EthersErrorLink } from "components/EthersErrorLink/EthersErrorLink";
-import { useErrorContext } from "hooks";
+import { wrongChainMessage } from "constant";
+import { useErrorContext, useWalletContext } from "hooks";
 import { ErrorOriginT } from "types";
 import {
   CloseButton,
@@ -12,27 +13,52 @@ import {
 } from "./styles";
 
 export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
+  const { isWrongChain } = useWalletContext();
   const { errorMessages, removeErrorMessage } = useErrorContext(errorOrigin);
 
-  if (!errorMessages.length) return null;
+  if (!errorMessages.length && !isWrongChain) return null;
 
   return (
     <Wrapper>
-      {errorMessages.map((message) => (
-        <ErrorMessageWrapper key={message?.toString()}>
-          <IconWrapper>
-            <WarningIcon />
-          </IconWrapper>
-          <ErrorMessage>
-            <EthersErrorLink errorMessage={message} />
-          </ErrorMessage>
-          <CloseButton onClick={() => removeErrorMessage(message)}>
-            <IconWrapper>
-              <CloseIcon />
-            </IconWrapper>
-          </CloseButton>
-        </ErrorMessageWrapper>
-      ))}
+      {isWrongChain ? (
+        <Error message={wrongChainMessage} />
+      ) : (
+        <>
+          {errorMessages.map((message) => (
+            <Error
+              key={message}
+              message={message}
+              removeErrorMessage={removeErrorMessage}
+            />
+          ))}
+        </>
+      )}
     </Wrapper>
+  );
+}
+
+function Error({
+  message,
+  removeErrorMessage,
+}: {
+  message: string;
+  removeErrorMessage?: (message: string) => void;
+}) {
+  return (
+    <ErrorMessageWrapper>
+      <IconWrapper>
+        <WarningIcon />
+      </IconWrapper>
+      <ErrorMessage>
+        <EthersErrorLink errorMessage={message} />
+      </ErrorMessage>
+      {!!removeErrorMessage && (
+        <CloseButton onClick={() => removeErrorMessage(message)}>
+          <IconWrapper>
+            <CloseIcon />
+          </IconWrapper>
+        </CloseButton>
+      )}
+    </ErrorMessageWrapper>
   );
 }
