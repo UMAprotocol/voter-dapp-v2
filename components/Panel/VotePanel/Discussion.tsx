@@ -63,6 +63,9 @@ export function Discussion({ discussion, loading }: Props) {
                           </Sender>{" "}
                           <Time>
                             {format(new Date(Number(time) * 1000), "Pp", {
+                              // en-CA is the only locale that uses the correct
+                              // format for the date
+                              // yyyy-mm-dd
                               locale: enCA,
                             })}
                           </Time>

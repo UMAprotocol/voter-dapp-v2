@@ -354,6 +354,9 @@ export function VotesListItem({
                   `| Vote #${resolvedPriceRequestIndex}`}{" "}
                 |{" "}
                 {format(timeAsDate, "Pp", {
+                  // en-CA is the only locale that uses the correct
+                  // format for the date
+                  // yyyy-mm-dd
                   locale: enCA,
                 })}
               </VoteOrigin>
