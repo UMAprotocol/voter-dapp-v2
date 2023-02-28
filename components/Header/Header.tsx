@@ -116,14 +116,14 @@ export function Header() {
                 {isDelegate && (
                   <>
                     <Dot />
-                    &nbsp;&nbsp;Connected as{" "}
+                    Connected as{" "}
                     <Link href="/wallet-settings">delegate wallet</Link>
                   </>
                 )}
                 {isDelegator && (
                   <>
                     <Dot />
-                    &nbsp;&nbsp;Connected as{" "}
+                    Connected as{" "}
                     <Link href="/wallet-settings">delegator wallet</Link>
                   </>
                 )}
@@ -305,7 +305,8 @@ const NotificationIconWrapper = styled.div`
 const Dot = styled.span`
   height: 8px;
   width: 8px;
-  background-color: ${green};
+  margin-right: 8px;
+  background-color: var(--color);
   border-radius: 50%;
   display: inline-block;
 `;
