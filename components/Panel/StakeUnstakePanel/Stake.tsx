@@ -1,6 +1,6 @@
 import { AmountInput, Button, Checkbox, PanelErrorBanner } from "components";
-import { mobileAndUnder } from "constant";
-import { maximumApprovalAmountString } from "constant";
+import { maximumApprovalAmountString, mobileAndUnder } from "constant";
+import { intervalToDuration } from "date-fns";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
@@ -33,7 +33,12 @@ export function Stake({
   const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const unstakeCoolDownFormatted = unstakeCoolDown
-    ? formatDuration({ seconds: unstakeCoolDown.toNumber() })
+    ? formatDuration(
+        intervalToDuration({
+          start: 0,
+          end: unstakeCoolDown.toNumber() * 1000,
+        })
+      )
     : "0 seconds";
 
   const disclaimer = `I understand that once staked, I will not be able to reclaim my tokens until ${unstakeCoolDownFormatted} after my unstaking request is submitted.`;
