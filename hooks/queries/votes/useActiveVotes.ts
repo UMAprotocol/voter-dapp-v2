@@ -4,12 +4,14 @@ import {
   useContractsContext,
   useHandleError,
   useVoteTimingContext,
+  useWalletContext,
 } from "hooks";
 import { getActiveVotes } from "web3";
 
 export function useActiveVotes() {
   const { voting } = useContractsContext();
   const { roundId } = useVoteTimingContext();
+  const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
 
@@ -26,6 +28,7 @@ export function useActiveVotes() {
         activeVotes: {},
         hasActiveVotes: false,
       },
+      enabled: !isWrongChain,
       onError,
     }
   );
