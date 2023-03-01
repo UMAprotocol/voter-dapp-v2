@@ -45,7 +45,7 @@ const LabelWrapper = styled.div`
   white-space: pre-line;
   overflow-wrap: break-word;
   word-wrap: break-word;
-  hyphens: auto;
+
 `;
 
 const TooltipContent = styled(AnimatedTooltipContent)`
