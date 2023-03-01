@@ -3,16 +3,16 @@ import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
 import {
+  useDelegationContext,
   usePanelContext,
   useStakingContext,
   useUserContext,
-  useDelegationContext,
 } from "hooks";
+import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
 import styled from "styled-components";
-import NextLink from "next/link";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
@@ -75,9 +75,13 @@ export function HowItWorks() {
               {isDelegate ? (
                 <Tooltip
                   label={
-                    delegatorAddress
-                      ? `Delegator address ${delegatorAddress}`
-                      : ""
+                    delegatorAddress ? (
+                      <>
+                        <strong>Delegator address</strong> {delegatorAddress}
+                      </>
+                    ) : (
+                      ""
+                    )
                   }
                 >
                   <span>
