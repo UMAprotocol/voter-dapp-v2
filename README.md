@@ -21,7 +21,7 @@ yarn dev
 
 ## Generating the Approved Identifiers Table
 
-We use a JSON file to look up titles, descriptions and URLs for approved price identifiers for display in the UI. The list of approved identifiers can be found [in our docs](https://docs.umaproject.org/resources/approved-price-identifiers). 
+We use a JSON file to look up titles, descriptions and URLs for approved price identifiers for display in the UI. The list of approved identifiers can be found [in our docs](https://docs.uma.xyz/resources/approved-price-identifiers).
 
 These approved identifiers are updated periodically in the docs, and when this happens, the JSON file will need to be re-generated.
 

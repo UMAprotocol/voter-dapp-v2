@@ -1,15 +1,15 @@
 import assert from "assert";
+import { BigNumber } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
+import * as ss from "superstruct";
 import { SupportedChainIds } from "types";
 import {
   constructContract,
-  getNodeUrls,
-  getFromBlock,
-  isSupportedChainId,
   ContractName,
+  getFromBlock,
+  getNodeUrls,
+  isSupportedChainId,
 } from "./_common";
-import * as ss from "superstruct";
-import { BigNumber } from "ethers";
 
 const debug = !!process.env.DEBUG;
 
@@ -63,7 +63,7 @@ function constructOoUiLink(
   if (!txHash || !chainId || !oracleType) return;
   if (!isSupportedChainId(chainId)) return;
   const subDomain = Number(chainId) === 5 ? "testnet." : "";
-  return `https://${subDomain}oracle.umaproject.org/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
+  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
     oracleType
   )}`;
 }

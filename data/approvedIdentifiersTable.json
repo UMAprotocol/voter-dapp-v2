@@ -1929,7 +1929,7 @@
   },
   "ZODIAC": {
     "identifier": "ZODIAC",
-    "summary": "The ZODIAC identifier is intended to be used with a [Zodiac module](https://gnosis.github.io/zodiac/docs/intro) that allows you to control a [Gnosis Safe](https://gnosis-safe.io/) according to a set of rules defined off-chain and enforced with UMA's Optimistic Oracle. Unless the module contract has extra restrictions, any address can propose transactions that follow the rules and any address can dispute a proposal to UMA's [Optimistic Oracle](https://umaproject.org/products/optimistic-oracle) within a challenge window.",
+    "summary": "The ZODIAC identifier is intended to be used with a [Zodiac module](https://gnosis.github.io/zodiac/docs/intro) that allows you to control a [Gnosis Safe](https://gnosis-safe.io/) according to a set of rules defined off-chain and enforced with UMA's Optimistic Oracle. Unless the module contract has extra restrictions, any address can propose transactions that follow the rules and any address can dispute a proposal to UMA's [Optimistic Oracle](https://uma.xyz/products/optimistic-oracle) within a challenge window.",
     "umipLink": {
       "number": "UMIP-152",
       "url": "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-152.md"
@@ -1940,7 +1940,7 @@
     "summary": "No of Approved Price Identifiers.",
     "umipLink": {
       "number": "244",
-      "url": "https://docs.umaproject.org/uma-tokenholders/approved-price-identifiers"
+      "url": "https://docs.uma.xyz/uma-tokenholders/approved-price-identifiers"
     }
   },
   "": {

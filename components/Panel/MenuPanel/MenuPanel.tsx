@@ -2,6 +2,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import { Button, Nav, WalletIcon } from "components";
 import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
+import { config } from "helpers/config";
 import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
 import NextLink from "next/link";
 import LinkedAddress from "public/assets/icons/link.svg";
@@ -9,7 +10,6 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelWrapper } from "../styles";
-import { config } from "helpers/config";
 
 export function MenuPanel() {
   const [_wallets, connect, disconnect] = useConnectWallet();
@@ -42,11 +42,15 @@ export function MenuPanel() {
     },
     {
       title: "Optimistic Oracle",
-      href: "https://oracle.umaproject.org",
+      href: "https://oracle.uma.xyz",
     },
     {
       title: "Docs",
-      href: "https://docs.umaproject.org",
+      href: "https://docs.uma.xyz",
+    },
+    {
+      title: "Projects",
+      href: "https://projects.uma.xyz",
     },
   ];
 
