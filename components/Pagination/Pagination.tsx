@@ -94,7 +94,12 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   }
 
   function onSelectResultsPerPage(item: DropdownItemT) {
-    _setResultsPerPage(Number(item.value));
+    const newResultsPerPage = Number(item.value);
+    const newPageNumber = Math.ceil(
+      (pageNumber * resultsPerPage) / newResultsPerPage
+    );
+    _setResultsPerPage(newResultsPerPage);
+    _goToPage(newPageNumber);
   }
 
   return (
