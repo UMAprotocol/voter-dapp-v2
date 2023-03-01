@@ -1,5 +1,5 @@
 import { Tooltip } from "components/Tooltip/Tooltip";
-import { green, grey500, red500 } from "constant";
+import { black, green, grey500, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { CSSProperties } from "react";
 import styled from "styled-components";
@@ -14,7 +14,20 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
     resolvedPriceRequestIndex,
     voteHistory: { voted, correctness, staking, slashAmount },
   } = vote;
-  const scoreColor = slashAmount.lt(0) ? red500 : green;
+  const formattedSlashAmount = makeFormattedSlashAmount();
+  const scoreColor = getScoreColor();
+
+  function makeFormattedSlashAmount() {
+    const formattedSlashAmount = formatNumberForDisplay(slashAmount);
+    if (formattedSlashAmount === "-0") return "0";
+    return formattedSlashAmount;
+  }
+
+  function getScoreColor() {
+    if (formattedSlashAmount === "0") return black;
+    if (formattedSlashAmount.startsWith("-")) return red500;
+    return green;
+  }
 
   return (
     <Tr>
@@ -45,7 +58,7 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
         </Correctness>
       </CorrectnessTd>
       <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
-        {formatNumberForDisplay(slashAmount)}
+        {formattedSlashAmount}
       </ScoreTd>
     </Tr>
   );
