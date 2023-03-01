@@ -104,8 +104,13 @@ export function DelegationPanel() {
       <InnerWrapper>
         <PanelSectionTitle>Delegation</PanelSectionTitle>
         <PanelSectionText>
-          For more information about vote delegation, please refer here. TO DO:
-          Add docs link.
+          For more information about vote delegation, please{" "}
+          <Link
+            href="https://docs.uma.xyz/protocol-overview/dvm-2.0#vote-delegation"
+            target="_blank"
+          >
+            refer here.
+          </Link>
         </PanelSectionText>
         <StepsWrapper>
           <StepWrapper>
