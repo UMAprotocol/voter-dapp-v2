@@ -349,8 +349,10 @@ export function VotesListItem({
                     <RolledIconWrapper>
                       <RolledIcon />
                     </RolledIconWrapper>
-                    {/* todo: add link to explanation of rolled votes in the docs once its written */}
-                    <RolledLink href="https://docs.uma.xyz" target="_blank">
+                    <RolledLink
+                      href="https://docs.umaproject.org/protocol-overview/dvm-2.0#rolled-votes"
+                      target="_blank"
+                    >
                       Roll #{rollCount}
                     </RolledLink>
                   </RolledWrapper>

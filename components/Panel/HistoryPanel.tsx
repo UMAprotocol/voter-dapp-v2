@@ -1,3 +1,4 @@
+import NextLink from "next/link";
 import {
   LoadingSkeleton,
   LoadingSpinner,
@@ -98,8 +99,13 @@ export function HistoryPanel() {
             wrong, they will lose a small portion of their stake. Conversely, if
             a voter votes correctly in a round, they will receive a pro-rata
             share of the reallocated stake from incorrect voters. For more
-            information on vote history and how APY is calculated, refer here.
-            TO DO ADD Documentation Link.
+            information on vote history and how APY is calculated,{" "}
+            <Link
+              href="https://docs.uma.xyz/protocol-overview/dvm-2.0#vote-delegation"
+              target="_blank"
+            >
+              refer here.
+            </Link>
           </PanelSectionText>
         </SectionWrapper>
         <SectionWrapper>
@@ -182,4 +188,11 @@ const BonusOrPenalty = styled.span`
 const HistoryWrapper = styled.div`
   display: grid;
   place-items: center;
+`;
+const Link = styled(NextLink)`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
