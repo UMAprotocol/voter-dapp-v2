@@ -46,6 +46,9 @@ const LabelWrapper = styled.div`
   overflow-wrap: break-word;
   word-wrap: break-word;
 
+  strong {
+    font-weight: 700;
+  }
 `;
 
 const TooltipContent = styled(AnimatedTooltipContent)`
