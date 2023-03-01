@@ -4440,15 +4440,15 @@
     "@typescript-eslint/types" "5.50.0"
     eslint-visitor-keys "^3.3.0"
 
-"@uma/contracts-frontend@^0.4.10":
-  version "0.4.10"
-  resolved "https://registry.yarnpkg.com/@uma/contracts-frontend/-/contracts-frontend-0.4.10.tgz#19dd7f4191023d9623212d0cecea22f231850e2b"
-  integrity sha512-vrHiW/0ip5Cbss9x5q1Yq032meimVDvrV3r/fEPq6kXb3lvIrK5johXEePeQErLmE5E1MvObsLqCRu/1BL7+3w==
+"@uma/contracts-frontend@^0.4.12":
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-frontend/-/contracts-frontend-0.4.12.tgz#c92cd707201ca18ca91c55ff61f979afe7580bd2"
+  integrity sha512-e0gfqSJZOY8fHtSIvAIJr+JKX/70ductElJedTqgwEfeWn08l1u8aEecxET9uaVP3kbhVgSbQBbRH8BkxXJm4w==
 
-"@uma/contracts-node@^0.4.10":
-  version "0.4.10"
-  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.4.10.tgz#eedf7f96109acb909d351518310433231b36323a"
-  integrity sha512-eznadzjAJEeQo1oYANjgR7GCCcH9VYQBjM19iqxD+Ey1vgcspuJfzjd23cbjYVOrDrGJlXIBiICMH+fJyzR+Fg==
+"@uma/contracts-node@^0.4.12":
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/@uma/contracts-node/-/contracts-node-0.4.12.tgz#c445b6db82d36f1eab5d7aa6b212cc97a799e9ec"
+  integrity sha512-oDbNSlM81Zrx6V5OTsJTpi0QJ8z89CtXN5HabHcsQ8mvGqR+Hu6MCa5aHzRxxnB02MxtnxY2o0OT3Gdn0oRkcw==
 
 "@unstoppabledomains/resolution@^8.0":
   version "8.5.0"
