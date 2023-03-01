@@ -1,13 +1,13 @@
 import { TooltipPopup, useTooltip } from "@reach/tooltip";
 import "@reach/tooltip/styles.css";
 import { animated, useTransition } from "@react-spring/web";
-import { cloneElement } from "react";
+import { cloneElement, ReactElement, ReactNode } from "react";
 import styled from "styled-components";
 
 interface Props {
   "aria-label"?: string;
-  children: React.ReactElement;
-  label: string;
+  children: ReactElement;
+  label: ReactNode;
 }
 export function Tooltip({ children, label, ...rest }: Props) {
   const [trigger, tooltip, isVisible] = useTooltip();
