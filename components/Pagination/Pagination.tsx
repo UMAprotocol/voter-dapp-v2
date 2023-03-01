@@ -1,10 +1,9 @@
 import { Dropdown } from "components";
-import { grey800, mobileAndUnder, white } from "constant";
+import { grey800, tabletAndUnder, white } from "constant";
 import { addOpacityToHsl } from "helpers";
-import { usePaginationContext, useWindowSize } from "hooks";
+import { usePaginationContext } from "hooks";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
-import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT, PaginateForT } from "types";
 
@@ -23,51 +22,31 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
     lastPage,
     setResultsPerPage,
   } = usePaginationContext();
-  const { width } = useWindowSize();
-  const [wrapperWidth, setWrapperWidth] = useState(0);
-  const [buttonsWrapperWidth, setButtonsWrapperWidth] = useState(0);
-
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const buttonsWrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (wrapperRef.current) {
-      setWrapperWidth(wrapperRef.current.offsetWidth);
-    }
-    if (buttonsWrapperRef.current) {
-      setButtonsWrapperWidth(buttonsWrapperRef.current.offsetWidth);
-    }
-  }, [buttonsWrapperRef, width]);
 
   const { pageNumber, resultsPerPage } = pageStates[paginateFor];
   const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
   const lastPageNumber = numberOfPages;
   const defaultNumberOfButtons = 4;
-  const hasMorePagesThanButtons = numberOfPages >= defaultNumberOfButtons;
-  const showFirstButton = hasMorePagesThanButtons;
-  const showLastButton = hasMorePagesThanButtons;
   const numberOfButtons = getNumberOfButtons();
+  const hasMorePagesThanButtons = numberOfPages > numberOfButtons;
   const numbersPastMax = pageNumber - numberOfButtons;
+  const isLastNumbers = 2 * numberOfButtons + numbersPastMax > numberOfPages;
+  const isFirstNumbers = numbersPastMax <= 0;
+  const showFirstButton = hasMorePagesThanButtons;
+  const showLastButton =
+    hasMorePagesThanButtons &&
+    !isLastNumbers &&
+    lastPageNumber - 1 !== numberOfButtons;
   const buttonNumbers = makeButtonNumbers();
 
   function getNumberOfButtons() {
-    if (wrapperWidth >= buttonsWrapperWidth) {
-      return hasMorePagesThanButtons ? defaultNumberOfButtons : numberOfPages;
+    if (numberOfPages === defaultNumberOfButtons + 1) {
+      return defaultNumberOfButtons + 1;
     }
-
-    const buttonWidth = 40;
-    const nextAndBackButtonsWidth = 2 * buttonWidth;
-    const firstAndLastButtonsWidth = 2 * buttonWidth;
-    const ellipsisWidth = 8;
-
-    const availableSpace =
-      wrapperWidth -
-      nextAndBackButtonsWidth -
-      (hasMorePagesThanButtons ? firstAndLastButtonsWidth + ellipsisWidth : 0);
-
-    const numberOfButtonsThatFit = Math.floor(availableSpace / buttonWidth);
-
-    return numberOfButtonsThatFit;
+    if (numberOfPages < defaultNumberOfButtons) {
+      return numberOfPages;
+    }
+    return defaultNumberOfButtons;
   }
 
   function makeButtonNumbers() {
@@ -75,12 +54,9 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
       return Array.from({ length: numberOfPages }, (_, i) => i + 1);
     }
 
-    const isLastPastNumbers =
-      2 * numberOfButtons + numbersPastMax >= numberOfPages;
-
-    if (isLastPastNumbers) {
+    if (isLastNumbers) {
       return Array.from(
-        { length: numberOfButtons },
+        { length: numberOfButtons + 1 },
         (_, i) => lastPageNumber - numberOfButtons + i
       );
     }
@@ -118,11 +94,16 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
   }
 
   function onSelectResultsPerPage(item: DropdownItemT) {
-    _setResultsPerPage(Number(item.value));
+    const newResultsPerPage = Number(item.value);
+    const newPageNumber = Math.ceil(
+      (pageNumber * resultsPerPage) / newResultsPerPage
+    );
+    _setResultsPerPage(newResultsPerPage);
+    _goToPage(newPageNumber);
   }
 
   return (
-    <Wrapper ref={wrapperRef}>
+    <Wrapper>
       <ResultsPerPageWrapper>
         <Dropdown
           items={resultsPerPageOptions}
@@ -133,15 +114,18 @@ export function Pagination({ paginateFor, numberOfEntries }: Props) {
           borderColor={grey800}
         />
       </ResultsPerPageWrapper>
-      <ButtonsWrapper ref={buttonsWrapperRef}>
+      <ButtonsWrapper>
         {showFirstButton && (
-          <PageButton
-            onClick={_firstPage}
-            disabled={pageNumber === 1}
-            $isActive={isActive(1)}
-          >
-            1
-          </PageButton>
+          <>
+            <PageButton
+              onClick={_firstPage}
+              disabled={pageNumber === 1}
+              $isActive={isActive(1)}
+            >
+              1
+            </PageButton>
+            {!isFirstNumbers && <Ellipsis>...</Ellipsis>}
+          </>
         )}
         {buttonNumbers.map((buttonNumber) => (
           <PageButton
@@ -182,7 +166,7 @@ const Wrapper = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  @media ${mobileAndUnder} {
+  @media ${tabletAndUnder} {
     flex-direction: column;
     gap: 10px;
     align-items: start;

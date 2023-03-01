@@ -103,3 +103,9 @@ Past.args = {
     voteWithCorrectVoteWithoutUserVote,
   ],
 };
+
+export const With100Entries = Template.bind({});
+With100Entries.args = {
+  activityStatus: "past",
+  pastVotes: Array.from({ length: 100 }, () => voteWithCorrectVoteWithUserVote),
+};
