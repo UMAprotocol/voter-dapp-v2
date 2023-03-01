@@ -41,7 +41,7 @@ const AnimatedTooltipContent = animated(TooltipPopup);
 
 const LabelWrapper = styled.div`
   display: inline-block;
-  max-width: min(80vw, 300px);
+  max-width: min(80vw, 328px);
   white-space: pre-line;
   overflow-wrap: break-word;
   word-wrap: break-word;
