@@ -18,9 +18,7 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
   const scoreColor = getScoreColor();
 
   function makeFormattedSlashAmount() {
-    const formattedSlashAmount = formatNumberForDisplay(slashAmount, {
-      decimals: 3,
-    });
+    const formattedSlashAmount = formatNumberForDisplay(slashAmount);
     if (formattedSlashAmount === "-0") return "0";
     return formattedSlashAmount;
   }
