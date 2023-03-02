@@ -30,19 +30,19 @@ export function MigrationBanner() {
         <LogoIcon />
         <Text>
           Welcome to the UMA 2.0 voting app. Read our{" "}
-          <Link href="https://todo.com" target="_blank">
+          <Link href="https://medium.com/uma-project/uma-token-staking-is-live-here-is-how-you-participate-bf959cc39091" target="_blank">
             migration and staking instructions here.
           </Link>
         </Text>
         <TabletText>
           Welcome to UMA 2.0. Learn now to{" "}
-          <Link href="https://todo.com" target="_blank">
+          <Link href="https://medium.com/uma-project/uma-token-staking-is-live-here-is-how-you-participate-bf959cc39091" target="_blank">
             migrate and stake.
           </Link>
         </TabletText>
         <MobileText>
           Welcome to UMA 2.0.{" "}
-          <Link href="https://todo.com" target="_blank">
+          <Link href="https://medium.com/uma-project/uma-token-staking-is-live-here-is-how-you-participate-bf959cc39091" target="_blank">
             Migrate now.
           </Link>
         </MobileText>
