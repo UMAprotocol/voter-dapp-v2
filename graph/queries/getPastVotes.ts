@@ -127,8 +127,8 @@ export async function getPastVotesV2() {
       const correctVote = price;
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
-        uniqueCommitAddresses: revealedVotes.length,
-        uniqueRevealAddresses: committedVotes.length,
+        uniqueCommitAddresses: committedVotes.length,
+        uniqueRevealAddresses: revealedVotes.length,
         totalTokensVotedWith,
       };
       const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
