@@ -42,7 +42,7 @@ export function Votes() {
   const { phase, roundId } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
-  const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
+  const { sign, isSigning, setCorrectChain, isSettingChain } =
     useWalletContext();
   const { voting } = useContractsContext();
   const { stakedBalance } = useStakingContext();
@@ -64,24 +64,67 @@ export function Votes() {
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    determineVotesToShow()
-  );
-  const actionStatus = calculateActionStatus();
-  type ActionStatus = {
+  type ButtonConfig = {
     tooltip?: string;
     label: string;
     infoText?: { label: string; tooltip: string };
     onClick: () => void;
     disabled?: boolean;
     hidden?: boolean;
-    canCommit: boolean;
-    canReveal: boolean;
+    canCommit?: boolean;
+    canReveal?: boolean;
   };
-  function calculateActionStatus(): ActionStatus {
-    const actionConfig: ActionStatus = {
+  // this is a special button that should only show when there are no votes, and signed in with no signature.
+  // any other time, signing should be available to user.
+  const signButtonConfig = getSignButtonConfig();
+  function getSignButtonConfig() {
+    const signButton: ButtonConfig = {
+      hidden: true,
+      tooltip: undefined,
+      label: "",
+      infoText: undefined,
+      onClick: () => undefined,
+      disabled: true,
+    };
+    const hasWallet = !!address;
+    const isShowingVotes =
+      Object.values(getActiveVotes()).filter((x) => x).length > 0;
+
+    if (
+      hasWallet &&
+      !isShowingVotes &&
+      !hasSigningKey &&
+      correctChainConnected
+    ) {
+      signButton.hidden = false;
+      signButton.disabled = false;
+      signButton.label = "Sign";
+      signButton.onClick = () => sign();
+      signButton.infoText = {
+        label: "Why do I need to sign?",
+        tooltip:
+          "UMA uses this signature to verify that you are the owner of this address. This will allow you to participate in votes and see your past votes.",
+      };
+      signButton.disabled = false;
+
+      if (isSigning) {
+        signButton.disabled = true;
+        signButton.tooltip =
+          "Confirm the request for a signature in your wallet software.";
+        return signButton;
+      }
+      return signButton;
+    }
+    return signButton;
+  }
+  const votesToShow = getEntriesForPage(
+    pageNumber,
+    resultsPerPage,
+    determineVotesToShow()
+  );
+  const actionStatus = calculateActionStatus();
+  function calculateActionStatus(): ButtonConfig {
+    const actionConfig: ButtonConfig = {
       hidden: true,
       tooltip: undefined,
       label: "",
@@ -95,7 +138,6 @@ export function Votes() {
     const isCommit = phase === "commit";
     const isReveal = phase === "reveal";
     const hasStaked = stakedBalance?.gt(0) ?? false;
-    const hasSigner = !!signer;
 
     const votesToShow = determineVotesToShow();
     const hasPreviouslyCommittedAll =
@@ -123,7 +165,7 @@ export function Votes() {
         );
       }).length > 0;
 
-    if (!hasSigner || !address) {
+    if (!address) {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = "Connect Wallet";
@@ -147,7 +189,6 @@ export function Votes() {
       }
       return actionConfig;
     }
-
     if (isCommit) {
       actionConfig.label = "Commit";
       actionConfig.hidden = false;
@@ -320,8 +361,58 @@ export function Votes() {
         return "Past votes:";
     }
   }
+  function renderButton(config: ButtonConfig) {
+    return (
+      <ButtonOuterWrapper>
+        {config.infoText ? (
+          <Tooltip label={config.infoText.tooltip}>
+            <InfoText>
+              <IconWrapper width={20} height={20}>
+                <WarningIcon />
+              </IconWrapper>
+              {config.infoText.label}
+            </InfoText>
+          </Tooltip>
+        ) : null}
+        <ButtonInnerWrapper>
+          {isDirty() ? (
+            <>
+              <Button
+                variant="secondary"
+                label="Reset Changes"
+                onClick={() => setSelectedVotes({})}
+              />
+              <ButtonSpacer />
+            </>
+          ) : undefined}
+          {!config.hidden ? (
+            config.tooltip ? (
+              <Tooltip label={config.tooltip}>
+                <div>
+                  <Button
+                    variant="primary"
+                    label={config.label}
+                    onClick={config.onClick}
+                    disabled={config.disabled}
+                  />
+                </div>
+              </Tooltip>
+            ) : (
+              <Button
+                variant="primary"
+                label={config.label}
+                onClick={config.onClick}
+                disabled={config.disabled}
+              />
+            )
+          ) : null}
+        </ButtonInnerWrapper>
+      </ButtonOuterWrapper>
+    );
+  }
   return (
     <>
+      {renderButton(signButtonConfig)}
       <Title>{determineTitle()}</Title>
       {(getActivityStatus() === "active" ||
         getActivityStatus() === "upcoming") && <VoteTimeline />}
@@ -359,53 +450,7 @@ export function Votes() {
           * Changes to committed votes need to be re-committed
         </RecommittingVotesMessage>
       ) : null}
-      {getActivityStatus() === "active" ? (
-        <ButtonOuterWrapper>
-          {actionStatus.infoText ? (
-            <Tooltip label={actionStatus.infoText.tooltip}>
-              <InfoText>
-                <IconWrapper width={20} height={20}>
-                  <WarningIcon />
-                </IconWrapper>
-                {actionStatus.infoText.label}
-              </InfoText>
-            </Tooltip>
-          ) : null}
-          <ButtonInnerWrapper>
-            {isDirty() ? (
-              <>
-                <Button
-                  variant="secondary"
-                  label="Reset Changes"
-                  onClick={() => setSelectedVotes({})}
-                />
-                <ButtonSpacer />
-              </>
-            ) : undefined}
-            {!actionStatus.hidden ? (
-              actionStatus.tooltip ? (
-                <Tooltip label={actionStatus.tooltip}>
-                  <div>
-                    <Button
-                      variant="primary"
-                      label={actionStatus.label}
-                      onClick={actionStatus.onClick}
-                      disabled={actionStatus.disabled}
-                    />
-                  </div>
-                </Tooltip>
-              ) : (
-                <Button
-                  variant="primary"
-                  label={actionStatus.label}
-                  onClick={actionStatus.onClick}
-                  disabled={actionStatus.disabled}
-                />
-              )
-            ) : null}
-          </ButtonInnerWrapper>
-        </ButtonOuterWrapper>
-      ) : null}
+      {getActivityStatus() === "active" ? renderButton(actionStatus) : null}
       {determineVotesToShow().length > defaultResultsPerPage && (
         <PaginationWrapper>
           <Pagination
