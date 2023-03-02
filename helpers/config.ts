@@ -21,6 +21,7 @@ const Env = ss.object({
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
   NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
+  NEXT_PUBLIC_OVERRIDE_APR: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -49,6 +50,7 @@ export const env = ss.create(
     NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN:
       process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
+    NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
   },
   Env
 );
@@ -70,6 +72,7 @@ const AppConfig = ss.object({
   graphV1Enabled: ss.defaulted(ss.boolean(), false),
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
   contentfulEnabled: ss.defaulted(ss.boolean(), false),
+  overrideApr: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -97,6 +100,7 @@ export const appConfig = ss.create(
     contentfulEnabled:
       !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
       !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    overrideApr: env.NEXT_PUBLIC_OVERRIDE_APR,
   },
   AppConfig
 );
