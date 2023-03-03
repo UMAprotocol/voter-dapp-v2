@@ -212,6 +212,8 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
     ooChains
   );
   const requestPriceTable = createLookupTable(requestPriceEvents);
+  
+  console.log("requestPriceTable",requestPriceTable)
 
   return l1Requests.map((l1Request) => {
     const votingRequestEvent =
@@ -245,6 +247,7 @@ export default async function handler(
 
   try {
     const body: RequestBody = ss.create(request.body, RequestBody);
+    console.log("body", body);
     const result = await augmentRequests(body);
     response.status(200).send(result);
   } catch (e) {
