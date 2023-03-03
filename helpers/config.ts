@@ -1,5 +1,6 @@
 import * as ss from "superstruct";
 import { SupportedChainIds } from "types";
+import { getDesignatedVotingFactoryAddress } from "@uma/contracts-frontend";
 
 // we want to create a raw type for the env, so we can alert the developer immediately when something does not exist
 // and give them information as to which env was missing. We don't want the app to run without required variables.
@@ -22,6 +23,7 @@ const Env = ss.object({
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
   NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_OVERRIDE_APR: ss.optional(ss.string()),
+  NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -51,6 +53,8 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
     NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
+    NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
+      process.env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS,
   },
   Env
 );
@@ -73,6 +77,7 @@ const AppConfig = ss.object({
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
   contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
+  designatedVotingFactoryV1Address: ss.string(),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -101,6 +106,11 @@ export const appConfig = ss.create(
       !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
       !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     overrideApr: env.NEXT_PUBLIC_OVERRIDE_APR,
+    designatedVotingFactoryV1Address:
+      env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS ??
+      getDesignatedVotingFactoryAddress(
+        Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1")
+      ),
   },
   AppConfig
 );

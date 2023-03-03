@@ -1,7 +1,8 @@
 import { config } from "helpers/config";
 import request, { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
-import { PastVotesQuery } from "types";
+import { PastVotesQuery, RevealedVotesByAddress } from "types";
+import { utils } from "ethers";
 
 const { graphEndpoint, graphEndpointV1 } = config;
 
@@ -34,6 +35,10 @@ export async function getPastVotesV1() {
         }
         revealedVotes {
           id
+          voter {
+            address
+          }
+          price
         }
       }
     }
@@ -62,6 +67,13 @@ export async function getPastVotesV1() {
         vote: price,
         tokensVotedWith: Number(totalVoteAmount),
       }));
+
+      const init: RevealedVotesByAddress = {};
+      const revealedVoteByAddress = revealedVotes.reduce((result, vote) => {
+        result[utils.getAddress(vote.voter.address)] = vote.price;
+        return result;
+      }, init);
+
       return {
         identifier,
         time: Number(time),
@@ -71,6 +83,7 @@ export async function getPastVotesV1() {
         participation,
         results,
         isV1: true,
+        revealedVoteByAddress,
       };
     }
   );
@@ -107,6 +120,10 @@ export async function getPastVotesV2() {
         }
         revealedVotes {
           id
+          voter {
+            address
+          }
+          price
         }
       }
     }
@@ -135,6 +152,11 @@ export async function getPastVotesV2() {
         vote: price,
         tokensVotedWith: Number(totalVoteAmount),
       }));
+      const init: RevealedVotesByAddress = {};
+      const revealedVoteByAddress = revealedVotes.reduce((result, vote) => {
+        result[utils.getAddress(vote.voter.address)] = vote.price;
+        return result;
+      }, init);
       return {
         identifier,
         time: Number(time),
@@ -144,6 +166,7 @@ export async function getPastVotesV2() {
         isV1: false,
         participation,
         results,
+        revealedVoteByAddress,
       };
     }
   );

@@ -42,6 +42,7 @@ function formatPriceRequest(
   const ancillaryData = priceRequest.ancillaryData;
   let decodedIdentifier = "";
   let decodedAncillaryData = "";
+  const revealedVoteByAddress = priceRequest.revealedVoteByAddress || {};
   try {
     decodedIdentifier = decodeHexString(identifier);
   } catch (e) {
@@ -90,5 +91,6 @@ function formatPriceRequest(
     isV1,
     isGovernance,
     rollCount,
+    revealedVoteByAddress,
   };
 }

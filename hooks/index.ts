@@ -68,3 +68,4 @@ export { usePastVotes } from "./queries/votes/usePastVotes";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
 export { useVoteDiscussion } from "./queries/votes/useVoteDiscussion";
+export { useDesignatedVotingV1Address } from "./queries/user/useDesignatedVotingV1Address";

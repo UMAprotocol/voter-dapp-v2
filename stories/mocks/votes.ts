@@ -61,6 +61,7 @@ export const voteWithoutUserVote = {
     slashAmount: BigNumber.from(0),
   },
   rollCount: 0,
+  revealedVoteByAddress: {},
 };
 
 export const userVote = {
@@ -83,6 +84,7 @@ export const voteCommitted = {
   commitHash:
     "0xb7013512cb5f4e59fd08c299d8534373457f0f02aeb294e4f61611bfc8f43286",
   revealHash: undefined,
+  revealedVoteByAddress: {},
 };
 
 export const voteCommittedButNotRevealed = { ...voteCommitted };

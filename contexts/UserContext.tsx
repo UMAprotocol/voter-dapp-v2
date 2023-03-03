@@ -65,7 +65,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     undefined
   );
   const { signingKeys, connectedChainId } = useWalletContext();
-
   const {
     data: {
       apr,

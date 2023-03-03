@@ -1,6 +1,7 @@
 import { DisconnectOptions, WalletState } from "@web3-onboard/core";
 import { ethers } from "ethers";
 import { getAddress, truncateEthAddress } from "helpers";
+import { createDesignatedVotingFactoryV1Instance } from "web3";
 
 export function handleDisconnectWallet(
   wallet: WalletState | null,
@@ -27,4 +28,11 @@ export function getAccountDetails(connectedWallets?: WalletState[]) {
     address,
     truncatedAddress,
   };
+}
+
+export async function getDesignatedVotingV1Address(
+  address: string
+): Promise<string | undefined> {
+  const contract = createDesignatedVotingFactoryV1Instance();
+  return contract.designatedVotingContracts(address);
 }

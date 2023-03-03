@@ -16,6 +16,7 @@ import {
   useUserVotingAndStakingDetails,
   useCommittedVotesForDelegator,
   useVoteTimingContext,
+  useDesignatedVotingV1Address,
 } from "hooks";
 import { createContext, ReactNode, useState } from "react";
 import {
@@ -89,6 +90,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const [addressOverride, setAddressOverride] = useState<string | undefined>(
     undefined
   );
+  const { address } = useAccountDetails();
+  const { data: designatedVotingV1Address } =
+    useDesignatedVotingV1Address(address);
   const { roundId } = useVoteTimingContext();
   const {
     data: { activeVotes, hasActiveVotes },
@@ -146,7 +150,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: decryptedPastVotesIsLoading,
     isFetching: decryptedPastVotesIsFetching,
   } = useDecryptedVotes();
-  const { address } = useAccountDetails();
   const {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails(addressOverride);
@@ -243,11 +246,19 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         !!committedVotesForDelegator[uniqueKey])
     );
   }
+
   function getVotesWithData(
     priceRequests: PriceRequestByKeyT,
     decryptedVotes: DecryptedVotesByKeyT
   ): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
+      // this value only exists when we have votes that have revealed from the graph, using this we can
+      // lookup revealed votes without a signature, just have to find the right address
+      const pastVoteRevealed: string | undefined =
+        vote?.revealedVoteByAddress[address] ||
+        (designatedVotingV1Address &&
+          vote.revealedVoteByAddress[designatedVotingV1Address]) ||
+        (addressOverride && vote.revealedVoteByAddress[addressOverride]);
       return {
         ...vote,
         uniqueKey,
@@ -262,7 +273,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         canReveal: getCanReveal(uniqueKey),
         revealHash: revealedVotes[uniqueKey],
         encryptedVote: encryptedVotes[uniqueKey],
-        decryptedVote: decryptedVotes[uniqueKey],
+        decryptedVote: pastVoteRevealed
+          ? { price: pastVoteRevealed, salt: "" }
+          : decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
         augmentedData: augmentedData[uniqueKey],
         voteHistory: voteHistoryByKey[uniqueKey] ?? {
