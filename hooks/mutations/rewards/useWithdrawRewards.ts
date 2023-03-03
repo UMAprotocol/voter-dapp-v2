@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { withdrawRewards } from "chain";
 import {
-  unstakedBalanceKey,
   outstandingRewardsKey,
   rewardsCalculationInputsKey,
+  unstakedBalanceKey,
 } from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
 import { ErrorOriginT, RewardCalculationT } from "types";
-import { withdrawRewards } from "web3";
 
 export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();

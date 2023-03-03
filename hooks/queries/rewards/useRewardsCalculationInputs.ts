@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getRewardsCalculationInputs } from "chain";
 import { oneMinute, rewardsCalculationInputsKey } from "constant";
 import { BigNumber } from "ethers";
 import {
@@ -7,7 +8,6 @@ import {
   useUserContext,
   useWalletContext,
 } from "hooks";
-import { getRewardsCalculationInputs } from "web3";
 
 export function useRewardsCalculationInputs(addressOverride?: string) {
   const { voting } = useContractsContext();

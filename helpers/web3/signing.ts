@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
-import { SigningKeys, SigningKey } from "types";
 import { derivePrivateKey, recoverPublicKey } from "helpers";
 import { config } from "helpers/config";
+import { SigningKey, SigningKeys } from "types";
+import Web3 from "web3";
 
 type Signer = ethers.Signer;
 const { signingMessage } = config;
@@ -25,7 +26,14 @@ export async function makeSigningKey(
   signer: ethers.Signer,
   message: string
 ): Promise<SigningKey> {
-  const signedMessage = await signer.signMessage(message);
+  console.log(message);
+  const mm = window.ethereum;
+  const isMM = Boolean(mm);
+  const web3 = new Web3(mm);
+  const address = await signer.getAddress();
+  const signedMessage = isMM
+    ? await web3.eth.sign(ethers.utils.keccak256(Buffer.from(message)), address)
+    : await signer.signMessage(message);
   const privateKey = derivePrivateKey(signedMessage);
   const publicKey = recoverPublicKey(privateKey);
   return {

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getStakerDetails } from "chain";
 import { stakerDetailsKey } from "constant";
 import { BigNumber } from "ethers";
 import { zeroAddress } from "helpers";
@@ -8,7 +9,6 @@ import {
   useHandleError,
   useWalletContext,
 } from "hooks";
-import { getStakerDetails } from "web3";
 
 const initialData = {
   pendingUnstake: BigNumber.from(0),

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { getUnstakeCoolDown } from "chain";
 import { unstakeCoolDownKey } from "constant";
 import { BigNumber } from "ethers";
 import { useContractsContext, useHandleError } from "hooks";
-import { getUnstakeCoolDown } from "web3";
 
 export function useUnstakeCoolDown() {
   const { voting } = useContractsContext();

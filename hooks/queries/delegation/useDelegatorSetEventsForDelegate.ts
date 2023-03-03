@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getDelegatorSetEvents } from "chain";
 import { delegatorSetEventForDelegateKey } from "constant";
 import {
   useContractsContext,
@@ -6,7 +7,6 @@ import {
   useUserContext,
   useWalletContext,
 } from "hooks";
-import { getDelegatorSetEvents } from "web3";
 
 export function useDelegatorSetEventsForDelegate() {
   const { voting } = useContractsContext();

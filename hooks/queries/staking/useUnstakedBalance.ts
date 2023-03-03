@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getUnstakedBalance } from "chain";
 import { unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
 import {
@@ -7,7 +8,6 @@ import {
   useHandleError,
   useWalletContext,
 } from "hooks";
-import { getUnstakedBalance } from "web3";
 
 const initialData = BigNumber.from(0);
 

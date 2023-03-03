@@ -38,7 +38,7 @@ async function decryptVotes(
 ) {
   const decryptedVotes: DecryptedVotesByKeyT = {};
   if (!privateKey || Object.keys(encryptedVotes).length === 0) return {};
-
+  console.log("decrypting votes", encryptedVotes, privateKey);
   for await (const [uniqueKey, encryptedVote] of Object.entries(
     encryptedVotes
   )) {

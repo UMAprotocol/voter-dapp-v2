@@ -11,7 +11,7 @@ import styled from "styled-components";
 import {
   createVotingContractInstance,
   createVotingTokenContractInstance,
-} from "web3";
+} from "chain";
 import { WalletIcon } from "./WalletIcon";
 
 export function Wallet() {

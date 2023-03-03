@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { getAugmentedVoteData } from "chain";
 import { augmentedVoteDataKey } from "constant";
-import { getAugmentedVoteData } from "web3";
 import { useActiveVotes } from "./useActiveVotes";
 import { usePastVotes } from "./usePastVotes";
 import { useUpcomingVotes } from "./useUpcomingVotes";

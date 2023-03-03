@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { executeUnstake } from "chain";
 import {
   stakedBalanceKey,
   stakerDetailsKey,
@@ -7,7 +8,6 @@ import {
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
-import { executeUnstake } from "web3";
 
 function max(a: BigNumber, b: BigNumber) {
   if (a.gt(b)) return a;

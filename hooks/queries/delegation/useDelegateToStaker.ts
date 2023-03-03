@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getDelegateToStaker } from "chain";
 import { delegateToStakerKey } from "constant";
 import { zeroAddress } from "helpers";
 import {
@@ -8,7 +9,6 @@ import {
   useUserContext,
   useWalletContext,
 } from "hooks";
-import { getDelegateToStaker } from "web3";
 
 export function useDelegateToStaker() {
   const { voting } = useContractsContext();

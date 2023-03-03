@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getEncryptedVotes } from "chain";
 import { encryptedVotesKey } from "constant";
 import {
   useAccountDetails,
@@ -6,7 +7,6 @@ import {
   useHandleError,
   useWalletContext,
 } from "hooks";
-import { getEncryptedVotes } from "web3";
 
 export function useEncryptedVotes(roundId?: number) {
   const { voting, votingV1 } = useContractsContext();

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getOutstandingRewards } from "chain";
 import { outstandingRewardsKey } from "constant";
 import { BigNumber } from "ethers";
 import {
@@ -7,7 +8,6 @@ import {
   useUserContext,
   useWalletContext,
 } from "hooks";
-import { getOutstandingRewards } from "web3";
 
 export function useOutstandingRewards(addressOverride?: string) {
   const { voting } = useContractsContext();

@@ -8,7 +8,7 @@ import {
   createVotingContractInstance,
   createVotingTokenContractInstance,
   createVotingV1ContractInstance,
-} from "web3";
+} from "chain";
 
 export interface ContractsContextState {
   voting: VotingV2Ethers;

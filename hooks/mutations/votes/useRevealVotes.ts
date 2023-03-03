@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { revealVotes } from "chain";
 import { revealedVotesKey } from "constant";
 import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { VoteExistsByKeyT } from "types";
-import { revealVotes } from "web3";
 
 export function useRevealVotes() {
   const queryClient = useQueryClient();

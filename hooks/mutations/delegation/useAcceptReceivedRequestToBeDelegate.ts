@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { setDelegator } from "chain";
 import { delegateToStakerKey, voterFromDelegateKey } from "constant";
 import { useHandleError, useUserContext } from "hooks";
-import { setDelegator } from "web3";
 
 export function useAcceptReceivedRequestToBeDelegate() {
   const { address } = useUserContext();

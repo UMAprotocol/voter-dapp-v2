@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { getVoterFromDelegate } from "chain";
 import { voterFromDelegateKey } from "constant";
 import { useContractsContext, useUserContext, useWalletContext } from "hooks";
-import { getVoterFromDelegate } from "web3";
 
 export function useVoterFromDelegate() {
   const { voting } = useContractsContext();

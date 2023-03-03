@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { getStakedBalance } from "chain";
 import { stakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
 import { useContractsContext } from "hooks/contexts/useContractsContext";
 import { useWalletContext } from "hooks/contexts/useWalletContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
-import { getStakedBalance } from "web3";
 import { useAccountDetails } from "../user/useAccountDetails";
 
 const initialData = BigNumber.from(0);

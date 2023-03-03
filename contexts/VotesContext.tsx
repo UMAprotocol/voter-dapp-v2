@@ -6,6 +6,7 @@ import {
   useAugmentedVoteData,
   useCommittedVotes,
   useCommittedVotesByCaller,
+  useCommittedVotesForDelegator,
   useContentfulData,
   useDecodedAdminTransactions,
   useDecryptedVotes,
@@ -14,7 +15,6 @@ import {
   useRevealedVotes,
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
-  useCommittedVotesForDelegator,
   useVoteTimingContext,
 } from "hooks";
 import { createContext, ReactNode, useState } from "react";

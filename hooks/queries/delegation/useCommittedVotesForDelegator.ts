@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getCommittedVotes } from "chain";
 import { committedVotesForDelegatorKey, oneMinute } from "constant";
 import {
   useContractsContext,
@@ -9,7 +10,6 @@ import {
   useWalletContext,
 } from "hooks";
 import { VoteExistsByKeyT } from "types";
-import { getCommittedVotes } from "web3";
 
 export function useCommittedVotesForDelegator() {
   const { address } = useUserContext();

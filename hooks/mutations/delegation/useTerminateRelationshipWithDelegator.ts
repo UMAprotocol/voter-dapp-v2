@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { removeDelegator } from "chain";
 import { voterFromDelegateKey } from "constant";
 import { useHandleError, useUserContext } from "hooks";
-import { removeDelegator } from "web3";
 
 export function useTerminateRelationshipWithDelegator() {
   const { address } = useUserContext();

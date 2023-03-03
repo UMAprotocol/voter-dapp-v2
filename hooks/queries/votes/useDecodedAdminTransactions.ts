@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { getDecodedAdminTransactions } from "chain";
 import { decodedAdminTransactionsKey } from "constant";
 import { useActiveVotes, usePastVotes, useUpcomingVotes } from "hooks";
-import { getDecodedAdminTransactions } from "web3";
 
 export function useDecodedAdminTransactions() {
   const {

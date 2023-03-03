@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { requestUnstake } from "chain";
 import {
   stakedBalanceKey,
   stakerDetailsKey,
@@ -8,7 +9,6 @@ import { BigNumber } from "ethers";
 import { getCanUnstakeTime } from "helpers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
-import { requestUnstake } from "web3";
 
 export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();

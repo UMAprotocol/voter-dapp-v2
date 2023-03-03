@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { removeDelegate } from "chain";
 import { delegateToStakerKey, sentRequestsToBeDelegateKey } from "constant";
 import { zeroAddress } from "helpers";
 import { useHandleError, useUserContext } from "hooks";
 import { DelegationEventT } from "types";
-import { removeDelegate } from "web3";
 
 export function useTerminateRelationshipWithDelegate() {
   const { address } = useUserContext();

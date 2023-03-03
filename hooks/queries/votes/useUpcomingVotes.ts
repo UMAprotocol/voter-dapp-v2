@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getUpcomingVotes } from "chain";
 import { upcomingVotesKey } from "constant";
 import {
   useContractsContext,
@@ -6,7 +7,6 @@ import {
   useNewVotesAdded,
   useVoteTimingContext,
 } from "hooks";
-import { getUpcomingVotes } from "web3";
 
 export function useUpcomingVotes() {
   const { voting } = useContractsContext();

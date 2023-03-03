@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { stake } from "chain";
 import { stakedBalanceKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError } from "hooks";
 import { ErrorOriginT } from "types";
-import { stake } from "web3";
 
 export function useStake(errorOrigin?: ErrorOriginT) {
   const queryClient = useQueryClient();

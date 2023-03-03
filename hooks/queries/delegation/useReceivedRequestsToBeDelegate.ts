@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getDelegateSetEvents } from "chain";
 import { receivedRequestsToBeDelegateKey } from "constant";
 import {
   useContractsContext,
@@ -7,7 +8,6 @@ import {
   useUserContext,
   useWalletContext,
 } from "hooks";
-import { getDelegateSetEvents } from "web3";
 
 export function useReceivedRequestsToBeDelegate() {
   const { voting } = useContractsContext();

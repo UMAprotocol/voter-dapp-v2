@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getRevealedVotes } from "chain";
 import { revealedVotesKey } from "constant";
 import {
   useAccountDetails,
@@ -7,7 +8,6 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { getRevealedVotes } from "web3";
 
 export function useRevealedVotes(addressOverride?: string) {
   const { voting } = useContractsContext();

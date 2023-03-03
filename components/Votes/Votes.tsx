@@ -10,6 +10,7 @@ import {
   VoteTimeline,
 } from "components";
 import { defaultResultsPerPage } from "constant";
+import { ethers } from "ethers";
 import { formatVotesToCommit, getEntriesForPage } from "helpers";
 import { config } from "helpers/config";
 import {

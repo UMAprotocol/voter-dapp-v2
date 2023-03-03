@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { getVoteDiscussion } from "chain";
 import { voteDiscussionKey } from "constant";
 import { L1Request } from "types";
-import { getVoteDiscussion } from "web3";
 
 export function useVoteDiscussion({ identifier, time }: L1Request) {
   return useQuery({
