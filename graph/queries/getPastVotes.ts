@@ -53,8 +53,8 @@ export async function getPastVotesV1() {
       const correctVote = price;
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
       const participation = {
-        uniqueCommitAddresses: revealedVotes.length,
-        uniqueRevealAddresses: committedVotes.length,
+        uniqueCommitAddresses: committedVotes.length,
+        uniqueRevealAddresses: revealedVotes.length,
         totalTokensVotedWith,
       };
 
