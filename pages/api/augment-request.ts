@@ -193,7 +193,7 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
           event?.args?.time instanceof BigNumber
             ? event?.args?.time?.toNumber()
             : event?.args?.time,
-        contractType: "OptimisticOracleV2", // The event based type is only every OOv2.
+        contractType: "OptimisticOracleV2", // The event based type is only ever OOv2.
         chainId: 137,
       },
       CommonEventData
