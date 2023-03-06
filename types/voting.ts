@@ -32,6 +32,7 @@ export type PriceRequestT = {
   isGovernance?: boolean;
   rollCount: number;
   resolvedPriceRequestIndex?: string;
+  revealedVoteByAddress: RevealedVotesByAddress;
 };
 
 export type ParticipationT = {
@@ -53,6 +54,8 @@ export type VoteResultsT = {
   results?: ResultsT;
 };
 
+export type RevealedVotesByAddress = Record<string, string>;
+
 export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
@@ -65,6 +68,7 @@ export type RawPriceRequestDataT = {
   rollCount?: number;
   isGovernance?: boolean;
   resolvedPriceRequestIndex?: string;
+  revealedVoteByAddress?: RevealedVotesByAddress;
 };
 
 export type VoteHistoryDataT = {

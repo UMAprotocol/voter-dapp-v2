@@ -1,6 +1,7 @@
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
 export { createVotingV1ContractInstance } from "./contracts/createVotingV1ContractInstance";
+export { createDesignatedVotingFactoryV1Instance } from "./contracts/createDesignatedVotingFactoryV1Instance";
 export { removeDelegate } from "./mutations/delegation/removeDelegate";
 export { removeDelegator } from "./mutations/delegation/removeDelegator";
 export { setDelegate } from "./mutations/delegation/setDelegate";
