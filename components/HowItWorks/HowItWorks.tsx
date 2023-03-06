@@ -186,7 +186,7 @@ const InnerWrapper = styled.div`
   padding-block: 30px;
   max-width: var(--page-width);
   margin-inline: auto;
-  div {
+  > div {
     margin-bottom: 5px;
   }
   @media ${tabletAndUnder} {
