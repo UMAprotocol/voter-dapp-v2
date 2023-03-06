@@ -176,6 +176,31 @@ async function getOracleRequestPrices(
   );
 }
 
+async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
+  const contract = await constructContract(137, "OracleChildTunnel");
+  const events = await contract.queryFilter(
+    contract.filters.PriceRequestAdded()
+  );
+  return events.map((event) =>
+    ss.create(
+      {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        transactionHash: event?.transactionHash,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        identifier: event?.args?.identifier,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        time:
+          event?.args?.time instanceof BigNumber
+            ? event?.args?.time?.toNumber()
+            : event?.args?.time,
+        contractType: "OptimisticOracleV2", // The event based type is only ever OOv2.
+        chainId: 137,
+      },
+      CommonEventData
+    )
+  );
+}
+
 async function getManyOracleRequestsPrices(
   oracleTypes: OracleType[],
   chainIds: SupportedChainIds[]
@@ -185,7 +210,12 @@ async function getManyOracleRequestsPrices(
       chainIds.map((chainId) => getOracleRequestPrices(oracleType, chainId))
     )
     .flat();
-  return (await Promise.allSettled(requests))
+
+  // To accommodate event based expiration on polygon, we need to also query the oracle child tunnel to join
+  // timestamps correctly. This should be refined in the future.
+  const oracleChildTunnel = getOracleChildTunnelMessages();
+
+  return (await Promise.allSettled([requests, oracleChildTunnel].flat()))
     .map((result) => {
       if (result.status === "fulfilled") {
         return result.value;
