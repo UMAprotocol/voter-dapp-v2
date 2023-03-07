@@ -97,7 +97,7 @@ export const appConfig = ss.create(
     graphEndpointV1: env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
-      env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
+      env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp - 0", // Default to message from old dapp.
     deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
     chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
     graphV1Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,

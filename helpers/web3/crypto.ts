@@ -74,7 +74,7 @@ export function getRandomUnsignedInt(): BigNumber {
 }
 
 export function derivePrivateKey(signature: string) {
-  const pk = solidityKeccak256(["string"], [signature]);
+  const pk = solidityKeccak256(["bytes"], [signature]);
   if (pk) return pk;
   return "";
 }
