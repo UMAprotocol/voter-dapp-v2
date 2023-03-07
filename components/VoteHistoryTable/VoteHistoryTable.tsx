@@ -8,7 +8,7 @@ interface Props {
 }
 export function VoteHistoryTable({ votes }: Props) {
   const { openPanel } = usePanelContext();
-  const headings = ["Vote", "Staking", "Voted", "Correctness", "Score"];
+  const headings = ["Vote", "Staking", "Voted", "Correctness", "Earnings"];
 
   return (
     <Table>

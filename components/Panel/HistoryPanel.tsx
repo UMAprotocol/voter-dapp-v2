@@ -63,7 +63,7 @@ export function HistoryPanel() {
           <AprDetailsWrapper>
             <Text>
               <>
-                Based on participation score:{" "}
+                Earnings based on participation:{" "}
                 {isLoading() ? (
                   <LoadingSkeleton width={40} />
                 ) : (
