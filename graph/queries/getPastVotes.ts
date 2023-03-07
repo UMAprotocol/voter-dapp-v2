@@ -16,6 +16,7 @@ export async function getPastVotesV1() {
         where: { isResolved: true }
         orderBy: time
         orderDirection: desc
+        first: 1000
       ) {
         identifier {
           id
@@ -98,6 +99,7 @@ export async function getPastVotesV2() {
         where: { isResolved: true }
         orderBy: resolvedPriceRequestIndex
         orderDirection: desc
+        first: 1000
       ) {
         identifier {
           id
