@@ -172,13 +172,12 @@ const _generateTransactionDataRecursive = function (
 async function generateReadableAdminTransactionData(identifiers: string[]) {
   const governorV1 = await constructContract(1, "Governor");
 
-  // TODO: to enable decoding of v2 transactions we simply need to uncomment this.
-  // const governorV2 = constructContract(1, "GovernorV2");
+  const governorV2 = await constructContract(1, "GovernorV2");
 
   const events = (
     await Promise.all([
       governorV1.queryFilter(governorV1.filters.NewProposal()),
-      // governorV2.queryFilter(governorV2.filters.NewProposal()),
+      governorV2.queryFilter(governorV2.filters.NewProposal()),
     ])
   ).flat();
 
