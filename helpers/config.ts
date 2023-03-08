@@ -24,6 +24,7 @@ const Env = ss.object({
   NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_OVERRIDE_APR: ss.optional(ss.string()),
   NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS: ss.optional(ss.string()),
+  NEXT_PUBLIC_PHASE_LENGTH: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -55,6 +56,7 @@ export const env = ss.create(
     NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
     NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
       process.env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS,
+    NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
   },
   Env
 );
@@ -78,6 +80,7 @@ const AppConfig = ss.object({
   contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
+  phaseLength: ss.number(),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -111,6 +114,7 @@ export const appConfig = ss.create(
       getDesignatedVotingFactoryAddress(
         Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1")
       ),
+    phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
   },
   AppConfig
 );
