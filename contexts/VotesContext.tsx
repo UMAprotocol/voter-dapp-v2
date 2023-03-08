@@ -39,7 +39,6 @@ export interface VotesContextState {
   revealedVotes: VoteExistsByKeyT;
   encryptedVotes: EncryptedVotesByKeyT;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
-  decryptedPastVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
   getActiveVotes: () => VoteT[];
   getUpcomingVotes: () => VoteT[];
@@ -65,7 +64,6 @@ export const defaultVotesContextState: VotesContextState = {
   revealedVotes: {},
   encryptedVotes: {},
   decryptedVotes: {},
-  decryptedPastVotes: {},
   contentfulData: {},
   getActiveVotes: () => [],
   getUpcomingVotes: () => [],
@@ -146,11 +144,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isFetching: decryptedVotesIsFetching,
   } = useDecryptedVotes(roundId);
   const {
-    data: decryptedPastVotes,
-    isLoading: decryptedPastVotesIsLoading,
-    isFetching: decryptedPastVotesIsFetching,
-  } = useDecryptedVotes();
-  const {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails(addressOverride);
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
@@ -165,8 +158,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       committedVotesForDelegatorIsLoading ||
       revealedVotesIsLoading ||
       encryptedVotesIsLoading ||
-      decryptedVotesIsLoading ||
-      decryptedPastVotesIsLoading
+      decryptedVotesIsLoading
     );
   }
 
@@ -188,8 +180,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       committedVotesByForDelegatorFetching ||
       revealedVotesIsFetching ||
       encryptedVotesIsFetching ||
-      decryptedVotesIsFetching ||
-      decryptedPastVotesIsFetching
+      decryptedVotesIsFetching
     );
   }
 
@@ -212,11 +203,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getPastVotes() {
-    return getVotesWithData(pastVotes, decryptedPastVotes);
+    return getVotesWithData(pastVotes, decryptedVotes);
   }
 
   function getPastVotesV2() {
-    return getVotesWithData(pastVotes, decryptedPastVotes).filter(
+    return getVotesWithData(pastVotes, decryptedVotes).filter(
       (vote) => !vote.isV1
     );
   }
@@ -308,7 +299,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         revealedVotes,
         encryptedVotes,
         decryptedVotes,
-        decryptedPastVotes,
         contentfulData,
         getActiveVotes,
         getUpcomingVotes,

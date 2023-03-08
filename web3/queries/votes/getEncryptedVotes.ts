@@ -20,13 +20,17 @@ export async function getEncryptedVotes(
     .filter(({ roundId }) => (findRoundId ? roundId === findRoundId : true));
 
   const encryptedVotes: EncryptedVotesByKeyT = {};
-
-  v1EventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
-    const decodedIdentifier = decodeHexString(identifier);
-    encryptedVotes[
-      makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
-    ] = encryptedVote;
-  });
+  // disable v1 events if a round id is specified, this means we are only looking for current rounds
+  if (findRoundId === undefined) {
+    v1EventData?.forEach(
+      ({ encryptedVote, identifier, time, ancillaryData }) => {
+        const decodedIdentifier = decodeHexString(identifier);
+        encryptedVotes[
+          makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
+        ] = encryptedVote;
+      }
+    );
+  }
   v2EventData?.forEach(({ encryptedVote, identifier, time, ancillaryData }) => {
     const decodedIdentifier = decodeHexString(identifier);
     encryptedVotes[
