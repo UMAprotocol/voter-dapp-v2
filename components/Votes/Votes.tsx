@@ -304,62 +304,98 @@ export function Votes() {
         return getActiveVotes();
       case "upcoming":
         return getUpcomingVotes();
-      case "past":
-        return getPastVotes();
+      default:
+        return [];
     }
   }
 
-  function determineTitle() {
-    const status = getActivityStatus();
-    switch (status) {
-      case "active":
-        return "Active votes:";
-      case "upcoming":
-        return "Upcoming votes:";
-      default:
-        return "Past votes:";
-    }
+  const activityStatus = getActivityStatus();
+
+  // this is the view for past votes when no active or upcoming votes
+  function pastView() {
+    const pastVotes = getPastVotes().slice(0, 5);
+    if (pastVotes.length === 0) return null;
+    return (
+      <>
+        <Title>Recent past votes:</Title>
+        <VotesTableWrapper
+          style={
+            {
+              "--margin-top": "0px",
+            } as CSSProperties
+          }
+        >
+          <VotesList
+            headings={<VotesTableHeadings activityStatus="past" />}
+            rows={pastVotes.map((vote) => (
+              <VotesListItem
+                vote={vote}
+                phase={phase}
+                selectedVote={undefined}
+                selectVote={() => null}
+                activityStatus="past"
+                moreDetailsAction={() => openPanel("vote", vote)}
+                key={vote.uniqueKey}
+                isFetching={getUserDependentIsFetching()}
+              />
+            ))}
+          />
+        </VotesTableWrapper>
+        <ButtonInnerWrapper>
+          <Button label="See all" href="/past-votes" variant="primary" />
+        </ButtonInnerWrapper>
+      </>
+    );
   }
-  return (
-    <>
-      <Title>{determineTitle()}</Title>
-      {(getActivityStatus() === "active" ||
-        getActivityStatus() === "upcoming") && <VoteTimeline />}
-      <VotesTableWrapper>
-        <VotesList
-          headings={<VotesTableHeadings activityStatus={getActivityStatus()} />}
-          rows={votesToShow.map((vote, index) => (
-            <VotesListItem
-              vote={vote}
-              phase={phase}
-              selectedVote={selectedVotes[vote.uniqueKey]}
-              selectVote={(value) => selectVote(value, vote)}
-              activityStatus={getActivityStatus()}
-              moreDetailsAction={() => openVotePanel(vote)}
-              key={vote.uniqueKey}
-              delegationStatus={getDelegationStatus()}
-              isDirty={dirtyInputs[index]}
-              setDirty={(dirty: boolean) => {
-                setDirtyInput((inputs) => {
-                  inputs[index] = dirty;
-                  return [...inputs];
-                });
-              }}
-              isFetching={
-                getUserDependentIsFetching() ||
-                isCommittingVotes ||
-                isRevealingVotes
-              }
+  // show this view when votes are active
+  function activeView() {
+    const pv = pastView();
+    return (
+      <>
+        <Title> Active votes: </Title>
+        <VoteTimeline />
+        <VotesTableWrapper>
+          <VotesList
+            headings={<VotesTableHeadings activityStatus={activityStatus} />}
+            rows={votesToShow.map((vote, index) => (
+              <VotesListItem
+                vote={vote}
+                phase={phase}
+                selectedVote={selectedVotes[vote.uniqueKey]}
+                selectVote={(value) => selectVote(value, vote)}
+                activityStatus={activityStatus}
+                moreDetailsAction={() => openVotePanel(vote)}
+                key={vote.uniqueKey}
+                delegationStatus={getDelegationStatus()}
+                isDirty={dirtyInputs[index]}
+                setDirty={(dirty: boolean) => {
+                  setDirtyInput((inputs) => {
+                    inputs[index] = dirty;
+                    return [...inputs];
+                  });
+                }}
+                isFetching={
+                  getUserDependentIsFetching() ||
+                  isCommittingVotes ||
+                  isRevealingVotes
+                }
+              />
+            ))}
+          />
+        </VotesTableWrapper>
+        {determineVotesToShow().length > defaultResultsPerPage && (
+          <PaginationWrapper>
+            <Pagination
+              paginateFor="activeVotesPage"
+              numberOfEntries={determineVotesToShow().length}
             />
-          ))}
-        />
-      </VotesTableWrapper>
-      {isDirty() ? (
-        <RecommittingVotesMessage>
-          * Changes to committed votes need to be re-committed
-        </RecommittingVotesMessage>
-      ) : null}
-      {getActivityStatus() === "active" ? (
+          </PaginationWrapper>
+        )}
+        {isDirty() ? (
+          <RecommittingVotesMessage>
+            * Changes to committed votes need to be re-committed
+          </RecommittingVotesMessage>
+        ) : null}
         <ButtonOuterWrapper>
           {actionStatus.infoText ? (
             <Tooltip label={actionStatus.infoText.tooltip}>
@@ -405,51 +441,74 @@ export function Votes() {
             ) : null}
           </ButtonInnerWrapper>
         </ButtonOuterWrapper>
-      ) : null}
-      {determineVotesToShow().length > defaultResultsPerPage && (
-        <PaginationWrapper>
-          <Pagination
-            paginateFor="activeVotesPage"
-            numberOfEntries={determineVotesToShow().length}
+        {pv ? (
+          <>
+            <Divider />
+            {pv}
+          </>
+        ) : null}
+      </>
+    );
+  }
+  function upcomingView() {
+    const pv = pastView();
+    return (
+      <>
+        <Title>Upcoming votes:</Title>
+        <VoteTimeline />
+        <VotesTableWrapper>
+          <VotesList
+            headings={<VotesTableHeadings activityStatus={activityStatus} />}
+            rows={votesToShow.map((vote, index) => (
+              <VotesListItem
+                vote={vote}
+                phase={phase}
+                selectedVote={selectedVotes[vote.uniqueKey]}
+                selectVote={(value) => selectVote(value, vote)}
+                activityStatus={activityStatus}
+                moreDetailsAction={() => openVotePanel(vote)}
+                key={vote.uniqueKey}
+                delegationStatus={getDelegationStatus()}
+                isDirty={dirtyInputs[index]}
+                setDirty={(dirty: boolean) => {
+                  setDirtyInput((inputs) => {
+                    inputs[index] = dirty;
+                    return [...inputs];
+                  });
+                }}
+                isFetching={
+                  getUserDependentIsFetching() ||
+                  isCommittingVotes ||
+                  isRevealingVotes
+                }
+              />
+            ))}
           />
-        </PaginationWrapper>
-      )}
-      {getPastVotes().length > 0 && getActivityStatus() !== "past" && (
-        <>
-          <Divider />
-          <Title>Recent past votes:</Title>
-          <VotesTableWrapper
-            style={
-              {
-                "--margin-top": "0px",
-              } as CSSProperties
-            }
-          >
-            <VotesList
-              headings={<VotesTableHeadings activityStatus="past" />}
-              rows={getPastVotes()
-                .slice(0, 3)
-                .map((vote) => (
-                  <VotesListItem
-                    vote={vote}
-                    phase={phase}
-                    selectedVote={undefined}
-                    selectVote={() => null}
-                    activityStatus="past"
-                    moreDetailsAction={() => openPanel("vote", vote)}
-                    key={vote.uniqueKey}
-                    isFetching={getUserDependentIsFetching()}
-                  />
-                ))}
+        </VotesTableWrapper>
+        {determineVotesToShow().length > defaultResultsPerPage && (
+          <PaginationWrapper>
+            <Pagination
+              paginateFor="upcomingVotesPage"
+              numberOfEntries={determineVotesToShow().length}
             />
-          </VotesTableWrapper>
-          <ButtonInnerWrapper>
-            <Button label="See all" href="/past-votes" variant="primary" />
-          </ButtonInnerWrapper>
-        </>
-      )}
-    </>
-  );
+          </PaginationWrapper>
+        )}
+        {pv ? (
+          <>
+            <Divider />
+            {pv}
+          </>
+        ) : null}
+      </>
+    );
+  }
+  if (activityStatus === "active") {
+    return activeView();
+  } else if (activityStatus === "upcoming") {
+    return upcomingView();
+  } else {
+    return pastView();
+  }
 }
 
 const VotesTableWrapper = styled.div`
