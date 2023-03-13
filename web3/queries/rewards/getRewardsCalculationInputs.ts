@@ -10,7 +10,7 @@ export async function getRewardsCalculationInputs(voting: VotingV2Ethers) {
     voting.emissionRate(),
     voting.rewardPerTokenStored(),
     voting.cumulativeStake(),
-    voting.getCurrentTime(),
+    voting.lastUpdateTime(),
   ]);
 
   return {

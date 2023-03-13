@@ -5,8 +5,13 @@ export async function getStakerDetails(
   address: string
 ) {
   const result = await votingContract.voterStakes(address);
-  const { pendingUnstake, unstakeTime, delegate, rewardsPaidPerToken } =
-    result ?? {};
+  const {
+    pendingUnstake,
+    unstakeTime,
+    delegate,
+    rewardsPaidPerToken,
+    outstandingRewards,
+  } = result ?? {};
   const canUnstakeTime = new Date(Number(unstakeTime) * 1000);
 
   return {
@@ -14,5 +19,6 @@ export async function getStakerDetails(
     canUnstakeTime,
     delegate,
     rewardsPaidPerToken,
+    outstandingRewards,
   };
 }

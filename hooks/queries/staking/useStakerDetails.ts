@@ -15,6 +15,7 @@ const initialData = {
   canUnstakeTime: new Date(0),
   delegate: zeroAddress,
   rewardsPaidPerToken: BigNumber.from(0),
+  outstandingRewards: BigNumber.from(0),
 };
 
 export function useStakerDetails(addressOverride?: string) {
