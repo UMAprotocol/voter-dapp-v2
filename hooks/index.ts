@@ -43,7 +43,6 @@ export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceive
 export { useSentRequestsToBeDelegate } from "./queries/delegation/useSentRequestsToBeDelegate";
 export { useVoterFromDelegate } from "./queries/delegation/useVoterFromDelegate";
 export { useGlobals } from "./queries/rewards/useGlobals";
-export { useOutstandingRewards } from "./queries/rewards/useOutstandingRewards";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
 export { useV1Rewards } from "./queries/rewards/useV1Rewards";
 export { useDelegatorStakedBalance } from "./queries/staking/useDelegatorStakedBalance";

@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { oneEth } from "helpers/web3/ethers";
 
 interface CalculationInputs {
-  outstandingRewardsFromContract: BigNumber;
+  voterOutstandingRewards: BigNumber;
   stakedBalance: BigNumber;
   rewardsPaidPerToken: BigNumber;
   cumulativeStake: BigNumber;
@@ -11,7 +11,7 @@ interface CalculationInputs {
   emissionRate: BigNumber;
 }
 export function calculateOutstandingRewards({
-  outstandingRewardsFromContract,
+  voterOutstandingRewards,
   stakedBalance,
   rewardsPaidPerToken,
   cumulativeStake,
@@ -32,5 +32,5 @@ export function calculateOutstandingRewards({
     .mul(rewardPerToken.sub(rewardsPaidPerToken))
     .div(oneEth);
 
-  return outstandingRewardsFromContract.add(rewardsFromLoad);
+  return voterOutstandingRewards.add(rewardsFromLoad);
 }

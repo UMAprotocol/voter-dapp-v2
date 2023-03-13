@@ -3,7 +3,6 @@ import { calculateOutstandingRewards } from "helpers";
 import {
   useAccountDetails,
   useInterval,
-  useOutstandingRewards,
   useRewardsCalculationInputs,
   useStakedBalance,
   useStakerDetails,
@@ -64,7 +63,12 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   const address = addressOverride || defaultAddress;
 
   const {
-    data: { pendingUnstake, canUnstakeTime, rewardsPaidPerToken },
+    data: {
+      pendingUnstake,
+      canUnstakeTime,
+      rewardsPaidPerToken,
+      outstandingRewards: voterOutstandingRewards,
+    },
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails(address);
@@ -83,11 +87,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isLoading: rewardsCalculationInputsLoading,
     isFetching: rewardsCalculationInputsFetching,
   } = useRewardsCalculationInputs(address);
-  const {
-    data: outstandingRewardsFromContract,
-    isLoading: outstandingRewardsLoading,
-    isFetching: outstandingRewardsFetching,
-  } = useOutstandingRewards(address);
   const {
     data: tokenAllowance,
     isLoading: tokenAllowanceLoading,
@@ -111,7 +110,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
 
   function updateOutstandingRewards() {
     const calculatedOutstandingRewards = calculateOutstandingRewards({
-      outstandingRewardsFromContract,
+      voterOutstandingRewards,
       stakedBalance,
       rewardsPaidPerToken,
       cumulativeStake,
@@ -130,7 +129,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       stakerDetailsLoading ||
       stakedBalanceLoading ||
       unstakedBalanceLoading ||
-      outstandingRewardsLoading ||
       tokenAllowanceLoading ||
       unstakeCoolDownLoading ||
       rewardsCalculationInputsLoading
@@ -144,7 +142,6 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       stakerDetailsFetching ||
       stakedBalanceFetching ||
       unstakedBalanceFetching ||
-      outstandingRewardsFetching ||
       tokenAllowanceFetching ||
       unstakeCoolDownFetching ||
       rewardsCalculationInputsFetching
