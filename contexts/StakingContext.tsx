@@ -3,7 +3,6 @@ import { calculateOutstandingRewards } from "helpers";
 import {
   useAccountDetails,
   useInterval,
-  useOutstandingRewards,
   useRewardsCalculationInputs,
   useStakedBalance,
   useStakerDetails,
