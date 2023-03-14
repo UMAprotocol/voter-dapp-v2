@@ -12,11 +12,12 @@ import {
 
 export interface ContractsContextState {
   voting: VotingV2Ethers;
-  setVoting: (voting: VotingV2Ethers) => void;
+  votingWriter: VotingV2Ethers | undefined;
+  setVotingWriter: (voting: VotingV2Ethers | undefined) => void;
   votingToken: VotingTokenEthers;
-  setVotingToken: (votingToken: VotingTokenEthers) => void;
+  votingTokenWriter: VotingTokenEthers | undefined;
+  setVotingTokenWriter: (votingToken: VotingTokenEthers | undefined) => void;
   votingV1: VotingEthers;
-  setVotingV1: (votingV1: VotingEthers) => void;
 }
 
 const defaultVoting = createVotingContractInstance();
@@ -25,11 +26,12 @@ const defaultVotingV1 = createVotingV1ContractInstance();
 
 export const defaultContractContextState = {
   voting: defaultVoting,
-  setVoting: () => null,
+  votingWriter: undefined,
+  setVotingWriter: () => null,
   votingToken: defaultVotingToken,
-  setVotingToken: () => null,
+  votingTokenWriter: undefined,
+  setVotingTokenWriter: () => null,
   votingV1: defaultVotingV1,
-  setVotingV1: () => null,
 };
 
 export const ContractsContext = createContext<ContractsContextState>(
@@ -37,19 +39,23 @@ export const ContractsContext = createContext<ContractsContextState>(
 );
 
 export function ContractsProvider({ children }: { children: ReactNode }) {
-  const [voting, setVoting] = useState(defaultVoting);
-  const [votingToken, setVotingToken] = useState(defaultVotingToken);
-  const [votingV1, setVotingV1] = useState(defaultVotingV1);
+  const [votingTokenWriter, setVotingTokenWriter] = useState<
+    VotingTokenEthers | undefined
+  >(undefined);
+  const [votingWriter, setVotingWriter] = useState<VotingV2Ethers | undefined>(
+    undefined
+  );
 
   return (
     <ContractsContext.Provider
       value={{
-        voting,
-        setVoting,
-        votingToken,
-        setVotingToken,
-        votingV1,
-        setVotingV1,
+        voting: defaultVoting,
+        votingToken: defaultVotingToken,
+        votingV1: defaultVotingV1,
+        setVotingWriter,
+        votingWriter,
+        setVotingTokenWriter,
+        votingTokenWriter,
       }}
     >
       {children}

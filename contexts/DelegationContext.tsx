@@ -118,7 +118,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     terminateRelationshipWithDelegatorMutation,
     isTerminatingRelationshipWithDelegator,
   } = useTerminateRelationshipWithDelegator();
-  const { voting } = useContractsContext();
+  const { votingWriter } = useContractsContext();
   const { address } = useUserContext();
   const {
     data: { delegate },
@@ -269,9 +269,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function sendRequestToBeDelegate(delegateAddress: string) {
+    if (!votingWriter) return;
     sendRequestToBeDelegateMutation(
       {
-        voting,
+        voting: votingWriter,
         delegateAddress,
         notificationMessages: {
           pending: `Requesting ${truncateEthAddress(
@@ -294,8 +295,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function cancelSentRequestToBeDelegate() {
+    if (!votingWriter) return;
     cancelSentRequestToBeDelegateMutation({
-      voting,
+      voting: votingWriter,
       notificationMessages: {
         pending: "Cancelling request to delegate...",
         success: "Successfully cancelled request to delegate",
@@ -305,8 +307,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
+    if (!votingWriter) return;
     acceptReceivedRequestToBeDelegateMutation({
-      voting,
+      voting: votingWriter,
       delegatorAddress,
       notificationMessages: {
         pending: `Accepting request to be delegate from ${truncateEthAddress(
@@ -330,8 +333,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegator() {
+    if (!votingWriter) return;
     terminateRelationshipWithDelegatorMutation({
-      voting,
+      voting: votingWriter,
       notificationMessages: {
         pending: "Removing delegator...",
         success: "Successfully removed delegator",
@@ -341,8 +345,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function terminateRelationshipWithDelegate() {
+    if (!votingWriter) return;
     terminateRelationshipWithDelegateMutation({
-      voting,
+      voting: votingWriter,
       notificationMessages: {
         pending: "Removing delegate...",
         success: "Successfully removed delegate",

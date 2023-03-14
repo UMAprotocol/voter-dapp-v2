@@ -22,7 +22,7 @@ import {
 const minimumAmountClaimable = parseEtherSafe(".01");
 
 export function ClaimPanel() {
-  const { voting } = useContractsContext();
+  const { votingWriter } = useContractsContext();
   const { getDelegationStatus } = useDelegationContext();
   const { withdrawRewardsMutation, isWithdrawingRewards } =
     useWithdrawRewards("claim");
@@ -32,15 +32,15 @@ export function ClaimPanel() {
   const isDelegate = getDelegationStatus() === "delegate";
 
   function withdrawRewards() {
-    if (!outstandingRewards) return;
+    if (!outstandingRewards || !votingWriter) return;
 
-    withdrawRewardsMutation({ voting, outstandingRewards });
+    withdrawRewardsMutation({ voting: votingWriter, outstandingRewards });
   }
 
   function withdrawAndRestake() {
-    if (!outstandingRewards) return;
+    if (!outstandingRewards || !votingWriter) return;
 
-    withdrawAndRestakeMutation({ voting, outstandingRewards });
+    withdrawAndRestakeMutation({ voting: votingWriter, outstandingRewards });
   }
 
   function isLoading() {

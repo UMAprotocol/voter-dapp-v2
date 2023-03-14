@@ -21,7 +21,7 @@ import { Stake } from "./Stake";
 import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
-  const { voting, votingToken } = useContractsContext();
+  const { votingWriter, votingTokenWriter } = useContractsContext();
   const {
     tokenAllowance,
     stakedBalance,
@@ -57,17 +57,19 @@ export function StakeUnstakePanel() {
   }
 
   function approve(approveAmountInput: string) {
+    if (!votingTokenWriter) return;
     const approveAmount =
       approveAmountInput === maximumApprovalAmountString
         ? maximumApprovalAmount
         : parseEtherSafe(approveAmountInput);
-    approveMutation({ votingToken, approveAmount });
+    approveMutation({ votingToken: votingTokenWriter, approveAmount });
   }
 
   function stake(stakeAmountInput: string, resetStakeAmount: () => void) {
+    if (!votingWriter) return;
     const stakeAmount = parseEther(stakeAmountInput);
     stakeMutation(
-      { voting, stakeAmount },
+      { voting: votingWriter, stakeAmount },
       {
         onSuccess: () => {
           resetStakeAmount();
@@ -77,14 +79,15 @@ export function StakeUnstakePanel() {
   }
 
   function requestUnstake(unstakeAmountInput: string) {
+    if (!votingWriter) return;
     const unstakeAmount = parseEther(unstakeAmountInput);
-    requestUnstakeMutation({ voting, unstakeAmount });
+    requestUnstakeMutation({ voting: votingWriter, unstakeAmount });
   }
 
   function executeUnstake() {
-    if (!pendingUnstake) return;
+    if (!pendingUnstake || !votingWriter) return;
 
-    executeUnstakeMutation({ voting, pendingUnstake });
+    executeUnstakeMutation({ voting: votingWriter, pendingUnstake });
   }
 
   const tabs = [

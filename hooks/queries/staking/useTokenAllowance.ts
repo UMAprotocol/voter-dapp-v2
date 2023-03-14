@@ -10,16 +10,16 @@ import {
 import { getTokenAllowance } from "web3";
 
 export function useTokenAllowance() {
-  const { votingToken } = useContractsContext();
+  const { votingTokenWriter } = useContractsContext();
   const { address } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery(
     [tokenAllowanceKey, address],
-    () => getTokenAllowance(votingToken, address),
+    () => getTokenAllowance(votingTokenWriter!, address),
     {
-      enabled: !!address && !isWrongChain,
+      enabled: !!address && !isWrongChain && !!votingTokenWriter,
       initialData: BigNumber.from(0),
       onError,
     }

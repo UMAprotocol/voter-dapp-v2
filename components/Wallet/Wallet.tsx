@@ -18,7 +18,7 @@ export function Wallet() {
   const [{ wallet, connecting }, connect] = useConnectWallet();
   const connectedWallets = useWallets();
   const { setProvider, setSigner, isWrongChain } = useWalletContext();
-  const { setVoting, setVotingToken } = useContractsContext();
+  const { setVotingWriter, setVotingTokenWriter } = useContractsContext();
   const { openPanel } = usePanelContext();
   const { truncatedAddress } = useUserContext();
 
@@ -59,8 +59,8 @@ export function Wallet() {
     if (!wallet?.provider || isWrongChain) {
       setProvider(null);
       setSigner(null);
-      setVoting(createVotingContractInstance());
-      setVotingToken(createVotingTokenContractInstance());
+      setVotingWriter(undefined);
+      setVotingTokenWriter(undefined);
     } else {
       // After this is set you can use the provider to sign or transact
       const provider = new ethers.providers.Web3Provider(wallet.provider);
@@ -69,8 +69,8 @@ export function Wallet() {
       setProvider(provider);
       setSigner(signer);
       // if a signer exists, we can change the voting contract instance to use it instead of the default `VoidSigner`
-      setVoting(createVotingContractInstance(signer));
-      setVotingToken(createVotingTokenContractInstance(signer));
+      setVotingWriter(createVotingContractInstance(signer));
+      setVotingTokenWriter(createVotingTokenContractInstance(signer));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, isWrongChain]);

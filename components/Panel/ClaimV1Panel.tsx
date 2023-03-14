@@ -13,20 +13,24 @@ import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimV1Panel() {
-  const { voting } = useContractsContext();
+  const { votingWriter } = useContractsContext();
   const { withdrawV1RewardsMutation, isWithdrawingV1Rewards } =
     useWithdrawV1Rewards("claimV1");
   const { v1Rewards } = useStakingContext();
   const claimableV1Rewards = v1Rewards?.totalRewards ?? BigNumber.from(0);
 
   function withdrawV1Rewards() {
-    if (!v1Rewards) return;
+    if (!v1Rewards || !votingWriter) return;
 
     const { totalRewards, multicallPayload } = v1Rewards;
 
     if (totalRewards.eq(0) || multicallPayload.length === 0) return;
 
-    withdrawV1RewardsMutation({ voting, totalRewards, multicallPayload });
+    withdrawV1RewardsMutation({
+      voting: votingWriter,
+      totalRewards,
+      multicallPayload,
+    });
   }
 
   function isLoading() {
