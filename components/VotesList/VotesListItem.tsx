@@ -130,12 +130,7 @@ export function VotesListItem({
   }
 
   function getDecryptedVoteAsString() {
-    return getDecryptedVoteAsNumber()?.toString();
-  }
-
-  function getDecryptedVoteAsNumber() {
-    const formattedString = getDecryptedVoteAsFormattedString();
-    return formattedString ? Number(formattedString) : undefined;
+    return getDecryptedVoteAsFormattedString();
   }
 
   function showVoteInput() {
