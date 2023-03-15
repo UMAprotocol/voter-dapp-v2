@@ -44,7 +44,7 @@ export function Votes() {
     useUserContext();
   const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
     useWalletContext();
-  const { voting } = useContractsContext();
+  const { votingWriter } = useContractsContext();
   const { stakedBalance } = useStakingContext();
   const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
@@ -248,7 +248,7 @@ export function Votes() {
   }
 
   async function commitVotes() {
-    if (!actionStatus.canCommit || !signingKey) return;
+    if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: getActiveVotes(),
@@ -259,7 +259,7 @@ export function Votes() {
     });
     commitVotesMutation(
       {
-        voting,
+        voting: votingWriter,
         formattedVotes,
       },
       {
@@ -271,10 +271,10 @@ export function Votes() {
   }
 
   function revealVotes() {
-    if (!actionStatus.canReveal) return;
+    if (!actionStatus.canReveal || !votingWriter) return;
 
     revealVotesMutation({
-      voting,
+      voting: votingWriter,
       votesToReveal: getVotesToReveal(),
     });
   }
