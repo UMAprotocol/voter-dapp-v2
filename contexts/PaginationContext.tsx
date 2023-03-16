@@ -24,6 +24,7 @@ export const defaultPageStates = {
   activeVotesPage: defaultPageState,
   upcomingVotesPage: defaultPageState,
   pastVotesPage: defaultPageState,
+  pastVotesComponent: defaultPageState,
   voteHistoryPage: defaultPageState,
 };
 
@@ -49,6 +50,9 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
     ...defaultPageState,
   });
   const [pastVotesPage, setPastVotesPage] = useState({ ...defaultPageState });
+  const [pastVotesComponent, setPastVotesComponent] = useState({
+    ...defaultPageState,
+  });
   const [voteHistoryPage, setVoteHistoryPage] = useState({
     ...defaultPageState,
   });
@@ -56,6 +60,7 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
     activeVotesPage,
     upcomingVotesPage,
     pastVotesPage,
+    pastVotesComponent,
     voteHistoryPage,
   };
 
@@ -63,6 +68,7 @@ export function PaginationProvider({ children }: { children: ReactNode }) {
     activeVotesPage: setActiveVotesPage,
     upcomingVotesPage: setUpcomingVotesPage,
     pastVotesPage: setPastVotesPage,
+    pastVotesComponent: setPastVotesComponent,
     voteHistoryPage: setVoteHistoryPage,
   };
 

@@ -26,6 +26,7 @@ export type PaginateForT =
   | "activeVotesPage"
   | "upcomingVotesPage"
   | "pastVotesPage"
+  | "pastVotesComponent"
   | "voteHistoryPage";
 
 export type PageStateT = {
