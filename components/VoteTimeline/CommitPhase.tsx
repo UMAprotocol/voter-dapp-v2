@@ -19,6 +19,22 @@ export function CommitPhase({ phase, timeRemaining }: Props) {
     Date.now() + timeRemaining
   );
 
+  let message = (
+    <Message>
+      Commit phase starts in: <Strong>{formattedTimeRemaining}</Strong>
+    </Message>
+  );
+  if (phase === "commit") {
+    message = (
+      <Message>
+        Time remaining to commit votes:{" "}
+        <Strong>{formattedTimeRemaining}</Strong>
+      </Message>
+    );
+  } else if (phase === "reveal") {
+    message = <Message>Commit phase over</Message>;
+  }
+
   return (
     <OuterWrapper>
       <InnerWrapper
@@ -39,16 +55,7 @@ export function CommitPhase({ phase, timeRemaining }: Props) {
             }
           />
         </CommitIconWrapper>
-        {isActive ? (
-          <Message>
-            Time remaining to commit votes:{" "}
-            <Strong>{formattedTimeRemaining}</Strong>
-          </Message>
-        ) : (
-          <Message>
-            Commit phase starts in: <Strong>{formattedTimeRemaining}</Strong>
-          </Message>
-        )}
+        {message}
       </InnerWrapper>
       {isActive && (
         <MobileActiveIndicatorWrapper>
