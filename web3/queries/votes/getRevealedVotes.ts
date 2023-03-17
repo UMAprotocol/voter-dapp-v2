@@ -6,7 +6,7 @@ export async function getRevealedVotes(
   votingContract: VotingV2Ethers,
   address: string,
   roundId: number
-) {
+): Promise<VoteExistsByKeyT> {
   const filter = votingContract.filters.VoteRevealed(
     address,
     null,
