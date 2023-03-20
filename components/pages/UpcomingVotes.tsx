@@ -11,15 +11,10 @@ import {
   VotesTableHeadings,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { getEntriesForPage } from "helpers";
-import {
-  usePaginationContext,
-  usePanelContext,
-  useVotesContext,
-  useVoteTimingContext,
-} from "hooks";
+import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
+import { useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -31,19 +26,10 @@ export function UpcomingVotes() {
   } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const {
-    pageStates: {
-      upcomingVotesPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
+  const [votesToShow, setVotesToShow] = useState(getUpcomingVotes());
   const upcomingVotes = getUpcomingVotes();
   const numberOfUpcomingVotes = upcomingVotes.length;
   const hasUpcomingVotes = numberOfUpcomingVotes > 0;
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    upcomingVotes
-  );
 
   return (
     <Layout title="UMA | Upcoming Votes">
@@ -84,8 +70,8 @@ export function UpcomingVotes() {
                   {numberOfUpcomingVotes > defaultResultsPerPage && (
                     <PaginationWrapper>
                       <Pagination
-                        paginateFor="upcomingVotesPage"
-                        numberOfEntries={numberOfUpcomingVotes}
+                        entries={votesToShow}
+                        setEntriesToShow={setVotesToShow}
                       />
                     </PaginationWrapper>
                   )}

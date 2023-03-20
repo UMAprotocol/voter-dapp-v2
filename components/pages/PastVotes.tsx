@@ -10,13 +10,8 @@ import {
   VotesTableHeadings,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { getEntriesForPage } from "helpers";
-import {
-  usePaginationContext,
-  usePanelContext,
-  useVotesContext,
-  useVoteTimingContext,
-} from "hooks";
+import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -28,16 +23,8 @@ export function PastVotes() {
   } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const {
-    pageStates: {
-      pastVotesPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
-
-  const pastVotes = getPastVotes();
-  const numberOfPastVotes = pastVotes.length;
-  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
-
+  const [votesToShow, setVotesToShow] = useState(getPastVotes());
+  const numberOfPastVotes = getPastVotes().length;
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -69,8 +56,8 @@ export function PastVotes() {
               {numberOfPastVotes > defaultResultsPerPage && (
                 <PaginationWrapper>
                   <Pagination
-                    paginateFor="pastVotesPage"
-                    numberOfEntries={numberOfPastVotes}
+                    entries={votesToShow}
+                    setEntriesToShow={setVotesToShow}
                   />
                 </PaginationWrapper>
               )}

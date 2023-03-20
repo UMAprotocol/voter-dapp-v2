@@ -10,13 +10,12 @@ import {
   VoteTimeline,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { formatVotesToCommit, getEntriesForPage } from "helpers";
+import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  usePaginationContext,
   usePanelContext,
   useRevealVotes,
   useStakingContext,
@@ -50,25 +49,17 @@ export function Votes() {
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
-  const {
-    pageStates: {
-      activeVotesPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const isDelegate = getDelegationStatus() === "delegate";
   const isDelegator = getDelegationStatus() === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
+  const [votesToShow, setVotesToShow] = useState(determineVotesToShow());
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    determineVotesToShow()
-  );
+
   const actionStatus = calculateActionStatus();
   type ActionStatus = {
     tooltip?: string;
@@ -386,8 +377,8 @@ export function Votes() {
         {determineVotesToShow().length > defaultResultsPerPage && (
           <PaginationWrapper>
             <Pagination
-              paginateFor="activeVotesPage"
-              numberOfEntries={determineVotesToShow().length}
+              entries={votesToShow}
+              setEntriesToShow={setVotesToShow}
             />
           </PaginationWrapper>
         )}
@@ -488,8 +479,8 @@ export function Votes() {
         {determineVotesToShow().length > defaultResultsPerPage && (
           <PaginationWrapper>
             <Pagination
-              paginateFor="upcomingVotesPage"
-              numberOfEntries={determineVotesToShow().length}
+              entries={votesToShow}
+              setEntriesToShow={setVotesToShow}
             />
           </PaginationWrapper>
         )}
