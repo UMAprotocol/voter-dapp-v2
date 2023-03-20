@@ -1,5 +1,4 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { VoteExistsByKeyT } from "types";
 import { revealedVotesKey } from "constant";
 import {
   useAccountDetails,
@@ -19,33 +18,21 @@ export function useRevealedVotes(addressOverride?: string) {
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride ?? myAddress;
 
-  const queryResult = useQuery(
-    [revealedVotesKey, address, roundId],
+  const queryKey = [revealedVotesKey, address, roundId];
+  const queryResult = useQuery({
+    queryKey,
     // we update cache client side when we know we successfully revealed, so we want to merge data in the cache,
     // and not override, in case the web3 call returns empty as we use a different provider to query vs write.
-    async () => {
-      const result = await getRevealedVotes(voting, address, roundId);
-      // this is really ugly, but I cant figure out a better way to merge cache and stil return the data
-      return new Promise<VoteExistsByKeyT>((res) =>
-        queryClient.setQueryData<VoteExistsByKeyT>(
-          [revealedVotesKey, address, roundId],
-          (oldRevealedVotes) => {
-            const merged = {
-              ...oldRevealedVotes,
-              ...result,
-            };
-            res(merged);
-            return merged;
-          }
-        )
+    queryFn: () => getRevealedVotes(voting, address, roundId),
+    onSuccess(data) {
+      queryClient.setQueryData<typeof data>(queryKey, (oldRevealedVotes) =>
+        oldRevealedVotes ? { ...oldRevealedVotes, ...data } : data
       );
     },
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+    enabled: !!address && !isWrongChain,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }
