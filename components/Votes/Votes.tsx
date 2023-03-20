@@ -31,9 +31,9 @@ import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
   const {
-    getActiveVotes,
-    getUpcomingVotes,
-    getPastVotes,
+    activeVotesList,
+    pastVotesList,
+    upcomingVotesList,
     getActivityStatus,
     getUserDependentIsFetching,
   } = useVotesContext();
@@ -242,7 +242,7 @@ export function Votes() {
     if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
 
     const formattedVotes = await formatVotesToCommit({
-      votes: getActiveVotes(),
+      votes: activeVotesList,
       selectedVotes,
       roundId,
       address: delegatorAddress ? delegatorAddress : address,
@@ -271,7 +271,7 @@ export function Votes() {
   }
 
   function getVotesToReveal() {
-    return getActiveVotes().filter(
+    return activeVotesList.filter(
       (vote) =>
         vote.isCommitted &&
         !!vote.decryptedVote &&
@@ -292,9 +292,9 @@ export function Votes() {
     const status = getActivityStatus();
     switch (status) {
       case "active":
-        return getActiveVotes();
+        return activeVotesList;
       case "upcoming":
-        return getUpcomingVotes();
+        return upcomingVotesList;
       default:
         return [];
     }
@@ -304,8 +304,7 @@ export function Votes() {
 
   // this is the view for past votes when no active or upcoming votes
   function pastView() {
-    const pastVotes = getPastVotes().slice(0, 5);
-    if (pastVotes.length === 0) return null;
+    if (pastVotesList.length === 0) return null;
     return (
       <>
         <Title>Recent past votes:</Title>
@@ -318,7 +317,7 @@ export function Votes() {
         >
           <VotesList
             headings={<VotesTableHeadings activityStatus="past" />}
-            rows={pastVotes.map((vote) => (
+            rows={pastVotesList.map((vote) => (
               <VotesListItem
                 vote={vote}
                 phase={phase}
