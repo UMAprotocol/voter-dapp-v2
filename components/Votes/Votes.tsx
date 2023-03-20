@@ -25,7 +25,7 @@ import {
   useWalletContext,
 } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
@@ -55,6 +55,13 @@ export function Votes() {
   const isDelegator = getDelegationStatus() === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
   const [votesToShow, setVotesToShow] = useState(determineVotesToShow());
+
+  useEffect(() => {
+    if (determineVotesToShow().length <= defaultResultsPerPage) {
+      setVotesToShow(determineVotesToShow());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeVotesList, upcomingVotesList, pastVotesList]);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -317,7 +324,7 @@ export function Votes() {
         >
           <VotesList
             headings={<VotesTableHeadings activityStatus="past" />}
-            rows={pastVotesList.map((vote) => (
+            rows={pastVotesList.slice(0, 5).map((vote) => (
               <VotesListItem
                 vote={vote}
                 phase={phase}

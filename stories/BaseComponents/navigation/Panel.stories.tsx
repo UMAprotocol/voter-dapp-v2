@@ -125,7 +125,7 @@ const userDecorator: DecoratorFn = (Story, { args }) => {
 const votesDecorator: DecoratorFn = (Story, { args }) => {
   const mockVotesContextState: VotesContextState = {
     ...defaultVotesContextState,
-    getPastVotes: () => args.votes ?? [],
+    pastVotesList: args.votes ?? [],
   };
 
   return (

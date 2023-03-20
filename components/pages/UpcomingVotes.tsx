@@ -14,22 +14,27 @@ import { defaultResultsPerPage } from "constant";
 import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
   const {
-    getUpcomingVotes,
+    upcomingVotesList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const [votesToShow, setVotesToShow] = useState(getUpcomingVotes());
-  const upcomingVotes = getUpcomingVotes();
-  const numberOfUpcomingVotes = upcomingVotes.length;
+  const [votesToShow, setVotesToShow] = useState(upcomingVotesList);
+  const numberOfUpcomingVotes = upcomingVotesList.length;
   const hasUpcomingVotes = numberOfUpcomingVotes > 0;
+
+  useEffect(() => {
+    if (upcomingVotesList.length <= defaultResultsPerPage) {
+      setVotesToShow(upcomingVotesList);
+    }
+  }, [upcomingVotesList]);
 
   return (
     <Layout title="UMA | Upcoming Votes">

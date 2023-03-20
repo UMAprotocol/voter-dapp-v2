@@ -44,10 +44,6 @@ export interface VotesContextState {
   encryptedVotes: EncryptedVotesByKeyT;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
-  getActiveVotes: () => VoteT[];
-  getUpcomingVotes: () => VoteT[];
-  getPastVotes: () => VoteT[];
-  getPastVotesV2: () => VoteT[];
   getActivityStatus: () => ActivityStatusT;
   getUserDependentIsLoading: () => boolean;
   getUserIndependentIsLoading: () => boolean;
@@ -73,10 +69,6 @@ export const defaultVotesContextState: VotesContextState = {
   encryptedVotes: {},
   decryptedVotes: {},
   contentfulData: {},
-  getActiveVotes: () => [],
-  getUpcomingVotes: () => [],
-  getPastVotes: () => [],
-  getPastVotesV2: () => [],
   getActivityStatus: () => "past",
   getUserDependentIsLoading: () => false,
   getUserIndependentIsLoading: () => false,
@@ -101,17 +93,17 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     useDesignatedVotingV1Address(address);
   const { roundId } = useVoteTimingContext();
   const {
-    data: { activeVotes, hasActiveVotes },
+    data: { activeVotes: activeVotesByKey, hasActiveVotes },
     isLoading: activeVotesIsLoading,
     isFetching: activeVotesIsFetching,
   } = useActiveVotes();
   const {
-    data: { upcomingVotes, hasUpcomingVotes },
+    data: { upcomingVotes: upcomingVotesByKey, hasUpcomingVotes },
     isLoading: upcomingVotesIsLoading,
     isFetching: upcomingVotesIsFetching,
   } = useUpcomingVotes();
   const {
-    data: pastVotes,
+    data: pastVotesByKey,
     isLoading: pastVotesIsLoading,
     isFetching: pastVotesIsFetching,
   } = usePastVotes();
@@ -202,24 +194,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     return getUserDependentIsFetching() || getUserIndependentIsFetching();
   }
 
-  function getActiveVotes() {
-    return getVotesWithData(activeVotes, decryptedVotes);
-  }
-
-  function getUpcomingVotes() {
-    return getVotesWithData(upcomingVotes, decryptedVotes);
-  }
-
-  function getPastVotes() {
-    return getVotesWithData(pastVotes, decryptedVotes);
-  }
-
-  function getPastVotesV2() {
-    return getVotesWithData(pastVotes, decryptedVotes).filter(
-      (vote) => !vote.isV1
-    );
-  }
-
   function getActivityStatus() {
     if (hasActiveVotes) return "active";
     if (hasUpcomingVotes) return "upcoming";
@@ -295,21 +269,24 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  const activeVotesList = getVotesWithData(activeVotes, decryptedVotes);
-  const upcomingVotesList = getVotesWithData(upcomingVotes, decryptedVotes);
-  const pastVotesList = getVotesWithData(pastVotes, decryptedVotes);
+  const activeVotesList = getVotesWithData(activeVotesByKey, decryptedVotes);
+  const upcomingVotesList = getVotesWithData(
+    upcomingVotesByKey,
+    decryptedVotes
+  );
+  const pastVotesList = getVotesWithData(pastVotesByKey, decryptedVotes);
   const pastVotesV2List = pastVotesList.filter((vote) => !vote.isV1);
 
   return (
     <VotesContext.Provider
       value={{
         hasActiveVotes,
-        activeVotesByKey: activeVotes,
+        activeVotesByKey,
         activeVotesList,
         hasUpcomingVotes,
-        upcomingVotesByKey: upcomingVotes,
+        upcomingVotesByKey,
         upcomingVotesList,
-        pastVotesByKey: pastVotes,
+        pastVotesByKey,
         pastVotesList,
         pastVotesV2List,
         committedVotes,
@@ -317,10 +294,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         encryptedVotes,
         decryptedVotes,
         contentfulData,
-        getActiveVotes,
-        getUpcomingVotes,
-        getPastVotes,
-        getPastVotesV2,
         getActivityStatus,
         getUserDependentIsLoading,
         getUserIndependentIsLoading,
