@@ -270,5 +270,5 @@ const NextPageButton = styled(NavigationButton)``;
 const Ellipsis = styled.span`
   height: min-content;
   margin-top: auto;
-  font: var(--body-sm);
+  font: var(--text-sm);
 `;
