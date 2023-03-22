@@ -23,11 +23,6 @@ WithTypeText.args = {
   type: "text",
 };
 
-export const WithTypeEmail = Template.bind({});
-WithTypeEmail.args = {
-  type: "email",
-};
-
 export const WithTypeNumber = Template.bind({});
 WithTypeNumber.args = {
   type: "number",
