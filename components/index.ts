@@ -20,6 +20,7 @@ export { HowItWorks } from "./HowItWorks/HowItWorks";
 export { IconWrapper } from "./IconWrapper/IconWrapper";
 export { InfoBar } from "./InfoBar/InfoBar";
 export { AmountInput } from "./Input/AmountInput";
+export { EmailInput } from "./Input/EmailInput";
 export { Input, Wrapper } from "./Input/Input";
 export { TextInput } from "./Input/TextInput";
 export { Layout } from "./Layout/Layout";

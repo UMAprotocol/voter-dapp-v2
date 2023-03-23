@@ -7,7 +7,7 @@ interface Props {
   onInput: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
-  type?: "text" | "number" | "email";
+  type?: "text" | "number";
   isNumeric?: boolean;
   maxDecimals?: number;
   allowNegative?: boolean;
@@ -21,10 +21,9 @@ export function TextInput({
   maxDecimals = 18,
   allowNegative = true,
 }: Props) {
-  const inputMode =
-    type === "text" ? "text" : type === "number" ? "decimal" : "email";
-  // treat numbers as text inputs
-  const _type = type === "number" ? "text" : type;
+  const inputMode = type === "text" ? "text" : "decimal";
+  // treat all as text inputs to avoid unwanted automatic number formatting
+  const _type = "text";
   const onChange = useHandleDecimalInput(
     onInput,
     maxDecimals,

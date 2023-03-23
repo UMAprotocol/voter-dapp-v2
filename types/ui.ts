@@ -43,4 +43,5 @@ export type ErrorOriginT =
   | "claim"
   | "claimV1"
   | "delegation"
-  | "storybook";
+  | "storybook"
+  | "remind";

@@ -1,5 +1,7 @@
 import { phaseLengthMilliseconds, tabletAndUnder } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
+import { config } from "helpers";
+import { usePanelContext } from "hooks";
 import Commit from "public/assets/icons/commit.svg";
 import styled from "styled-components";
 
@@ -9,6 +11,8 @@ interface Props {
 }
 
 export function NextRoundStartsIn({ phase, timeRemaining }: Props) {
+  const { openPanel } = usePanelContext();
+
   const millisecondsUntilRoundEnds =
     phase === "commit"
       ? timeRemaining + phaseLengthMilliseconds
@@ -16,6 +20,8 @@ export function NextRoundStartsIn({ phase, timeRemaining }: Props) {
   const formattedTimeRemaining = formatDistanceToNowStrict(
     Date.now() + millisecondsUntilRoundEnds
   );
+
+  const hasMailchimpUrl = config.mailchimpUrl !== undefined;
 
   return (
     <Wrapper>
@@ -25,6 +31,11 @@ export function NextRoundStartsIn({ phase, timeRemaining }: Props) {
       <Message>
         Next voting round starts in: <Strong>{formattedTimeRemaining}</Strong>
       </Message>
+      {hasMailchimpUrl && (
+        <RemindMeButton onClick={() => openPanel("remind")}>
+          Remind me
+        </RemindMeButton>
+      )}
     </Wrapper>
   );
 }
@@ -66,4 +77,14 @@ const CommitIcon = styled(Commit)`
 
 const Strong = styled.strong`
   font-weight: 700;
+`;
+
+const RemindMeButton = styled.button`
+  background: transparent;
+  margin-left: auto;
+  margin-right: 1.5vw;
+  color: var(--red-500);
+  @media ${tabletAndUnder} {
+    display: none;
+  }
 `;
