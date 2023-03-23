@@ -83,7 +83,7 @@ const AppConfig = ss.object({
   overrideApr: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
-  mailchimpUrl: ss.string(),
+  mailchimpUrl: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -118,7 +118,7 @@ export const appConfig = ss.create(
         Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1")
       ),
     phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
-    mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL ?? "",
+    mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL,
   },
   AppConfig
 );

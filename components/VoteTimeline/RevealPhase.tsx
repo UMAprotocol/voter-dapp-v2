@@ -1,5 +1,6 @@
 import { black, red500, tabletAndUnder, white } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
+import { config } from "helpers";
 import { usePanelContext } from "hooks";
 import MobileActiveIndicator from "public/assets/icons/active-phase-indicator.svg";
 import Reveal from "public/assets/icons/reveal.svg";
@@ -21,6 +22,7 @@ export function RevealPhase({ phase, timeRemaining }: Props) {
   const formattedTimeRemaining = formatDistanceToNowStrict(
     Date.now() + timeRemaining
   );
+  const hasMailchimpUrl = config.mailchimpUrl !== undefined;
 
   return (
     <Wrapper
@@ -51,16 +53,18 @@ export function RevealPhase({ phase, timeRemaining }: Props) {
           Reveal phase starts in: <Strong>{formattedTimeRemaining}</Strong>
         </Message>
       )}
-      <RemindMeButton
-        onClick={() => openPanel("remind")}
-        style={
-          {
-            "--color": remindMeButtonTextColor,
-          } as CSSProperties
-        }
-      >
-        Remind me
-      </RemindMeButton>
+      {hasMailchimpUrl && (
+        <RemindMeButton
+          onClick={() => openPanel("remind")}
+          style={
+            {
+              "--color": remindMeButtonTextColor,
+            } as CSSProperties
+          }
+        >
+          Remind me
+        </RemindMeButton>
+      )}
       {isActive && (
         <MobileActiveIndicatorWrapper>
           <MobileActiveIndicator />

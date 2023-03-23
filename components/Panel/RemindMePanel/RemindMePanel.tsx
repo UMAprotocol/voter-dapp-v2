@@ -13,7 +13,7 @@ export function RemindMePanel() {
   const [email, setEmail] = useState("");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
-  const url = config.mailchimpUrl;
+  const url = config.mailchimpUrl ?? "";
 
   const { loading, success, message, handleSubmit } = useMailChimpForm(url);
 
@@ -22,6 +22,8 @@ export function RemindMePanel() {
 
     handleSubmit({ EMAIL: email });
   }
+
+  if (url === "") return null;
 
   return (
     <PanelWrapper>
