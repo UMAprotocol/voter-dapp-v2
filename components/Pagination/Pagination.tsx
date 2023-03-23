@@ -82,9 +82,7 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
 
   function updateResultsPerPage(newResultsPerPage: number) {
     setResultsPerPage(newResultsPerPage);
-    const newPageNumber = Math.ceil(
-      (pageNumber * resultsPerPage) / newResultsPerPage
-    );
+    const newPageNumber = Math.ceil(numberOfEntries / newResultsPerPage);
     updateEntries({ newPageNumber, newResultsPerPage });
     setPageNumber(newPageNumber);
   }
