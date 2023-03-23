@@ -1,5 +1,4 @@
-import { Button, Checkbox, PanelErrorBanner } from "components";
-import { EmailInput } from "components";
+import { Button, Checkbox, EmailInput, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import { config } from "helpers";
 import Check from "public/assets/icons/check.svg";
@@ -21,11 +20,7 @@ export function RemindMePanel() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    try {
-      handleSubmit({ EMAIL: email });
-    } catch (e) {
-      console.log(e);
-    }
+    handleSubmit({ EMAIL: email });
   }
 
   return (
