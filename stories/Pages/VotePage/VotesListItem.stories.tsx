@@ -63,7 +63,7 @@ const pastVoteCommonArgs = {
 
 // we only show `isCommitted` and `isRevealed` when we are dealing with active votes. This information is not relevant for upcoming votes, and it is redundant for past votes (we can simply show the user's votes instead).
 
-export const ActiveNotCommitted = {
+export const ActiveNotCommitted: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,
@@ -72,7 +72,7 @@ export const ActiveNotCommitted = {
   },
 };
 
-export const ActiveCommitted = {
+export const ActiveCommitted: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,
@@ -81,7 +81,7 @@ export const ActiveCommitted = {
   },
 };
 
-export const ActiveNotRevealed = {
+export const ActiveNotRevealed: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,
@@ -90,7 +90,7 @@ export const ActiveNotRevealed = {
   },
 };
 
-export const ActiveRevealed = {
+export const ActiveRevealed: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,
@@ -99,7 +99,7 @@ export const ActiveRevealed = {
   },
 };
 
-export const ActiveRevealButDidNotVote = {
+export const ActiveRevealButDidNotVote: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,
@@ -110,7 +110,7 @@ export const ActiveRevealButDidNotVote = {
 
 // upcoming votes
 
-export const UpcomingVote = {
+export const UpcomingVote: Story = {
   ...Template,
   args: {
     ...commonArgs,
@@ -121,7 +121,7 @@ export const UpcomingVote = {
 
 // past votes
 
-export const PastVoteDidNotVote = {
+export const PastVoteDidNotVote: Story = {
   ...Template,
   args: {
     ...pastVoteCommonArgs,
@@ -129,7 +129,7 @@ export const PastVoteDidNotVote = {
   },
 };
 
-export const PastVoteDidVote = {
+export const PastVoteDidVote: Story = {
   ...Template,
   args: {
     ...pastVoteCommonArgs,
@@ -137,7 +137,7 @@ export const PastVoteDidVote = {
   },
 };
 
-export const PolymarketNotCommitted = {
+export const PolymarketNotCommitted: Story = {
   ...Template,
   args: {
     ...activeVotesCommonArgs,

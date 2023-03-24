@@ -1,12 +1,14 @@
-import { Meta, Story, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import {
   defaultVotesContextState,
   defaultVoteTimingContextState,
   VotesContext,
+  VotesContextState,
   VoteTimingContext,
 } from "contexts";
 import VotePage from "pages";
 import {
+  polymarketVote,
   voteCommitted,
   voteCommittedButNotRevealed,
   voteRevealed,
@@ -15,7 +17,6 @@ import {
   voteWithoutUserVote,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
-import meta from "./VotesListItem.stories";
 
 interface Args {
   phase: "commit" | "reveal";
@@ -42,11 +43,11 @@ const Template: Story = {
       roundId: 1,
     };
 
-    const mockVotesContextState = {
+    const mockVotesContextState: VotesContextState = {
       ...defaultVotesContextState,
-      getActiveVotes: () => args.activeVotes ?? [],
-      getUpcomingVotes: () => args.upcomingVotes ?? [],
-      getPastVotes: () => args.pastVotes ?? [],
+      activeVotesList: args.activeVotes ?? [],
+      upcomingVotesList: args.upcomingVotes ?? [],
+      pastVotesList: args.pastVotes ?? [],
       getActivityStatus: () => args.activityStatus ?? "past",
     };
 
@@ -60,59 +61,73 @@ const Template: Story = {
   },
 };
 
-export const ActiveCommit = Template.bind({});
-ActiveCommit.args = {
-  activityStatus: "active",
-  phase: "commit",
-  activeVotes: [
-    voteWithoutUserVote,
-    voteCommitted,
-    voteWithoutUserVote,
-    voteCommitted,
-  ],
+export const ActiveCommit: Story = {
+  ...Template,
+  args: {
+    activityStatus: "active",
+    phase: "commit",
+    activeVotes: [
+      voteWithoutUserVote,
+      polymarketVote,
+      voteCommitted,
+      voteWithoutUserVote,
+      voteCommitted,
+    ],
+  },
 };
 
-export const ActiveReveal = Template.bind({});
-ActiveReveal.args = {
-  activityStatus: "active",
-  phase: "reveal",
-  activeVotes: [
-    voteCommittedButNotRevealed,
-    voteRevealed,
-    voteCommittedButNotRevealed,
-    voteRevealed,
-  ],
+export const ActiveReveal: Story = {
+  ...Template,
+  args: {
+    activityStatus: "active",
+    phase: "reveal",
+    activeVotes: [
+      voteCommittedButNotRevealed,
+      voteRevealed,
+      voteCommittedButNotRevealed,
+      voteRevealed,
+    ],
+  },
 };
 
-export const Upcoming = Template.bind({});
-Upcoming.args = {
-  activityStatus: "upcoming",
-  upcomingVotes: [
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-  ],
-  pastVotes: [
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-  ],
+export const Upcoming: Story = {
+  ...Template,
+  args: {
+    activityStatus: "upcoming",
+    upcomingVotes: [
+      voteWithoutUserVote,
+      voteWithoutUserVote,
+      voteWithoutUserVote,
+    ],
+    pastVotes: [
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+    ],
+  },
 };
 
-export const Past = Template.bind({});
-Past.args = {
-  activityStatus: "past",
-  pastVotes: [
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-  ],
+export const Past: Story = {
+  ...Template,
+  args: {
+    activityStatus: "past",
+    pastVotes: [
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+    ],
+  },
 };
 
-export const With100Entries = Template.bind({});
-With100Entries.args = {
-  activityStatus: "past",
-  pastVotes: Array.from({ length: 100 }, () => voteWithCorrectVoteWithUserVote),
+export const With100Entries: Story = {
+  ...Template,
+  args: {
+    activityStatus: "past",
+    pastVotes: Array.from(
+      { length: 100 },
+      () => voteWithCorrectVoteWithUserVote
+    ),
+  },
 };
