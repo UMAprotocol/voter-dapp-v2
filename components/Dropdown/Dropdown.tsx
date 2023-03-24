@@ -8,6 +8,7 @@ import {
 import "@reach/menu-button/styles.css";
 import { positionMatchWidth } from "@reach/popover";
 import { black, blackOpacity50 } from "constant";
+import { capitalizeFirstLetter } from "helpers";
 import Chevron from "public/assets/icons/chevron.svg";
 import { ReactNode } from "react";
 import styled, { CSSProperties, keyframes } from "styled-components";
@@ -49,6 +50,7 @@ export function Dropdown({
             <ChevronIcon $isExpanded={isExpanded} />
           </ToggleButton>
           <DropdownList
+            data-testid="dropdown"
             position={positionMatchWidth}
             style={{ "--border-color": borderColor } as CSSProperties}
           >
@@ -58,7 +60,7 @@ export function Dropdown({
                 onSelect={() => onSelect(item)}
                 key={item.label}
               >
-                <Label>{item.label}</Label>
+                <Label>{capitalizeFirstLetter(item.label)}</Label>
                 {item.secondaryLabel ? (
                   <SecondaryLabel>({item.secondaryLabel})</SecondaryLabel>
                 ) : null}
