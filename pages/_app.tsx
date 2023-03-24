@@ -6,7 +6,6 @@ import {
   DelegationProvider,
   ErrorProvider,
   NotificationsProvider,
-  PaginationProvider,
   PanelProvider,
   StakingProvider,
   UserProvider,
@@ -28,20 +27,18 @@ function MyApp({ Component, pageProps }: AppProps) {
             <WalletProvider>
               <UserProvider>
                 <ContractsProvider>
-                  <PaginationProvider>
-                    <DelegationProvider>
-                      <StakingProvider>
-                        <VotesProvider>
-                          <PanelProvider>
-                            <GlobalStyle />
-                            <Component {...pageProps} />
-                            <Panel />
-                            <Notifications />
-                          </PanelProvider>
-                        </VotesProvider>
-                      </StakingProvider>
-                    </DelegationProvider>
-                  </PaginationProvider>
+                  <DelegationProvider>
+                    <StakingProvider>
+                      <VotesProvider>
+                        <PanelProvider>
+                          <GlobalStyle />
+                          <Component {...pageProps} />
+                          <Panel />
+                          <Notifications />
+                        </PanelProvider>
+                      </VotesProvider>
+                    </StakingProvider>
+                  </DelegationProvider>
                 </ContractsProvider>
                 <ReactQueryDevtools />
               </UserProvider>

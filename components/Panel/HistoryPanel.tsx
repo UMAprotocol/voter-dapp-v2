@@ -1,4 +1,3 @@
-import NextLink from "next/link";
 import {
   LoadingSkeleton,
   LoadingSpinner,
@@ -12,30 +11,31 @@ import {
   mobileAndUnder,
   red500,
 } from "constant";
-import { formatNumberForDisplay, getEntriesForPage } from "helpers";
-import { usePaginationContext, useUserContext, useVotesContext } from "hooks";
+import { formatNumberForDisplay } from "helpers";
+import { useUserContext, useVotesContext } from "hooks";
+import NextLink from "next/link";
+import { useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
-  const { getPastVotesV2 } = useVotesContext();
+  const { pastVotesV2List } = useVotesContext();
   const {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
-  const {
-    pageStates: {
-      voteHistoryPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
+  const [votesToShow, setVotesToShow] = useState(pastVotesV2List);
+  const numberOfPastVotes = pastVotesV2List.length;
 
-  const pastVotes = getPastVotesV2();
-  const numberOfPastVotes = pastVotes.length;
-  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
+  useEffect(() => {
+    if (pastVotesV2List.length <= defaultResultsPerPage) {
+      setVotesToShow(pastVotesV2List);
+    }
+  }, [pastVotesV2List]);
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -120,8 +120,8 @@ export function HistoryPanel() {
           {numberOfPastVotes > defaultResultsPerPage && (
             <PaginationWrapper>
               <Pagination
-                paginateFor="voteHistoryPage"
-                numberOfEntries={numberOfPastVotes}
+                entries={pastVotesV2List}
+                setEntriesToShow={setVotesToShow}
               />
             </PaginationWrapper>
           )}

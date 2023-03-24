@@ -22,12 +22,6 @@ export {
   NotificationsProvider,
 } from "./NotificationsContext";
 export {
-  defaultPaginationContextState,
-  PaginationContext,
-  PaginationProvider,
-} from "./PaginationContext";
-export type { PaginationContextState } from "./PaginationContext";
-export {
   defaultPanelContextState,
   PanelContext,
   PanelProvider,

@@ -2,7 +2,6 @@ export { useContractsContext } from "./contexts/useContractsContext";
 export { useDelegationContext } from "./contexts/useDelegationContext";
 export { useErrorContext } from "./contexts/useErrorContext";
 export { useNotificationsContext } from "./contexts/useNotificationsContext";
-export { usePaginationContext } from "./contexts/usePaginationContext";
 export { usePanelContext } from "./contexts/usePanelContext";
 export { useStakingContext } from "./contexts/useStakingContext";
 export { useUserContext } from "./contexts/useUserContext";

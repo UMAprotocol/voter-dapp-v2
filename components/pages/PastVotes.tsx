@@ -10,34 +10,27 @@ import {
   VotesTableHeadings,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { getEntriesForPage } from "helpers";
-import {
-  usePaginationContext,
-  usePanelContext,
-  useVotesContext,
-  useVoteTimingContext,
-} from "hooks";
+import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
   const {
-    getPastVotes,
+    pastVotesList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const {
-    pageStates: {
-      pastVotesPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
+  const [votesToShow, setVotesToShow] = useState(pastVotesList);
+  const numberOfPastVotes = pastVotesList.length;
 
-  const pastVotes = getPastVotes();
-  const numberOfPastVotes = pastVotes.length;
-  const votesToShow = getEntriesForPage(pageNumber, resultsPerPage, pastVotes);
-
+  useEffect(() => {
+    if (pastVotesList.length <= defaultResultsPerPage) {
+      setVotesToShow(pastVotesList);
+    }
+  }, [pastVotesList]);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -69,8 +62,8 @@ export function PastVotes() {
               {numberOfPastVotes > defaultResultsPerPage && (
                 <PaginationWrapper>
                   <Pagination
-                    paginateFor="pastVotesPage"
-                    numberOfEntries={numberOfPastVotes}
+                    entries={pastVotesList}
+                    setEntriesToShow={setVotesToShow}
                   />
                 </PaginationWrapper>
               )}
