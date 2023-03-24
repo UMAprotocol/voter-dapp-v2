@@ -10,13 +10,12 @@ import {
   VoteTimeline,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { formatVotesToCommit, getEntriesForPage } from "helpers";
+import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  usePaginationContext,
   usePanelContext,
   useRevealVotes,
   useStakingContext,
@@ -26,15 +25,15 @@ import {
   useWalletContext,
 } from "hooks";
 import Warning from "public/assets/icons/warning.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { SelectedVotesByKeyT, VoteT } from "types";
 
 export function Votes() {
   const {
-    getActiveVotes,
-    getUpcomingVotes,
-    getPastVotes,
+    activeVotesList,
+    pastVotesList,
+    upcomingVotesList,
     getActivityStatus,
     getUserDependentIsFetching,
   } = useVotesContext();
@@ -50,25 +49,24 @@ export function Votes() {
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const { openPanel } = usePanelContext();
-  const {
-    pageStates: {
-      activeVotesPage: { resultsPerPage, pageNumber },
-    },
-  } = usePaginationContext();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const isDelegate = getDelegationStatus() === "delegate";
   const isDelegator = getDelegationStatus() === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
+  const [votesToShow, setVotesToShow] = useState(determineVotesToShow());
+
+  useEffect(() => {
+    if (determineVotesToShow().length <= defaultResultsPerPage) {
+      setVotesToShow(determineVotesToShow());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeVotesList, upcomingVotesList, pastVotesList]);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
-  const votesToShow = getEntriesForPage(
-    pageNumber,
-    resultsPerPage,
-    determineVotesToShow()
-  );
+
   const actionStatus = calculateActionStatus();
   type ActionStatus = {
     tooltip?: string;
@@ -251,7 +249,7 @@ export function Votes() {
     if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
 
     const formattedVotes = await formatVotesToCommit({
-      votes: getActiveVotes(),
+      votes: activeVotesList,
       selectedVotes,
       roundId,
       address: delegatorAddress ? delegatorAddress : address,
@@ -280,7 +278,7 @@ export function Votes() {
   }
 
   function getVotesToReveal() {
-    return getActiveVotes().filter(
+    return activeVotesList.filter(
       (vote) =>
         vote.isCommitted &&
         !!vote.decryptedVote &&
@@ -301,9 +299,9 @@ export function Votes() {
     const status = getActivityStatus();
     switch (status) {
       case "active":
-        return getActiveVotes();
+        return activeVotesList;
       case "upcoming":
-        return getUpcomingVotes();
+        return upcomingVotesList;
       default:
         return [];
     }
@@ -313,8 +311,7 @@ export function Votes() {
 
   // this is the view for past votes when no active or upcoming votes
   function pastView() {
-    const pastVotes = getPastVotes().slice(0, 5);
-    if (pastVotes.length === 0) return null;
+    if (pastVotesList.length === 0) return null;
     return (
       <>
         <Title>Recent past votes:</Title>
@@ -327,7 +324,7 @@ export function Votes() {
         >
           <VotesList
             headings={<VotesTableHeadings activityStatus="past" />}
-            rows={pastVotes.map((vote) => (
+            rows={pastVotesList.slice(0, 5).map((vote) => (
               <VotesListItem
                 vote={vote}
                 phase={phase}
@@ -386,8 +383,8 @@ export function Votes() {
         {determineVotesToShow().length > defaultResultsPerPage && (
           <PaginationWrapper>
             <Pagination
-              paginateFor="activeVotesPage"
-              numberOfEntries={determineVotesToShow().length}
+              entries={votesToShow}
+              setEntriesToShow={setVotesToShow}
             />
           </PaginationWrapper>
         )}
@@ -488,8 +485,8 @@ export function Votes() {
         {determineVotesToShow().length > defaultResultsPerPage && (
           <PaginationWrapper>
             <Pagination
-              paginateFor="upcomingVotesPage"
-              numberOfEntries={determineVotesToShow().length}
+              entries={votesToShow}
+              setEntriesToShow={setVotesToShow}
             />
           </PaginationWrapper>
         )}
