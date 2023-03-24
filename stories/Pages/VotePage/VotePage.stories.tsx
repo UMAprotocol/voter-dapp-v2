@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, Story, StoryObj } from "@storybook/react";
 import {
   defaultVotesContextState,
   defaultVoteTimingContextState,
@@ -15,8 +15,9 @@ import {
   voteWithoutUserVote,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
+import meta from "./VotesListItem.stories";
 
-interface StoryProps {
+interface Args {
   phase: "commit" | "reveal";
   activeVotes: VoteT[];
   upcomingVotes: VoteT[];
@@ -24,33 +25,39 @@ interface StoryProps {
   activityStatus: ActivityStatusT;
 }
 
-export default {
+const meta: Meta = {
   title: "Pages/Vote Page/VotePage",
   component: VotePage,
-} as Meta<StoryProps>;
+};
 
-const Template: Story<StoryProps> = (args) => {
-  const mockVoteTimingContextState = {
-    ...defaultVoteTimingContextState,
-    phase: args.phase ?? "commit",
-    roundId: 1,
-  };
+export default meta;
 
-  const mockVotesContextState = {
-    ...defaultVotesContextState,
-    getActiveVotes: () => args.activeVotes ?? [],
-    getUpcomingVotes: () => args.upcomingVotes ?? [],
-    getPastVotes: () => args.pastVotes ?? [],
-    getActivityStatus: () => args.activityStatus ?? "past",
-  };
+type Story = StoryObj<Args>;
 
-  return (
-    <VoteTimingContext.Provider value={mockVoteTimingContextState}>
-      <VotesContext.Provider value={mockVotesContextState}>
-        <VotePage />
-      </VotesContext.Provider>
-    </VoteTimingContext.Provider>
-  );
+const Template: Story = {
+  render: function Wrapper(args) {
+    const mockVoteTimingContextState = {
+      ...defaultVoteTimingContextState,
+      phase: args.phase ?? "commit",
+      roundId: 1,
+    };
+
+    const mockVotesContextState = {
+      ...defaultVotesContextState,
+      getActiveVotes: () => args.activeVotes ?? [],
+      getUpcomingVotes: () => args.upcomingVotes ?? [],
+      getPastVotes: () => args.pastVotes ?? [],
+      getActivityStatus: () => args.activityStatus ?? "past",
+    };
+
+    return (
+      <VoteTimingContext.Provider value={mockVoteTimingContextState}>
+        <VotesContext.Provider value={mockVotesContextState}>
+          <VotePage />
+        </VotesContext.Provider>
+      </VoteTimingContext.Provider>
+    );
+  },
 };
 
 export const ActiveCommit = Template.bind({});
