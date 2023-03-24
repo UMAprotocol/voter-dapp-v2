@@ -1,6 +1,8 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { VotesListItem } from "components";
+import { Meta, StoryObj } from "@storybook/react";
+import { VotesList, VotesListItem, VotesTableHeadings } from "components";
+import { useState } from "react";
 import {
+  polymarketVote,
   voteCommitted,
   voteCommittedButNotRevealed,
   voteRevealed,
@@ -9,21 +11,37 @@ import {
   voteWithoutUserVote,
 } from "stories/mocks/votes";
 
-export default {
+const meta: Meta = {
   title: "Pages/Vote Page/VotesListItem",
   component: VotesListItem,
-  decorators: [
-    (Story) => (
-      <table style={{ width: 1100 }}>
-        <Story />
-      </table>
-    ),
-  ],
-} as ComponentMeta<typeof VotesListItem>;
+};
 
-const Template: ComponentStory<typeof VotesListItem> = (args) => (
-  <VotesListItem {...args} />
-);
+export default meta;
+
+type Story = StoryObj<typeof VotesListItem>;
+
+const Template: Story = {
+  render: function Wrapper(args) {
+    const [selectedVote, setSelectedVote] = useState<string | undefined>(
+      undefined
+    );
+    return (
+      <div style={{ maxWidth: "var(--page-width)" }}>
+        <VotesList
+          headings={<VotesTableHeadings {...args} />}
+          rows={[
+            <VotesListItem
+              {...args}
+              key="only one here"
+              selectedVote={selectedVote}
+              selectVote={setSelectedVote}
+            />,
+          ]}
+        />
+      </div>
+    );
+  },
+};
 
 const mockMoreDetailsAction = () => alert("More details clicked");
 
@@ -45,63 +63,85 @@ const pastVoteCommonArgs = {
 
 // we only show `isCommitted` and `isRevealed` when we are dealing with active votes. This information is not relevant for upcoming votes, and it is redundant for past votes (we can simply show the user's votes instead).
 
-export const ActiveNotCommitted = Template.bind({});
-ActiveNotCommitted.args = {
-  ...activeVotesCommonArgs,
-  phase: "commit",
-  vote: voteWithoutUserVote,
+export const ActiveNotCommitted = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "commit",
+    vote: voteWithoutUserVote,
+  },
 };
 
-export const ActiveCommitted = Template.bind({});
-ActiveCommitted.args = {
-  ...activeVotesCommonArgs,
-  phase: "commit",
-  vote: voteCommitted,
+export const ActiveCommitted = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "commit",
+    vote: voteCommitted,
+  },
 };
 
-export const ActiveNotRevealed = Template.bind({});
-ActiveNotRevealed.args = {
-  ...activeVotesCommonArgs,
-  phase: "reveal",
-  vote: voteCommittedButNotRevealed,
+export const ActiveNotRevealed = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "reveal",
+    vote: voteCommittedButNotRevealed,
+  },
 };
 
-export const ActiveRevealed = Template.bind({});
-ActiveRevealed.args = {
-  ...activeVotesCommonArgs,
-  phase: "reveal",
-  vote: voteRevealed,
+export const ActiveRevealed = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "reveal",
+    vote: voteRevealed,
+  },
 };
 
-export const ActiveRevealButDidNotVote = Template.bind({});
-ActiveRevealButDidNotVote.args = {
-  ...activeVotesCommonArgs,
-  phase: "reveal",
-  vote: voteWithoutUserVote,
+export const ActiveRevealButDidNotVote = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "reveal",
+    vote: voteWithoutUserVote,
+  },
 };
 
 // upcoming votes
 
-export const UpcomingVote = Template.bind({});
-
-UpcomingVote.args = {
-  ...commonArgs,
-  vote: voteWithoutUserVote,
-  activityStatus: "upcoming",
+export const UpcomingVote = {
+  ...Template,
+  args: {
+    ...commonArgs,
+    vote: voteWithoutUserVote,
+    activityStatus: "upcoming",
+  },
 };
 
 // past votes
 
-export const PastVoteDidNotVote = Template.bind({});
-
-PastVoteDidNotVote.args = {
-  ...pastVoteCommonArgs,
-  vote: voteWithCorrectVoteWithoutUserVote,
+export const PastVoteDidNotVote = {
+  ...Template,
+  args: {
+    ...pastVoteCommonArgs,
+    vote: voteWithCorrectVoteWithoutUserVote,
+  },
 };
 
-export const PastVoteDidVote = Template.bind({});
+export const PastVoteDidVote = {
+  ...Template,
+  args: {
+    ...pastVoteCommonArgs,
+    vote: voteWithCorrectVoteWithUserVote,
+  },
+};
 
-PastVoteDidVote.args = {
-  ...pastVoteCommonArgs,
-  vote: voteWithCorrectVoteWithUserVote,
+export const PolymarketNotCommitted = {
+  ...Template,
+  args: {
+    ...activeVotesCommonArgs,
+    phase: "commit",
+    vote: polymarketVote,
+  },
 };
