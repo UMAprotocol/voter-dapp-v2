@@ -233,3 +233,17 @@ export const polymarketVote = {
   rollCount: 0,
   revealedVoteByAddress: {},
 };
+
+export const polymarketVoteCommitted = {
+  ...polymarketVote,
+  encryptedVote: "0x0",
+  decryptedVote: {
+    price: "0",
+    salt: "0",
+  },
+  isCommitted: true,
+  commitHash:
+    "0xb7013512cb5f4e59fd08c299d8534373457f0f02aeb294e4f61611bfc8f43286",
+  revealHash: undefined,
+  revealedVoteByAddress: {},
+};
