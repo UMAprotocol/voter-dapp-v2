@@ -247,3 +247,11 @@ export const polymarketVoteCommitted = {
   revealHash: undefined,
   revealedVoteByAddress: {},
 };
+
+export const polymarketVoteCommittedCustomInput = {
+  ...polymarketVoteCommitted,
+  decryptedVote: {
+    price: "123000000000000000000",
+    salt: "0",
+  },
+};
