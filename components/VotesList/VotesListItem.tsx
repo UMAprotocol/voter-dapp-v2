@@ -37,6 +37,7 @@ export interface Props {
   phase: VotePhaseT;
   selectedVote: string | undefined;
   selectVote: (value: string) => void;
+  clearVote: () => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
@@ -49,6 +50,7 @@ export function VotesListItem({
   phase,
   selectedVote,
   selectVote,
+  clearVote,
   activityStatus,
   moreDetailsAction,
   isFetching,
@@ -123,6 +125,7 @@ export function VotesListItem({
   }
 
   function exitCustomInput() {
+    clearVote();
     setIsCustomInput(false);
   }
 

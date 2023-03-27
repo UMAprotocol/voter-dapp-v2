@@ -35,6 +35,7 @@ const Template: Story = {
               key="only one here"
               selectedVote={selectedVote}
               selectVote={setSelectedVote}
+              clearVote={() => setSelectedVote(undefined)}
             />,
           ]}
         />
