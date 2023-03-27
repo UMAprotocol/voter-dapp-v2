@@ -1,49 +1,14 @@
-import { config } from "helpers/config";
+import { utils } from "ethers";
 import request, { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
+import { config } from "helpers/config";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
-import { utils } from "ethers";
 
-const { graphEndpoint, graphEndpointV1 } = config;
+const { graphEndpoint } = config;
 
 export async function getPastVotesV1() {
-  const endpoint = graphEndpointV1;
-  if (!endpoint) throw new Error("V1 subgraph is disabled");
-
-  const pastVotesQuery = gql`
-    {
-      priceRequests(
-        where: { isResolved: true }
-        orderBy: time
-        orderDirection: desc
-      ) {
-        identifier {
-          id
-        }
-        price
-        time
-        ancillaryData
-        latestRound {
-          totalVotesRevealed
-          groups {
-            price
-            totalVoteAmount
-          }
-        }
-        committedVotes {
-          id
-        }
-        revealedVotes {
-          id
-          voter {
-            address
-          }
-          price
-        }
-      }
-    }
-  `;
-  const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
+  const result = (await import("data/pastVotesV1.json"))
+    .default as PastVotesQuery;
   return result?.priceRequests?.map(
     ({
       identifier: { id },
