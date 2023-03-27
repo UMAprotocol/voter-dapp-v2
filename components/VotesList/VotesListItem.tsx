@@ -118,6 +118,7 @@ export function VotesListItem({
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
+      if (!isDirty) clearVote();
       setIsCustomInput(true);
     } else {
       selectVote(option.value.toString());
@@ -125,7 +126,7 @@ export function VotesListItem({
   }
 
   function exitCustomInput() {
-    clearVote();
+    if (!isDirty) clearVote();
     setIsCustomInput(false);
   }
 
