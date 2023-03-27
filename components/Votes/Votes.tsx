@@ -287,8 +287,12 @@ export function Votes() {
     );
   }
 
-  function selectVote(value: string, vote: VoteT) {
+  function selectVote(value: string | undefined, vote: VoteT) {
     setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
+  }
+
+  function clearSelectedVote(vote: VoteT) {
+    selectVote(undefined, vote);
   }
 
   function openVotePanel(vote: VoteT) {
@@ -330,6 +334,7 @@ export function Votes() {
                 phase={phase}
                 selectedVote={undefined}
                 selectVote={() => null}
+                clearVote={() => null}
                 activityStatus="past"
                 moreDetailsAction={() => openPanel("vote", vote)}
                 key={vote.uniqueKey}
@@ -360,6 +365,7 @@ export function Votes() {
                 phase={phase}
                 selectedVote={selectedVotes[vote.uniqueKey]}
                 selectVote={(value) => selectVote(value, vote)}
+                clearVote={() => clearSelectedVote(vote)}
                 activityStatus={activityStatus}
                 moreDetailsAction={() => openVotePanel(vote)}
                 key={vote.uniqueKey}
@@ -456,23 +462,17 @@ export function Votes() {
         <VotesTableWrapper>
           <VotesList
             headings={<VotesTableHeadings activityStatus={activityStatus} />}
-            rows={votesToShow.map((vote, index) => (
+            rows={votesToShow.map((vote) => (
               <VotesListItem
                 vote={vote}
                 phase={phase}
-                selectedVote={selectedVotes[vote.uniqueKey]}
-                selectVote={(value) => selectVote(value, vote)}
+                selectedVote={undefined}
+                selectVote={() => null}
+                clearVote={() => null}
                 activityStatus={activityStatus}
                 moreDetailsAction={() => openVotePanel(vote)}
                 key={vote.uniqueKey}
                 delegationStatus={getDelegationStatus()}
-                isDirty={dirtyInputs[index]}
-                setDirty={(dirty: boolean) => {
-                  setDirtyInput((inputs) => {
-                    inputs[index] = dirty;
-                    return [...inputs];
-                  });
-                }}
                 isFetching={
                   getUserDependentIsFetching() ||
                   isCommittingVotes ||
