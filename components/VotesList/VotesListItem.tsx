@@ -36,7 +36,7 @@ export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
   selectedVote: string | undefined;
-  selectVote: (value: string) => void;
+  selectVote: (value: string | undefined) => void;
   clearVote: () => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
@@ -118,7 +118,7 @@ export function VotesListItem({
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
-      if (!isDirty) clearVote();
+      selectVote("");
       setIsCustomInput(true);
     } else {
       selectVote(option.value.toString());
@@ -126,7 +126,7 @@ export function VotesListItem({
   }
 
   function exitCustomInput() {
-    if (!isDirty) clearVote();
+    clearVote();
     setIsCustomInput(false);
   }
 
