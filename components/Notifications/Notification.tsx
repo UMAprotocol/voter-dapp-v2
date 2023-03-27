@@ -1,11 +1,11 @@
 import { LoadingSpinner } from "components/LoadingSpinner";
+import { config } from "helpers/config";
 import NextLink from "next/link";
-import Success from "public/assets/icons/success.svg";
 import Close from "public/assets/icons/close.svg";
 import Failure from "public/assets/icons/failure.svg";
+import Success from "public/assets/icons/success.svg";
 import styled from "styled-components";
 import { NotificationT, UniqueIdT } from "types";
-import { config } from "helpers/config";
 
 export function Notification({
   message,
@@ -78,12 +78,7 @@ const IconWrapper = styled.div`
   height: 32px;
 `;
 
-const SuccessIcon = styled(Success)`
-  path {
-    fill: var(--white);
-    stroke: var(--green);
-  }
-`;
+const SuccessIcon = styled(Success)``;
 
 const TextWrapper = styled.div`
   display: grid;

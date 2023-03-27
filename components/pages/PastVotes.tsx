@@ -51,6 +51,7 @@ export function PastVotes() {
                       phase={phase}
                       selectedVote={undefined}
                       selectVote={() => null}
+                      clearVote={() => null}
                       activityStatus="past"
                       moreDetailsAction={() => openPanel("vote", vote)}
                       key={vote.uniqueKey}

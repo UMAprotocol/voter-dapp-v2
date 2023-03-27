@@ -6,7 +6,6 @@ import {
   ContractsProvider,
   DelegationProvider,
   ErrorProvider,
-  PaginationProvider,
   PanelProvider,
   StakingProvider,
   UserProvider,
@@ -37,16 +36,14 @@ export const decorators: Decorator[] = [
             <UserProvider>
               <ContractsProvider>
                 <StakingProvider>
-                  <PaginationProvider>
-                    <DelegationProvider>
-                      <VotesProvider>
-                        <PanelProvider>
-                          <GlobalStyle />
-                          <Story />
-                        </PanelProvider>
-                      </VotesProvider>
-                    </DelegationProvider>
-                  </PaginationProvider>
+                  <DelegationProvider>
+                    <VotesProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Story />
+                      </PanelProvider>
+                    </VotesProvider>
+                  </DelegationProvider>
                 </StakingProvider>
               </ContractsProvider>
             </UserProvider>

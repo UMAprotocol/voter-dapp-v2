@@ -1,12 +1,14 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import {
   defaultVotesContextState,
   defaultVoteTimingContextState,
   VotesContext,
+  VotesContextState,
   VoteTimingContext,
 } from "contexts";
 import VotePage from "pages";
 import {
+  polymarketVote,
   voteCommitted,
   voteCommittedButNotRevealed,
   voteRevealed,
@@ -16,7 +18,7 @@ import {
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
 
-interface StoryProps {
+interface Args {
   phase: "commit" | "reveal";
   activeVotes: VoteT[];
   upcomingVotes: VoteT[];
@@ -24,88 +26,108 @@ interface StoryProps {
   activityStatus: ActivityStatusT;
 }
 
-export default {
+const meta: Meta = {
   title: "Pages/Vote Page/VotePage",
   component: VotePage,
-} as Meta<StoryProps>;
-
-const Template: Story<StoryProps> = (args) => {
-  const mockVoteTimingContextState = {
-    ...defaultVoteTimingContextState,
-    phase: args.phase ?? "commit",
-    roundId: 1,
-  };
-
-  const mockVotesContextState = {
-    ...defaultVotesContextState,
-    getActiveVotes: () => args.activeVotes ?? [],
-    getUpcomingVotes: () => args.upcomingVotes ?? [],
-    getPastVotes: () => args.pastVotes ?? [],
-    getActivityStatus: () => args.activityStatus ?? "past",
-  };
-
-  return (
-    <VoteTimingContext.Provider value={mockVoteTimingContextState}>
-      <VotesContext.Provider value={mockVotesContextState}>
-        <VotePage />
-      </VotesContext.Provider>
-    </VoteTimingContext.Provider>
-  );
 };
 
-export const ActiveCommit = Template.bind({});
-ActiveCommit.args = {
-  activityStatus: "active",
-  phase: "commit",
-  activeVotes: [
-    voteWithoutUserVote,
-    voteCommitted,
-    voteWithoutUserVote,
-    voteCommitted,
-  ],
+export default meta;
+
+type Story = StoryObj<Args>;
+
+const Template: Story = {
+  render: function Wrapper(args) {
+    const mockVoteTimingContextState = {
+      ...defaultVoteTimingContextState,
+      phase: args.phase ?? "commit",
+      roundId: 1,
+    };
+
+    const mockVotesContextState: VotesContextState = {
+      ...defaultVotesContextState,
+      activeVotesList: args.activeVotes ?? [],
+      upcomingVotesList: args.upcomingVotes ?? [],
+      pastVotesList: args.pastVotes ?? [],
+      getActivityStatus: () => args.activityStatus ?? "past",
+    };
+
+    return (
+      <VoteTimingContext.Provider value={mockVoteTimingContextState}>
+        <VotesContext.Provider value={mockVotesContextState}>
+          <VotePage />
+        </VotesContext.Provider>
+      </VoteTimingContext.Provider>
+    );
+  },
 };
 
-export const ActiveReveal = Template.bind({});
-ActiveReveal.args = {
-  activityStatus: "active",
-  phase: "reveal",
-  activeVotes: [
-    voteCommittedButNotRevealed,
-    voteRevealed,
-    voteCommittedButNotRevealed,
-    voteRevealed,
-  ],
+export const ActiveCommit: Story = {
+  ...Template,
+  args: {
+    activityStatus: "active",
+    phase: "commit",
+    activeVotes: [
+      voteWithoutUserVote,
+      polymarketVote,
+      voteCommitted,
+      voteWithoutUserVote,
+      voteCommitted,
+    ],
+  },
 };
 
-export const Upcoming = Template.bind({});
-Upcoming.args = {
-  activityStatus: "upcoming",
-  upcomingVotes: [
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-  ],
-  pastVotes: [
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-  ],
+export const ActiveReveal: Story = {
+  ...Template,
+  args: {
+    activityStatus: "active",
+    phase: "reveal",
+    activeVotes: [
+      voteCommittedButNotRevealed,
+      voteRevealed,
+      voteCommittedButNotRevealed,
+      voteRevealed,
+    ],
+  },
 };
 
-export const Past = Template.bind({});
-Past.args = {
-  activityStatus: "past",
-  pastVotes: [
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-    voteWithCorrectVoteWithUserVote,
-    voteWithCorrectVoteWithoutUserVote,
-  ],
+export const Upcoming: Story = {
+  ...Template,
+  args: {
+    activityStatus: "upcoming",
+    upcomingVotes: [
+      voteWithoutUserVote,
+      voteWithoutUserVote,
+      voteWithoutUserVote,
+    ],
+    pastVotes: [
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+    ],
+  },
 };
 
-export const With100Entries = Template.bind({});
-With100Entries.args = {
-  activityStatus: "past",
-  pastVotes: Array.from({ length: 100 }, () => voteWithCorrectVoteWithUserVote),
+export const Past: Story = {
+  ...Template,
+  args: {
+    activityStatus: "past",
+    pastVotes: [
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+      voteWithCorrectVoteWithUserVote,
+      voteWithCorrectVoteWithoutUserVote,
+    ],
+  },
+};
+
+export const With100Entries: Story = {
+  ...Template,
+  args: {
+    activityStatus: "past",
+    pastVotes: Array.from(
+      { length: 100 },
+      () => voteWithCorrectVoteWithUserVote
+    ),
+  },
 };

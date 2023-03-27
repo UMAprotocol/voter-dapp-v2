@@ -64,6 +64,7 @@ export function UpcomingVotes() {
                           phase={phase}
                           selectedVote={undefined}
                           selectVote={() => null}
+                          clearVote={() => null}
                           activityStatus="upcoming"
                           moreDetailsAction={() => openPanel("vote", vote)}
                           key={vote.uniqueKey}
