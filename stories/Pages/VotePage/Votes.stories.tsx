@@ -8,12 +8,12 @@ import {
   VoteTimingContext,
 } from "contexts";
 import {
-  voteCommitted,
+  defaultMockVote,
+  mockCommitted,
+  mockRevealed,
   voteCommittedButNotRevealed,
-  voteRevealed,
   voteWithCorrectVoteWithoutUserVote,
   voteWithCorrectVoteWithUserVote,
-  voteWithoutUserVote,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
 
@@ -65,12 +65,7 @@ export const ActiveCommit = Template.bind({});
 ActiveCommit.args = {
   activityStatus: "active",
   phase: "commit",
-  activeVotes: [
-    voteWithoutUserVote,
-    voteCommitted,
-    voteWithoutUserVote,
-    voteCommitted,
-  ],
+  activeVotes: [defaultMockVote, mockCommitted, defaultMockVote, mockCommitted],
 };
 
 export const ActiveReveal = Template.bind({});
@@ -79,20 +74,16 @@ ActiveReveal.args = {
   phase: "reveal",
   activeVotes: [
     voteCommittedButNotRevealed,
-    voteRevealed,
+    mockRevealed,
     voteCommittedButNotRevealed,
-    voteRevealed,
+    mockRevealed,
   ],
 };
 
 export const Upcoming = Template.bind({});
 Upcoming.args = {
   activityStatus: "upcoming",
-  upcomingVotes: [
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-    voteWithoutUserVote,
-  ],
+  upcomingVotes: [defaultMockVote, defaultMockVote, defaultMockVote],
 };
 
 export const Past = Template.bind({});

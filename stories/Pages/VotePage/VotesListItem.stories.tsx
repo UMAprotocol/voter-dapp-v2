@@ -4,15 +4,15 @@ import { userEvent, waitFor, within } from "@storybook/testing-library";
 import { VotesList, VotesListItem, VotesTableHeadings } from "components";
 import { useState } from "react";
 import {
+  defaultMockVote,
+  mockCommitted,
+  mockRevealed,
   polymarketVote,
   polymarketVoteCommitted,
   polymarketVoteCommittedCustomInput,
-  voteCommitted,
   voteCommittedButNotRevealed,
-  voteRevealed,
   voteWithCorrectVoteWithoutUserVote,
   voteWithCorrectVoteWithUserVote,
-  voteWithoutUserVote,
 } from "stories/mocks/votes";
 
 const meta: Meta = {
@@ -73,7 +73,7 @@ export const ActiveNotCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: voteWithoutUserVote,
+    vote: defaultMockVote,
   },
 };
 
@@ -82,7 +82,7 @@ export const ActiveCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: voteCommitted,
+    vote: mockCommitted,
   },
 };
 
@@ -100,7 +100,7 @@ export const ActiveRevealed: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "reveal",
-    vote: voteRevealed,
+    vote: mockRevealed,
   },
 };
 
@@ -109,7 +109,7 @@ export const ActiveRevealButDidNotVote: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "reveal",
-    vote: voteWithoutUserVote,
+    vote: defaultMockVote,
   },
 };
 
@@ -119,7 +119,7 @@ export const UpcomingVote: Story = {
   ...Template,
   args: {
     ...commonArgs,
-    vote: voteWithoutUserVote,
+    vote: defaultMockVote,
     activityStatus: "upcoming",
   },
 };
