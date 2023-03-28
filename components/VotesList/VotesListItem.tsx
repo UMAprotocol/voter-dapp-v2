@@ -34,9 +34,9 @@ import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
 export interface Props {
   vote: VoteT;
   phase: VotePhaseT;
-  selectedVote: string | undefined;
-  selectVote: (value: string | undefined) => void;
-  clearVote: () => void;
+  selectedVote?: string | undefined;
+  selectVote?: (value: string | undefined) => void;
+  clearVote?: () => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
@@ -117,15 +117,15 @@ export function VotesListItem({
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
-      selectVote("");
+      selectVote?.("");
       setIsCustomInput(true);
     } else {
-      selectVote(option.value.toString());
+      selectVote?.(option.value.toString());
     }
   }
 
   function exitCustomInput() {
-    clearVote();
+    clearVote?.();
     setIsCustomInput(false);
   }
 
@@ -376,7 +376,7 @@ export function VotesListItem({
           </VoteDetailsWrapper>
         </VoteTitleWrapper>
       </VoteTitleCell>
-      {showVoteInput() ? (
+      {showVoteInput() && selectVote ? (
         <VoteInputCell as={isTabletAndUnder ? "div" : "td"}>
           {options && !isCustomInput ? (
             <Dropdown

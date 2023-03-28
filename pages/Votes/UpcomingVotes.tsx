@@ -16,7 +16,8 @@ import { useEffect, useState } from "react";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVotesList, getActivityStatus } = useVotesContext();
+  const { upcomingVotesList, getActivityStatus, getUserDependentIsFetching } =
+    useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { getDelegationStatus } = useDelegationContext();
@@ -39,14 +40,11 @@ export function UpcomingVotes() {
             <VotesListItem
               vote={vote}
               phase={phase}
-              selectedVote={undefined}
-              selectVote={() => null}
-              clearVote={() => null}
               activityStatus="upcoming"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
               delegationStatus={getDelegationStatus()}
-              isFetching={false}
+              isFetching={getUserDependentIsFetching()}
             />
           ))}
         />
