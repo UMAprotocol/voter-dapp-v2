@@ -10,7 +10,6 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "storybook-addon-pseudo-states",
-    "storybook-mobile",
   ],
   staticDirs: ["../public"],
   framework: {
@@ -56,9 +55,6 @@ const config: StorybookConfig = {
       }),
     ]);
     return config;
-  },
-  docs: {
-    autodocs: true,
   },
 };
 
