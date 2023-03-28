@@ -1,6 +1,7 @@
 import { Decorator } from "@storybook/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { mockDateDecorator } from "storybook-mock-date-decorator";
 import { GlobalStyle } from "../components/GlobalStyle";
 import {
   ContractsProvider,
@@ -13,6 +14,7 @@ import {
   VoteTimingProvider,
   WalletProvider,
 } from "../contexts";
+import { mockDate } from "../stories/mocks/misc";
 import "../styles/fonts.css";
 
 export const parameters = {
@@ -23,11 +25,13 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  date: mockDate,
 };
 
 const queryClient = new QueryClient();
 
 export const decorators: Decorator[] = [
+  mockDateDecorator,
   (Story) => (
     <ErrorProvider>
       <QueryClientProvider client={queryClient}>
