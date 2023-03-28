@@ -60,7 +60,7 @@ export { Tabs } from "./Tabs/Tabs";
 export { Toggle } from "./Toggle/Toggle";
 export { Tooltip } from "./Tooltip/Tooltip";
 export { VoteHistoryTable } from "./VoteHistoryTable/VoteHistoryTable";
-export { Votes } from "../pages/Votes/Votes";
+export { Votes } from "./Votes/Votes";
 export { VotesList } from "./VotesList/VotesList";
 export { VotesListItem } from "./VotesList/VotesListItem";
 export type { Props } from "./VotesList/VotesListItem";
