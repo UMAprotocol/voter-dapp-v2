@@ -1,14 +1,16 @@
 import { sub } from "date-fns";
 import { BigNumber } from "ethers";
-import { formatBytes32String } from "ethers/lib/utils";
 import {
   bigNumberFromFloatString,
+  formatBytes32String,
   makeUniqueKeyForVote,
   maybeMakePolymarketOptions,
 } from "helpers";
 import { VoteT } from "types";
 
-export const defaultMockVote = (number = Math.random()): VoteT => {
+export const defaultMockVote = (
+  number = Math.floor(Math.random() * 1000)
+): VoteT => {
   const decodedIdentifier = "MOCK_IDENTIFIER";
   const decodedAncillaryData = `MOCK_ANCILLARY_DATA_${number}`;
   const identifier = formatBytes32String(decodedIdentifier);

@@ -5,14 +5,13 @@ import { VotesList, VotesListItem, VotesTableHeadings } from "components";
 import { useState } from "react";
 import {
   defaultMockVote,
+  makeMockVotes,
   mockCommitted,
+  mockCorrectVote,
   mockRevealed,
   polymarketVote,
   polymarketVoteCommitted,
   polymarketVoteCommittedCustomInput,
-  voteCommittedButNotRevealed,
-  voteWithCorrectVoteWithoutUserVote,
-  voteWithCorrectVoteWithUserVote,
 } from "stories/mocks/votes";
 
 const meta: Meta = {
@@ -50,6 +49,26 @@ const Template: Story = {
 
 const mockMoreDetailsAction = () => alert("More details clicked");
 
+const [
+  _mockCommitted,
+  _mockRevealed,
+  _voteWithCorrectVoteWithoutUserVote,
+  _voteWithCorrectVoteWithUserVote,
+  _polymarketVote,
+  _polymarketVoteCommitted,
+  _polymarketVoteCommittedCustomInput,
+] = makeMockVotes({
+  inputs: [
+    mockCommitted,
+    mockRevealed,
+    mockCorrectVote,
+    { ...mockCommitted, ...mockRevealed, ...mockCorrectVote },
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteCommittedCustomInput,
+  ],
+});
+
 const commonArgs = {
   moreDetailsAction: mockMoreDetailsAction,
 };
@@ -73,7 +92,7 @@ export const ActiveNotCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: defaultMockVote,
+    vote: defaultMockVote(),
   },
 };
 
@@ -82,7 +101,7 @@ export const ActiveCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: mockCommitted,
+    vote: _mockCommitted,
   },
 };
 
@@ -91,7 +110,7 @@ export const ActiveNotRevealed: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "reveal",
-    vote: voteCommittedButNotRevealed,
+    vote: _mockCommitted,
   },
 };
 
@@ -100,7 +119,7 @@ export const ActiveRevealed: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "reveal",
-    vote: mockRevealed,
+    vote: _mockRevealed,
   },
 };
 
@@ -109,7 +128,7 @@ export const ActiveRevealButDidNotVote: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "reveal",
-    vote: defaultMockVote,
+    vote: defaultMockVote(),
   },
 };
 
@@ -119,7 +138,7 @@ export const UpcomingVote: Story = {
   ...Template,
   args: {
     ...commonArgs,
-    vote: defaultMockVote,
+    vote: defaultMockVote(),
     activityStatus: "upcoming",
   },
 };
@@ -130,7 +149,7 @@ export const PastVoteDidNotVote: Story = {
   ...Template,
   args: {
     ...pastVoteCommonArgs,
-    vote: voteWithCorrectVoteWithoutUserVote,
+    vote: _voteWithCorrectVoteWithoutUserVote,
   },
 };
 
@@ -138,7 +157,7 @@ export const PastVoteDidVote: Story = {
   ...Template,
   args: {
     ...pastVoteCommonArgs,
-    vote: voteWithCorrectVoteWithUserVote,
+    vote: _voteWithCorrectVoteWithUserVote,
   },
 };
 
@@ -147,7 +166,7 @@ export const PolymarketNotCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: polymarketVote,
+    vote: _polymarketVote,
   },
 };
 
@@ -174,7 +193,7 @@ export const PolymarketCommitted: Story = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit",
-    vote: polymarketVoteCommitted,
+    vote: _polymarketVoteCommitted,
   },
 };
 
@@ -201,7 +220,7 @@ export const PolymarketCommittedCustomValue = {
   args: {
     ...activeVotesCommonArgs,
     phase: "commit" as const,
-    vote: polymarketVoteCommittedCustomInput,
+    vote: _polymarketVoteCommittedCustomInput,
   },
 };
 
