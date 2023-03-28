@@ -28,7 +28,6 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
-import Close from "public/assets/icons/x.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
@@ -387,20 +386,13 @@ export function VotesListItem({
               onSelect={onSelectVote}
             />
           ) : (
-            <TextInputWrapper>
-              <TextInput
-                value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
-                onInput={selectVote}
-                maxDecimals={maxDecimals}
-                type="number"
-              />
-              <ExitCustomInputButton
-                aria-label="exit custom input"
-                onClick={exitCustomInput}
-              >
-                <CloseIcon />
-              </ExitCustomInputButton>
-            </TextInputWrapper>
+            <TextInput
+              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
+              onInput={selectVote}
+              onClear={exitCustomInput}
+              maxDecimals={maxDecimals}
+              type="number"
+            />
           )}
         </VoteInputCell>
       ) : null}
@@ -675,26 +667,3 @@ const Link = styled(NextLink)`
     color: var(--black-opacity-50);
   }
 `;
-
-const TextInputWrapper = styled.div`
-  position: relative;
-`;
-
-const ExitCustomInputButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--grey-100);
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.75;
-  }
-`;
-
-const CloseIcon = styled(Close)``;
