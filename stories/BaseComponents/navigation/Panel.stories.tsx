@@ -26,7 +26,7 @@ import {
   mockDelegateRequestTransaction,
 } from "stories/mocks/delegation";
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
-import { makeMockVotesWithHistory, voteCommitted } from "stories/mocks/votes";
+import { defaultMockVote, makeMockVotesWithHistory } from "stories/mocks/votes";
 import { DelegationEventT, DelegationStatusT, VoteT } from "types";
 
 interface Props
@@ -279,7 +279,7 @@ export const VotePanelWithoutResults: Story = {
   ...Template,
   args: {
     panelType: "vote",
-    panelContent: voteCommitted,
+    panelContent: defaultMockVote(),
     panelOpen: true,
   },
 };
@@ -289,7 +289,7 @@ export const VotePanelWithResults: Story = {
   args: {
     ...VotePanelWithoutResults.args,
     panelContent: {
-      ...voteCommitted,
+      ...defaultMockVote(),
       participation: {
         uniqueCommitAddresses: 100,
         uniqueRevealAddresses: 100,
@@ -322,7 +322,7 @@ export const VotePanelWithLongTitle: Story = {
   args: {
     ...VotePanelWithoutResults.args,
     panelContent: {
-      ...voteCommitted,
+      ...defaultMockVote(),
       title:
         "Will Coinbase support Polygon USDC deposits & withdrawals by June 30, 2022?",
     },

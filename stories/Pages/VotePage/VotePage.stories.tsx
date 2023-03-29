@@ -8,13 +8,14 @@ import {
 } from "contexts";
 import VotePage from "pages";
 import {
+  makeMockVotes,
+  mockCommitted,
+  mockEncryptedAndDecrypted,
   polymarketVote,
-  voteCommitted,
-  voteCommittedButNotRevealed,
-  voteRevealed,
-  voteWithCorrectVoteWithoutUserVote,
-  voteWithCorrectVoteWithUserVote,
-  voteWithoutUserVote,
+  polymarketVoteCommitted,
+  polymarketVoteCommittedCustomInput,
+  polymarketVoteRevealed,
+  polymarketVoteRevealedCustomInput,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
 
@@ -61,18 +62,99 @@ const Template: Story = {
   },
 };
 
+const commitActiveVotes = makeMockVotes({
+  inputs: [
+    mockEncryptedAndDecrypted,
+    mockCommitted,
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteCommittedCustomInput,
+  ],
+});
+
+const revealActiveVotes = makeMockVotes({
+  inputs: [
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteRevealed,
+    polymarketVoteRevealedCustomInput,
+  ],
+});
+
+const manyRevealActiveVotes = makeMockVotes({
+  count: 100,
+  inputs: [
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteRevealed,
+    polymarketVoteRevealedCustomInput,
+  ],
+});
+
+const manyCommitActiveVotes = makeMockVotes({
+  count: 100,
+  inputs: [
+    mockEncryptedAndDecrypted,
+    mockCommitted,
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteCommittedCustomInput,
+  ],
+});
+
+const pastVotes = makeMockVotes({
+  count: 100,
+  inputs: [
+    mockEncryptedAndDecrypted,
+    mockCommitted,
+    polymarketVote,
+    polymarketVoteCommitted,
+    polymarketVoteCommittedCustomInput,
+  ],
+});
+
+const upcomingVotes = makeMockVotes({
+  count: 5,
+  inputs: [polymarketVote],
+});
+
+const manyUpcomingVotes = makeMockVotes({
+  count: 100,
+  inputs: [polymarketVote],
+});
+
 export const ActiveCommit: Story = {
   ...Template,
   args: {
     activityStatus: "active",
     phase: "commit",
-    activeVotes: [
-      voteWithoutUserVote,
-      polymarketVote,
-      voteCommitted,
-      voteWithoutUserVote,
-      voteCommitted,
-    ],
+    activeVotes: commitActiveVotes,
+    pastVotes: pastVotes,
+  },
+};
+
+export const ActiveCommitWithPagination: Story = {
+  ...ActiveCommit,
+  args: {
+    ...ActiveCommit.args,
+    activeVotes: manyCommitActiveVotes,
+  },
+};
+
+export const ActiveCommitWithUpcoming: Story = {
+  ...ActiveCommit,
+  args: {
+    ...ActiveCommit.args,
+    upcomingVotes: upcomingVotes,
+  },
+};
+
+export const ActiveCommitWithUpcomingWithPagination: Story = {
+  ...ActiveCommitWithUpcoming,
+  args: {
+    ...ActiveCommitWithUpcoming.args,
+    upcomingVotes: manyUpcomingVotes,
+    activeVotes: manyCommitActiveVotes,
   },
 };
 
@@ -81,12 +163,33 @@ export const ActiveReveal: Story = {
   args: {
     activityStatus: "active",
     phase: "reveal",
-    activeVotes: [
-      voteCommittedButNotRevealed,
-      voteRevealed,
-      voteCommittedButNotRevealed,
-      voteRevealed,
-    ],
+    activeVotes: revealActiveVotes,
+    pastVotes: pastVotes,
+  },
+};
+
+export const ActiveRevealWithPagination: Story = {
+  ...ActiveReveal,
+  args: {
+    ...ActiveReveal.args,
+    activeVotes: manyRevealActiveVotes,
+  },
+};
+
+export const ActiveRevealWithUpcoming = {
+  ...ActiveReveal,
+  args: {
+    ...ActiveReveal.args,
+    upcomingVotes: upcomingVotes,
+  },
+};
+
+export const ActiveRevealWithUpcomingWithPagination: Story = {
+  ...ActiveRevealWithUpcoming,
+  args: {
+    ...ActiveRevealWithUpcoming.args,
+    upcomingVotes: manyUpcomingVotes,
+    activeVotes: manyRevealActiveVotes,
   },
 };
 
@@ -94,17 +197,16 @@ export const Upcoming: Story = {
   ...Template,
   args: {
     activityStatus: "upcoming",
-    upcomingVotes: [
-      voteWithoutUserVote,
-      voteWithoutUserVote,
-      voteWithoutUserVote,
-    ],
-    pastVotes: [
-      voteWithCorrectVoteWithUserVote,
-      voteWithCorrectVoteWithoutUserVote,
-      voteWithCorrectVoteWithUserVote,
-      voteWithCorrectVoteWithoutUserVote,
-    ],
+    upcomingVotes: upcomingVotes,
+    pastVotes: pastVotes,
+  },
+};
+
+export const UpcomingWithPagination: Story = {
+  ...Upcoming,
+  args: {
+    ...Upcoming.args,
+    upcomingVotes: manyUpcomingVotes,
   },
 };
 
@@ -112,22 +214,6 @@ export const Past: Story = {
   ...Template,
   args: {
     activityStatus: "past",
-    pastVotes: [
-      voteWithCorrectVoteWithUserVote,
-      voteWithCorrectVoteWithoutUserVote,
-      voteWithCorrectVoteWithUserVote,
-      voteWithCorrectVoteWithoutUserVote,
-    ],
-  },
-};
-
-export const With100Entries: Story = {
-  ...Template,
-  args: {
-    activityStatus: "past",
-    pastVotes: Array.from(
-      { length: 100 },
-      () => voteWithCorrectVoteWithUserVote
-    ),
+    pastVotes: pastVotes,
   },
 };
