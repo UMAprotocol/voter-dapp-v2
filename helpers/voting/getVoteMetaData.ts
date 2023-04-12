@@ -16,6 +16,27 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
+  // we are hard coding this because we have an upcoming vote, but the voterdapp cannot currently decode it
+  // TODO: remove this hard coding
+  if (decodedIdentifier.includes("ASSERT_TRUTH")) {
+    // if all checks fail, return with generic values generated from the data we have
+    return {
+      title: decodedIdentifier,
+      description: "Asserted truth: 1+1=3",
+      umipOrUppLink: {
+        label: "umip-170".toUpperCase(),
+        href: "https://github.com/UMAprotocol/UMIPs/blob/7e4eadb309c8e38d540bdf6f39cee81a3e48d260/UMIPs/umip-170.md",
+      },
+      umipOrUppNumber: "umip-170",
+      options: [
+        { label: "True", value: "1" },
+        { label: "False", value: "0" },
+      ],
+      origin: "UMA",
+      isGovernance: false,
+      discordLink,
+    };
+  }
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
   if (isUmip) {
