@@ -1,11 +1,12 @@
+import { OptimisticOracleV3Ethers } from "@uma/contracts-frontend";
 import assert from "assert";
 import { BigNumber } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { SupportedChainIds } from "types";
 import {
-  constructContract,
   ContractName,
+  constructContract,
   getFromBlock,
   getNodeUrls,
   isSupportedChainId,
@@ -243,7 +244,10 @@ async function getOov3Assertions(
   chainId: SupportedChainIds
 ): Promise<CommonEventData[]> {
   //
-  const contract = await constructContract(chainId, "OptimisticOracleV3");
+  const contract = (await constructContract(
+    chainId,
+    "OptimisticOracleV3"
+  )) as OptimisticOracleV3Ethers;
   const events = await contract.queryFilter(contract.filters.AssertionMade());
   //
 
