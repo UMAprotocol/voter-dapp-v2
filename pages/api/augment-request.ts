@@ -15,7 +15,10 @@ const debug = !!process.env.DEBUG;
 
 type OracleType = Extract<
   ContractName,
-  "OptimisticOracle" | "OptimisticOracleV2" | "SkinnyOptimisticOracle"
+  | "OptimisticOracle"
+  | "OptimisticOracleV2"
+  | "OptimisticOracleV3"
+  | "SkinnyOptimisticOracle"
 >;
 type VotingType = Extract<ContractName, "Voting" | "VotingV2">;
 
@@ -23,6 +26,7 @@ const EnabledVoting: VotingType[] = ["Voting", "VotingV2"];
 const EnabledOracles: OracleType[] = [
   "OptimisticOracle",
   "OptimisticOracleV2",
+  "OptimisticOracleV3",
   "SkinnyOptimisticOracle",
 ];
 
@@ -48,6 +52,14 @@ const CommonEventData = ss.object({
   time: ss.number(),
   contractType: ss.string(),
   chainId: ss.number(),
+  domainId: ss.string(),
+  assertionId: ss.string(),
+  claim: ss.string(),
+  asserter: ss.string(),
+  callbackRecipient: ss.string(),
+  escalationManager: ss.string(),
+  expirationTime: ss.number(),
+  caller: ss.string(),
 });
 type CommonEventData = ss.Infer<typeof CommonEventData>;
 
@@ -76,6 +88,8 @@ function castOracleNameForOOUi(oracleType: string): string {
       return "OptimisticV2";
     case "SkinnyOptimisticOracle":
       return "Skinny";
+    case "OptimisticOracleV3":
+      return "OptimisticV3";
     default:
       throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
   }
@@ -121,6 +135,14 @@ async function getVotingRequestAdded(
             : event?.args?.time,
         contractType,
         chainId,
+        assertionId: "",
+        domainId: "",
+        claim: "",
+        asserter: "",
+        callbackRecipient: "",
+        escalationManager: "",
+        expirationTime: 0,
+        caller: "",
       },
       CommonEventData
     )
@@ -170,6 +192,14 @@ async function getOracleRequestPrices(
             : event?.args?.timestamp,
         contractType,
         chainId,
+        assertionId: "",
+        domainId: "",
+        claim: "",
+        asserter: "",
+        callbackRecipient: "",
+        escalationManager: "",
+        expirationTime: 0,
+        caller: "",
       },
       CommonEventData
     )
@@ -195,6 +225,54 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
             : event?.args?.time,
         contractType: "OptimisticOracleV2", // The event based type is only ever OOv2.
         chainId: 137,
+        assertionId: "",
+        domainId: "",
+        claim: "",
+        asserter: "",
+        callbackRecipient: "",
+        escalationManager: "",
+        expirationTime: 0,
+        caller: "",
+      },
+      CommonEventData
+    )
+  );
+}
+
+async function getOov3Assertions(
+  chainId: SupportedChainIds
+): Promise<CommonEventData[]> {
+  //
+  const contract = await constructContract(chainId, "OptimisticOracleV3");
+  const events = await contract.queryFilter(contract.filters.AssertionMade());
+  //
+
+  const assertionDetails = await Promise.all(
+    events.map((event) => contract.assertions(event?.args?.assertionId))
+  );
+  //
+  return events.map((event, index) =>
+    ss.create(
+      {
+        transactionHash: event?.transactionHash,
+        identifier: event?.args?.identifier,
+        contractType: "OptimisticOracleV3", // The event based type is only ever OOv2.
+        time:
+          assertionDetails[index].assertionTime instanceof BigNumber
+            ? assertionDetails[index].assertionTime?.toNumber()
+            : assertionDetails[index].assertionTime,
+        chainId,
+        assertionId: event?.args?.assertionId,
+        domainId: event?.args?.domainId || "",
+        claim: event?.args?.claim,
+        asserter: event?.args?.asserter,
+        callbackRecipient: event?.args?.callbackRecipient,
+        escalationManager: event?.args?.escalationManager,
+        expirationTime:
+          event?.args?.expirationTime instanceof BigNumber
+            ? event?.args?.expirationTime?.toNumber()
+            : event?.args?.expirationTime,
+        caller: event?.args?.caller,
       },
       CommonEventData
     )
@@ -214,8 +292,13 @@ async function getManyOracleRequestsPrices(
   // To accommodate event based expiration on polygon, we need to also query the oracle child tunnel to join
   // timestamps correctly. This should be refined in the future.
   const oracleChildTunnel = getOracleChildTunnelMessages();
+  const assertions = chainIds
+    .map((chainId) => getOov3Assertions(chainId))
+    .flat();
 
-  return (await Promise.allSettled([requests, oracleChildTunnel].flat()))
+  const processedOutputs = (
+    await Promise.allSettled([requests, oracleChildTunnel, assertions].flat())
+  )
     .map((result) => {
       if (result.status === "fulfilled") {
         return result.value;
@@ -224,6 +307,8 @@ async function getManyOracleRequestsPrices(
       return [];
     })
     .flat();
+  //
+  return processedOutputs;
 }
 
 async function augmentRequests({ l1Requests, chainId }: RequestBody) {
@@ -241,7 +326,9 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
     EnabledOracles,
     ooChains
   );
+  //
   const requestPriceTable = createLookupTable(requestPriceEvents);
+  //
 
   return l1Requests.map((l1Request) => {
     const votingRequestEvent =
@@ -252,6 +339,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       requestPriceTable?.[l1Request.identifier.toLowerCase()]?.[
         l1Request.time
       ] || {};
+
     return {
       ...l1Request,
       l1RequestTxHash: votingRequestEvent.transactionHash,
@@ -263,6 +351,20 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       originatingChainTxHash: oracleRequestPriceEvent.transactionHash,
       originatingChainId: oracleRequestPriceEvent.chainId,
       originatingOracleType: oracleRequestPriceEvent.contractType,
+      optimisticOracleV3Data:
+        oracleRequestPriceEvent.contractType == "OptimisticOracleV3"
+          ? {
+              domainId: oracleRequestPriceEvent?.domainId || "",
+              claim: oracleRequestPriceEvent?.claim || "",
+              asserter: oracleRequestPriceEvent?.asserter || "",
+              callbackRecipient:
+                oracleRequestPriceEvent?.callbackRecipient || "",
+              escalationManager:
+                oracleRequestPriceEvent?.escalationManager || "",
+              expirationTime: oracleRequestPriceEvent?.expirationTime || "",
+              caller: oracleRequestPriceEvent?.caller || "",
+            }
+          : undefined,
     };
   });
 }
