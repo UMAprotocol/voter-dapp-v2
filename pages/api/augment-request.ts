@@ -296,7 +296,7 @@ async function getManyOracleRequestsPrices(
     .map((chainId) => getOov3Assertions(chainId))
     .flat();
 
-  const processedOutputs = (
+  return (
     await Promise.allSettled([requests, oracleChildTunnel, assertions].flat())
   )
     .map((result) => {
@@ -307,8 +307,6 @@ async function getManyOracleRequestsPrices(
       return [];
     })
     .flat();
-  //
-  return processedOutputs;
 }
 
 async function augmentRequests({ l1Requests, chainId }: RequestBody) {
