@@ -260,7 +260,7 @@ async function getOov3Assertions(
       {
         transactionHash: event?.transactionHash,
         identifier: event?.args?.identifier,
-        contractType: "OptimisticOracleV3", // The event based type is only ever OOv2.
+        contractType: "OptimisticOracleV3",
         time:
           assertionDetails[index].assertionTime instanceof BigNumber
             ? assertionDetails[index].assertionTime?.toNumber()
