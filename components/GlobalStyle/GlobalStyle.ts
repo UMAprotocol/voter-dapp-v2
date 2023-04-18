@@ -119,8 +119,6 @@ body {
   /* Remove fill and set stroke color to the inherited font color */
   stroke: currentColor;
   fill: none;
-  /* Rounded stroke */
-  stroke-linecap: round;
   stroke-linejoin: round;
 }
 
