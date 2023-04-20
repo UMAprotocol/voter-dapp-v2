@@ -389,7 +389,7 @@ export function VotesListItem({
             <TextInput
               value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
               onInput={selectVote}
-              onClear={exitCustomInput}
+              onClear={isCustomInput ? exitCustomInput : undefined}
               maxDecimals={maxDecimals}
               type="number"
             />
