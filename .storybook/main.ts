@@ -1,10 +1,7 @@
 import type { StorybookConfig } from "@storybook/nextjs";
 import webpack from "webpack";
 const config: StorybookConfig = {
-  stories: [
-    "../stories/**/*.stories.mdx",
-    "../stories/**/*.stories.@(js|jsx|ts|tsx)",
-  ],
+  stories: ["../stories/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
@@ -16,9 +13,7 @@ const config: StorybookConfig = {
     name: "@storybook/nextjs",
     options: {},
   },
-  core: {
-    builder: "@storybook/builder-webpack5",
-  },
+  core: {},
   webpackFinal: async (config) => {
     // this modifies the existing image rule to exclude .svg files
     // since we want to handle those files with @svgr/webpack
@@ -35,7 +30,6 @@ const config: StorybookConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
-
     if (!config.resolve?.fallback) return config;
     const fallback = config.resolve.fallback;
     Object.assign(fallback, {
@@ -56,6 +50,8 @@ const config: StorybookConfig = {
     ]);
     return config;
   },
+  docs: {
+    autodocs: "tag",
+  },
 };
-
 export default config;
