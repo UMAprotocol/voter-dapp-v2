@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   stakedBalanceKey,
-  outstandingRewardsKey,
+  stakerDetailsKey,
   rewardsCalculationInputsKey,
 } from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
-import { ErrorOriginT, RewardCalculationT } from "types";
+import { ErrorOriginT, RewardCalculationT, StakerDetailsT } from "types";
 import { withdrawAndRestake } from "web3";
 
 export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
@@ -24,10 +24,14 @@ export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
         [stakedBalanceKey, address],
         (oldStakedBalance) => {
           // change outstanding rewards from contract to 0
-          queryClient.setQueryData<BigNumber>(
-            [outstandingRewardsKey, address],
-            () => {
-              return BigNumber.from(0);
+          queryClient.setQueryData<StakerDetailsT>(
+            [stakerDetailsKey, address],
+            (oldDetails) => {
+              if (oldDetails === undefined) return oldDetails;
+              return {
+                ...oldDetails,
+                outstandingRewards: BigNumber.from(0),
+              };
             }
           );
 
@@ -51,7 +55,6 @@ export function useWithdrawAndRestake(errorOrigin?: ErrorOriginT) {
             return;
 
           const newStakedBalance = oldStakedBalance.add(outstandingRewards);
-
           return newStakedBalance;
         }
       );
