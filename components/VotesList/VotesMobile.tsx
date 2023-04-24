@@ -1,6 +1,6 @@
 import styled from "styled-components";
+import { VotesTableRow } from "./VoteListItem/VotesTableRow";
 import { VotesListProps } from "./VotesList";
-import { VotesTableRow } from "./VotesTableRow";
 
 export function VotesMobile({ votesToShow, ...delegated }: VotesListProps) {
   return (

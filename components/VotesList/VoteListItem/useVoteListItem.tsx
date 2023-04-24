@@ -7,7 +7,7 @@ import {
 } from "helpers";
 import { useCallback, useEffect, useState } from "react";
 import { DropdownItemT, VoteT } from "types";
-import { VotesListProps } from "./VotesList";
+import { VotesListProps } from "../VotesList";
 
 export interface VoteListItemProps extends Omit<VotesListProps, "votesToShow"> {
   vote: VoteT;

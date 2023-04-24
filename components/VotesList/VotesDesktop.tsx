@@ -1,7 +1,7 @@
 import styled from "styled-components";
+import { VotesTableRow } from "./VoteListItem/VotesTableRow";
 import { VotesListProps } from "./VotesList";
 import { VotesTableHeadings } from "./VotesTableHeadings";
-import { VotesTableRow } from "./VotesTableRow";
 
 export function VotesDesktop({
   votesToShow,
