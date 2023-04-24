@@ -114,7 +114,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
   }, [activeVotesList]);
 
   const commitVotes = useCallback(
-    async function commitVotes() {
+    async function () {
       if (!canCommit) return;
 
       const formattedVotes = await formatVotesToCommit({
@@ -150,7 +150,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
   );
 
   const revealVotes = useCallback(
-    function revealVotes() {
+    function () {
       if (!canReveal) return;
 
       revealVotesMutation({
@@ -162,7 +162,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
   );
 
   const calculateActionStatus = useCallback(
-    function calculateActionStatus() {
+    function () {
       const actionConfig: ActionStatus = {
         hidden: true,
         tooltip: undefined,
@@ -320,13 +320,13 @@ export function useVotes(activityStatus: ActivityStatusT) {
   );
 
   const isDirty = useCallback(
-    function isDirty(uniqueKey: UniqueIdT) {
+    function (uniqueKey: UniqueIdT) {
       return dirtyInputs[uniqueKey];
     },
     [dirtyInputs]
   );
 
-  const selectVote = useCallback(function selectVote(
+  const selectVote = useCallback(function (
     value: string | undefined,
     vote: VoteT
   ) {
@@ -334,37 +334,30 @@ export function useVotes(activityStatus: ActivityStatusT) {
   },
   []);
 
-  const clearSelectedVote = useCallback(function clearSelectedVote(
-    vote: VoteT
-  ) {
+  const clearSelectedVote = useCallback(function (vote: VoteT) {
     setSelectedVotes((selected) => ({
       ...selected,
       [vote.uniqueKey]: undefined,
     }));
-  },
-  []);
+  }, []);
 
-  const resetSelectedVotes = useCallback(function resetSelectedVotes() {
+  const resetSelectedVotes = useCallback(function () {
     setSelectedVotes({});
   }, []);
 
   const moreDetailsAction = useCallback(
-    function moreDetailsAction(vote: VoteT) {
+    function (vote: VoteT) {
       openPanel("vote", vote);
     },
     [openPanel]
   );
 
-  const setDirty = useCallback(function setDirty(
-    dirty: boolean,
-    uniqueKey: UniqueIdT
-  ) {
+  const setDirty = useCallback(function (dirty: boolean, uniqueKey: UniqueIdT) {
     setDirtyInputs((inputs) => ({
       ...inputs,
       [uniqueKey]: dirty,
     }));
-  },
-  []);
+  }, []);
 
   return {
     phase,
