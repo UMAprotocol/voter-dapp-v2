@@ -63,23 +63,19 @@ export function useVotes(activityStatus: ActivityStatusT) {
   const hasStaked = stakedBalance?.gt(0) ?? false;
   const hasSigner = !!signer;
   const votesToReveal = activeVotesList.filter(
-    (vote) =>
-      vote.isCommitted &&
-      !!vote.decryptedVote &&
-      vote.isRevealed === false &&
-      vote.canReveal
+    ({ isCommitted, decryptedVote, isRevealed, canReveal }) =>
+      isCommitted && !!decryptedVote && isRevealed === false && canReveal
   );
   const isFetching =
     getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes;
 
   const isAnyDirty = Object.values(dirtyInputs).some(Boolean);
   const hasPreviouslyCommittedAll =
-    activeVotesList.filter((vote) => vote.decryptedVote).length ===
+    activeVotesList.filter(({ decryptedVote }) => decryptedVote).length ===
     activeVotesList.length;
   // counting how many votes we have edited with committable values ( non empty )
-  const selectedVotesCount = Object.values(selectedVotes).filter(
-    (x) => x
-  ).length;
+  const selectedVotesCount =
+    Object.values(selectedVotes).filter(Boolean).length;
   // check if we have votes to commit by seeing there are more than 1 and its dirty
   const hasVotesToCommit =
     selectedVotesCount > 0
@@ -90,11 +86,10 @@ export function useVotes(activityStatus: ActivityStatusT) {
   const hasVotesToReveal = votesToReveal.length > 0;
   // the current account is editing a previously committed value from another account, either delegate or delegator
   const isEditingUnknownVote =
-    activeVotesList.filter((vote) => {
-      return (
-        vote.commitHash && !vote.decryptedVote && selectedVotes[vote.uniqueKey]
-      );
-    }).length > 0;
+    activeVotesList.filter(
+      ({ commitHash, decryptedVote, uniqueKey }) =>
+        commitHash && !decryptedVote && selectedVotes[uniqueKey]
+    ).length > 0;
   const requiredForBothCommitAndReveal =
     !!address &&
     !!signingKey &&
@@ -111,6 +106,12 @@ export function useVotes(activityStatus: ActivityStatusT) {
     requiredForBothCommitAndReveal && isCommit && hasVotesToCommit;
   const canReveal =
     requiredForBothCommitAndReveal && isReveal && hasVotesToReveal;
+
+  useEffect(() => {
+    if (activeVotesList.length <= defaultResultsPerPage) {
+      setVotesToShow(activeVotesList);
+    }
+  }, [activeVotesList]);
 
   const commitVotes = useCallback(
     async function commitVotes() {
@@ -317,12 +318,6 @@ export function useVotes(activityStatus: ActivityStatusT) {
       sign,
     ]
   );
-
-  useEffect(() => {
-    if (activeVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(activeVotesList);
-    }
-  }, [activeVotesList]);
 
   const isDirty = useCallback(
     function isDirty(uniqueKey: UniqueIdT) {

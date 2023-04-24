@@ -9,6 +9,22 @@ import { useCallback, useEffect, useState } from "react";
 import { DropdownItemT, VoteT } from "types";
 import { VotesListProps } from "../VotesList";
 
+function findVoteInOptions(
+  value: string | undefined,
+  options: DropdownItemT[] | undefined
+) {
+  return options?.find((option) => {
+    return option.value === value;
+  });
+}
+function findVoteInOptionsDetectEarlyVote(
+  value: string | undefined,
+  options: DropdownItemT[] | undefined
+) {
+  if (isEarlyVote(value)) return { label: "Early request" };
+  return findVoteInOptions(value, options);
+}
+
 export interface VoteListItemProps extends Omit<VotesListProps, "votesToShow"> {
   vote: VoteT;
 }
@@ -71,8 +87,8 @@ export function useVoteListItem({
     // yyyy-mm-dd
     locale: enCA,
   });
-  const formattedCorrectVote = getCorrectVote();
-  const formattedUserVote = getYourVote();
+  const formattedCorrectVote = getFormattedCorrectVote();
+  const formattedUserVote = getFormattedUserVote();
   const showDropdown = options !== undefined && !isCustomInput;
   const existingOrSelectedVote = getExistingOrSelectedVoteFromOptions();
 
@@ -81,11 +97,11 @@ export function useVoteListItem({
     // then we must be using a custom input
     if (
       decryptedVoteAsFormattedString &&
-      !findVoteInOptionsDetectEarlyVote(decryptedVoteAsFormattedString)
+      !findVoteInOptionsDetectEarlyVote(decryptedVoteAsFormattedString, options)
     ) {
       setIsCustomInput(true);
     }
-  }, [decryptedVoteAsFormattedString]);
+  }, [decryptedVoteAsFormattedString, options]);
 
   useEffect(() => {
     // Function returns true if the input exist and has changed from our committed value, false otherwise
@@ -137,13 +153,14 @@ export function useVoteListItem({
     });
   }
 
-  function getYourVote() {
+  function getFormattedUserVote() {
     if (!decryptedVote && isCommitted) {
       return "Unknown";
     }
     if (!decryptedVote) return "Did not vote";
     return (
-      findVoteInOptionsDetectEarlyVote(decryptedVoteAsFormattedString)?.label ??
+      findVoteInOptionsDetectEarlyVote(decryptedVoteAsFormattedString, options)
+        ?.label ??
       formatVoteStringWithPrecision(
         decryptedVote?.price?.toString(),
         decodedIdentifier
@@ -151,24 +168,16 @@ export function useVoteListItem({
     );
   }
 
-  function getCorrectVote() {
+  function getFormattedCorrectVote() {
     if (correctVote === undefined) return;
     const formatted = formatVoteStringWithPrecision(
       correctVote,
       decodedIdentifier
     );
 
-    return findVoteInOptionsDetectEarlyVote(formatted)?.label ?? formatted;
-  }
-
-  function findVoteInOptions(value: string | undefined) {
-    return options?.find((option) => {
-      return option.value === value;
-    });
-  }
-  function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
-    if (isEarlyVote(value)) return { label: "Early request" };
-    return findVoteInOptions(value);
+    return (
+      findVoteInOptionsDetectEarlyVote(formatted, options)?.label ?? formatted
+    );
   }
 
   const onMoreDetails = useCallback(
