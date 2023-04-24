@@ -42,19 +42,17 @@ export function VotesTableRow(listItemProps: VoteListItemProps) {
       )}
       {showYourVote && (
         <UserVoteCell>
-          <VoteLabel>Your vote</VoteLabel>{" "}
           <VoteText voteText={formattedUserVote} />
         </UserVoteCell>
       )}
       {showCorrectVote && (
         <CorrectVoteCell>
-          <VoteLabel>Correct vote</VoteLabel>{" "}
           <VoteText voteText={formattedCorrectVote} />
         </CorrectVoteCell>
       )}
       {showVoteStatus && (
         <VoteStatusCell>
-          <VoteLabel>Vote status</VoteLabel> <VoteStatus {...props} />
+          <VoteStatus {...props} />
         </VoteStatusCell>
       )}
       <MoreDetailsCell>
@@ -149,14 +147,6 @@ const CorrectVoteCell = styled(VoteOutputCell)`
 
   @media ${tabletAndUnder} {
     padding-left: 0;
-  }
-`;
-
-const VoteLabel = styled.span`
-  display: none;
-
-  @media ${tabletAndUnder} {
-    display: inline;
   }
 `;
 

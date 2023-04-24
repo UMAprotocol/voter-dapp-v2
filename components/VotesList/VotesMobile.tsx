@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { VotesTableRow } from "./VoteListItem/VotesTableRow";
+import { VotesListItem } from "./VoteListItem/VotesListItem";
 import { VotesListProps } from "./VotesList";
 
 export function VotesMobile({ votesToShow, ...delegated }: VotesListProps) {
   return (
     <Wrapper>
       {votesToShow?.map((vote) => (
-        <VotesTableRow key={vote.uniqueKey} vote={vote} {...delegated} />
+        <VotesListItem key={vote.uniqueKey} vote={vote} {...delegated} />
       ))}
     </Wrapper>
   );
