@@ -1,10 +1,21 @@
 export const isExternalLink = (href: string) => !href.startsWith("/");
 import { mobileAndUnder, tabletAndUnder } from "constant";
+import { format } from "date-fns";
+import { enCA } from "date-fns/locale";
 import { chainConstantsList, config } from "helpers/config";
 import { css } from "styled-components";
 
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function formatDate(date: Date) {
+  return format(date, "Pp", {
+    // en-CA is the only locale that uses the correct
+    // format for the date
+    // yyyy-mm-dd
+    locale: enCA,
+  });
 }
 
 // this will make a link to etherescan ( or whatever block explorer for the chain )

@@ -1,7 +1,6 @@
-import { grey100, isEarlyVote } from "constant";
-import { format } from "date-fns";
-import { enCA } from "date-fns/locale";
+import { isEarlyVote } from "constant";
 import {
+  formatDate,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
@@ -23,6 +22,23 @@ function findVoteInOptionsDetectEarlyVote(
 ) {
   if (isEarlyVote(value)) return { label: "Early request" };
   return findVoteInOptions(value, options);
+}
+
+function getExistingOrSelectedVoteFromOptions(
+  options: DropdownItemT[] | undefined,
+  selectedVote: string | undefined,
+  decryptedVoteAsFormattedString: string | undefined
+) {
+  return options?.find((option) => {
+    // prefer showing the selected vote if it exists
+    if (selectedVote !== undefined) {
+      return option.value === selectedVote;
+    }
+
+    if (decryptedVoteAsFormattedString !== undefined) {
+      return option.value === decryptedVoteAsFormattedString;
+    }
+  });
 }
 
 export interface VoteListItemProps extends Omit<VotesListProps, "votesToShow"> {
@@ -59,44 +75,42 @@ export function useVoteListItem({
     canReveal,
     rollCount,
   } = vote;
+  const isActive = activityStatus === "active";
+  const isPast = activityStatus === "past";
+  const isReveal = phase === "reveal";
+  const isCommit = phase === "commit";
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
-  const isRolled = rollCount > 0;
   const decryptedVoteAsFormattedString =
     decryptedVote?.price !== undefined
       ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier)
       : undefined;
+  const isRolled = rollCount > 0;
   const selectedVote = selectedVotes[vote.uniqueKey];
-  const showVoteInput = activityStatus === "active" && phase === "commit";
-  const showYourVote =
-    (activityStatus === "active" && phase === "reveal") ||
-    activityStatus === "past";
-  const showCorrectVote =
-    activityStatus === "past" && correctVote !== undefined;
-  const showVoteStatus = activityStatus === "active";
-  const borderColor =
-    activityStatus === "past" || phase === "reveal" ? grey100 : "transparent";
-  const showRolledVoteExplanation = isRolled && !isV1;
   const voteNumber =
     !!resolvedPriceRequestIndex && !isV1
       ? resolvedPriceRequestIndex
       : undefined;
 
-  const formattedDate = format(timeAsDate, "Pp", {
-    // en-CA is the only locale that uses the correct
-    // format for the date
-    // yyyy-mm-dd
-    locale: enCA,
-  });
+  const formattedDate = formatDate(timeAsDate);
   const formattedCorrectVote = getFormattedCorrectVote();
   const formattedUserVote = getFormattedUserVote();
+  const existingOrSelectedVote = getExistingOrSelectedVoteFromOptions(
+    options,
+    selectedVote,
+    decryptedVoteAsFormattedString
+  );
+
+  const showVoteInput = isActive && isCommit;
+  const showYourVote = (isActive && isReveal) || isPast;
+  const showCorrectVote = isPast && correctVote !== undefined;
   const showDropdown = options !== undefined && !isCustomInput;
-  const existingOrSelectedVote = getExistingOrSelectedVoteFromOptions();
+  const showVoteStatus = isActive;
+  const showRolledVoteExplanation = isRolled && !isV1;
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
     if (
-      decryptedVoteAsFormattedString &&
       !findVoteInOptionsDetectEarlyVote(decryptedVoteAsFormattedString, options)
     ) {
       setIsCustomInput(true);
@@ -105,16 +119,16 @@ export function useVoteListItem({
 
   useEffect(() => {
     // Function returns true if the input exist and has changed from our committed value, false otherwise
-    function isDirtyCheck() {
-      if (phase !== "commit") return false;
+    function runIsDirtyEffect() {
+      if (!isCommit) return false;
       if (!decryptedVoteAsFormattedString) return false;
       // this happens if you clear the vote inputs, selected vote normally
       // would be "" if editing. dirty = false if we clear inputs.
       if (selectedVote === undefined) return false;
       return selectedVote !== decryptedVoteAsFormattedString;
     }
-    const dirty = isDirtyCheck();
-    if (setDirty && dirty !== isDirty?.(vote.uniqueKey)) {
+    const dirty = runIsDirtyEffect();
+    if (setDirty && dirty !== isDirty(vote.uniqueKey)) {
       setDirty(dirty, vote.uniqueKey);
     }
   }, [
@@ -122,35 +136,22 @@ export function useVoteListItem({
     setDirty,
     isDirty,
     decryptedVoteAsFormattedString,
-    phase,
+    isCommit,
     vote.uniqueKey,
   ]);
 
   function onSelectVoteInDropdown(option: DropdownItemT) {
     if (option.value === "custom") {
-      selectVote?.("", vote);
+      selectVote("", vote);
       setIsCustomInput(true);
     } else {
-      selectVote?.(option.value.toString(), vote);
+      selectVote(option.value.toString(), vote);
     }
   }
 
   function exitCustomInput() {
-    clearSelectedVote?.(vote);
+    clearSelectedVote(vote);
     setIsCustomInput(false);
-  }
-
-  function getExistingOrSelectedVoteFromOptions() {
-    return options?.find((option) => {
-      // prefer showing the selected vote if it exists
-      if (selectedVote !== undefined) {
-        return option.value === selectedVote;
-      }
-
-      if (decryptedVoteAsFormattedString !== undefined) {
-        return option.value === decryptedVoteAsFormattedString;
-      }
-    });
   }
 
   function getFormattedUserVote() {
@@ -192,23 +193,22 @@ export function useVoteListItem({
   }
 
   return {
+    options: options ?? [],
+    isDirty: isDirty(vote.uniqueKey),
     origin,
     title,
-    options: options ?? [],
     showRolledVoteExplanation,
     showVoteInput,
-    voteNumber,
-    formattedDate,
     showYourVote,
     showCorrectVote,
     showVoteStatus,
+    showDropdown,
+    voteNumber,
+    formattedDate,
     formattedCorrectVote,
     formattedUserVote,
     isFetching,
-    isDirty: isDirty(vote.uniqueKey),
-    borderColor,
     onMoreDetails,
-    showDropdown,
     selectedVote,
     decryptedVoteAsFormattedString,
     existingOrSelectedVote,
@@ -226,6 +226,10 @@ export function useVoteListItem({
     canReveal,
     commitHash,
     revealHash,
+    isActive,
+    isPast,
+    isCommit,
+    isReveal,
   };
 }
 

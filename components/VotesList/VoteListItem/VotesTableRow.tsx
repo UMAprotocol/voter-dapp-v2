@@ -1,5 +1,5 @@
 import { Button } from "components";
-import { tabletAndUnder } from "constant";
+import { grey100, tabletAndUnder } from "constant";
 import { CSSProperties } from "react";
 import styled from "styled-components";
 import { VoteInput } from "./VoteInput";
@@ -11,7 +11,8 @@ import { VoteListItemProps, useVoteListItem } from "./useVoteListItem";
 export function VotesTableRow(listItemProps: VoteListItemProps) {
   const props = useVoteListItem(listItemProps);
   const {
-    borderColor,
+    isPast,
+    isReveal,
     showVoteInput,
     showYourVote,
     showCorrectVote,
@@ -20,6 +21,8 @@ export function VotesTableRow(listItemProps: VoteListItemProps) {
     formattedUserVote,
     onMoreDetails,
   } = props;
+
+  const borderColor = isPast || isReveal ? grey100 : "transparent";
 
   return (
     <Wrapper
@@ -51,8 +54,7 @@ export function VotesTableRow(listItemProps: VoteListItemProps) {
       )}
       {showVoteStatus && (
         <VoteStatusCell>
-          <VoteLabel>Vote status</VoteLabel>
-          <VoteStatus {...props} />
+          <VoteLabel>Vote status</VoteLabel> <VoteStatus {...props} />
         </VoteStatusCell>
       )}
       <MoreDetailsCell>
