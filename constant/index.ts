@@ -8,6 +8,7 @@ export * from "./styles/breakpoints";
 export * from "./styles/colors";
 export * from "./styles/containers";
 export * from "./styles/fonts";
+export * from "./styles/icons";
 export * from "./styles/shadows";
 export * from "./voting/discord";
 export * from "./voting/earlyRequestMagicNumber";

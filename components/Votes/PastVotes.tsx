@@ -4,13 +4,13 @@ import {
   VotesListItem,
   VotesTableHeadings,
 } from "components";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import { CSSProperties } from "react";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
   Title,
-  VotesTableWrapper,
+  VotesListWrapper,
 } from "./style";
 
 export function PastVotes() {
@@ -21,7 +21,7 @@ export function PastVotes() {
   return (
     <>
       <Title>Recent past votes:</Title>
-      <VotesTableWrapper
+      <VotesListWrapper
         style={
           {
             "--margin-top": "0px",
@@ -41,7 +41,7 @@ export function PastVotes() {
             />
           ))}
         />
-      </VotesTableWrapper>
+      </VotesListWrapper>
       <ButtonOuterWrapper>
         <ButtonInnerWrapper>
           <Button label="See all" href="/past-votes" variant="primary" />

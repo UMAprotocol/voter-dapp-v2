@@ -64,8 +64,6 @@ const Template: Story = {
 
 const commitActiveVotes = makeMockVotes({
   inputs: [
-    mockEncryptedAndDecrypted,
-    mockCommitted,
     polymarketVote,
     polymarketVoteCommitted,
     polymarketVoteCommittedCustomInput,

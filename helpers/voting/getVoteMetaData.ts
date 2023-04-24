@@ -53,7 +53,7 @@ export function getVoteMetaData(
       umipOrUppLink: maybeMakeUmipOrUppLink(umipOrUppNumber, umipOrUppUrl),
       umipOrUppNumber,
       options,
-      origin: "UMA",
+      origin: "UMA Governance",
       isGovernance: true,
       discordLink,
     };

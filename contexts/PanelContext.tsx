@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useCallback, useState } from "react";
 import { PanelTypeT, VoteT } from "types";
 
 export interface PanelContextState {
@@ -29,12 +29,16 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     { panelType: PanelTypeT; panelContent: VoteT | undefined }[]
   >([]);
 
-  function openPanel(panelType: PanelTypeT, panelContent?: VoteT) {
+  const openPanel = useCallback(function openPanel(
+    panelType: PanelTypeT,
+    panelContent?: VoteT
+  ) {
     setPanelType(panelType);
     setPanelContent(panelContent);
     setPanelOpen(true);
     pushPanelDataOntoStack(panelType, panelContent);
-  }
+  },
+  []);
 
   function closePanel(clearPreviousPanelData = false) {
     if (clearPreviousPanelData) {

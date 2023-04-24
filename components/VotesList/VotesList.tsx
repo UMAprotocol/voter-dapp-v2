@@ -1,36 +1,46 @@
-import { tabletAndUnder, tabletMax } from "constant";
-import { useWindowSize } from "hooks";
+import { hideOnMobileAndUnder, showOnMobileAndUnder } from "helpers";
 import styled from "styled-components";
+import {
+  ActivityStatusT,
+  DelegationStatusT,
+  SelectedVotesByKeyT,
+  UniqueIdT,
+  VotePhaseT,
+  VoteT,
+} from "types";
+import { VotesDesktop } from "./VotesDesktop";
+import { VotesMobile } from "./VotesMobile";
 
-interface Props {
-  headings: JSX.Element;
-  rows: JSX.Element[];
+export interface VotesListProps {
+  votesToShow: VoteT[] | undefined;
+  activityStatus: ActivityStatusT;
+  phase: VotePhaseT;
+  selectedVotes: SelectedVotesByKeyT;
+  delegationStatus: DelegationStatusT;
+  isFetching: boolean;
+  selectVote: (value: string | undefined, vote: VoteT) => void;
+  clearSelectedVote: (vote: VoteT) => void;
+  moreDetailsAction: (vote: VoteT) => void;
+  isDirty: (uniqueKey: UniqueIdT) => boolean;
+  setDirty: (dirty: boolean, uniqueKey: UniqueIdT) => void;
 }
-export function VotesList({ headings, rows }: Props) {
-  const { width } = useWindowSize();
-
-  if (!width) return null;
-
-  const isTabletAndUnder = width <= tabletMax;
-
+export function VotesList(props: VotesListProps) {
   return (
-    <Wrapper as={isTabletAndUnder ? "div" : "table"}>
-      {!isTabletAndUnder && <Thead>{headings}</Thead>}
-      {isTabletAndUnder ? <>{rows}</> : <Tbody>{rows}</Tbody>}
-    </Wrapper>
+    <>
+      <DesktopWrapper>
+        <VotesDesktop {...props} />
+      </DesktopWrapper>
+      <MobileWrapper>
+        <VotesMobile {...props} />
+      </MobileWrapper>
+    </>
   );
 }
 
-const Wrapper = styled.table`
-  width: 100%;
-  border-spacing: 0 5px;
-
-  @media ${tabletAndUnder} {
-    display: grid;
-    gap: 5px;
-  }
+const DesktopWrapper = styled.div`
+  ${hideOnMobileAndUnder}
 `;
 
-const Thead = styled.thead``;
-
-const Tbody = styled.tbody``;
+const MobileWrapper = styled.div`
+  ${showOnMobileAndUnder}
+`;

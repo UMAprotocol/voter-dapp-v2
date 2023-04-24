@@ -13,7 +13,7 @@ import {
   useVoteTimingContext,
 } from "hooks";
 import { useEffect, useState } from "react";
-import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
+import { Divider, PaginationWrapper, Title, VotesListWrapper } from "./style";
 
 export function UpcomingVotes() {
   const { upcomingVotesList, getActivityStatus, getUserDependentIsFetching } =
@@ -33,7 +33,7 @@ export function UpcomingVotes() {
     <>
       <Title>Upcoming votes:</Title>
       {getActivityStatus() === "upcoming" && <VoteTimeline />}
-      <VotesTableWrapper>
+      <VotesListWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus="upcoming" />}
           rows={votesToShow.map((vote) => (
@@ -48,7 +48,7 @@ export function UpcomingVotes() {
             />
           ))}
         />
-      </VotesTableWrapper>
+      </VotesListWrapper>
       {upcomingVotesList.length > defaultResultsPerPage && (
         <PaginationWrapper>
           <Pagination

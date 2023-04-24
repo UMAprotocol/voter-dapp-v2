@@ -1,7 +1,7 @@
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 
-export const VotesTableWrapper = styled.div`
+export const VotesListWrapper = styled.div`
   margin-top: var(--margin-top, 35px);
 `;
 
