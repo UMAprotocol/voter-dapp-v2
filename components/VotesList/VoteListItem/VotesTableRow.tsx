@@ -1,5 +1,5 @@
 import { Button } from "components";
-import { grey100, tabletAndUnder } from "constant";
+import { grey100 } from "constant";
 import { CSSProperties } from "react";
 import styled from "styled-components";
 import { VoteInput } from "./VoteInput";
@@ -70,14 +70,6 @@ const Wrapper = styled.tr`
   background: var(--white);
   height: 80px;
   border-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    height: auto;
-    display: grid;
-    gap: 12px;
-    align-items: left;
-    padding: 15px;
-  }
 `;
 
 const VoteTitleCell = styled.td`
@@ -86,44 +78,23 @@ const VoteTitleCell = styled.td`
   padding-right: var(--cell-padding);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    width: 100%;
-    padding: 0;
-  }
 `;
 
 const VoteInputCell = styled.td`
   width: var(--input-cell-width);
   padding-right: var(--cell-padding);
-
-  @media ${tabletAndUnder} {
-    padding: 0;
-    min-width: unset;
-  }
 `;
 
 const VoteOutputCell = styled.td`
   width: var(--output-cell-width);
   padding-right: var(--cell-padding);
   font: var(--text-md);
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
 `;
 
 const VoteStatusCell = styled.td`
   width: var(--status-cell-width);
   padding-right: var(--cell-padding);
-
   font: var(--text-md);
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
 `;
 
 const MoreDetailsCell = styled.td`
@@ -131,11 +102,6 @@ const MoreDetailsCell = styled.td`
   padding-right: var(--cell-padding);
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    padding-top: 10px;
-    border-top: 1px solid var(--border-color);
-  }
 `;
 
 const UserVoteCell = styled(VoteOutputCell)`
@@ -144,18 +110,9 @@ const UserVoteCell = styled(VoteOutputCell)`
 
 const CorrectVoteCell = styled(VoteOutputCell)`
   white-space: nowrap;
-
-  @media ${tabletAndUnder} {
-    padding-left: 0;
-  }
 `;
 
 const MoreDetails = styled.div`
   width: fit-content;
   margin-left: auto;
-
-  @media ${tabletAndUnder} {
-    margin-left: unset;
-    margin-right: auto;
-  }
 `;
