@@ -7,13 +7,14 @@ import {
   maybeMakePolymarketOptions,
 } from "helpers";
 import { VoteT } from "types";
+import { date } from "./misc";
 
 export const defaultMockVote = (number = 1): VoteT => {
   const decodedIdentifier = "MOCK_IDENTIFIER";
   const decodedAncillaryData = `MOCK_ANCILLARY_DATA_${number}`;
   const identifier = formatBytes32String(decodedIdentifier);
   const ancillaryData = formatBytes32String(decodedAncillaryData);
-  const timeAsDate = sub(new Date(), { days: 1 });
+  const timeAsDate = sub(date, { days: 1 });
   const timeMilliseconds = timeAsDate.getTime();
   const time = Math.round(timeAsDate.getTime() / 1000);
   const uniqueKey = makeUniqueKeyForVote(
