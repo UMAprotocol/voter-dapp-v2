@@ -6,7 +6,7 @@ import {
 } from "helpers";
 import { useCallback, useEffect, useState } from "react";
 import { DropdownItemT, VoteT } from "types";
-import { VotesListProps } from "../VotesList";
+import { VoteListProps } from "../VoteList";
 
 function findVoteInOptions(
   value: string | undefined,
@@ -41,7 +41,7 @@ function getExistingOrSelectedVoteFromOptions(
   });
 }
 
-export interface VoteListItemProps extends Omit<VotesListProps, "votesToShow"> {
+export interface VoteListItemProps extends Omit<VoteListProps, "votesToShow"> {
   vote: VoteT;
 }
 export function useVoteListItem(props: VoteListItemProps) {

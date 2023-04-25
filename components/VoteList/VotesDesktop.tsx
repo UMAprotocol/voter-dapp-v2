@@ -1,19 +1,19 @@
 import styled from "styled-components";
-import { VotesTableRow } from "./VoteListItem/VotesTableRow";
-import { VotesListProps } from "./VotesList";
-import { VotesTableHeadings } from "./VotesTableHeadings";
+import { VoteListProps } from "./VoteList";
+import { VoteTableRow } from "./VoteListItem/VoteTableRow";
+import { VoteTableHeadings } from "./VoteTableHeadings";
 
 export function VotesDesktop({
   votesToShow,
   activityStatus,
   ...delegated
-}: VotesListProps) {
+}: VoteListProps) {
   return (
     <Wrapper>
-      <VotesTableHeadings activityStatus={activityStatus} />
+      <VoteTableHeadings activityStatus={activityStatus} />
       <Tbody>
         {votesToShow?.map((vote) => (
-          <VotesTableRow
+          <VoteTableRow
             key={vote.uniqueKey}
             vote={vote}
             activityStatus={activityStatus}

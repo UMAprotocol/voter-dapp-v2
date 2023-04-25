@@ -1,13 +1,13 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { VotesTableHeadings } from "components";
+import { VoteTableHeadings } from "components";
 
 export default {
-  title: "Pages/Vote Page/VotesTableHeadings",
-  component: VotesTableHeadings,
-} as ComponentMeta<typeof VotesTableHeadings>;
+  title: "Pages/Vote Page/VoteTableHeadings",
+  component: VoteTableHeadings,
+} as ComponentMeta<typeof VoteTableHeadings>;
 
-const Template: ComponentStory<typeof VotesTableHeadings> = (args) => (
-  <VotesTableHeadings {...args} />
+const Template: ComponentStory<typeof VoteTableHeadings> = (args) => (
+  <VoteTableHeadings {...args} />
 );
 
 export const Active = Template.bind({});

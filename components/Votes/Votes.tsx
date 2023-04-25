@@ -6,12 +6,11 @@ import { PastVotes } from "./PastVotes";
 import { UpcomingVotes } from "./UpcomingVotes";
 
 export function Votes() {
-  const { activeVotesList, pastVotesList, upcomingVotesList } =
-    useVotesContext();
+  const { activeVoteList, pastVoteList, upcomingVoteList } = useVotesContext();
 
-  const hasActiveVotes = activeVotesList.length > 0;
-  const hasUpcomingVotes = upcomingVotesList.length > 0;
-  const hasPastVotes = pastVotesList.length > 0;
+  const hasActiveVotes = activeVoteList.length > 0;
+  const hasUpcomingVotes = upcomingVoteList.length > 0;
+  const hasPastVotes = pastVoteList.length > 0;
   const hasAnyVotes = hasActiveVotes || hasUpcomingVotes || hasPastVotes;
 
   return (

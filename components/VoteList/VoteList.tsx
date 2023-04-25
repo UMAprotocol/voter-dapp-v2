@@ -1,11 +1,11 @@
-import { useVotes } from "components/Votes/useVotes";
+import { useVoteList } from "components/Votes/useVoteList";
 import { tabletMax } from "constant";
 import { useWindowSize } from "usehooks-ts";
 import { VotesDesktop } from "./VotesDesktop";
 import { VotesMobile } from "./VotesMobile";
 
-export type VotesListProps = ReturnType<typeof useVotes>;
-export function VotesList(props: VotesListProps) {
+export type VoteListProps = ReturnType<typeof useVoteList>;
+export function VoteList(props: VoteListProps) {
   const { width } = useWindowSize();
 
   if (width === undefined || width === 0) return null;

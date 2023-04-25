@@ -6,12 +6,12 @@ import {
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import { useEffect, useState } from "react";
@@ -20,21 +20,21 @@ import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
   const {
-    upcomingVotesList,
+    upcomingVoteList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const [votesToShow, setVotesToShow] = useState(upcomingVotesList);
-  const numberOfUpcomingVotes = upcomingVotesList.length;
+  const [votesToShow, setVotesToShow] = useState(upcomingVoteList);
+  const numberOfUpcomingVotes = upcomingVoteList.length;
   const hasUpcomingVotes = numberOfUpcomingVotes > 0;
 
   useEffect(() => {
-    if (upcomingVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(upcomingVotesList);
+    if (upcomingVoteList.length <= defaultResultsPerPage) {
+      setVotesToShow(upcomingVoteList);
     }
-  }, [upcomingVotesList]);
+  }, [upcomingVoteList]);
 
   return (
     <Layout title="UMA | Upcoming Votes">
@@ -54,12 +54,10 @@ export function UpcomingVotes() {
                     timeRemaining={millisecondsUntilPhaseEnds}
                   />
                   <VotesTableWrapper>
-                    <VotesList
-                      headings={
-                        <VotesTableHeadings activityStatus="upcoming" />
-                      }
+                    <VoteList
+                      headings={<VoteTableHeadings activityStatus="upcoming" />}
                       rows={votesToShow.map((vote) => (
-                        <VotesListItem
+                        <VoteListItem
                           vote={vote}
                           phase={phase}
                           selectedVote={undefined}

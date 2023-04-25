@@ -5,32 +5,32 @@ import {
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
 } from "components";
 import { defaultResultsPerPage } from "constant";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
   const {
-    pastVotesList,
+    pastVoteList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const [votesToShow, setVotesToShow] = useState(pastVotesList);
-  const numberOfPastVotes = pastVotesList.length;
+  const [votesToShow, setVotesToShow] = useState(pastVoteList);
+  const numberOfPastVotes = pastVoteList.length;
 
   useEffect(() => {
-    if (pastVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(pastVotesList);
+    if (pastVoteList.length <= defaultResultsPerPage) {
+      setVotesToShow(pastVoteList);
     }
-  }, [pastVotesList]);
+  }, [pastVoteList]);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -43,10 +43,10 @@ export function PastVotes() {
           ) : (
             <>
               <VotesTableWrapper>
-                <VotesList
-                  headings={<VotesTableHeadings activityStatus="past" />}
+                <VoteList
+                  headings={<VoteTableHeadings activityStatus="past" />}
                   rows={votesToShow.map((vote) => (
-                    <VotesListItem
+                    <VoteListItem
                       vote={vote}
                       phase={phase}
                       selectedVote={undefined}
@@ -63,7 +63,7 @@ export function PastVotes() {
               {numberOfPastVotes > defaultResultsPerPage && (
                 <PaginationWrapper>
                   <Pagination
-                    entries={pastVotesList}
+                    entries={pastVoteList}
                     setEntriesToShow={setVotesToShow}
                   />
                 </PaginationWrapper>

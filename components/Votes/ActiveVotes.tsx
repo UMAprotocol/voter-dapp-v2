@@ -1,4 +1,4 @@
-import { Pagination, VotesList, VoteTimeline } from "components";
+import { Pagination, VoteList, VoteTimeline } from "components";
 import { defaultResultsPerPage } from "constant";
 import { ActionButtons } from "./ActionButtons";
 import {
@@ -6,12 +6,12 @@ import {
   PaginationWrapper,
   RecommittingVotesMessage,
   Title,
-  VotesListWrapper,
+  VoteListWrapper,
 } from "./style";
-import { useVotes } from "./useVotes";
+import { useVoteList } from "./useVoteList";
 
 export function ActiveVotes() {
-  const voteListProps = useVotes("active");
+  const voteListProps = useVoteList("active");
   const {
     votesList,
     setVotesToShow,
@@ -24,9 +24,9 @@ export function ActiveVotes() {
     <>
       <Title>Active votes:</Title>
       <VoteTimeline />
-      <VotesListWrapper>
-        <VotesList {...voteListProps} />
-      </VotesListWrapper>
+      <VoteListWrapper>
+        <VoteList {...voteListProps} />
+      </VoteListWrapper>
       {votesList.length > defaultResultsPerPage && (
         <PaginationWrapper>
           <Pagination entries={votesList} setEntriesToShow={setVotesToShow} />

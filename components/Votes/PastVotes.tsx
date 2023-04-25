@@ -1,37 +1,32 @@
-import {
-  Button,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
-} from "components";
+import { Button, VoteList, VoteListItem, VoteTableHeadings } from "components";
 import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import { CSSProperties } from "react";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
   Title,
-  VotesListWrapper,
+  VoteListWrapper,
 } from "./style";
 
 export function PastVotes() {
-  const { pastVotesList, getUserDependentIsFetching } = useVotesContext();
+  const { pastVoteList, getUserDependentIsFetching } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
 
   return (
     <>
       <Title>Recent past votes:</Title>
-      <VotesListWrapper
+      <VoteListWrapper
         style={
           {
             "--margin-top": "0px",
           } as CSSProperties
         }
       >
-        <VotesList
-          headings={<VotesTableHeadings activityStatus="past" />}
-          rows={pastVotesList.slice(0, 5).map((vote) => (
-            <VotesListItem
+        <VoteList
+          headings={<VoteTableHeadings activityStatus="past" />}
+          rows={pastVoteList.slice(0, 5).map((vote) => (
+            <VoteListItem
               vote={vote}
               phase={phase}
               activityStatus="past"
@@ -41,7 +36,7 @@ export function PastVotes() {
             />
           ))}
         />
-      </VotesListWrapper>
+      </VoteListWrapper>
       <ButtonOuterWrapper>
         <ButtonInnerWrapper>
           <Button label="See all" href="/past-votes" variant="primary" />

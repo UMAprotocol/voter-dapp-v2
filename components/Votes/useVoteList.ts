@@ -23,17 +23,17 @@ import {
   VoteT,
 } from "types";
 
-export function useVotes(activityStatus: ActivityStatusT) {
+export function useVoteList(activityStatus: ActivityStatusT) {
   const {
-    activeVotesList,
-    upcomingVotesList,
-    pastVotesList,
+    activeVoteList,
+    upcomingVoteList,
+    pastVoteList,
     getUserDependentIsFetching,
   } = useVotesContext();
   const votesListsForStatus = {
-    active: activeVotesList,
-    upcoming: upcomingVotesList,
-    past: pastVotesList,
+    active: activeVoteList,
+    upcoming: upcomingVoteList,
+    past: pastVoteList,
   };
   const votesList = votesListsForStatus[activityStatus];
   const [votesToShow, setVotesToShow] = useState(votesList);
@@ -62,7 +62,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
   const isReveal = phase === "reveal";
   const hasStaked = stakedBalance?.gt(0) ?? false;
   const hasSigner = !!signer;
-  const votesToReveal = activeVotesList.filter(
+  const votesToReveal = activeVoteList.filter(
     ({ isCommitted, decryptedVote, isRevealed, canReveal }) =>
       isCommitted && !!decryptedVote && isRevealed === false && canReveal
   );
@@ -71,8 +71,8 @@ export function useVotes(activityStatus: ActivityStatusT) {
 
   const isAnyDirty = Object.values(dirtyInputs).some(Boolean);
   const hasPreviouslyCommittedAll =
-    activeVotesList.filter(({ decryptedVote }) => decryptedVote).length ===
-    activeVotesList.length;
+    activeVoteList.filter(({ decryptedVote }) => decryptedVote).length ===
+    activeVoteList.length;
   // counting how many votes we have edited with committable values ( non empty )
   const selectedVotesCount =
     Object.values(selectedVotes).filter(Boolean).length;
@@ -86,7 +86,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
   const hasVotesToReveal = votesToReveal.length > 0;
   // the current account is editing a previously committed value from another account, either delegate or delegator
   const isEditingUnknownVote =
-    activeVotesList.filter(
+    activeVoteList.filter(
       ({ commitHash, decryptedVote, uniqueKey }) =>
         commitHash && !decryptedVote && selectedVotes[uniqueKey]
     ).length > 0;
@@ -108,17 +108,17 @@ export function useVotes(activityStatus: ActivityStatusT) {
     requiredForBothCommitAndReveal && isReveal && hasVotesToReveal;
 
   useEffect(() => {
-    if (activeVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(activeVotesList);
+    if (activeVoteList.length <= defaultResultsPerPage) {
+      setVotesToShow(activeVoteList);
     }
-  }, [activeVotesList]);
+  }, [activeVoteList]);
 
   const commitVotes = useCallback(
     async function () {
       if (!canCommit) return;
 
       const formattedVotes = await formatVotesToCommit({
-        votes: activeVotesList,
+        votes: activeVoteList,
         selectedVotes,
         roundId,
         address: delegatorAddress ? delegatorAddress : address,
@@ -137,7 +137,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
       );
     },
     [
-      activeVotesList,
+      activeVoteList,
       address,
       canCommit,
       commitVotesMutation,

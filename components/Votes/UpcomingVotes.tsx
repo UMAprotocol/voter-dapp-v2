@@ -1,43 +1,43 @@
 import {
   Pagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
   VoteTimeline,
 } from "components";
 import { defaultResultsPerPage } from "constant";
 import {
   useDelegationContext,
   usePanelContext,
-  useVotesContext,
   useVoteTimingContext,
+  useVotesContext,
 } from "hooks";
 import { useEffect, useState } from "react";
-import { Divider, PaginationWrapper, Title, VotesListWrapper } from "./style";
+import { Divider, PaginationWrapper, Title, VoteListWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVotesList, getActivityStatus, getUserDependentIsFetching } =
+  const { upcomingVoteList, getActivityStatus, getUserDependentIsFetching } =
     useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { getDelegationStatus } = useDelegationContext();
-  const [votesToShow, setVotesToShow] = useState(upcomingVotesList);
+  const [votesToShow, setVotesToShow] = useState(upcomingVoteList);
 
   useEffect(() => {
-    if (upcomingVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(upcomingVotesList);
+    if (upcomingVoteList.length <= defaultResultsPerPage) {
+      setVotesToShow(upcomingVoteList);
     }
-  }, [upcomingVotesList]);
+  }, [upcomingVoteList]);
 
   return (
     <>
       <Title>Upcoming votes:</Title>
       {getActivityStatus() === "upcoming" && <VoteTimeline />}
-      <VotesListWrapper>
-        <VotesList
-          headings={<VotesTableHeadings activityStatus="upcoming" />}
+      <VoteListWrapper>
+        <VoteList
+          headings={<VoteTableHeadings activityStatus="upcoming" />}
           rows={votesToShow.map((vote) => (
-            <VotesListItem
+            <VoteListItem
               vote={vote}
               phase={phase}
               activityStatus="upcoming"
@@ -48,11 +48,11 @@ export function UpcomingVotes() {
             />
           ))}
         />
-      </VotesListWrapper>
-      {upcomingVotesList.length > defaultResultsPerPage && (
+      </VoteListWrapper>
+      {upcomingVoteList.length > defaultResultsPerPage && (
         <PaginationWrapper>
           <Pagination
-            entries={upcomingVotesList}
+            entries={upcomingVoteList}
             setEntriesToShow={setVotesToShow}
           />
         </PaginationWrapper>

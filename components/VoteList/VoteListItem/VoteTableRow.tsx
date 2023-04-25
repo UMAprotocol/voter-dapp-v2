@@ -8,7 +8,7 @@ import { VoteText } from "./VoteText";
 import { VoteTitle } from "./VoteTitle";
 import { VoteListItemProps, useVoteListItem } from "./useVoteListItem";
 
-export function VotesListItem(listItemProps: VoteListItemProps) {
+export function VoteTableRow(listItemProps: VoteListItemProps) {
   const props = useVoteListItem(listItemProps);
   const {
     isPast,
@@ -32,96 +32,87 @@ export function VotesListItem(listItemProps: VoteListItemProps) {
         } as CSSProperties
       }
     >
-      <VoteTitleWrapper>
+      <VoteTitleCell>
         <VoteTitle {...props} />
-      </VoteTitleWrapper>
+      </VoteTitleCell>
       {showVoteInput && (
-        <VoteInputWrapper>
+        <VoteInputCell>
           <VoteInput {...props} />
-        </VoteInputWrapper>
+        </VoteInputCell>
       )}
       {showYourVote && (
-        <UserVoteWrapper>
-          <VoteLabel>Your vote</VoteLabel>
+        <UserVoteCell>
           <VoteText voteText={formattedUserVote} />
-        </UserVoteWrapper>
+        </UserVoteCell>
       )}
       {showCorrectVote && (
-        <CorrectVoteWrapper>
-          <VoteLabel>Correct vote</VoteLabel>
+        <CorrectVoteCell>
           <VoteText voteText={formattedCorrectVote} />
-        </CorrectVoteWrapper>
+        </CorrectVoteCell>
       )}
       {showVoteStatus && (
-        <VoteStatusWrapper>
-          <VoteLabel>Vote status</VoteLabel> <VoteStatus {...props} />
-        </VoteStatusWrapper>
+        <VoteStatusCell>
+          <VoteStatus {...props} />
+        </VoteStatusCell>
       )}
-      <MoreDetailsWrapper>
-        <MoreDetailsButtonWrapper>
+      <MoreDetailsCell>
+        <MoreDetails>
           <Button label="More details" onClick={onMoreDetails} />
-        </MoreDetailsButtonWrapper>
-      </MoreDetailsWrapper>
+        </MoreDetails>
+      </MoreDetailsCell>
     </Wrapper>
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.tr`
   --cell-padding: 1.5vw;
   --title-icon-size: 40px;
   background: var(--white);
+  height: 80px;
   border-radius: 5px;
-  height: auto;
-  display: grid;
-  gap: 12px;
-  align-items: left;
-  padding: 15px;
 `;
 
-const VoteTitleWrapper = styled.div`
+const VoteTitleCell = styled.td`
+  width: var(--title-cell-width);
+  padding-left: var(--cell-padding);
+  padding-right: var(--cell-padding);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  width: 100%;
-  padding: 0;
 `;
 
-const VoteInputWrapper = styled.div`
-  padding: 0;
+const VoteInputCell = styled.td`
+  width: var(--input-cell-width);
+  padding-right: var(--cell-padding);
 `;
 
-const VoteOutputWrapper = styled.div`
+const VoteOutputCell = styled.td`
+  width: var(--output-cell-width);
+  padding-right: var(--cell-padding);
   font: var(--text-md);
-  display: flex;
-  justify-content: space-between;
 `;
 
-const VoteStatusWrapper = styled.div`
+const VoteStatusCell = styled.td`
+  width: var(--status-cell-width);
+  padding-right: var(--cell-padding);
   font: var(--text-md);
-  display: flex;
-  justify-content: space-between;
 `;
 
-const MoreDetailsWrapper = styled.div`
+const MoreDetailsCell = styled.td`
+  width: var(--more-details-cell-width);
+  padding-right: var(--cell-padding);
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-color);
 `;
 
-const UserVoteWrapper = styled(VoteOutputWrapper)`
+const UserVoteCell = styled(VoteOutputCell)`
   white-space: nowrap;
 `;
 
-const CorrectVoteWrapper = styled(VoteOutputWrapper)`
+const CorrectVoteCell = styled(VoteOutputCell)`
   white-space: nowrap;
-  padding-left: 0;
 `;
 
-const VoteLabel = styled.span`
-  display: inline;
-`;
-
-const MoreDetailsButtonWrapper = styled.div`
+const MoreDetails = styled.div`
   width: fit-content;
-  margin-right: auto;
+  margin-left: auto;
 `;
