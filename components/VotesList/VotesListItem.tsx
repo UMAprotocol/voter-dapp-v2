@@ -20,7 +20,7 @@ import {
   getPrecisionForIdentifier,
 } from "helpers";
 import { config } from "helpers/config";
-import { useWindowSize } from "hooks";
+import { useWindowSize, useUserContext } from "hooks";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -60,6 +60,7 @@ export function VotesListItem({
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
   const [wrapperWidth, setWrapperWidth] = useState(0);
+  const { hasSigningKey } = useUserContext();
   const {
     decodedIdentifier,
     title,
@@ -210,6 +211,7 @@ export function VotesListItem({
 
   function getCommittedOrRevealed() {
     if (phase === "commit") {
+      if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
         if (delegationStatus === "delegator") {
           return "Committed by Delegate";
@@ -222,6 +224,7 @@ export function VotesListItem({
       return isCommitted ? "Committed" : "Not committed";
     } else {
       if (!isCommitted) return "Not committed";
+      if (!hasSigningKey) return "Requires signature";
       if (!decryptedVote || !canReveal) {
         if (delegationStatus === "delegator") {
           if (isRevealed) {
