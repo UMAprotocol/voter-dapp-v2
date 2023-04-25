@@ -1,11 +1,15 @@
 import { Meta, StoryObj } from "@storybook/react";
 import {
-  defaultVotesContextState,
-  defaultVoteTimingContextState,
+  VoteTimingContext,
   VotesContext,
   VotesContextState,
-  VoteTimingContext,
+  defaultVoteTimingContextState,
+  defaultVotesContextState,
 } from "contexts";
+import {
+  computeMillisecondsUntilPhaseEnds,
+  computePhaseEndTimeMilliseconds,
+} from "helpers";
 import VotePage from "pages";
 import {
   makeMockVotes,
@@ -40,6 +44,9 @@ const Template: Story = {
   render: function Wrapper(args) {
     const mockVoteTimingContextState = {
       ...defaultVoteTimingContextState,
+      phaseEndTimeMilliseconds: computePhaseEndTimeMilliseconds(),
+      phaseEndTimeAsDate: new Date(computePhaseEndTimeMilliseconds()),
+      millisecondsUntilPhaseEnds: computeMillisecondsUntilPhaseEnds(),
       phase: args.phase ?? "commit",
       roundId: 1,
     };
