@@ -1,5 +1,4 @@
-import { hideOnTabletAndUnder, showOnTabletAndUnder } from "helpers";
-import styled from "styled-components";
+import { tabletMax } from "constant";
 import {
   ActivityStatusT,
   DelegationStatusT,
@@ -8,6 +7,7 @@ import {
   VotePhaseT,
   VoteT,
 } from "types";
+import { useWindowSize } from "usehooks-ts";
 import { VotesDesktop } from "./VotesDesktop";
 import { VotesMobile } from "./VotesMobile";
 
@@ -25,22 +25,17 @@ export interface VotesListProps {
   setDirty: (dirty: boolean, uniqueKey: UniqueIdT) => void;
 }
 export function VotesList(props: VotesListProps) {
+  const { width } = useWindowSize();
+
+  if (width === undefined || width === 0) return null;
+
+  const isMobile = width <= tabletMax;
+  const isDesktop = width > tabletMax;
+
   return (
     <>
-      <DesktopWrapper>
-        <VotesDesktop {...props} />
-      </DesktopWrapper>
-      <MobileWrapper>
-        <VotesMobile {...props} />
-      </MobileWrapper>
+      {isDesktop && <VotesDesktop {...props} />}
+      {isMobile && <VotesMobile {...props} />}
     </>
   );
 }
-
-const DesktopWrapper = styled.div`
-  ${hideOnTabletAndUnder}
-`;
-
-const MobileWrapper = styled.div`
-  ${showOnTabletAndUnder}
-`;
