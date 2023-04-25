@@ -1,6 +1,7 @@
 import { Meta, Story } from "@storybook/react";
-import { defaultVotesContextState, VotesContext } from "contexts";
+import { VotesContext, defaultVotesContextState } from "contexts";
 import { BigNumber } from "ethers";
+import { uniqueId } from "lodash";
 import PastVotesPage from "pages/past-votes";
 import { VoteT } from "types";
 
@@ -17,17 +18,13 @@ const mockPastVotes = Array.from({ length: 200 }).map((_, i) => ({
   decodedAncillaryData:
     'q:"Had the following insured event occurred as of request timestamp: Tom ate Jerry?",ooRequester:0438e738cb7b1eb98b8cb9f26d6a11d59506b9dd',
   correctVote: 0,
-  uniqueKey:
-    "YES_OR_NO_QUERY-1666025124-0x713a224861642074686520666f6c6c6f77696e6720696e7375726564206576656e74206f63637572726564206173206f6620726571756573742074696d657374616d703a20546f6d20617465204a657272793f222c6f6f5265717565737465723a30343338653733386362376231656239386238636239663236643661313164353935303662396464" +
-    Math.random().toString(),
+  uniqueKey: uniqueId(),
   isCommitted: false,
   isRevealed: false,
   transactionHash:
     "0x2a37d6072ef32814755e67e40b118d5c3f8d389fb1d9e80f0a75037aa042ea39",
   voteHistory: {
-    uniqueKey:
-      "YES_OR_NO_QUERY-1666025124-0x713a224861642074686520666f6c6c6f77696e6720696e7375726564206576656e74206f63637572726564206173206f6620726571756573742074696d657374616d703a20546f6d20617465204a657272793f222c6f6f5265717565737465723a30343338653733386362376231656239386238636239663236643661313164353935303662396464" +
-      Math.random().toString(),
+    uniqueKey: uniqueId(),
     voted: false,
     correctness: null,
     slashAmount: BigNumber.from("-0x56bc75e2d631000000"),

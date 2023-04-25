@@ -4,6 +4,8 @@ export type StakerDetailsT = {
   pendingUnstake: BigNumber;
   canUnstakeTime: Date | undefined;
   delegate: string;
+  rewardsPaidPerToken: BigNumber;
+  outstandingRewards: BigNumber;
 };
 
 export type V1RewardsT = {

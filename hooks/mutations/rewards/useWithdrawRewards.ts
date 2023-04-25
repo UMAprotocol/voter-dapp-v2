@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   unstakedBalanceKey,
-  outstandingRewardsKey,
+  stakerDetailsKey,
   rewardsCalculationInputsKey,
 } from "constant";
 import { BigNumber } from "ethers";
 import { useAccountDetails, useHandleError, useStakingContext } from "hooks";
-import { ErrorOriginT, RewardCalculationT } from "types";
+import { ErrorOriginT, RewardCalculationT, StakerDetailsT } from "types";
 import { withdrawRewards } from "web3";
 
 export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
@@ -24,9 +24,15 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
         [unstakedBalanceKey, address],
         (oldUnstakedBalance) => {
           // change outstanding rewards from contract to 0
-          queryClient.setQueryData<BigNumber>(
-            [outstandingRewardsKey, address],
-            () => BigNumber.from(0)
+          queryClient.setQueryData<StakerDetailsT>(
+            [stakerDetailsKey, address],
+            (oldDetails) => {
+              if (oldDetails === undefined) return oldDetails;
+              return {
+                ...oldDetails,
+                outstandingRewards: BigNumber.from(0),
+              };
+            }
           );
           // change our update time to calculate the correct new rewards based on amount staked
           // this happens every minute on an interval

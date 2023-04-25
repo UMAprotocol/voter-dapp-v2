@@ -1,11 +1,6 @@
 import { Decorator, Meta, StoryObj } from "@storybook/react";
 import { Button, Panel } from "components";
 import {
-  defaultDelegationContextState,
-  defaultErrorContextState,
-  defaultPanelContextState,
-  defaultUserContextState,
-  defaultVotesContextState,
   DelegationContext,
   DelegationContextState,
   ErrorContext,
@@ -16,6 +11,11 @@ import {
   UserContextState,
   VotesContext,
   VotesContextState,
+  defaultDelegationContextState,
+  defaultErrorContextState,
+  defaultPanelContextState,
+  defaultUserContextState,
+  defaultVotesContextState,
 } from "contexts";
 import { BigNumber } from "ethers";
 import { bigNumberFromFloatString, zeroAddress } from "helpers";
@@ -373,13 +373,9 @@ export const HistoryPanel: Story = {
   ...Template,
   args: {
     panelType: "history",
-    apr: bigNumberFromFloatString(`${Math.random() * 100}`),
-    cumulativeCalculatedSlash: bigNumberFromFloatString(
-      `${Math.random() * 100}`
-    ),
-    cumulativeCalculatedSlashPercentage: bigNumberFromFloatString(
-      `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
-    ),
+    apr: bigNumberFromFloatString(`32`),
+    cumulativeCalculatedSlash: bigNumberFromFloatString(`23`),
+    cumulativeCalculatedSlashPercentage: bigNumberFromFloatString("100"),
     votes: makeMockVotesWithHistory(),
   },
   decorators: [userDecorator, votesDecorator],
