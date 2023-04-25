@@ -26,6 +26,7 @@ const Env = ss.object({
   NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS: ss.optional(ss.string()),
   NEXT_PUBLIC_PHASE_LENGTH: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
+  NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -59,6 +60,7 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS,
     NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
     NEXT_PUBLIC_MAILCHIMP_URL: process.env.NEXT_PUBLIC_MAILCHIMP_URL,
+    NEXT_PUBLIC_MAILCHIMP_TAGS: process.env.NEXT_PUBLIC_MAILCHIMP_TAGS,
   },
   Env
 );
@@ -84,6 +86,7 @@ const AppConfig = ss.object({
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
   mailchimpUrl: ss.optional(ss.string()),
+  mailchimpTags: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -119,6 +122,7 @@ export const appConfig = ss.create(
       ),
     phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
     mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL,
+    mailchimpTags: env.NEXT_PUBLIC_MAILCHIMP_TAGS,
   },
   AppConfig
 );
