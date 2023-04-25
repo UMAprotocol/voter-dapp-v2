@@ -10,11 +10,11 @@ import {
   PanelProvider,
   StakingProvider,
   UserProvider,
-  VotesProvider,
   VoteTimingProvider,
+  VotesProvider,
   WalletProvider,
 } from "../contexts";
-import { mockDate } from "../stories/mocks/misc";
+import { date } from "../stories/mocks/misc";
 import "../styles/fonts.css";
 
 export const parameters = {
@@ -25,7 +25,7 @@ export const parameters = {
       date: /Date$/,
     },
   },
-  date: mockDate,
+  date,
 };
 
 const queryClient = new QueryClient();

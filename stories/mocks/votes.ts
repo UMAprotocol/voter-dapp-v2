@@ -7,15 +7,14 @@ import {
   maybeMakePolymarketOptions,
 } from "helpers";
 import { VoteT } from "types";
+import { date } from "./misc";
 
-export const defaultMockVote = (
-  number = Math.floor(Math.random() * 1000)
-): VoteT => {
+export const defaultMockVote = (number = 1): VoteT => {
   const decodedIdentifier = "MOCK_IDENTIFIER";
   const decodedAncillaryData = `MOCK_ANCILLARY_DATA_${number}`;
   const identifier = formatBytes32String(decodedIdentifier);
   const ancillaryData = formatBytes32String(decodedAncillaryData);
-  const timeAsDate = sub(new Date(), { days: 1 });
+  const timeAsDate = sub(date, { days: 1 });
   const timeMilliseconds = timeAsDate.getTime();
   const time = Math.round(timeAsDate.getTime() / 1000);
   const uniqueKey = makeUniqueKeyForVote(
@@ -158,15 +157,11 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
   return {
     ...mockVoteHistory,
     ...args,
-    uniqueKey: `${Math.random()}`,
-    voted: args?.voted ?? Math.random() > 0.5,
-    correctness: args?.correctness ?? Math.random() > 0.5,
-    staking: args?.staking ?? Math.random() > 0.5,
-    slashAmount:
-      args?.slashAmount ??
-      bigNumberFromFloatString(
-        `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
-      ),
+    uniqueKey: `${JSON.stringify(args)}`,
+    voted: args?.voted ?? true,
+    correctness: args?.correctness ?? true,
+    staking: args?.staking ?? true,
+    slashAmount: args?.slashAmount ?? bigNumberFromFloatString("100"),
   };
 }
 

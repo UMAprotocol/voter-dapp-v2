@@ -1,10 +1,11 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { CooldownTimer } from "components";
 import { red500 } from "constant";
 import add from "date-fns/add";
 import { BigNumber } from "ethers";
+import { date } from "stories/mocks/misc";
 
-export default {
+const meta: Meta = {
   title: "Base components/Info/Cooldown Timer",
   component: CooldownTimer,
   decorators: [
@@ -23,24 +24,32 @@ export default {
       </div>
     ),
   ],
-} as ComponentMeta<typeof CooldownTimer>;
-
-const Template: ComponentStory<typeof CooldownTimer> = (args) => (
-  <CooldownTimer {...args} />
-);
-
-export const InCooldown = Template.bind({});
-InCooldown.args = {
-  cooldownEnds: add(new Date(), { hours: 1, minutes: 10 }),
-  pendingUnstake: BigNumber.from(100),
-  isReadyToUnstake: false,
-  onExecuteUnstake: () => alert("Yay rewards!"),
 };
 
-export const ReadyToUnstake = Template.bind({});
-ReadyToUnstake.args = {
-  cooldownEnds: null,
-  pendingUnstake: BigNumber.from(100),
-  isReadyToUnstake: true,
-  onExecuteUnstake: () => alert("Yay rewards!"),
+export default meta;
+
+type Story = StoryObj<typeof CooldownTimer>;
+
+const Template: Story = {
+  render: (args) => <CooldownTimer {...args} />,
+};
+
+export const InCooldown: Story = {
+  ...Template,
+  args: {
+    cooldownEnds: add(date, { hours: 1, minutes: 10 }),
+    pendingUnstake: BigNumber.from(100),
+    isReadyToUnstake: false,
+    onExecuteUnstake: () => alert("Yay rewards!"),
+  },
+};
+
+export const ReadyToUnstake: Story = {
+  ...Template,
+  args: {
+    cooldownEnds: null,
+    pendingUnstake: BigNumber.from(100),
+    isReadyToUnstake: true,
+    onExecuteUnstake: () => alert("Yay rewards!"),
+  },
 };
