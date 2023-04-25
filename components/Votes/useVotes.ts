@@ -375,6 +375,7 @@ export function useVotes(activityStatus: ActivityStatusT) {
     setDirty,
     isFetching,
     activityStatus,
+    hasSigningKey,
     actionStatus: calculateActionStatus(),
   };
 }

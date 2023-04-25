@@ -11,14 +11,14 @@ import {
 import { useVotes } from "./useVotes";
 
 export function ActiveVotes() {
+  const voteListProps = useVotes("active");
   const {
     votesList,
     setVotesToShow,
     resetSelectedVotes,
     isAnyDirty,
     actionStatus,
-    ...voteListProps
-  } = useVotes("active");
+  } = voteListProps;
 
   return (
     <>

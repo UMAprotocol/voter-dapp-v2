@@ -44,35 +44,28 @@ function getExistingOrSelectedVoteFromOptions(
 export interface VoteListItemProps extends Omit<VotesListProps, "votesToShow"> {
   vote: VoteT;
 }
-export function useVoteListItem({
-  vote,
-  phase,
-  selectedVotes,
-  selectVote,
-  clearSelectedVote,
-  activityStatus,
-  moreDetailsAction,
-  isFetching,
-  isDirty,
-  setDirty,
-  delegationStatus,
-}: VoteListItemProps) {
+export function useVoteListItem(props: VoteListItemProps) {
   const [isCustomInput, setIsCustomInput] = useState(false);
   const {
+    vote,
+    phase,
+    selectedVotes,
+    selectVote,
+    clearSelectedVote,
+    activityStatus,
+    moreDetailsAction,
+    isDirty,
+    setDirty,
+  } = props;
+  const {
     decodedIdentifier,
-    title,
-    origin,
     options,
     isCommitted,
-    commitHash,
-    isRevealed,
-    revealHash,
     decryptedVote,
     correctVote,
     resolvedPriceRequestIndex,
     isV1,
     timeAsDate,
-    canReveal,
     rollCount,
   } = vote;
   const isActive = activityStatus === "active";
@@ -193,10 +186,10 @@ export function useVoteListItem({
   }
 
   return {
+    ...props,
+    ...vote,
     options: options ?? [],
     isDirty: isDirty(vote.uniqueKey),
-    origin,
-    title,
     showRolledVoteExplanation,
     showVoteInput,
     showYourVote,
@@ -207,7 +200,6 @@ export function useVoteListItem({
     formattedDate,
     formattedCorrectVote,
     formattedUserVote,
-    isFetching,
     onMoreDetails,
     selectedVote,
     decryptedVoteAsFormattedString,
@@ -217,15 +209,6 @@ export function useVoteListItem({
     isCustomInput,
     exitCustomInput,
     maxDecimals,
-    rollCount,
-    phase,
-    isCommitted,
-    isRevealed,
-    decryptedVote,
-    delegationStatus,
-    canReveal,
-    commitHash,
-    revealHash,
     isActive,
     isPast,
     isCommit,
