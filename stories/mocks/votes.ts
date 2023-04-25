@@ -8,9 +8,7 @@ import {
 } from "helpers";
 import { VoteT } from "types";
 
-export const defaultMockVote = (
-  number = Math.floor(Math.random() * 1000)
-): VoteT => {
+export const defaultMockVote = (number = 1): VoteT => {
   const decodedIdentifier = "MOCK_IDENTIFIER";
   const decodedAncillaryData = `MOCK_ANCILLARY_DATA_${number}`;
   const identifier = formatBytes32String(decodedIdentifier);
@@ -158,15 +156,11 @@ function makeMockVoteHistory(args?: VoteHistoryMockArgsT) {
   return {
     ...mockVoteHistory,
     ...args,
-    uniqueKey: `${Math.random()}`,
-    voted: args?.voted ?? Math.random() > 0.5,
-    correctness: args?.correctness ?? Math.random() > 0.5,
-    staking: args?.staking ?? Math.random() > 0.5,
-    slashAmount:
-      args?.slashAmount ??
-      bigNumberFromFloatString(
-        `${Math.random() > 0.5 ? "-" : ""}${Math.random() * 100}`
-      ),
+    uniqueKey: `${JSON.stringify(args)}`,
+    voted: args?.voted ?? true,
+    correctness: args?.correctness ?? true,
+    staking: args?.staking ?? true,
+    slashAmount: args?.slashAmount ?? bigNumberFromFloatString("100"),
   };
 }
 
