@@ -42,13 +42,13 @@ export function VotesListItem(listItemProps: VoteListItemProps) {
       )}
       {showYourVote && (
         <UserVoteWrapper>
-          <VoteLabel>Your vote</VoteLabel>{" "}
+          <VoteLabel>Your vote</VoteLabel>
           <VoteText voteText={formattedUserVote} />
         </UserVoteWrapper>
       )}
       {showCorrectVote && (
         <CorrectVoteWrapper>
-          <VoteLabel>Correct vote</VoteLabel>{" "}
+          <VoteLabel>Correct vote</VoteLabel>
           <VoteText voteText={formattedCorrectVote} />
         </CorrectVoteWrapper>
       )}
@@ -58,9 +58,9 @@ export function VotesListItem(listItemProps: VoteListItemProps) {
         </VoteStatusWrapper>
       )}
       <MoreDetailsWrapper>
-        <MoreDetails>
+        <MoreDetailsButtonWrapper>
           <Button label="More details" onClick={onMoreDetails} />
-        </MoreDetails>
+        </MoreDetailsButtonWrapper>
       </MoreDetailsWrapper>
     </Wrapper>
   );
@@ -121,7 +121,7 @@ const VoteLabel = styled.span`
   display: inline;
 `;
 
-const MoreDetails = styled.div`
+const MoreDetailsButtonWrapper = styled.div`
   width: fit-content;
   margin-right: auto;
 `;

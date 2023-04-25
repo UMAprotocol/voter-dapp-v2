@@ -1,4 +1,4 @@
-import { hideOnMobileAndUnder, showOnMobileAndUnder } from "helpers";
+import { hideOnTabletAndUnder, showOnTabletAndUnder } from "helpers";
 import styled from "styled-components";
 import {
   ActivityStatusT,
@@ -38,9 +38,9 @@ export function VotesList(props: VotesListProps) {
 }
 
 const DesktopWrapper = styled.div`
-  ${hideOnMobileAndUnder}
+  ${hideOnTabletAndUnder}
 `;
 
 const MobileWrapper = styled.div`
-  ${showOnMobileAndUnder}
+  ${showOnTabletAndUnder}
 `;
