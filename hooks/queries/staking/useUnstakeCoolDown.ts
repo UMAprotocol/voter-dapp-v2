@@ -6,14 +6,13 @@ import { getUnstakeCoolDown } from "web3";
 
 export function useUnstakeCoolDown() {
   const { voting } = useContractsContext();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const { onError } = useHandleError({ isDataFetching: true });
   // only need to fetch this one time
   const queryResult = useQuery({
     queryKey: [unstakeCoolDownKey],
     queryFn: () => getUnstakeCoolDown(voting),
     initialData: BigNumber.from(0),
     onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;

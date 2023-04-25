@@ -11,7 +11,7 @@ export function useDelegatorStakedBalance() {
   const { voting } = useContractsContext();
   const { data: address } = useVoterFromDelegate();
   const { isWrongChain } = useWalletContext();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const { onError } = useHandleError({ isDataFetching: true });
   const queryResult = useQuery({
     queryKey: [stakedBalanceKey, address],
     queryFn: () =>
@@ -19,7 +19,6 @@ export function useDelegatorStakedBalance() {
     enabled: !!address && !isWrongChain,
     initialData: BigNumber.from(0),
     onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;

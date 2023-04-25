@@ -13,7 +13,7 @@ export function useStakedBalance(addressOverride?: string) {
   const { voting } = useContractsContext();
   const { address: defaultAddress } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
   const queryResult = useQuery({
@@ -22,7 +22,6 @@ export function useStakedBalance(addressOverride?: string) {
     enabled: !!address && !isWrongChain,
     initialData,
     onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;
