@@ -10,7 +10,7 @@ export function useV1Rewards() {
   const { address } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
   const [{ connectedChain }] = useSetChain();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
     queryKey: [v1RewardsKey, address, connectedChain],
@@ -19,7 +19,6 @@ export function useV1Rewards() {
     initialData: { multicallPayload: [], totalRewards: BigNumber.from(0) },
     enabled: !!address && !!connectedChain && !isWrongChain,
     onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;

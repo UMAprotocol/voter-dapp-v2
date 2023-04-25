@@ -6,7 +6,7 @@ import { getIsOldDesignatedVotingAccount } from "web3";
 export function useIsOldDesignatedVotingAccount() {
   const { address } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
-  const { onError, clearErrors } = useHandleError({ isDataFetching: true });
+  const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
     queryKey: [isOldDesignatedVotingAccountKey, address],
@@ -18,7 +18,6 @@ export function useIsOldDesignatedVotingAccount() {
     },
     enabled: !!address && !isWrongChain,
     onError,
-    onSuccess: clearErrors,
   });
 
   return queryResult;
