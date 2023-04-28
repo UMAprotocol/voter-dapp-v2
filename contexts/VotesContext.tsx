@@ -17,6 +17,7 @@ import {
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
   useVoteTimingContext,
+  useActiveVoteResults,
 } from "hooks";
 import { ReactNode, createContext, useState } from "react";
 import {
@@ -26,6 +27,10 @@ import {
   EncryptedVotesByKeyT,
   PriceRequestByKeyT,
   VoteExistsByKeyT,
+  VoteParticipationT,
+  PriceRequestT,
+  VoteResultsT,
+  UniqueKeyT,
   VoteT,
 } from "types";
 
@@ -143,6 +148,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: decryptedVotesIsLoading,
     isFetching: decryptedVotesIsFetching,
   } = useDecryptedVotes(roundId);
+  const { data: activeVoteResultsByKey } = useActiveVoteResults();
   const {
     data: { voteHistoryByKey },
   } = useUserVotingAndStakingDetails(addressOverride);
@@ -221,7 +227,10 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   }
 
   function getVotesWithData(
-    priceRequests: PriceRequestByKeyT,
+    priceRequests: Record<
+      UniqueKeyT,
+      PriceRequestT & VoteParticipationT & VoteResultsT
+    >,
     decryptedVotes: DecryptedVotesByKeyT
   ): VoteT[] {
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
@@ -234,6 +243,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         (addressOverride && vote.revealedVoteByAddress[addressOverride]);
       return {
         ...vote,
+        // prefer active vote results first, this will either exist or not, if not we can just fall back to the default vote results
+        results: activeVoteResultsByKey?.[uniqueKey]?.results ?? vote?.results,
+        participation:
+          activeVoteResultsByKey?.[uniqueKey]?.participation ??
+          vote?.participation,
         uniqueKey,
         isCommitted:
           committedVotes[uniqueKey] || committedVotesForDelegator[uniqueKey]
