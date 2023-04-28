@@ -8,19 +8,27 @@ import {
 import { addOpacityToHsl } from "helpers";
 import PreviousPage from "public/assets/icons/left-chevron.svg";
 import NextPage from "public/assets/icons/right-chevron.svg";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
-interface Props<Entry> {
-  entries: Entry[];
-  setEntriesToShow: (entries: Entry[]) => void;
-}
 /**
- * Handles pagination for a list of entries
- * @param entries - the entries to paginate (not the entries to show)
- * @param setEntriesToShow - the function to call when the entries to show change
+ * @description
+ * This component is used to navigate between pages of a list of entries.
+ * @param entries - The list of entries to paginate.
+ * @param findIndex - The index of the entry to find, if any.
+ * @returns
+ * An array of entries to show for the current page.
+ * All of the props needed to render the pagination component.
  */
-export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
+export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
+  const [entriesToShow, setEntriesToShow] = useState<typeof entries>([]);
+
+  useEffect(() => {
+    if (entries.length <= defaultResultsPerPage) {
+      setEntriesToShow(entries);
+    }
+  }, [entries]);
+
   const [pageNumber, setPageNumber] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(defaultResultsPerPage);
   const numberOfEntries = entries.length;
@@ -39,10 +47,72 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
     lastPageNumber - 1 !== numberOfButtons;
   const buttonNumbers = makeButtonNumbers();
 
+  const getPageNumberOfItem = useCallback(
+    function (itemIndex: number | undefined) {
+      if (!itemIndex) return;
+      const pageNumber = Math.ceil((itemIndex + 1) / resultsPerPage);
+
+      return pageNumber;
+    },
+    [resultsPerPage]
+  );
+
+  const getEntriesForPage = useCallback(
+    function ({
+      newPageNumber = pageNumber,
+      newResultsPerPage = resultsPerPage,
+    }: {
+      newPageNumber?: number;
+      newResultsPerPage?: number;
+    }) {
+      const startIndex = (newPageNumber - 1) * newResultsPerPage;
+      const endIndex = startIndex + newResultsPerPage;
+      return entries.slice(startIndex, endIndex);
+    },
+    [entries, pageNumber, resultsPerPage]
+  );
+
+  const updateEntries = useCallback(
+    function (params?: { newPageNumber?: number; newResultsPerPage?: number }) {
+      const newPageNumber = params?.newPageNumber ?? pageNumber;
+      const newResultsPerPage = params?.newResultsPerPage ?? resultsPerPage;
+
+      setEntriesToShow(getEntriesForPage({ newPageNumber, newResultsPerPage }));
+    },
+    [getEntriesForPage, pageNumber, resultsPerPage, setEntriesToShow]
+  );
+
   useEffect(() => {
     updateEntries();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entries]);
+  }, [entries, updateEntries]);
+
+  useEffect(() => {
+    if (!findIndex || findIndex === -1) return;
+
+    const newPageNumber = getPageNumberOfItem(findIndex);
+
+    if (!newPageNumber) return;
+
+    setPageNumber(newPageNumber);
+    updateEntries({ newPageNumber });
+  }, [findIndex, resultsPerPage, entries, getPageNumberOfItem, updateEntries]);
+
+  useEffect(() => {
+    if (entries.length === 0) {
+      setPageNumber(1);
+      updateEntries();
+      return;
+    }
+
+    const newNumberOfPages = Math.ceil(entries.length / resultsPerPage);
+    if (pageNumber > newNumberOfPages) {
+      const newPageNumber = newNumberOfPages;
+      setPageNumber(newPageNumber);
+      updateEntries({ newPageNumber });
+    } else {
+      updateEntries();
+    }
+  }, [entries, pageNumber, resultsPerPage, updateEntries]);
 
   function getNumberOfButtons() {
     if (numberOfPages === defaultNumberOfButtons + 1) {
@@ -88,29 +158,7 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
     updateEntries({ newPageNumber, newResultsPerPage });
   }
 
-  function updateEntries(params?: {
-    newPageNumber?: number;
-    newResultsPerPage?: number;
-  }) {
-    const newPageNumber = params?.newPageNumber ?? pageNumber;
-    const newResultsPerPage = params?.newResultsPerPage ?? resultsPerPage;
-
-    setEntriesToShow(getEntriesForPage({ newPageNumber, newResultsPerPage }));
-  }
-
-  function getEntriesForPage({
-    newPageNumber = pageNumber,
-    newResultsPerPage = resultsPerPage,
-  }: {
-    newPageNumber?: number;
-    newResultsPerPage?: number;
-  }) {
-    const startIndex = (newPageNumber - 1) * newResultsPerPage;
-    const endIndex = startIndex + newResultsPerPage;
-    return entries.slice(startIndex, endIndex);
-  }
-
-  function isActive(buttonNumber: number) {
+  function isPageActive(buttonNumber: number) {
     return buttonNumber === pageNumber;
   }
 
@@ -119,60 +167,113 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
     updateEntriesForPageNumber(number);
   }
 
-  function nextPage() {
+  function goToNextPage() {
     const newPageNumber = pageNumber + 1;
     setPageNumber(newPageNumber);
     updateEntriesForPageNumber(newPageNumber);
   }
 
-  function prevPage() {
+  function goToPreviousPage() {
     const newPageNumber = pageNumber - 1;
     setPageNumber(newPageNumber);
     updateEntriesForPageNumber(newPageNumber);
   }
 
-  function firstPage() {
+  function goToFirstPage() {
     setPageNumber(1);
     updateEntriesForPageNumber(1);
   }
 
-  function lastPage() {
+  function goToLastPage() {
     setPageNumber(lastPageNumber);
     updateEntriesForPageNumber(lastPageNumber);
   }
 
+  return {
+    entriesToShow,
+    pageNumber,
+    goToPage,
+    resultsPerPage,
+    updateResultsPerPage,
+    buttonNumbers,
+    showFirstButton,
+    goToFirstPage,
+    showLastButton,
+    goToLastPage,
+    isFirstNumbers,
+    isPageActive,
+    lastPageNumber,
+    goToNextPage,
+    goToPreviousPage,
+  };
+}
+
+type Props = Omit<ReturnType<typeof usePagination>, "entriesToShow">;
+/**
+ * @description Pagination component.
+ * Intended to be used with the `usePagination` hook.
+ * All of the props come from there.
+ * The only omission is the `entriesToShow`, which is the array of entries to be shown on the current page.
+ * This is returned from the hook, but is not needed as a prop.
+ * @param pageNumber The current page number.
+ * @param goToPage A function to go to a specific page.
+ * @param resultsPerPage The number of results to show per page.
+ * @param updateResultsPerPage A function to update the number of results to show per page.
+ * @param buttonNumbers An array of page numbers to show as buttons.
+ * @param showFirstButton Whether to show the button to go to the first page.
+ * @param goToFirstPage A function to go to the first page.
+ * @param showLastButton Whether to show the button to go to the last page.
+ * @param goToLastPage A function to go to the last page.
+ * @param isFirstNumbers Whether the current page is the first page of the button numbers.
+ * @param isPageActive A function to check if a page number is the current page.
+ * @param lastPageNumber The last page number.
+ * @param goToNextPage A function to go to the next page.
+ * @param goToPreviousPage A function to go to the previous page.
+ */
+export function Pagination({
+  pageNumber,
+  goToPage,
+  resultsPerPage,
+  updateResultsPerPage,
+  buttonNumbers,
+  showFirstButton,
+  goToFirstPage,
+  showLastButton,
+  goToLastPage,
+  isFirstNumbers,
+  isPageActive,
+  lastPageNumber,
+  goToNextPage,
+  goToPreviousPage,
+}: Props) {
   const resultsPerPageOptions = [
     { value: 10, label: "10 results" },
     { value: 20, label: "20 results" },
     { value: 50, label: "50 results" },
   ];
 
-  function getSelectedResultsPerPage() {
-    return (
-      resultsPerPageOptions.find((option) => option.value === resultsPerPage) ??
-      resultsPerPageOptions[0]
-    );
-  }
-
+  const selectedResultsPerPage =
+    resultsPerPageOptions.find((option) => option.value === resultsPerPage) ??
+    resultsPerPageOptions[0];
   return (
     <Wrapper>
-      <ResultsPerPageWrapper>
+      <ResultsPerPageWrapper data-testid="results-per-page">
         <Dropdown
           items={resultsPerPageOptions}
-          selected={getSelectedResultsPerPage()}
+          selected={selectedResultsPerPage}
           onSelect={(option) => updateResultsPerPage(Number(option.value))}
           textColor={grey800}
           borderColor={grey800}
           label="Results per page"
         />
       </ResultsPerPageWrapper>
-      <ButtonsWrapper>
+      <ButtonsWrapper data-testid="page-buttons">
         {showFirstButton && (
           <>
             <PageButton
-              onClick={firstPage}
+              onClick={goToFirstPage}
               disabled={pageNumber === 1}
-              $isActive={isActive(1)}
+              $isActive={isPageActive(1)}
             >
               1
             </PageButton>
@@ -183,7 +284,7 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
           <PageButton
             key={buttonNumber}
             onClick={() => goToPage(buttonNumber)}
-            $isActive={isActive(buttonNumber)}
+            $isActive={isPageActive(buttonNumber)}
           >
             {buttonNumber}
           </PageButton>
@@ -191,16 +292,22 @@ export function Pagination<Entry>({ entries, setEntriesToShow }: Props<Entry>) {
         {showLastButton && (
           <>
             <Ellipsis>...</Ellipsis>
-            <PageButton onClick={lastPage} $isActive={isActive(lastPageNumber)}>
+            <PageButton
+              onClick={goToLastPage}
+              $isActive={isPageActive(lastPageNumber)}
+            >
               {lastPageNumber}
             </PageButton>
           </>
         )}
-        <PreviousPageButton onClick={prevPage} disabled={pageNumber === 1}>
+        <PreviousPageButton
+          onClick={goToPreviousPage}
+          disabled={pageNumber === 1}
+        >
           <PreviousPage />
         </PreviousPageButton>
         <NextPageButton
-          onClick={nextPage}
+          onClick={goToNextPage}
           disabled={pageNumber === lastPageNumber}
         >
           <NextPage />
