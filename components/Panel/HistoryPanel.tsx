@@ -3,18 +3,12 @@ import {
   LoadingSpinner,
   Pagination,
   VoteHistoryTable,
+  usePagination,
 } from "components";
-import {
-  black,
-  defaultResultsPerPage,
-  green,
-  mobileAndUnder,
-  red500,
-} from "constant";
+import { black, green, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -28,14 +22,8 @@ export function HistoryPanel() {
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
-  const [votesToShow, setVotesToShow] = useState(pastVotesV2List);
-  const numberOfPastVotes = pastVotesV2List.length;
-
-  useEffect(() => {
-    if (pastVotesV2List.length <= defaultResultsPerPage) {
-      setVotesToShow(pastVotesV2List);
-    }
-  }, [pastVotesV2List]);
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(pastVotesV2List);
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -114,15 +102,12 @@ export function HistoryPanel() {
             {isLoading() ? (
               <LoadingSpinner size={40} />
             ) : (
-              <VoteHistoryTable votes={votesToShow} />
+              <VoteHistoryTable votes={entriesToShow} />
             )}
           </HistoryWrapper>
-          {numberOfPastVotes > defaultResultsPerPage && (
+          {showPagination && (
             <PaginationWrapper>
-              <Pagination
-                entries={pastVotesV2List}
-                setEntriesToShow={setVotesToShow}
-              />
+              <Pagination {...paginationProps} />
             </PaginationWrapper>
           )}
         </SectionWrapper>

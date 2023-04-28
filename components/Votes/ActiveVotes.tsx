@@ -4,12 +4,12 @@ import {
   IconWrapper,
   Pagination,
   Tooltip,
+  usePagination,
   VotesList,
   VotesListItem,
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
-import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -24,7 +24,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SelectedVotesByKeyT, VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -55,13 +55,8 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  const [votesToShow, setVotesToShow] = useState(activeVotesList);
-
-  useEffect(() => {
-    if (activeVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(activeVotesList);
-    }
-  }, [activeVotesList]);
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(activeVotesList);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -305,7 +300,7 @@ export function ActiveVotes() {
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus="active" />}
-          rows={votesToShow.map((vote, index) => (
+          rows={entriesToShow.map((vote, index) => (
             <VotesListItem
               vote={vote}
               phase={phase}
@@ -332,12 +327,9 @@ export function ActiveVotes() {
           ))}
         />
       </VotesTableWrapper>
-      {activeVotesList.length > defaultResultsPerPage && (
+      {showPagination && (
         <PaginationWrapper>
-          <Pagination
-            entries={activeVotesList}
-            setEntriesToShow={setVotesToShow}
-          />
+          <Pagination {...paginationProps} />
         </PaginationWrapper>
       )}
       {isDirty() ? (

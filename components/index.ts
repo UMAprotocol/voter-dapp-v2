@@ -34,7 +34,7 @@ export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
 export { UpcomingVotes } from "./pages/UpcomingVotes";
 export { Wallets } from "./pages/WalletSettings/Wallets";
 export { WalletSettings } from "./pages/WalletSettings/WalletSettings";
-export { Pagination } from "./Pagination/Pagination";
+export { Pagination, usePagination } from "./Pagination/Pagination";
 export { ClaimPanel } from "./Panel/ClaimPanel";
 export { ClaimV1Panel } from "./Panel/ClaimV1Panel";
 export { HistoryPanel } from "./Panel/HistoryPanel";

@@ -9,12 +9,11 @@ import {
   VotesList,
   VotesListItem,
   VotesTableHeadings,
+  usePagination,
 } from "components";
-import { defaultResultsPerPage } from "constant";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -26,15 +25,9 @@ export function UpcomingVotes() {
   } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const [votesToShow, setVotesToShow] = useState(upcomingVotesList);
-  const numberOfUpcomingVotes = upcomingVotesList.length;
-  const hasUpcomingVotes = numberOfUpcomingVotes > 0;
-
-  useEffect(() => {
-    if (upcomingVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(upcomingVotesList);
-    }
-  }, [upcomingVotesList]);
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(upcomingVotesList);
+  const hasUpcomingVotes = upcomingVotesList.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
@@ -58,7 +51,7 @@ export function UpcomingVotes() {
                       headings={
                         <VotesTableHeadings activityStatus="upcoming" />
                       }
-                      rows={votesToShow.map((vote) => (
+                      rows={entriesToShow.map((vote) => (
                         <VotesListItem
                           vote={vote}
                           phase={phase}
@@ -73,12 +66,9 @@ export function UpcomingVotes() {
                       ))}
                     />
                   </VotesTableWrapper>
-                  {numberOfUpcomingVotes > defaultResultsPerPage && (
+                  {showPagination && (
                     <PaginationWrapper>
-                      <Pagination
-                        entries={votesToShow}
-                        setEntriesToShow={setVotesToShow}
-                      />
+                      <Pagination {...paginationProps} />
                     </PaginationWrapper>
                   )}
                 </>
