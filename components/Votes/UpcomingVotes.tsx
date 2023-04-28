@@ -1,18 +1,17 @@
 import {
   Pagination,
+  usePagination,
   VotesList,
   VotesListItem,
   VotesTableHeadings,
   VoteTimeline,
 } from "components";
-import { defaultResultsPerPage } from "constant";
 import {
   useDelegationContext,
   usePanelContext,
   useVotesContext,
   useVoteTimingContext,
 } from "hooks";
-import { useEffect, useState } from "react";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
@@ -21,13 +20,8 @@ export function UpcomingVotes() {
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { getDelegationStatus } = useDelegationContext();
-  const [votesToShow, setVotesToShow] = useState(upcomingVotesList);
-
-  useEffect(() => {
-    if (upcomingVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(upcomingVotesList);
-    }
-  }, [upcomingVotesList]);
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(upcomingVotesList);
 
   return (
     <>
@@ -36,7 +30,7 @@ export function UpcomingVotes() {
       <VotesTableWrapper>
         <VotesList
           headings={<VotesTableHeadings activityStatus="upcoming" />}
-          rows={votesToShow.map((vote) => (
+          rows={entriesToShow.map((vote) => (
             <VotesListItem
               vote={vote}
               phase={phase}
@@ -49,12 +43,9 @@ export function UpcomingVotes() {
           ))}
         />
       </VotesTableWrapper>
-      {upcomingVotesList.length > defaultResultsPerPage && (
+      {showPagination && (
         <PaginationWrapper>
-          <Pagination
-            entries={upcomingVotesList}
-            setEntriesToShow={setVotesToShow}
-          />
+          <Pagination {...paginationProps} />
         </PaginationWrapper>
       )}
       <Divider />

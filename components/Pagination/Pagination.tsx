@@ -32,6 +32,7 @@ export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
   const [pageNumber, setPageNumber] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(defaultResultsPerPage);
   const numberOfEntries = entries.length;
+  const showPagination = numberOfEntries > defaultResultsPerPage;
   const numberOfPages = Math.ceil(numberOfEntries / resultsPerPage);
   const lastPageNumber = numberOfPages;
   const defaultNumberOfButtons = 4;
@@ -190,6 +191,7 @@ export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
   }
 
   return {
+    showPagination,
     entriesToShow,
     pageNumber,
     goToPage,
@@ -208,12 +210,15 @@ export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
   };
 }
 
-type Props = Omit<ReturnType<typeof usePagination>, "entriesToShow">;
+type Props = Omit<
+  ReturnType<typeof usePagination>,
+  "entriesToShow" | "showPagination"
+>;
 /**
  * @description Pagination component.
  * Intended to be used with the `usePagination` hook.
  * All of the props come from there.
- * The only omission is the `entriesToShow`, which is the array of entries to be shown on the current page.
+ * The only omissions are the `entriesToShow`, which is the array of entries to be shown on the current page, and `showPagination`, which is a boolean to show or hide the pagination component.
  * This is returned from the hook, but is not needed as a prop.
  * @param pageNumber The current page number.
  * @param goToPage A function to go to a specific page.

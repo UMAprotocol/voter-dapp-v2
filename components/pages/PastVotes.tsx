@@ -8,10 +8,9 @@ import {
   VotesList,
   VotesListItem,
   VotesTableHeadings,
+  usePagination,
 } from "components";
-import { defaultResultsPerPage } from "constant";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
-import { useEffect, useState } from "react";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -23,14 +22,8 @@ export function PastVotes() {
   } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const [votesToShow, setVotesToShow] = useState(pastVotesList);
-  const numberOfPastVotes = pastVotesList.length;
-
-  useEffect(() => {
-    if (pastVotesList.length <= defaultResultsPerPage) {
-      setVotesToShow(pastVotesList);
-    }
-  }, [pastVotesList]);
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(pastVotesList);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -45,7 +38,7 @@ export function PastVotes() {
               <VotesTableWrapper>
                 <VotesList
                   headings={<VotesTableHeadings activityStatus="past" />}
-                  rows={votesToShow.map((vote) => (
+                  rows={entriesToShow.map((vote) => (
                     <VotesListItem
                       vote={vote}
                       phase={phase}
@@ -60,12 +53,9 @@ export function PastVotes() {
                   ))}
                 />
               </VotesTableWrapper>
-              {numberOfPastVotes > defaultResultsPerPage && (
+              {showPagination && (
                 <PaginationWrapper>
-                  <Pagination
-                    entries={pastVotesList}
-                    setEntriesToShow={setVotesToShow}
-                  />
+                  <Pagination {...paginationProps} />
                 </PaginationWrapper>
               )}
             </>
