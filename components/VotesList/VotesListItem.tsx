@@ -25,6 +25,7 @@ import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
+import OSnap from "public/assets/icons/osnap.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
@@ -248,6 +249,7 @@ export function VotesListItem({
 
   function getVoteIcon() {
     if (origin === "Polymarket") return PolymarketIcon;
+    if (origin === "OSnap") return OsnapIcon;
     if (origin === "Across") return AcrossIcon;
     if (origin === "UMA" && isGovernance) return UMAGovernanceIcon;
     return UMAIcon;
@@ -636,6 +638,8 @@ const UMAGovernanceIcon = styled(UMAGovernance)``;
 const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
+
+const OsnapIcon = styled(OSnap)``;
 
 const DotIcon = styled(Dot)`
   circle {

@@ -27,6 +27,12 @@ const Env = ss.object({
   NEXT_PUBLIC_PHASE_LENGTH: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_1: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_288: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_42161: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -61,6 +67,12 @@ export const env = ss.create(
     NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
     NEXT_PUBLIC_MAILCHIMP_URL: process.env.NEXT_PUBLIC_MAILCHIMP_URL,
     NEXT_PUBLIC_MAILCHIMP_TAGS: process.env.NEXT_PUBLIC_MAILCHIMP_TAGS,
+    NEXT_PUBLIC_PROVIDER_V3_1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
+    NEXT_PUBLIC_PROVIDER_V3_137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
+    NEXT_PUBLIC_PROVIDER_V3_288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
+    NEXT_PUBLIC_PROVIDER_V3_42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
+    NEXT_PUBLIC_PROVIDER_V3_5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
+    NEXT_PUBLIC_PROVIDER_V3_10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
   },
   Env
 );
@@ -87,6 +99,12 @@ const AppConfig = ss.object({
   phaseLength: ss.number(),
   mailchimpUrl: ss.optional(ss.string()),
   mailchimpTags: ss.optional(ss.string()),
+  oov3ProviderUrl1: ss.optional(ss.string()),
+  oov3ProviderUrl137: ss.optional(ss.string()),
+  oov3ProviderUrl288: ss.optional(ss.string()),
+  oov3ProviderUrl42161: ss.optional(ss.string()),
+  oov3ProviderUrl5: ss.optional(ss.string()),
+  oov3ProviderUrl10: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -123,6 +141,12 @@ export const appConfig = ss.create(
     phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
     mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL,
     mailchimpTags: env.NEXT_PUBLIC_MAILCHIMP_TAGS,
+    oov3ProviderUrl1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
+    oov3ProviderUrl137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
+    oov3ProviderUrl288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
+    oov3ProviderUrl42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
+    oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
+    oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
   },
   AppConfig
 );

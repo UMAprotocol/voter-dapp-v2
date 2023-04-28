@@ -1,6 +1,11 @@
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
-import { checkIfIsPolymarket, maybeMakePolymarketOptions } from "helpers";
+import {
+  checkIfIsOptimisticGovernor,
+  checkIfIsPolymarket,
+  maybeMakePolymarketOptions,
+  parseOptimisticGovernorAncillaryData,
+} from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -16,26 +21,34 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
-  // we are hard coding this because we have an upcoming vote, but the voterdapp cannot currently decode it
-  // TODO: remove this hard coding
-  if (decodedIdentifier.includes("ASSERT_TRUTH")) {
-    // if all checks fail, return with generic values generated from the data we have
-    return {
+  const isAssertion = decodedIdentifier.includes("ASSERT_TRUTH");
+  if (isAssertion) {
+    const result = {
       title: decodedIdentifier,
-      description: "Asserted truth: 1+1=3",
+      description: decodedAncillaryData,
       umipOrUppLink: {
-        label: "umip-170".toUpperCase(),
+        label: "UMIP-170",
         href: "https://github.com/UMAprotocol/UMIPs/blob/7e4eadb309c8e38d540bdf6f39cee81a3e48d260/UMIPs/umip-170.md",
       },
       umipOrUppNumber: "umip-170",
-      options: [
-        { label: "True", value: "1" },
-        { label: "False", value: "0" },
-      ],
-      origin: "UMA",
+      options: makeAssertionOptions(),
+      origin: "UMA" as const,
       isGovernance: false,
       discordLink,
     };
+    const isOptimisticGovernor =
+      checkIfIsOptimisticGovernor(decodedAncillaryData);
+    if (isOptimisticGovernor) {
+      const { title, description } =
+        parseOptimisticGovernorAncillaryData(decodedAncillaryData);
+      return {
+        ...result,
+        title,
+        description,
+        origin: "OSnap" as const,
+      };
+    }
+    return result;
   }
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
@@ -220,4 +233,11 @@ function getUmipOrUppNumberFromUrl(url: string | undefined) {
     const uppNumber = url.split("upp-")[1].split(".")[0];
     return `upp-${uppNumber}`;
   }
+}
+
+function makeAssertionOptions() {
+  return [
+    { label: "True", value: "1" },
+    { label: "False", value: "0" },
+  ];
 }
