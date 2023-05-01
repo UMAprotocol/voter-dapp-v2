@@ -18,7 +18,6 @@ import {
   useUserVotingAndStakingDetails,
   useVoteTimingContext,
 } from "hooks";
-import { useAssertionClaims } from "hooks/queries/votes/useAssertionClaims";
 import { createContext, ReactNode, useState } from "react";
 import {
   ActivityStatusT,
@@ -149,9 +148,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   } = useUserVotingAndStakingDetails(addressOverride);
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
   const { data: augmentedData } = useAugmentedVoteData();
-  const { data: assertionClaims } = useAssertionClaims();
-
-  // console.log(assertionClaims);
   function getUserDependentIsLoading() {
     if (!address) return false;
 

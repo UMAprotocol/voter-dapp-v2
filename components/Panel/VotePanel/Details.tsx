@@ -26,6 +26,8 @@ import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
 import { config } from "helpers/config";
+import { useAssertionClaim } from "hooks/queries/votes/useAssertionClaims";
+import { decodeHexString } from "helpers";
 
 export function Details({
   decodedIdentifier,
@@ -39,17 +41,24 @@ export function Details({
   decodedAdminTransactions,
   umipOrUppLink,
   augmentedData,
+  assertionChildChainId,
+  assertionId,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
+  const [showRawClaimData, setShowRawClaimData] = useState(false);
 
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
   }
 
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   function toggleShowRawAncillaryData() {
     setShowRawAncillaryData(!showRawAncillaryData);
+  }
+  function toggleShowRawClaimData() {
+    setShowRawClaimData(!showRawClaimData);
   }
 
   function makeOoRequestLink() {
@@ -115,6 +124,22 @@ export function Details({
           </ReactMarkdown>
         </Text>
       </SectionWrapper>
+      {!!claim && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <AncillaryDataIcon />
+            </IconWrapper>{" "}
+            Assertion Claim{" "}
+            <ToggleText onClick={toggleShowRawClaimData}>
+              (view {showRawClaimData ? "decoded" : "raw"})
+            </ToggleText>
+          </PanelSectionTitle>
+          <Text as="div">
+            {showRawClaimData ? claim : decodeHexString(claim)}
+          </Text>
+        </SectionWrapper>
+      )}
       <SectionWrapper>
         <PanelSectionTitle>
           <IconWrapper>

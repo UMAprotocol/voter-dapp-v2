@@ -33,6 +33,10 @@ export type PriceRequestT = {
   rollCount: number;
   resolvedPriceRequestIndex?: string;
   revealedVoteByAddress: RevealedVotesByAddress;
+  isAssertion: boolean;
+  assertionId?: string;
+  assertionAsserter?: string;
+  assertionChildChainId?: number;
 };
 
 export type ParticipationT = {
