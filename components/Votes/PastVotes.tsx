@@ -1,47 +1,44 @@
-import { Button, VoteList, VoteListItem, VoteTableHeadings } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
-import { CSSProperties } from "react";
+import { Button, Pagination, VoteList, usePagination } from "components";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
+  PaginationWrapper,
   Title,
   VoteListWrapper,
 } from "./style";
+import { useVoteList } from "./useVoteList";
 
-export function PastVotes() {
-  const { pastVoteList, getUserDependentIsFetching } = useVotesContext();
-  const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+interface Props {
+  isHomePage?: boolean;
+}
+export function PastVotes({ isHomePage = false }: Props) {
+  const voteListProps = useVoteList("past");
+  const { votesList } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(votesList);
+  const titleText = isHomePage ? "Recent past votes:" : "Past votes:";
+  const showSeeAllButton = votesList.length > 5;
+  const votesToShow = isHomePage ? votesList.slice(0, 5) : entriesToShow;
 
   return (
     <>
-      <Title>Recent past votes:</Title>
-      <VoteListWrapper
-        style={
-          {
-            "--margin-top": "0px",
-          } as CSSProperties
-        }
-      >
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="past" />}
-          rows={pastVoteList.slice(0, 5).map((vote) => (
-            <VoteListItem
-              vote={vote}
-              phase={phase}
-              activityStatus="past"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-              isFetching={getUserDependentIsFetching()}
-            />
-          ))}
-        />
+      <Title>{titleText}</Title>
+      <VoteListWrapper>
+        <VoteList {...voteListProps} votesToShow={votesToShow} />
       </VoteListWrapper>
-      <ButtonOuterWrapper>
-        <ButtonInnerWrapper>
-          <Button label="See all" href="/past-votes" variant="primary" />
-        </ButtonInnerWrapper>
-      </ButtonOuterWrapper>
+      {isHomePage
+        ? showSeeAllButton && (
+            <ButtonOuterWrapper>
+              <ButtonInnerWrapper>
+                <Button label="See all" href="/past-votes" variant="primary" />
+              </ButtonInnerWrapper>
+            </ButtonOuterWrapper>
+          )
+        : showPagination && (
+            <PaginationWrapper>
+              <Pagination {...paginationProps} />
+            </PaginationWrapper>
+          )}
     </>
   );
 }
