@@ -2,7 +2,6 @@ import { tabletAndUnder } from "constant";
 import { useVotesContext, useVoteTimingContext } from "hooks";
 import styled from "styled-components";
 import { CommitPhase } from "./CommitPhase";
-import { NextRoundStartsIn } from "./NextRoundStartsIn";
 import { RevealPhase } from "./RevealPhase";
 
 export function VoteTimeline() {
@@ -11,29 +10,13 @@ export function VoteTimeline() {
 
   const status = getActivityStatus();
 
-  if (status === "past") return null;
+  if (status === "active") return null;
 
   return (
-    <>
-      {status === "upcoming" && (
-        <NextRoundStartsIn
-          phase={phase}
-          timeRemaining={millisecondsUntilPhaseEnds}
-        />
-      )}
-      {status === "active" && (
-        <Wrapper>
-          <CommitPhase
-            phase={phase}
-            timeRemaining={millisecondsUntilPhaseEnds}
-          />
-          <RevealPhase
-            phase={phase}
-            timeRemaining={millisecondsUntilPhaseEnds}
-          />
-        </Wrapper>
-      )}
-    </>
+    <Wrapper>
+      <CommitPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
+      <RevealPhase phase={phase} timeRemaining={millisecondsUntilPhaseEnds} />
+    </Wrapper>
   );
 }
 

@@ -1,63 +1,56 @@
 import {
+  Button,
+  NextRoundStartsIn,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
-  VoteTimeline,
+  usePagination,
 } from "components";
-import { defaultResultsPerPage } from "constant";
 import {
-  useDelegationContext,
-  usePanelContext,
-  useVoteTimingContext,
-  useVotesContext,
-} from "hooks";
-import { useEffect, useState } from "react";
-import { Divider, PaginationWrapper, Title, VoteListWrapper } from "./style";
+  ButtonInnerWrapper,
+  ButtonOuterWrapper,
+  Divider,
+  PaginationWrapper,
+  Title,
+  VoteListWrapper,
+} from "./style";
+import { useVoteList } from "./useVoteList";
 
-export function UpcomingVotes() {
-  const { upcomingVoteList, getActivityStatus, getUserDependentIsFetching } =
-    useVotesContext();
-  const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
-  const { getDelegationStatus } = useDelegationContext();
-  const [votesToShow, setVotesToShow] = useState(upcomingVoteList);
-
-  useEffect(() => {
-    if (upcomingVoteList.length <= defaultResultsPerPage) {
-      setVotesToShow(upcomingVoteList);
-    }
-  }, [upcomingVoteList]);
+interface Props {
+  isHomePage?: boolean;
+}
+export function UpcomingVotes({ isHomePage = false }: Props) {
+  const voteListProps = useVoteList("upcoming");
+  const { votesList } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(votesList);
+  const showSeeAllButton = votesList.length > 5;
+  const votesToShow = isHomePage ? votesList.slice(0, 5) : entriesToShow;
 
   return (
     <>
       <Title>Upcoming votes:</Title>
-      {getActivityStatus() === "upcoming" && <VoteTimeline />}
+      <NextRoundStartsIn />
       <VoteListWrapper>
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="upcoming" />}
-          rows={votesToShow.map((vote) => (
-            <VoteListItem
-              vote={vote}
-              phase={phase}
-              activityStatus="upcoming"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-              delegationStatus={getDelegationStatus()}
-              isFetching={getUserDependentIsFetching()}
-            />
-          ))}
-        />
+        <VoteList {...voteListProps} votesToShow={votesToShow} />
       </VoteListWrapper>
-      {upcomingVoteList.length > defaultResultsPerPage && (
-        <PaginationWrapper>
-          <Pagination
-            entries={upcomingVoteList}
-            setEntriesToShow={setVotesToShow}
-          />
-        </PaginationWrapper>
-      )}
-      <Divider />
+      {isHomePage
+        ? showSeeAllButton && (
+            <ButtonOuterWrapper>
+              <ButtonInnerWrapper>
+                <Button
+                  label="See all"
+                  href="/upcoming-votes"
+                  variant="primary"
+                />
+              </ButtonInnerWrapper>
+            </ButtonOuterWrapper>
+          )
+        : showPagination && (
+            <PaginationWrapper>
+              <Pagination {...paginationProps} />
+            </PaginationWrapper>
+          )}
+      {isHomePage && <Divider />}
     </>
   );
 }
