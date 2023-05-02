@@ -54,7 +54,7 @@ export function useVoteListItem(props: VoteListItemProps) {
     clearSelectedVote,
     activityStatus,
     moreDetailsAction,
-    isDirty,
+    checkIfIsDirty,
     setDirty,
   } = props;
   const {
@@ -121,13 +121,13 @@ export function useVoteListItem(props: VoteListItemProps) {
       return selectedVote !== decryptedVoteAsFormattedString;
     }
     const dirty = runIsDirtyEffect();
-    if (setDirty && dirty !== isDirty(vote.uniqueKey)) {
+    if (setDirty && dirty !== checkIfIsDirty(vote.uniqueKey)) {
       setDirty(dirty, vote.uniqueKey);
     }
   }, [
     selectedVote,
     setDirty,
-    isDirty,
+    checkIfIsDirty,
     decryptedVoteAsFormattedString,
     isCommit,
     vote.uniqueKey,
@@ -189,7 +189,7 @@ export function useVoteListItem(props: VoteListItemProps) {
     ...props,
     ...vote,
     options: options ?? [],
-    isDirty: isDirty(vote.uniqueKey),
+    isDirty: checkIfIsDirty(vote.uniqueKey),
     showRolledVoteExplanation,
     showVoteInput,
     showYourVote,

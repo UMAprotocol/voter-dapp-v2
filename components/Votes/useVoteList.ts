@@ -311,7 +311,7 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     ]
   );
 
-  const isDirty = useCallback(
+  const checkIfIsDirty = useCallback(
     function (uniqueKey: UniqueIdT) {
       return dirtyInputs[uniqueKey];
     },
@@ -360,7 +360,7 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     resetSelectedVotes,
     clearSelectedVote,
     moreDetailsAction,
-    isDirty,
+    checkIfIsDirty,
     isAnyDirty,
     setDirty,
     isFetching,

@@ -1,4 +1,4 @@
-import { LoadingSkeleton } from "components/LoadingSkeleton/LoadingSkeleton";
+import { LoadingSkeleton } from "components";
 import { green, red500, tabletAndUnder } from "constant";
 import { config } from "helpers/config";
 import NextLink from "next/link";
@@ -6,6 +6,7 @@ import Dot from "public/assets/icons/dot.svg";
 import { CSSProperties } from "react";
 import styled from "styled-components";
 import { VoteListItemHookResult } from "./useVoteListItem";
+
 export function VoteStatus({
   phase,
   isCommitted,
