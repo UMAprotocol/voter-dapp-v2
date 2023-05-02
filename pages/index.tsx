@@ -18,12 +18,10 @@ const HomePage: NextPage = () => {
   const {
     data: { annualPercentageReturn },
   } = useGlobals();
-  const { activeVoteList, pastVoteList, upcomingVoteList } = useVotesContext();
+  const { hasActiveVotes, hasUpcomingVotes, getUserIndependentIsLoading } =
+    useVotesContext();
+  const isLoading = getUserIndependentIsLoading();
 
-  const hasActiveVotes = activeVoteList.length > 0;
-  const hasUpcomingVotes = upcomingVoteList.length > 0;
-  const hasPastVotes = pastVoteList.length > 0;
-  const hasAnyVotes = hasActiveVotes || hasUpcomingVotes || hasPastVotes;
   return (
     <Layout title="UMA | Voting dApp">
       <Banner>
@@ -33,13 +31,17 @@ const HomePage: NextPage = () => {
       <PageOuterWrapper>
         <HowItWorks />
         <PageInnerWrapper>
-          {hasActiveVotes && <ActiveVotes />}
-          {hasUpcomingVotes && <UpcomingVotes />}
-          {hasPastVotes && <PastVotes />}
-          {!hasAnyVotes && (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
+          ) : (
+            <>
+              {hasActiveVotes && <ActiveVotes />}
+              {hasUpcomingVotes && <UpcomingVotes />}
+              {/* There will always be past votes, so no need to check if they exist */}
+              <PastVotes />
+            </>
           )}
         </PageInnerWrapper>
       </PageOuterWrapper>
