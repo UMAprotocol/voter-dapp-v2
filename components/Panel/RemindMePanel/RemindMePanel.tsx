@@ -1,8 +1,9 @@
 import { Button, Checkbox, EmailInput, PanelErrorBanner } from "components";
+import { useErrorContext } from "hooks";
 import { mobileAndUnder } from "constant";
 import { config } from "helpers";
 import Check from "public/assets/icons/check.svg";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import styled from "styled-components";
 import { useMailChimpForm } from "use-mailchimp-form";
 import { PanelFooter } from "../PanelFooter";
@@ -12,16 +13,29 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "../styles";
 export function RemindMePanel() {
   const [email, setEmail] = useState("");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const { addErrorMessage, clearErrorMessages, removeErrorMessage } =
+    useErrorContext("remind");
 
   const url = config.mailchimpUrl ?? "";
+  const tags = config.mailchimpTags ?? "";
 
-  const { loading, success, message, handleSubmit } = useMailChimpForm(url);
+  const { loading, success, message, handleSubmit, error } =
+    useMailChimpForm(url);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
+    clearErrorMessages();
     e.preventDefault();
-
-    handleSubmit({ EMAIL: email });
+    handleSubmit({ EMAIL: email, tags });
   }
+
+  useEffect(() => {
+    if (!error) {
+      removeErrorMessage(message);
+    } else {
+      addErrorMessage(message);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, message]);
 
   if (url === "") return null;
 

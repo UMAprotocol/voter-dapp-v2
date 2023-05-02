@@ -29,7 +29,7 @@ export { LoadingSpinner } from "./LoadingSpinner/LoadingSpinner";
 export { MigrationBanner } from "./MigrationBanner/MigrationBanner";
 export { Nav } from "./Nav/Nav";
 export { Notifications } from "./Notifications/Notifications";
-export { Pagination } from "./Pagination/Pagination";
+export { Pagination, usePagination } from "./Pagination/Pagination";
 export { ClaimPanel } from "./Panel/ClaimPanel";
 export { ClaimV1Panel } from "./Panel/ClaimV1Panel";
 export { HistoryPanel } from "./Panel/HistoryPanel";
