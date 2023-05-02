@@ -11,7 +11,7 @@ import { truncateDecimals } from "helpers";
 import { useGlobals } from "hooks";
 import type { NextPage } from "next";
 
-const VotePage: NextPage = () => {
+const HomePage: NextPage = () => {
   const {
     data: { annualPercentageReturn },
   } = useGlobals();
@@ -31,4 +31,4 @@ const VotePage: NextPage = () => {
   );
 };
 
-export default VotePage;
+export default HomePage;

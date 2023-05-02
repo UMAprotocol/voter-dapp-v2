@@ -10,7 +10,7 @@ import {
   computeMillisecondsUntilPhaseEnds,
   computePhaseEndTimeMilliseconds,
 } from "helpers";
-import VotePage from "pages";
+import HomePage from "pages";
 import {
   makeMockVotes,
   mockCommitted,
@@ -33,7 +33,7 @@ interface Args {
 
 const meta: Meta = {
   title: "Pages/Vote Page/VotePage",
-  component: VotePage,
+  component: HomePage,
 };
 
 export default meta;
@@ -62,7 +62,7 @@ const Template: Story = {
     return (
       <VoteTimingContext.Provider value={mockVoteTimingContextState}>
         <VotesContext.Provider value={mockVotesContextState}>
-          <VotePage />
+          <HomePage />
         </VotesContext.Provider>
       </VoteTimingContext.Provider>
     );

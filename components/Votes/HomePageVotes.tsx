@@ -5,7 +5,7 @@ import { ActiveVotes } from "./ActiveVotes";
 import { PastVotes } from "./PastVotes";
 import { UpcomingVotes } from "./UpcomingVotes";
 
-export function Votes() {
+export function HomePageVotes() {
   const { activeVoteList, pastVoteList, upcomingVoteList } = useVotesContext();
 
   const hasActiveVotes = activeVoteList.length > 0;
