@@ -14,8 +14,9 @@ import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 
 const UpcomingVotesPage: NextPage = () => {
-  const { getUserIndependentIsLoading, hasUpcomingVotes } = useVotesContext();
+  const { getUserIndependentIsLoading, upcomingVoteList } = useVotesContext();
   const isLoading = getUserIndependentIsLoading();
+  const hasUpcomingVotes = upcomingVoteList.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">

@@ -18,9 +18,11 @@ const HomePage: NextPage = () => {
   const {
     data: { annualPercentageReturn },
   } = useGlobals();
-  const { hasActiveVotes, hasUpcomingVotes, getUserIndependentIsLoading } =
+  const { activeVoteList, upcomingVoteList, getUserIndependentIsLoading } =
     useVotesContext();
   const isLoading = getUserIndependentIsLoading();
+  const hasActiveVotes = activeVoteList.length > 0;
+  const hasUpcomingVotes = upcomingVoteList.length > 0;
 
   return (
     <Layout title="UMA | Voting dApp">
