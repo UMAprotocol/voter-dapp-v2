@@ -1,5 +1,4 @@
 import { useConnectWallet } from "@web3-onboard/react";
-import { defaultResultsPerPage } from "constant";
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -14,7 +13,7 @@ import {
   useVotesContext,
   useWalletContext,
 } from "hooks";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActionStatus,
   ActivityStatusT,
@@ -36,7 +35,6 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     past: pastVoteList,
   };
   const votesList = votesListsForStatus[activityStatus];
-  const [votesToShow, setVotesToShow] = useState(votesList);
   const { phase, roundId } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
@@ -106,12 +104,6 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     requiredForBothCommitAndReveal && isCommit && hasVotesToCommit;
   const canReveal =
     requiredForBothCommitAndReveal && isReveal && hasVotesToReveal;
-
-  useEffect(() => {
-    if (activeVoteList.length <= defaultResultsPerPage) {
-      setVotesToShow(activeVoteList);
-    }
-  }, [activeVoteList]);
 
   const commitVotes = useCallback(
     async function () {
@@ -363,8 +355,6 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     phase,
     delegationStatus,
     votesList,
-    votesToShow,
-    setVotesToShow,
     selectedVotes,
     selectVote,
     resetSelectedVotes,

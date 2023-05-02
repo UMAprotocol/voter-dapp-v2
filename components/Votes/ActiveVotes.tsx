@@ -1,5 +1,4 @@
-import { Pagination, VoteList, VoteTimeline } from "components";
-import { defaultResultsPerPage } from "constant";
+import { Pagination, VoteList, VoteTimeline, usePagination } from "components";
 import { ActionButtons } from "./ActionButtons";
 import {
   Divider,
@@ -12,24 +11,21 @@ import { useVoteList } from "./useVoteList";
 
 export function ActiveVotes() {
   const voteListProps = useVoteList("active");
-  const {
-    votesList,
-    setVotesToShow,
-    resetSelectedVotes,
-    isAnyDirty,
-    actionStatus,
-  } = voteListProps;
+  const { votesList, resetSelectedVotes, isAnyDirty, actionStatus } =
+    voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(votesList);
 
   return (
     <>
       <Title>Active votes:</Title>
       <VoteTimeline />
       <VoteListWrapper>
-        <VoteList {...voteListProps} />
+        <VoteList {...voteListProps} votesToShow={entriesToShow} />
       </VoteListWrapper>
-      {votesList.length > defaultResultsPerPage && (
+      {showPagination && (
         <PaginationWrapper>
-          <Pagination entries={votesList} setEntriesToShow={setVotesToShow} />
+          <Pagination {...paginationProps} />
         </PaginationWrapper>
       )}
       {isAnyDirty ? (
