@@ -6,7 +6,7 @@ import {
   PageOuterWrapper,
 } from "components";
 import { useDelegationContext } from "hooks";
-import { LoadingSpinnerWrapper } from "../pages/styles";
+import { LoadingSpinnerWrapper } from "../style";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {

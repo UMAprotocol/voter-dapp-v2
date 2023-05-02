@@ -9,7 +9,7 @@ import {
   PastVotes,
   UpcomingVotes,
 } from "components";
-import { LoadingSpinnerWrapper, Strong } from "components/pages/styles";
+import { LoadingSpinnerWrapper, Strong } from "components/style";
 import { truncateDecimals } from "helpers";
 import { useGlobals, useVotesContext } from "hooks";
 import type { NextPage } from "next";

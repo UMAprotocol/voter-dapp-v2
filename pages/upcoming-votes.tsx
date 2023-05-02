@@ -6,7 +6,7 @@ import {
   PageOuterWrapper,
   UpcomingVotes,
 } from "components";
-import { LoadingSpinnerWrapper } from "components/pages/styles";
+import { LoadingSpinnerWrapper } from "components/style";
 import { useVotesContext } from "hooks";
 import type { NextPage } from "next";
 import Image from "next/image";

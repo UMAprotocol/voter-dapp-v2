@@ -70,4 +70,4 @@ export { Wallet } from "./Wallet/Wallet";
 export { WalletIcon } from "./Wallet/WalletIcon";
 export { WalletSettings } from "./WalletSettings/WalletSettings";
 export { Wallets } from "./WalletSettings/Wallets";
-export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
+export { PageInnerWrapper, PageOuterWrapper } from "./style";
