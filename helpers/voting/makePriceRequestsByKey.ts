@@ -1,4 +1,4 @@
-import { BigNumber, utils } from "ethers";
+import { BigNumber } from "ethers";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
 import {
   PriceRequestByKeyT,
