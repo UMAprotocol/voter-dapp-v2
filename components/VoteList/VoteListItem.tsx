@@ -6,30 +6,9 @@ import {
   TextInput,
   Tooltip,
 } from "components";
-import {
-  green,
-  grey100,
-  isEarlyVote,
-  red500,
-  tabletAndUnder,
-  tabletMax,
-} from "constant";
-import { format } from "date-fns";
-import { enCA } from "date-fns/locale";
-import {
-  decodeHexString,
-  formatVoteStringWithPrecision,
-  getPrecisionForIdentifier,
-} from "helpers";
+import { green, grey100, red500, tabletAndUnder, tabletMax } from "constant";
 import { config } from "helpers/config";
-import {
-  useAccountDetails,
-  useAssertionClaim,
-  useDelegationContext,
-  useVotesContext,
-  useWalletContext,
-  useWindowSize,
-} from "hooks";
+import { useWindowSize, useVotesContext, useDelegationContext } from "hooks";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -40,81 +19,62 @@ import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
-export interface Props {
-  vote: VoteT;
-  phase: VotePhaseT;
-  selectedVote?: string | undefined;
-  selectVote?: (value: string | undefined) => void;
-  clearVote?: () => void;
-  activityStatus: ActivityStatusT | undefined;
-  moreDetailsAction: () => void;
-  setDirty?: (dirty: boolean) => void;
-  isDirty?: boolean;
-}
-export function VoteListItem({
-  vote,
-  phase,
-  selectedVote,
-  selectVote,
-  clearVote,
-  activityStatus,
-  moreDetailsAction,
-  setDirty,
-  isDirty = false,
-}: Props) {
+import { VoteListItemProps, useVoteListItem } from "./useVoteListItem";
+
+export function VoteListItem(delegatedProps: VoteListItemProps) {
   const { width } = useWindowSize();
-  const [isCustomInput, setIsCustomInput] = useState(false);
   const [wrapperWidth, setWrapperWidth] = useState(0);
-  const { address } = useAccountDetails();
-  const { signingKeys } = useWalletContext();
-  const hasSigningKey = !!address && !!signingKeys[address];
-  const {
-    decodedIdentifier,
-    title,
-    origin,
-    options,
-    isCommitted,
-    commitHash,
-    isRevealed,
-    revealHash,
-    decryptedVote,
-    correctVote,
-    resolvedPriceRequestIndex,
-    isV1,
-    isGovernance,
-    timeAsDate,
-    canReveal,
-    rollCount,
-    assertionChildChainId,
-    assertionId,
-  } = vote;
-  const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
-  const Icon = getVoteIcon();
-  const isTabletAndUnder = width && width <= tabletMax;
-  const isRolled = rollCount > 0;
-  const wrapperRef = useRef<HTMLTableRowElement>(null);
-  const existingVote = getDecryptedVoteAsFormattedString();
-  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const props = useVoteListItem(delegatedProps);
   const {
     decryptedVotesIsLoading,
     activeVotesIsLoading,
     upcomingVotesIsLoading,
   } = useVotesContext();
-  const { delegationStatus, isLoading: delegationDataLoading } =
-    useDelegationContext();
-  const isDelegate = delegationStatus === "delegate";
-  const isDelegator = delegationStatus === "delegator";
+  const { isLoading: delegationDataLoading } = useDelegationContext();
+  const {
+    hasSigningKey,
+    titleOrClaim,
+    isUpcoming,
+    isActive,
+    isPast,
+    isCommit,
+    isCommitted,
+    isReveal,
+    isRevealed,
+    isDelegator,
+    isDelegate,
+    isRolled,
+    isV1,
+    isCustomInput,
+    isDirty,
+    isGovernance,
+    showVoteInput,
+    showYourVote,
+    showCorrectVote,
+    showVoteStatus,
+    commitHash,
+    revealHash,
+    canReveal,
+    resolvedPriceRequestIndex,
+    decryptedVote,
+    decryptedVoteAsFormattedString,
+    options,
+    selectedVote,
+    existingOrSelectedVote,
+    formattedDate,
+    formattedCorrectVote,
+    formattedUserVote,
+    rollCount,
+    maxDecimals,
+    onMoreDetails,
+    onSelectVoteInDropdown,
+    onSelectVoteInTextInput,
+    exitCustomInput,
+  } = props;
 
-  useEffect(() => {
-    // if options exist but the existing decrypted vote is not one from the list,
-    // then we must be using a custom input
-    const decryptedVote = getDecryptedVoteAsFormattedString();
-    if (decryptedVote && !findVoteInOptionsDetectEarlyVote(decryptedVote)) {
-      setIsCustomInput(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [decryptedVote]);
+  const Icon = getVoteIcon();
+  const isTabletAndUnder = width && width <= tabletMax;
+  const wrapperRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
     if (wrapperRef.current) {
@@ -122,115 +82,8 @@ export function VoteListItem({
     }
   }, [width]);
 
-  useEffect(() => {
-    // Function returns true if the input exist and has changed from our committed value, false otherwise
-    function isDirtyCheck(): boolean {
-      if (phase !== "commit") return false;
-      if (!existingVote) return false;
-      // this happens if you clear the vote inputs, selected vote normally
-      // would be "" if editing. dirty = false if we clear inputs.
-      if (selectedVote === undefined) return false;
-      return selectedVote !== existingVote;
-    }
-    const dirty = isDirtyCheck();
-    if (setDirty && dirty !== isDirty) setDirty(dirty);
-  }, [selectedVote, setDirty, isDirty, existingVote, phase]);
-
-  function onSelectVote(option: DropdownItemT) {
-    if (option.value === "custom") {
-      selectVote?.("");
-      setIsCustomInput(true);
-    } else {
-      selectVote?.(option.value.toString());
-    }
-  }
-
-  function exitCustomInput() {
-    clearVote?.();
-    setIsCustomInput(false);
-  }
-
-  function getDecryptedVoteAsFormattedString() {
-    return decryptedVote?.price !== undefined
-      ? formatVoteStringWithPrecision(decryptedVote.price, decodedIdentifier)
-      : undefined;
-  }
-
-  function getDecryptedVoteAsString() {
-    return getDecryptedVoteAsFormattedString();
-  }
-
-  function showVoteInput() {
-    return activityStatus === "active" && phase === "commit";
-  }
-
-  function showYourVote() {
-    return (
-      (activityStatus === "active" && phase === "reveal") ||
-      activityStatus === "past"
-    );
-  }
-
-  function showCorrectVote() {
-    return activityStatus === "past" && correctVote !== undefined;
-  }
-
-  function showVoteStatus() {
-    return activityStatus === "active";
-  }
-
-  function getExistingOrSelectedVoteFromOptions() {
-    return options?.find((option) => {
-      const existingVote = getDecryptedVoteAsFormattedString();
-
-      // prefer showing the selected vote if it exists
-      if (selectedVote !== undefined) {
-        return option.value === selectedVote;
-      }
-
-      if (existingVote !== undefined) {
-        return option.value === existingVote;
-      }
-    });
-  }
-
-  function getYourVote() {
-    if (!decryptedVote && isCommitted) {
-      return "Unknown";
-    }
-    if (!decryptedVote) return "Did not vote";
-    return (
-      findVoteInOptionsDetectEarlyVote(getDecryptedVoteAsFormattedString())
-        ?.label ??
-      formatVoteStringWithPrecision(
-        decryptedVote?.price?.toString(),
-        decodedIdentifier
-      )
-    );
-  }
-
-  function getCorrectVote() {
-    if (correctVote === undefined || correctVote === null) return;
-    const formatted = formatVoteStringWithPrecision(
-      correctVote,
-      decodedIdentifier
-    );
-
-    return findVoteInOptionsDetectEarlyVote(formatted)?.label ?? formatted;
-  }
-
-  function findVoteInOptions(value: string | undefined) {
-    return options?.find((option) => {
-      return option.value === value;
-    });
-  }
-  function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
-    if (isEarlyVote(value)) return { label: "Early request" };
-    return findVoteInOptions(value);
-  }
-
   function getCommittedOrRevealed() {
-    if (phase === "commit") {
+    if (isCommit) {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
         if (isDelegator) {
@@ -275,7 +128,7 @@ export function VoteListItem({
   }
 
   function getDotColor() {
-    if (phase === "commit") {
+    if (isCommit) {
       return isCommitted ? green : red500;
     } else {
       return isRevealed ? green : red500;
@@ -283,7 +136,7 @@ export function VoteListItem({
   }
 
   function getBorderColor() {
-    if (activityStatus === "past" || phase === "reveal") return grey100;
+    if (isPast || isReveal) return grey100;
     return "transparent";
   }
 
@@ -313,20 +166,20 @@ export function VoteListItem({
       "--title-cell-width": `${0.6 * wrapperWidth}px`,
     };
 
-    if (activityStatus === "active") {
-      if (phase === "commit") return commitCellWidths;
-      if (phase === "reveal") return revealCellWidths;
+    if (isActive) {
+      if (isCommit) return commitCellWidths;
+      if (isReveal) return revealCellWidths;
     }
 
-    if (activityStatus === "upcoming") return upcomingCellWidths;
+    if (isUpcoming) return upcomingCellWidths;
 
-    if (activityStatus === "past") return pastCellWidths;
+    if (isPast) return pastCellWidths;
 
     return baseCellWidths;
   }
 
   function getRelevantTransactionLink(): ReactNode | string {
-    if (phase === "commit") {
+    if (isCommit) {
       return commitHash ? (
         <Link href={config.makeTransactionHashLink(commitHash)} target="_blank">
           {getCommittedOrRevealed()}
@@ -353,8 +206,6 @@ export function VoteListItem({
   } as CSSProperties;
 
   if (!width) return null;
-
-  const titleOrClaim = claim ? decodeHexString(claim) : title;
 
   return (
     <Wrapper
@@ -390,31 +241,25 @@ export function VoteListItem({
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
                   `| Vote #${resolvedPriceRequestIndex}`}{" "}
-                |{" "}
-                {format(timeAsDate, "Pp", {
-                  // en-CA is the only locale that uses the correct
-                  // format for the date
-                  // yyyy-mm-dd
-                  locale: enCA,
-                })}
+                | {formattedDate}
               </VoteOrigin>
             </VoteDetailsInnerWrapper>
           </VoteDetailsWrapper>
         </VoteTitleWrapper>
       </VoteTitleCell>
-      {showVoteInput() && selectVote ? (
+      {showVoteInput ? (
         <VoteInputCell as={isTabletAndUnder ? "div" : "td"}>
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
               items={options}
-              selected={getExistingOrSelectedVoteFromOptions()}
-              onSelect={onSelectVote}
+              selected={existingOrSelectedVote}
+              onSelect={onSelectVoteInDropdown}
             />
           ) : (
             <TextInput
-              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
-              onInput={selectVote}
+              value={selectedVote ?? decryptedVoteAsFormattedString ?? ""}
+              onInput={onSelectVoteInTextInput}
               onClear={isCustomInput ? exitCustomInput : undefined}
               maxDecimals={maxDecimals}
               type="number"
@@ -422,18 +267,19 @@ export function VoteListItem({
           )}
         </VoteInputCell>
       ) : null}
-      {showYourVote() ? (
+      {showYourVote ? (
         <YourVote as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Your vote</VoteLabel> <VoteText voteText={getYourVote()} />
+          <VoteLabel>Your vote</VoteLabel>{" "}
+          <VoteText voteText={formattedUserVote} />
         </YourVote>
       ) : null}
-      {showCorrectVote() ? (
+      {showCorrectVote ? (
         <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Correct vote</VoteLabel>{" "}
-          <VoteText voteText={getCorrectVote()} />
+          <VoteText voteText={formattedCorrectVote} />
         </CorrectVote>
       ) : null}
-      {showVoteStatus() ? (
+      {showVoteStatus ? (
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
@@ -463,7 +309,7 @@ export function VoteListItem({
       ) : null}
       <MoreDetailsCell as={isTabletAndUnder ? "div" : "td"}>
         <MoreDetails>
-          <Button label="More details" onClick={moreDetailsAction} />
+          <Button label="More details" onClick={onMoreDetails} />
         </MoreDetails>
       </MoreDetailsCell>
     </Wrapper>

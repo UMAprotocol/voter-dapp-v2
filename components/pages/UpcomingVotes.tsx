@@ -7,32 +7,29 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
+  useVoteList,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
-import { isUndefined } from "lodash";
+import { useVoteTimingContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
-  );
-  const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
+  const voteListProps = useVoteList("upcoming");
+  const { voteList, isLoading } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(voteList);
+  const hasUpcomingVotes = voteList.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
       <Banner>Upcoming Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {isUndefined(upcomingVoteList) ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -45,21 +42,7 @@ export function UpcomingVotes() {
                     timeRemaining={millisecondsUntilPhaseEnds}
                   />
                   <VotesTableWrapper>
-                    <VoteList
-                      headings={<VoteTableHeadings activityStatus="upcoming" />}
-                      rows={entriesToShow.map((vote) => (
-                        <VoteListItem
-                          phase={phase}
-                          vote={vote}
-                          selectedVote={undefined}
-                          selectVote={() => null}
-                          clearVote={() => null}
-                          activityStatus="upcoming"
-                          moreDetailsAction={() => openPanel("vote", vote)}
-                          key={vote.uniqueKey}
-                        />
-                      ))}
-                    />
+                    <VoteList votesToShow={entriesToShow} {...voteListProps} />
                   </VotesTableWrapper>
                   {showPagination && (
                     <PaginationWrapper>

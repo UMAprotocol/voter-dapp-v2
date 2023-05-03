@@ -6,49 +6,30 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
+  useVoteList,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
-import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const { pastVoteList } = useVotesContext();
-  const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    pastVoteList ?? []
-  );
+  const voteListProps = useVoteList("past");
+  const { voteList, isLoading } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(voteList);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {isUndefined(pastVoteList) ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
               <VotesTableWrapper>
-                <VoteList
-                  headings={<VoteTableHeadings activityStatus="past" />}
-                  rows={entriesToShow.map((vote) => (
-                    <VoteListItem
-                      phase={phase}
-                      vote={vote}
-                      selectedVote={undefined}
-                      selectVote={() => null}
-                      clearVote={() => null}
-                      activityStatus="past"
-                      moreDetailsAction={() => openPanel("vote", vote)}
-                      key={vote.uniqueKey}
-                    />
-                  ))}
-                />
+                <VoteList votesToShow={entriesToShow} {...voteListProps} />
               </VotesTableWrapper>
               {showPagination && (
                 <PaginationWrapper>

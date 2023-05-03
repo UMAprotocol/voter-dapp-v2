@@ -1,39 +1,29 @@
 import {
+  NextRoundStartsIn,
   Pagination,
   usePagination,
+  useVoteList,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
-  VoteTimeline,
 } from "components";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import { useVoteTimingContext } from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, activityStatus } = useVotesContext();
-  const { openPanel } = usePanelContext();
-  const { phase } = useVoteTimingContext();
-  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
-  );
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
+  const voteListProps = useVoteList("upcoming");
+  const { voteList } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(voteList);
 
   return (
     <>
       <Title>Upcoming votes:</Title>
-      {activityStatus === "upcoming" && <VoteTimeline />}
+      <NextRoundStartsIn
+        phase={phase}
+        timeRemaining={millisecondsUntilPhaseEnds}
+      />
       <VotesTableWrapper>
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="upcoming" />}
-          rows={entriesToShow.map((vote) => (
-            <VoteListItem
-              phase={phase}
-              vote={vote}
-              activityStatus="upcoming"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-            />
-          ))}
-        />
+        <VoteList votesToShow={entriesToShow} {...voteListProps} />
       </VotesTableWrapper>
       {showPagination && (
         <PaginationWrapper>
