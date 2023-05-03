@@ -10,7 +10,7 @@ export function VoteTimeline() {
 
   const status = getActivityStatus();
 
-  if (status === "active") return null;
+  if (status !== "active") return null;
 
   return (
     <Wrapper>

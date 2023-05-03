@@ -40,9 +40,9 @@ const HomePage: NextPage = () => {
           ) : (
             <>
               {hasActiveVotes && <ActiveVotes />}
-              {hasUpcomingVotes && <UpcomingVotes />}
+              {hasUpcomingVotes && <UpcomingVotes isHomePage={true} />}
               {/* There will always be past votes, so no need to check if they exist */}
-              <PastVotes />
+              <PastVotes isHomePage={true} />
             </>
           )}
         </PageInnerWrapper>
