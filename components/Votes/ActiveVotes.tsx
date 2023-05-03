@@ -320,8 +320,8 @@ export function ActiveVotes() {
           headings={<VoteTableHeadings activityStatus="active" />}
           rows={entriesToShow.map((vote, index) => (
             <VoteListItem
-              phase={phase}
               vote={vote}
+              phase={phase}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={(value) => selectVote(value, vote)}
               clearVote={() => clearSelectedVote(vote)}

@@ -1,6 +1,8 @@
 export const isExternalLink = (href: string) => !href.startsWith("/");
+import { enCA } from "date-fns/locale";
 import { chainConstantsList, config } from "helpers/config";
 import { isUndefined } from "lodash";
+import { format } from "date-fns";
 
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -65,4 +67,13 @@ export function makeBlockExplorerLink(
 
 export function isAnyUndefined<Item>(...items: (Item | undefined)[]) {
   return items.some(isUndefined);
+}
+
+export function formatDate(date: Date) {
+  return format(date, "Pp", {
+    // en-CA is the only locale that uses the correct
+    // format for the date
+    // yyyy-mm-dd
+    locale: enCA,
+  });
 }

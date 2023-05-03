@@ -1,8 +1,8 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { supportedChains } from "constant";
 import { BigNumber } from "ethers";
-import { DropdownItemT, LinkT, UserVoteDataT } from "types";
 import * as ss from "superstruct";
+import { DropdownItemT, LinkT, UserVoteDataT } from "types";
 
 export type UniqueKeyT = string;
 
@@ -317,3 +317,12 @@ export const L1Request = ss.object({
   identifier: ss.string(),
 });
 export type L1Request = ss.Infer<typeof L1Request>;
+
+export type ActionStatus = {
+  tooltip?: string;
+  label: string;
+  infoText?: { label: string; tooltip: string };
+  onClick: () => void;
+  disabled?: boolean;
+  hidden?: boolean;
+};

@@ -31,7 +31,7 @@ const Template: Story = {
   render: function Wrapper(args) {
     const mockVoteContextState: VotesContextState = {
       ...defaultVotesContextState,
-      pastVotesList: args.votes ?? [],
+      pastVoteList: args.votes ?? [],
     };
 
     return (
