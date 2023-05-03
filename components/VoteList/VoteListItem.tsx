@@ -34,6 +34,7 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
   const {
     hasSigningKey,
     titleOrClaim,
+    origin,
     isUpcoming,
     isActive,
     isPast,
