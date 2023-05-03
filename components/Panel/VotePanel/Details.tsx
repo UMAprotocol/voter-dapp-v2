@@ -13,7 +13,6 @@ import {
   truncateEthAddress,
 } from "helpers";
 import { config } from "helpers/config";
-import { useAssertionClaim } from "hooks";
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -44,18 +43,18 @@ export function Details({
   augmentedData,
   assertionChildChainId,
   assertionAsserter,
-  assertionId,
-}: VoteT) {
+  claim,
+}: VoteT & { claim: string | undefined }) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
   const [showRawClaimData, setShowRawClaimData] = useState(false);
-
+  const isClaim = !!claim;
+  const showAncillaryData = !isClaim;
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
   }
 
-  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   function toggleShowRawAncillaryData() {
     setShowRawAncillaryData(!showRawAncillaryData);
   }
@@ -132,7 +131,7 @@ export function Details({
         </Text>
         <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
       </SectionWrapper>
-      {!!claim && (
+      {isClaim && (
         <SectionWrapper>
           <PanelSectionTitle>
             <IconWrapper>
@@ -148,28 +147,30 @@ export function Details({
           </DecodedTextAsMarkdown>
         </SectionWrapper>
       )}
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <AncillaryDataIcon />
-          </IconWrapper>{" "}
-          Decoded ancillary data{" "}
-          <ToggleText onClick={toggleShowRawAncillaryData}>
-            (view {showRawAncillaryData ? "decoded" : "raw"})
-          </ToggleText>
-        </PanelSectionTitle>
-        <Text>
-          {showRawAncillaryData ? (
-            <>{ancillaryData}</>
-          ) : (
-            <>
-              {decodedAncillaryData === ""
-                ? "The ancillary data for this request is blank."
-                : decodedAncillaryData}
-            </>
-          )}
-        </Text>
-      </SectionWrapper>
+      {showAncillaryData && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <AncillaryDataIcon />
+            </IconWrapper>{" "}
+            Decoded ancillary data{" "}
+            <ToggleText onClick={toggleShowRawAncillaryData}>
+              (view {showRawAncillaryData ? "decoded" : "raw"})
+            </ToggleText>
+          </PanelSectionTitle>
+          <Text>
+            {showRawAncillaryData ? (
+              <>{ancillaryData}</>
+            ) : (
+              <>
+                {decodedAncillaryData === ""
+                  ? "The ancillary data for this request is blank."
+                  : decodedAncillaryData}
+              </>
+            )}
+          </Text>
+        </SectionWrapper>
+      )}
       {decodedAdminTransactions?.transactions ? (
         <SectionWrapper>
           <PanelSectionTitle>
