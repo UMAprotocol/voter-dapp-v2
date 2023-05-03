@@ -1,9 +1,12 @@
 import { isEarlyVote } from "constant";
 import {
+  decodeHexString,
   formatDate,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
+import { useAssertionClaim } from "hooks";
+import { title } from "process";
 import { useCallback, useEffect, useState } from "react";
 import { DropdownItemT, VoteT } from "types";
 import { VoteListProps } from "./useVoteList";
@@ -70,8 +73,12 @@ export function useVoteListItem(props: VoteListItemProps) {
     isV1,
     timeAsDate,
     rollCount,
+    assertionChildChainId,
+    assertionId,
   } = vote;
 
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const titleOrClaim = claim ? decodeHexString(claim) : title;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const decryptedVoteAsFormattedString =
     decryptedVote?.price !== undefined
@@ -189,16 +196,14 @@ export function useVoteListItem(props: VoteListItemProps) {
   return {
     ...props,
     ...vote,
+    titleOrClaim,
     options,
-    isActive,
-    isPast,
-    isCommit,
-    isReveal,
     isCustomInput,
     isDirty,
     voteNumber,
     maxDecimals,
     selectedVote,
+    resolvedPriceRequestIndex,
     existingOrSelectedVote,
     formattedDate,
     formattedCorrectVote,
@@ -210,6 +215,9 @@ export function useVoteListItem(props: VoteListItemProps) {
     showCorrectVote,
     showVoteStatus,
     showDropdown,
+    isRolled,
+    rollCount,
+    isV1,
     onMoreDetails,
     onSelectVoteInTextInput,
     onSelectVoteInDropdown,

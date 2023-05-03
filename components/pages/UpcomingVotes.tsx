@@ -7,34 +7,29 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
+  useVoteList,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import { useVoteTimingContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
-  const {
-    upcomingVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const voteListProps = useVoteList("upcoming");
+  const { voteList, isLoading } = voteListProps;
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVoteList);
-  const hasUpcomingVotes = upcomingVoteList.length > 0;
+    usePagination(voteList);
+  const hasUpcomingVotes = voteList.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
       <Banner>Upcoming Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -47,22 +42,7 @@ export function UpcomingVotes() {
                     timeRemaining={millisecondsUntilPhaseEnds}
                   />
                   <VotesTableWrapper>
-                    <VoteList
-                      headings={<VoteTableHeadings activityStatus="upcoming" />}
-                      rows={entriesToShow.map((vote) => (
-                        <VoteListItem
-                          vote={vote}
-                          phase={phase}
-                          selectedVote={undefined}
-                          selectVote={() => null}
-                          clearVote={() => null}
-                          activityStatus="upcoming"
-                          moreDetailsAction={() => openPanel("vote", vote)}
-                          key={vote.uniqueKey}
-                          isFetching={getUserDependentIsFetching()}
-                        />
-                      ))}
-                    />
+                    <VoteList votesToShow={entriesToShow} {...voteListProps} />
                   </VotesTableWrapper>
                   {showPagination && (
                     <PaginationWrapper>

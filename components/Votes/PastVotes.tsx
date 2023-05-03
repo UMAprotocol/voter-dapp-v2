@@ -1,5 +1,4 @@
-import { Button, VoteList, VoteListItem, VoteTableHeadings } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import { Button, VoteList, useVoteList } from "components";
 import { CSSProperties } from "react";
 import {
   ButtonInnerWrapper,
@@ -9,9 +8,8 @@ import {
 } from "./style";
 
 export function PastVotes() {
-  const { pastVoteList, getUserDependentIsFetching } = useVotesContext();
-  const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const voteListProps = useVoteList("past");
+  const { voteList } = voteListProps;
 
   return (
     <>
@@ -23,19 +21,7 @@ export function PastVotes() {
           } as CSSProperties
         }
       >
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="past" />}
-          rows={pastVoteList.slice(0, 5).map((vote) => (
-            <VoteListItem
-              vote={vote}
-              phase={phase}
-              activityStatus="past"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-              isFetching={getUserDependentIsFetching()}
-            />
-          ))}
-        />
+        <VoteList votesToShow={voteList.slice(0, 5)} {...voteListProps} />
       </VotesTableWrapper>
       <ButtonOuterWrapper>
         <ButtonInnerWrapper>

@@ -32,6 +32,7 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     upcomingVoteList,
     pastVoteList,
     getUserDependentIsFetching,
+    getUserIndependentIsLoading,
   } = useVotesContext();
   const voteListsForStatus = {
     active: activeVoteList,
@@ -64,12 +65,14 @@ export function useVoteList(activityStatus: ActivityStatusT) {
   const isReveal = phase === "reveal";
   const hasStaked = stakedBalance?.gt(0) ?? false;
   const hasSigner = !!signer;
+  const isUpcoming = activityStatus === "upcoming";
   const isActive = activityStatus === "active";
   const isPast = activityStatus === "past";
   const votesToReveal = activeVoteList.filter(
     ({ isCommitted, decryptedVote, isRevealed, canReveal }) =>
       isCommitted && !!decryptedVote && isRevealed === false && canReveal
   );
+  const isLoading = getUserIndependentIsLoading();
   const isFetching =
     getUserDependentIsFetching() || isCommittingVotes || isRevealingVotes;
 
@@ -337,13 +340,19 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     activityStatus,
     actionStatus,
     delegationStatus,
+    isDelegate,
+    isDelegator,
     isCommit,
     isReveal,
+    canCommit,
+    canReveal,
+    isUpcoming,
     isActive,
     isPast,
     voteList,
     selectedVotes,
     isAnyDirty,
+    isLoading,
     isFetching,
     hasSigningKey,
     selectVote,

@@ -6,52 +6,30 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
+  useVoteList,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const {
-    pastVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
-  const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const voteListProps = useVoteList("past");
+  const { voteList, isLoading } = voteListProps;
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVoteList);
+    usePagination(voteList);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
           ) : (
             <>
               <VotesTableWrapper>
-                <VoteList
-                  headings={<VoteTableHeadings activityStatus="past" />}
-                  rows={entriesToShow.map((vote) => (
-                    <VoteListItem
-                      vote={vote}
-                      phase={phase}
-                      selectedVote={undefined}
-                      selectVote={() => null}
-                      clearVote={() => null}
-                      activityStatus="past"
-                      moreDetailsAction={() => openPanel("vote", vote)}
-                      key={vote.uniqueKey}
-                      isFetching={getUserDependentIsFetching()}
-                    />
-                  ))}
-                />
+                <VoteList votesToShow={entriesToShow} {...voteListProps} />
               </VotesTableWrapper>
               {showPagination && (
                 <PaginationWrapper>
