@@ -92,9 +92,9 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     ).length > 0;
   const requiredForBothCommitAndReveal =
     !!address &&
-    !!signingKey &&
     !!votingWriter &&
     correctChainConnected &&
+    hasSigningKey &&
     hasSigner &&
     hasStaked &&
     !isSigning &&
