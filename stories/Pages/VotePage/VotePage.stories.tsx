@@ -53,9 +53,9 @@ const Template: Story = {
 
     const mockVotesContextState: VotesContextState = {
       ...defaultVotesContextState,
-      activeVotesList: args.activeVotes ?? [],
-      upcomingVotesList: args.upcomingVotes ?? [],
-      pastVotesList: args.pastVotes ?? [],
+      activeVoteList: args.activeVotes ?? [],
+      upcomingVoteList: args.upcomingVotes ?? [],
+      pastVoteList: args.pastVotes ?? [],
       getActivityStatus: () => args.activityStatus ?? "past",
     };
 

@@ -6,7 +6,7 @@ interface Props {
   headings: JSX.Element;
   rows: JSX.Element[];
 }
-export function VotesList({ headings, rows }: Props) {
+export function VoteList({ headings, rows }: Props) {
   const { width } = useWindowSize();
 
   if (!width) return null;

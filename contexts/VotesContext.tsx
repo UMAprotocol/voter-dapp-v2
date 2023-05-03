@@ -18,7 +18,7 @@ import {
   useUserVotingAndStakingDetails,
   useVoteTimingContext,
 } from "hooks";
-import { createContext, ReactNode, useState } from "react";
+import { ReactNode, createContext, useState } from "react";
 import {
   ActivityStatusT,
   ContentfulDataByKeyT,
@@ -32,12 +32,12 @@ import {
 export interface VotesContextState {
   hasActiveVotes: boolean | undefined;
   activeVotesByKey: PriceRequestByKeyT;
-  activeVotesList: VoteT[];
+  activeVoteList: VoteT[];
   hasUpcomingVotes: boolean | undefined;
   upcomingVotesByKey: PriceRequestByKeyT;
-  upcomingVotesList: VoteT[];
+  upcomingVoteList: VoteT[];
   pastVotesByKey: PriceRequestByKeyT;
-  pastVotesList: VoteT[];
+  pastVoteList: VoteT[];
   pastVotesV2List: VoteT[];
   committedVotes: VoteExistsByKeyT;
   revealedVotes: VoteExistsByKeyT;
@@ -57,12 +57,12 @@ export interface VotesContextState {
 export const defaultVotesContextState: VotesContextState = {
   hasActiveVotes: undefined,
   activeVotesByKey: {},
-  activeVotesList: [],
+  activeVoteList: [],
   hasUpcomingVotes: undefined,
   upcomingVotesByKey: {},
-  upcomingVotesList: [],
+  upcomingVoteList: [],
   pastVotesByKey: {},
-  pastVotesList: [],
+  pastVoteList: [],
   pastVotesV2List: [],
   committedVotes: {},
   revealedVotes: {},
@@ -269,25 +269,22 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  const activeVotesList = getVotesWithData(activeVotesByKey, decryptedVotes);
-  const upcomingVotesList = getVotesWithData(
-    upcomingVotesByKey,
-    decryptedVotes
-  );
-  const pastVotesList = getVotesWithData(pastVotesByKey, decryptedVotes);
-  const pastVotesV2List = pastVotesList.filter((vote) => !vote.isV1);
+  const activeVoteList = getVotesWithData(activeVotesByKey, decryptedVotes);
+  const upcomingVoteList = getVotesWithData(upcomingVotesByKey, decryptedVotes);
+  const pastVoteList = getVotesWithData(pastVotesByKey, decryptedVotes);
+  const pastVotesV2List = pastVoteList.filter((vote) => !vote.isV1);
 
   return (
     <VotesContext.Provider
       value={{
         hasActiveVotes,
         activeVotesByKey,
-        activeVotesList,
+        activeVoteList,
         hasUpcomingVotes,
         upcomingVotesByKey,
-        upcomingVotesList,
+        upcomingVoteList,
         pastVotesByKey,
-        pastVotesList,
+        pastVoteList,
         pastVotesV2List,
         committedVotes,
         revealedVotes,
