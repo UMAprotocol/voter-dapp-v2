@@ -37,9 +37,14 @@ export function VotePanel({ content }: Props) {
 
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
-  const titleToShow = claim
+  const titleOrClaimOrIdentifier = claim
     ? decodeHexString(claim)
     : title ?? decodedIdentifier;
+
+  const titleToShow =
+    titleOrClaimOrIdentifier.length > 100
+      ? titleOrClaimOrIdentifier.slice(0, 50) + "..."
+      : titleOrClaimOrIdentifier;
 
   function makeTabs() {
     const hasResults = Boolean(results?.length);
