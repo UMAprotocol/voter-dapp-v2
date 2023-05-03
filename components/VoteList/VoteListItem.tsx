@@ -46,7 +46,7 @@ export interface Props {
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
-export function VotesListItem({
+export function VoteListItem({
   vote,
   phase,
   selectedVote,

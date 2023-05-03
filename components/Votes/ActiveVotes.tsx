@@ -5,9 +5,9 @@ import {
   Pagination,
   Tooltip,
   usePagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
   VoteTimeline,
 } from "components";
 import { formatVotesToCommit } from "helpers";
@@ -40,7 +40,7 @@ import {
 } from "./style";
 
 export function ActiveVotes() {
-  const { activeVotesList, getUserDependentIsFetching } = useVotesContext();
+  const { activeVoteList, getUserDependentIsFetching } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
@@ -56,7 +56,7 @@ export function ActiveVotes() {
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(activeVotesList);
+    usePagination(activeVoteList);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -95,8 +95,8 @@ export function ActiveVotes() {
     const hasSigner = !!signer;
 
     const hasPreviouslyCommittedAll =
-      activeVotesList.filter((vote) => vote.decryptedVote).length ===
-      activeVotesList.length;
+      activeVoteList.filter((vote) => vote.decryptedVote).length ===
+      activeVoteList.length;
     // counting how many votes we have edited with committable values ( non empty )
     const selectedVotesCount = Object.values(selectedVotes).filter(
       (x) => x
@@ -111,7 +111,7 @@ export function ActiveVotes() {
     const hasVotesToReveal = getVotesToReveal().length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote =
-      activeVotesList.filter((vote) => {
+      activeVoteList.filter((vote) => {
         return (
           vote.commitHash &&
           !vote.decryptedVote &&
@@ -247,7 +247,7 @@ export function ActiveVotes() {
     if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
 
     const formattedVotes = await formatVotesToCommit({
-      votes: activeVotesList,
+      votes: activeVoteList,
       selectedVotes,
       roundId,
       address: delegatorAddress ? delegatorAddress : address,
@@ -276,7 +276,7 @@ export function ActiveVotes() {
   }
 
   function getVotesToReveal() {
-    return activeVotesList.filter(
+    return activeVoteList.filter(
       (vote) =>
         vote.isCommitted &&
         !!vote.decryptedVote &&
@@ -298,10 +298,10 @@ export function ActiveVotes() {
       <Title> Active votes: </Title>
       <VoteTimeline />
       <VotesTableWrapper>
-        <VotesList
-          headings={<VotesTableHeadings activityStatus="active" />}
+        <VoteList
+          headings={<VoteTableHeadings activityStatus="active" />}
           rows={entriesToShow.map((vote, index) => (
-            <VotesListItem
+            <VoteListItem
               vote={vote}
               phase={phase}
               selectedVote={selectedVotes[vote.uniqueKey]}

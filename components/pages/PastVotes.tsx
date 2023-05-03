@@ -5,9 +5,9 @@ import {
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
   usePagination,
 } from "components";
 import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
@@ -16,14 +16,14 @@ import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
   const {
-    pastVotesList,
+    pastVoteList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVotesList);
+    usePagination(pastVoteList);
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -36,10 +36,10 @@ export function PastVotes() {
           ) : (
             <>
               <VotesTableWrapper>
-                <VotesList
-                  headings={<VotesTableHeadings activityStatus="past" />}
+                <VoteList
+                  headings={<VoteTableHeadings activityStatus="past" />}
                   rows={entriesToShow.map((vote) => (
-                    <VotesListItem
+                    <VoteListItem
                       vote={vote}
                       phase={phase}
                       selectedVote={undefined}

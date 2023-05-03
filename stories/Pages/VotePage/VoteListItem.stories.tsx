@@ -1,7 +1,7 @@
 import { expect } from "@storybook/jest";
 import { Meta, StoryObj } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
-import { VotesList, VotesListItem, VotesTableHeadings } from "components";
+import { VoteList, VoteListItem, VoteTableHeadings } from "components";
 import { useState } from "react";
 import {
   defaultMockVote,
@@ -15,13 +15,13 @@ import {
 } from "stories/mocks/votes";
 
 const meta: Meta = {
-  title: "Pages/Vote Page/VotesListItem",
-  component: VotesListItem,
+  title: "Pages/Vote Page/VoteListItem",
+  component: VoteListItem,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof VotesListItem>;
+type Story = StoryObj<typeof VoteListItem>;
 
 const Template: Story = {
   render: function Wrapper(args) {
@@ -30,10 +30,10 @@ const Template: Story = {
     );
     return (
       <div style={{ maxWidth: "var(--page-width)" }}>
-        <VotesList
-          headings={<VotesTableHeadings {...args} />}
+        <VoteList
+          headings={<VoteTableHeadings {...args} />}
           rows={[
-            <VotesListItem
+            <VoteListItem
               {...args}
               key="only one here"
               selectedVote={selectedVote}
