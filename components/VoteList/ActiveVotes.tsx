@@ -1,13 +1,13 @@
 import { Pagination, VoteList, VoteTimeline, usePagination } from "components";
-import { ActionButtons } from "../VoteList/ActionButtons";
-import { useVoteList } from "../VoteList/useVoteList";
 import {
   Divider,
   PaginationWrapper,
   RecommittingVotesMessage,
   Title,
   VoteListWrapper,
-} from "./style";
+} from "../Votes/style";
+import { ActionButtons } from "./ActionButtons";
+import { useVoteList } from "./useVoteList";
 
 export function ActiveVotes() {
   const voteListProps = useVoteList("active");

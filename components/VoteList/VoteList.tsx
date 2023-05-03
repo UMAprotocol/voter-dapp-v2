@@ -1,4 +1,4 @@
-import { useVoteList } from "components/Votes/useVoteList";
+import { useVoteList } from "components/VoteList/useVoteList";
 import { tabletMax } from "constant";
 import { VoteT } from "types";
 import { useWindowSize } from "usehooks-ts";

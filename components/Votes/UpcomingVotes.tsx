@@ -5,6 +5,7 @@ import {
   VoteList,
   usePagination,
 } from "components";
+import { useVoteList } from "../VoteList/useVoteList";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
@@ -13,7 +14,6 @@ import {
   Title,
   VoteListWrapper,
 } from "./style";
-import { useVoteList } from "./useVoteList";
 
 interface Props {
   isHomePage?: boolean;

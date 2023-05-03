@@ -6,7 +6,7 @@ import {
   ButtonSpacer,
   InfoText,
   WarningIcon,
-} from "./style";
+} from "../Votes/style";
 
 interface Props {
   actionStatus: ActionStatus;

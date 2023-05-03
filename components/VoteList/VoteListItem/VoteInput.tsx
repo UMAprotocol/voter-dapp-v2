@@ -16,7 +16,7 @@ export function VoteInput({
 }: VoteListItemHookResult) {
   return (
     <>
-      {showDropdown ? (
+      {showDropdown && !!options ? (
         <Dropdown
           label="Choose answer"
           items={options}

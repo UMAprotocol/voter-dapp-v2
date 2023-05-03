@@ -60,6 +60,8 @@ export function useVoteList(activityStatus: ActivityStatusT) {
   const isReveal = phase === "reveal";
   const hasStaked = stakedBalance?.gt(0) ?? false;
   const hasSigner = !!signer;
+  const isActive = activityStatus === "active";
+  const isPast = activityStatus === "past";
   const votesToReveal = activeVoteList.filter(
     ({ isCommitted, decryptedVote, isRevealed, canReveal }) =>
       isCommitted && !!decryptedVote && isRevealed === false && canReveal
@@ -104,6 +106,139 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     requiredForBothCommitAndReveal && isCommit && hasVotesToCommit;
   const canReveal =
     requiredForBothCommitAndReveal && isReveal && hasVotesToReveal;
+  const actionStatus = calculateActionStatus();
+
+  function calculateActionStatus() {
+    const actionConfig: ActionStatus = {
+      hidden: true,
+      tooltip: undefined,
+      label: "",
+      infoText: undefined,
+      onClick: () => undefined,
+      disabled: true,
+    };
+
+    if (!hasSigner || !address) {
+      actionConfig.hidden = false;
+      actionConfig.disabled = false;
+      actionConfig.label = "Connect Wallet";
+      actionConfig.onClick = () => {
+        connect().catch(console.error);
+      };
+
+      if (isConnectingWallet) {
+        actionConfig.disabled = true;
+      }
+      return actionConfig;
+    }
+    if (!correctChainConnected) {
+      actionConfig.hidden = false;
+      actionConfig.disabled = false;
+      actionConfig.label = `Switch To ${config.properName}`;
+      actionConfig.onClick = () => setCorrectChain();
+
+      if (isSettingChain) {
+        actionConfig.disabled = true;
+      }
+      return actionConfig;
+    }
+
+    if (isCommit) {
+      actionConfig.label = "Commit";
+      actionConfig.hidden = false;
+      if (isEditingUnknownVote && (isDelegate || isDelegator)) {
+        const otherAccount = isDelegate ? "delegator" : "delegate";
+        actionConfig.infoText = {
+          label: `Editing ${otherAccount}'s vote.`,
+          tooltip: `Your ${otherAccount} has already committed a vote for you, there is no need to re-vote on this account. Only do this if you want to change the vote or change which account can reveal, otherwise you will waste gas.`,
+        };
+      }
+      if (isCommittingVotes) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "Committing votes in progress...";
+        return actionConfig;
+      }
+      if (isDelegate) {
+        if (!hasStaked) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "You cannot commit because your delegator has no UMA Staked.";
+          return actionConfig;
+        }
+      } else {
+        if (!hasStaked) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "You cannot commit because you have no UMA Staked.";
+          return actionConfig;
+        }
+      }
+      if (!hasSigningKey) {
+        actionConfig.label = "Sign";
+        actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
+        actionConfig.disabled = false;
+
+        if (isSigning) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "Confirm the request for a signature in your wallet software.";
+          return actionConfig;
+        }
+        return actionConfig;
+      }
+      if (!hasVotesToCommit) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip =
+          "You must enter your votes before you can continue.";
+        return actionConfig;
+      }
+      actionConfig.disabled = false;
+      actionConfig.onClick = () => {
+        commitVotes().catch(console.error);
+      };
+      return actionConfig;
+    }
+    if (isReveal) {
+      actionConfig.hidden = false;
+      actionConfig.label = "Reveal";
+      if (!hasSigningKey) {
+        actionConfig.label = "Sign";
+        actionConfig.onClick = () => sign();
+        actionConfig.infoText = {
+          label: "Why do I need to sign?",
+          tooltip:
+            "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
+        };
+        actionConfig.disabled = false;
+        if (isSigning) {
+          actionConfig.disabled = true;
+          actionConfig.tooltip =
+            "Confirm the request for a signature in your wallet software.";
+          return actionConfig;
+        }
+        return actionConfig;
+      }
+      if (isRevealingVotes) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "Revealing votes in progress...";
+        return actionConfig;
+      }
+      if (!hasVotesToReveal) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "You have no votes to reveal.";
+        return actionConfig;
+      }
+      actionConfig.disabled = false;
+      actionConfig.onClick = () => revealVotes();
+      return actionConfig;
+    }
+    return actionConfig;
+  }
 
   const commitVotes = useCallback(
     async function () {
@@ -153,164 +288,6 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     [canReveal, revealVotesMutation, votesToReveal, votingWriter]
   );
 
-  const calculateActionStatus = useCallback(
-    function () {
-      const actionConfig: ActionStatus = {
-        hidden: true,
-        tooltip: undefined,
-        label: "",
-        infoText: undefined,
-        onClick: () => undefined,
-        disabled: true,
-      };
-
-      if (!hasSigner || !address) {
-        actionConfig.hidden = false;
-        actionConfig.disabled = false;
-        actionConfig.label = "Connect Wallet";
-        actionConfig.onClick = () => {
-          connect().catch(console.error);
-        };
-
-        if (isConnectingWallet) {
-          actionConfig.disabled = true;
-        }
-        return actionConfig;
-      }
-      if (!correctChainConnected) {
-        actionConfig.hidden = false;
-        actionConfig.disabled = false;
-        actionConfig.label = `Switch To ${config.properName}`;
-        actionConfig.onClick = () => setCorrectChain();
-
-        if (isSettingChain) {
-          actionConfig.disabled = true;
-        }
-        return actionConfig;
-      }
-
-      if (isCommit) {
-        actionConfig.label = "Commit";
-        actionConfig.hidden = false;
-        if (isEditingUnknownVote && (isDelegate || isDelegator)) {
-          const otherAccount = isDelegate ? "delegator" : "delegate";
-          actionConfig.infoText = {
-            label: `Editing ${otherAccount}'s vote.`,
-            tooltip: `Your ${otherAccount} has already committed a vote for you, there is no need to re-vote on this account. Only do this if you want to change the vote or change which account can reveal, otherwise you will waste gas.`,
-          };
-        }
-        if (isCommittingVotes) {
-          actionConfig.disabled = true;
-          actionConfig.tooltip = "Committing votes in progress...";
-          return actionConfig;
-        }
-        if (isDelegate) {
-          if (!hasStaked) {
-            actionConfig.disabled = true;
-            actionConfig.tooltip =
-              "You cannot commit because your delegator has no UMA Staked.";
-            return actionConfig;
-          }
-        } else {
-          if (!hasStaked) {
-            actionConfig.disabled = true;
-            actionConfig.tooltip =
-              "You cannot commit because you have no UMA Staked.";
-            return actionConfig;
-          }
-        }
-        if (!hasSigningKey) {
-          actionConfig.label = "Sign";
-          actionConfig.onClick = () => sign();
-          actionConfig.infoText = {
-            label: "Why do I need to sign?",
-            tooltip:
-              "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
-          };
-          actionConfig.disabled = false;
-
-          if (isSigning) {
-            actionConfig.disabled = true;
-            actionConfig.tooltip =
-              "Confirm the request for a signature in your wallet software.";
-            return actionConfig;
-          }
-          return actionConfig;
-        }
-        if (!hasVotesToCommit) {
-          actionConfig.disabled = true;
-          actionConfig.tooltip =
-            "You must enter your votes before you can continue.";
-          return actionConfig;
-        }
-        actionConfig.disabled = false;
-        actionConfig.onClick = () => {
-          commitVotes().catch(console.error);
-        };
-        return actionConfig;
-      }
-      if (isReveal) {
-        actionConfig.hidden = false;
-        actionConfig.label = "Reveal";
-        if (!hasSigningKey) {
-          actionConfig.label = "Sign";
-          actionConfig.onClick = () => sign();
-          actionConfig.infoText = {
-            label: "Why do I need to sign?",
-            tooltip:
-              "UMA uses this signature to verify that you are the owner of this address. We must do this to prevent double voting.",
-          };
-          actionConfig.disabled = false;
-          if (isSigning) {
-            actionConfig.disabled = true;
-            actionConfig.tooltip =
-              "Confirm the request for a signature in your wallet software.";
-            return actionConfig;
-          }
-          return actionConfig;
-        }
-        if (isRevealingVotes) {
-          actionConfig.disabled = true;
-          actionConfig.tooltip = "Revealing votes in progress...";
-          return actionConfig;
-        }
-        if (!hasVotesToReveal) {
-          actionConfig.disabled = true;
-          actionConfig.tooltip = "You have no votes to reveal.";
-          return actionConfig;
-        }
-        actionConfig.disabled = false;
-        actionConfig.onClick = () => revealVotes();
-        return actionConfig;
-      }
-      return actionConfig;
-    },
-    [
-      address,
-      commitVotes,
-      connect,
-      correctChainConnected,
-      hasSigner,
-      hasSigningKey,
-      hasStaked,
-      hasVotesToCommit,
-      hasVotesToReveal,
-      isCommit,
-      isCommittingVotes,
-      isConnectingWallet,
-      isDelegate,
-      isDelegator,
-      isEditingUnknownVote,
-      isReveal,
-      isRevealingVotes,
-      isSettingChain,
-      isSigning,
-      revealVotes,
-      setCorrectChain,
-      sign,
-    ]
-  );
-
   const checkIfIsDirty = useCallback(
     function (uniqueKey: UniqueIdT) {
       return dirtyInputs[uniqueKey];
@@ -353,19 +330,23 @@ export function useVoteList(activityStatus: ActivityStatusT) {
 
   return {
     phase,
+    activityStatus,
+    actionStatus,
     delegationStatus,
+    isCommit,
+    isReveal,
+    isActive,
+    isPast,
     votesList,
     selectedVotes,
+    isAnyDirty,
+    isFetching,
+    hasSigningKey,
     selectVote,
     resetSelectedVotes,
     clearSelectedVote,
     moreDetailsAction,
     checkIfIsDirty,
-    isAnyDirty,
     setDirty,
-    isFetching,
-    activityStatus,
-    hasSigningKey,
-    actionStatus: calculateActionStatus(),
   };
 }

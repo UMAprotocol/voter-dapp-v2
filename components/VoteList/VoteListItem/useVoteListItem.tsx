@@ -48,15 +48,18 @@ export function useVoteListItem(props: VoteListItemProps) {
   const [isCustomInput, setIsCustomInput] = useState(false);
   const {
     vote,
-    phase,
+    isActive,
+    isPast,
+    isCommit,
+    isReveal,
     selectedVotes,
     selectVote,
     clearSelectedVote,
-    activityStatus,
-    moreDetailsAction,
     checkIfIsDirty,
     setDirty,
+    moreDetailsAction,
   } = props;
+
   const {
     decodedIdentifier,
     options,
@@ -68,10 +71,7 @@ export function useVoteListItem(props: VoteListItemProps) {
     timeAsDate,
     rollCount,
   } = vote;
-  const isActive = activityStatus === "active";
-  const isPast = activityStatus === "past";
-  const isReveal = phase === "reveal";
-  const isCommit = phase === "commit";
+
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const decryptedVoteAsFormattedString =
     decryptedVote?.price !== undefined
@@ -92,11 +92,12 @@ export function useVoteListItem(props: VoteListItemProps) {
     selectedVote,
     decryptedVoteAsFormattedString
   );
+  const isDirty = checkIfIsDirty(vote.uniqueKey);
 
   const showVoteInput = isActive && isCommit;
   const showYourVote = (isActive && isReveal) || isPast;
   const showCorrectVote = isPast && correctVote !== undefined;
-  const showDropdown = options !== undefined && !isCustomInput;
+  const showDropdown = !isCustomInput;
   const showVoteStatus = isActive;
   const showRolledVoteExplanation = isRolled && !isV1;
 
@@ -188,31 +189,31 @@ export function useVoteListItem(props: VoteListItemProps) {
   return {
     ...props,
     ...vote,
-    options: options ?? [],
-    isDirty: checkIfIsDirty(vote.uniqueKey),
+    options,
+    isActive,
+    isPast,
+    isCommit,
+    isReveal,
+    isCustomInput,
+    isDirty,
+    voteNumber,
+    maxDecimals,
+    selectedVote,
+    existingOrSelectedVote,
+    formattedDate,
+    formattedCorrectVote,
+    formattedUserVote,
+    decryptedVoteAsFormattedString,
     showRolledVoteExplanation,
     showVoteInput,
     showYourVote,
     showCorrectVote,
     showVoteStatus,
     showDropdown,
-    voteNumber,
-    formattedDate,
-    formattedCorrectVote,
-    formattedUserVote,
     onMoreDetails,
-    selectedVote,
-    decryptedVoteAsFormattedString,
-    existingOrSelectedVote,
     onSelectVoteInTextInput,
     onSelectVoteInDropdown,
-    isCustomInput,
     exitCustomInput,
-    maxDecimals,
-    isActive,
-    isPast,
-    isCommit,
-    isReveal,
   };
 }
 
