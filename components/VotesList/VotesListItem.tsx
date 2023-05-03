@@ -16,14 +16,16 @@ import {
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import {
+  decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
 } from "helpers";
 import { config } from "helpers/config";
-import { useWindowSize, useUserContext } from "hooks";
+import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
+import OSnap from "public/assets/icons/osnap.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
@@ -78,6 +80,8 @@ export function VotesListItem({
     timeAsDate,
     canReveal,
     rollCount,
+    assertionChildChainId,
+    assertionId,
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
@@ -85,6 +89,7 @@ export function VotesListItem({
   const isRolled = rollCount > 0;
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
@@ -248,6 +253,7 @@ export function VotesListItem({
 
   function getVoteIcon() {
     if (origin === "Polymarket") return PolymarketIcon;
+    if (origin === "OSnap") return OsnapIcon;
     if (origin === "Across") return AcrossIcon;
     if (origin === "UMA" && isGovernance) return UMAGovernanceIcon;
     return UMAIcon;
@@ -333,6 +339,8 @@ export function VotesListItem({
 
   if (!width) return null;
 
+  const titleOrClaim = claim ? decodeHexString(claim) : title;
+
   return (
     <Wrapper
       as={isTabletAndUnder ? "div" : "tr"}
@@ -345,7 +353,7 @@ export function VotesListItem({
             <Icon />
           </VoteIconWrapper>
           <VoteDetailsWrapper>
-            <VoteTitle>{title}</VoteTitle>
+            <VoteTitle>{titleOrClaim}</VoteTitle>
             <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -636,6 +644,8 @@ const UMAGovernanceIcon = styled(UMAGovernance)``;
 const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
+
+const OsnapIcon = styled(OSnap)``;
 
 const DotIcon = styled(Dot)`
   circle {

@@ -1,5 +1,6 @@
 import { Tabs } from "components";
-import { useVoteDiscussion } from "hooks";
+import { decodeHexString } from "helpers";
+import { useAssertionClaim, useVoteDiscussion } from "hooks";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -23,6 +24,8 @@ export function VotePanel({ content }: Props) {
     results,
     isGovernance,
     options,
+    assertionChildChainId,
+    assertionId,
   } = content;
 
   const { data: discussion, isFetching: discussionLoading } = useVoteDiscussion(
@@ -32,13 +35,24 @@ export function VotePanel({ content }: Props) {
     }
   );
 
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+
+  const titleOrClaimOrIdentifier = claim
+    ? decodeHexString(claim)
+    : title ?? decodedIdentifier;
+
+  const titleToShow =
+    titleOrClaimOrIdentifier.length > 100
+      ? titleOrClaimOrIdentifier.slice(0, 50) + "..."
+      : titleOrClaimOrIdentifier;
+
   function makeTabs() {
     const hasResults = Boolean(results?.length);
 
     const tabs = [
       {
         title: "Details",
-        content: <Details {...content} />,
+        content: <Details {...content} claim={claim} />,
       },
       {
         title: "Discussion",
@@ -72,7 +86,7 @@ export function VotePanel({ content }: Props) {
   return (
     <PanelWrapper>
       <PanelTitle
-        title={title ?? decodedIdentifier}
+        title={titleToShow}
         origin={origin}
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}

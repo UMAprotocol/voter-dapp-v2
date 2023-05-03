@@ -1,15 +1,18 @@
 import { Button, PanelErrorBanner } from "components";
 import {
+  getOracleTypeDisplayName,
   mobileAndUnder,
   supportedChains,
-  getOracleTypeDisplayName,
 } from "constant";
 import {
+  decodeHexString,
   formatNumberForDisplay,
+  makeBlockExplorerLink,
   makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
 } from "helpers";
+import { config } from "helpers/config";
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -21,11 +24,10 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { LinkT, VoteT } from "types";
+import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
-import { config } from "helpers/config";
 
 export function Details({
   decodedIdentifier,
@@ -39,17 +41,25 @@ export function Details({
   decodedAdminTransactions,
   umipOrUppLink,
   augmentedData,
-}: VoteT) {
+  assertionChildChainId,
+  assertionAsserter,
+  claim,
+}: VoteT & { claim: string | undefined }) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
-
+  const [showRawClaimData, setShowRawClaimData] = useState(false);
+  const isClaim = !!claim;
+  const showAncillaryData = !isClaim;
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
   }
 
   function toggleShowRawAncillaryData() {
     setShowRawAncillaryData(!showRawAncillaryData);
+  }
+  function toggleShowRawClaimData() {
+    setShowRawClaimData(!showRawClaimData);
   }
 
   function makeOoRequestLink() {
@@ -61,8 +71,22 @@ export function Details({
     };
   }
 
+  function makeAsserterLink() {
+    if (!assertionAsserter || !assertionChildChainId) return;
+
+    return {
+      label: "Asserter",
+      href: makeBlockExplorerLink(
+        assertionAsserter,
+        assertionChildChainId,
+        "address"
+      ),
+    };
+  }
+
   const optionLabels = options?.map(({ label }) => label);
   const links = [
+    makeAsserterLink(),
     umipOrUppLink,
     augmentedData?.l1RequestTxHash &&
     augmentedData?.l1RequestTxHash !== "rolled"
@@ -86,7 +110,7 @@ export function Details({
         )
       : undefined,
     makeOoRequestLink(),
-  ].filter((link): link is LinkT => !!link);
+  ].filter(Boolean);
 
   return (
     <Wrapper>
@@ -105,38 +129,48 @@ export function Details({
           <Strong>Identifier: </Strong>
           {decodedIdentifier}
         </Text>
-        <Text as="div">
-          <ReactMarkdown
-            components={{
-              a: (props) => <A {...props} target="_blank" />,
-            }}
-          >
-            {description}
-          </ReactMarkdown>
-        </Text>
+        <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
       </SectionWrapper>
-      <SectionWrapper>
-        <PanelSectionTitle>
-          <IconWrapper>
-            <AncillaryDataIcon />
-          </IconWrapper>{" "}
-          Decoded ancillary data{" "}
-          <ToggleText onClick={toggleShowRawAncillaryData}>
-            (view {showRawAncillaryData ? "decoded" : "raw"})
-          </ToggleText>
-        </PanelSectionTitle>
-        <Text>
-          {showRawAncillaryData ? (
-            <>{ancillaryData}</>
-          ) : (
-            <>
-              {decodedAncillaryData === ""
-                ? "The ancillary data for this request is blank."
-                : decodedAncillaryData}
-            </>
-          )}
-        </Text>
-      </SectionWrapper>
+      {isClaim && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <AncillaryDataIcon />
+            </IconWrapper>{" "}
+            Assertion Claim{" "}
+            <ToggleText onClick={toggleShowRawClaimData}>
+              (view {showRawClaimData ? "decoded" : "raw"})
+            </ToggleText>
+          </PanelSectionTitle>
+          <DecodedTextAsMarkdown>
+            {showRawClaimData ? claim : decodeHexString(claim)}
+          </DecodedTextAsMarkdown>
+        </SectionWrapper>
+      )}
+      {showAncillaryData && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <AncillaryDataIcon />
+            </IconWrapper>{" "}
+            Decoded ancillary data{" "}
+            <ToggleText onClick={toggleShowRawAncillaryData}>
+              (view {showRawAncillaryData ? "decoded" : "raw"})
+            </ToggleText>
+          </PanelSectionTitle>
+          <Text>
+            {showRawAncillaryData ? (
+              <>{ancillaryData}</>
+            ) : (
+              <>
+                {decodedAncillaryData === ""
+                  ? "The ancillary data for this request is blank."
+                  : decodedAncillaryData}
+              </>
+            )}
+          </Text>
+        </SectionWrapper>
+      )}
       {decodedAdminTransactions?.transactions ? (
         <SectionWrapper>
           <PanelSectionTitle>
@@ -252,6 +286,20 @@ export function Details({
         <PanelErrorBanner errorOrigin="vote" />
       </DiscordLinkWrapper>
     </Wrapper>
+  );
+}
+
+function DecodedTextAsMarkdown({ children }: { children: string }) {
+  return (
+    <Text as="div">
+      <ReactMarkdown
+        components={{
+          a: (props) => <A {...props} target="_blank" />,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </Text>
   );
 }
 
