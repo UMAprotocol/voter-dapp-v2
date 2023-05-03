@@ -74,29 +74,6 @@ function formatPriceRequest(
     : priceRequest.isGovernance;
   const rollCount = priceRequest.rollCount || 0;
   const resolvedPriceRequestIndex = priceRequest.resolvedPriceRequestIndex;
-  const isAssertion = ["assertionId:", "ooAsserter:", "childChainId:"].every(
-    (lookup) => decodedAncillaryData.includes(lookup)
-  );
-  const assertion: {
-    isAssertion: boolean;
-    assertionId?: string;
-    assertionAsserter?: string;
-    assertionChildChainId?: number;
-  } = {
-    isAssertion,
-  };
-  if (isAssertion) {
-    const regex = /assertionId:(\w+),ooAsserter:(\w+),childChainId:(\d+)/;
-    const match = decodedAncillaryData.match(regex);
-    if (!!match) {
-      const [, assertionId, ooAsserter, childChainId] = match;
-      if (!!assertionId) assertion.assertionId = `0x${assertionId}`;
-      if (typeof ooAsserter === "string")
-        assertion.assertionAsserter = utils.getAddress(`0x${ooAsserter}`);
-      if (!!childChainId)
-        assertion.assertionChildChainId = Number(childChainId);
-    }
-  }
 
   return {
     time,
@@ -115,6 +92,5 @@ function formatPriceRequest(
     isGovernance,
     rollCount,
     revealedVoteByAddress,
-    ...assertion,
   };
 }

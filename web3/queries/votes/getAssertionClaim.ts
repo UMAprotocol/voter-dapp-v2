@@ -1,7 +1,7 @@
-import { OptimisticOracleV3Interface } from "@uma/contracts-frontend/dist/typechain/core/ethers";
+import { OptimisticOracleV3InterfaceEthers } from "@uma/contracts-frontend";
 
 export async function getAssertionMadeEvents(
-  instance: OptimisticOracleV3Interface,
+  instance: OptimisticOracleV3InterfaceEthers,
   assertionId: string
 ) {
   const filter = instance.filters.AssertionMade(assertionId);
@@ -9,7 +9,7 @@ export async function getAssertionMadeEvents(
 }
 
 export async function getAssertionClaim(
-  instance: OptimisticOracleV3Interface,
+  instance: OptimisticOracleV3InterfaceEthers,
   assertionId: string
 ) {
   const events = await getAssertionMadeEvents(instance, assertionId);

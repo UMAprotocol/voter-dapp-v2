@@ -1,15 +1,19 @@
 import { Button, PanelErrorBanner } from "components";
 import {
+  getOracleTypeDisplayName,
   mobileAndUnder,
   supportedChains,
-  getOracleTypeDisplayName,
 } from "constant";
 import {
+  decodeHexString,
   formatNumberForDisplay,
+  makeBlockExplorerLink,
   makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
 } from "helpers";
+import { config } from "helpers/config";
+import { useAssertionClaim } from "hooks";
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -21,13 +25,10 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { LinkT, VoteT } from "types";
+import { VoteT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
-import { config } from "helpers/config";
-import { useAssertionClaim } from "hooks/queries/votes/useAssertionClaims";
-import { decodeHexString } from "helpers";
 
 export function Details({
   decodedIdentifier,
@@ -42,6 +43,7 @@ export function Details({
   umipOrUppLink,
   augmentedData,
   assertionChildChainId,
+  assertionAsserter,
   assertionId,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
@@ -70,8 +72,22 @@ export function Details({
     };
   }
 
+  function makeAsserterLink() {
+    if (!assertionAsserter || !assertionChildChainId) return;
+
+    return {
+      label: "Asserter",
+      href: makeBlockExplorerLink(
+        assertionAsserter,
+        assertionChildChainId,
+        "address"
+      ),
+    };
+  }
+
   const optionLabels = options?.map(({ label }) => label);
   const links = [
+    makeAsserterLink(),
     umipOrUppLink,
     augmentedData?.l1RequestTxHash &&
     augmentedData?.l1RequestTxHash !== "rolled"
@@ -95,7 +111,7 @@ export function Details({
         )
       : undefined,
     makeOoRequestLink(),
-  ].filter((link): link is LinkT => !!link);
+  ].filter(Boolean);
 
   return (
     <Wrapper>
@@ -114,15 +130,7 @@ export function Details({
           <Strong>Identifier: </Strong>
           {decodedIdentifier}
         </Text>
-        <Text as="div">
-          <ReactMarkdown
-            components={{
-              a: (props) => <A {...props} target="_blank" />,
-            }}
-          >
-            {description}
-          </ReactMarkdown>
-        </Text>
+        <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
       </SectionWrapper>
       {!!claim && (
         <SectionWrapper>
@@ -135,9 +143,9 @@ export function Details({
               (view {showRawClaimData ? "decoded" : "raw"})
             </ToggleText>
           </PanelSectionTitle>
-          <Text as="div">
+          <DecodedTextAsMarkdown>
             {showRawClaimData ? claim : decodeHexString(claim)}
-          </Text>
+          </DecodedTextAsMarkdown>
         </SectionWrapper>
       )}
       <SectionWrapper>
@@ -277,6 +285,20 @@ export function Details({
         <PanelErrorBanner errorOrigin="vote" />
       </DiscordLinkWrapper>
     </Wrapper>
+  );
+}
+
+function DecodedTextAsMarkdown({ children }: { children: string }) {
+  return (
+    <Text as="div">
+      <ReactMarkdown
+        components={{
+          a: (props) => <A {...props} target="_blank" />,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </Text>
   );
 }
 

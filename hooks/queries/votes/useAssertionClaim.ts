@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { assertionClaimsKey } from "constant";
-import { useHandleError } from "hooks/helpers/useHandleError";
-import { getAssertionClaim } from "web3/queries/votes/getAssertionClaims";
-import { getInstance } from "web3/contracts/createOOV3ContractInstances";
+import { useHandleError } from "hooks";
+import { getAssertionClaim, getInstance } from "web3";
 
 export function useAssertionClaim(chainId?: number, assertionId?: string) {
   const { onError } = useHandleError({ isDataFetching: true });

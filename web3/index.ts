@@ -1,7 +1,8 @@
+export { getInstance } from "web3/contracts/createOOV3ContractInstances";
+export { createDesignatedVotingFactoryV1Instance } from "./contracts/createDesignatedVotingFactoryV1Instance";
 export { createVotingContractInstance } from "./contracts/createVotingContractInstance";
 export { createVotingTokenContractInstance } from "./contracts/createVotingTokenContractInstance";
 export { createVotingV1ContractInstance } from "./contracts/createVotingV1ContractInstance";
-export { createDesignatedVotingFactoryV1Instance } from "./contracts/createDesignatedVotingFactoryV1Instance";
 export { removeDelegate } from "./mutations/delegation/removeDelegate";
 export { removeDelegator } from "./mutations/delegation/removeDelegator";
 export { setDelegate } from "./mutations/delegation/setDelegate";
@@ -30,6 +31,7 @@ export { getTokenAllowance } from "./queries/staking/getTokenAllowance";
 export { getUnstakeCoolDown } from "./queries/staking/getUnstakeCoolDown";
 export { getUnstakedBalance } from "./queries/staking/getUnstakedBalance";
 export { getActiveVotes } from "./queries/votes/getActiveVotes";
+export { getAssertionClaim } from "./queries/votes/getAssertionClaim";
 export { getAugmentedVoteData } from "./queries/votes/getAugmentedVoteData";
 export { getCommittedVotes } from "./queries/votes/getCommittedVotes";
 export { getCommittedVotesByCaller } from "./queries/votes/getCommittedVotesByCaller";

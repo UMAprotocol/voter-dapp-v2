@@ -33,10 +33,6 @@ export type PriceRequestT = {
   rollCount: number;
   resolvedPriceRequestIndex?: string;
   revealedVoteByAddress: RevealedVotesByAddress;
-  isAssertion: boolean;
-  assertionId?: string;
-  assertionAsserter?: string;
-  assertionChildChainId?: number;
 };
 
 export type ParticipationT = {
@@ -100,6 +96,10 @@ export type VoteMetaDataT = {
   isGovernance: boolean;
   discordLink: string;
   options: DropdownItemT[] | undefined;
+  isAssertion: boolean;
+  assertionId?: string | undefined;
+  assertionAsserter?: string | undefined;
+  assertionChildChainId?: number | undefined;
 };
 
 export type VoteContentfulDataT = {

@@ -1,11 +1,7 @@
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
-import {
-  checkIfIsOptimisticGovernor,
-  checkIfIsPolymarket,
-  maybeMakePolymarketOptions,
-  parseOptimisticGovernorAncillaryData,
-} from "helpers";
+import { utils } from "ethers";
+import { checkIfIsPolymarket, maybeMakePolymarketOptions } from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -21,11 +17,15 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
-  const isAssertion = decodedIdentifier.includes("ASSERT_TRUTH");
+  const isAssertion = ["assertionId:", "ooAsserter:", "childChainId:"].every(
+    (lookup) => decodedAncillaryData.includes(lookup)
+  );
   if (isAssertion) {
-    const result = {
+    const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
+    const description = makeAssertionDescription(assertionData);
+    return {
       title: decodedIdentifier,
-      description: decodedAncillaryData,
+      description,
       umipOrUppLink: {
         label: "UMIP-170",
         href: "https://github.com/UMAprotocol/UMIPs/blob/7e4eadb309c8e38d540bdf6f39cee81a3e48d260/UMIPs/umip-170.md",
@@ -35,20 +35,9 @@ export function getVoteMetaData(
       origin: "UMA" as const,
       isGovernance: false,
       discordLink,
+      isAssertion: true,
+      ...assertionData,
     };
-    const isOptimisticGovernor =
-      checkIfIsOptimisticGovernor(decodedAncillaryData);
-    if (isOptimisticGovernor) {
-      const { title, description } =
-        parseOptimisticGovernorAncillaryData(decodedAncillaryData);
-      return {
-        ...result,
-        title,
-        description,
-        origin: "OSnap" as const,
-      };
-    }
-    return result;
   }
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
@@ -69,6 +58,7 @@ export function getVoteMetaData(
       origin: "UMA",
       isGovernance: true,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -90,6 +80,7 @@ export function getVoteMetaData(
       origin: "Across",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -121,6 +112,7 @@ export function getVoteMetaData(
       origin: "Polymarket",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -142,6 +134,7 @@ export function getVoteMetaData(
       origin: "UMA",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -155,6 +148,7 @@ export function getVoteMetaData(
     origin: "UMA",
     isGovernance: false,
     discordLink,
+    isAssertion: false,
   };
 }
 
@@ -240,4 +234,27 @@ function makeAssertionOptions() {
     { label: "True", value: "1" },
     { label: "False", value: "0" },
   ];
+}
+
+function parseAssertionAncillaryData(decodedAncillaryData: string) {
+  const regex =
+    /^(?=.*assertionId:([a-f0-9]+))(?=.*ooAsserter:([a-f0-9]+))(?=.*childChainId:(\d+)).*$/;
+  const match = decodedAncillaryData.match(regex);
+
+  return {
+    assertionId: match?.[1] && `0x${match?.[1]}`,
+    assertionAsserter: match?.[2] && utils.getAddress(`0x${match[2]}`),
+    assertionChildChainId: match?.[3] ? Number(match[3]) : undefined,
+  };
+}
+
+function makeAssertionDescription(
+  parsedAncillaryData: ReturnType<typeof parseAssertionAncillaryData>
+) {
+  const { assertionId, assertionChildChainId } = parsedAncillaryData;
+
+  return assertionId
+    ? `${assertionId ? `Assertion ID: ${assertionId}  ` : ""}  
+${assertionChildChainId ? `Chain ID: ${assertionChildChainId}` : ""}`
+    : "";
 }
