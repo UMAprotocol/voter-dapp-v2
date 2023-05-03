@@ -1,7 +1,11 @@
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { utils } from "ethers";
-import { checkIfIsPolymarket, maybeMakePolymarketOptions } from "helpers";
+import {
+  checkIfIsPolymarket,
+  makeBlockExplorerLink,
+  maybeMakePolymarketOptions,
+} from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -251,10 +255,32 @@ function parseAssertionAncillaryData(decodedAncillaryData: string) {
 function makeAssertionDescription(
   parsedAncillaryData: ReturnType<typeof parseAssertionAncillaryData>
 ) {
-  const { assertionId, assertionChildChainId } = parsedAncillaryData;
+  const { assertionId, assertionChildChainId, assertionAsserter } =
+    parsedAncillaryData;
 
-  return assertionId
-    ? `${assertionId ? `Assertion ID: ${assertionId}  ` : ""}  
-${assertionChildChainId ? `Chain ID: ${assertionChildChainId}` : ""}`
+  const asserterAddressLink =
+    assertionAsserter && assertionChildChainId
+      ? makeBlockExplorerLink(
+          assertionAsserter,
+          assertionChildChainId,
+          "address"
+        )
+      : undefined;
+
+  // note: markdown indicates new lines by appending two spaces to the end of a line
+  const twoSpaces = "  ";
+  const assertionIdText = assertionId
+    ? `**Assertion ID:** ${assertionId}` + twoSpaces
     : "";
+  const chainIdText = assertionChildChainId
+    ? `**Chain ID:** ${assertionChildChainId}` + twoSpaces
+    : "";
+  const asserterText =
+    assertionAsserter && asserterAddressLink
+      ? `**Asserter:** [${assertionAsserter}](${asserterAddressLink})`
+      : "";
+
+  return `${assertionIdText}
+${chainIdText}
+${asserterText}`;
 }
