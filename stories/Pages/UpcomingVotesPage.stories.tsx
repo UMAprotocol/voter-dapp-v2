@@ -4,23 +4,16 @@ import {
   VotesContextState,
   defaultVotesContextState,
 } from "contexts";
-import PastVotesPage from "pages/past-votes";
-import {
-  makeMockVotes,
-  mockCommitted,
-  mockEncryptedAndDecrypted,
-  polymarketVote,
-  polymarketVoteCommitted,
-  polymarketVoteCommittedCustomInput,
-} from "stories/mocks/votes";
+import UpcomingVotesPage from "pages/upcoming-votes";
+import { makeMockVotes, polymarketVote } from "stories/mocks/votes";
 import { VoteT } from "types";
 
 interface Args {
   votes: VoteT[];
 }
 const meta: Meta = {
-  title: "Pages/PastVotesPage",
-  component: PastVotesPage,
+  title: "Pages/UpcomingVotesPage",
+  component: UpcomingVotesPage,
 };
 
 export default meta;
@@ -31,12 +24,12 @@ const Template: Story = {
   render: function Wrapper(args) {
     const mockVoteContextState: VotesContextState = {
       ...defaultVotesContextState,
-      pastVotesList: args.votes ?? [],
+      upcomingVotesList: args.votes ?? [],
     };
 
     return (
       <VotesContext.Provider value={mockVoteContextState}>
-        <PastVotesPage />
+        <UpcomingVotesPage />
       </VotesContext.Provider>
     );
   },
@@ -47,13 +40,7 @@ export const Default: Story = {
   args: {
     votes: makeMockVotes({
       count: 100,
-      inputs: [
-        mockEncryptedAndDecrypted,
-        mockCommitted,
-        polymarketVote,
-        polymarketVoteCommitted,
-        polymarketVoteCommittedCustomInput,
-      ],
+      inputs: [polymarketVote],
     }),
   },
 };
