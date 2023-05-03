@@ -26,6 +26,7 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
   const props = useVoteListItem(delegatedProps);
   const {
     titleOrClaim,
+    origin,
     isUpcoming,
     isActive,
     isPast,

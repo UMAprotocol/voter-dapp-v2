@@ -6,7 +6,6 @@ import {
   getPrecisionForIdentifier,
 } from "helpers";
 import { useAssertionClaim } from "hooks";
-import { title } from "process";
 import { useCallback, useEffect, useState } from "react";
 import { DropdownItemT, VoteT } from "types";
 import { VoteListProps } from "./useVoteList";
@@ -75,6 +74,7 @@ export function useVoteListItem(props: VoteListItemProps) {
     rollCount,
     assertionChildChainId,
     assertionId,
+    title,
   } = vote;
 
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
