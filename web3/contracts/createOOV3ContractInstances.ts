@@ -71,7 +71,7 @@ export const instances = createOOV3ContractInstances();
 
 export function getInstance(desiredChainId: number) {
   const found = instances.find(({ chainId }) => chainId === desiredChainId);
-  if (!found)
+  if (!found?.instance)
     throw new Error(`No OOV3 instance for chainId: ${desiredChainId}`);
   return found.instance;
 }
