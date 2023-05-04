@@ -136,7 +136,7 @@ const userDecorator: Decorator<Props> = (Story, { args }) => {
 const votesDecorator: Decorator<Props> = (Story, { args }) => {
   const mockVotesContextState: VotesContextState = {
     ...defaultVotesContextState,
-    pastVotesList: args.votes ?? [],
+    pastVoteList: args.votes ?? [],
   };
 
   return (

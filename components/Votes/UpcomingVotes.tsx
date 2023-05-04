@@ -1,9 +1,9 @@
 import {
   Pagination,
   usePagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
   VoteTimeline,
 } from "components";
 import {
@@ -15,23 +15,23 @@ import {
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVotesList, getActivityStatus, getUserDependentIsFetching } =
+  const { upcomingVoteList, getActivityStatus, getUserDependentIsFetching } =
     useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { getDelegationStatus } = useDelegationContext();
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVotesList);
+    usePagination(upcomingVoteList);
 
   return (
     <>
       <Title>Upcoming votes:</Title>
       {getActivityStatus() === "upcoming" && <VoteTimeline />}
       <VotesTableWrapper>
-        <VotesList
-          headings={<VotesTableHeadings activityStatus="upcoming" />}
+        <VoteList
+          headings={<VoteTableHeadings activityStatus="upcoming" />}
           rows={entriesToShow.map((vote) => (
-            <VotesListItem
+            <VoteListItem
               vote={vote}
               phase={phase}
               activityStatus="upcoming"

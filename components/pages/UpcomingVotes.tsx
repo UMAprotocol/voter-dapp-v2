@@ -6,9 +6,9 @@ import {
   PageInnerWrapper,
   PageOuterWrapper,
   Pagination,
-  VotesList,
-  VotesListItem,
-  VotesTableHeadings,
+  VoteList,
+  VoteListItem,
+  VoteTableHeadings,
   usePagination,
 } from "components";
 import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
@@ -19,15 +19,15 @@ import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
   const {
-    upcomingVotesList,
+    upcomingVoteList,
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVotesList);
-  const hasUpcomingVotes = upcomingVotesList.length > 0;
+    usePagination(upcomingVoteList);
+  const hasUpcomingVotes = upcomingVoteList.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
@@ -47,12 +47,10 @@ export function UpcomingVotes() {
                     timeRemaining={millisecondsUntilPhaseEnds}
                   />
                   <VotesTableWrapper>
-                    <VotesList
-                      headings={
-                        <VotesTableHeadings activityStatus="upcoming" />
-                      }
+                    <VoteList
+                      headings={<VoteTableHeadings activityStatus="upcoming" />}
                       rows={entriesToShow.map((vote) => (
-                        <VotesListItem
+                        <VoteListItem
                           vote={vote}
                           phase={phase}
                           selectedVote={undefined}

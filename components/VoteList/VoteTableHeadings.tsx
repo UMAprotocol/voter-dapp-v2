@@ -4,7 +4,7 @@ import { ActivityStatusT } from "types";
 interface Props {
   activityStatus: ActivityStatusT;
 }
-export function VotesTableHeadings({ activityStatus }: Props) {
+export function VoteTableHeadings({ activityStatus }: Props) {
   const activeHeadings = ["Vote", "Your vote", "Vote status"];
   const upcomingHeadings = ["Vote"];
   const pastHeadings = ["Vote", "Your vote", "Correct vote"];
