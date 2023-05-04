@@ -29,12 +29,12 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     pastVoteList,
     getUserDependentIsFetching,
   } = useVotesContext();
-  const votesListsForStatus = {
+  const voteListsForStatus = {
     active: activeVoteList,
     upcoming: upcomingVoteList,
     past: pastVoteList,
   };
-  const votesList = votesListsForStatus[activityStatus];
+  const voteList = voteListsForStatus[activityStatus];
   const { phase, roundId } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
@@ -337,7 +337,7 @@ export function useVoteList(activityStatus: ActivityStatusT) {
     isReveal,
     isActive,
     isPast,
-    votesList,
+    voteList,
     selectedVotes,
     isAnyDirty,
     isFetching,

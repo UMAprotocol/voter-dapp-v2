@@ -11,10 +11,10 @@ import { useVoteList } from "./useVoteList";
 
 export function ActiveVotes() {
   const voteListProps = useVoteList("active");
-  const { votesList, resetSelectedVotes, isAnyDirty, actionStatus } =
+  const { voteList, resetSelectedVotes, isAnyDirty, actionStatus } =
     voteListProps;
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(votesList);
+    usePagination(voteList);
 
   return (
     <>

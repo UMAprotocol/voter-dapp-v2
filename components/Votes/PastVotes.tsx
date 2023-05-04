@@ -13,12 +13,12 @@ interface Props {
 }
 export function PastVotes({ isHomePage = false }: Props) {
   const voteListProps = useVoteList("past");
-  const { votesList } = voteListProps;
+  const { voteList } = voteListProps;
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(votesList);
+    usePagination(voteList);
   const titleText = isHomePage ? "Recent past votes:" : "Past votes:";
-  const showSeeAllButton = votesList.length > 5;
-  const votesToShow = isHomePage ? votesList.slice(0, 5) : entriesToShow;
+  const showSeeAllButton = voteList.length > 5;
+  const votesToShow = isHomePage ? voteList.slice(0, 5) : entriesToShow;
 
   return (
     <>

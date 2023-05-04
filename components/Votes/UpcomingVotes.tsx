@@ -20,11 +20,11 @@ interface Props {
 }
 export function UpcomingVotes({ isHomePage = false }: Props) {
   const voteListProps = useVoteList("upcoming");
-  const { votesList } = voteListProps;
+  const { voteList } = voteListProps;
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(votesList);
-  const showSeeAllButton = votesList.length > 5;
-  const votesToShow = isHomePage ? votesList.slice(0, 5) : entriesToShow;
+    usePagination(voteList);
+  const showSeeAllButton = voteList.length > 5;
+  const votesToShow = isHomePage ? voteList.slice(0, 5) : entriesToShow;
 
   return (
     <>
