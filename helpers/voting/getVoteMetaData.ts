@@ -1,6 +1,11 @@
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
-import { checkIfIsPolymarket, maybeMakePolymarketOptions } from "helpers";
+import { utils } from "ethers";
+import {
+  checkIfIsPolymarket,
+  makeBlockExplorerLink,
+  maybeMakePolymarketOptions,
+} from "helpers";
 import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -16,25 +21,26 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
-  // we are hard coding this because we have an upcoming vote, but the voterdapp cannot currently decode it
-  // TODO: remove this hard coding
-  if (decodedIdentifier.includes("ASSERT_TRUTH")) {
-    // if all checks fail, return with generic values generated from the data we have
+  const isAssertion = ["assertionId:", "ooAsserter:", "childChainId:"].every(
+    (lookup) => decodedAncillaryData.includes(lookup)
+  );
+  if (isAssertion) {
+    const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
+    const description = makeAssertionDescription(assertionData);
     return {
       title: decodedIdentifier,
-      description: "Asserted truth: 1+1=3",
+      description,
       umipOrUppLink: {
-        label: "umip-170".toUpperCase(),
+        label: "UMIP-170",
         href: "https://github.com/UMAprotocol/UMIPs/blob/7e4eadb309c8e38d540bdf6f39cee81a3e48d260/UMIPs/umip-170.md",
       },
       umipOrUppNumber: "umip-170",
-      options: [
-        { label: "True", value: "1" },
-        { label: "False", value: "0" },
-      ],
-      origin: "UMA",
+      options: makeAssertionOptions(),
+      origin: "UMA" as const,
       isGovernance: false,
       discordLink,
+      isAssertion: true,
+      ...assertionData,
     };
   }
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
@@ -56,6 +62,7 @@ export function getVoteMetaData(
       origin: "UMA Governance",
       isGovernance: true,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -77,6 +84,7 @@ export function getVoteMetaData(
       origin: "Across",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -108,6 +116,7 @@ export function getVoteMetaData(
       origin: "Polymarket",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -129,6 +138,7 @@ export function getVoteMetaData(
       origin: "UMA",
       isGovernance: false,
       discordLink,
+      isAssertion: false,
     };
   }
 
@@ -142,6 +152,7 @@ export function getVoteMetaData(
     origin: "UMA",
     isGovernance: false,
     discordLink,
+    isAssertion: false,
   };
 }
 
@@ -220,4 +231,56 @@ function getUmipOrUppNumberFromUrl(url: string | undefined) {
     const uppNumber = url.split("upp-")[1].split(".")[0];
     return `upp-${uppNumber}`;
   }
+}
+
+function makeAssertionOptions() {
+  return [
+    { label: "True", value: "1" },
+    { label: "False", value: "0" },
+  ];
+}
+
+function parseAssertionAncillaryData(decodedAncillaryData: string) {
+  const regex =
+    /^(?=.*assertionId:([a-f0-9]+))(?=.*ooAsserter:([a-f0-9]+))(?=.*childChainId:(\d+)).*$/;
+  const match = decodedAncillaryData.match(regex);
+
+  return {
+    assertionId: match?.[1] && `0x${match?.[1]}`,
+    assertionAsserter: match?.[2] && utils.getAddress(`0x${match[2]}`),
+    assertionChildChainId: match?.[3] ? Number(match[3]) : undefined,
+  };
+}
+
+function makeAssertionDescription(
+  parsedAncillaryData: ReturnType<typeof parseAssertionAncillaryData>
+) {
+  const { assertionId, assertionChildChainId, assertionAsserter } =
+    parsedAncillaryData;
+
+  const asserterAddressLink =
+    assertionAsserter && assertionChildChainId
+      ? makeBlockExplorerLink(
+          assertionAsserter,
+          assertionChildChainId,
+          "address"
+        )
+      : undefined;
+
+  // note: markdown indicates new lines by appending two spaces to the end of a line
+  const twoSpaces = "  ";
+  const assertionIdText = assertionId
+    ? `**Assertion ID:** ${assertionId}` + twoSpaces
+    : "";
+  const chainIdText = assertionChildChainId
+    ? `**Chain ID:** ${assertionChildChainId}` + twoSpaces
+    : "";
+  const asserterText =
+    assertionAsserter && asserterAddressLink
+      ? `**Asserter:** [${assertionAsserter}](${asserterAddressLink})`
+      : "";
+
+  return `${assertionIdText}
+${chainIdText}
+${asserterText}`;
 }

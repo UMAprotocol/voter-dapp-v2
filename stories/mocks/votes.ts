@@ -60,6 +60,7 @@ export const defaultMockVote = (number = 1): VoteT => {
     },
     rollCount: 0,
     revealedVoteByAddress: {},
+    isAssertion: false,
   };
 };
 

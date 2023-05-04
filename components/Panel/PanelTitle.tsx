@@ -1,6 +1,7 @@
 import { mobileAndUnder } from "constant";
 import Across from "public/assets/icons/across.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
+import OSnap from "public/assets/icons/osnap.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
@@ -60,6 +61,12 @@ function TitleIcon({
           <PolymarketIcon />
         </TitleIconWrapper>
       );
+    case "OSnap":
+      return (
+        <TitleIconWrapper>
+          <OSnapIcon />
+        </TitleIconWrapper>
+      );
     default:
       return null;
   }
@@ -117,6 +124,8 @@ const UMAGovernanceIcon = styled(UMAGovernance)``;
 const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
+
+const OSnapIcon = styled(OSnap)``;
 
 const TitleIconWrapper = styled.div`
   width: 40px;

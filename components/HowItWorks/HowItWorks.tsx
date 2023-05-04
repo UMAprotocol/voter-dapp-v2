@@ -93,7 +93,7 @@ export function HowItWorks() {
                 "You are staking"
               )}{" "}
               <Strong>
-                {isLoading() ? (
+                {stakedBalance === undefined ? (
                   <LoadingSkeleton width={50} />
                 ) : (
                   formatNumberForDisplay(stakedBalance)
@@ -126,7 +126,8 @@ export function HowItWorks() {
             <>
               You have voted in{" "}
               <Strong>
-                {isLoading() ? (
+                {countCorrectVotes === undefined ||
+                countWrongVotes === undefined ? (
                   <LoadingSkeleton width={50} />
                 ) : (
                   formatNumberForDisplay(getTotalVotes(), { decimals: 0 })
@@ -136,7 +137,7 @@ export function HowItWorks() {
               {getTotalVotes()?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"},
               and are earning{" "}
               <Strong>
-                {isLoading() ? (
+                {apr === undefined ? (
                   <LoadingSkeleton width={50} />
                 ) : (
                   formatNumberForDisplay(apr, { decimals: 1 })
@@ -161,7 +162,7 @@ export function HowItWorks() {
             <>
               Your unclaimed UMA rewards:{" "}
               <Strong>
-                {isLoading() ? (
+                {outstandingRewards === undefined ? (
                   <LoadingSkeleton width={50} />
                 ) : (
                   formatNumberForDisplay(outstandingRewards, { decimals: 3 })

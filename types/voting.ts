@@ -96,6 +96,10 @@ export type VoteMetaDataT = {
   isGovernance: boolean;
   discordLink: string;
   options: DropdownItemT[] | undefined;
+  isAssertion: boolean;
+  assertionId?: string | undefined;
+  assertionAsserter?: string | undefined;
+  assertionChildChainId?: number | undefined;
 };
 
 export type VoteContentfulDataT = {
@@ -140,7 +144,12 @@ export type VoteTimelineT = {
   phaseEnds: Date;
 };
 
-export type VoteOriginT = "UMA" | "UMA Governance" | "Polymarket" | "Across";
+export type VoteOriginT =
+  | "UMA"
+  | "UMA Governance"
+  | "Polymarket"
+  | "Across"
+  | "OSnap";
 
 export type SigningKey = {
   publicKey: string;
