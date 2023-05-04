@@ -195,7 +195,7 @@ export function VoteListItem({
   }
 
   function getCorrectVote() {
-    if (correctVote === undefined) return;
+    if (correctVote === undefined || correctVote === null) return;
     const formatted = formatVoteStringWithPrecision(
       correctVote,
       decodedIdentifier
