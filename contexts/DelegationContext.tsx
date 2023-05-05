@@ -136,6 +136,13 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: { delegate },
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
+  const pendingReceivedRequestsToBeDelegate =
+    getPendingReceivedRequestsToBeDelegate();
+  const hasPendingReceivedRequestsToBeDelegate =
+    pendingReceivedRequestsToBeDelegate.length > 0;
+  const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
+  const hasPendingSentRequestsToBeDelegate =
+    getHasPendingSentRequestsToBeDelegate();
   const delegationStatus = getDelegationStatus();
   const isNoWalletConnected = delegationStatus === "no-wallet-connected";
   const isNoDelegation = delegationStatus === "no-delegation";
@@ -145,13 +152,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const isDelegator = delegationStatus === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
   const delegateAddress = getDelegateAddress();
-  const pendingReceivedRequestsToBeDelegate =
-    getPendingReceivedRequestsToBeDelegate();
-  const hasPendingReceivedRequestsToBeDelegate =
-    pendingReceivedRequestsToBeDelegate.length > 0;
-  const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
-  const hasPendingSentRequestsToBeDelegate =
-    getHasPendingSentRequestsToBeDelegate();
 
   const getDelegationDataLoading = useCallback(() => {
     return (
