@@ -18,7 +18,7 @@ import {
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
-import { ReactNode, createContext } from "react";
+import { ReactNode, createContext, useCallback, useMemo } from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
   delegationStatus: DelegationStatusT;
@@ -153,41 +153,75 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const hasPendingSentRequestsToBeDelegate =
     getHasPendingSentRequestsToBeDelegate();
 
-  function getDelegationDataLoading() {
-    return (
-      receivedRequestsToBeDelegateLoading ||
-      sentRequestsToBeDelegateLoading ||
-      delegatorSetEventsForDelegateLoading ||
-      voterFromDelegateLoading ||
-      delegateToStakerLoading ||
-      delegatorSetEventsForDelegatorLoading ||
-      ignoredRequestToBeDelegateAddressesLoading ||
-      isIgnoringRequestToBeDelegate ||
-      isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate ||
-      isAcceptingReceivedRequestToBeDelegate ||
-      isTerminatingRelationshipWithDelegate ||
-      isTerminatingRelationshipWithDelegator
-    );
-  }
+  const getDelegationDataLoading = useCallback(
+    function () {
+      return (
+        receivedRequestsToBeDelegateLoading ||
+        sentRequestsToBeDelegateLoading ||
+        delegatorSetEventsForDelegateLoading ||
+        voterFromDelegateLoading ||
+        delegateToStakerLoading ||
+        delegatorSetEventsForDelegatorLoading ||
+        ignoredRequestToBeDelegateAddressesLoading ||
+        isIgnoringRequestToBeDelegate ||
+        isSendingRequestToBeDelegate ||
+        isCancelingSentRequestToBeDelegate ||
+        isAcceptingReceivedRequestToBeDelegate ||
+        isTerminatingRelationshipWithDelegate ||
+        isTerminatingRelationshipWithDelegator
+      );
+    },
+    [
+      delegateToStakerLoading,
+      delegatorSetEventsForDelegateLoading,
+      delegatorSetEventsForDelegatorLoading,
+      ignoredRequestToBeDelegateAddressesLoading,
+      isAcceptingReceivedRequestToBeDelegate,
+      isCancelingSentRequestToBeDelegate,
+      isIgnoringRequestToBeDelegate,
+      isSendingRequestToBeDelegate,
+      isTerminatingRelationshipWithDelegate,
+      isTerminatingRelationshipWithDelegator,
+      receivedRequestsToBeDelegateLoading,
+      sentRequestsToBeDelegateLoading,
+      voterFromDelegateLoading,
+    ]
+  );
 
-  function getDelegationDataFetching() {
-    return (
-      receivedRequestsToBeDelegateFetching ||
-      sentRequestsToBeDelegateFetching ||
-      delegatorSetEventsForDelegateFetching ||
-      voterFromDelegateFetching ||
-      delegateToStakerFetching ||
-      delegatorSetEventsForDelegatorFetching ||
-      ignoredRequestToBeDelegateAddressesFetching ||
-      isIgnoringRequestToBeDelegate ||
-      isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate ||
-      isAcceptingReceivedRequestToBeDelegate ||
-      isTerminatingRelationshipWithDelegate ||
-      isTerminatingRelationshipWithDelegator
-    );
-  }
+  const getDelegationDataFetching = useCallback(
+    function () {
+      return (
+        receivedRequestsToBeDelegateFetching ||
+        sentRequestsToBeDelegateFetching ||
+        delegatorSetEventsForDelegateFetching ||
+        voterFromDelegateFetching ||
+        delegateToStakerFetching ||
+        delegatorSetEventsForDelegatorFetching ||
+        ignoredRequestToBeDelegateAddressesFetching ||
+        isIgnoringRequestToBeDelegate ||
+        isSendingRequestToBeDelegate ||
+        isCancelingSentRequestToBeDelegate ||
+        isAcceptingReceivedRequestToBeDelegate ||
+        isTerminatingRelationshipWithDelegate ||
+        isTerminatingRelationshipWithDelegator
+      );
+    },
+    [
+      delegateToStakerFetching,
+      delegatorSetEventsForDelegateFetching,
+      delegatorSetEventsForDelegatorFetching,
+      ignoredRequestToBeDelegateAddressesFetching,
+      isAcceptingReceivedRequestToBeDelegate,
+      isCancelingSentRequestToBeDelegate,
+      isIgnoringRequestToBeDelegate,
+      isSendingRequestToBeDelegate,
+      isTerminatingRelationshipWithDelegate,
+      isTerminatingRelationshipWithDelegator,
+      receivedRequestsToBeDelegateFetching,
+      sentRequestsToBeDelegateFetching,
+      voterFromDelegateFetching,
+    ]
+  );
 
   function getDelegateAddress() {
     if (isDelegator) return delegate;
@@ -290,119 +324,162 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  function sendRequestToBeDelegate(delegateAddress: string) {
-    if (!votingWriter) return;
-    sendRequestToBeDelegateMutation(
-      {
+  const sendRequestToBeDelegate = useCallback(
+    function sendRequestToBeDelegate(delegateAddress: string) {
+      if (!votingWriter) return;
+      sendRequestToBeDelegateMutation(
+        {
+          voting: votingWriter,
+          delegateAddress,
+          notificationMessages: {
+            pending: `Requesting ${truncateEthAddress(
+              delegateAddress
+            )} to be your delegate...`,
+            success: `Successfully requested ${truncateEthAddress(
+              delegateAddress
+            )} to be your delegate`,
+            error: `Failed to request ${truncateEthAddress(
+              delegateAddress
+            )} to be your delegate`,
+          },
+        },
+        {
+          onSuccess: () => {
+            closePanel();
+          },
+        }
+      );
+    },
+    [closePanel, sendRequestToBeDelegateMutation, votingWriter]
+  );
+
+  const cancelSentRequestToBeDelegate = useCallback(
+    function cancelSentRequestToBeDelegate() {
+      if (!votingWriter) return;
+      cancelSentRequestToBeDelegateMutation({
         voting: votingWriter,
-        delegateAddress,
         notificationMessages: {
-          pending: `Requesting ${truncateEthAddress(
-            delegateAddress
-          )} to be your delegate...`,
-          success: `Successfully requested ${truncateEthAddress(
-            delegateAddress
-          )} to be your delegate`,
-          error: `Failed to request ${truncateEthAddress(
-            delegateAddress
-          )} to be your delegate`,
+          pending: "Cancelling request to delegate...",
+          success: "Successfully cancelled request to delegate",
+          error: "Failed to cancel request to delegate",
         },
-      },
-      {
-        onSuccess: () => {
-          closePanel();
-        },
-      }
-    );
-  }
+      });
+    },
+    [cancelSentRequestToBeDelegateMutation, votingWriter]
+  );
 
-  function cancelSentRequestToBeDelegate() {
-    if (!votingWriter) return;
-    cancelSentRequestToBeDelegateMutation({
-      voting: votingWriter,
-      notificationMessages: {
-        pending: "Cancelling request to delegate...",
-        success: "Successfully cancelled request to delegate",
-        error: "Failed to cancel request to delegate",
-      },
-    });
-  }
-
-  function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
-    if (!votingWriter) return;
-    acceptReceivedRequestToBeDelegateMutation({
-      voting: votingWriter,
-      delegatorAddress,
-      notificationMessages: {
-        pending: `Accepting request to be delegate from ${truncateEthAddress(
-          delegatorAddress
-        )}...`,
-        success: `Successfully accepted request to be delegate from ${truncateEthAddress(
-          delegatorAddress
-        )}`,
-        error: `Failed to accept request to be delegate from ${truncateEthAddress(
-          delegatorAddress
-        )}`,
-      },
-    });
-  }
-
-  function ignoreReceivedRequestToBeDelegate(delegatorAddress: string) {
-    ignoreReceivedRequestToBeDelegateMutation({
-      userAddress: address,
-      delegatorAddress,
-    });
-  }
-
-  function terminateRelationshipWithDelegator() {
-    if (!votingWriter) return;
-    terminateRelationshipWithDelegatorMutation({
-      voting: votingWriter,
-      notificationMessages: {
-        pending: "Removing delegator...",
-        success: "Successfully removed delegator",
-        error: "Failed to remove delegator",
-      },
-    });
-  }
-
-  function terminateRelationshipWithDelegate() {
-    if (!votingWriter) return;
-    terminateRelationshipWithDelegateMutation({
-      voting: votingWriter,
-      notificationMessages: {
-        pending: "Removing delegate...",
-        success: "Successfully removed delegate",
-        error: "Failed to remove delegate",
-      },
-    });
-  }
-  return (
-    <DelegationContext.Provider
-      value={{
-        delegationStatus,
-        isNoWalletConnected,
-        isNoDelegation,
-        isDelegatePending,
-        isDelegatorPending,
-        isDelegate,
-        isDelegator,
+  const acceptReceivedRequestToBeDelegate = useCallback(
+    function acceptReceivedRequestToBeDelegate(delegatorAddress: string) {
+      if (!votingWriter) return;
+      acceptReceivedRequestToBeDelegateMutation({
+        voting: votingWriter,
         delegatorAddress,
-        delegateAddress,
-        pendingReceivedRequestsToBeDelegate,
-        pendingSentRequestsToBeDelegate,
-        hasPendingSentRequestsToBeDelegate,
-        hasPendingReceivedRequestsToBeDelegate,
-        sendRequestToBeDelegate,
-        terminateRelationshipWithDelegate,
-        terminateRelationshipWithDelegator,
-        acceptReceivedRequestToBeDelegate,
-        ignoreReceivedRequestToBeDelegate,
-        cancelSentRequestToBeDelegate,
-        getDelegationDataLoading,
-        getDelegationDataFetching,
-      }}
-    >
+        notificationMessages: {
+          pending: `Accepting request to be delegate from ${truncateEthAddress(
+            delegatorAddress
+          )}...`,
+          success: `Successfully accepted request to be delegate from ${truncateEthAddress(
+            delegatorAddress
+          )}`,
+          error: `Failed to accept request to be delegate from ${truncateEthAddress(
+            delegatorAddress
+          )}`,
+        },
+      });
+    },
+    [acceptReceivedRequestToBeDelegateMutation, votingWriter]
+  );
+
+  const ignoreReceivedRequestToBeDelegate = useCallback(
+    function (delegatorAddress: string) {
+      ignoreReceivedRequestToBeDelegateMutation({
+        userAddress: address,
+        delegatorAddress,
+      });
+    },
+    [address, ignoreReceivedRequestToBeDelegateMutation]
+  );
+
+  const terminateRelationshipWithDelegator = useCallback(
+    function () {
+      if (!votingWriter) return;
+      terminateRelationshipWithDelegatorMutation({
+        voting: votingWriter,
+        notificationMessages: {
+          pending: "Removing delegator...",
+          success: "Successfully removed delegator",
+          error: "Failed to remove delegator",
+        },
+      });
+    },
+    [terminateRelationshipWithDelegatorMutation, votingWriter]
+  );
+
+  const terminateRelationshipWithDelegate = useCallback(
+    function () {
+      if (!votingWriter) return;
+      terminateRelationshipWithDelegateMutation({
+        voting: votingWriter,
+        notificationMessages: {
+          pending: "Removing delegate...",
+          success: "Successfully removed delegate",
+          error: "Failed to remove delegate",
+        },
+      });
+    },
+    [terminateRelationshipWithDelegateMutation, votingWriter]
+  );
+
+  const value = useMemo(
+    () => ({
+      delegationStatus,
+      isNoWalletConnected,
+      isNoDelegation,
+      isDelegatePending,
+      isDelegatorPending,
+      isDelegate,
+      isDelegator,
+      delegatorAddress,
+      delegateAddress,
+      pendingReceivedRequestsToBeDelegate,
+      pendingSentRequestsToBeDelegate,
+      hasPendingSentRequestsToBeDelegate,
+      hasPendingReceivedRequestsToBeDelegate,
+      sendRequestToBeDelegate,
+      terminateRelationshipWithDelegate,
+      terminateRelationshipWithDelegator,
+      acceptReceivedRequestToBeDelegate,
+      ignoreReceivedRequestToBeDelegate,
+      cancelSentRequestToBeDelegate,
+      getDelegationDataLoading,
+      getDelegationDataFetching,
+    }),
+    [
+      acceptReceivedRequestToBeDelegate,
+      cancelSentRequestToBeDelegate,
+      delegateAddress,
+      delegationStatus,
+      delegatorAddress,
+      getDelegationDataFetching,
+      getDelegationDataLoading,
+      hasPendingReceivedRequestsToBeDelegate,
+      hasPendingSentRequestsToBeDelegate,
+      ignoreReceivedRequestToBeDelegate,
+      isDelegate,
+      isDelegatePending,
+      isDelegator,
+      isDelegatorPending,
+      isNoDelegation,
+      isNoWalletConnected,
+      pendingReceivedRequestsToBeDelegate,
+      pendingSentRequestsToBeDelegate,
+      sendRequestToBeDelegate,
+      terminateRelationshipWithDelegate,
+      terminateRelationshipWithDelegator,
+    ]
+  );
+  return (
+    <DelegationContext.Provider value={value}>
       {children}
     </DelegationContext.Provider>
   );

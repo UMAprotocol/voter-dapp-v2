@@ -1,5 +1,5 @@
 import { events } from "helpers";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
 import {
   NotificationT,
   PendingNotificationT,
@@ -97,14 +97,17 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     setNotifications((prev) => ({ ...prev, [id]: undefined }));
   }
 
+  const value = useMemo(
+    () => ({
+      notifications,
+      removeNotification,
+      clearNotifications,
+    }),
+    [notifications]
+  );
+
   return (
-    <NotificationsContext.Provider
-      value={{
-        notifications,
-        removeNotification,
-        clearNotifications,
-      }}
-    >
+    <NotificationsContext.Provider value={value}>
       {children}
     </NotificationsContext.Provider>
   );

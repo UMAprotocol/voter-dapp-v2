@@ -3,7 +3,7 @@ import {
   VotingTokenEthers,
   VotingV2Ethers,
 } from "@uma/contracts-frontend";
-import { createContext, ReactNode, useState } from "react";
+import { ReactNode, createContext, useMemo, useState } from "react";
 import {
   createVotingContractInstance,
   createVotingTokenContractInstance,
@@ -46,18 +46,21 @@ export function ContractsProvider({ children }: { children: ReactNode }) {
     undefined
   );
 
+  const value = useMemo(
+    () => ({
+      voting: defaultVoting,
+      votingToken: defaultVotingToken,
+      votingV1: defaultVotingV1,
+      setVotingWriter,
+      votingWriter,
+      setVotingTokenWriter,
+      votingTokenWriter,
+    }),
+    [votingTokenWriter, votingWriter]
+  );
+
   return (
-    <ContractsContext.Provider
-      value={{
-        voting: defaultVoting,
-        votingToken: defaultVotingToken,
-        votingV1: defaultVotingV1,
-        setVotingWriter,
-        votingWriter,
-        setVotingTokenWriter,
-        votingTokenWriter,
-      }}
-    >
+    <ContractsContext.Provider value={value}>
       {children}
     </ContractsContext.Provider>
   );
