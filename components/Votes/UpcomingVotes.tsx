@@ -15,18 +15,18 @@ import {
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, getActivityStatus, getUserDependentIsFetching } =
+  const { upcomingVoteList, activityStatus, getUserDependentIsFetching } =
     useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus } = useDelegationContext();
+  const { isDelegate, isDelegator } = useDelegationContext();
   const { showPagination, entriesToShow, ...paginationProps } =
     usePagination(upcomingVoteList);
 
   return (
     <>
       <Title>Upcoming votes:</Title>
-      {getActivityStatus() === "upcoming" && <VoteTimeline />}
+      {activityStatus === "upcoming" && <VoteTimeline />}
       <VotesTableWrapper>
         <VoteList
           headings={<VoteTableHeadings activityStatus="upcoming" />}
@@ -37,7 +37,8 @@ export function UpcomingVotes() {
               activityStatus="upcoming"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              delegationStatus={getDelegationStatus()}
+              isDelegate={isDelegate}
+              isDelegator={isDelegator}
               isFetching={getUserDependentIsFetching()}
             />
           ))}

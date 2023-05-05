@@ -7,7 +7,7 @@ import {
   useUserVotingAndStakingDetails,
   useWalletContext,
 } from "hooks";
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useMemo, useState } from "react";
 import { SigningKey, VoteHistoryByKeyT } from "types";
 
 export interface UserContextState {
@@ -85,31 +85,48 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const signingKey = signingKeys[address];
   const correctChainConnected = connectedChainId === config.chainId;
 
-  return (
-    <UserContext.Provider
-      value={{
-        connectedWallet,
-        account,
-        address,
-        truncatedAddress,
-        walletIcon,
-        apr,
-        countReveals,
-        countNoVotes,
-        countWrongVotes,
-        countCorrectVotes,
-        cumulativeCalculatedSlash,
-        cumulativeCalculatedSlashPercentage,
-        voteHistoryByKey,
-        userDataLoading,
-        userDataFetching,
-        signingKey,
-        hasSigningKey: !!signingKey,
-        correctChainConnected,
-        setAddressOverride,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
+  const value = useMemo(
+    () => ({
+      connectedWallet,
+      account,
+      address,
+      truncatedAddress,
+      walletIcon,
+      apr,
+      countReveals,
+      countNoVotes,
+      countWrongVotes,
+      countCorrectVotes,
+      cumulativeCalculatedSlash,
+      cumulativeCalculatedSlashPercentage,
+      voteHistoryByKey,
+      userDataLoading,
+      userDataFetching,
+      signingKey,
+      hasSigningKey: !!signingKey,
+      correctChainConnected,
+      setAddressOverride,
+    }),
+    [
+      account,
+      address,
+      apr,
+      connectedWallet,
+      correctChainConnected,
+      countCorrectVotes,
+      countNoVotes,
+      countReveals,
+      countWrongVotes,
+      cumulativeCalculatedSlash,
+      cumulativeCalculatedSlashPercentage,
+      signingKey,
+      truncatedAddress,
+      userDataFetching,
+      userDataLoading,
+      voteHistoryByKey,
+      walletIcon,
+    ]
   );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

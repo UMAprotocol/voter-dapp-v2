@@ -22,11 +22,11 @@ export function OtherWallet({
   remove: (address: string) => void;
 }) {
   if (!address) return null;
+  const isDelegate = status === "delegate";
 
-  const text =
-    status === "delegate"
-      ? "A delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, as well as claim and stake reward tokens. A delegate cannot unstake tokens for a delegator. A delegate can only be a delegate for a single delegator."
-      : "A delegator is a wallet that has chosen to delegate its voting power to another party. Delegators can only delegate to one address at a time.";
+  const text = isDelegate
+    ? "A delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, as well as claim and stake reward tokens. A delegate cannot unstake tokens for a delegator. A delegate can only be a delegate for a single delegator."
+    : "A delegator is a wallet that has chosen to delegate its voting power to another party. Delegators can only delegate to one address at a time.";
 
   return (
     <>

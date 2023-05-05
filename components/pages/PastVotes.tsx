@@ -10,7 +10,12 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import {
+  useDelegationContext,
+  usePanelContext,
+  useVoteTimingContext,
+  useVotesContext,
+} from "hooks";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
@@ -20,6 +25,7 @@ export function PastVotes() {
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
+  const { isDelegate, isDelegator } = useDelegationContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } =
@@ -48,6 +54,8 @@ export function PastVotes() {
                       activityStatus="past"
                       moreDetailsAction={() => openPanel("vote", vote)}
                       key={vote.uniqueKey}
+                      isDelegate={isDelegate}
+                      isDelegator={isDelegator}
                       isFetching={getUserDependentIsFetching()}
                     />
                   ))}

@@ -12,10 +12,17 @@ import {
   useV1Rewards,
 } from "hooks";
 import { useIsOldDesignatedVotingAccount } from "hooks/queries/rewards/useIsOldDesignatedVotingAccount";
-import { ReactNode, createContext, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { OldDesignatedVotingAccountT, V1RewardsT } from "types";
 
 export interface StakingContextState {
+  hasStaked: boolean;
   stakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
@@ -32,6 +39,7 @@ export interface StakingContextState {
 }
 
 export const defaultStakingContextState: StakingContextState = {
+  hasStaked: false,
   stakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
@@ -135,7 +143,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     setOutstandingRewards(calculatedOutstandingRewards);
   }
 
-  function getStakingDataLoading() {
+  const getStakingDataLoading = useCallback(() => {
     if (!address) return false;
 
     return (
@@ -146,9 +154,17 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakeCoolDownLoading ||
       rewardsCalculationInputsLoading
     );
-  }
+  }, [
+    address,
+    rewardsCalculationInputsLoading,
+    stakedBalanceLoading,
+    stakerDetailsLoading,
+    tokenAllowanceLoading,
+    unstakeCoolDownLoading,
+    unstakedBalanceLoading,
+  ]);
 
-  function getStakingDataFetching() {
+  const getStakingDataFetching = useCallback(() => {
     if (!address) return false;
 
     return (
@@ -159,27 +175,53 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       unstakeCoolDownFetching ||
       rewardsCalculationInputsFetching
     );
-  }
+  }, [
+    address,
+    rewardsCalculationInputsFetching,
+    stakedBalanceFetching,
+    stakerDetailsFetching,
+    tokenAllowanceFetching,
+    unstakeCoolDownFetching,
+    unstakedBalanceFetching,
+  ]);
+
+  const hasStaked = stakedBalance?.gt(0) ?? false;
+
+  const value = useMemo(
+    () => ({
+      hasStaked,
+      stakedBalance,
+      unstakedBalance,
+      pendingUnstake,
+      updateTime,
+      unstakeCoolDown,
+      outstandingRewards,
+      tokenAllowance,
+      canUnstakeTime,
+      v1Rewards,
+      oldDesignatedVotingAccount,
+      getStakingDataLoading,
+      getStakingDataFetching,
+      setAddressOverride,
+    }),
+    [
+      canUnstakeTime,
+      getStakingDataFetching,
+      getStakingDataLoading,
+      hasStaked,
+      oldDesignatedVotingAccount,
+      outstandingRewards,
+      pendingUnstake,
+      stakedBalance,
+      tokenAllowance,
+      unstakeCoolDown,
+      unstakedBalance,
+      updateTime,
+      v1Rewards,
+    ]
+  );
 
   return (
-    <StakingContext.Provider
-      value={{
-        stakedBalance,
-        unstakedBalance,
-        pendingUnstake,
-        updateTime,
-        unstakeCoolDown,
-        outstandingRewards,
-        tokenAllowance,
-        canUnstakeTime,
-        v1Rewards,
-        oldDesignatedVotingAccount,
-        getStakingDataLoading,
-        getStakingDataFetching,
-        setAddressOverride,
-      }}
-    >
-      {children}
-    </StakingContext.Provider>
+    <StakingContext.Provider value={value}>{children}</StakingContext.Provider>
   );
 }

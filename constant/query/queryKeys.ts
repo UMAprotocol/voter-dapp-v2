@@ -40,3 +40,4 @@ export const delegateToStakerKey = "delegateToStakerKey";
 export const ignoredRequestToBeDelegateAddressesKey =
   "ignoredRequestToBeDelegateAddressesKey";
 export const committedVotesForDelegatorKey = "committedVotesForDelegatorKey";
+export const activeVoteResultsKey = "activeVoteResultsKey";

@@ -31,7 +31,7 @@ export function StakeUnstakePanel() {
     getStakingDataFetching,
     unstakeCoolDown,
   } = useStakingContext();
-  const { getDelegationStatus } = useDelegationContext();
+  const { isDelegate } = useDelegationContext();
   const { approveMutation, isApproving } = useApprove("stake");
   const { stakeMutation, isStaking } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } =
@@ -41,7 +41,6 @@ export function StakeUnstakePanel() {
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasPendingUnstake = pendingUnstake?.gt(0) ?? false;
-  const isDelegate = getDelegationStatus() === "delegate";
   const isReadyToUnstake =
     !isDelegate && !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
