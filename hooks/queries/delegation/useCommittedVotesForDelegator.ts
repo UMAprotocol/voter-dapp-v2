@@ -15,12 +15,9 @@ export function useCommittedVotesForDelegator() {
   const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
   const { voting } = useContractsContext();
-  const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
+  const { delegatorAddress, isDelegate } = useDelegationContext();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
-
-  const status = getDelegationStatus();
-  const delegatorAddress = getDelegatorAddress();
 
   const queryResult = useQuery(
     [committedVotesForDelegatorKey, address, delegatorAddress, roundId],
@@ -29,12 +26,8 @@ export function useCommittedVotesForDelegator() {
         ? getCommittedVotes(voting, delegatorAddress, roundId)
         : {},
     {
-      refetchInterval: status === "delegate" ? oneMinute : false,
-      enabled:
-        !!address &&
-        !isWrongChain &&
-        !!delegatorAddress &&
-        status === "delegate",
+      refetchInterval: isDelegate ? oneMinute : false,
+      enabled: !!address && !isWrongChain && !!delegatorAddress && isDelegate,
       initialData: {},
       onError,
     }

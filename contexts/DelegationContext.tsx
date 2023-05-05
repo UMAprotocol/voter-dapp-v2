@@ -23,7 +23,7 @@ import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
   delegationStatus: DelegationStatusT;
   isNoWalletConnected: boolean;
-  isNoDelegate: boolean;
+  isNoDelegation: boolean;
   isDelegate: boolean;
   isDelegator: boolean;
   isDelegatePending: boolean;
@@ -47,7 +47,7 @@ export interface DelegationContextState {
 export const defaultDelegationContextState: DelegationContextState = {
   delegationStatus: "no-wallet-connected",
   isNoWalletConnected: true,
-  isNoDelegate: false,
+  isNoDelegation: false,
   isDelegatePending: false,
   isDelegatorPending: false,
   isDelegate: false,
@@ -138,7 +138,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const { closePanel } = usePanelContext();
   const delegationStatus = getDelegationStatus();
   const isNoWalletConnected = delegationStatus === "no-wallet-connected";
-  const isNoDelegate = delegationStatus === "no-delegation";
+  const isNoDelegation = delegationStatus === "no-delegation";
   const isDelegatePending = delegationStatus === "delegate-pending";
   const isDelegatorPending = delegationStatus === "delegator-pending";
   const isDelegate = delegationStatus === "delegate";
@@ -190,16 +190,14 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   }
 
   function getDelegateAddress() {
-    const status = getDelegationStatus();
-    if (status === "delegator") return delegate;
-    if (status === "delegate") return address;
+    if (isDelegator) return delegate;
+    if (isDelegate) return address;
     return zeroAddress;
   }
 
   function getDelegatorAddress() {
-    const status = getDelegationStatus();
-    if (status === "delegator") return address;
-    if (status === "delegate") return voterFromDelegate;
+    if (isDelegator) return address;
+    if (isDelegate) return voterFromDelegate;
     return zeroAddress;
   }
 
@@ -384,7 +382,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       value={{
         delegationStatus,
         isNoWalletConnected,
-        isNoDelegate,
+        isNoDelegation,
         isDelegatePending,
         isDelegatorPending,
         isDelegate,

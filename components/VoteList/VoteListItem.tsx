@@ -42,7 +42,8 @@ export interface Props {
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
   isFetching: boolean;
-  delegationStatus?: string;
+  isDelegate: boolean;
+  isDelegator: boolean;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
@@ -57,7 +58,8 @@ export function VoteListItem({
   isFetching,
   setDirty,
   isDirty = false,
-  delegationStatus,
+  isDelegate,
+  isDelegator,
 }: Props) {
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
@@ -218,9 +220,9 @@ export function VoteListItem({
     if (phase === "commit") {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
-        if (delegationStatus === "delegator") {
+        if (isDelegator) {
           return "Committed by Delegate";
-        } else if (delegationStatus === "delegate") {
+        } else if (isDelegate) {
           return "Committed by Delegator";
         } else {
           return "Decrypt Error";
@@ -231,13 +233,13 @@ export function VoteListItem({
       if (!isCommitted) return "Not committed";
       if (!hasSigningKey) return "Requires signature";
       if (!decryptedVote || !canReveal) {
-        if (delegationStatus === "delegator") {
+        if (isDelegator) {
           if (isRevealed) {
             return "Delegate revealed";
           } else {
             return "Delegate must reveal";
           }
-        } else if (delegationStatus === "delegate") {
+        } else if (isDelegate) {
           if (isRevealed) {
             return "Delegator revealed";
           } else {

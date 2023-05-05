@@ -23,7 +23,7 @@ export function UpcomingVotes() {
   const voteList = voteListsByActivityStatus.upcoming;
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus } = useDelegationContext();
+  const { isDelegate, isDelegator } = useDelegationContext();
   const { showPagination, entriesToShow, ...paginationProps } =
     usePagination(voteList);
 
@@ -41,7 +41,8 @@ export function UpcomingVotes() {
               activityStatus="upcoming"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              delegationStatus={getDelegationStatus()}
+              isDelegate={isDelegate}
+              isDelegator={isDelegator}
               isFetching={getUserDependentIsFetching()}
             />
           ))}

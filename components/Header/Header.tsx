@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Wallet } from "components";
 import {
   green,
@@ -19,13 +18,19 @@ import NextLink from "next/link";
 import Bell from "public/assets/icons/bell.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Logo from "public/assets/logo.svg";
+import { useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
 import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
-  const { getDelegationStatus, getDelegationDataLoading, getDelegatorAddress } =
-    useDelegationContext();
+  const {
+    delegatorAddress,
+    isDelegate,
+    isDelegatePending,
+    isDelegator,
+    getDelegationDataLoading,
+  } = useDelegationContext();
 
   // theres a feature now to set the override address for various contexts. This allows us to query data based
   // on an arbitrary address, in all cases though this is based on the delegate/ delegator relationship. if we
@@ -34,11 +39,9 @@ export function Header() {
     useStakingContext();
   const { setAddressOverride: setUserContextAddress } = useUserContext();
   const { setAddressOverride: setVotesAddressOverride } = useVotesContext();
-  const delegationStatus = getDelegationStatus();
-  const delegatorAddress = getDelegatorAddress();
 
   useEffect(() => {
-    if (delegationStatus === "delegate") {
+    if (isDelegate) {
       const address = delegatorAddress;
       // these contexts have special logic to allow certain queries based on a different address, in this case
       // its the delegator address, so we can get things like stake/unstake balance, vote history and other data.
@@ -52,23 +55,17 @@ export function Header() {
       setVotesAddressOverride(undefined);
     }
   }, [
-    delegationStatus,
     delegatorAddress,
+    isDelegate,
     setUserContextAddress,
     setStakingAddressOverride,
     setVotesAddressOverride,
   ]);
 
-  const status = getDelegationStatus();
   const showDelegationNotification =
     !getDelegationDataLoading() &&
-    (status === "delegate" ||
-      status === "delegate-pending" ||
-      status === "delegator");
+    (isDelegate || isDelegatePending || isDelegator);
   const showV1RewardsNotification = v1Rewards?.totalRewards.gt(0);
-  const isDelegate = status === "delegate";
-  const isDelegator = status === "delegator";
-  const isDelegatePending = status === "delegate-pending";
 
   const delegationNotificationStyle = {
     "--color": isDelegate || isDelegator ? green : red500,

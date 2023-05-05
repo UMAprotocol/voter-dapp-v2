@@ -25,9 +25,7 @@ export function HowItWorks() {
   } = useStakingContext();
   const { countWrongVotes, countCorrectVotes, apr, userDataFetching } =
     useUserContext();
-  const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
-  const isDelegate = getDelegationStatus() === "delegate";
-  const delegatorAddress = getDelegatorAddress();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
 
   function openStakeUnstakePanel() {
     openPanel("stake");

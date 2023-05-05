@@ -6,21 +6,23 @@ import { NoDelegation } from "./NoDelegation";
 import { NoWalletConnected } from "./NoWalletConnected";
 
 export function Wallets() {
-  const { getDelegationStatus } = useDelegationContext();
-  const delegationStatus = getDelegationStatus();
+  const {
+    isNoWalletConnected,
+    isNoDelegation,
+    isDelegate,
+    isDelegator,
+    isDelegatePending,
+    isDelegatorPending,
+  } = useDelegationContext();
 
   return (
     <Wrapper>
-      {delegationStatus === "no-wallet-connected" && <NoWalletConnected />}
-      {delegationStatus === "no-delegation" && <NoDelegation />}
-      {delegationStatus === "delegator" && <IsDelegator />}
-      {delegationStatus === "delegate" && <IsDelegate />}
-      {delegationStatus === "delegator-pending" && (
-        <IsDelegator hasPending={true} />
-      )}
-      {delegationStatus === "delegate-pending" && (
-        <IsDelegate hasPending={true} />
-      )}
+      {isNoWalletConnected && <NoWalletConnected />}
+      {isNoDelegation && <NoDelegation />}
+      {isDelegator && <IsDelegator />}
+      {isDelegate && <IsDelegate />}
+      {isDelegatorPending && <IsDelegator hasPending={true} />}
+      {isDelegatePending && <IsDelegate hasPending={true} />}
     </Wrapper>
   );
 }

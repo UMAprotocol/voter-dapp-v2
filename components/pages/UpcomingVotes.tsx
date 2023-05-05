@@ -11,7 +11,12 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import {
+  useDelegationContext,
+  usePanelContext,
+  useVoteTimingContext,
+  useVotesContext,
+} from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
@@ -23,6 +28,7 @@ export function UpcomingVotes() {
     getUserIndependentIsLoading,
     getUserDependentIsFetching,
   } = useVotesContext();
+  const { isDelegate, isDelegator } = useDelegationContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } =
@@ -59,6 +65,8 @@ export function UpcomingVotes() {
                           activityStatus="upcoming"
                           moreDetailsAction={() => openPanel("vote", vote)}
                           key={vote.uniqueKey}
+                          isDelegate={isDelegate}
+                          isDelegator={isDelegator}
                           isFetching={getUserDependentIsFetching()}
                         />
                       ))}
