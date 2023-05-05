@@ -7,21 +7,19 @@ import { RevealPhase } from "./RevealPhase";
 
 export function VoteTimeline() {
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { getActivityStatus } = useVotesContext();
+  const { activityStatus } = useVotesContext();
 
-  const status = getActivityStatus();
-
-  if (status === "past") return null;
+  if (activityStatus === "past") return null;
 
   return (
     <>
-      {status === "upcoming" && (
+      {activityStatus === "upcoming" && (
         <NextRoundStartsIn
           phase={phase}
           timeRemaining={millisecondsUntilPhaseEnds}
         />
       )}
-      {status === "active" && (
+      {activityStatus === "active" && (
         <Wrapper>
           <CommitPhase
             phase={phase}

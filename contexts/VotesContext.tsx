@@ -56,7 +56,6 @@ export interface VotesContextState {
   encryptedVotes: EncryptedVotesByKeyT;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT;
-  getActivityStatus: () => ActivityStatusT;
   getUserDependentIsLoading: () => boolean;
   getUserIndependentIsLoading: () => boolean;
   getIsLoading: () => boolean;
@@ -92,7 +91,6 @@ export const defaultVotesContextState: VotesContextState = {
   encryptedVotes: {},
   decryptedVotes: {},
   contentfulData: {},
-  getActivityStatus: () => "past",
   getUserDependentIsLoading: () => false,
   getUserIndependentIsLoading: () => false,
   getIsLoading: () => false,
@@ -347,7 +345,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         encryptedVotes,
         decryptedVotes,
         contentfulData,
-        getActivityStatus,
         getUserDependentIsLoading,
         getUserIndependentIsLoading,
         getIsLoading,

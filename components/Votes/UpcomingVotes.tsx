@@ -15,18 +15,22 @@ import {
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, getActivityStatus, getUserDependentIsFetching } =
-    useVotesContext();
+  const {
+    activityStatus,
+    voteListsByActivityStatus,
+    getUserDependentIsFetching,
+  } = useVotesContext();
+  const voteList = voteListsByActivityStatus.upcoming;
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { getDelegationStatus } = useDelegationContext();
   const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVoteList);
+    usePagination(voteList);
 
   return (
     <>
       <Title>Upcoming votes:</Title>
-      {getActivityStatus() === "upcoming" && <VoteTimeline />}
+      {activityStatus === "upcoming" && <VoteTimeline />}
       <VotesTableWrapper>
         <VoteList
           headings={<VoteTableHeadings activityStatus="upcoming" />}
