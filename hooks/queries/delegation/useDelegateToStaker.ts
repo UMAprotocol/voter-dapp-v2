@@ -12,9 +12,8 @@ import { getDelegateToStaker } from "web3";
 
 export function useDelegateToStaker() {
   const { voting } = useContractsContext();
-  const {
-    data: { delegate },
-  } = useStakerDetails();
+  const { data: stakerDetails } = useStakerDetails();
+  const { delegate } = stakerDetails ?? {};
   const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });

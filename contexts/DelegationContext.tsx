@@ -132,9 +132,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   } = useTerminateRelationshipWithDelegator();
   const { votingWriter } = useContractsContext();
   const { address } = useUserContext();
-  const {
-    data: { delegate },
-  } = useStakerDetails();
+  const { data: stakerDetails } = useStakerDetails();
+  const { delegate } = stakerDetails ?? {};
   const { closePanel } = usePanelContext();
   const pendingReceivedRequestsToBeDelegate =
     getPendingReceivedRequestsToBeDelegate();

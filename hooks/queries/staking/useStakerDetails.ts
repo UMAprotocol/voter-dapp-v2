@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constant";
-import { BigNumber } from "ethers";
-import { zeroAddress } from "helpers";
 import {
   useAccountDetails,
   useContractsContext,
@@ -9,14 +7,6 @@ import {
   useWalletContext,
 } from "hooks";
 import { getStakerDetails } from "web3";
-
-const initialData = {
-  pendingUnstake: BigNumber.from(0),
-  canUnstakeTime: new Date(0),
-  delegate: zeroAddress,
-  rewardsPaidPerToken: BigNumber.from(0),
-  outstandingRewards: BigNumber.from(0),
-};
 
 export function useStakerDetails(addressOverride?: string) {
   const { voting } = useContractsContext();
@@ -26,10 +16,9 @@ export function useStakerDetails(addressOverride?: string) {
   const address = addressOverride || defaultAddress;
   return useQuery(
     [stakerDetailsKey, address],
-    () => (address ? getStakerDetails(voting, address) : initialData),
+    () => getStakerDetails(voting, address),
     {
       enabled: !!address && !isWrongChain,
-      initialData,
       onError,
     }
   );

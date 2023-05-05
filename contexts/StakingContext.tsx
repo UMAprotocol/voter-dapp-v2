@@ -71,15 +71,16 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   const address = addressOverride || defaultAddress;
 
   const {
-    data: {
-      pendingUnstake,
-      canUnstakeTime,
-      rewardsPaidPerToken,
-      outstandingRewards: voterOutstandingRewards,
-    },
+    data: stakerDetails,
     isLoading: stakerDetailsLoading,
     isFetching: stakerDetailsFetching,
   } = useStakerDetails(address);
+  const {
+    pendingUnstake,
+    canUnstakeTime,
+    rewardsPaidPerToken,
+    outstandingRewards: voterOutstandingRewards,
+  } = stakerDetails || {};
   const {
     data: stakedBalance,
     isLoading: stakedBalanceLoading,
@@ -106,9 +107,9 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isFetching: unstakeCoolDownFetching,
   } = useUnstakeCoolDown();
   const { data: v1Rewards } = useV1Rewards();
-  const [outstandingRewards, setOutstandingRewards] = useState(
-    BigNumber.from(0)
-  );
+  const [outstandingRewards, setOutstandingRewards] = useState<
+    BigNumber | undefined
+  >(undefined);
   const { data: oldDesignatedVotingAccount } =
     useIsOldDesignatedVotingAccount();
 
