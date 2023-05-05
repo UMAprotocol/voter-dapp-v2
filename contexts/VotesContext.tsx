@@ -143,11 +143,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: decryptedVotesIsLoading,
     isFetching: decryptedVotesIsFetching,
   } = useDecryptedVotes(roundId);
-  const {
-    data: { voteHistoryByKey },
-  } = useUserVotingAndStakingDetails(addressOverride);
+  const { data: votingAndStakingDetails } =
+    useUserVotingAndStakingDetails(addressOverride);
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
   const { data: augmentedData } = useAugmentedVoteData();
+  const { voteHistoryByKey } = votingAndStakingDetails || {};
   function getUserDependentIsLoading() {
     if (!address) return false;
 
@@ -251,7 +251,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           : decryptedVotes[uniqueKey],
         contentfulData: contentfulData[uniqueKey],
         augmentedData: augmentedData[uniqueKey],
-        voteHistory: voteHistoryByKey[uniqueKey] ?? {
+        voteHistory: voteHistoryByKey?.[uniqueKey] ?? {
           uniqueKey,
           voted: false,
           correctness: false,

@@ -1,14 +1,14 @@
 import { WalletState } from "@web3-onboard/core";
 import { Account } from "@web3-onboard/core/dist/types";
 import { BigNumber } from "ethers";
+import { config } from "helpers/config";
 import {
   useAccountDetails,
   useUserVotingAndStakingDetails,
   useWalletContext,
 } from "hooks";
-import { createContext, ReactNode, useState } from "react";
-import { VoteHistoryByKeyT, SigningKey } from "types";
-import { config } from "helpers/config";
+import { ReactNode, createContext, useState } from "react";
+import { SigningKey, VoteHistoryByKeyT } from "types";
 
 export interface UserContextState {
   connectedWallet: WalletState | undefined;
@@ -66,19 +66,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
   const { signingKeys, connectedChainId } = useWalletContext();
   const {
-    data: {
-      apr,
-      countNoVotes,
-      countWrongVotes,
-      countCorrectVotes,
-      countReveals,
-      cumulativeCalculatedSlash,
-      cumulativeCalculatedSlashPercentage,
-      voteHistoryByKey,
-    },
+    data: votingAndStakingDetails,
     isLoading: userDataLoading,
     isFetching: userDataFetching,
   } = useUserVotingAndStakingDetails(addressOverride);
+  const {
+    apr,
+    countNoVotes,
+    countWrongVotes,
+    countCorrectVotes,
+    countReveals,
+    cumulativeCalculatedSlash,
+    cumulativeCalculatedSlashPercentage,
+    voteHistoryByKey,
+  } = votingAndStakingDetails || {};
 
   const walletIcon = connectedWallet?.icon;
   const signingKey = signingKeys[address];

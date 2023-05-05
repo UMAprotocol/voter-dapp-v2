@@ -1,4 +1,4 @@
-import { InfoBar, LoadingSkeleton, Tooltip } from "components";
+import { InfoBar, Loader, Tooltip } from "components";
 import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther } from "helpers";
@@ -16,15 +16,9 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const {
-    stakedBalance,
-    unstakedBalance,
-    outstandingRewards,
-    getStakingDataFetching,
-    pendingUnstake,
-  } = useStakingContext();
-  const { countWrongVotes, countCorrectVotes, apr, userDataFetching } =
-    useUserContext();
+  const { stakedBalance, unstakedBalance, outstandingRewards, pendingUnstake } =
+    useStakingContext();
+  const { countWrongVotes, countCorrectVotes, apr } = useUserContext();
   const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
   const isDelegate = getDelegationStatus() === "delegate";
   const delegatorAddress = getDelegatorAddress();
@@ -45,10 +39,6 @@ export function HowItWorks() {
     )
       return;
     return unstakedBalance.add(stakedBalance).add(pendingUnstake);
-  }
-
-  function isLoading() {
-    return getStakingDataFetching() || userDataFetching;
   }
 
   function getTotalVotes() {
@@ -93,19 +83,15 @@ export function HowItWorks() {
                 "You are staking"
               )}{" "}
               <Strong>
-                {stakedBalance === undefined ? (
-                  <LoadingSkeleton width={50} />
-                ) : (
-                  formatNumberForDisplay(stakedBalance)
-                )}
+                <Loader dataToWatch={stakedBalance} width={50}>
+                  {formatNumberForDisplay(stakedBalance)}
+                </Loader>
               </Strong>{" "}
               {isDelegate ? "of their" : "of your"}{" "}
               <Strong>
-                {isLoading() ? (
-                  <LoadingSkeleton width={50} />
-                ) : (
-                  formatNumberForDisplay(totalTokens())
-                )}
+                <Loader dataToWatch={totalTokens()} width={50}>
+                  {formatNumberForDisplay(totalTokens())}
+                </Loader>
               </Strong>{" "}
               UMA tokens.
             </>
@@ -126,22 +112,20 @@ export function HowItWorks() {
             <>
               You have voted in{" "}
               <Strong>
-                {countCorrectVotes === undefined ||
-                countWrongVotes === undefined ? (
-                  <LoadingSkeleton width={50} />
-                ) : (
-                  formatNumberForDisplay(getTotalVotes(), { decimals: 0 })
-                )}
+                <Loader
+                  dataToWatch={[countCorrectVotes, countWrongVotes]}
+                  width={50}
+                >
+                  {formatNumberForDisplay(getTotalVotes(), { decimals: 0 })}
+                </Loader>
               </Strong>{" "}
               vote
               {getTotalVotes()?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"},
               and are earning{" "}
               <Strong>
-                {apr === undefined ? (
-                  <LoadingSkeleton width={50} />
-                ) : (
-                  formatNumberForDisplay(apr, { decimals: 1 })
-                )}
+                <Loader dataToWatch={apr} width={50}>
+                  {formatNumberForDisplay(apr, { decimals: 1 })}
+                </Loader>
                 % APR.
               </Strong>{" "}
             </>
@@ -162,11 +146,9 @@ export function HowItWorks() {
             <>
               Your unclaimed UMA rewards:{" "}
               <Strong>
-                {outstandingRewards === undefined ? (
-                  <LoadingSkeleton width={50} />
-                ) : (
-                  formatNumberForDisplay(outstandingRewards, { decimals: 3 })
-                )}
+                <Loader dataToWatch={outstandingRewards} width={50}>
+                  {formatNumberForDisplay(outstandingRewards, { decimals: 3 })}
+                </Loader>
               </Strong>{" "}
             </>
           }

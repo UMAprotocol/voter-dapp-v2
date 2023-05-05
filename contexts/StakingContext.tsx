@@ -12,7 +12,7 @@ import {
   useV1Rewards,
 } from "hooks";
 import { useIsOldDesignatedVotingAccount } from "hooks/queries/rewards/useIsOldDesignatedVotingAccount";
-import { createContext, ReactNode, useState } from "react";
+import { ReactNode, createContext, useState } from "react";
 import { OldDesignatedVotingAccountT, V1RewardsT } from "types";
 
 export interface StakingContextState {
@@ -109,6 +109,19 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   }, 100);
 
   function updateOutstandingRewards() {
+    // if any of the inputs are undefined return
+    if (
+      !voterOutstandingRewards ||
+      !stakedBalance ||
+      !rewardsPaidPerToken ||
+      !cumulativeStake ||
+      !rewardPerTokenStored ||
+      !updateTime ||
+      !emissionRate
+    ) {
+      return;
+    }
+
     const calculatedOutstandingRewards = calculateOutstandingRewards({
       voterOutstandingRewards,
       stakedBalance,
