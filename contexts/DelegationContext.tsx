@@ -6,8 +6,8 @@ import {
   useDelegateToStaker,
   useDelegatorSetEventsForDelegate,
   useDelegatorSetEventsForDelegator,
-  useIgnoredRequestToBeDelegateAddresses,
   useIgnoreReceivedRequestToBeDelegate,
+  useIgnoredRequestToBeDelegateAddresses,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
   useSendRequestToBeDelegate,
@@ -18,20 +18,22 @@ import {
   useUserContext,
   useVoterFromDelegate,
 } from "hooks";
-import { createContext, ReactNode } from "react";
+import { ReactNode, createContext } from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
   delegationStatus: DelegationStatusT;
+  isNoWalletConnected: boolean;
+  isNoDelegate: boolean;
   isDelegate: boolean;
   isDelegator: boolean;
+  isDelegatePending: boolean;
+  isDelegatorPending: boolean;
+  delegateAddress: string | undefined;
   delegatorAddress: string | undefined;
-  getDelegationStatus: () => DelegationStatusT;
-  getPendingReceivedRequestsToBeDelegate: () => DelegationEventT[];
-  getHasPendingReceivedRequestsToBeDelegate: () => boolean;
-  getPendingSentRequestsToBeDelegate: () => DelegationEventT[];
-  getHasPendingSentRequestsToBeDelegate: () => boolean;
-  getDelegateAddress: () => string | undefined;
-  getDelegatorAddress: () => string | undefined;
+  pendingReceivedRequestsToBeDelegate: DelegationEventT[];
+  hasPendingReceivedRequestsToBeDelegate: boolean;
+  pendingSentRequestsToBeDelegate: DelegationEventT[];
+  hasPendingSentRequestsToBeDelegate: boolean;
   sendRequestToBeDelegate: (delegateAddress: string) => void;
   cancelSentRequestToBeDelegate: () => void;
   acceptReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
@@ -44,16 +46,18 @@ export interface DelegationContextState {
 
 export const defaultDelegationContextState: DelegationContextState = {
   delegationStatus: "no-wallet-connected",
+  isNoWalletConnected: true,
+  isNoDelegate: false,
+  isDelegatePending: false,
+  isDelegatorPending: false,
   isDelegate: false,
   isDelegator: false,
+  delegateAddress: undefined,
   delegatorAddress: undefined,
-  getDelegationStatus: () => "no-wallet-connected",
-  getPendingReceivedRequestsToBeDelegate: () => [],
-  getHasPendingReceivedRequestsToBeDelegate: () => false,
-  getPendingSentRequestsToBeDelegate: () => [],
-  getHasPendingSentRequestsToBeDelegate: () => false,
-  getDelegateAddress: () => zeroAddress,
-  getDelegatorAddress: () => zeroAddress,
+  pendingReceivedRequestsToBeDelegate: [],
+  hasPendingReceivedRequestsToBeDelegate: false,
+  pendingSentRequestsToBeDelegate: [],
+  hasPendingSentRequestsToBeDelegate: false,
   sendRequestToBeDelegate: () => null,
   terminateRelationshipWithDelegate: () => null,
   terminateRelationshipWithDelegator: () => null,
@@ -133,9 +137,21 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
   const delegationStatus = getDelegationStatus();
+  const isNoWalletConnected = delegationStatus === "no-wallet-connected";
+  const isNoDelegate = delegationStatus === "no-delegation";
+  const isDelegatePending = delegationStatus === "delegate-pending";
+  const isDelegatorPending = delegationStatus === "delegator-pending";
   const isDelegate = delegationStatus === "delegate";
   const isDelegator = delegationStatus === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
+  const delegateAddress = getDelegateAddress();
+  const pendingReceivedRequestsToBeDelegate =
+    getPendingReceivedRequestsToBeDelegate();
+  const hasPendingReceivedRequestsToBeDelegate =
+    pendingReceivedRequestsToBeDelegate.length > 0;
+  const pendingSentRequestsToBeDelegate = getPendingSentRequestsToBeDelegate();
+  const hasPendingSentRequestsToBeDelegate =
+    getHasPendingSentRequestsToBeDelegate();
 
   function getDelegationDataLoading() {
     return (
@@ -209,7 +225,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     )
       return "delegator";
     // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
-    if (getHasPendingReceivedRequestsToBeDelegate()) return "delegate-pending";
+    if (hasPendingReceivedRequestsToBeDelegate) return "delegate-pending";
     // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
     if (getHasPendingSentRequestsToBeDelegate()) return "delegator-pending";
     // if none are true we assume the user has no delegation
@@ -230,10 +246,6 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return (
       delegatorSetEventsForDelegate && delegatorSetEventsForDelegate.length > 0
     );
-  }
-
-  function getHasPendingReceivedRequestsToBeDelegate() {
-    return getPendingReceivedRequestsToBeDelegate().length > 0;
   }
 
   function getHasPendingSentRequestsToBeDelegate() {
@@ -371,16 +383,18 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     <DelegationContext.Provider
       value={{
         delegationStatus,
+        isNoWalletConnected,
+        isNoDelegate,
+        isDelegatePending,
+        isDelegatorPending,
         isDelegate,
         isDelegator,
         delegatorAddress,
-        getDelegationStatus,
-        getDelegateAddress,
-        getDelegatorAddress,
-        getPendingReceivedRequestsToBeDelegate,
-        getHasPendingReceivedRequestsToBeDelegate,
-        getPendingSentRequestsToBeDelegate,
-        getHasPendingSentRequestsToBeDelegate,
+        delegateAddress,
+        pendingReceivedRequestsToBeDelegate,
+        pendingSentRequestsToBeDelegate,
+        hasPendingSentRequestsToBeDelegate,
+        hasPendingReceivedRequestsToBeDelegate,
         sendRequestToBeDelegate,
         terminateRelationshipWithDelegate,
         terminateRelationshipWithDelegator,
