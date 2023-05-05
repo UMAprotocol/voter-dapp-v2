@@ -21,6 +21,10 @@ import {
 import { createContext, ReactNode } from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
+  delegationStatus: DelegationStatusT;
+  isDelegate: boolean;
+  isDelegator: boolean;
+  delegatorAddress: string | undefined;
   getDelegationStatus: () => DelegationStatusT;
   getPendingReceivedRequestsToBeDelegate: () => DelegationEventT[];
   getHasPendingReceivedRequestsToBeDelegate: () => boolean;
@@ -39,6 +43,10 @@ export interface DelegationContextState {
 }
 
 export const defaultDelegationContextState: DelegationContextState = {
+  delegationStatus: "no-wallet-connected",
+  isDelegate: false,
+  isDelegator: false,
+  delegatorAddress: undefined,
   getDelegationStatus: () => "no-wallet-connected",
   getPendingReceivedRequestsToBeDelegate: () => [],
   getHasPendingReceivedRequestsToBeDelegate: () => false,
@@ -124,6 +132,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: { delegate },
   } = useStakerDetails();
   const { closePanel } = usePanelContext();
+  const delegationStatus = getDelegationStatus();
+  const isDelegate = delegationStatus === "delegate";
+  const isDelegator = delegationStatus === "delegator";
+  const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
 
   function getDelegationDataLoading() {
     return (
@@ -358,6 +370,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   return (
     <DelegationContext.Provider
       value={{
+        delegationStatus,
+        isDelegate,
+        isDelegator,
+        delegatorAddress,
         getDelegationStatus,
         getDelegateAddress,
         getDelegatorAddress,

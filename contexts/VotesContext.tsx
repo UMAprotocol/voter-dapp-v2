@@ -35,6 +35,13 @@ import {
 } from "types";
 
 export interface VotesContextState {
+  voteListsByActivityStatus: Record<ActivityStatusT, VoteT[]>;
+  hasPreviouslyCommittedAll: boolean;
+  votesToReveal: VoteT[];
+  activityStatus: ActivityStatusT;
+  isActive: boolean;
+  isUpcoming: boolean;
+  isPast: boolean;
   hasActiveVotes: boolean | undefined;
   activeVotesByKey: PriceRequestByKeyT;
   activeVoteList: VoteT[];
@@ -60,6 +67,17 @@ export interface VotesContextState {
 }
 
 export const defaultVotesContextState: VotesContextState = {
+  voteListsByActivityStatus: {
+    active: [],
+    upcoming: [],
+    past: [],
+  },
+  hasPreviouslyCommittedAll: false,
+  votesToReveal: [],
+  activityStatus: "past",
+  isActive: false,
+  isUpcoming: false,
+  isPast: false,
   hasActiveVotes: undefined,
   activeVotesByKey: {},
   activeVoteList: [],
@@ -288,9 +306,33 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const pastVoteList = getVotesWithData(pastVotesByKey, decryptedVotes);
   const pastVotesV2List = pastVoteList.filter((vote) => !vote.isV1);
 
+  const activityStatus = getActivityStatus();
+  const isActive = activityStatus === "active";
+  const isUpcoming = activityStatus === "upcoming";
+  const isPast = activityStatus === "past";
+  const votesToReveal = activeVoteList.filter(
+    ({ isCommitted, decryptedVote, isRevealed, canReveal }) =>
+      isCommitted && !!decryptedVote && isRevealed === false && canReveal
+  );
+  const voteListsByActivityStatus = {
+    active: activeVoteList,
+    upcoming: upcomingVoteList,
+    past: pastVoteList,
+  };
+  const hasPreviouslyCommittedAll =
+    activeVoteList.filter(({ decryptedVote }) => decryptedVote).length ===
+    activeVoteList.length;
+
   return (
     <VotesContext.Provider
       value={{
+        hasPreviouslyCommittedAll,
+        voteListsByActivityStatus,
+        votesToReveal,
+        activityStatus,
+        isActive,
+        isUpcoming,
+        isPast,
         hasActiveVotes,
         activeVotesByKey,
         activeVoteList,

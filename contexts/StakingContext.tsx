@@ -16,6 +16,7 @@ import { createContext, ReactNode, useState } from "react";
 import { OldDesignatedVotingAccountT, V1RewardsT } from "types";
 
 export interface StakingContextState {
+  hasStaked: boolean;
   stakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
@@ -32,6 +33,7 @@ export interface StakingContextState {
 }
 
 export const defaultStakingContextState: StakingContextState = {
+  hasStaked: false,
   stakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
@@ -148,9 +150,12 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  const hasStaked = stakedBalance?.gt(0) ?? false;
+
   return (
     <StakingContext.Provider
       value={{
+        hasStaked,
         stakedBalance,
         unstakedBalance,
         pendingUnstake,
