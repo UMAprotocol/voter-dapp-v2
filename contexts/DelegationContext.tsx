@@ -40,8 +40,22 @@ export interface DelegationContextState {
   ignoreReceivedRequestToBeDelegate: (delegatorAddress: string) => void;
   terminateRelationshipWithDelegate: () => void;
   terminateRelationshipWithDelegator: () => void;
-  getDelegationDataLoading: () => boolean;
-  getDelegationDataFetching: () => boolean;
+  isLoading: boolean;
+  isMutating: boolean;
+  isBusy: boolean;
+  receivedRequestsToBeDelegateLoading: boolean;
+  sentRequestsToBeDelegateLoading: boolean;
+  delegatorSetEventsForDelegateLoading: boolean;
+  voterFromDelegateLoading: boolean;
+  delegateToStakerLoading: boolean;
+  delegatorSetEventsForDelegatorLoading: boolean;
+  ignoredRequestToBeDelegateAddressesLoading: boolean;
+  isIgnoringRequestToBeDelegate: boolean;
+  isSendingRequestToBeDelegate: boolean;
+  isCancelingSentRequestToBeDelegate: boolean;
+  isAcceptingReceivedRequestToBeDelegate: boolean;
+  isTerminatingRelationshipWithDelegate: boolean;
+  isTerminatingRelationshipWithDelegator: boolean;
 }
 
 export const defaultDelegationContextState: DelegationContextState = {
@@ -64,8 +78,22 @@ export const defaultDelegationContextState: DelegationContextState = {
   acceptReceivedRequestToBeDelegate: () => null,
   ignoreReceivedRequestToBeDelegate: () => null,
   cancelSentRequestToBeDelegate: () => null,
-  getDelegationDataLoading: () => false,
-  getDelegationDataFetching: () => false,
+  isLoading: false,
+  isMutating: false,
+  isBusy: false,
+  receivedRequestsToBeDelegateLoading: false,
+  sentRequestsToBeDelegateLoading: false,
+  delegatorSetEventsForDelegateLoading: false,
+  voterFromDelegateLoading: false,
+  delegateToStakerLoading: false,
+  delegatorSetEventsForDelegatorLoading: false,
+  ignoredRequestToBeDelegateAddressesLoading: false,
+  isIgnoringRequestToBeDelegate: false,
+  isSendingRequestToBeDelegate: false,
+  isCancelingSentRequestToBeDelegate: false,
+  isAcceptingReceivedRequestToBeDelegate: false,
+  isTerminatingRelationshipWithDelegate: false,
+  isTerminatingRelationshipWithDelegator: false,
 };
 
 export const DelegationContext = createContext<DelegationContextState>(
@@ -76,37 +104,26 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const {
     data: receivedRequestsToBeDelegate,
     isLoading: receivedRequestsToBeDelegateLoading,
-    isFetching: receivedRequestsToBeDelegateFetching,
   } = useReceivedRequestsToBeDelegate();
   const {
     data: sentRequestsToBeDelegate,
     isLoading: sentRequestsToBeDelegateLoading,
-    isFetching: sentRequestsToBeDelegateFetching,
   } = useSentRequestsToBeDelegate();
   const {
     data: delegatorSetEventsForDelegate,
     isLoading: delegatorSetEventsForDelegateLoading,
-    isFetching: delegatorSetEventsForDelegateFetching,
   } = useDelegatorSetEventsForDelegate();
   const {
     data: delegatorSetEventsForDelegator,
     isLoading: delegatorSetEventsForDelegatorLoading,
-    isFetching: delegatorSetEventsForDelegatorFetching,
   } = useDelegatorSetEventsForDelegator();
-  const {
-    data: voterFromDelegate,
-    isLoading: voterFromDelegateLoading,
-    isFetching: voterFromDelegateFetching,
-  } = useVoterFromDelegate();
-  const {
-    data: delegateToStaker,
-    isLoading: delegateToStakerLoading,
-    isFetching: delegateToStakerFetching,
-  } = useDelegateToStaker();
+  const { data: voterFromDelegate, isLoading: voterFromDelegateLoading } =
+    useVoterFromDelegate();
+  const { data: delegateToStaker, isLoading: delegateToStakerLoading } =
+    useDelegateToStaker();
   const {
     data: ignoredRequestToBeDelegateAddresses,
     isLoading: ignoredRequestToBeDelegateAddressesLoading,
-    isFetching: ignoredRequestToBeDelegateAddressesFetching,
   } = useIgnoredRequestToBeDelegateAddresses();
   const {
     ignoreReceivedRequestToBeDelegateMutation,
@@ -151,71 +168,22 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const isDelegator = delegationStatus === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
   const delegateAddress = getDelegateAddress();
-
-  const getDelegationDataLoading = useCallback(() => {
-    return (
-      receivedRequestsToBeDelegateLoading ||
-      sentRequestsToBeDelegateLoading ||
-      delegatorSetEventsForDelegateLoading ||
-      voterFromDelegateLoading ||
-      delegateToStakerLoading ||
-      delegatorSetEventsForDelegatorLoading ||
-      ignoredRequestToBeDelegateAddressesLoading ||
-      isIgnoringRequestToBeDelegate ||
-      isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate ||
-      isAcceptingReceivedRequestToBeDelegate ||
-      isTerminatingRelationshipWithDelegate ||
-      isTerminatingRelationshipWithDelegator
-    );
-  }, [
-    delegateToStakerLoading,
-    delegatorSetEventsForDelegateLoading,
-    delegatorSetEventsForDelegatorLoading,
-    ignoredRequestToBeDelegateAddressesLoading,
-    isAcceptingReceivedRequestToBeDelegate,
-    isCancelingSentRequestToBeDelegate,
-    isIgnoringRequestToBeDelegate,
-    isSendingRequestToBeDelegate,
-    isTerminatingRelationshipWithDelegate,
-    isTerminatingRelationshipWithDelegator,
-    receivedRequestsToBeDelegateLoading,
-    sentRequestsToBeDelegateLoading,
-    voterFromDelegateLoading,
-  ]);
-
-  const getDelegationDataFetching = useCallback(() => {
-    return (
-      receivedRequestsToBeDelegateFetching ||
-      sentRequestsToBeDelegateFetching ||
-      delegatorSetEventsForDelegateFetching ||
-      voterFromDelegateFetching ||
-      delegateToStakerFetching ||
-      delegatorSetEventsForDelegatorFetching ||
-      ignoredRequestToBeDelegateAddressesFetching ||
-      isIgnoringRequestToBeDelegate ||
-      isSendingRequestToBeDelegate ||
-      isCancelingSentRequestToBeDelegate ||
-      isAcceptingReceivedRequestToBeDelegate ||
-      isTerminatingRelationshipWithDelegate ||
-      isTerminatingRelationshipWithDelegator
-    );
-  }, [
-    delegateToStakerFetching,
-    delegatorSetEventsForDelegateFetching,
-    delegatorSetEventsForDelegatorFetching,
-    ignoredRequestToBeDelegateAddressesFetching,
-    isAcceptingReceivedRequestToBeDelegate,
-    isCancelingSentRequestToBeDelegate,
-    isIgnoringRequestToBeDelegate,
-    isSendingRequestToBeDelegate,
-    isTerminatingRelationshipWithDelegate,
-    isTerminatingRelationshipWithDelegator,
-    receivedRequestsToBeDelegateFetching,
-    sentRequestsToBeDelegateFetching,
-    voterFromDelegateFetching,
-  ]);
-
+  const isLoading =
+    receivedRequestsToBeDelegateLoading ||
+    sentRequestsToBeDelegateLoading ||
+    delegatorSetEventsForDelegateLoading ||
+    voterFromDelegateLoading ||
+    delegateToStakerLoading ||
+    delegatorSetEventsForDelegatorLoading ||
+    ignoredRequestToBeDelegateAddressesLoading;
+  const isMutating =
+    isIgnoringRequestToBeDelegate ||
+    isSendingRequestToBeDelegate ||
+    isCancelingSentRequestToBeDelegate ||
+    isAcceptingReceivedRequestToBeDelegate ||
+    isTerminatingRelationshipWithDelegate ||
+    isTerminatingRelationshipWithDelegator;
+  const isBusy = isLoading || isMutating;
   function getDelegateAddress() {
     if (isDelegator) return delegate;
     if (isDelegate) return address;
@@ -438,31 +406,59 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       acceptReceivedRequestToBeDelegate,
       ignoreReceivedRequestToBeDelegate,
       cancelSentRequestToBeDelegate,
-      getDelegationDataLoading,
-      getDelegationDataFetching,
+      isLoading,
+      isMutating,
+      isBusy,
+      receivedRequestsToBeDelegateLoading,
+      sentRequestsToBeDelegateLoading,
+      delegatorSetEventsForDelegateLoading,
+      voterFromDelegateLoading,
+      delegateToStakerLoading,
+      delegatorSetEventsForDelegatorLoading,
+      ignoredRequestToBeDelegateAddressesLoading,
+      isIgnoringRequestToBeDelegate,
+      isSendingRequestToBeDelegate,
+      isCancelingSentRequestToBeDelegate,
+      isAcceptingReceivedRequestToBeDelegate,
+      isTerminatingRelationshipWithDelegate,
+      isTerminatingRelationshipWithDelegator,
     }),
     [
       acceptReceivedRequestToBeDelegate,
       cancelSentRequestToBeDelegate,
       delegateAddress,
+      delegateToStakerLoading,
       delegationStatus,
       delegatorAddress,
-      getDelegationDataFetching,
-      getDelegationDataLoading,
+      delegatorSetEventsForDelegateLoading,
+      delegatorSetEventsForDelegatorLoading,
       hasPendingReceivedRequestsToBeDelegate,
       hasPendingSentRequestsToBeDelegate,
       ignoreReceivedRequestToBeDelegate,
+      ignoredRequestToBeDelegateAddressesLoading,
+      isAcceptingReceivedRequestToBeDelegate,
+      isBusy,
+      isCancelingSentRequestToBeDelegate,
       isDelegate,
       isDelegatePending,
       isDelegator,
       isDelegatorPending,
+      isIgnoringRequestToBeDelegate,
+      isLoading,
+      isMutating,
       isNoDelegation,
       isNoWalletConnected,
+      isSendingRequestToBeDelegate,
+      isTerminatingRelationshipWithDelegate,
+      isTerminatingRelationshipWithDelegator,
       pendingReceivedRequestsToBeDelegate,
       pendingSentRequestsToBeDelegate,
+      receivedRequestsToBeDelegateLoading,
       sendRequestToBeDelegate,
+      sentRequestsToBeDelegateLoading,
       terminateRelationshipWithDelegate,
       terminateRelationshipWithDelegator,
+      voterFromDelegateLoading,
     ]
   );
   return (

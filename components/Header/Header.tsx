@@ -29,7 +29,7 @@ export function Header() {
     isDelegate,
     isDelegatePending,
     isDelegator,
-    getDelegationDataLoading,
+    isLoading: delegationDataLoading,
   } = useDelegationContext();
 
   // theres a feature now to set the override address for various contexts. This allows us to query data based
@@ -63,8 +63,7 @@ export function Header() {
   ]);
 
   const showDelegationNotification =
-    !getDelegationDataLoading() &&
-    (isDelegate || isDelegatePending || isDelegator);
+    !delegationDataLoading && (isDelegate || isDelegatePending || isDelegator);
   const showV1RewardsNotification = v1Rewards?.totalRewards.gt(0);
 
   const delegationNotificationStyle = {

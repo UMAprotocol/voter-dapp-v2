@@ -34,7 +34,7 @@ export function DelegationPanel() {
     isDelegatorPending,
     sendRequestToBeDelegate,
     pendingSentRequestsToBeDelegate,
-    getDelegationDataFetching,
+    isBusy,
   } = useDelegationContext();
 
   useEffect(() => {
@@ -85,10 +85,6 @@ export function DelegationPanel() {
     return false;
   }
 
-  function isLoading() {
-    return getDelegationDataFetching();
-  }
-
   return (
     <PanelWrapper>
       <PanelTitle title="Add delegate wallet" />
@@ -123,7 +119,7 @@ export function DelegationPanel() {
             After acceptance, the delegate can vote on your behalf.
           </StepWrapper>
         </StepsWrapper>
-        {isLoading() ? (
+        {isBusy ? (
           <LoadingSpinnerWrapper>
             <LoadingSpinner />
           </LoadingSpinnerWrapper>
