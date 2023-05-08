@@ -12,17 +12,11 @@ import {
   useV1Rewards,
 } from "hooks";
 import { useIsOldDesignatedVotingAccount } from "hooks/queries/rewards/useIsOldDesignatedVotingAccount";
-import {
-  ReactNode,
-  createContext,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, createContext, useMemo, useState } from "react";
 import { OldDesignatedVotingAccountT, V1RewardsT } from "types";
 
 export interface StakingContextState {
-  hasStaked: boolean;
+  hasStaked: boolean | undefined;
   stakedBalance: BigNumber | undefined;
   unstakedBalance: BigNumber | undefined;
   pendingUnstake: BigNumber | undefined;
@@ -33,13 +27,11 @@ export interface StakingContextState {
   unstakeCoolDown: BigNumber | undefined;
   v1Rewards: V1RewardsT | undefined;
   oldDesignatedVotingAccount: OldDesignatedVotingAccountT | undefined;
-  getStakingDataLoading: () => boolean;
-  getStakingDataFetching: () => boolean;
   setAddressOverride: (address?: string) => void;
 }
 
 export const defaultStakingContextState: StakingContextState = {
-  hasStaked: false,
+  hasStaked: undefined,
   stakedBalance: undefined,
   unstakedBalance: undefined,
   pendingUnstake: undefined,
@@ -49,13 +41,7 @@ export const defaultStakingContextState: StakingContextState = {
   canUnstakeTime: undefined,
   unstakeCoolDown: undefined,
   v1Rewards: undefined,
-  oldDesignatedVotingAccount: {
-    isOldDesignatedVotingAccount: false,
-    message: "",
-    designatedVotingContract: "",
-  },
-  getStakingDataLoading: () => false,
-  getStakingDataFetching: () => false,
+  oldDesignatedVotingAccount: undefined,
   setAddressOverride: () => undefined,
 };
 
@@ -70,44 +56,21 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   );
   const address = addressOverride || defaultAddress;
 
-  const {
-    data: stakerDetails,
-    isLoading: stakerDetailsLoading,
-    isFetching: stakerDetailsFetching,
-  } = useStakerDetails(address);
+  const { data: stakerDetails } = useStakerDetails(address);
   const {
     pendingUnstake,
     canUnstakeTime,
     rewardsPaidPerToken,
     outstandingRewards: voterOutstandingRewards,
   } = stakerDetails || {};
-  const {
-    data: stakedBalance,
-    isLoading: stakedBalanceLoading,
-    isFetching: stakedBalanceFetching,
-  } = useStakedBalance(address);
-  const {
-    data: unstakedBalance,
-    isLoading: unstakedBalanceLoading,
-    isFetching: unstakedBalanceFetching,
-  } = useUnstakedBalance(address);
-  const {
-    data: rewardCalculationInputs,
-    isLoading: rewardsCalculationInputsLoading,
-    isFetching: rewardsCalculationInputsFetching,
-  } = useRewardsCalculationInputs(address);
+  const { data: stakedBalance } = useStakedBalance(address);
+  const { data: unstakedBalance } = useUnstakedBalance(address);
+  const { data: rewardCalculationInputs } =
+    useRewardsCalculationInputs(address);
   const { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime } =
     rewardCalculationInputs || {};
-  const {
-    data: tokenAllowance,
-    isLoading: tokenAllowanceLoading,
-    isFetching: tokenAllowanceFetching,
-  } = useTokenAllowance();
-  const {
-    data: unstakeCoolDown,
-    isLoading: unstakeCoolDownLoading,
-    isFetching: unstakeCoolDownFetching,
-  } = useUnstakeCoolDown();
+  const { data: tokenAllowance } = useTokenAllowance();
+  const { data: unstakeCoolDown } = useUnstakeCoolDown();
   const { data: v1Rewards } = useV1Rewards();
   const [outstandingRewards, setOutstandingRewards] = useState<
     BigNumber | undefined
@@ -146,49 +109,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     setOutstandingRewards(calculatedOutstandingRewards);
   }
 
-  const getStakingDataLoading = useCallback(() => {
-    if (!address) return false;
-
-    return (
-      stakerDetailsLoading ||
-      stakedBalanceLoading ||
-      unstakedBalanceLoading ||
-      tokenAllowanceLoading ||
-      unstakeCoolDownLoading ||
-      rewardsCalculationInputsLoading
-    );
-  }, [
-    address,
-    rewardsCalculationInputsLoading,
-    stakedBalanceLoading,
-    stakerDetailsLoading,
-    tokenAllowanceLoading,
-    unstakeCoolDownLoading,
-    unstakedBalanceLoading,
-  ]);
-
-  const getStakingDataFetching = useCallback(() => {
-    if (!address) return false;
-
-    return (
-      stakerDetailsFetching ||
-      stakedBalanceFetching ||
-      unstakedBalanceFetching ||
-      tokenAllowanceFetching ||
-      unstakeCoolDownFetching ||
-      rewardsCalculationInputsFetching
-    );
-  }, [
-    address,
-    rewardsCalculationInputsFetching,
-    stakedBalanceFetching,
-    stakerDetailsFetching,
-    tokenAllowanceFetching,
-    unstakeCoolDownFetching,
-    unstakedBalanceFetching,
-  ]);
-
-  const hasStaked = stakedBalance?.gt(0) ?? false;
+  const hasStaked = stakedBalance?.gt(0);
 
   const value = useMemo(
     () => ({
@@ -203,14 +124,10 @@ export function StakingProvider({ children }: { children: ReactNode }) {
       canUnstakeTime,
       v1Rewards,
       oldDesignatedVotingAccount,
-      getStakingDataLoading,
-      getStakingDataFetching,
       setAddressOverride,
     }),
     [
       canUnstakeTime,
-      getStakingDataFetching,
-      getStakingDataLoading,
       hasStaked,
       oldDesignatedVotingAccount,
       outstandingRewards,
