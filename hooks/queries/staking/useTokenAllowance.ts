@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { tokenAllowanceKey } from "constant";
-import { BigNumber } from "ethers";
 import {
   useAccountDetails,
   useContractsContext,
@@ -15,15 +14,13 @@ export function useTokenAllowance() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [tokenAllowanceKey, address],
-    () => getTokenAllowance(votingTokenWriter!, address),
-    {
-      enabled: !!address && !isWrongChain && !!votingTokenWriter,
-      initialData: BigNumber.from(0),
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [tokenAllowanceKey, address],
+    queryFn: () => getTokenAllowance(votingTokenWriter, address),
+    enabled: !!address && !isWrongChain && !!votingTokenWriter,
+    onError,
+  });
 
   return queryResult;
 }

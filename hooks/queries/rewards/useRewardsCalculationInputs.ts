@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { oneMinute, rewardsCalculationInputsKey } from "constant";
-import { BigNumber } from "ethers";
 import {
   useContractsContext,
   useHandleError,
@@ -16,22 +15,14 @@ export function useRewardsCalculationInputs(addressOverride?: string) {
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
-  const queryResult = useQuery(
-    [rewardsCalculationInputsKey, address],
-    () => getRewardsCalculationInputs(voting),
-    {
-      refetchInterval: oneMinute,
-      enabled: !!address && !isWrongChain,
-      initialData: {
-        emissionRate: BigNumber.from(0),
-        rewardPerTokenStored: BigNumber.from(0),
-        cumulativeStake: BigNumber.from(0),
-        updateTime: BigNumber.from(Date.now()),
-        updateTimeSeconds: BigNumber.from(Math.floor(Date.now() / 1000)),
-      },
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [rewardsCalculationInputsKey, address],
+    queryFn: () => getRewardsCalculationInputs(voting),
+    refetchInterval: oneMinute,
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

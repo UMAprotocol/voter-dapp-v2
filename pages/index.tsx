@@ -2,6 +2,7 @@ import {
   Banner,
   HowItWorks,
   Layout,
+  Loader,
   PageInnerWrapper,
   PageOuterWrapper,
   Votes,
@@ -12,14 +13,17 @@ import { useGlobals } from "hooks";
 import type { NextPage } from "next";
 
 const VotePage: NextPage = () => {
-  const {
-    data: { annualPercentageReturn },
-  } = useGlobals();
+  const { data: globals } = useGlobals();
+  const { annualPercentageReturn } = globals || {};
   return (
     <Layout title="UMA | Voting dApp">
       <Banner>
         Stake, vote &amp; earn up to{" "}
-        <Strong>{truncateDecimals(annualPercentageReturn, 0) || 0}% APR</Strong>
+        <Loader dataToWatch={annualPercentageReturn}>
+          <Strong>
+            {truncateDecimals(annualPercentageReturn || 0, 0)}% APR
+          </Strong>
+        </Loader>
       </Banner>
       <PageOuterWrapper>
         <HowItWorks />

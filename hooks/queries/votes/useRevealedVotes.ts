@@ -30,7 +30,6 @@ export function useRevealedVotes(addressOverride?: string) {
       );
     },
     enabled: !!address && !isWrongChain,
-    initialData: {},
     onError,
   });
 

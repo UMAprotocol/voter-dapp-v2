@@ -32,7 +32,7 @@ export interface StakingContextState {
   canUnstakeTime: Date | undefined;
   unstakeCoolDown: BigNumber | undefined;
   v1Rewards: V1RewardsT | undefined;
-  oldDesignatedVotingAccount: OldDesignatedVotingAccountT;
+  oldDesignatedVotingAccount: OldDesignatedVotingAccountT | undefined;
   getStakingDataLoading: () => boolean;
   getStakingDataFetching: () => boolean;
   setAddressOverride: (address?: string) => void;
@@ -92,10 +92,12 @@ export function StakingProvider({ children }: { children: ReactNode }) {
     isFetching: unstakedBalanceFetching,
   } = useUnstakedBalance(address);
   const {
-    data: { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime },
+    data: rewardCalculationInputs,
     isLoading: rewardsCalculationInputsLoading,
     isFetching: rewardsCalculationInputsFetching,
   } = useRewardsCalculationInputs(address);
+  const { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime } =
+    rewardCalculationInputs || {};
   const {
     data: tokenAllowance,
     isLoading: tokenAllowanceLoading,

@@ -13,13 +13,9 @@ import {
 } from "./styles";
 
 export function OldDesignatedVotingAccountWarningBanner() {
-  const {
-    oldDesignatedVotingAccount: {
-      isOldDesignatedVotingAccount,
-      message,
-      designatedVotingContract,
-    },
-  } = useStakingContext();
+  const { oldDesignatedVotingAccount } = useStakingContext();
+  const { isOldDesignatedVotingAccount, message, designatedVotingContract } =
+    oldDesignatedVotingAccount || {};
   const [closeClicked, setClosedClicked] = useLocalStorage(
     "show-old-designated-voting-account-warning-banner",
     false
@@ -29,7 +25,7 @@ export function OldDesignatedVotingAccountWarningBanner() {
 
   const show = isOldDesignatedVotingAccount && !closeClicked;
 
-  if (!isClient || !show) return null;
+  if (!isClient || !show || !designatedVotingContract) return null;
 
   function close() {
     setClosedClicked(true);

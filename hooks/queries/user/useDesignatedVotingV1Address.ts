@@ -4,14 +4,11 @@ import { useWalletContext } from "hooks";
 
 export function useDesignatedVotingV1Address(address: string) {
   const { isWrongChain } = useWalletContext();
-  return useQuery(
-    ["designatedVotingV1Address", address],
-    () => getDesignatedVotingV1Address(address),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: undefined,
-      onError: (err) =>
-        console.error("Error fetching designated voting v1 address", err),
-    }
-  );
+  return useQuery({
+    queryKey: ["designatedVotingV1Address", address],
+    queryFn: () => getDesignatedVotingV1Address(address),
+    enabled: !!address && !isWrongChain,
+    onError: (err) =>
+      console.error("Error fetching designated voting v1 address", err),
+  });
 }

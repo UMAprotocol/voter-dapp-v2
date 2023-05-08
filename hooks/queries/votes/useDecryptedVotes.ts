@@ -8,8 +8,8 @@ import {
   useWalletContext,
 } from "hooks";
 import {
-  DecryptedVotesByKeyT,
   DecryptedVoteT,
+  DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
 } from "types";
 
@@ -19,25 +19,32 @@ export function useDecryptedVotes(roundId?: number) {
   const { data: encryptedVotes } = useEncryptedVotes(roundId);
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [decryptedVotesKey, encryptedVotes, address],
-    () => decryptVotes(signingKey?.privateKey, encryptedVotes),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [
+      decryptedVotesKey,
+      encryptedVotes,
+      address,
+      signingKey?.privateKey,
+    ],
+    queryFn: () => decryptVotes(signingKey?.privateKey, encryptedVotes),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }
 
 async function decryptVotes(
   privateKey: string | undefined,
-  encryptedVotes: EncryptedVotesByKeyT
+  encryptedVotes: EncryptedVotesByKeyT | undefined
 ) {
   const decryptedVotes: DecryptedVotesByKeyT = {};
-  if (!privateKey || Object.keys(encryptedVotes).length === 0) return {};
+  if (
+    !privateKey ||
+    !encryptedVotes ||
+    Object.keys(encryptedVotes).length === 0
+  )
+    return {};
 
   for await (const [uniqueKey, encryptedVote] of Object.entries(
     encryptedVotes

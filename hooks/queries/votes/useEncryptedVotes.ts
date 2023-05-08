@@ -14,15 +14,12 @@ export function useEncryptedVotes(roundId?: number) {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [encryptedVotesKey, address, roundId],
-    () => getEncryptedVotes(voting, votingV1, address, roundId),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [encryptedVotesKey, address, roundId, votingV1],
+    queryFn: () => getEncryptedVotes(voting, votingV1, address, roundId),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

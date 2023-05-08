@@ -23,6 +23,8 @@
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "@tanstack/query/exhaustive-deps": "warn",
+    "@tanstack/query/prefer-query-object-syntax": "warn"
   }
 }

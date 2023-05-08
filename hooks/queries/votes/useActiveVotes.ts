@@ -19,19 +19,14 @@ export function useActiveVotes() {
     phase === "commit" &&
     phaseLengthMilliseconds - millisecondsUntilPhaseEnds < 30 * oneSecond;
 
-  const queryResult = useQuery(
-    [activeVotesKey, roundId],
-    () => getActiveVotes(voting),
-    {
-      refetchInterval: shouldRefetch ? 1000 : false,
-      initialData: {
-        activeVotes: {},
-        hasActiveVotes: false,
-      },
-      enabled: !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [activeVotesKey, roundId],
+    queryFn: () => getActiveVotes(voting),
+    refetchInterval: shouldRefetch ? 1000 : false,
+    enabled: !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

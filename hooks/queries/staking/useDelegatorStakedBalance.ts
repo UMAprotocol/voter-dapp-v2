@@ -13,11 +13,11 @@ export function useDelegatorStakedBalance() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const queryResult = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [stakedBalanceKey, address],
     queryFn: () =>
       address ? getStakedBalance(voting, address) : BigNumber.from(0),
     enabled: !!address && !isWrongChain,
-    initialData: BigNumber.from(0),
     onError,
   });
 

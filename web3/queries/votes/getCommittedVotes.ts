@@ -4,9 +4,11 @@ import { VoteExistsByKeyT } from "types";
 
 export async function getCommittedVotes(
   votingContract: VotingV2Ethers,
-  address: string,
+  address: string | undefined,
   roundId: number
 ) {
+  if (!address) return {};
+
   const filter = votingContract.filters.VoteCommitted(
     address,
     null,

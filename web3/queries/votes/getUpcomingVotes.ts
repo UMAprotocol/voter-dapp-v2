@@ -13,10 +13,6 @@ export async function getUpcomingVotes(
   const eventData = result?.map(({ args }) => args);
   const onlyUpcoming = eventData?.filter((event) => event.roundId > roundId);
   const upcomingVotes = makePriceRequestsByKey(onlyUpcoming);
-  const hasUpcomingVotes = Object.keys(upcomingVotes).length > 0;
 
-  return {
-    hasUpcomingVotes,
-    upcomingVotes,
-  };
+  return upcomingVotes;
 }

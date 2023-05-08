@@ -48,20 +48,18 @@ export interface VotesContextState {
   isActive: boolean;
   isUpcoming: boolean;
   isPast: boolean;
-  hasActiveVotes: boolean | undefined;
-  activeVotesByKey: PriceRequestByKeyT;
+  activeVotesByKey: PriceRequestByKeyT | undefined;
   activeVoteList: VoteT[];
-  hasUpcomingVotes: boolean | undefined;
-  upcomingVotesByKey: PriceRequestByKeyT;
+  upcomingVotesByKey: PriceRequestByKeyT | undefined;
   upcomingVoteList: VoteT[];
-  pastVotesByKey: PriceRequestByKeyT;
+  pastVotesByKey: PriceRequestByKeyT | undefined;
   pastVoteList: VoteT[];
   pastVotesV2List: VoteT[];
-  committedVotes: VoteExistsByKeyT;
-  revealedVotes: VoteExistsByKeyT;
-  encryptedVotes: EncryptedVotesByKeyT;
+  committedVotes: VoteExistsByKeyT | undefined;
+  revealedVotes: VoteExistsByKeyT | undefined;
+  encryptedVotes: EncryptedVotesByKeyT | undefined;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
-  contentfulData: ContentfulDataByKeyT;
+  contentfulData: ContentfulDataByKeyT | undefined;
   getUserDependentIsLoading: () => boolean;
   getUserIndependentIsLoading: () => boolean;
   getIsLoading: () => boolean;
@@ -83,10 +81,8 @@ export const defaultVotesContextState: VotesContextState = {
   isActive: false,
   isUpcoming: false,
   isPast: false,
-  hasActiveVotes: undefined,
   activeVotesByKey: {},
   activeVoteList: [],
-  hasUpcomingVotes: undefined,
   upcomingVotesByKey: {},
   upcomingVoteList: [],
   pastVotesByKey: {},
@@ -120,12 +116,12 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     useDesignatedVotingV1Address(address);
   const { roundId } = useVoteTimingContext();
   const {
-    data: { activeVotes: activeVotesByKey, hasActiveVotes },
+    data: activeVotesByKey,
     isLoading: activeVotesIsLoading,
     isFetching: activeVotesIsFetching,
   } = useActiveVotes();
   const {
-    data: { upcomingVotes: upcomingVotesByKey, hasUpcomingVotes },
+    data: upcomingVotesByKey,
     isLoading: upcomingVotesIsLoading,
     isFetching: upcomingVotesIsFetching,
   } = useUpcomingVotes();
@@ -250,24 +246,24 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     // for a delegate who committed, they will never be the voter, but will be the caller and have a vote by the delegator
     return (
       // this table finds all votes as the voter for the current account
-      (!!committedVotes[uniqueKey] &&
+      (!!committedVotes?.[uniqueKey] &&
         // this table finds all votes as the caller for the current account
-        !!committedVotesByCaller[uniqueKey] &&
+        !!committedVotesByCaller?.[uniqueKey] &&
         // this table will look up your delagate if you are a delegator and find votes with them as the voter
-        !committedVotesForDelegator[uniqueKey]) ||
-      (!committedVotes[uniqueKey] &&
-        !!committedVotesByCaller[uniqueKey] &&
-        !!committedVotesForDelegator[uniqueKey])
+        !committedVotesForDelegator?.[uniqueKey]) ||
+      (!committedVotes?.[uniqueKey] &&
+        !!committedVotesByCaller?.[uniqueKey] &&
+        !!committedVotesForDelegator?.[uniqueKey])
     );
   }
 
   function getVotesWithData(
-    priceRequests: Record<
-      UniqueKeyT,
-      PriceRequestT & VoteParticipationT & VoteResultsT
-    >,
-    decryptedVotes: DecryptedVotesByKeyT
+    priceRequests:
+      | Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
+      | undefined,
+    decryptedVotes: DecryptedVotesByKeyT | undefined
   ): VoteT[] {
+    if (!priceRequests) return [];
     return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
       // this value only exists when we have votes that have revealed from the graph, using this we can
       // lookup revealed votes without a signature, just have to find the right address
@@ -285,21 +281,22 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           vote?.participation,
         uniqueKey,
         isCommitted:
-          committedVotes[uniqueKey] || committedVotesForDelegator[uniqueKey]
+          committedVotes?.[uniqueKey] || committedVotesForDelegator?.[uniqueKey]
             ? true
             : false,
         commitHash:
-          committedVotes[uniqueKey] || committedVotesForDelegator[uniqueKey],
-        isRevealed: revealedVotes[uniqueKey] ? true : false,
+          committedVotes?.[uniqueKey] ||
+          committedVotesForDelegator?.[uniqueKey],
+        isRevealed: revealedVotes?.[uniqueKey] ? true : false,
         // tells you if you can possibily reveal this vote, it does not check all conditions (ie in reveal phase, etc)
         canReveal: getCanReveal(uniqueKey),
-        revealHash: revealedVotes[uniqueKey],
-        encryptedVote: encryptedVotes[uniqueKey],
+        revealHash: revealedVotes?.[uniqueKey],
+        encryptedVote: encryptedVotes?.[uniqueKey],
         decryptedVote: pastVoteRevealed
           ? { price: pastVoteRevealed, salt: "" }
-          : decryptedVotes[uniqueKey],
-        contentfulData: contentfulData[uniqueKey],
-        augmentedData: augmentedData[uniqueKey],
+          : decryptedVotes?.[uniqueKey],
+        contentfulData: contentfulData?.[uniqueKey],
+        augmentedData: augmentedData?.[uniqueKey],
         voteHistory: voteHistoryByKey?.[uniqueKey] ?? {
           uniqueKey,
           voted: false,
@@ -308,11 +305,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           slashAmount: BigNumber.from(0),
         },
         decodedAdminTransactions:
-          decodedAdminTransactions[vote.decodedIdentifier],
+          decodedAdminTransactions?.[vote.decodedIdentifier],
         ...getVoteMetaData(
           vote.decodedIdentifier,
           vote.decodedAncillaryData,
-          contentfulData[uniqueKey]
+          contentfulData?.[uniqueKey]
         ),
       };
     });
@@ -321,6 +318,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const activeVoteList = getVotesWithData(activeVotesByKey, decryptedVotes);
   const upcomingVoteList = getVotesWithData(upcomingVotesByKey, decryptedVotes);
   const pastVoteList = getVotesWithData(pastVotesByKey, decryptedVotes);
+  const hasActiveVotes = activeVoteList.length > 0;
+  const hasUpcomingVotes = upcomingVoteList.length > 0;
   const pastVotesV2List = pastVoteList.filter((vote) => !vote.isV1);
 
   const activityStatus: ActivityStatusT = hasActiveVotes
