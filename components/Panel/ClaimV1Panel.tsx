@@ -45,7 +45,7 @@ export function ClaimV1Panel() {
               dataToWatch={v1Rewards}
               variant="white"
               override={{
-                shouldOverride: !hasAddress,
+                isOverride: !hasAddress,
                 children: 0,
               }}
             >

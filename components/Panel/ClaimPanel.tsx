@@ -54,7 +54,7 @@ export function ClaimPanel() {
                 variant="white"
                 width={164}
                 override={{
-                  shouldOverride: !hasAddress,
+                  isOverride: !hasAddress,
                   children: 0,
                 }}
               >
