@@ -1,4 +1,4 @@
-import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
+import { Button, Loader, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
@@ -14,8 +14,7 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimV1Panel() {
   const { votingWriter } = useContractsContext();
-  const { withdrawV1RewardsMutation, isWithdrawingV1Rewards } =
-    useWithdrawV1Rewards("claimV1");
+  const { withdrawV1RewardsMutation } = useWithdrawV1Rewards("claimV1");
   const { v1Rewards } = useStakingContext();
   const claimableV1Rewards = v1Rewards?.totalRewards ?? BigNumber.from(0);
 
@@ -33,10 +32,6 @@ export function ClaimV1Panel() {
     });
   }
 
-  function isLoading() {
-    return isWithdrawingV1Rewards;
-  }
-
   return (
     <PanelWrapper>
       <PanelTitle title="Claim V1 Rewards" />
@@ -44,14 +39,12 @@ export function ClaimV1Panel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable V1 Rewards</RewardsHeader>
           <Rewards>
-            {isLoading() ? (
-              <LoadingSkeleton variant="white" />
-            ) : (
+            <Loader dataToWatch={v1Rewards} variant="white">
               <Strong>
                 {formatNumberForDisplay(claimableV1Rewards)}{" "}
                 <TokenSymbol>UMA</TokenSymbol>
               </Strong>
-            )}{" "}
+            </Loader>
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

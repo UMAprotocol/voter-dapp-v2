@@ -1,6 +1,7 @@
 import {
   Button,
   Dropdown,
+  Loader,
   LoadingSkeleton,
   TextInput,
   Tooltip,
@@ -19,7 +20,6 @@ import {
   decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
-  isAnyUndefined,
 } from "helpers";
 import { config } from "helpers/config";
 import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
@@ -97,7 +97,6 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
-  const statusIsLoading = isAnyUndefined(isCommit, isReveal);
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
@@ -427,9 +426,7 @@ export function VoteListItem({
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {statusIsLoading ? (
-              <LoadingSkeleton width="8vw" />
-            ) : (
+            <Loader dataToWatch={[isCommit, isReveal]} width="8vw">
               <>
                 <DotIcon
                   style={
@@ -441,7 +438,7 @@ export function VoteListItem({
                 {getRelevantTransactionLink()}
                 {isDirty ? "*" : ""}
               </>
-            )}
+            </Loader>
           </VoteStatus>
         </VoteStatusCell>
       ) : null}
@@ -455,7 +452,7 @@ export function VoteListItem({
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <LoadingSkeleton width="8vw" />;
+  if (voteText === undefined) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {

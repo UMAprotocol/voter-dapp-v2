@@ -1,5 +1,5 @@
 import {
-  LoadingSkeleton,
+  Loader,
   LoadingSpinner,
   Pagination,
   VoteHistoryTable,
@@ -8,6 +8,7 @@ import {
 import { black, green, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { useUserContext, useVotesContext } from "hooks";
+import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
@@ -20,7 +21,6 @@ export function HistoryPanel() {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
-    userDataFetching,
   } = useUserContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVotesV2List ?? []
@@ -32,10 +32,6 @@ export function HistoryPanel() {
     ? green
     : red500;
 
-  function isLoading() {
-    return userDataFetching;
-  }
-
   return (
     <PanelWrapper>
       <PanelTitle title="History" />
@@ -43,21 +39,17 @@ export function HistoryPanel() {
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
           <Apr>
-            {isLoading() ? (
-              <LoadingSkeleton variant="white" width="50%" />
-            ) : (
-              `${formatNumberForDisplay(apr)}%`
-            )}
+            <Loader dataToWatch={apr} variant="white" width="50%">
+              {formatNumberForDisplay(apr)}%
+            </Loader>
           </Apr>
           <AprDetailsWrapper>
             <Text>
               <>
                 Earnings based on participation:{" "}
-                {isLoading() ? (
-                  <LoadingSkeleton width={40} />
-                ) : (
-                  formatNumberForDisplay(cumulativeCalculatedSlash)
-                )}
+                <Loader dataToWatch={cumulativeCalculatedSlash} width={40}>
+                  {formatNumberForDisplay(cumulativeCalculatedSlash)}
+                </Loader>
               </>
             </Text>
             <Text>
@@ -69,13 +61,12 @@ export function HistoryPanel() {
                   } as CSSProperties
                 }
               >
-                {isLoading() ? (
-                  <LoadingSkeleton width={40} />
-                ) : (
-                  `${formatNumberForDisplay(
-                    cumulativeCalculatedSlashPercentage
-                  )}%`
-                )}
+                <Loader
+                  dataToWatch={cumulativeCalculatedSlashPercentage}
+                  width={40}
+                >
+                  {formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%
+                </Loader>
               </BonusOrPenalty>
             </Text>
           </AprDetailsWrapper>
@@ -100,7 +91,7 @@ export function HistoryPanel() {
         <SectionWrapper>
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
-            {isLoading() ? (
+            {isUndefined(pastVotesV2List) ? (
               <LoadingSpinner size={40} />
             ) : (
               <VoteHistoryTable votes={entriesToShow} />
