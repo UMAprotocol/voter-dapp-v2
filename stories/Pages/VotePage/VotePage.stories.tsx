@@ -56,7 +56,7 @@ const Template: Story = {
       activeVoteList: args.activeVotes ?? [],
       upcomingVoteList: args.upcomingVotes ?? [],
       pastVoteList: args.pastVotes ?? [],
-      getActivityStatus: () => args.activityStatus ?? "past",
+      activityStatus: args.activityStatus ?? "past",
     };
 
     return (

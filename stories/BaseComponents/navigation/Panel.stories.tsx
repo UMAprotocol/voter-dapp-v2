@@ -149,13 +149,12 @@ const votesDecorator: Decorator<Props> = (Story, { args }) => {
 const delegationDecorator: Decorator<Props> = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
-    getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-    getPendingSentRequestsToBeDelegate: () =>
-      args.pendingSentRequestsToBeDelegate ?? [],
-    getPendingReceivedRequestsToBeDelegate: () =>
+    delegationStatus: args.delegationStatus ?? "no-delegation",
+    pendingSentRequestsToBeDelegate: args.pendingSentRequestsToBeDelegate ?? [],
+    pendingReceivedRequestsToBeDelegate:
       args.pendingReceivedRequestsToBeDelegate ?? [],
-    getDelegateAddress: () => args.delegateAddress ?? zeroAddress,
-    getDelegatorAddress: () => args.delegatorAddress ?? zeroAddress,
+    delegateAddress: args.delegateAddress ?? zeroAddress,
+    delegatorAddress: args.delegatorAddress ?? zeroAddress,
   };
 
   return (

@@ -48,7 +48,7 @@ export function ActiveVotes() {
     useWalletContext();
   const { votingWriter } = useContractsContext();
   const { stakedBalance } = useStakingContext();
-  const { getDelegationStatus, getDelegatorAddress } = useDelegationContext();
+  const { isDelegate, isDelegator, delegatorAddress } = useDelegationContext();
   const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
@@ -61,10 +61,6 @@ export function ActiveVotes() {
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
-
-  const isDelegate = getDelegationStatus() === "delegate";
-  const isDelegator = getDelegationStatus() === "delegator";
-  const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
 
   const actionStatus = calculateActionStatus();
   type ActionStatus = {
@@ -310,7 +306,8 @@ export function ActiveVotes() {
               activityStatus="active"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              delegationStatus={getDelegationStatus()}
+              isDelegate={isDelegate}
+              isDelegator={isDelegator}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useMemo, useState } from "react";
 import { ErrorOriginT } from "types";
 
 type ErrorMessagesT = Record<ErrorOriginT, string[]>;
@@ -61,16 +61,17 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
     }));
   }
 
+  const value = useMemo(
+    () => ({
+      errorMessages,
+      addErrorMessage,
+      removeErrorMessage,
+      clearErrorMessages,
+    }),
+    [errorMessages]
+  );
+
   return (
-    <ErrorContext.Provider
-      value={{
-        errorMessages,
-        addErrorMessage,
-        removeErrorMessage,
-        clearErrorMessages,
-      }}
-    >
-      {children}
-    </ErrorContext.Provider>
+    <ErrorContext.Provider value={value}>{children}</ErrorContext.Provider>
   );
 }

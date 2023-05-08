@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { PanelTypeT, VoteT } from "types";
 
 export interface PanelContextState {
@@ -29,29 +35,35 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     { panelType: PanelTypeT; panelContent: VoteT | undefined }[]
   >([]);
 
-  function openPanel(panelType: PanelTypeT, panelContent?: VoteT) {
-    setPanelType(panelType);
-    setPanelContent(panelContent);
-    setPanelOpen(true);
-    pushPanelDataOntoStack(panelType, panelContent);
-  }
+  const openPanel = useCallback(
+    (panelType: PanelTypeT, panelContent?: VoteT) => {
+      setPanelType(panelType);
+      setPanelContent(panelContent);
+      setPanelOpen(true);
+      pushPanelDataOntoStack(panelType, panelContent);
+    },
+    []
+  );
 
-  function closePanel(clearPreviousPanelData = false) {
-    if (clearPreviousPanelData) {
-      setPreviousPanelData([]);
-      setPanelOpen(false);
-      return;
-    }
-    if (previousPanelData.length > 1) {
-      const previousPanel = previousPanelData[previousPanelData.length - 2];
-      setPanelType(previousPanel.panelType);
-      setPanelContent(previousPanel.panelContent);
-      popPanelDataOffStack();
-    } else {
-      popPanelDataOffStack();
-      setPanelOpen(false);
-    }
-  }
+  const closePanel = useCallback(
+    (clearPreviousPanelData = false) => {
+      if (clearPreviousPanelData) {
+        setPreviousPanelData([]);
+        setPanelOpen(false);
+        return;
+      }
+      if (previousPanelData.length > 1) {
+        const previousPanel = previousPanelData[previousPanelData.length - 2];
+        setPanelType(previousPanel.panelType);
+        setPanelContent(previousPanel.panelContent);
+        popPanelDataOffStack();
+      } else {
+        popPanelDataOffStack();
+        setPanelOpen(false);
+      }
+    },
+    [previousPanelData]
+  );
 
   function pushPanelDataOntoStack(panelType: PanelTypeT, panelContent?: VoteT) {
     setPreviousPanelData((prev) => {
@@ -65,17 +77,18 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  const value = useMemo(
+    () => ({
+      panelType,
+      panelContent,
+      panelOpen,
+      openPanel,
+      closePanel,
+    }),
+    [closePanel, openPanel, panelContent, panelOpen, panelType]
+  );
+
   return (
-    <PanelContext.Provider
-      value={{
-        panelType,
-        panelContent,
-        panelOpen,
-        openPanel,
-        closePanel,
-      }}
-    >
-      {children}
-    </PanelContext.Provider>
+    <PanelContext.Provider value={value}>{children}</PanelContext.Provider>
   );
 }

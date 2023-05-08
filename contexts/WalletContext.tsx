@@ -4,7 +4,13 @@ import { ethers } from "ethers";
 import { getSavedSigningKeys, initOnboard } from "helpers";
 import { config } from "helpers/config";
 import { useSign } from "hooks";
-import { createContext, ReactNode, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { SigningKeys } from "types";
 
 export interface WalletContextState {
@@ -60,11 +66,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     signer,
     setSigningKeys
   );
-  function setCorrectChain() {
+
+  const setCorrectChain = useCallback(() => {
     setChain({ chainId: config.onboardConfig.id }).catch((err) =>
       console.error("Error Setting Chain:", err)
     );
-  }
+  }, [setChain]);
+
   const connectedChainId = connectedChain
     ? parseInt(connectedChain.id)
     : undefined;
@@ -73,26 +81,38 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     ? connectedChainId !== parseInt(config.onboardConfig.id)
     : false;
 
+  const value = useMemo(
+    () => ({
+      isWrongChain,
+      onboard,
+      setOnboard,
+      provider,
+      setProvider,
+      signer,
+      setSigner,
+      signingKeys,
+      setSigningKeys,
+      sign,
+      isSigning,
+      connectedChainId,
+      setCorrectChain,
+      isSettingChain,
+    }),
+    [
+      connectedChainId,
+      isSettingChain,
+      isSigning,
+      isWrongChain,
+      onboard,
+      provider,
+      setCorrectChain,
+      sign,
+      signer,
+      signingKeys,
+    ]
+  );
+
   return (
-    <WalletContext.Provider
-      value={{
-        isWrongChain,
-        onboard,
-        setOnboard,
-        provider,
-        setProvider,
-        signer,
-        setSigner,
-        signingKeys,
-        setSigningKeys,
-        sign,
-        isSigning,
-        connectedChainId,
-        setCorrectChain,
-        isSettingChain,
-      }}
-    >
-      {children}
-    </WalletContext.Provider>
+    <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
   );
 }

@@ -6,6 +6,7 @@ import {
 } from "components";
 import { mobileAndUnder } from "constant";
 import { getAddress, isAddress, truncateEthAddress } from "helpers";
+import { config } from "helpers/config";
 import {
   useDelegationContext,
   useErrorContext,
@@ -22,7 +23,6 @@ import styled, { css } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
 import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
-import { config } from "helpers/config";
 
 export function DelegationPanel() {
   const { closePanel } = usePanelContext();
@@ -30,34 +30,25 @@ export function DelegationPanel() {
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
   const {
-    getDelegationStatus,
+    isNoDelegation,
+    isDelegatorPending,
     sendRequestToBeDelegate,
-    getPendingSentRequestsToBeDelegate,
+    pendingSentRequestsToBeDelegate,
     getDelegationDataFetching,
   } = useDelegationContext();
 
-  const delegationStatus = getDelegationStatus();
-
   useEffect(() => {
     // only show this panel when the user has not yet entered a delegation relationship, or the user has requested another wallet to be their delegate wallet
-    if (
-      !(
-        delegationStatus === "no-delegation" ||
-        delegationStatus === "delegator-pending"
-      )
-    ) {
+    if (!(isNoDelegation || isDelegatorPending)) {
       closePanel();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delegationStatus]);
-
-  const pendingRequests = getPendingSentRequestsToBeDelegate();
+  }, [closePanel, isDelegatorPending, isNoDelegation]);
 
   // only allow user to add a delegate wallet if they are neither a delegator nor a delegate
-  const showAddDelegateInput = delegationStatus === "no-delegation";
+  const showAddDelegateInput = isNoDelegation;
 
   const showPendingRequests =
-    delegationStatus === "delegator-pending" && pendingRequests.length > 0;
+    isDelegatorPending && pendingSentRequestsToBeDelegate.length > 0;
 
   function onAddDelegateWallet() {
     if (!address) return;
@@ -155,31 +146,35 @@ export function DelegationPanel() {
               </AddDelegateInputWrapper>
             )}
             {showPendingRequests &&
-              pendingRequests.map(({ delegate, transactionHash }) => (
-                <PendingRequestWrapper key={transactionHash}>
-                  <AddressWrapper>
-                    <IconWrapper>
-                      <PendingRequestIcon />
-                    </IconWrapper>
-                    <PendingRequestDetailsWrapper>
-                      <PendingRequestText>
-                        Request sent to {truncateEthAddress(delegate)}
-                      </PendingRequestText>
-                      <PendingRequestText>
-                        Waiting for approval.
-                      </PendingRequestText>
-                      <PendingRequestText>
-                        <Link
-                          href={config.makeTransactionHashLink(transactionHash)}
-                          target="_blank"
-                        >
-                          View Transaction
-                        </Link>
-                      </PendingRequestText>
-                    </PendingRequestDetailsWrapper>
-                  </AddressWrapper>
-                </PendingRequestWrapper>
-              ))}
+              pendingSentRequestsToBeDelegate.map(
+                ({ delegate, transactionHash }) => (
+                  <PendingRequestWrapper key={transactionHash}>
+                    <AddressWrapper>
+                      <IconWrapper>
+                        <PendingRequestIcon />
+                      </IconWrapper>
+                      <PendingRequestDetailsWrapper>
+                        <PendingRequestText>
+                          Request sent to {truncateEthAddress(delegate)}
+                        </PendingRequestText>
+                        <PendingRequestText>
+                          Waiting for approval.
+                        </PendingRequestText>
+                        <PendingRequestText>
+                          <Link
+                            href={config.makeTransactionHashLink(
+                              transactionHash
+                            )}
+                            target="_blank"
+                          >
+                            View Transaction
+                          </Link>
+                        </PendingRequestText>
+                      </PendingRequestDetailsWrapper>
+                    </AddressWrapper>
+                  </PendingRequestWrapper>
+                )
+              )}
           </>
         )}
         <PanelErrorBanner errorOrigin="delegation" />

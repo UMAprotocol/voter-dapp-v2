@@ -4,9 +4,11 @@ import {
   computeRoundId,
   getPhase,
 } from "helpers";
-import { createContext, ReactNode, useState } from "react";
+import { ReactNode, createContext, useMemo, useState } from "react";
 
 export interface VoteTimingContextState {
+  isCommit: boolean;
+  isReveal: boolean;
   roundId: number;
   setRoundId: (roundId: number) => void;
   phase: "commit" | "reveal";
@@ -20,6 +22,8 @@ export interface VoteTimingContextState {
 }
 
 export const defaultVoteTimingContextState: VoteTimingContextState = {
+  isCommit: false,
+  isReveal: false,
   roundId: computeRoundId(),
   setRoundId: () => null,
   phase: getPhase(),
@@ -48,22 +52,37 @@ export function VoteTimingProvider({ children }: { children: ReactNode }) {
   const [millisecondsUntilPhaseEnds, setMillisecondsUntilPhaseEnds] = useState(
     defaultVoteTimingContextState.millisecondsUntilPhaseEnds
   );
+  const isCommit = phase === "commit";
+  const isReveal = phase === "reveal";
+
+  const value = useMemo(
+    () => ({
+      isCommit,
+      isReveal,
+      roundId,
+      setRoundId,
+      phase,
+      setPhase,
+      phaseEndTimeMilliseconds,
+      setPhaseEndTimeMilliseconds,
+      phaseEndTimeAsDate,
+      setPhaseEndTimeAsDate,
+      millisecondsUntilPhaseEnds,
+      setMillisecondsUntilPhaseEnds,
+    }),
+    [
+      isCommit,
+      isReveal,
+      millisecondsUntilPhaseEnds,
+      phase,
+      phaseEndTimeAsDate,
+      phaseEndTimeMilliseconds,
+      roundId,
+    ]
+  );
 
   return (
-    <VoteTimingContext.Provider
-      value={{
-        roundId,
-        setRoundId,
-        phase,
-        setPhase,
-        phaseEndTimeMilliseconds,
-        setPhaseEndTimeMilliseconds,
-        phaseEndTimeAsDate,
-        setPhaseEndTimeAsDate,
-        millisecondsUntilPhaseEnds,
-        setMillisecondsUntilPhaseEnds,
-      }}
-    >
+    <VoteTimingContext.Provider value={value}>
       {children}
     </VoteTimingContext.Provider>
   );
