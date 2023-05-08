@@ -7,14 +7,21 @@ type Props = LoadingSkeletonProps & {
   children: ReactNode;
   dataToWatch?: UnknownOrUndefined | UnknownOrUndefined[];
   isLoading?: boolean;
+  override?: {
+    shouldOverride: boolean;
+    children: ReactNode;
+  };
 };
 
 export function Loader({
   children,
   dataToWatch,
   isLoading,
+  override,
   ...delegated
 }: Props) {
+  if (override?.shouldOverride) return <>{override.children}</>;
+
   const showLoader =
     isLoading !== undefined
       ? isLoading

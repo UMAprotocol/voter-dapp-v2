@@ -5,6 +5,7 @@ import { formatNumberForDisplay } from "helpers";
 import {
   useContractsContext,
   useStakingContext,
+  useUserContext,
   useWithdrawV1Rewards,
 } from "hooks";
 import styled from "styled-components";
@@ -16,6 +17,7 @@ export function ClaimV1Panel() {
   const { votingWriter } = useContractsContext();
   const { withdrawV1RewardsMutation } = useWithdrawV1Rewards("claimV1");
   const { v1Rewards } = useStakingContext();
+  const { hasAddress } = useUserContext();
   const claimableV1Rewards = v1Rewards?.totalRewards ?? BigNumber.from(0);
 
   function withdrawV1Rewards() {
@@ -39,7 +41,14 @@ export function ClaimV1Panel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable V1 Rewards</RewardsHeader>
           <Rewards>
-            <Loader dataToWatch={v1Rewards} variant="white">
+            <Loader
+              dataToWatch={v1Rewards}
+              variant="white"
+              override={{
+                shouldOverride: !hasAddress,
+                children: 0,
+              }}
+            >
               <Strong>
                 {formatNumberForDisplay(claimableV1Rewards)}{" "}
                 <TokenSymbol>UMA</TokenSymbol>

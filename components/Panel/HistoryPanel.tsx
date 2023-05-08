@@ -18,6 +18,7 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 export function HistoryPanel() {
   const { pastVotesV2List } = useVotesContext();
   const {
+    hasAddress,
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
@@ -32,6 +33,11 @@ export function HistoryPanel() {
     ? green
     : red500;
 
+  const loaderOverride = {
+    shouldOverride: !hasAddress,
+    children: 0,
+  };
+
   return (
     <PanelWrapper>
       <PanelTitle title="History" />
@@ -39,7 +45,12 @@ export function HistoryPanel() {
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
           <Apr>
-            <Loader dataToWatch={apr} variant="white" width="50%">
+            <Loader
+              dataToWatch={apr}
+              variant="white"
+              width="50%"
+              override={loaderOverride}
+            >
               {formatNumberForDisplay(apr)}%
             </Loader>
           </Apr>
@@ -47,7 +58,11 @@ export function HistoryPanel() {
             <Text>
               <>
                 Earnings based on participation:{" "}
-                <Loader dataToWatch={cumulativeCalculatedSlash} width={40}>
+                <Loader
+                  dataToWatch={cumulativeCalculatedSlash}
+                  width={40}
+                  override={loaderOverride}
+                >
                   {formatNumberForDisplay(cumulativeCalculatedSlash)}
                 </Loader>
               </>
@@ -64,6 +79,7 @@ export function HistoryPanel() {
                 <Loader
                   dataToWatch={cumulativeCalculatedSlashPercentage}
                   width={40}
+                  override={loaderOverride}
                 >
                   {formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%
                 </Loader>

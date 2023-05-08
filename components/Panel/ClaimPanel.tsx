@@ -5,6 +5,7 @@ import {
   useContractsContext,
   useDelegationContext,
   useStakingContext,
+  useUserContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
@@ -27,7 +28,7 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation } = useWithdrawAndRestake("claim");
   const { outstandingRewards } = useStakingContext();
-
+  const { hasAddress } = useUserContext();
   function withdrawRewards() {
     if (!outstandingRewards || !votingWriter) return;
 
@@ -47,12 +48,20 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            <Loader dataToWatch={outstandingRewards} variant="white">
-              <Strong>
-                {formatNumberForDisplay(outstandingRewards)}{" "}
-                <TokenSymbol>UMA</TokenSymbol>
-              </Strong>
-            </Loader>
+            <Strong>
+              <Loader
+                dataToWatch={outstandingRewards}
+                variant="white"
+                width={164}
+                override={{
+                  shouldOverride: !hasAddress,
+                  children: 0,
+                }}
+              >
+                {formatNumberForDisplay(outstandingRewards)}
+              </Loader>{" "}
+              <TokenSymbol>UMA</TokenSymbol>
+            </Strong>
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

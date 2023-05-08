@@ -1,5 +1,6 @@
 import { Loader, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
+import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
@@ -10,6 +11,7 @@ import {
   useRequestUnstake,
   useStake,
   useStakingContext,
+  useUserContext,
 } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
@@ -29,6 +31,7 @@ export function StakeUnstakePanel() {
     canUnstakeTime,
     unstakeCoolDown,
   } = useStakingContext();
+  const { hasAddress } = useUserContext();
   const { isDelegate } = useDelegationContext();
   const { approveMutation, isApproving } = useApprove("stake");
   const { stakeMutation } = useStake("stake");
@@ -42,6 +45,10 @@ export function StakeUnstakePanel() {
     !isDelegate && !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
     isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
+  const loaderOverride = {
+    shouldOverride: !hasAddress,
+    children: 0,
+  };
 
   function approve(approveAmountInput: string) {
     if (!votingTokenWriter) return;
@@ -118,7 +125,12 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
-                <Loader dataToWatch={stakedBalance} variant="white" width="80%">
+                <Loader
+                  dataToWatch={stakedBalance}
+                  variant="white"
+                  width="80%"
+                  override={loaderOverride}
+                >
                   {formatNumberForDisplay(stakedBalance)}
                 </Loader>
               </BalanceAmount>
@@ -130,6 +142,7 @@ export function StakeUnstakePanel() {
                   dataToWatch={unstakedBalance}
                   variant="white"
                   width="80%"
+                  override={loaderOverride}
                 >
                   {formatNumberForDisplay(unstakedBalance)}
                 </Loader>

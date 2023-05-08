@@ -13,7 +13,8 @@ import { SigningKey, VoteHistoryByKeyT } from "types";
 export interface UserContextState {
   connectedWallet: WalletState | undefined;
   account: Account | undefined;
-  address: string;
+  address: string | undefined;
+  hasAddress: boolean;
   truncatedAddress: string | undefined;
   walletIcon?: string | undefined;
   apr: BigNumber | undefined;
@@ -35,7 +36,8 @@ export interface UserContextState {
 export const defaultUserContextState: UserContextState = {
   connectedWallet: undefined,
   account: undefined,
-  address: "",
+  address: undefined,
+  hasAddress: false,
   truncatedAddress: undefined,
   walletIcon: undefined,
   apr: undefined,
@@ -81,8 +83,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     voteHistoryByKey,
   } = votingAndStakingDetails || {};
 
+  const hasAddress = !!addressOverride || !!address;
   const walletIcon = connectedWallet?.icon;
-  const signingKey = signingKeys[address];
+  const signingKey = !!address ? signingKeys[address] : undefined;
   const correctChainConnected = connectedChainId === config.chainId;
 
   const value = useMemo(
@@ -90,6 +93,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       connectedWallet,
       account,
       address,
+      hasAddress,
       truncatedAddress,
       walletIcon,
       apr,
@@ -110,6 +114,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [
       account,
       address,
+      hasAddress,
       apr,
       connectedWallet,
       correctChainConnected,

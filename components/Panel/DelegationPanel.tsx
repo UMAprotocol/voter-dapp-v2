@@ -72,7 +72,7 @@ export function DelegationPanel() {
       addErrorMessage("Please enter a valid Ethereum address.");
       return false;
     }
-    if (getAddress(inputAddress) === getAddress(address)) {
+    if (address && getAddress(inputAddress) === getAddress(address)) {
       addErrorMessage("You cannot delegate to yourself.");
       return false;
     }
