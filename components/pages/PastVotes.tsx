@@ -16,26 +16,24 @@ import {
   useVoteTimingContext,
   useVotesContext,
 } from "hooks";
+import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const {
-    pastVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
+  const { pastVoteList, isActive, isPast } = useVotesContext();
   const { isDelegate, isDelegator } = useDelegationContext();
-  const { phase } = useVoteTimingContext();
+  const { isCommit, isReveal } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVoteList);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    pastVoteList ?? []
+  );
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isUndefined(pastVoteList) ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -47,7 +45,6 @@ export function PastVotes() {
                   rows={entriesToShow.map((vote) => (
                     <VoteListItem
                       vote={vote}
-                      phase={phase}
                       selectedVote={undefined}
                       selectVote={() => null}
                       clearVote={() => null}
@@ -56,7 +53,10 @@ export function PastVotes() {
                       key={vote.uniqueKey}
                       isDelegate={isDelegate}
                       isDelegator={isDelegator}
-                      isFetching={getUserDependentIsFetching()}
+                      isActive={isActive}
+                      isPast={isPast}
+                      isCommit={isCommit}
+                      isReveal={isReveal}
                     />
                   ))}
                 />

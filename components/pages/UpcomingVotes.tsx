@@ -21,26 +21,25 @@ import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
+import { isUndefined } from "lodash";
 
 export function UpcomingVotes() {
-  const {
-    upcomingVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
+  const { upcomingVoteList, isActive, isPast } = useVotesContext();
   const { isDelegate, isDelegator } = useDelegationContext();
-  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
+  const { phase, isCommit, isReveal, millisecondsUntilPhaseEnds } =
+    useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVoteList);
-  const hasUpcomingVotes = upcomingVoteList.length > 0;
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    upcomingVoteList ?? []
+  );
+  const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
       <Banner>Upcoming Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isUndefined(upcomingVoteList) ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -58,7 +57,6 @@ export function UpcomingVotes() {
                       rows={entriesToShow.map((vote) => (
                         <VoteListItem
                           vote={vote}
-                          phase={phase}
                           selectedVote={undefined}
                           selectVote={() => null}
                           clearVote={() => null}
@@ -67,7 +65,10 @@ export function UpcomingVotes() {
                           key={vote.uniqueKey}
                           isDelegate={isDelegate}
                           isDelegator={isDelegator}
-                          isFetching={getUserDependentIsFetching()}
+                          isCommit={isCommit}
+                          isReveal={isReveal}
+                          isActive={isActive}
+                          isPast={isPast}
                         />
                       ))}
                     />

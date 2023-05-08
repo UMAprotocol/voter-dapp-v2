@@ -14,8 +14,8 @@ import {
 } from "./style";
 
 export function PastVotes() {
-  const { pastVoteList, getUserDependentIsFetching } = useVotesContext();
-  const { phase } = useVoteTimingContext();
+  const { pastVoteList = [], isActive, isPast } = useVotesContext();
+  const { isCommit, isReveal } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { isDelegate, isDelegator } = useDelegationContext();
 
@@ -34,13 +34,15 @@ export function PastVotes() {
           rows={pastVoteList.slice(0, 5).map((vote) => (
             <VoteListItem
               vote={vote}
-              phase={phase}
               activityStatus="past"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
               isDelegate={isDelegate}
               isDelegator={isDelegator}
-              isFetching={getUserDependentIsFetching()}
+              isActive={isActive}
+              isPast={isPast}
+              isCommit={isCommit}
+              isReveal={isReveal}
             />
           ))}
         />

@@ -15,13 +15,14 @@ import {
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, activityStatus, getUserDependentIsFetching } =
+  const { upcomingVoteList, activityStatus, isActive, isPast } =
     useVotesContext();
-  const { phase } = useVoteTimingContext();
+  const { isCommit, isReveal } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { isDelegate, isDelegator } = useDelegationContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVoteList);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    upcomingVoteList ?? []
+  );
 
   return (
     <>
@@ -33,13 +34,15 @@ export function UpcomingVotes() {
           rows={entriesToShow.map((vote) => (
             <VoteListItem
               vote={vote}
-              phase={phase}
               activityStatus="upcoming"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
               isDelegate={isDelegate}
               isDelegator={isDelegator}
-              isFetching={getUserDependentIsFetching()}
+              isActive={isActive}
+              isPast={isPast}
+              isCommit={isCommit}
+              isReveal={isReveal}
             />
           ))}
         />

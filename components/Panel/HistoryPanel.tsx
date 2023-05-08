@@ -22,8 +22,9 @@ export function HistoryPanel() {
     cumulativeCalculatedSlashPercentage,
     userDataFetching,
   } = useUserContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVotesV2List);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    pastVotesV2List ?? []
+  );
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black

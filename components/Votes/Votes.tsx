@@ -8,9 +8,9 @@ import { UpcomingVotes } from "./UpcomingVotes";
 export function Votes() {
   const { activeVoteList, pastVoteList, upcomingVoteList } = useVotesContext();
 
-  const hasActiveVotes = activeVoteList.length > 0;
-  const hasUpcomingVotes = upcomingVoteList.length > 0;
-  const hasPastVotes = pastVoteList.length > 0;
+  const hasActiveVotes = Boolean(activeVoteList?.length);
+  const hasUpcomingVotes = Boolean(upcomingVoteList?.length);
+  const hasPastVotes = Boolean(pastVoteList?.length);
   const hasAnyVotes = hasActiveVotes || hasUpcomingVotes || hasPastVotes;
 
   return (

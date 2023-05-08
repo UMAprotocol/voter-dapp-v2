@@ -40,8 +40,8 @@ import {
 } from "./style";
 
 export function ActiveVotes() {
-  const { activeVoteList, getUserDependentIsFetching } = useVotesContext();
-  const { phase, roundId } = useVoteTimingContext();
+  const { activeVoteList, isActive, isPast } = useVotesContext();
+  const { phase, roundId, isCommit, isReveal } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
   const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
@@ -55,8 +55,9 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(activeVoteList);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    activeVoteList ?? []
+  );
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -91,8 +92,9 @@ export function ActiveVotes() {
     const hasSigner = !!signer;
 
     const hasPreviouslyCommittedAll =
+      !!activeVoteList &&
       activeVoteList.filter((vote) => vote.decryptedVote).length ===
-      activeVoteList.length;
+        activeVoteList.length;
     // counting how many votes we have edited with committable values ( non empty )
     const selectedVotesCount = Object.values(selectedVotes).filter(
       (x) => x
@@ -106,14 +108,15 @@ export function ActiveVotes() {
         : false;
     const hasVotesToReveal = getVotesToReveal().length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
-    const isEditingUnknownVote =
-      activeVoteList.filter((vote) => {
+    const isEditingUnknownVote = Boolean(
+      activeVoteList?.filter((vote) => {
         return (
           vote.commitHash &&
           !vote.decryptedVote &&
           selectedVotes[vote.uniqueKey]
         );
-      }).length > 0;
+      }).length
+    );
 
     if (!hasSigner || !address) {
       actionConfig.hidden = false;
@@ -240,7 +243,13 @@ export function ActiveVotes() {
   }
 
   async function commitVotes() {
-    if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
+    if (
+      !activeVoteList ||
+      !actionStatus.canCommit ||
+      !signingKey ||
+      !votingWriter
+    )
+      return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: activeVoteList,
@@ -272,12 +281,14 @@ export function ActiveVotes() {
   }
 
   function getVotesToReveal() {
-    return activeVoteList.filter(
-      (vote) =>
-        vote.isCommitted &&
-        !!vote.decryptedVote &&
-        vote.isRevealed === false &&
-        vote.canReveal
+    return (
+      activeVoteList?.filter(
+        (vote) =>
+          vote.isCommitted &&
+          !!vote.decryptedVote &&
+          vote.isRevealed === false &&
+          vote.canReveal
+      ) ?? []
     );
   }
 
@@ -299,7 +310,6 @@ export function ActiveVotes() {
           rows={entriesToShow.map((vote, index) => (
             <VoteListItem
               vote={vote}
-              phase={phase}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={(value) => selectVote(value, vote)}
               clearVote={() => clearSelectedVote(vote)}
@@ -308,6 +318,10 @@ export function ActiveVotes() {
               key={vote.uniqueKey}
               isDelegate={isDelegate}
               isDelegator={isDelegator}
+              isActive={isActive}
+              isPast={isPast}
+              isCommit={isCommit}
+              isReveal={isReveal}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {
@@ -315,11 +329,6 @@ export function ActiveVotes() {
                   return [...inputs];
                 });
               }}
-              isFetching={
-                getUserDependentIsFetching() ||
-                isCommittingVotes ||
-                isRevealingVotes
-              }
             />
           ))}
         />

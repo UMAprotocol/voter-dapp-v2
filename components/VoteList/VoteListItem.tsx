@@ -19,6 +19,7 @@ import {
   decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
+  isAnyUndefined,
 } from "helpers";
 import { config } from "helpers/config";
 import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
@@ -32,34 +33,38 @@ import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { ActivityStatusT, DropdownItemT, VotePhaseT, VoteT } from "types";
+import { ActivityStatusT, DropdownItemT, VoteT } from "types";
 export interface Props {
   vote: VoteT;
-  phase: VotePhaseT;
   selectedVote?: string | undefined;
   selectVote?: (value: string | undefined) => void;
   clearVote?: () => void;
   activityStatus: ActivityStatusT;
   moreDetailsAction: () => void;
-  isFetching: boolean;
   isDelegate: boolean;
   isDelegator: boolean;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
+  isActive: boolean | undefined;
+  isPast: boolean | undefined;
+  isCommit: boolean | undefined;
+  isReveal: boolean | undefined;
 }
 export function VoteListItem({
   vote,
-  phase,
   selectedVote,
   selectVote,
   clearVote,
   activityStatus,
   moreDetailsAction,
-  isFetching,
   setDirty,
   isDirty = false,
   isDelegate,
   isDelegator,
+  isActive,
+  isPast,
+  isCommit,
+  isReveal,
 }: Props) {
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
@@ -92,6 +97,7 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const statusIsLoading = isAnyUndefined(isCommit, isReveal);
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
@@ -112,7 +118,7 @@ export function VoteListItem({
   useEffect(() => {
     // Function returns true if the input exist and has changed from our committed value, false otherwise
     function isDirtyCheck(): boolean {
-      if (phase !== "commit") return false;
+      if (!isCommit) return false;
       if (!existingVote) return false;
       // this happens if you clear the vote inputs, selected vote normally
       // would be "" if editing. dirty = false if we clear inputs.
@@ -121,7 +127,7 @@ export function VoteListItem({
     }
     const dirty = isDirtyCheck();
     if (setDirty && dirty !== isDirty) setDirty(dirty);
-  }, [selectedVote, setDirty, isDirty, existingVote, phase]);
+  }, [selectedVote, setDirty, isDirty, existingVote, isCommit]);
 
   function onSelectVote(option: DropdownItemT) {
     if (option.value === "custom") {
@@ -148,22 +154,19 @@ export function VoteListItem({
   }
 
   function showVoteInput() {
-    return activityStatus === "active" && phase === "commit";
+    return isActive && isCommit;
   }
 
   function showYourVote() {
-    return (
-      (activityStatus === "active" && phase === "reveal") ||
-      activityStatus === "past"
-    );
+    return (isActive && isReveal) || isPast;
   }
 
   function showCorrectVote() {
-    return activityStatus === "past" && correctVote !== undefined;
+    return isPast && correctVote !== undefined;
   }
 
   function showVoteStatus() {
-    return activityStatus === "active";
+    return isActive;
   }
 
   function getExistingOrSelectedVoteFromOptions() {
@@ -217,7 +220,7 @@ export function VoteListItem({
   }
 
   function getCommittedOrRevealed() {
-    if (phase === "commit") {
+    if (isCommit) {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
         if (isDelegator) {
@@ -262,7 +265,7 @@ export function VoteListItem({
   }
 
   function getDotColor() {
-    if (phase === "commit") {
+    if (isCommit) {
       return isCommitted ? green : red500;
     } else {
       return isRevealed ? green : red500;
@@ -270,7 +273,7 @@ export function VoteListItem({
   }
 
   function getBorderColor() {
-    if (activityStatus === "past" || phase === "reveal") return grey100;
+    if (activityStatus === "past" || isReveal) return grey100;
     return "transparent";
   }
 
@@ -300,9 +303,9 @@ export function VoteListItem({
       "--title-cell-width": `${0.6 * wrapperWidth}px`,
     };
 
-    if (activityStatus === "active") {
-      if (phase === "commit") return commitCellWidths;
-      if (phase === "reveal") return revealCellWidths;
+    if (isActive) {
+      if (isCommit) return commitCellWidths;
+      if (isReveal) return revealCellWidths;
     }
 
     if (activityStatus === "upcoming") return upcomingCellWidths;
@@ -313,7 +316,7 @@ export function VoteListItem({
   }
 
   function getRelevantTransactionLink(): ReactNode | string {
-    if (phase === "commit") {
+    if (isCommit) {
       return commitHash ? (
         <Link href={config.makeTransactionHashLink(commitHash)} target="_blank">
           {getCommittedOrRevealed()}
@@ -424,7 +427,7 @@ export function VoteListItem({
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {isFetching ? (
+            {statusIsLoading ? (
               <LoadingSkeleton width="8vw" />
             ) : (
               <>
