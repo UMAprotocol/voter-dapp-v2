@@ -34,7 +34,7 @@ export function HistoryPanel() {
     : red500;
 
   const loaderOverride = {
-    shouldOverride: !hasAddress,
+    isOverride: !hasAddress,
     children: 0,
   };
 

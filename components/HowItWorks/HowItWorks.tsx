@@ -23,7 +23,7 @@ export function HowItWorks() {
   const { isDelegate, delegatorAddress } = useDelegationContext();
 
   const loaderOverride = {
-    shouldOverride: !hasAddress,
+    isOverride: !hasAddress,
     children: 0,
   };
 

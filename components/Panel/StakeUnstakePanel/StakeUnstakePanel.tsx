@@ -45,7 +45,7 @@ export function StakeUnstakePanel() {
   const showCooldownTimer =
     isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
   const loaderOverride = {
-    shouldOverride: !hasAddress,
+    isOverride: !hasAddress,
     children: 0,
   };
 
