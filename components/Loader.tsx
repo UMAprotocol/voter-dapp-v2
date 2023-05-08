@@ -37,7 +37,6 @@ type Props = LoadingSkeletonProps & {
  *   <div>Content to be shown after loading is complete</div>
  * </Loader>
  *
- * @param props - The component's props.
  * @param children - The child components to be wrapped by the Loader.
  * @param dataToWatch - Data to watch for loading state.
  * @param isLoading - If true, it will show the loader. If not provided, it will use `dataToWatch` to determine the loading state.
