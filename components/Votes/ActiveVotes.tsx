@@ -244,6 +244,7 @@ export function ActiveVotes() {
 
   async function commitVotes() {
     if (
+      !address ||
       !activeVoteList ||
       !actionStatus.canCommit ||
       !signingKey ||

@@ -1,8 +1,9 @@
 import { getIgnoredRequestToBeDelegateAddressesFromStorage } from "helpers";
 
 export function getIgnoredRequestToBeDelegateAddresses(
-  ignoredByAddress: string
+  ignoredByAddress: string | undefined
 ) {
+  if (!ignoredByAddress) return [];
   const ignoredRequestToBeDelegateAddresses =
     getIgnoredRequestToBeDelegateAddressesFromStorage();
 

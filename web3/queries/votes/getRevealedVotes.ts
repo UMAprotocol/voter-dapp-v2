@@ -4,9 +4,10 @@ import { VoteExistsByKeyT } from "types";
 
 export async function getRevealedVotes(
   votingContract: VotingV2Ethers,
-  address: string,
+  address: string | undefined,
   roundId: number
 ): Promise<VoteExistsByKeyT> {
+  if (!address) return {};
   const filter = votingContract.filters.VoteRevealed(
     address,
     null,

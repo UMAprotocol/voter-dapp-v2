@@ -182,7 +182,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       // this value only exists when we have votes that have revealed from the graph, using this we can
       // lookup revealed votes without a signature, just have to find the right address
       const pastVoteRevealed: string | undefined =
-        vote?.revealedVoteByAddress[address] ||
+        vote?.revealedVoteByAddress[address ?? ""] ||
         (designatedVotingV1Address &&
           vote.revealedVoteByAddress[designatedVotingV1Address]) ||
         (addressOverride && vote.revealedVoteByAddress[addressOverride]);

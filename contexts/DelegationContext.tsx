@@ -353,6 +353,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   const ignoreReceivedRequestToBeDelegate = useCallback(
     function (delegatorAddress: string) {
+      if (!address) return;
+
       ignoreReceivedRequestToBeDelegateMutation({
         userAddress: address,
         delegatorAddress,

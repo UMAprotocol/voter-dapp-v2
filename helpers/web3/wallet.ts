@@ -31,8 +31,9 @@ export function getAccountDetails(connectedWallets?: WalletState[]) {
 }
 
 export async function getDesignatedVotingV1Address(
-  address: string
+  address: string | undefined
 ): Promise<string | undefined> {
+  if (!address) return;
   const contract = createDesignatedVotingFactoryV1Instance();
   return contract.designatedVotingContracts(address);
 }

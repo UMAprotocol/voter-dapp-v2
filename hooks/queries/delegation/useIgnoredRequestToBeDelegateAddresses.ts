@@ -8,14 +8,12 @@ export function useIgnoredRequestToBeDelegateAddresses() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [ignoredRequestToBeDelegateAddressesKey, address],
-    () => getIgnoredRequestToBeDelegateAddresses(address),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [ignoredRequestToBeDelegateAddressesKey, address],
+    queryFn: () => getIgnoredRequestToBeDelegateAddresses(address),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

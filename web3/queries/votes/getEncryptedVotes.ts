@@ -5,9 +5,10 @@ import { EncryptedVotesByKeyT } from "types";
 export async function getEncryptedVotes(
   votingContract: VotingV2Ethers,
   votingV1Contract: VotingEthers,
-  address: string,
+  address: string | undefined,
   findRoundId?: number
 ) {
+  if (!address) return {};
   const v1Filter = votingV1Contract.filters.EncryptedVote(address);
   const v1Result = await votingV1Contract.queryFilter(v1Filter);
 

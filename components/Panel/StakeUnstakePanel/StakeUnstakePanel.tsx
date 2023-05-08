@@ -1,6 +1,5 @@
 import { Loader, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
-import { BigNumber } from "ethers";
 import { formatNumberForDisplay, parseEther, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {

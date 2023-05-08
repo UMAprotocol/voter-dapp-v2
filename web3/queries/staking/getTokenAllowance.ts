@@ -6,9 +6,9 @@ const { votingContractAddress } = config;
 
 export async function getTokenAllowance(
   votingTokenContract: VotingTokenEthers | undefined,
-  address: string
+  address: string | undefined
 ) {
-  if (!votingTokenContract) return BigNumber.from(0);
+  if (!address || !votingTokenContract) return BigNumber.from(0);
   const result = await votingTokenContract.functions.allowance(
     address,
     votingContractAddress

@@ -1,4 +1,14 @@
-export async function getIsOldDesignatedVotingAccount(account: string) {
+export async function getIsOldDesignatedVotingAccount(
+  account: string | undefined
+) {
+  if (!account) {
+    return {
+      isOldDesignatedVotingAccount: false,
+      message: "",
+      designatedVotingContract: "",
+    };
+  }
+
   const response = await fetch("/api/designated-voting", {
     method: "POST",
     headers: {
