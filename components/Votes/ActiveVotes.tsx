@@ -319,7 +319,8 @@ export function ActiveVotes() {
               activityStatus="active"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              delegationStatus={delegationStatus}
+              isDelegate={isDelegate}
+              isDelegator={isDelegator}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {
