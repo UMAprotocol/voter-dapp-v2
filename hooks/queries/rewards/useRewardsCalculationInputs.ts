@@ -16,7 +16,6 @@ export function useRewardsCalculationInputs(addressOverride?: string) {
   const address = addressOverride || defaultAddress;
 
   const queryResult = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [rewardsCalculationInputsKey, address],
     queryFn: () => getRewardsCalculationInputs(voting),
     refetchInterval: oneMinute,

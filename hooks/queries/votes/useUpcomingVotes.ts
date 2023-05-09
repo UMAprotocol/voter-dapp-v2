@@ -15,7 +15,6 @@ export function useUpcomingVotes() {
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [upcomingVotesKey, roundId, newVotesAdded],
     queryFn: () => getUpcomingVotes(voting, roundId),
     onError,

@@ -8,7 +8,6 @@ export function useUnstakeCoolDown() {
   const { onError } = useHandleError({ isDataFetching: true });
   // only need to fetch this one time
   const queryResult = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [unstakeCoolDownKey],
     queryFn: () => getUnstakeCoolDown(voting),
     onError,

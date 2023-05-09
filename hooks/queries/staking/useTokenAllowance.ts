@@ -15,7 +15,6 @@ export function useTokenAllowance() {
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [tokenAllowanceKey, address],
     queryFn: () => getTokenAllowance(votingTokenWriter, address),
     enabled: !!address && !isWrongChain && !!votingTokenWriter,
