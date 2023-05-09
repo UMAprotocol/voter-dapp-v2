@@ -43,12 +43,12 @@ export interface VotesContextState {
   isUpcoming: boolean | undefined;
   isPast: boolean | undefined;
   activeVotesByKey: PriceRequestByKeyT | undefined;
-  activeVoteList: VoteT[] | undefined;
+  activeVoteList: VoteT[];
   upcomingVotesByKey: PriceRequestByKeyT | undefined;
-  upcomingVoteList: VoteT[] | undefined;
+  upcomingVoteList: VoteT[];
   pastVotesByKey: PriceRequestByKeyT | undefined;
-  pastVoteList: VoteT[] | undefined;
-  pastVotesV2List: VoteT[] | undefined;
+  pastVoteList: VoteT[];
+  pastVotesV2List: VoteT[];
   committedVotes: VoteExistsByKeyT | undefined;
   revealedVotes: VoteExistsByKeyT | undefined;
   encryptedVotes: EncryptedVotesByKeyT | undefined;
@@ -80,12 +80,12 @@ export const defaultVotesContextState: VotesContextState = {
   isUpcoming: undefined,
   isPast: undefined,
   activeVotesByKey: undefined,
-  activeVoteList: undefined,
+  activeVoteList: [],
   upcomingVotesByKey: undefined,
-  upcomingVoteList: undefined,
+  upcomingVoteList: [],
   pastVotesByKey: undefined,
-  pastVoteList: undefined,
-  pastVotesV2List: undefined,
+  pastVoteList: [],
+  pastVotesV2List: [],
   committedVotes: undefined,
   revealedVotes: undefined,
   encryptedVotes: undefined,
