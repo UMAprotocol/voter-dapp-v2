@@ -18,14 +18,12 @@ export function useDelegateToStaker() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [delegateToStakerKey, address],
-    () => getDelegateToStaker(voting, delegate ?? zeroAddress),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [delegateToStakerKey, address],
+    queryFn: () => getDelegateToStaker(voting, delegate ?? zeroAddress),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

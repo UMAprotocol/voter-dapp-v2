@@ -9,7 +9,8 @@ export function useCancelSentRequestToBeDelegate() {
   const { onError, clearErrors } = useHandleError();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation(removeDelegate, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: removeDelegate,
     onError,
     onSuccess: () => {
       clearErrors();
