@@ -73,16 +73,14 @@ export function useContentfulData() {
     }
   }
 
-  const queryResult = useQuery(
-    [contentfulDataKey, activeVotes, upcomingVotes, pastVotes],
-    () => getContentfulData(adminProposalNumbersByKey),
-    {
-      refetchInterval: oneMinute,
-      enabled: !!contentfulClient,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [contentfulDataKey, activeVotes, upcomingVotes, pastVotes],
+    queryFn: () => getContentfulData(adminProposalNumbersByKey),
+    refetchInterval: oneMinute,
+    enabled: !!contentfulClient,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }

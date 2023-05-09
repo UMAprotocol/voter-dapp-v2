@@ -11,7 +11,8 @@ export function useWithdrawV1Rewards(errorOrigin: ErrorOriginT) {
   const { address } = useUserContext();
   const [{ connectedChain }] = useSetChain();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
-  const { mutate, isLoading } = useMutation(withdrawV1Rewards, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: withdrawV1Rewards,
     onError,
     onSuccess: (_receipt, { totalRewards }) => {
       clearErrors();

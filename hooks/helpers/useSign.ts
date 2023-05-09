@@ -7,7 +7,8 @@ export function useSign(
   signer: ethers.Signer | null | undefined,
   setSigningKeys: (signingKeys: SigningKeys) => void
 ) {
-  return useMutation(async () => (signer ? sign(signer) : {}), {
+  return useMutation({
+    mutationFn: async () => (signer ? sign(signer) : {}),
     onError: (error) => console.error("Error signing:", error),
     onSuccess: setSigningKeys,
   });

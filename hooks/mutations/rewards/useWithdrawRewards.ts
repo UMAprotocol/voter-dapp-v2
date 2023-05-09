@@ -15,7 +15,8 @@ export function useWithdrawRewards(errorOrigin?: ErrorOriginT) {
   const { outstandingRewards } = useStakingContext();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(withdrawRewards, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: withdrawRewards,
     onError,
     onSuccess: () => {
       clearErrors();

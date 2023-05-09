@@ -19,7 +19,8 @@ export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
   const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(executeUnstake, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: executeUnstake,
     onError,
     onSuccess: (_contractReceipt, { pendingUnstake }) => {
       clearErrors();

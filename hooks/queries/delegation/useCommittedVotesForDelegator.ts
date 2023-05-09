@@ -19,19 +19,22 @@ export function useCommittedVotesForDelegator() {
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [committedVotesForDelegatorKey, address, delegatorAddress, roundId],
-    async (): Promise<VoteExistsByKeyT> =>
+  const queryResult = useQuery({
+    queryKey: [
+      committedVotesForDelegatorKey,
+      address,
+      delegatorAddress,
+      roundId,
+    ],
+    queryFn: async (): Promise<VoteExistsByKeyT> =>
       delegatorAddress
         ? getCommittedVotes(voting, delegatorAddress, roundId)
         : {},
-    {
-      refetchInterval: isDelegate ? oneMinute : false,
-      enabled: !!address && !isWrongChain && !!delegatorAddress && isDelegate,
-      initialData: {},
-      onError,
-    }
-  );
+    refetchInterval: isDelegate ? oneMinute : false,
+    enabled: !!address && !isWrongChain && !!delegatorAddress && isDelegate,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }

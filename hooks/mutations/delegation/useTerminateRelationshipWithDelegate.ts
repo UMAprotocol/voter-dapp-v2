@@ -10,7 +10,8 @@ export function useTerminateRelationshipWithDelegate() {
   const queryClient = useQueryClient();
   const { onError, clearErrors } = useHandleError();
 
-  const { mutate, isLoading } = useMutation(removeDelegate, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: removeDelegate,
     onError,
     onSuccess: () => {
       clearErrors();

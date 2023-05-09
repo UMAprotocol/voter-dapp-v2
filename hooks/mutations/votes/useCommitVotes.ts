@@ -10,7 +10,8 @@ export function useCommitVotes() {
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
 
-  const { mutate, isLoading } = useMutation(commitVotes, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: commitVotes,
     onError,
     onSuccess: (data, { formattedVotes }) => {
       clearErrors();

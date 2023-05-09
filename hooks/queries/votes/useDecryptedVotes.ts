@@ -19,15 +19,13 @@ export function useDecryptedVotes(roundId?: number) {
   const { data: encryptedVotes } = useEncryptedVotes(roundId);
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [decryptedVotesKey, encryptedVotes, address],
-    () => decryptVotes(signingKey?.privateKey, encryptedVotes),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [decryptedVotesKey, encryptedVotes, address],
+    queryFn: () => decryptVotes(signingKey?.privateKey, encryptedVotes),
+    enabled: !!address && !isWrongChain,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }

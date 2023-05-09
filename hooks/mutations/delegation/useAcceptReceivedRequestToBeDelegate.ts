@@ -8,7 +8,8 @@ export function useAcceptReceivedRequestToBeDelegate() {
   const { onError, clearErrors } = useHandleError();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation(setDelegator, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: setDelegator,
     onError,
     onSuccess: (_data, { delegatorAddress }) => {
       clearErrors();

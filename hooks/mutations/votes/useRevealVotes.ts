@@ -10,7 +10,8 @@ export function useRevealVotes() {
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
 
-  const { mutate, isLoading } = useMutation(revealVotes, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: revealVotes,
     onError,
     onSuccess: (data, { votesToReveal }) => {
       clearErrors();

@@ -8,13 +8,11 @@ export function useVoterFromDelegate() {
   const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
 
-  const queryResult = useQuery(
-    [voterFromDelegateKey, address],
-    () => getVoterFromDelegate(voting, address),
-    {
-      enabled: !!address && !isWrongChain,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [voterFromDelegateKey, address],
+    queryFn: () => getVoterFromDelegate(voting, address),
+    enabled: !!address && !isWrongChain,
+  });
 
   return queryResult;
 }

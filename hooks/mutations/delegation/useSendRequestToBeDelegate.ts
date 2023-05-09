@@ -9,7 +9,8 @@ export function useSendRequestToBeDelegate(errorOrigin?: ErrorOriginT) {
   const { onError, clearErrors } = useHandleError({ errorOrigin });
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation(setDelegate, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: setDelegate,
     onError,
     onSuccess: ({ transactionHash }, { delegateAddress }) => {
       clearErrors();
