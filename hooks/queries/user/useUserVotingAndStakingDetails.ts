@@ -10,15 +10,13 @@ export function useUserVotingAndStakingDetails(addressOverride?: string) {
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
-  const queryResult = useQuery(
-    [userDataKey, address],
-    () => getUserData(address),
-    {
-      enabled: !!address && !isWrongChain && config.graphV2Enabled,
-      refetchInterval: oneMinute,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [userDataKey, address],
+    queryFn: () => getUserData(address),
+    enabled: !!address && !isWrongChain && config.graphV2Enabled,
+    refetchInterval: oneMinute,
+    onError,
+  });
 
   return queryResult;
 }

@@ -25,7 +25,6 @@ export function useCommittedVotesForDelegator() {
       address,
       delegatorAddress,
       roundId,
-      voting,
     ],
     queryFn: async (): Promise<VoteExistsByKeyT> =>
       getCommittedVotes(voting, delegatorAddress, roundId),
