@@ -48,8 +48,7 @@ export function ActiveVotes() {
     useWalletContext();
   const { votingWriter } = useContractsContext();
   const { stakedBalance } = useStakingContext();
-  const { delegationStatus, isDelegate, isDelegator, delegatorAddress } =
-    useDelegationContext();
+  const { isDelegate, isDelegator, delegatorAddress } = useDelegationContext();
   const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
