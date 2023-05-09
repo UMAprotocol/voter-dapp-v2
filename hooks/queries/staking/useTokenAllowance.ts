@@ -15,15 +15,13 @@ export function useTokenAllowance() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [tokenAllowanceKey, address],
-    () => getTokenAllowance(votingTokenWriter!, address),
-    {
-      enabled: !!address && !isWrongChain && !!votingTokenWriter,
-      initialData: BigNumber.from(0),
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [tokenAllowanceKey, address],
+    queryFn: () => getTokenAllowance(votingTokenWriter!, address),
+    enabled: !!address && !isWrongChain && !!votingTokenWriter,
+    initialData: BigNumber.from(0),
+    onError,
+  });
 
   return queryResult;
 }

@@ -24,13 +24,11 @@ export function useStakerDetails(addressOverride?: string) {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
-  return useQuery(
-    [stakerDetailsKey, address],
-    () => (address ? getStakerDetails(voting, address) : initialData),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData,
-      onError,
-    }
-  );
+  return useQuery({
+    queryKey: [stakerDetailsKey, address],
+    queryFn: () => (address ? getStakerDetails(voting, address) : initialData),
+    enabled: !!address && !isWrongChain,
+    initialData,
+    onError,
+  });
 }

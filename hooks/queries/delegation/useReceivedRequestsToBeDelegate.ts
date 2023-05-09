@@ -16,14 +16,12 @@ export function useReceivedRequestsToBeDelegate() {
   const { onError } = useHandleError({ isDataFetching: true });
   const newRequests = useNewReceivedRequestsToBeDelegate();
 
-  const queryResult = useQuery(
-    [receivedRequestsToBeDelegateKey, address, newRequests],
-    () => getDelegateSetEvents(voting, address, "delegate"),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [receivedRequestsToBeDelegateKey, address, newRequests],
+    queryFn: () => getDelegateSetEvents(voting, address, "delegate"),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

@@ -16,15 +16,13 @@ export function useCommittedVotes() {
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [committedVotesKey, address, roundId],
-    () => getCommittedVotes(voting, address, roundId),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [committedVotesKey, address, roundId],
+    queryFn: () => getCommittedVotes(voting, address, roundId),
+    enabled: !!address && !isWrongChain,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }

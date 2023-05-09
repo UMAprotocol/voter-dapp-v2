@@ -8,16 +8,14 @@ export function usePastVotes() {
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [pastVotesKey, roundId],
-    () => getPastVotesAllVersions(),
-    {
-      enabled: config.graphV1Enabled && config.graphV2Enabled,
-      refetchInterval: oneMinute,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [pastVotesKey, roundId],
+    queryFn: () => getPastVotesAllVersions(),
+    enabled: config.graphV1Enabled && config.graphV2Enabled,
+    refetchInterval: oneMinute,
+    initialData: {},
+    onError,
+  });
 
   return queryResult;
 }

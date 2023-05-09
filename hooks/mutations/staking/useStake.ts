@@ -10,7 +10,8 @@ export function useStake(errorOrigin?: ErrorOriginT) {
   const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(stake, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: stake,
     onError,
     onSuccess: (_data, { stakeAmount }) => {
       clearErrors();

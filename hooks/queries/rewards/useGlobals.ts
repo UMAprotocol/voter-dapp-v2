@@ -4,7 +4,9 @@ import { getGlobals } from "graph";
 import { config } from "helpers/config";
 
 export function useGlobals() {
-  return useQuery(["globals"], getGlobals, {
+  return useQuery({
+    queryKey: ["globals"],
+    queryFn: getGlobals,
     refetchInterval: oneMinute,
     initialData: {
       annualPercentageReturn: 0,

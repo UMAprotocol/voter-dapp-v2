@@ -10,7 +10,8 @@ export function useApprove(errorOrigin?: ErrorOriginT) {
   const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(approve, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: approve,
     onError,
     onSuccess: (_data, { approveAmount }) => {
       clearErrors();

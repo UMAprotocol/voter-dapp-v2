@@ -14,14 +14,12 @@ export function useDelegatorSetEventsForDelegate() {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [delegatorSetEventForDelegateKey, address],
-    () => getDelegatorSetEvents(voting, address, "delegate"),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [delegatorSetEventForDelegateKey, address],
+    queryFn: () => getDelegatorSetEvents(voting, address, "delegate"),
+    enabled: !!address && !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

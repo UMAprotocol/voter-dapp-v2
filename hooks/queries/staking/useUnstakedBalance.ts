@@ -18,15 +18,14 @@ export function useUnstakedBalance(addressOverride?: string) {
   const { onError } = useHandleError({ isDataFetching: true });
   const address = addressOverride || defaultAddress;
 
-  const queryResult = useQuery(
-    [unstakedBalanceKey, address],
-    () => (address ? getUnstakedBalance(votingToken, address) : initialData),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-      initialData,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [unstakedBalanceKey, address],
+    queryFn: () =>
+      address ? getUnstakedBalance(votingToken, address) : initialData,
+    enabled: !!address && !isWrongChain,
+    onError,
+    initialData,
+  });
 
   return queryResult;
 }
