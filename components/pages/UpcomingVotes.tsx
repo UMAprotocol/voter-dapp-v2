@@ -17,17 +17,16 @@ import {
   useVoteTimingContext,
   useVotesContext,
 } from "hooks";
+import { isUndefined } from "lodash";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
-import { isUndefined } from "lodash";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, isActive, isPast } = useVotesContext();
+  const { upcomingVoteList } = useVotesContext();
   const { isDelegate, isDelegator } = useDelegationContext();
-  const { phase, isCommit, isReveal, millisecondsUntilPhaseEnds } =
-    useVoteTimingContext();
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     upcomingVoteList ?? []
@@ -65,10 +64,6 @@ export function UpcomingVotes() {
                           key={vote.uniqueKey}
                           isDelegate={isDelegate}
                           isDelegator={isDelegator}
-                          isCommit={isCommit}
-                          isReveal={isReveal}
-                          isActive={isActive}
-                          isPast={isPast}
                         />
                       ))}
                     />

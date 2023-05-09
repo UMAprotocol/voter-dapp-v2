@@ -10,20 +10,14 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import {
-  useDelegationContext,
-  usePanelContext,
-  useVoteTimingContext,
-  useVotesContext,
-} from "hooks";
+import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
 import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const { pastVoteList, isActive, isPast } = useVotesContext();
+  const { pastVoteList } = useVotesContext();
   const { isDelegate, isDelegator } = useDelegationContext();
-  const { isCommit, isReveal } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVoteList ?? []
@@ -53,10 +47,7 @@ export function PastVotes() {
                       key={vote.uniqueKey}
                       isDelegate={isDelegate}
                       isDelegator={isDelegator}
-                      isActive={isActive}
-                      isPast={isPast}
-                      isCommit={isCommit}
-                      isReveal={isReveal}
+                      isPast={true}
                     />
                   ))}
                 />

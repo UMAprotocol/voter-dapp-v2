@@ -45,10 +45,10 @@ export interface Props {
   isDelegator: boolean;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
-  isActive: boolean | undefined;
-  isPast: boolean | undefined;
-  isCommit: boolean | undefined;
-  isReveal: boolean | undefined;
+  isActive?: boolean;
+  isPast?: boolean;
+  isCommit?: boolean;
+  isReveal?: boolean;
 }
 export function VoteListItem({
   vote,
@@ -59,12 +59,12 @@ export function VoteListItem({
   moreDetailsAction,
   setDirty,
   isDirty = false,
-  isDelegate,
-  isDelegator,
-  isActive,
-  isPast,
-  isCommit,
-  isReveal,
+  isDelegate = false,
+  isDelegator = false,
+  isActive = false,
+  isPast = false,
+  isCommit = false,
+  isReveal = false,
 }: Props) {
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);

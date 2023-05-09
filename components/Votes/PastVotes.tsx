@@ -1,10 +1,5 @@
 import { Button, VoteList, VoteListItem, VoteTableHeadings } from "components";
-import {
-  useDelegationContext,
-  usePanelContext,
-  useVoteTimingContext,
-  useVotesContext,
-} from "hooks";
+import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
 import { CSSProperties } from "react";
 import {
   ButtonInnerWrapper,
@@ -14,8 +9,7 @@ import {
 } from "./style";
 
 export function PastVotes() {
-  const { pastVoteList = [], isActive, isPast } = useVotesContext();
-  const { isCommit, isReveal } = useVoteTimingContext();
+  const { pastVoteList = [] } = useVotesContext();
   const { openPanel } = usePanelContext();
   const { isDelegate, isDelegator } = useDelegationContext();
 
@@ -39,10 +33,7 @@ export function PastVotes() {
               key={vote.uniqueKey}
               isDelegate={isDelegate}
               isDelegator={isDelegator}
-              isActive={isActive}
-              isPast={isPast}
-              isCommit={isCommit}
-              isReveal={isReveal}
+              isPast={true}
             />
           ))}
         />

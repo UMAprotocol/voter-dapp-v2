@@ -6,18 +6,11 @@ import {
   VoteTableHeadings,
   VoteTimeline,
 } from "components";
-import {
-  useDelegationContext,
-  usePanelContext,
-  useVotesContext,
-  useVoteTimingContext,
-} from "hooks";
+import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList, activityStatus, isActive, isPast } =
-    useVotesContext();
-  const { isCommit, isReveal } = useVoteTimingContext();
+  const { upcomingVoteList, activityStatus } = useVotesContext();
   const { openPanel } = usePanelContext();
   const { isDelegate, isDelegator } = useDelegationContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
@@ -39,10 +32,6 @@ export function UpcomingVotes() {
               key={vote.uniqueKey}
               isDelegate={isDelegate}
               isDelegator={isDelegator}
-              isActive={isActive}
-              isPast={isPast}
-              isCommit={isCommit}
-              isReveal={isReveal}
             />
           ))}
         />
