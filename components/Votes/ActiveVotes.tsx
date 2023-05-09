@@ -40,15 +40,16 @@ import {
 } from "./style";
 
 export function ActiveVotes() {
-  const { activeVoteList, isActive, isPast } = useVotesContext();
-  const { phase, roundId, isCommit, isReveal } = useVoteTimingContext();
+  const { activeVoteList } = useVotesContext();
+  const { phase, roundId } = useVoteTimingContext();
   const { address, hasSigningKey, correctChainConnected, signingKey } =
     useUserContext();
   const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
     useWalletContext();
   const { votingWriter } = useContractsContext();
   const { stakedBalance } = useStakingContext();
-  const { isDelegate, isDelegator, delegatorAddress } = useDelegationContext();
+  const { delegationStatus, isDelegate, isDelegator, delegatorAddress } =
+    useDelegationContext();
   const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
@@ -310,6 +311,7 @@ export function ActiveVotes() {
           headings={<VoteTableHeadings activityStatus="active" />}
           rows={entriesToShow.map((vote, index) => (
             <VoteListItem
+              phase={phase}
               vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={(value) => selectVote(value, vote)}
@@ -317,12 +319,7 @@ export function ActiveVotes() {
               activityStatus="active"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              isDelegate={isDelegate}
-              isDelegator={isDelegator}
-              isActive={isActive}
-              isPast={isPast}
-              isCommit={isCommit}
-              isReveal={isReveal}
+              delegationStatus={delegationStatus}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {

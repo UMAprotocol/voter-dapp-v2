@@ -6,13 +6,13 @@ import {
   VoteTableHeadings,
   VoteTimeline,
 } from "components";
-import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
+import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
   const { upcomingVoteList, activityStatus } = useVotesContext();
   const { openPanel } = usePanelContext();
-  const { isDelegate, isDelegator } = useDelegationContext();
+  const { phase } = useVoteTimingContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     upcomingVoteList ?? []
   );
@@ -26,12 +26,11 @@ export function UpcomingVotes() {
           headings={<VoteTableHeadings activityStatus="upcoming" />}
           rows={entriesToShow.map((vote) => (
             <VoteListItem
+              phase={phase}
               vote={vote}
               activityStatus="upcoming"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              isDelegate={isDelegate}
-              isDelegator={isDelegator}
             />
           ))}
         />

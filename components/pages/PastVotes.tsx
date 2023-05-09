@@ -10,14 +10,14 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
   const { pastVoteList } = useVotesContext();
-  const { isDelegate, isDelegator } = useDelegationContext();
+  const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVoteList ?? []
@@ -38,6 +38,7 @@ export function PastVotes() {
                   headings={<VoteTableHeadings activityStatus="past" />}
                   rows={entriesToShow.map((vote) => (
                     <VoteListItem
+                      phase={phase}
                       vote={vote}
                       selectedVote={undefined}
                       selectVote={() => null}
@@ -45,9 +46,6 @@ export function PastVotes() {
                       activityStatus="past"
                       moreDetailsAction={() => openPanel("vote", vote)}
                       key={vote.uniqueKey}
-                      isDelegate={isDelegate}
-                      isDelegator={isDelegator}
-                      isPast={true}
                     />
                   ))}
                 />

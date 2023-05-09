@@ -1,5 +1,5 @@
 import { Button, VoteList, VoteListItem, VoteTableHeadings } from "components";
-import { useDelegationContext, usePanelContext, useVotesContext } from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
 import { CSSProperties } from "react";
 import {
   ButtonInnerWrapper,
@@ -11,7 +11,7 @@ import {
 export function PastVotes() {
   const { pastVoteList = [] } = useVotesContext();
   const { openPanel } = usePanelContext();
-  const { isDelegate, isDelegator } = useDelegationContext();
+  const { phase } = useVoteTimingContext();
 
   return (
     <>
@@ -28,12 +28,10 @@ export function PastVotes() {
           rows={pastVoteList.slice(0, 5).map((vote) => (
             <VoteListItem
               vote={vote}
+              phase={phase}
               activityStatus="past"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              isDelegate={isDelegate}
-              isDelegator={isDelegator}
-              isPast={true}
             />
           ))}
         />
