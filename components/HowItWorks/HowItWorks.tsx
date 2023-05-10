@@ -1,13 +1,14 @@
 import { InfoBar, Loader, Tooltip } from "components";
 import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
-import { formatNumberForDisplay, parseEther } from "helpers";
+import { formatNumberForDisplay, isAnyUndefined, parseEther } from "helpers";
 import {
   useDelegationContext,
   usePanelContext,
   useStakingContext,
   useUserContext,
 } from "hooks";
+import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -18,14 +19,8 @@ export function HowItWorks() {
   const { openPanel } = usePanelContext();
   const { stakedBalance, unstakedBalance, outstandingRewards, pendingUnstake } =
     useStakingContext();
-  const { countWrongVotes, countCorrectVotes, apr, hasAddress } =
-    useUserContext();
+  const { countWrongVotes, countCorrectVotes, apr } = useUserContext();
   const { isDelegate, delegatorAddress } = useDelegationContext();
-
-  const loaderOverride = {
-    isOverride: !hasAddress,
-    children: 0,
-  };
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -87,21 +82,13 @@ export function HowItWorks() {
                 "You are staking"
               )}{" "}
               <Strong>
-                <Loader
-                  dataToWatch={stakedBalance}
-                  width={50}
-                  override={loaderOverride}
-                >
+                <Loader isLoading={isUndefined(stakedBalance)} width={50}>
                   {formatNumberForDisplay(stakedBalance)}
                 </Loader>
               </Strong>{" "}
               {isDelegate ? "of their" : "of your"}{" "}
               <Strong>
-                <Loader
-                  dataToWatch={totalTokens()}
-                  width={50}
-                  override={loaderOverride}
-                >
+                <Loader isLoading={isUndefined(totalTokens())} width={50}>
                   {formatNumberForDisplay(totalTokens())}
                 </Loader>
               </Strong>{" "}
@@ -125,9 +112,8 @@ export function HowItWorks() {
               You have voted in{" "}
               <Strong>
                 <Loader
-                  dataToWatch={[countCorrectVotes, countWrongVotes]}
+                  isLoading={isAnyUndefined(countCorrectVotes, countWrongVotes)}
                   width={50}
-                  override={loaderOverride}
                 >
                   {formatNumberForDisplay(getTotalVotes(), { decimals: 0 })}
                 </Loader>
@@ -136,7 +122,7 @@ export function HowItWorks() {
               {getTotalVotes()?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"},
               and are earning{" "}
               <Strong>
-                <Loader dataToWatch={apr} width={50} override={loaderOverride}>
+                <Loader isLoading={isUndefined(apr)} width={50}>
                   {formatNumberForDisplay(apr, { decimals: 1 })}
                 </Loader>
                 % APR.
@@ -159,11 +145,7 @@ export function HowItWorks() {
             <>
               Your unclaimed UMA rewards:{" "}
               <Strong>
-                <Loader
-                  dataToWatch={outstandingRewards}
-                  width={50}
-                  override={loaderOverride}
-                >
+                <Loader isLoading={isUndefined(outstandingRewards)} width={50}>
                   {formatNumberForDisplay(outstandingRewards, { decimals: 3 })}
                 </Loader>
               </Strong>{" "}
