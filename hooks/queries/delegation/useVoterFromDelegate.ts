@@ -11,7 +11,7 @@ export function useVoterFromDelegate() {
   const queryResult = useQuery({
     queryKey: [voterFromDelegateKey, address],
     queryFn: () => getVoterFromDelegate(voting, address),
-    enabled: !isWrongChain,
+    enabled: !!address && !isWrongChain,
   });
 
   return queryResult;

@@ -65,8 +65,7 @@ export function StakingProvider({ children }: { children: ReactNode }) {
   } = stakerDetails || {};
   const { data: stakedBalance } = useStakedBalance(address);
   const { data: unstakedBalance } = useUnstakedBalance(address);
-  const { data: rewardCalculationInputs } =
-    useRewardsCalculationInputs(address);
+  const { data: rewardCalculationInputs } = useRewardsCalculationInputs();
   const { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime } =
     rewardCalculationInputs || {};
   const { data: tokenAllowance } = useTokenAllowance();
