@@ -20,12 +20,14 @@ import {
   decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
+  isAnyUndefined,
 } from "helpers";
 import { config } from "helpers/config";
 import {
   useAssertionClaim,
   useDelegationContext,
   useUserContext,
+  useVotesContext,
   useWindowSize,
 } from "hooks";
 import { isUndefined } from "lodash";
@@ -93,6 +95,7 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const { decryptedVotesIsLoading } = useVotesContext();
   const { delegationStatus, isLoading: delegationDataLoading } =
     useDelegationContext();
   const isDelegate = delegationStatus === "delegate";
@@ -222,6 +225,13 @@ export function VoteListItem({
   }
 
   function getCommittedOrRevealed() {
+    if (
+      delegationDataLoading ||
+      decryptedVotesIsLoading ||
+      isAnyUndefined(isCommitted, isRevealed, canReveal)
+    )
+      return;
+
     if (phase === "commit") {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
@@ -430,8 +440,8 @@ export function VoteListItem({
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
             <Loader
-              isLoading={isUndefined(activityStatus) || delegationDataLoading}
-              width="8vw"
+              isLoading={isUndefined(getCommittedOrRevealed())}
+              width="6vw"
             >
               <>
                 <DotIcon
