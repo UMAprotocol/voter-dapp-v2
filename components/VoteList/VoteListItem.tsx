@@ -22,7 +22,12 @@ import {
   getPrecisionForIdentifier,
 } from "helpers";
 import { config } from "helpers/config";
-import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
+import {
+  useAssertionClaim,
+  useDelegationContext,
+  useUserContext,
+  useWindowSize,
+} from "hooks";
 import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
@@ -43,8 +48,6 @@ export interface Props {
   clearVote?: () => void;
   activityStatus: ActivityStatusT | undefined;
   moreDetailsAction: () => void;
-  isDelegate?: boolean;
-  isDelegator?: boolean;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
@@ -58,8 +61,6 @@ export function VoteListItem({
   moreDetailsAction,
   setDirty,
   isDirty = false,
-  isDelegate = false,
-  isDelegator = false,
 }: Props) {
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
@@ -92,6 +93,10 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const { delegationStatus, isLoading: delegationDataLoading } =
+    useDelegationContext();
+  const isDelegate = delegationStatus === "delegate";
+  const isDelegator = delegationStatus === "delegator";
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
@@ -424,7 +429,10 @@ export function VoteListItem({
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <Loader isLoading={isUndefined(activityStatus)} width="8vw">
+            <Loader
+              isLoading={isUndefined(activityStatus) || delegationDataLoading}
+              width="8vw"
+            >
               <>
                 <DotIcon
                   style={
