@@ -18,7 +18,7 @@ export function useUnstakedBalance(addressOverride?: string) {
   const queryResult = useQuery({
     queryKey: [unstakedBalanceKey, address],
     queryFn: () => getUnstakedBalance(votingToken, address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

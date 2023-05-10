@@ -21,7 +21,7 @@ export function useDelegateToStaker() {
   const queryResult = useQuery({
     queryKey: [delegateToStakerKey, address],
     queryFn: () => getDelegateToStaker(voting, delegate ?? zeroAddress),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

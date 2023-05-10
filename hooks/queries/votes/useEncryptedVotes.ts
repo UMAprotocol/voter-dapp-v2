@@ -17,7 +17,7 @@ export function useEncryptedVotes(roundId?: number) {
   const queryResult = useQuery({
     queryKey: [encryptedVotesKey, address, roundId],
     queryFn: () => getEncryptedVotes(voting, votingV1, address, roundId),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

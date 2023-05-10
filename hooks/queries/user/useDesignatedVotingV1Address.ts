@@ -7,7 +7,7 @@ export function useDesignatedVotingV1Address(address: string | undefined) {
   return useQuery({
     queryKey: ["designatedVotingV1Address", address],
     queryFn: () => getDesignatedVotingV1Address(address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError: (err) =>
       console.error("Error fetching designated voting v1 address", err),
   });

@@ -17,7 +17,7 @@ export function useDelegatorSetEventsForDelegate() {
   const queryResult = useQuery({
     queryKey: [delegatorSetEventForDelegateKey, address],
     queryFn: () => getDelegatorSetEvents(voting, address, "delegate"),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

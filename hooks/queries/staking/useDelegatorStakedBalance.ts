@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakedBalanceKey } from "constant";
-import { BigNumber } from "ethers";
 import { useContractsContext } from "hooks/contexts/useContractsContext";
 import { useWalletContext } from "hooks/contexts/useWalletContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
@@ -14,9 +13,8 @@ export function useDelegatorStakedBalance() {
   const { onError } = useHandleError({ isDataFetching: true });
   const queryResult = useQuery({
     queryKey: [stakedBalanceKey, address],
-    queryFn: () =>
-      address ? getStakedBalance(voting, address) : BigNumber.from(0),
-    enabled: !!address && !isWrongChain,
+    queryFn: () => getStakedBalance(voting, address),
+    enabled: !isWrongChain,
     onError,
   });
 

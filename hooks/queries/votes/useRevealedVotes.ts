@@ -29,7 +29,7 @@ export function useRevealedVotes(addressOverride?: string) {
         oldRevealedVotes ? { ...oldRevealedVotes, ...data } : data
       );
     },
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

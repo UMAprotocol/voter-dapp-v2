@@ -4,7 +4,6 @@ import {
   useContractsContext,
   useDelegationContext,
   useHandleError,
-  useUserContext,
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
@@ -12,7 +11,6 @@ import { VoteExistsByKeyT } from "types";
 import { getCommittedVotes } from "web3";
 
 export function useCommittedVotesForDelegator() {
-  const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
   const { voting } = useContractsContext();
   const { delegatorAddress, isDelegate } = useDelegationContext();
@@ -20,16 +18,11 @@ export function useCommittedVotesForDelegator() {
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
-    queryKey: [
-      committedVotesForDelegatorKey,
-      address,
-      delegatorAddress,
-      roundId,
-    ],
+    queryKey: [committedVotesForDelegatorKey, delegatorAddress, roundId],
     queryFn: async (): Promise<VoteExistsByKeyT> =>
       getCommittedVotes(voting, delegatorAddress, roundId),
     refetchInterval: isDelegate ? oneMinute : false,
-    enabled: !!address && !isWrongChain && !!delegatorAddress && isDelegate,
+    enabled: !isWrongChain && isDelegate,
     onError,
   });
 

@@ -27,7 +27,7 @@ export function useDecryptedVotes(roundId?: number) {
       signingKey?.privateKey,
     ],
     queryFn: () => decryptVotes(signingKey?.privateKey, encryptedVotes),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

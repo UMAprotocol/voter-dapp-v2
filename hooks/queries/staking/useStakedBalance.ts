@@ -16,7 +16,7 @@ export function useStakedBalance(addressOverride?: string) {
   const queryResult = useQuery({
     queryKey: [stakedBalanceKey, address],
     queryFn: () => getStakedBalance(voting, address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

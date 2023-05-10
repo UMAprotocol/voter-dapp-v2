@@ -15,7 +15,7 @@ export function useV1Rewards() {
     queryKey: [v1RewardsKey, address, connectedChain?.id],
     queryFn: () =>
       getV1Rewards(address, Number(connectedChain?.id ?? 1) as MainnetOrGoerli),
-    enabled: !!address && !!connectedChain && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

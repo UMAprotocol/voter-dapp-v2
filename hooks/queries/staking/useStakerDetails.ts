@@ -17,7 +17,7 @@ export function useStakerDetails(addressOverride?: string) {
   return useQuery({
     queryKey: [stakerDetailsKey, address],
     queryFn: () => getStakerDetails(voting, address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 }

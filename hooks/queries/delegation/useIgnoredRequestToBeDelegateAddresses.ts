@@ -11,7 +11,7 @@ export function useIgnoredRequestToBeDelegateAddresses() {
   const queryResult = useQuery({
     queryKey: [ignoredRequestToBeDelegateAddressesKey, address],
     queryFn: () => getIgnoredRequestToBeDelegateAddresses(address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

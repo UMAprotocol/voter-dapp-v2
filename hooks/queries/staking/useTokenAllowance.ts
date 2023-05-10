@@ -17,7 +17,7 @@ export function useTokenAllowance() {
   const queryResult = useQuery({
     queryKey: [tokenAllowanceKey, address],
     queryFn: () => getTokenAllowance(votingTokenWriter, address),
-    enabled: !!address && !isWrongChain && !!votingTokenWriter,
+    enabled: !isWrongChain,
     onError,
   });
 

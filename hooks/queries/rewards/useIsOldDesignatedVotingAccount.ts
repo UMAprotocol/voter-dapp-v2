@@ -11,7 +11,7 @@ export function useIsOldDesignatedVotingAccount() {
   const queryResult = useQuery({
     queryKey: [isOldDesignatedVotingAccountKey, address],
     queryFn: () => getIsOldDesignatedVotingAccount(address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 

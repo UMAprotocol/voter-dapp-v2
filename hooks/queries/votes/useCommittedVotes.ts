@@ -19,7 +19,7 @@ export function useCommittedVotes() {
   const queryResult = useQuery({
     queryKey: [committedVotesKey, address, roundId],
     queryFn: () => getCommittedVotes(voting, address, roundId),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 
