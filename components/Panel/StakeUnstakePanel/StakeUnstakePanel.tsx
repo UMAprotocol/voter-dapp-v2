@@ -10,8 +10,8 @@ import {
   useRequestUnstake,
   useStake,
   useStakingContext,
-  useUserContext,
 } from "hooks";
+import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -30,7 +30,6 @@ export function StakeUnstakePanel() {
     canUnstakeTime,
     unstakeCoolDown,
   } = useStakingContext();
-  const { hasAddress } = useUserContext();
   const { isDelegate } = useDelegationContext();
   const { approveMutation, isApproving } = useApprove("stake");
   const { stakeMutation } = useStake("stake");
@@ -44,10 +43,6 @@ export function StakeUnstakePanel() {
     !isDelegate && !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
     isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
-  const loaderOverride = {
-    isOverride: !hasAddress,
-    children: 0,
-  };
 
   function approve(approveAmountInput: string) {
     if (!votingTokenWriter) return;
@@ -125,10 +120,9 @@ export function StakeUnstakePanel() {
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
                 <Loader
-                  dataToWatch={stakedBalance}
+                  isLoading={isUndefined(stakedBalance)}
                   variant="white"
                   width="80%"
-                  override={loaderOverride}
                 >
                   {formatNumberForDisplay(stakedBalance)}
                 </Loader>
@@ -138,10 +132,9 @@ export function StakeUnstakePanel() {
               <BalanceHeader>Unstaked balance</BalanceHeader>
               <BalanceAmount>
                 <Loader
-                  dataToWatch={unstakedBalance}
+                  isLoading={isUndefined(unstakedBalance)}
                   variant="white"
                   width="80%"
-                  override={loaderOverride}
                 >
                   {formatNumberForDisplay(unstakedBalance)}
                 </Loader>

@@ -5,9 +5,9 @@ import { formatNumberForDisplay } from "helpers";
 import {
   useContractsContext,
   useStakingContext,
-  useUserContext,
   useWithdrawV1Rewards,
 } from "hooks";
+import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -17,7 +17,6 @@ export function ClaimV1Panel() {
   const { votingWriter } = useContractsContext();
   const { withdrawV1RewardsMutation } = useWithdrawV1Rewards("claimV1");
   const { v1Rewards } = useStakingContext();
-  const { hasAddress } = useUserContext();
   const claimableV1Rewards = v1Rewards?.totalRewards ?? BigNumber.from(0);
 
   function withdrawV1Rewards() {
@@ -41,14 +40,7 @@ export function ClaimV1Panel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable V1 Rewards</RewardsHeader>
           <Rewards>
-            <Loader
-              dataToWatch={v1Rewards}
-              variant="white"
-              override={{
-                isOverride: !hasAddress,
-                children: 0,
-              }}
-            >
+            <Loader isLoading={isUndefined(v1Rewards)} variant="white">
               <Strong>
                 {formatNumberForDisplay(claimableV1Rewards)}{" "}
                 <TokenSymbol>UMA</TokenSymbol>

@@ -23,6 +23,7 @@ import {
 } from "helpers";
 import { config } from "helpers/config";
 import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
+import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -423,7 +424,7 @@ export function VoteListItem({
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            <Loader dataToWatch={activityStatus} width="8vw">
+            <Loader isLoading={isUndefined(activityStatus)} width="8vw">
               <>
                 <DotIcon
                   style={

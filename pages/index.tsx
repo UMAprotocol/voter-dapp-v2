@@ -10,6 +10,7 @@ import {
 import { Strong } from "components/pages/styles";
 import { truncateDecimals } from "helpers";
 import { useGlobals } from "hooks";
+import { isUndefined } from "lodash";
 import type { NextPage } from "next";
 
 const VotePage: NextPage = () => {
@@ -19,7 +20,7 @@ const VotePage: NextPage = () => {
     <Layout title="UMA | Voting dApp">
       <Banner>
         Stake, vote &amp; earn up to{" "}
-        <Loader dataToWatch={annualPercentageReturn}>
+        <Loader isLoading={isUndefined(annualPercentageReturn)}>
           <Strong>
             {truncateDecimals(annualPercentageReturn || 0, 0)}% APR
           </Strong>

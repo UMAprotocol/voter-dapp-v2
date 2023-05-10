@@ -5,10 +5,10 @@ import {
   useContractsContext,
   useDelegationContext,
   useStakingContext,
-  useUserContext,
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
+import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -28,7 +28,6 @@ export function ClaimPanel() {
   const { withdrawRewardsMutation } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation } = useWithdrawAndRestake("claim");
   const { outstandingRewards } = useStakingContext();
-  const { hasAddress } = useUserContext();
   function withdrawRewards() {
     if (!outstandingRewards || !votingWriter) return;
 
@@ -50,13 +49,9 @@ export function ClaimPanel() {
           <Rewards>
             <Strong>
               <Loader
-                dataToWatch={outstandingRewards}
+                isLoading={isUndefined(outstandingRewards)}
                 variant="white"
                 width={164}
-                override={{
-                  isOverride: !hasAddress,
-                  children: 0,
-                }}
               >
                 {formatNumberForDisplay(outstandingRewards)}
               </Loader>{" "}
