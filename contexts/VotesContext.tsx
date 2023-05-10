@@ -171,6 +171,18 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function getIsCommitted(uniqueKey: UniqueKeyT) {
+    if (committedVotes === undefined || committedVotesByCaller === undefined) {
+      return;
+    }
+    return !!committedVotes[uniqueKey] || !!committedVotesByCaller[uniqueKey];
+  }
+
+  function getIsRevealed(uniqueKey: UniqueKeyT) {
+    if (revealedVotes === undefined) return;
+    return !!revealedVotes[uniqueKey];
+  }
+
   function getVotesWithData(
     priceRequests:
       | Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
@@ -194,14 +206,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           activeVoteResultsByKey?.[uniqueKey]?.participation ??
           vote?.participation,
         uniqueKey,
-        isCommitted:
-          committedVotes?.[uniqueKey] || committedVotesForDelegator?.[uniqueKey]
-            ? true
-            : false,
+        isCommitted: getIsCommitted(uniqueKey),
         commitHash:
           committedVotes?.[uniqueKey] ||
           committedVotesForDelegator?.[uniqueKey],
-        isRevealed: revealedVotes?.[uniqueKey] ? true : false,
+        isRevealed: getIsRevealed(uniqueKey),
         // tells you if you can possibily reveal this vote, it does not check all conditions (ie in reveal phase, etc)
         canReveal: getCanReveal(uniqueKey),
         revealHash: revealedVotes?.[uniqueKey],
