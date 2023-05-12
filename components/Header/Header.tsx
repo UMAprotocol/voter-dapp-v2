@@ -8,59 +8,29 @@ import {
 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import {
+  useAccountDetails,
   useDelegationContext,
   usePanelContext,
-  useStakingContext,
-  useUserContext,
-  useVotesContext,
+  useV1Rewards,
 } from "hooks";
 import NextLink from "next/link";
 import Bell from "public/assets/icons/bell.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
 import Logo from "public/assets/logo.svg";
-import { useEffect } from "react";
 import styled, { CSSProperties } from "styled-components";
 import Menu from "/public/assets/icons/menu.svg";
 
 export function Header() {
   const { openPanel } = usePanelContext();
+  const { address } = useAccountDetails();
   const {
-    delegatorAddress,
     isDelegate,
     isDelegatePending,
     isDelegator,
     isLoading: delegationDataLoading,
   } = useDelegationContext();
 
-  // theres a feature now to set the override address for various contexts. This allows us to query data based
-  // on an arbitrary address, in all cases though this is based on the delegate/ delegator relationship. if we
-  // are a delegate, we need to query various things based on the delegator address.
-  const { v1Rewards, setAddressOverride: setStakingAddressOverride } =
-    useStakingContext();
-  const { setAddressOverride: setUserContextAddress } = useUserContext();
-  const { setAddressOverride: setVotesAddressOverride } = useVotesContext();
-
-  useEffect(() => {
-    if (isDelegate) {
-      const address = delegatorAddress;
-      // these contexts have special logic to allow certain queries based on a different address, in this case
-      // its the delegator address, so we can get things like stake/unstake balance, vote history and other data.
-      setStakingAddressOverride(address);
-      setUserContextAddress(address);
-      setVotesAddressOverride(address);
-    } else {
-      // by default the address will be the current wallet connected
-      setStakingAddressOverride(undefined);
-      setUserContextAddress(undefined);
-      setVotesAddressOverride(undefined);
-    }
-  }, [
-    delegatorAddress,
-    isDelegate,
-    setUserContextAddress,
-    setStakingAddressOverride,
-    setVotesAddressOverride,
-  ]);
+  const { data: v1Rewards } = useV1Rewards(address);
 
   const showDelegationNotification =
     !delegationDataLoading && (isDelegate || isDelegatePending || isDelegator);

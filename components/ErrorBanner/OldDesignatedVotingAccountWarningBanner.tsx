@@ -1,4 +1,4 @@
-import { useStakingContext } from "hooks";
+import { useAccountDetails, useIsOldDesignatedVotingAccount } from "hooks";
 import NextLink from "next/link";
 import styled from "styled-components";
 import { useIsClient, useLocalStorage } from "usehooks-ts";
@@ -13,7 +13,9 @@ import {
 } from "./styles";
 
 export function OldDesignatedVotingAccountWarningBanner() {
-  const { oldDesignatedVotingAccount } = useStakingContext();
+  const { address } = useAccountDetails();
+  const { data: oldDesignatedVotingAccount } =
+    useIsOldDesignatedVotingAccount(address);
   const { isOldDesignatedVotingAccount, message, designatedVotingContract } =
     oldDesignatedVotingAccount || {};
   const [closeClicked, setClosedClicked] = useLocalStorage(

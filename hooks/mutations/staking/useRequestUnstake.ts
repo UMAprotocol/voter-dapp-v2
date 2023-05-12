@@ -6,13 +6,15 @@ import {
 } from "constant";
 import { BigNumber } from "ethers";
 import { getCanUnstakeTime } from "helpers";
-import { useAccountDetails, useHandleError } from "hooks";
+import { useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
 
-export function useRequestUnstake(errorOrigin?: ErrorOriginT) {
+export function useRequestUnstake(
+  address: string | undefined,
+  errorOrigin?: ErrorOriginT
+) {
   const queryClient = useQueryClient();
-  const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
   const { mutate, isLoading } = useMutation({

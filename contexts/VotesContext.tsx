@@ -11,15 +11,15 @@ import {
   useContentfulData,
   useDecodedAdminTransactions,
   useDecryptedVotes,
+  useDelegationContext,
   useDesignatedVotingV1Address,
   useEncryptedVotes,
   usePastVotes,
   useRevealedVotes,
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
-  useVoteTimingContext,
 } from "hooks";
-import { ReactNode, createContext, useMemo, useState } from "react";
+import { ReactNode, createContext, useMemo } from "react";
 import {
   ActivityStatusT,
   ContentfulDataByKeyT,
@@ -54,7 +54,6 @@ export interface VotesContextState {
   encryptedVotes: EncryptedVotesByKeyT | undefined;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
   contentfulData: ContentfulDataByKeyT | undefined;
-  setAddressOverride: (address?: string) => void;
   activeVotesIsLoading: boolean;
   upcomingVotesIsLoading: boolean;
   pastVotesIsLoading: boolean;
@@ -91,7 +90,6 @@ export const defaultVotesContextState: VotesContextState = {
   encryptedVotes: undefined,
   decryptedVotes: undefined,
   contentfulData: undefined,
-  setAddressOverride: () => undefined,
   activeVotesIsLoading: false,
   upcomingVotesIsLoading: false,
   pastVotesIsLoading: false,
@@ -109,14 +107,11 @@ export const VotesContext = createContext<VotesContextState>(
 );
 
 export function VotesProvider({ children }: { children: ReactNode }) {
-  // usually you can add this extra address as your delegator if you are a delegate.
-  const [addressOverride, setAddressOverride] = useState<string | undefined>(
-    undefined
-  );
-  const { address } = useAccountDetails();
+  const { address: userAddress } = useAccountDetails();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
   const { data: designatedVotingV1Address } =
-    useDesignatedVotingV1Address(address);
-  const { roundId } = useVoteTimingContext();
+    useDesignatedVotingV1Address(userAddress);
   const { data: activeVotesByKey, isLoading: activeVotesIsLoading } =
     useActiveVotes();
   const { data: upcomingVotesByKey, isLoading: upcomingVotesIsLoading } =
@@ -126,11 +121,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const { data: contentfulData, isLoading: contentfulDataIsLoading } =
     useContentfulData();
   const { data: committedVotes, isLoading: committedVotesIsLoading } =
-    useCommittedVotes();
+    useCommittedVotes(userAddress);
   const {
     data: committedVotesByCaller,
     isLoading: committedVotesByCallerIsLoading,
-  } = useCommittedVotesByCaller();
+  } = useCommittedVotesByCaller(userAddress);
   const {
     data: committedVotesForDelegator,
     isLoading: committedVotesForDelegatorIsLoading,
@@ -139,14 +134,15 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     data: revealedVotes,
     isLoading: revealedVotesIsLoading,
     // if we are a delegate we need to override to our delegators address
-  } = useRevealedVotes(addressOverride);
+  } = useRevealedVotes(userOrDelegatorAddress);
   const { data: encryptedVotes, isLoading: encryptedVotesIsLoading } =
-    useEncryptedVotes();
+    useEncryptedVotes(userAddress);
   const { data: decryptedVotes, isLoading: decryptedVotesIsLoading } =
-    useDecryptedVotes(roundId);
+    useDecryptedVotes(userAddress, encryptedVotes);
   const { data: activeVoteResultsByKey } = useActiveVoteResults();
-  const { data: votingAndStakingDetails } =
-    useUserVotingAndStakingDetails(addressOverride);
+  const { data: votingAndStakingDetails } = useUserVotingAndStakingDetails(
+    userOrDelegatorAddress
+  );
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
   const { data: augmentedData } = useAugmentedVoteData();
   const { voteHistoryByKey } = votingAndStakingDetails || {};
@@ -194,10 +190,11 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       // this value only exists when we have votes that have revealed from the graph, using this we can
       // lookup revealed votes without a signature, just have to find the right address
       const pastVoteRevealed: string | undefined =
-        vote?.revealedVoteByAddress[address ?? ""] ||
+        vote?.revealedVoteByAddress[userAddress ?? ""] ||
         (designatedVotingV1Address &&
           vote.revealedVoteByAddress[designatedVotingV1Address]) ||
-        (addressOverride && vote.revealedVoteByAddress[addressOverride]);
+        (userOrDelegatorAddress &&
+          vote.revealedVoteByAddress[userOrDelegatorAddress]);
       return {
         ...vote,
         // prefer active vote results first, this will either exist or not, if not we can just fall back to the default vote results
@@ -302,7 +299,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       revealedVotesIsLoading,
       encryptedVotesIsLoading,
       decryptedVotesIsLoading,
-      setAddressOverride,
     }),
     [
       activeVoteList,

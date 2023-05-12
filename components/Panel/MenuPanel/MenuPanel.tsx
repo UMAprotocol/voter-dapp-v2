@@ -3,7 +3,11 @@ import { Button, Nav, WalletIcon } from "components";
 import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
 import { config } from "helpers/config";
-import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
+import {
+  useAccountDetails,
+  useDelegationContext,
+  useWalletContext,
+} from "hooks";
 import NextLink from "next/link";
 import LinkedAddress from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
@@ -14,7 +18,7 @@ import { PanelWrapper } from "../styles";
 export function MenuPanel() {
   const [_wallets, connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
-  const { address, connectedWallet, walletIcon } = useUserContext();
+  const { address, connectedWallet, walletIcon } = useAccountDetails();
   const {
     isDelegate,
     isDelegatePending,

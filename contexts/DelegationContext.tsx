@@ -1,6 +1,7 @@
 import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
 import {
   useAcceptReceivedRequestToBeDelegate,
+  useAccountDetails,
   useCancelSentRequestToBeDelegate,
   useContractsContext,
   useDelegateToStaker,
@@ -15,7 +16,6 @@ import {
   useStakerDetails,
   useTerminateRelationshipWithDelegate,
   useTerminateRelationshipWithDelegator,
-  useUserContext,
   useVoterFromDelegate,
 } from "hooks";
 import { ReactNode, createContext, useCallback, useMemo } from "react";
@@ -101,55 +101,55 @@ export const DelegationContext = createContext<DelegationContextState>(
 );
 
 export function DelegationProvider({ children }: { children: ReactNode }) {
+  const { address } = useAccountDetails();
   const {
     data: receivedRequestsToBeDelegate,
     isLoading: receivedRequestsToBeDelegateLoading,
-  } = useReceivedRequestsToBeDelegate();
+  } = useReceivedRequestsToBeDelegate(address);
   const {
     data: sentRequestsToBeDelegate,
     isLoading: sentRequestsToBeDelegateLoading,
-  } = useSentRequestsToBeDelegate();
+  } = useSentRequestsToBeDelegate(address);
   const {
     data: delegatorSetEventsForDelegate,
     isLoading: delegatorSetEventsForDelegateLoading,
-  } = useDelegatorSetEventsForDelegate();
+  } = useDelegatorSetEventsForDelegate(address);
   const {
     data: delegatorSetEventsForDelegator,
     isLoading: delegatorSetEventsForDelegatorLoading,
-  } = useDelegatorSetEventsForDelegator();
+  } = useDelegatorSetEventsForDelegator(address);
   const { data: voterFromDelegate, isLoading: voterFromDelegateLoading } =
-    useVoterFromDelegate();
+    useVoterFromDelegate(address);
   const { data: delegateToStaker, isLoading: delegateToStakerLoading } =
-    useDelegateToStaker();
+    useDelegateToStaker(address);
   const {
     data: ignoredRequestToBeDelegateAddresses,
     isLoading: ignoredRequestToBeDelegateAddressesLoading,
-  } = useIgnoredRequestToBeDelegateAddresses();
+  } = useIgnoredRequestToBeDelegateAddresses(address);
   const {
     ignoreReceivedRequestToBeDelegateMutation,
     isIgnoringRequestToBeDelegate,
-  } = useIgnoreReceivedRequestToBeDelegate();
+  } = useIgnoreReceivedRequestToBeDelegate(address);
   const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } =
-    useSendRequestToBeDelegate();
+    useSendRequestToBeDelegate(address);
   const {
     cancelSentRequestToBeDelegateMutation,
     isCancelingSentRequestToBeDelegate,
-  } = useCancelSentRequestToBeDelegate();
+  } = useCancelSentRequestToBeDelegate(address);
   const {
     acceptReceivedRequestToBeDelegateMutation,
     isAcceptingReceivedRequestToBeDelegate,
-  } = useAcceptReceivedRequestToBeDelegate();
+  } = useAcceptReceivedRequestToBeDelegate(address);
   const {
     terminateRelationshipWithDelegateMutation,
     isTerminatingRelationshipWithDelegate,
-  } = useTerminateRelationshipWithDelegate();
+  } = useTerminateRelationshipWithDelegate(address);
   const {
     terminateRelationshipWithDelegatorMutation,
     isTerminatingRelationshipWithDelegator,
-  } = useTerminateRelationshipWithDelegator();
+  } = useTerminateRelationshipWithDelegator(address);
   const { votingWriter } = useContractsContext();
-  const { address } = useUserContext();
-  const { data: stakerDetails } = useStakerDetails();
+  const { data: stakerDetails } = useStakerDetails(address);
   const { delegate } = stakerDetails ?? {};
   const { closePanel } = usePanelContext();
   const pendingReceivedRequestsToBeDelegate =
@@ -184,6 +184,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isTerminatingRelationshipWithDelegate ||
     isTerminatingRelationshipWithDelegator;
   const isBusy = isLoading || isMutating;
+
   function getDelegateAddress() {
     if (isDelegator) return delegate;
     if (isDelegate) return address;

@@ -20,17 +20,16 @@ import {
   decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
-  isAnyUndefined,
 } from "helpers";
 import { config } from "helpers/config";
 import {
+  useAccountDetails,
   useAssertionClaim,
   useDelegationContext,
-  useUserContext,
   useVotesContext,
+  useWalletContext,
   useWindowSize,
 } from "hooks";
-import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -67,7 +66,9 @@ export function VoteListItem({
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
   const [wrapperWidth, setWrapperWidth] = useState(0);
-  const { hasSigningKey } = useUserContext();
+  const { address } = useAccountDetails();
+  const { signingKeys } = useWalletContext();
+  const hasSigningKey = !!address && !!signingKeys[address];
   const {
     decodedIdentifier,
     title,
@@ -95,7 +96,11 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
-  const { decryptedVotesIsLoading } = useVotesContext();
+  const {
+    decryptedVotesIsLoading,
+    activeVotesIsLoading,
+    upcomingVotesIsLoading,
+  } = useVotesContext();
   const { delegationStatus, isLoading: delegationDataLoading } =
     useDelegationContext();
   const isDelegate = delegationStatus === "delegate";
@@ -225,13 +230,6 @@ export function VoteListItem({
   }
 
   function getCommittedOrRevealed() {
-    if (
-      delegationDataLoading ||
-      decryptedVotesIsLoading ||
-      isAnyUndefined(isCommitted, isRevealed, canReveal)
-    )
-      return;
-
     if (phase === "commit") {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
@@ -440,7 +438,12 @@ export function VoteListItem({
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
             <Loader
-              isLoading={isUndefined(getCommittedOrRevealed())}
+              isLoading={
+                decryptedVotesIsLoading ||
+                activeVotesIsLoading ||
+                upcomingVotesIsLoading ||
+                delegationDataLoading
+              }
               width="6vw"
             >
               <>

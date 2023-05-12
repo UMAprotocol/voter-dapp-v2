@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { revealedVotesKey } from "constant";
-import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
+import { useHandleError, useVoteTimingContext } from "hooks";
 import { VoteExistsByKeyT } from "types";
 import { revealVotes } from "web3";
 
-export function useRevealVotes() {
+export function useRevealVotes(address: string | undefined) {
   const queryClient = useQueryClient();
-  const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
 

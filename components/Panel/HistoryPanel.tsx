@@ -7,7 +7,12 @@ import {
 } from "components";
 import { black, green, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
-import { useUserContext, useVotesContext } from "hooks";
+import {
+  useAccountDetails,
+  useDelegationContext,
+  useUserVotingAndStakingDetails,
+  useVotesContext,
+} from "hooks";
 import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import styled, { CSSProperties } from "styled-components";
@@ -17,11 +22,16 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
   const { pastVotesV2List } = useVotesContext();
+  const { address } = useAccountDetails();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { data: votingAndStakingDetails } = useUserVotingAndStakingDetails(
+    isDelegate ? delegatorAddress : address
+  );
   const {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
-  } = useUserContext();
+  } = votingAndStakingDetails ?? {};
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVotesV2List ?? []
   );

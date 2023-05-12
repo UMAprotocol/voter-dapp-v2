@@ -21,12 +21,13 @@ export function getAccountDetails(connectedWallets?: WalletState[]) {
   const account = connectedWallet?.accounts[0];
   const address = account?.address ? getAddress(account.address) : undefined;
   const truncatedAddress = address ? truncateEthAddress(address) : undefined;
-
+  const walletIcon = connectedWallet?.icon;
   return {
     connectedWallet,
     account,
     address,
     truncatedAddress,
+    walletIcon,
   };
 }
 

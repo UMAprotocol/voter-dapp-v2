@@ -3,11 +3,11 @@ import { mobileAndUnder } from "constant";
 import { BigNumber } from "ethers";
 import { formatNumberForDisplay } from "helpers";
 import {
+  useAccountDetails,
   useContractsContext,
-  useStakingContext,
+  useV1Rewards,
   useWithdrawV1Rewards,
 } from "hooks";
-import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -15,8 +15,13 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function ClaimV1Panel() {
   const { votingWriter } = useContractsContext();
-  const { withdrawV1RewardsMutation } = useWithdrawV1Rewards("claimV1");
-  const { v1Rewards } = useStakingContext();
+  const { address } = useAccountDetails();
+  const { withdrawV1RewardsMutation } = useWithdrawV1Rewards(
+    address,
+    "claimV1"
+  );
+  const { data: v1Rewards, isLoading: v1RewardsIsLoading } =
+    useV1Rewards(address);
   const claimableV1Rewards = v1Rewards?.totalRewards ?? BigNumber.from(0);
 
   function withdrawV1Rewards() {
@@ -40,7 +45,7 @@ export function ClaimV1Panel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable V1 Rewards</RewardsHeader>
           <Rewards>
-            <Loader isLoading={isUndefined(v1Rewards)} variant="white">
+            <Loader isLoading={v1RewardsIsLoading} variant="white">
               <Strong>
                 {formatNumberForDisplay(claimableV1Rewards)}{" "}
                 <TokenSymbol>UMA</TokenSymbol>

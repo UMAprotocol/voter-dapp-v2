@@ -8,7 +8,6 @@ export async function getEncryptedVotes(
   address: string | undefined,
   findRoundId?: number
 ) {
-  if (!address) return {};
   const v1Filter = votingV1Contract.filters.EncryptedVote(address);
   const v1Result = await votingV1Contract.queryFilter(v1Filter);
 

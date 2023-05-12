@@ -13,13 +13,13 @@ import {
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
+  useAccountDetails,
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
   usePanelContext,
   useRevealVotes,
-  useStakingContext,
-  useUserContext,
+  useStakedBalance,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
@@ -42,17 +42,27 @@ import {
 export function ActiveVotes() {
   const { activeVoteList } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
-  const { address, hasSigningKey, correctChainConnected, signingKey } =
-    useUserContext();
-  const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
-    useWalletContext();
+  const { address } = useAccountDetails();
+  const {
+    signingKeys,
+    signer,
+    sign,
+    isSigning,
+    isWrongChain,
+    setCorrectChain,
+    isSettingChain,
+  } = useWalletContext();
+  const signingKey = address ? signingKeys[address] : undefined;
+  const hasSigningKey = !!signingKey;
   const { votingWriter } = useContractsContext();
-  const { stakedBalance } = useStakingContext();
   const { isDelegate, isDelegator, delegatorAddress } = useDelegationContext();
+  const { data: stakedBalance } = useStakedBalance(
+    isDelegate ? delegatorAddress : address
+  );
   const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
-  const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
-  const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
+  const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
+  const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
@@ -131,7 +141,7 @@ export function ActiveVotes() {
       }
       return actionConfig;
     }
-    if (!correctChainConnected) {
+    if (isWrongChain) {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = `Switch To ${config.properName}`;

@@ -1,14 +1,16 @@
 import { InfoBar, Loader, Tooltip } from "components";
 import { tabletAndUnder } from "constant";
 import { BigNumber } from "ethers";
-import { formatNumberForDisplay, isAnyUndefined, parseEther } from "helpers";
+import { formatNumberForDisplay, parseEther } from "helpers";
 import {
+  useAccountDetails,
   useDelegationContext,
   usePanelContext,
-  useStakingContext,
-  useUserContext,
+  useStakedBalance,
+  useStakerDetails,
+  useUnstakedBalance,
+  useUserVotingAndStakingDetails,
 } from "hooks";
-import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
@@ -17,10 +19,26 @@ import styled from "styled-components";
 
 export function HowItWorks() {
   const { openPanel } = usePanelContext();
-  const { stakedBalance, unstakedBalance, outstandingRewards, pendingUnstake } =
-    useStakingContext();
-  const { countWrongVotes, countCorrectVotes, apr } = useUserContext();
-  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { address: userAddress } = useAccountDetails();
+  const {
+    isDelegate,
+    delegatorAddress,
+    isLoading: delegationDataIsLoading,
+  } = useDelegationContext();
+  const stakingAddress = isDelegate ? delegatorAddress : userAddress;
+  const { data: stakedBalance, isLoading: stakedBalanceIsLoading } =
+    useStakedBalance(stakingAddress);
+  const { data: unstakedBalance, isLoading: unstakedBalanceIsLoading } =
+    useUnstakedBalance(stakingAddress);
+  const { data: stakerDetails, isLoading: stakerDetailsIsLoading } =
+    useStakerDetails(stakingAddress);
+  const { outstandingRewards, pendingUnstake } = stakerDetails || {};
+  const {
+    data: votingAndStakingDetails,
+    isLoading: votingAndStakingDetailsIsLoading,
+  } = useUserVotingAndStakingDetails(stakingAddress);
+  const { countWrongVotes, countCorrectVotes, apr } =
+    votingAndStakingDetails || {};
 
   function openStakeUnstakePanel() {
     openPanel("stake");
@@ -82,13 +100,24 @@ export function HowItWorks() {
                 "You are staking"
               )}{" "}
               <Strong>
-                <Loader isLoading={isUndefined(stakedBalance)} width={50}>
+                <Loader
+                  isLoading={stakedBalanceIsLoading || delegationDataIsLoading}
+                  width={50}
+                >
                   {formatNumberForDisplay(stakedBalance)}
                 </Loader>
               </Strong>{" "}
               {isDelegate ? "of their" : "of your"}{" "}
               <Strong>
-                <Loader isLoading={isUndefined(totalTokens())} width={50}>
+                <Loader
+                  isLoading={
+                    stakedBalanceIsLoading ||
+                    unstakedBalanceIsLoading ||
+                    stakerDetailsIsLoading ||
+                    delegationDataIsLoading
+                  }
+                  width={50}
+                >
                   {formatNumberForDisplay(totalTokens())}
                 </Loader>
               </Strong>{" "}
@@ -111,10 +140,7 @@ export function HowItWorks() {
             <>
               You have voted in{" "}
               <Strong>
-                <Loader
-                  isLoading={isAnyUndefined(countCorrectVotes, countWrongVotes)}
-                  width={50}
-                >
+                <Loader isLoading={votingAndStakingDetailsIsLoading} width={50}>
                   {formatNumberForDisplay(getTotalVotes(), { decimals: 0 })}
                 </Loader>
               </Strong>{" "}
@@ -122,7 +148,7 @@ export function HowItWorks() {
               {getTotalVotes()?.eq(BigNumber.from(parseEther("1"))) ? "" : "s"},
               and are earning{" "}
               <Strong>
-                <Loader isLoading={isUndefined(apr)} width={50}>
+                <Loader isLoading={votingAndStakingDetailsIsLoading} width={50}>
                   {formatNumberForDisplay(apr, { decimals: 1 })}
                 </Loader>
                 % APR.
@@ -145,7 +171,7 @@ export function HowItWorks() {
             <>
               Your unclaimed UMA rewards:{" "}
               <Strong>
-                <Loader isLoading={isUndefined(outstandingRewards)} width={50}>
+                <Loader isLoading={stakerDetailsIsLoading} width={50}>
                   {formatNumberForDisplay(outstandingRewards, { decimals: 3 })}
                 </Loader>
               </Strong>{" "}

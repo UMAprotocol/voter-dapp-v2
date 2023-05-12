@@ -1,19 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakerDetailsKey } from "constant";
-import {
-  useAccountDetails,
-  useContractsContext,
-  useHandleError,
-  useWalletContext,
-} from "hooks";
+import { useContractsContext, useHandleError, useWalletContext } from "hooks";
 import { getStakerDetails } from "web3";
 
-export function useStakerDetails(addressOverride?: string) {
+export function useStakerDetails(address: string | undefined) {
   const { voting } = useContractsContext();
-  const { address: defaultAddress } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
-  const address = addressOverride || defaultAddress;
   return useQuery({
     queryKey: [stakerDetailsKey, address],
     queryFn: () => getStakerDetails(voting, address),

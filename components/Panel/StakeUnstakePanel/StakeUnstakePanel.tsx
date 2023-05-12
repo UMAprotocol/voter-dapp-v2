@@ -3,15 +3,19 @@ import { maximumApprovalAmountString } from "constant";
 import { formatNumberForDisplay, parseEther, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
+  useAccountDetails,
   useApprove,
   useContractsContext,
   useDelegationContext,
   useExecuteUnstake,
   useRequestUnstake,
   useStake,
-  useStakingContext,
+  useStakedBalance,
+  useStakerDetails,
+  useTokenAllowance,
+  useUnstakeCoolDown,
+  useUnstakedBalance,
 } from "hooks";
-import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -22,15 +26,17 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { votingWriter, votingTokenWriter } = useContractsContext();
-  const {
-    tokenAllowance,
-    stakedBalance,
-    unstakedBalance,
-    pendingUnstake,
-    canUnstakeTime,
-    unstakeCoolDown,
-  } = useStakingContext();
-  const { isDelegate } = useDelegationContext();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { address } = useAccountDetails();
+  const stakingAddress = isDelegate ? delegatorAddress : address;
+  const { data: tokenAllowance } = useTokenAllowance(address);
+  const { data: stakedBalance, isLoading: stakedBalanceIsLoading } =
+    useStakedBalance(stakingAddress);
+  const { data: unstakedBalance, isLoading: unstakedBalanceIsLoading } =
+    useUnstakedBalance(stakingAddress);
+  const { data: unstakeCoolDown } = useUnstakeCoolDown();
+  const { data: stakerDetails } = useStakerDetails(address);
+  const { pendingUnstake, canUnstakeTime } = stakerDetails || {};
   const { approveMutation, isApproving } = useApprove("stake");
   const { stakeMutation } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } =
@@ -120,7 +126,7 @@ export function StakeUnstakePanel() {
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
                 <Loader
-                  isLoading={isUndefined(stakedBalance)}
+                  isLoading={stakedBalanceIsLoading}
                   variant="white"
                   width="80%"
                 >
@@ -132,7 +138,7 @@ export function StakeUnstakePanel() {
               <BalanceHeader>Unstaked balance</BalanceHeader>
               <BalanceAmount>
                 <Loader
-                  isLoading={isUndefined(unstakedBalance)}
+                  isLoading={unstakedBalanceIsLoading}
                   variant="white"
                   width="80%"
                 >

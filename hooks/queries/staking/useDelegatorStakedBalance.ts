@@ -1,19 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { stakedBalanceKey } from "constant";
-import { useContractsContext } from "hooks/contexts/useContractsContext";
-import { useWalletContext } from "hooks/contexts/useWalletContext";
-import { useHandleError } from "hooks/helpers/useHandleError";
+import { useContractsContext, useHandleError, useWalletContext } from "hooks";
 import { getStakedBalance } from "web3";
-import { useVoterFromDelegate } from "../delegation/useVoterFromDelegate";
 
-export function useDelegatorStakedBalance() {
+export function useDelegatorStakedBalance(
+  delegatorAddress: string | undefined
+) {
   const { voting } = useContractsContext();
-  const { data: address } = useVoterFromDelegate();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
   const queryResult = useQuery({
-    queryKey: [stakedBalanceKey, address],
-    queryFn: () => getStakedBalance(voting, address),
+    queryKey: [stakedBalanceKey, delegatorAddress],
+    queryFn: () => getStakedBalance(voting, delegatorAddress),
     enabled: !isWrongChain,
     onError,
   });

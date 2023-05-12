@@ -8,10 +8,10 @@ import { mobileAndUnder } from "constant";
 import { getAddress, isAddress, truncateEthAddress } from "helpers";
 import { config } from "helpers/config";
 import {
+  useAccountDetails,
   useDelegationContext,
   useErrorContext,
   usePanelContext,
-  useUserContext,
 } from "hooks";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
@@ -26,7 +26,7 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function DelegationPanel() {
   const { closePanel } = usePanelContext();
-  const { address } = useUserContext();
+  const { address } = useAccountDetails();
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
   const {

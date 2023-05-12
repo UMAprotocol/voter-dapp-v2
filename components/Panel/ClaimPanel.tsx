@@ -2,13 +2,13 @@ import { Button, Loader, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
+  useAccountDetails,
   useContractsContext,
   useDelegationContext,
-  useStakingContext,
+  useStakerDetails,
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
-import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { PanelFooter } from "./PanelFooter";
 import { PanelTitle } from "./PanelTitle";
@@ -24,10 +24,13 @@ const minimumAmountClaimable = parseEtherSafe(".01");
 
 export function ClaimPanel() {
   const { votingWriter } = useContractsContext();
-  const { isDelegate } = useDelegationContext();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { address } = useAccountDetails();
   const { withdrawRewardsMutation } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation } = useWithdrawAndRestake("claim");
-  const { outstandingRewards } = useStakingContext();
+  const { data: stakerDetails, isLoading: stakerDetailsIsLoading } =
+    useStakerDetails(isDelegate ? delegatorAddress : address);
+  const { outstandingRewards } = stakerDetails || {};
   function withdrawRewards() {
     if (!outstandingRewards || !votingWriter) return;
 
@@ -49,7 +52,7 @@ export function ClaimPanel() {
           <Rewards>
             <Strong>
               <Loader
-                isLoading={isUndefined(outstandingRewards)}
+                isLoading={stakerDetailsIsLoading}
                 variant="white"
                 width={164}
               >
