@@ -4,12 +4,9 @@ import { Meta, Story } from "@storybook/react";
 import { Wallets } from "components";
 import { grey100 } from "constant";
 import {
-  defaultDelegationContextState,
-  defaultUserContextState,
   DelegationContext,
   DelegationContextState,
-  UserContext,
-  UserContextState,
+  defaultDelegationContextState,
 } from "contexts";
 import {
   mockAddress1,
@@ -20,7 +17,7 @@ import {
 import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { DelegationEventT, DelegationStatusT } from "types";
 
-interface StoryProps extends DelegationContextState, UserContextState {
+interface StoryProps extends DelegationContextState {
   delegationStatus: DelegationStatusT;
   address: string;
   walletIcon: string | undefined;
@@ -48,18 +45,6 @@ export default {
         <Story />
       </div>
     ),
-    (Story, { args }) => {
-      const mockUserContextState: UserContextState = {
-        ...defaultUserContextState,
-        address: args.address ?? mockAddress1,
-        walletIcon: args.walletIcon ?? mockWalletIcon,
-      };
-      return (
-        <UserContext.Provider value={mockUserContextState}>
-          <Story />
-        </UserContext.Provider>
-      );
-    },
     (Story, { args }) => {
       const mockDelegationContextState = {
         ...defaultDelegationContextState,
