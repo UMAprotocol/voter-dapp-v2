@@ -24,6 +24,16 @@ export type PastVotesQuery = {
         price: string;
       }[];
     };
+    committedVotes: {
+      id: string;
+    }[];
+    revealedVotes: {
+      id: string;
+      voter: {
+        address: string;
+      };
+      price: string;
+    }[];
   }[];
 };
 
