@@ -40,16 +40,16 @@ export async function getActiveVoteResults(): Promise<
             price
             totalVoteAmount
           }
-        }
-        committedVotes {
-          id
-        }
-        revealedVotes {
-          id
-          voter {
-            address
+          committedVotes {
+            id
           }
-          price
+          revealedVotes {
+            id
+            voter {
+              address
+            }
+            price
+          }
         }
       }
     }
@@ -64,15 +64,13 @@ export async function getActiveVoteResults(): Promise<
         ancillaryData,
         resolvedPriceRequestIndex,
         latestRound,
-        committedVotes,
-        revealedVotes,
       }) => {
         const identifier = formatBytes32String(id);
         const correctVote = price;
         const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
         const participation = {
-          uniqueCommitAddresses: committedVotes.length,
-          uniqueRevealAddresses: revealedVotes.length,
+          uniqueCommitAddresses: latestRound.committedVotes.length,
+          uniqueRevealAddresses: latestRound.revealedVotes.length,
           totalTokensVotedWith,
         };
         const results = latestRound.groups.map(
@@ -82,10 +80,13 @@ export async function getActiveVoteResults(): Promise<
           })
         );
         const init: RevealedVotesByAddress = {};
-        const revealedVoteByAddress = revealedVotes.reduce((result, vote) => {
-          result[utils.getAddress(vote.voter.address)] = vote.price;
-          return result;
-        }, init);
+        const revealedVoteByAddress = latestRound.revealedVotes.reduce(
+          (result, vote) => {
+            result[utils.getAddress(vote.voter.address)] = vote.price;
+            return result;
+          },
+          init
+        );
         return {
           identifier,
           time: Number(time),
