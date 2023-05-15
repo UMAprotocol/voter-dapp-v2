@@ -116,10 +116,13 @@ export async function getPastVotesV2() {
         tokensVotedWith: Number(totalVoteAmount),
       }));
       const init: RevealedVotesByAddress = {};
-      const revealedVoteByAddress = latestRound.revealedVotes.reduce((result, vote) => {
-        result[utils.getAddress(vote.voter.address)] = vote.price;
-        return result;
-      }, init);
+      const revealedVoteByAddress = latestRound.revealedVotes.reduce(
+        (result, vote) => {
+          result[utils.getAddress(vote.voter.address)] = vote.price;
+          return result;
+        },
+        init
+      );
       return {
         identifier,
         time: Number(time),
