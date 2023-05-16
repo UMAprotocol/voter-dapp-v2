@@ -6,9 +6,10 @@ import { VoteExistsByKeyT } from "types";
 // Use this in the case where we need to see that a delegate voted, as they are the caller, and the delegator is the voter.
 export async function getCommittedVotesByCaller(
   votingContract: VotingV2Ethers,
-  address: string,
+  address: string | undefined,
   roundId: number
 ) {
+  if (!address) return {};
   const filter = votingContract.filters.VoteCommitted(
     null,
     address,

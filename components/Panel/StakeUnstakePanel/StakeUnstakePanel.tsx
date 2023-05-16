@@ -1,16 +1,20 @@
-import { LoadingSkeleton, Tabs } from "components";
+import { Loader, Tabs } from "components";
 import { maximumApprovalAmountString } from "constant";
-import { parseEther } from "helpers";
-import { formatNumberForDisplay, parseEtherSafe } from "helpers";
+import { formatNumberForDisplay, parseEther, parseEtherSafe } from "helpers";
 import { maximumApprovalAmount } from "helpers/web3/ethers";
 import {
+  useAccountDetails,
   useApprove,
   useContractsContext,
   useDelegationContext,
   useExecuteUnstake,
   useRequestUnstake,
   useStake,
-  useStakingContext,
+  useStakedBalance,
+  useStakerDetails,
+  useTokenAllowance,
+  useUnstakeCoolDown,
+  useUnstakedBalance,
 } from "hooks";
 import styled from "styled-components";
 import { PanelFooter } from "../PanelFooter";
@@ -22,22 +26,22 @@ import { Unstake } from "./Unstake";
 
 export function StakeUnstakePanel() {
   const { votingWriter, votingTokenWriter } = useContractsContext();
-  const {
-    tokenAllowance,
-    stakedBalance,
-    unstakedBalance,
-    pendingUnstake,
-    canUnstakeTime,
-    getStakingDataFetching,
-    unstakeCoolDown,
-  } = useStakingContext();
-  const { isDelegate } = useDelegationContext();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { address } = useAccountDetails();
+  const stakingAddress = isDelegate ? delegatorAddress : address;
+  const { data: tokenAllowance } = useTokenAllowance(address);
+  const { data: stakedBalance, isLoading: stakedBalanceIsLoading } =
+    useStakedBalance(stakingAddress);
+  const { data: unstakedBalance, isLoading: unstakedBalanceIsLoading } =
+    useUnstakedBalance(stakingAddress);
+  const { data: unstakeCoolDown } = useUnstakeCoolDown();
+  const { data: stakerDetails } = useStakerDetails(address);
+  const { pendingUnstake, canUnstakeTime } = stakerDetails || {};
   const { approveMutation, isApproving } = useApprove("stake");
-  const { stakeMutation, isStaking } = useStake("stake");
+  const { stakeMutation } = useStake("stake");
   const { requestUnstakeMutation, isRequestingUnstake } =
     useRequestUnstake("unstake");
-  const { executeUnstakeMutation, isExecutingUnstake } =
-    useExecuteUnstake("unstake");
+  const { executeUnstakeMutation } = useExecuteUnstake("unstake");
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasPendingUnstake = pendingUnstake?.gt(0) ?? false;
@@ -45,15 +49,6 @@ export function StakeUnstakePanel() {
     !isDelegate && !hasCooldownTimeRemaining && hasPendingUnstake;
   const showCooldownTimer =
     isReadyToUnstake || (hasCooldownTimeRemaining && hasPendingUnstake);
-
-  function isLoading() {
-    return (
-      getStakingDataFetching() ||
-      isStaking ||
-      isRequestingUnstake ||
-      isExecutingUnstake
-    );
-  }
 
   function approve(approveAmountInput: string) {
     if (!votingTokenWriter) return;
@@ -130,21 +125,25 @@ export function StakeUnstakePanel() {
             <Balance>
               <BalanceHeader>Staked balance</BalanceHeader>
               <BalanceAmount>
-                {isLoading() ? (
-                  <LoadingSkeleton variant="white" width="80%" />
-                ) : (
-                  formatNumberForDisplay(stakedBalance)
-                )}
+                <Loader
+                  isLoading={stakedBalanceIsLoading}
+                  variant="white"
+                  width="80%"
+                >
+                  {formatNumberForDisplay(stakedBalance)}
+                </Loader>
               </BalanceAmount>
             </Balance>
             <Balance>
               <BalanceHeader>Unstaked balance</BalanceHeader>
               <BalanceAmount>
-                {isLoading() ? (
-                  <LoadingSkeleton variant="white" width="80%" />
-                ) : (
-                  formatNumberForDisplay(unstakedBalance)
-                )}
+                <Loader
+                  isLoading={unstakedBalanceIsLoading}
+                  variant="white"
+                  width="80%"
+                >
+                  {formatNumberForDisplay(unstakedBalance)}
+                </Loader>
               </BalanceAmount>
             </Balance>
           </Balances>

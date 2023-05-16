@@ -23,10 +23,6 @@ export function useActiveVotes() {
     queryKey: [activeVotesKey, roundId],
     queryFn: () => getActiveVotes(voting),
     refetchInterval: shouldRefetch ? 1000 : false,
-    initialData: {
-      activeVotes: {},
-      hasActiveVotes: false,
-    },
     enabled: !isWrongChain,
     onError,
   });

@@ -2,13 +2,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSetChain } from "@web3-onboard/react";
 import { unstakedBalanceKey, v1RewardsKey } from "constant";
 import { BigNumber } from "ethers";
-import { useHandleError, useUserContext } from "hooks";
+import { useHandleError } from "hooks";
 import { ErrorOriginT, V1RewardsT } from "types";
 import { withdrawV1Rewards } from "web3";
 
-export function useWithdrawV1Rewards(errorOrigin: ErrorOriginT) {
+export function useWithdrawV1Rewards(
+  address: string | undefined,
+  errorOrigin: ErrorOriginT
+) {
   const queryClient = useQueryClient();
-  const { address } = useUserContext();
   const [{ connectedChain }] = useSetChain();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
   const { mutate, isLoading } = useMutation({

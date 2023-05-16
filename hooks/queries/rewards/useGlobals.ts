@@ -8,9 +8,6 @@ export function useGlobals() {
     queryKey: ["globals"],
     queryFn: getGlobals,
     refetchInterval: oneMinute,
-    initialData: {
-      annualPercentageReturn: 0,
-    },
     enabled: config.graphV2Enabled,
     onError: (error) =>
       console.error("Error Fetching global data from subgraph:", error),

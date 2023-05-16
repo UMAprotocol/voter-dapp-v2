@@ -1,5 +1,6 @@
 export const isExternalLink = (href: string) => !href.startsWith("/");
 import { chainConstantsList, config } from "helpers/config";
+import { isUndefined } from "lodash";
 
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -60,4 +61,8 @@ export function makeBlockExplorerLink(
   if (!url) return "";
 
   return `${url}/${type}/${hash}`;
+}
+
+export function isAnyUndefined<Item>(...items: (Item | undefined)[]) {
+  return items.some(isUndefined);
 }

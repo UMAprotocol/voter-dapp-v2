@@ -19,20 +19,22 @@ export function handleDisconnectWallet(
 export function getAccountDetails(connectedWallets?: WalletState[]) {
   const connectedWallet = connectedWallets?.[0];
   const account = connectedWallet?.accounts[0];
-  const address = account?.address ? getAddress(account.address) : "";
+  const address = account?.address ? getAddress(account.address) : undefined;
   const truncatedAddress = address ? truncateEthAddress(address) : undefined;
-
+  const walletIcon = connectedWallet?.icon;
   return {
     connectedWallet,
     account,
     address,
     truncatedAddress,
+    walletIcon,
   };
 }
 
 export async function getDesignatedVotingV1Address(
-  address: string
+  address: string | undefined
 ): Promise<string | undefined> {
+  if (!address) return;
   const contract = createDesignatedVotingFactoryV1Instance();
   return contract.designatedVotingContracts(address);
 }

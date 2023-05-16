@@ -11,36 +11,28 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import {
-  useDelegationContext,
-  usePanelContext,
-  useVoteTimingContext,
-  useVotesContext,
-} from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import { isUndefined } from "lodash";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
-  const {
-    upcomingVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
-  const { isDelegate, isDelegator } = useDelegationContext();
+  const { upcomingVoteList } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(upcomingVoteList);
-  const hasUpcomingVotes = upcomingVoteList.length > 0;
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    upcomingVoteList ?? []
+  );
+  const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
 
   return (
     <Layout title="UMA | Upcoming Votes">
       <Banner>Upcoming Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isUndefined(upcomingVoteList) ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -57,17 +49,14 @@ export function UpcomingVotes() {
                       headings={<VoteTableHeadings activityStatus="upcoming" />}
                       rows={entriesToShow.map((vote) => (
                         <VoteListItem
-                          vote={vote}
                           phase={phase}
+                          vote={vote}
                           selectedVote={undefined}
                           selectVote={() => null}
                           clearVote={() => null}
                           activityStatus="upcoming"
                           moreDetailsAction={() => openPanel("vote", vote)}
                           key={vote.uniqueKey}
-                          isDelegate={isDelegate}
-                          isDelegator={isDelegator}
-                          isFetching={getUserDependentIsFetching()}
                         />
                       ))}
                     />

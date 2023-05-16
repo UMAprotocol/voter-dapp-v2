@@ -1,6 +1,7 @@
 import {
   Button,
   Dropdown,
+  Loader,
   LoadingSkeleton,
   TextInput,
   Tooltip,
@@ -21,7 +22,14 @@ import {
   getPrecisionForIdentifier,
 } from "helpers";
 import { config } from "helpers/config";
-import { useAssertionClaim, useUserContext, useWindowSize } from "hooks";
+import {
+  useAccountDetails,
+  useAssertionClaim,
+  useDelegationContext,
+  useVotesContext,
+  useWalletContext,
+  useWindowSize,
+} from "hooks";
 import NextLink from "next/link";
 import Across from "public/assets/icons/across.svg";
 import Dot from "public/assets/icons/dot.svg";
@@ -39,11 +47,8 @@ export interface Props {
   selectedVote?: string | undefined;
   selectVote?: (value: string | undefined) => void;
   clearVote?: () => void;
-  activityStatus: ActivityStatusT;
+  activityStatus: ActivityStatusT | undefined;
   moreDetailsAction: () => void;
-  isFetching: boolean;
-  isDelegate: boolean;
-  isDelegator: boolean;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
@@ -55,16 +60,15 @@ export function VoteListItem({
   clearVote,
   activityStatus,
   moreDetailsAction,
-  isFetching,
   setDirty,
   isDirty = false,
-  isDelegate,
-  isDelegator,
 }: Props) {
   const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
   const [wrapperWidth, setWrapperWidth] = useState(0);
-  const { hasSigningKey } = useUserContext();
+  const { address } = useAccountDetails();
+  const { signingKeys } = useWalletContext();
+  const hasSigningKey = !!address && !!signingKeys[address];
   const {
     decodedIdentifier,
     title,
@@ -92,6 +96,15 @@ export function VoteListItem({
   const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const {
+    decryptedVotesIsLoading,
+    activeVotesIsLoading,
+    upcomingVotesIsLoading,
+  } = useVotesContext();
+  const { delegationStatus, isLoading: delegationDataLoading } =
+    useDelegationContext();
+  const isDelegate = delegationStatus === "delegate";
+  const isDelegator = delegationStatus === "delegator";
 
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
@@ -424,9 +437,15 @@ export function VoteListItem({
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {isFetching ? (
-              <LoadingSkeleton width="8vw" />
-            ) : (
+            <Loader
+              isLoading={
+                decryptedVotesIsLoading ||
+                activeVotesIsLoading ||
+                upcomingVotesIsLoading ||
+                delegationDataLoading
+              }
+              width="6vw"
+            >
               <>
                 <DotIcon
                   style={
@@ -438,7 +457,7 @@ export function VoteListItem({
                 {getRelevantTransactionLink()}
                 {isDirty ? "*" : ""}
               </>
-            )}
+            </Loader>
           </VoteStatus>
         </VoteStatusCell>
       ) : null}
@@ -452,7 +471,7 @@ export function VoteListItem({
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <LoadingSkeleton width="8vw" />;
+  if (voteText === undefined) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {

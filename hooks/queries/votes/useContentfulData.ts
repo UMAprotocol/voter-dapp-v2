@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey, oneMinute } from "constant";
 import * as contentful from "contentful";
+import { config } from "helpers/config";
 import {
   useActiveVotes,
   useHandleError,
@@ -8,7 +9,6 @@ import {
   useUpcomingVotes,
 } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";
-import { config } from "helpers/config";
 
 const { contentfulSpace, contentfulAccessToken } = config;
 
@@ -51,12 +51,8 @@ async function getContentfulData(
 }
 
 export function useContentfulData() {
-  const {
-    data: { activeVotes },
-  } = useActiveVotes();
-  const {
-    data: { upcomingVotes },
-  } = useUpcomingVotes();
+  const { data: activeVotes } = useActiveVotes();
+  const { data: upcomingVotes } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
   const { onError } = useHandleError({ isDataFetching: true });
 
@@ -74,11 +70,16 @@ export function useContentfulData() {
   }
 
   const queryResult = useQuery({
-    queryKey: [contentfulDataKey, activeVotes, upcomingVotes, pastVotes],
+    queryKey: [
+      contentfulDataKey,
+      activeVotes,
+      upcomingVotes,
+      pastVotes,
+      adminProposalNumbersByKey,
+    ],
     queryFn: () => getContentfulData(adminProposalNumbersByKey),
     refetchInterval: oneMinute,
     enabled: !!contentfulClient,
-    initialData: {},
     onError,
   });
 

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { committedVotesKeyByCaller } from "constant";
 import {
-  useAccountDetails,
   useContractsContext,
   useHandleError,
   useVoteTimingContext,
@@ -9,9 +8,8 @@ import {
 } from "hooks";
 import { getCommittedVotesByCaller } from "web3";
 
-export function useCommittedVotesByCaller() {
+export function useCommittedVotesByCaller(address: string | undefined) {
   const { voting } = useContractsContext();
-  const { address } = useAccountDetails();
   const { isWrongChain } = useWalletContext();
   const { roundId } = useVoteTimingContext();
   const { onError } = useHandleError({ isDataFetching: true });
@@ -19,8 +17,7 @@ export function useCommittedVotesByCaller() {
   const queryResult = useQuery({
     queryKey: [committedVotesKeyByCaller, address, roundId],
     queryFn: () => getCommittedVotesByCaller(voting, address, roundId),
-    enabled: !!address && !isWrongChain,
-    initialData: {},
+    enabled: !isWrongChain,
     onError,
   });
 

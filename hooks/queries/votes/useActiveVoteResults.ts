@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { oneMinute, activeVoteResultsKey } from "constant";
+import { activeVoteResultsKey, oneMinute } from "constant";
 import { getActiveVoteResults } from "graph";
-import { useHandleError, useVoteTimingContext } from "hooks";
 import { config } from "helpers/config";
+import { useHandleError, useVoteTimingContext } from "hooks";
 
 export function useActiveVoteResults() {
   const { roundId } = useVoteTimingContext();
@@ -13,7 +13,6 @@ export function useActiveVoteResults() {
     queryFn: () => getActiveVoteResults(),
     enabled: config.graphV2Enabled,
     refetchInterval: oneMinute,
-    initialData: {},
     onError,
   });
 

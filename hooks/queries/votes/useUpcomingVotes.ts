@@ -17,10 +17,6 @@ export function useUpcomingVotes() {
   const queryResult = useQuery({
     queryKey: [upcomingVotesKey, roundId, newVotesAdded],
     queryFn: () => getUpcomingVotes(voting, roundId),
-    initialData: {
-      upcomingVotes: {},
-      hasUpcomingVotes: false,
-    },
     onError,
   });
 

@@ -10,32 +10,24 @@ import {
   VoteTableHeadings,
   usePagination,
 } from "components";
-import {
-  useDelegationContext,
-  usePanelContext,
-  useVoteTimingContext,
-  useVotesContext,
-} from "hooks";
+import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import { isUndefined } from "lodash";
 import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const {
-    pastVoteList,
-    getUserIndependentIsLoading,
-    getUserDependentIsFetching,
-  } = useVotesContext();
-  const { isDelegate, isDelegator } = useDelegationContext();
+  const { pastVoteList } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVoteList);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    pastVoteList ?? []
+  );
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getUserIndependentIsLoading() ? (
+          {isUndefined(pastVoteList) ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
             </LoadingSpinnerWrapper>
@@ -46,17 +38,14 @@ export function PastVotes() {
                   headings={<VoteTableHeadings activityStatus="past" />}
                   rows={entriesToShow.map((vote) => (
                     <VoteListItem
-                      vote={vote}
                       phase={phase}
+                      vote={vote}
                       selectedVote={undefined}
                       selectVote={() => null}
                       clearVote={() => null}
                       activityStatus="past"
                       moreDetailsAction={() => openPanel("vote", vote)}
                       key={vote.uniqueKey}
-                      isDelegate={isDelegate}
-                      isDelegator={isDelegator}
-                      isFetching={getUserDependentIsFetching()}
                     />
                   ))}
                 />

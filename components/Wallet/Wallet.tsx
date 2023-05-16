@@ -1,9 +1,9 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import {
+  useAccountDetails,
   useContractsContext,
   usePanelContext,
-  useUserContext,
   useWalletContext,
 } from "hooks";
 import { useEffect } from "react";
@@ -20,7 +20,7 @@ export function Wallet() {
   const { setProvider, setSigner, isWrongChain } = useWalletContext();
   const { setVotingWriter, setVotingTokenWriter } = useContractsContext();
   const { openPanel } = usePanelContext();
-  const { truncatedAddress } = useUserContext();
+  const { truncatedAddress } = useAccountDetails();
 
   useEffect(() => {
     if (!connectedWallets.length) return;

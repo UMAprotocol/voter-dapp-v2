@@ -11,7 +11,7 @@ import { VoteDiscussionT } from "types";
 import { PanelSectionTitle } from "../styles";
 
 interface Props {
-  discussion: VoteDiscussionT;
+  discussion: VoteDiscussionT | undefined;
   loading: boolean;
 }
 export function Discussion({ discussion, loading }: Props) {
@@ -42,7 +42,7 @@ export function Discussion({ discussion, loading }: Props) {
         <>
           {hasThread ? (
             <>
-              {discussion.thread.map(
+              {discussion?.thread.map(
                 ({ message, sender, senderPicture, time }) => (
                   <SectionWrapper key={time}>
                     <MessageWrapper>

@@ -13,13 +13,13 @@ import {
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
+  useAccountDetails,
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
   usePanelContext,
   useRevealVotes,
-  useStakingContext,
-  useUserContext,
+  useStakedBalance,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
@@ -40,23 +40,34 @@ import {
 } from "./style";
 
 export function ActiveVotes() {
-  const { activeVoteList, getUserDependentIsFetching } = useVotesContext();
+  const { activeVoteList } = useVotesContext();
   const { phase, roundId } = useVoteTimingContext();
-  const { address, hasSigningKey, correctChainConnected, signingKey } =
-    useUserContext();
-  const { signer, sign, isSigning, setCorrectChain, isSettingChain } =
-    useWalletContext();
+  const { address } = useAccountDetails();
+  const {
+    signingKeys,
+    signer,
+    sign,
+    isSigning,
+    isWrongChain,
+    setCorrectChain,
+    isSettingChain,
+  } = useWalletContext();
+  const signingKey = address ? signingKeys[address] : undefined;
+  const hasSigningKey = !!signingKey;
   const { votingWriter } = useContractsContext();
-  const { stakedBalance } = useStakingContext();
   const { isDelegate, isDelegator, delegatorAddress } = useDelegationContext();
+  const { data: stakedBalance } = useStakedBalance(
+    isDelegate ? delegatorAddress : address
+  );
   const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
-  const { commitVotesMutation, isCommittingVotes } = useCommitVotes();
-  const { revealVotesMutation, isRevealingVotes } = useRevealVotes();
+  const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
+  const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(activeVoteList);
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    activeVoteList ?? []
+  );
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -91,8 +102,9 @@ export function ActiveVotes() {
     const hasSigner = !!signer;
 
     const hasPreviouslyCommittedAll =
+      !!activeVoteList &&
       activeVoteList.filter((vote) => vote.decryptedVote).length ===
-      activeVoteList.length;
+        activeVoteList.length;
     // counting how many votes we have edited with committable values ( non empty )
     const selectedVotesCount = Object.values(selectedVotes).filter(
       (x) => x
@@ -106,14 +118,15 @@ export function ActiveVotes() {
         : false;
     const hasVotesToReveal = getVotesToReveal().length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
-    const isEditingUnknownVote =
-      activeVoteList.filter((vote) => {
+    const isEditingUnknownVote = Boolean(
+      activeVoteList?.filter((vote) => {
         return (
           vote.commitHash &&
           !vote.decryptedVote &&
           selectedVotes[vote.uniqueKey]
         );
-      }).length > 0;
+      }).length
+    );
 
     if (!hasSigner || !address) {
       actionConfig.hidden = false;
@@ -128,7 +141,7 @@ export function ActiveVotes() {
       }
       return actionConfig;
     }
-    if (!correctChainConnected) {
+    if (isWrongChain) {
       actionConfig.hidden = false;
       actionConfig.disabled = false;
       actionConfig.label = `Switch To ${config.properName}`;
@@ -240,7 +253,14 @@ export function ActiveVotes() {
   }
 
   async function commitVotes() {
-    if (!actionStatus.canCommit || !signingKey || !votingWriter) return;
+    if (
+      !address ||
+      !activeVoteList ||
+      !actionStatus.canCommit ||
+      !signingKey ||
+      !votingWriter
+    )
+      return;
 
     const formattedVotes = await formatVotesToCommit({
       votes: activeVoteList,
@@ -272,12 +292,14 @@ export function ActiveVotes() {
   }
 
   function getVotesToReveal() {
-    return activeVoteList.filter(
-      (vote) =>
-        vote.isCommitted &&
-        !!vote.decryptedVote &&
-        vote.isRevealed === false &&
-        vote.canReveal
+    return (
+      activeVoteList?.filter(
+        (vote) =>
+          vote.isCommitted &&
+          !!vote.decryptedVote &&
+          vote.isRevealed === false &&
+          vote.canReveal
+      ) ?? []
     );
   }
 
@@ -298,16 +320,14 @@ export function ActiveVotes() {
           headings={<VoteTableHeadings activityStatus="active" />}
           rows={entriesToShow.map((vote, index) => (
             <VoteListItem
-              vote={vote}
               phase={phase}
+              vote={vote}
               selectedVote={selectedVotes[vote.uniqueKey]}
               selectVote={(value) => selectVote(value, vote)}
               clearVote={() => clearSelectedVote(vote)}
               activityStatus="active"
               moreDetailsAction={() => openPanel("vote", vote)}
               key={vote.uniqueKey}
-              isDelegate={isDelegate}
-              isDelegator={isDelegator}
               isDirty={dirtyInputs[index]}
               setDirty={(dirty: boolean) => {
                 setDirtyInput((inputs) => {
@@ -315,11 +335,6 @@ export function ActiveVotes() {
                   return [...inputs];
                 });
               }}
-              isFetching={
-                getUserDependentIsFetching() ||
-                isCommittingVotes ||
-                isRevealingVotes
-              }
             />
           ))}
         />

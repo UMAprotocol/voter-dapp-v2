@@ -8,10 +8,10 @@ import { mobileAndUnder } from "constant";
 import { getAddress, isAddress, truncateEthAddress } from "helpers";
 import { config } from "helpers/config";
 import {
+  useAccountDetails,
   useDelegationContext,
   useErrorContext,
   usePanelContext,
-  useUserContext,
 } from "hooks";
 import NextLink from "next/link";
 import One from "public/assets/icons/one.svg";
@@ -26,7 +26,7 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function DelegationPanel() {
   const { closePanel } = usePanelContext();
-  const { address } = useUserContext();
+  const { address } = useAccountDetails();
   const { addErrorMessage, clearErrorMessages } = useErrorContext("delegation");
   const [delegateAddressToAdd, setDelegateAddressToAdd] = useState("");
   const {
@@ -34,7 +34,7 @@ export function DelegationPanel() {
     isDelegatorPending,
     sendRequestToBeDelegate,
     pendingSentRequestsToBeDelegate,
-    getDelegationDataFetching,
+    isBusy,
   } = useDelegationContext();
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export function DelegationPanel() {
       addErrorMessage("Please enter a valid Ethereum address.");
       return false;
     }
-    if (getAddress(inputAddress) === getAddress(address)) {
+    if (address && getAddress(inputAddress) === getAddress(address)) {
       addErrorMessage("You cannot delegate to yourself.");
       return false;
     }
@@ -83,10 +83,6 @@ export function DelegationPanel() {
     if (address.startsWith("0x") && address.length >= 40) return true;
     if (address.length >= 42) return true;
     return false;
-  }
-
-  function isLoading() {
-    return getDelegationDataFetching();
   }
 
   return (
@@ -123,7 +119,7 @@ export function DelegationPanel() {
             After acceptance, the delegate can vote on your behalf.
           </StepWrapper>
         </StepsWrapper>
-        {isLoading() ? (
+        {isBusy ? (
           <LoadingSpinnerWrapper>
             <LoadingSpinner />
           </LoadingSpinnerWrapper>

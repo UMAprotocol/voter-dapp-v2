@@ -7,10 +7,8 @@ import {
   ErrorProvider,
   NotificationsProvider,
   PanelProvider,
-  StakingProvider,
-  UserProvider,
-  VotesProvider,
   VoteTimingProvider,
+  VotesProvider,
   WalletProvider,
 } from "contexts";
 import type { AppProps } from "next/app";
@@ -25,23 +23,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <VoteTimingProvider>
           <QueryClientProvider client={queryClient}>
             <WalletProvider>
-              <UserProvider>
-                <ContractsProvider>
-                  <DelegationProvider>
-                    <StakingProvider>
-                      <VotesProvider>
-                        <PanelProvider>
-                          <GlobalStyle />
-                          <Component {...pageProps} />
-                          <Panel />
-                          <Notifications />
-                        </PanelProvider>
-                      </VotesProvider>
-                    </StakingProvider>
-                  </DelegationProvider>
-                </ContractsProvider>
-                <ReactQueryDevtools />
-              </UserProvider>
+              <ContractsProvider>
+                <DelegationProvider>
+                  <VotesProvider>
+                    <PanelProvider>
+                      <GlobalStyle />
+                      <Component {...pageProps} />
+                      <Panel />
+                      <Notifications />
+                    </PanelProvider>
+                  </VotesProvider>
+                </DelegationProvider>
+              </ContractsProvider>
+              <ReactQueryDevtools />
             </WalletProvider>
           </QueryClientProvider>
         </VoteTimingProvider>
