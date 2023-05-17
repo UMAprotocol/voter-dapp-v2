@@ -41,18 +41,25 @@ async function decryptVotes(
   for await (const [uniqueKey, encryptedVote] of Object.entries(
     encryptedVotes
   )) {
-    let decryptedVote: DecryptedVoteT;
+    try {
+      let decryptedVote: DecryptedVoteT;
 
-    if (encryptedVote && privateKey) {
-      const decryptedVoteString = await decryptMessage(
-        privateKey,
-        encryptedVote
-      );
-      decryptedVote = JSON.parse(decryptedVoteString) as DecryptedVoteT;
+      if (encryptedVote && privateKey) {
+        const decryptedVoteString = await decryptMessage(
+          privateKey,
+          encryptedVote
+        );
+        decryptedVote = JSON.parse(decryptedVoteString) as DecryptedVoteT;
 
-      if (decryptedVote) {
-        decryptedVotes[uniqueKey] = decryptedVote;
+        if (decryptedVote) {
+          decryptedVotes[uniqueKey] = decryptedVote;
+        }
       }
+    } catch (err) {
+      console.warn("Failed Decoding encrypted vote:", err, {
+        uniqueKey,
+        encryptedVote,
+      });
     }
   }
 
