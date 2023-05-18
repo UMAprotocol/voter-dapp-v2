@@ -24,6 +24,7 @@ export function HowItWorks() {
     isDelegate,
     delegatorAddress,
     isLoading: delegationDataIsLoading,
+    outstandingRewards,
   } = useDelegationContext();
   const stakingAddress = isDelegate ? delegatorAddress : userAddress;
   const { data: stakedBalance, isLoading: stakedBalanceIsLoading } =
@@ -32,7 +33,7 @@ export function HowItWorks() {
     useUnstakedBalance(stakingAddress);
   const { data: stakerDetails, isLoading: stakerDetailsIsLoading } =
     useStakerDetails(stakingAddress);
-  const { outstandingRewards, pendingUnstake } = stakerDetails || {};
+  const { pendingUnstake } = stakerDetails || {};
   const {
     data: votingAndStakingDetails,
     isLoading: votingAndStakingDetailsIsLoading,

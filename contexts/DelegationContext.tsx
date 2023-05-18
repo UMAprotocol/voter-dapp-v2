@@ -1,4 +1,10 @@
-import { getAddress, truncateEthAddress, zeroAddress } from "helpers";
+import {
+  getAddress,
+  truncateEthAddress,
+  zeroAddress,
+  calculateOutstandingRewards,
+} from "helpers";
+import { BigNumber } from "ethers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useAccountDetails,
@@ -9,16 +15,25 @@ import {
   useDelegatorSetEventsForDelegator,
   useIgnoreReceivedRequestToBeDelegate,
   useIgnoredRequestToBeDelegateAddresses,
+  useInterval,
   usePanelContext,
   useReceivedRequestsToBeDelegate,
+  useRewardsCalculationInputs,
   useSendRequestToBeDelegate,
   useSentRequestsToBeDelegate,
+  useStakedBalance,
   useStakerDetails,
   useTerminateRelationshipWithDelegate,
   useTerminateRelationshipWithDelegator,
   useVoterFromDelegate,
 } from "hooks";
-import { ReactNode, createContext, useCallback, useMemo } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
 export interface DelegationContextState {
   delegationStatus: DelegationStatusT;
@@ -56,6 +71,7 @@ export interface DelegationContextState {
   isAcceptingReceivedRequestToBeDelegate: boolean;
   isTerminatingRelationshipWithDelegate: boolean;
   isTerminatingRelationshipWithDelegator: boolean;
+  outstandingRewards: BigNumber;
 }
 
 export const defaultDelegationContextState: DelegationContextState = {
@@ -94,6 +110,7 @@ export const defaultDelegationContextState: DelegationContextState = {
   isAcceptingReceivedRequestToBeDelegate: false,
   isTerminatingRelationshipWithDelegate: false,
   isTerminatingRelationshipWithDelegator: false,
+  outstandingRewards: BigNumber.from(0),
 };
 
 export const DelegationContext = createContext<DelegationContextState>(
@@ -101,6 +118,9 @@ export const DelegationContext = createContext<DelegationContextState>(
 );
 
 export function DelegationProvider({ children }: { children: ReactNode }) {
+  const [outstandingRewards, setOutstandingRewards] = useState(
+    BigNumber.from(0)
+  );
   const { address } = useAccountDetails();
   const {
     data: receivedRequestsToBeDelegate,
@@ -148,9 +168,9 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     terminateRelationshipWithDelegatorMutation,
     isTerminatingRelationshipWithDelegator,
   } = useTerminateRelationshipWithDelegator(address);
-  const { votingWriter } = useContractsContext();
   const { data: stakerDetails } = useStakerDetails(address);
   const { delegate } = stakerDetails ?? {};
+  const { votingWriter } = useContractsContext();
   const { closePanel } = usePanelContext();
   const pendingReceivedRequestsToBeDelegate =
     getPendingReceivedRequestsToBeDelegate();
@@ -168,6 +188,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const isDelegator = delegationStatus === "delegator";
   const delegatorAddress = isDelegate ? getDelegatorAddress() : undefined;
   const delegateAddress = getDelegateAddress();
+  const stakerAddress = delegatorAddress ?? address;
+  // this makes sure to look up staker details by delegator if you are delegatee
+  const { data: stakerAddressStakerDetails } = useStakerDetails(stakerAddress);
+  const { data: stakerAddressStakedBalance } = useStakedBalance(stakerAddress);
   const isLoading =
     receivedRequestsToBeDelegateLoading ||
     sentRequestsToBeDelegateLoading ||
@@ -388,6 +412,33 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     });
   }, [terminateRelationshipWithDelegateMutation, votingWriter]);
 
+  const { data: rewardCalculationInputs } = useRewardsCalculationInputs();
+
+  useInterval(() => {
+    updateOutstandingRewards();
+  }, 100);
+
+  function updateOutstandingRewards() {
+    if (rewardCalculationInputs === undefined) return;
+    if (stakerAddressStakerDetails === undefined) return;
+    if (stakerAddressStakedBalance === undefined) return;
+    const { emissionRate, rewardPerTokenStored, cumulativeStake, updateTime } =
+      rewardCalculationInputs;
+    const { outstandingRewards: voterOutstandingRewards, rewardsPaidPerToken } =
+      stakerAddressStakerDetails;
+    if (voterOutstandingRewards === undefined) return;
+    const calculatedOutstandingRewards = calculateOutstandingRewards({
+      voterOutstandingRewards,
+      stakedBalance: stakerAddressStakedBalance,
+      rewardsPaidPerToken,
+      cumulativeStake,
+      rewardPerTokenStored,
+      updateTime,
+      emissionRate,
+    });
+    setOutstandingRewards(calculatedOutstandingRewards);
+  }
+
   const value = useMemo(
     () => ({
       delegationStatus,
@@ -425,6 +476,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       isAcceptingReceivedRequestToBeDelegate,
       isTerminatingRelationshipWithDelegate,
       isTerminatingRelationshipWithDelegator,
+      outstandingRewards,
     }),
     [
       acceptReceivedRequestToBeDelegate,
@@ -462,6 +514,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       terminateRelationshipWithDelegate,
       terminateRelationshipWithDelegator,
       voterFromDelegateLoading,
+      outstandingRewards,
     ]
   );
   return (
