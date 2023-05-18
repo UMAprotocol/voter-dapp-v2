@@ -24,13 +24,14 @@ const minimumAmountClaimable = parseEtherSafe(".01");
 
 export function ClaimPanel() {
   const { votingWriter } = useContractsContext();
-  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { isDelegate, delegatorAddress, outstandingRewards } =
+    useDelegationContext();
   const { address } = useAccountDetails();
   const { withdrawRewardsMutation } = useWithdrawRewards("claim");
   const { withdrawAndRestakeMutation } = useWithdrawAndRestake("claim");
-  const { data: stakerDetails, isLoading: stakerDetailsIsLoading } =
-    useStakerDetails(isDelegate ? delegatorAddress : address);
-  const { outstandingRewards } = stakerDetails || {};
+  const { isLoading: stakerDetailsIsLoading } = useStakerDetails(
+    isDelegate ? delegatorAddress : address
+  );
   function withdrawRewards() {
     if (!outstandingRewards || !votingWriter) return;
 
