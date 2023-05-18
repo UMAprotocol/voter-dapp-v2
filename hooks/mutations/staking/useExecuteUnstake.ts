@@ -14,10 +14,13 @@ function max(a: BigNumber, b: BigNumber) {
   return b;
 }
 
-export function useExecuteUnstake(
-  address: string | undefined,
-  errorOrigin?: ErrorOriginT
-) {
+export function useExecuteUnstake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 

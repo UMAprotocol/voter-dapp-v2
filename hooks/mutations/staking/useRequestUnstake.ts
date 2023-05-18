@@ -10,10 +10,13 @@ import { useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
 import { requestUnstake } from "web3";
 
-export function useRequestUnstake(
-  address: string | undefined,
-  errorOrigin?: ErrorOriginT
-) {
+export function useRequestUnstake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 

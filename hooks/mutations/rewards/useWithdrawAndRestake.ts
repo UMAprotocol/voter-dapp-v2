@@ -9,10 +9,13 @@ import { useHandleError, useStakerDetails } from "hooks";
 import { ErrorOriginT, RewardCalculationT, StakerDetailsT } from "types";
 import { withdrawAndRestake } from "web3";
 
-export function useWithdrawAndRestake(
-  address: string,
-  errorOrigin?: ErrorOriginT
-) {
+export function useWithdrawAndRestake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
   const { data: stakerDetails } = useStakerDetails(address);
   const { outstandingRewards } = stakerDetails || {};
