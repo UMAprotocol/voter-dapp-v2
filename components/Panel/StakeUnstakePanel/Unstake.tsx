@@ -4,7 +4,7 @@ import { intervalToDuration } from "date-fns";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther } from "helpers";
-import { useVotesContext, useVoteTimingContext } from "hooks";
+import { useVoteTimingContext, useVotesContext } from "hooks";
 import One from "public/assets/icons/one.svg";
 import Three from "public/assets/icons/three.svg";
 import Two from "public/assets/icons/two.svg";
@@ -36,8 +36,8 @@ export function Unstake({
   hasCooldownTimeRemaining,
   isRequestingUnstake,
 }: Props) {
-  const { phase } = useVoteTimingContext();
-  const { hasActiveVotes } = useVotesContext();
+  const { isReveal, isCommit } = useVoteTimingContext();
+  const { isActive } = useVotesContext();
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const unstakeCoolDownFormatted = unstakeCoolDown
     ? formatDuration(
@@ -95,7 +95,7 @@ export function Unstake({
           </HowItWorks>
         </>
       )}
-      {!isDelegate && (phase === "commit" || !hasActiveVotes) && (
+      {!isDelegate && (isCommit || !isActive) && (
         <>
           <AmountInputWrapper>
             <AmountInput
@@ -119,14 +119,11 @@ export function Unstake({
         </>
       )}
       <PanelErrorBanner errorOrigin="unstake" />
-      {!isReadyToUnstake &&
-        phase === "reveal" &&
-        hasActiveVotes &&
-        !isDelegate && (
-          <PanelWarningText>
-            You cannot request to unstake during an active reveal phase.
-          </PanelWarningText>
-        )}
+      {!isReadyToUnstake && isReveal && isActive && !isDelegate && (
+        <PanelWarningText>
+          You cannot request to unstake during an active reveal phase.
+        </PanelWarningText>
+      )}
       {isReadyToUnstake && !hasCooldownTimeRemaining && (
         <PanelWarningText>
           You cannot request to unstake until you claim your previously unstaked

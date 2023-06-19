@@ -2,8 +2,16 @@ import { VotingV2Ethers } from "@uma/contracts-frontend";
 
 export async function getStakerDetails(
   votingContract: VotingV2Ethers,
-  address: string
+  address: string | undefined
 ) {
+  if (!address)
+    return {
+      pendingUnstake: undefined,
+      unstakeTime: undefined,
+      delegate: undefined,
+      rewardsPaidPerToken: undefined,
+      outstandingRewards: undefined,
+    };
   const result = await votingContract.voterStakes(address);
   const {
     pendingUnstake,

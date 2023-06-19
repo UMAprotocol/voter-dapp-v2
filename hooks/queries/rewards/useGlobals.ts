@@ -4,11 +4,10 @@ import { getGlobals } from "graph";
 import { config } from "helpers/config";
 
 export function useGlobals() {
-  return useQuery(["globals"], getGlobals, {
+  return useQuery({
+    queryKey: ["globals"],
+    queryFn: getGlobals,
     refetchInterval: oneMinute,
-    initialData: {
-      annualPercentageReturn: 0,
-    },
     enabled: config.graphV2Enabled,
     onError: (error) =>
       console.error("Error Fetching global data from subgraph:", error),

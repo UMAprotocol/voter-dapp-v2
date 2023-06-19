@@ -3,7 +3,11 @@ import { Button, Nav, WalletIcon } from "components";
 import { mobileAndUnder } from "constant";
 import { handleDisconnectWallet, truncateEthAddress } from "helpers";
 import { config } from "helpers/config";
-import { useDelegationContext, useUserContext, useWalletContext } from "hooks";
+import {
+  useAccountDetails,
+  useDelegationContext,
+  useWalletContext,
+} from "hooks";
 import NextLink from "next/link";
 import LinkedAddress from "public/assets/icons/link.svg";
 import Time from "public/assets/icons/time-with-inner-circle.svg";
@@ -14,13 +18,16 @@ import { PanelWrapper } from "../styles";
 export function MenuPanel() {
   const [_wallets, connect, disconnect] = useConnectWallet();
   const { setSigner, setProvider } = useWalletContext();
-  const { address, connectedWallet, walletIcon } = useUserContext();
+  const { address, connectedWallet, walletIcon } = useAccountDetails();
   const {
-    getDelegationStatus,
-    getDelegateAddress,
-    getDelegatorAddress,
-    getPendingSentRequestsToBeDelegate,
-    getPendingReceivedRequestsToBeDelegate,
+    isDelegate,
+    isDelegatePending,
+    isDelegator,
+    isDelegatorPending,
+    delegateAddress,
+    delegatorAddress,
+    pendingSentRequestsToBeDelegate,
+    pendingReceivedRequestsToBeDelegate,
   } = useDelegationContext();
 
   const links = [
@@ -58,13 +65,6 @@ export function MenuPanel() {
     ? links
     : links.filter((link) => link.href !== "/wallet-settings");
 
-  const status = getDelegationStatus();
-
-  const isDelegator = status === "delegator";
-  const isDelegate = status === "delegate";
-  const isDelegatorPending = status === "delegator-pending";
-  const isDelegatePending = status === "delegate-pending";
-
   const walletTitle = isDelegator
     ? "Delegator Wallet"
     : isDelegate
@@ -73,14 +73,12 @@ export function MenuPanel() {
 
   const showOtherWallet = isDelegator || isDelegate;
   const otherWalletTitle = isDelegator ? "Delegate Wallet" : "Delegator Wallet";
-  const otherWalletAddress = isDelegator
-    ? getDelegateAddress()
-    : getDelegatorAddress();
+  const otherWalletAddress = isDelegator ? delegateAddress : delegatorAddress;
 
   const showPending = isDelegatorPending || isDelegatePending;
   const pendingRequests = isDelegatorPending
-    ? getPendingSentRequestsToBeDelegate()
-    : getPendingReceivedRequestsToBeDelegate();
+    ? pendingSentRequestsToBeDelegate
+    : pendingReceivedRequestsToBeDelegate;
   const pendingRequestLinkText = isDelegatorPending
     ? "Sent request"
     : "Received request";

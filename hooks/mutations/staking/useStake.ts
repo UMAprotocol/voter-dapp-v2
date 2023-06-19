@@ -1,16 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { stakedBalanceKey, unstakedBalanceKey } from "constant";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
+import { useHandleError } from "hooks";
 import { ErrorOriginT } from "types";
 import { stake } from "web3";
 
-export function useStake(errorOrigin?: ErrorOriginT) {
+export function useStake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
-  const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(stake, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: stake,
     onError,
     onSuccess: (_data, { stakeAmount }) => {
       clearErrors();

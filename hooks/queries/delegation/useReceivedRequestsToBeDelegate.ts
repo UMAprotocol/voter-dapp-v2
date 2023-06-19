@@ -4,26 +4,22 @@ import {
   useContractsContext,
   useHandleError,
   useNewReceivedRequestsToBeDelegate,
-  useUserContext,
   useWalletContext,
 } from "hooks";
 import { getDelegateSetEvents } from "web3";
 
-export function useReceivedRequestsToBeDelegate() {
+export function useReceivedRequestsToBeDelegate(address: string | undefined) {
   const { voting } = useContractsContext();
-  const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
-  const newRequests = useNewReceivedRequestsToBeDelegate();
+  const newRequests = useNewReceivedRequestsToBeDelegate(address);
 
-  const queryResult = useQuery(
-    [receivedRequestsToBeDelegateKey, address, newRequests],
-    () => getDelegateSetEvents(voting, address, "delegate"),
-    {
-      enabled: !!address && !isWrongChain,
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [receivedRequestsToBeDelegateKey, address, newRequests],
+    queryFn: () => getDelegateSetEvents(voting, address, "delegate"),
+    enabled: !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }

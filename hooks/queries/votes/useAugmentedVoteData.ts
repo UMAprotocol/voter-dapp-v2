@@ -6,20 +6,21 @@ import { usePastVotes } from "./usePastVotes";
 import { useUpcomingVotes } from "./useUpcomingVotes";
 
 export function useAugmentedVoteData() {
-  const {
-    data: { activeVotes },
-  } = useActiveVotes();
-  const {
-    data: { upcomingVotes },
-  } = useUpcomingVotes();
+  const { data: activeVotes } = useActiveVotes();
+  const { data: upcomingVotes } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
 
   const allVotes = { ...activeVotes, ...upcomingVotes, ...pastVotes };
 
   const queryResult = useQuery({
-    queryKey: [augmentedVoteDataKey, activeVotes, upcomingVotes, pastVotes],
+    queryKey: [
+      augmentedVoteDataKey,
+      activeVotes,
+      upcomingVotes,
+      pastVotes,
+      allVotes,
+    ],
     queryFn: () => getAugmentedVoteData(allVotes),
-    initialData: {},
   });
 
   return queryResult;

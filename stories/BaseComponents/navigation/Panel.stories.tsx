@@ -7,25 +7,20 @@ import {
   ErrorContextState,
   PanelContext,
   PanelContextState,
-  UserContext,
-  UserContextState,
   VotesContext,
   VotesContextState,
   defaultDelegationContextState,
   defaultErrorContextState,
   defaultPanelContextState,
-  defaultUserContextState,
   defaultVotesContextState,
 } from "contexts";
-import { BigNumber } from "ethers";
-import { bigNumberFromFloatString, zeroAddress } from "helpers";
+import { zeroAddress } from "helpers";
 import { useState } from "react";
 import {
   mockAddress1,
   mockAddress2,
   mockDelegateRequestTransaction,
 } from "stories/mocks/delegation";
-import { mockWalletIcon } from "stories/mocks/mockWalletIcon";
 import { defaultMockVote, makeMockVotesWithHistory } from "stories/mocks/votes";
 import { DelegationEventT, DelegationStatusT, VoteT } from "types";
 
@@ -33,7 +28,6 @@ interface Props
   extends PanelContextState,
     ErrorContextState,
     VotesContextState,
-    UserContextState,
     DelegationContextState {
   panelType: PanelContextState["panelType"];
   panelContent: PanelContextState["panelContent"];
@@ -105,34 +99,6 @@ const errorDecorator: Decorator<Props> = (Story, { args }) => {
   );
 };
 
-const mockConnectedWallet = {
-  label: "MetaMask",
-  icon: mockWalletIcon,
-  accounts: [],
-  chains: [],
-};
-
-const userDecorator: Decorator<Props> = (Story, { args }) => {
-  const mockUserContextState: UserContextState = {
-    ...defaultUserContextState,
-    apr: args.apr ?? BigNumber.from(0),
-    cumulativeCalculatedSlash:
-      args.cumulativeCalculatedSlash ?? BigNumber.from(0),
-    cumulativeCalculatedSlashPercentage:
-      args.cumulativeCalculatedSlashPercentage ?? BigNumber.from(0),
-    userDataFetching: args.userDataFetching ?? false,
-    address: args.address ?? mockAddress1,
-    walletIcon: args.walletIcon ?? mockWalletIcon,
-    connectedWallet: args.connectedWallet,
-  };
-
-  return (
-    <UserContext.Provider value={mockUserContextState}>
-      <Story />
-    </UserContext.Provider>
-  );
-};
-
 const votesDecorator: Decorator<Props> = (Story, { args }) => {
   const mockVotesContextState: VotesContextState = {
     ...defaultVotesContextState,
@@ -149,13 +115,12 @@ const votesDecorator: Decorator<Props> = (Story, { args }) => {
 const delegationDecorator: Decorator<Props> = (Story, { args }) => {
   const mockDelegationContextState: DelegationContextState = {
     ...defaultDelegationContextState,
-    getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
-    getPendingSentRequestsToBeDelegate: () =>
-      args.pendingSentRequestsToBeDelegate ?? [],
-    getPendingReceivedRequestsToBeDelegate: () =>
+    delegationStatus: args.delegationStatus ?? "no-delegation",
+    pendingSentRequestsToBeDelegate: args.pendingSentRequestsToBeDelegate ?? [],
+    pendingReceivedRequestsToBeDelegate:
       args.pendingReceivedRequestsToBeDelegate ?? [],
-    getDelegateAddress: () => args.delegateAddress ?? zeroAddress,
-    getDelegatorAddress: () => args.delegatorAddress ?? zeroAddress,
+    delegateAddress: args.delegateAddress ?? zeroAddress,
+    delegatorAddress: args.delegatorAddress ?? zeroAddress,
   };
 
   return (
@@ -170,12 +135,9 @@ export const MenuPanelNoWalletConnected: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: "",
-    connectedWallet: undefined,
-    walletIcon: undefined,
     delegationStatus: "no-wallet-connected",
   },
-  decorators: [errorDecorator, userDecorator],
+  decorators: [errorDecorator],
 };
 
 export const MenuPanelNoDelegation: Story = {
@@ -183,12 +145,9 @@ export const MenuPanelNoDelegation: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: mockAddress1,
-    // @ts-expect-error - no need to do a complicated mock for the provider here
-    connectedWallet: mockConnectedWallet,
     delegationStatus: "no-delegation",
   },
-  decorators: [userDecorator, delegationDecorator],
+  decorators: [delegationDecorator],
 };
 
 export const MenuPanelDelegator: Story = {
@@ -196,13 +155,10 @@ export const MenuPanelDelegator: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: mockAddress1,
-    // @ts-expect-error - no need to do a complicated mock for the provider here
-    connectedWallet: mockConnectedWallet,
     delegationStatus: "delegator",
     delegateAddress: mockAddress2,
   },
-  decorators: [userDecorator, delegationDecorator],
+  decorators: [delegationDecorator],
 };
 
 export const MenuPanelDelegate: Story = {
@@ -210,13 +166,10 @@ export const MenuPanelDelegate: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: mockAddress2,
-    // @ts-expect-error - no need to do a complicated mock for the provider here
-    connectedWallet: mockConnectedWallet,
     delegationStatus: "delegate",
     delegatorAddress: mockAddress1,
   },
-  decorators: [userDecorator, delegationDecorator],
+  decorators: [delegationDecorator],
 };
 
 export const MenuPanelDelegatorPending: Story = {
@@ -224,9 +177,6 @@ export const MenuPanelDelegatorPending: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: mockAddress1,
-    // @ts-expect-error - no need to do a complicated mock for the provider here
-    connectedWallet: mockConnectedWallet,
     delegationStatus: "delegator-pending",
     pendingSentRequestsToBeDelegate: [
       {
@@ -236,7 +186,7 @@ export const MenuPanelDelegatorPending: Story = {
       },
     ],
   },
-  decorators: [userDecorator, delegationDecorator],
+  decorators: [delegationDecorator],
 };
 
 export const MenuPanelDelegatePending: Story = {
@@ -244,9 +194,6 @@ export const MenuPanelDelegatePending: Story = {
   args: {
     panelType: "menu",
     panelOpen: true,
-    address: mockAddress2,
-    // @ts-expect-error - no need to do a complicated mock for the provider here
-    connectedWallet: mockConnectedWallet,
     delegationStatus: "delegate-pending",
     pendingReceivedRequestsToBeDelegate: [
       {
@@ -256,7 +203,7 @@ export const MenuPanelDelegatePending: Story = {
       },
     ],
   },
-  decorators: [userDecorator, delegationDecorator],
+  decorators: [delegationDecorator],
 };
 
 export const ClaimPanel: Story = {
@@ -373,15 +320,12 @@ export const HistoryPanel: Story = {
   ...Template,
   args: {
     panelType: "history",
-    apr: bigNumberFromFloatString(`32`),
-    cumulativeCalculatedSlash: bigNumberFromFloatString(`23`),
-    cumulativeCalculatedSlashPercentage: bigNumberFromFloatString("100"),
     votes: makeMockVotesWithHistory(),
   },
-  decorators: [userDecorator, votesDecorator],
+  decorators: [votesDecorator],
 };
 
-const delegationPanelDecorators = [userDecorator, delegationDecorator];
+const delegationPanelDecorators = [delegationDecorator];
 
 const delegationPanelCommonArgs = {
   panelType: "delegation" as const,

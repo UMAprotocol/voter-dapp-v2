@@ -1,4 +1,5 @@
 import { OptimisticOracleV3InterfaceEthers } from "@uma/contracts-frontend";
+import { getInstance } from "web3/contracts/createOOV3ContractInstances";
 
 export async function getAssertionMadeEvents(
   instance: OptimisticOracleV3InterfaceEthers,
@@ -9,9 +10,11 @@ export async function getAssertionMadeEvents(
 }
 
 export async function getAssertionClaim(
-  instance: OptimisticOracleV3InterfaceEthers,
-  assertionId: string
+  chainId: number | undefined,
+  assertionId: string | undefined
 ) {
+  if (!chainId || !assertionId) return undefined;
+  const instance = getInstance(chainId);
   const events = await getAssertionMadeEvents(instance, assertionId);
   if (events.length === 0)
     throw new Error(`Unable to find assertion claim for: ${assertionId}`);

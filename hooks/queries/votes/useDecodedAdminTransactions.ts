@@ -4,12 +4,8 @@ import { useActiveVotes, usePastVotes, useUpcomingVotes } from "hooks";
 import { getDecodedAdminTransactions } from "web3";
 
 export function useDecodedAdminTransactions() {
-  const {
-    data: { activeVotes },
-  } = useActiveVotes();
-  const {
-    data: { upcomingVotes },
-  } = useUpcomingVotes();
+  const { data: activeVotes } = useActiveVotes();
+  const { data: upcomingVotes } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
 
   const governanceVoteIdentifiers = Object.entries({
@@ -26,9 +22,9 @@ export function useDecodedAdminTransactions() {
       activeVotes,
       upcomingVotes,
       pastVotes,
+      governanceVoteIdentifiers,
     ],
     queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
-    initialData: {},
   });
 
   return queryResult;

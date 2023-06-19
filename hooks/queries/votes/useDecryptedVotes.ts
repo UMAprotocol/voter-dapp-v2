@@ -1,59 +1,65 @@
 import { useQuery } from "@tanstack/react-query";
 import { decryptedVotesKey } from "constant";
 import { decryptMessage } from "helpers";
+import { useHandleError, useWalletContext } from "hooks";
 import {
-  useEncryptedVotes,
-  useHandleError,
-  useUserContext,
-  useWalletContext,
-} from "hooks";
-import {
-  DecryptedVotesByKeyT,
   DecryptedVoteT,
+  DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
 } from "types";
 
-export function useDecryptedVotes(roundId?: number) {
-  const { address, signingKey } = useUserContext();
-  const { isWrongChain } = useWalletContext();
-  const { data: encryptedVotes } = useEncryptedVotes(roundId);
+export function useDecryptedVotes(
+  address: string | undefined,
+  encryptedVotes: EncryptedVotesByKeyT | undefined
+) {
+  const { signingKeys, isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
+  const signingKey = address ? signingKeys[address] : undefined;
 
-  const queryResult = useQuery(
-    [decryptedVotesKey, encryptedVotes, address],
-    () => decryptVotes(signingKey?.privateKey, encryptedVotes),
-    {
-      enabled: !!address && !isWrongChain,
-      initialData: {},
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [decryptedVotesKey, encryptedVotes, signingKey?.privateKey],
+    queryFn: () => decryptVotes(signingKey?.privateKey, encryptedVotes),
+    enabled: !isWrongChain,
+    onError,
+  });
 
   return queryResult;
 }
 
 async function decryptVotes(
   privateKey: string | undefined,
-  encryptedVotes: EncryptedVotesByKeyT
+  encryptedVotes: EncryptedVotesByKeyT | undefined
 ) {
   const decryptedVotes: DecryptedVotesByKeyT = {};
-  if (!privateKey || Object.keys(encryptedVotes).length === 0) return {};
+  if (
+    !privateKey ||
+    !encryptedVotes ||
+    Object.keys(encryptedVotes).length === 0
+  )
+    return {};
 
   for await (const [uniqueKey, encryptedVote] of Object.entries(
     encryptedVotes
   )) {
-    let decryptedVote: DecryptedVoteT;
+    try {
+      let decryptedVote: DecryptedVoteT;
 
-    if (encryptedVote && privateKey) {
-      const decryptedVoteString = await decryptMessage(
-        privateKey,
-        encryptedVote
-      );
-      decryptedVote = JSON.parse(decryptedVoteString) as DecryptedVoteT;
+      if (encryptedVote && privateKey) {
+        const decryptedVoteString = await decryptMessage(
+          privateKey,
+          encryptedVote
+        );
+        decryptedVote = JSON.parse(decryptedVoteString) as DecryptedVoteT;
 
-      if (decryptedVote) {
-        decryptedVotes[uniqueKey] = decryptedVote;
+        if (decryptedVote) {
+          decryptedVotes[uniqueKey] = decryptedVote;
+        }
       }
+    } catch (err) {
+      console.warn("Failed Decoding encrypted vote:", err, {
+        uniqueKey,
+        encryptedVote,
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-import { LoadingSpinner } from "components/LoadingSpinner";
+import { LoadingSpinner } from "components";
 import { config } from "helpers/config";
 import NextLink from "next/link";
 import Close from "public/assets/icons/close.svg";

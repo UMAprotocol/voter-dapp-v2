@@ -1,6 +1,5 @@
 import { WalletIcon } from "components";
 import { truncateEthAddress } from "helpers";
-import { useUserContext } from "hooks";
 import { AllowedActions } from "./AllowedActions";
 import {
   Address,
@@ -10,12 +9,13 @@ import {
   TruncatedAddress,
   WalletWrapper,
 } from "./styles";
+import { useAccountDetails } from "hooks";
 
 interface Props {
   status: "delegator" | "delegate" | "none";
 }
 export function ConnectedWallet({ status }: Props) {
-  const { address, walletIcon } = useUserContext();
+  const { address, walletIcon } = useAccountDetails();
 
   return (
     <>
@@ -43,8 +43,10 @@ export function ConnectedWallet({ status }: Props) {
       <BarWrapper>
         <WalletWrapper>
           <WalletIcon icon={walletIcon} />
-          <Address>{address}</Address>
-          <TruncatedAddress>{truncateEthAddress(address)}</TruncatedAddress>
+          <Address>{address ?? "No wallet connected"}</Address>
+          {address && (
+            <TruncatedAddress>{truncateEthAddress(address)}</TruncatedAddress>
+          )}
         </WalletWrapper>
         <AllowedActions status={status} />
       </BarWrapper>

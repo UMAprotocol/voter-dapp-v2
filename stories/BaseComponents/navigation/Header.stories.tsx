@@ -22,7 +22,7 @@ export default {
     (Story, { args }) => {
       const mockDelegationContextState: DelegationContextState = {
         ...defaultDelegationContextState,
-        getDelegationStatus: () => args.delegationStatus ?? "no-delegation",
+        delegationStatus: args.delegationStatus ?? "no-delegation",
       };
 
       return (

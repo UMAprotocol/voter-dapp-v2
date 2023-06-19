@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { committedVotesKey, encryptedVotesKey } from "constant";
-import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
+import { useHandleError, useVoteTimingContext } from "hooks";
 import { EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
 import { commitVotes } from "web3";
 
-export function useCommitVotes() {
+export function useCommitVotes(address: string | undefined) {
   const queryClient = useQueryClient();
-  const { address } = useAccountDetails();
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
 
-  const { mutate, isLoading } = useMutation(commitVotes, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: commitVotes,
     onError,
     onSuccess: (data, { formattedVotes }) => {
       clearErrors();

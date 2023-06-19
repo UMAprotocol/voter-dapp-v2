@@ -1,12 +1,11 @@
-import { useContractsContext } from "hooks/contexts/useContractsContext";
-import { useUserContext } from "hooks/contexts/useUserContext";
-import { useWalletContext } from "hooks/contexts/useWalletContext";
+import { useContractsContext, useWalletContext } from "hooks";
 import { useEffect, useState } from "react";
 
-export function useNewReceivedRequestsToBeDelegate() {
+export function useNewReceivedRequestsToBeDelegate(
+  address: string | undefined
+) {
   const { voting } = useContractsContext();
   const { provider } = useWalletContext();
-  const { address } = useUserContext();
   const { isWrongChain } = useWalletContext();
   const [newRequests, setNewRequests] = useState(0);
 

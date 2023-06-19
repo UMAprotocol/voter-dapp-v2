@@ -28,18 +28,6 @@ export {
 } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export {
-  defaultStakingContextState,
-  StakingContext,
-  StakingProvider,
-} from "./StakingContext";
-export type { StakingContextState } from "./StakingContext";
-export {
-  defaultUserContextState,
-  UserContext,
-  UserProvider,
-} from "./UserContext";
-export type { UserContextState } from "./UserContext";
-export {
   defaultVotesContextState,
   VotesContext,
   VotesProvider,

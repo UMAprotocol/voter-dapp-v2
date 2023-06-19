@@ -10,14 +10,14 @@ import { LoadingSpinnerWrapper } from "../styles";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {
-  const { getDelegationDataLoading } = useDelegationContext();
+  const { isLoading: delegationDataLoading } = useDelegationContext();
 
   return (
     <Layout title="UMA | Wallet Settings">
       <Banner>Wallet Settings</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {getDelegationDataLoading() ? (
+          {delegationDataLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner variant="black" size={40} />
             </LoadingSpinnerWrapper>

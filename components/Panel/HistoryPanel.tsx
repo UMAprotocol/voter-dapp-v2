@@ -1,5 +1,5 @@
 import {
-  LoadingSkeleton,
+  Loader,
   LoadingSpinner,
   Pagination,
   VoteHistoryTable,
@@ -7,7 +7,13 @@ import {
 } from "components";
 import { black, green, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
-import { useUserContext, useVotesContext } from "hooks";
+import {
+  useAccountDetails,
+  useDelegationContext,
+  useUserVotingAndStakingDetails,
+  useVotesContext,
+} from "hooks";
+import { isUndefined } from "lodash";
 import NextLink from "next/link";
 import styled, { CSSProperties } from "styled-components";
 import { PanelFooter } from "./PanelFooter";
@@ -16,24 +22,25 @@ import { PanelSectionText, PanelSectionTitle, PanelWrapper } from "./styles";
 
 export function HistoryPanel() {
   const { pastVotesV2List } = useVotesContext();
+  const { address } = useAccountDetails();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const { data: votingAndStakingDetails } = useUserVotingAndStakingDetails(
+    isDelegate ? delegatorAddress : address
+  );
   const {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
-    userDataFetching,
-  } = useUserContext();
-  const { showPagination, entriesToShow, ...paginationProps } =
-    usePagination(pastVotesV2List);
+  } = votingAndStakingDetails ?? {};
+  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
+    pastVotesV2List ?? []
+  );
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
     : cumulativeCalculatedSlashPercentage?.gt(0)
     ? green
     : red500;
-
-  function isLoading() {
-    return userDataFetching;
-  }
 
   return (
     <PanelWrapper>
@@ -42,21 +49,20 @@ export function HistoryPanel() {
         <AprWrapper>
           <AprHeader>Your return</AprHeader>
           <Apr>
-            {isLoading() ? (
-              <LoadingSkeleton variant="white" width="50%" />
-            ) : (
-              `${formatNumberForDisplay(apr)}%`
-            )}
+            <Loader isLoading={isUndefined(apr)} variant="white" width="50%">
+              {formatNumberForDisplay(apr)}%
+            </Loader>
           </Apr>
           <AprDetailsWrapper>
             <Text>
               <>
                 Earnings based on participation:{" "}
-                {isLoading() ? (
-                  <LoadingSkeleton width={40} />
-                ) : (
-                  formatNumberForDisplay(cumulativeCalculatedSlash)
-                )}
+                <Loader
+                  isLoading={isUndefined(cumulativeCalculatedSlash)}
+                  width={40}
+                >
+                  {formatNumberForDisplay(cumulativeCalculatedSlash)}
+                </Loader>
               </>
             </Text>
             <Text>
@@ -68,13 +74,12 @@ export function HistoryPanel() {
                   } as CSSProperties
                 }
               >
-                {isLoading() ? (
-                  <LoadingSkeleton width={40} />
-                ) : (
-                  `${formatNumberForDisplay(
-                    cumulativeCalculatedSlashPercentage
-                  )}%`
-                )}
+                <Loader
+                  isLoading={isUndefined(cumulativeCalculatedSlashPercentage)}
+                  width={40}
+                >
+                  {formatNumberForDisplay(cumulativeCalculatedSlashPercentage)}%
+                </Loader>
               </BonusOrPenalty>
             </Text>
           </AprDetailsWrapper>
@@ -99,7 +104,7 @@ export function HistoryPanel() {
         <SectionWrapper>
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
-            {isLoading() ? (
+            {isUndefined(pastVotesV2List) ? (
               <LoadingSpinner size={40} />
             ) : (
               <VoteHistoryTable votes={entriesToShow} />

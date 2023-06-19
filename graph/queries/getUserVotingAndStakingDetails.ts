@@ -1,18 +1,31 @@
+import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 import { bigNumberFromFloatString } from "helpers";
+import { config } from "helpers/config";
 import {
   UserDataQuery,
   UserDataT,
   VoteHistoryByKeyT,
   VoteHistoryT,
 } from "types";
-import { config } from "helpers/config";
 const { graphEndpoint } = config;
 
 export async function getUserVotingAndStakingDetails(
   address: string | undefined
-) {
+): Promise<UserDataT> {
   if (!graphEndpoint) throw new Error("V2 subgraph is disabled");
+
+  if (!address)
+    return {
+      apr: BigNumber.from(0),
+      countReveals: BigNumber.from(0),
+      countNoVotes: BigNumber.from(0),
+      countWrongVotes: BigNumber.from(0),
+      countCorrectVotes: BigNumber.from(0),
+      cumulativeCalculatedSlash: BigNumber.from(0),
+      cumulativeCalculatedSlashPercentage: BigNumber.from(0),
+      voteHistoryByKey: {},
+    };
 
   const userDataQuery = gql`
     {
@@ -82,7 +95,7 @@ function parseUserVotingAndStakingDetails(
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
     voteHistoryByKey,
-  } as UserDataT;
+  };
 }
 
 function makeVoteHistoryByKey(voteHistory: VoteHistoryT[] | undefined) {

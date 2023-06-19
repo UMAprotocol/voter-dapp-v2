@@ -1,10 +1,11 @@
-import { Button, LoadingSkeleton, PanelErrorBanner } from "components";
+import { Button, Loader, PanelErrorBanner } from "components";
 import { mobileAndUnder } from "constant";
 import { formatNumberForDisplay, parseEtherSafe } from "helpers";
 import {
+  useAccountDetails,
   useContractsContext,
   useDelegationContext,
-  useStakingContext,
+  useStakerDetails,
   useWithdrawAndRestake,
   useWithdrawRewards,
 } from "hooks";
@@ -23,14 +24,20 @@ const minimumAmountClaimable = parseEtherSafe(".01");
 
 export function ClaimPanel() {
   const { votingWriter } = useContractsContext();
-  const { getDelegationStatus } = useDelegationContext();
-  const { withdrawRewardsMutation, isWithdrawingRewards } =
-    useWithdrawRewards("claim");
-  const { withdrawAndRestakeMutation, isWithdrawingAndRestaking } =
-    useWithdrawAndRestake("claim");
-  const { outstandingRewards, getStakingDataFetching } = useStakingContext();
-  const isDelegate = getDelegationStatus() === "delegate";
-
+  const { isDelegate, delegatorAddress, outstandingRewards } =
+    useDelegationContext();
+  const { address } = useAccountDetails();
+  const { withdrawRewardsMutation } = useWithdrawRewards({
+    address,
+    errorOrigin: "claim",
+  });
+  const { withdrawAndRestakeMutation } = useWithdrawAndRestake({
+    address,
+    errorOrigin: "claim",
+  });
+  const { isLoading: stakerDetailsIsLoading } = useStakerDetails(
+    isDelegate ? delegatorAddress : address
+  );
   function withdrawRewards() {
     if (!outstandingRewards || !votingWriter) return;
 
@@ -43,14 +50,6 @@ export function ClaimPanel() {
     withdrawAndRestakeMutation({ voting: votingWriter, outstandingRewards });
   }
 
-  function isLoading() {
-    return (
-      getStakingDataFetching() ||
-      isWithdrawingAndRestaking ||
-      isWithdrawingRewards
-    );
-  }
-
   return (
     <PanelWrapper>
       <PanelTitle title="Claim" />
@@ -58,14 +57,16 @@ export function ClaimPanel() {
         <RewardsWrapper>
           <RewardsHeader>Claimable Rewards</RewardsHeader>
           <Rewards>
-            {isLoading() ? (
-              <LoadingSkeleton variant="white" />
-            ) : (
-              <Strong>
-                {formatNumberForDisplay(outstandingRewards)}{" "}
-                <TokenSymbol>UMA</TokenSymbol>
-              </Strong>
-            )}{" "}
+            <Strong>
+              <Loader
+                isLoading={stakerDetailsIsLoading}
+                variant="white"
+                width={164}
+              >
+                {formatNumberForDisplay(outstandingRewards)}
+              </Loader>{" "}
+              <TokenSymbol>UMA</TokenSymbol>
+            </Strong>
           </Rewards>
         </RewardsWrapper>
         <InnerWrapper>

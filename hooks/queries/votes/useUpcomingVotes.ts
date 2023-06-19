@@ -14,17 +14,11 @@ export function useUpcomingVotes() {
   const newVotesAdded = useNewVotesAdded();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery(
-    [upcomingVotesKey, roundId, newVotesAdded],
-    () => getUpcomingVotes(voting, roundId),
-    {
-      initialData: {
-        upcomingVotes: {},
-        hasUpcomingVotes: false,
-      },
-      onError,
-    }
-  );
+  const queryResult = useQuery({
+    queryKey: [upcomingVotesKey, roundId, newVotesAdded],
+    queryFn: () => getUpcomingVotes(voting, roundId),
+    onError,
+  });
 
   return queryResult;
 }

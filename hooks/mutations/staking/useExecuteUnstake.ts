@@ -5,7 +5,7 @@ import {
   unstakedBalanceKey,
 } from "constant";
 import { BigNumber } from "ethers";
-import { useAccountDetails, useHandleError } from "hooks";
+import { useHandleError } from "hooks";
 import { ErrorOriginT, StakerDetailsT } from "types";
 import { executeUnstake } from "web3";
 
@@ -14,12 +14,18 @@ function max(a: BigNumber, b: BigNumber) {
   return b;
 }
 
-export function useExecuteUnstake(errorOrigin?: ErrorOriginT) {
+export function useExecuteUnstake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
-  const { address } = useAccountDetails();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 
-  const { mutate, isLoading } = useMutation(executeUnstake, {
+  const { mutate, isLoading } = useMutation({
+    mutationFn: executeUnstake,
     onError,
     onSuccess: (_contractReceipt, { pendingUnstake }) => {
       clearErrors();

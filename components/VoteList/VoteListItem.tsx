@@ -1,6 +1,7 @@
 import {
   Button,
   Dropdown,
+  Loader,
   LoadingSkeleton,
   TextInput,
   Tooltip,
@@ -81,7 +82,9 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
       if (!hasSigningKey) return "Requires signature";
       if (isCommitted && !decryptedVote) {
         if (isDelegator) {
+        if (isDelegator) {
           return "Committed by Delegate";
+        } else if (isDelegate) {
         } else if (isDelegate) {
           return "Committed by Delegator";
         } else {
@@ -277,9 +280,15 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
         <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
           <VoteLabel>Vote status</VoteLabel>
           <VoteStatus>
-            {isFetching ? (
-              <LoadingSkeleton width="8vw" />
-            ) : (
+            <Loader
+              isLoading={
+                decryptedVotesIsLoading ||
+                activeVotesIsLoading ||
+                upcomingVotesIsLoading ||
+                delegationDataLoading
+              }
+              width="6vw"
+            >
               <>
                 <DotIcon
                   style={
@@ -291,7 +300,7 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
                 {getRelevantTransactionLink()}
                 {isDirty ? "*" : ""}
               </>
-            )}
+            </Loader>
           </VoteStatus>
         </VoteStatusCell>
       ) : null}
@@ -305,7 +314,7 @@ export function VoteListItem(delegatedProps: VoteListItemProps) {
 }
 
 function VoteText({ voteText }: { voteText: string | undefined }) {
-  if (!voteText) return <LoadingSkeleton width="8vw" />;
+  if (voteText === undefined) return <LoadingSkeleton width="8vw" />;
 
   const maxVoteTextLength = 15;
   if (voteText.length > maxVoteTextLength) {

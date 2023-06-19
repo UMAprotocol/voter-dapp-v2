@@ -24,6 +24,7 @@ export { EmailInput } from "./Input/EmailInput";
 export { Input, Wrapper } from "./Input/Input";
 export { TextInput } from "./Input/TextInput";
 export { Layout } from "./Layout/Layout";
+export { Loader } from "./Loader";
 export { LoadingSkeleton } from "./LoadingSkeleton/LoadingSkeleton";
 export { LoadingSpinner } from "./LoadingSpinner/LoadingSpinner";
 export { MigrationBanner } from "./MigrationBanner/MigrationBanner";
