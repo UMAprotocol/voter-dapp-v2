@@ -5,10 +5,13 @@ import { useHandleError } from "hooks";
 import { ErrorOriginT } from "types";
 import { stake } from "web3";
 
-export function useStake(
-  address: string | undefined,
-  errorOrigin?: ErrorOriginT
-) {
+export function useStake({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 

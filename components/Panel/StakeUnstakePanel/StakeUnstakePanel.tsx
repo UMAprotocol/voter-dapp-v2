@@ -37,11 +37,22 @@ export function StakeUnstakePanel() {
   const { data: unstakeCoolDown } = useUnstakeCoolDown();
   const { data: stakerDetails } = useStakerDetails(address);
   const { pendingUnstake, canUnstakeTime } = stakerDetails || {};
-  const { approveMutation, isApproving } = useApprove("stake");
-  const { stakeMutation } = useStake("stake");
-  const { requestUnstakeMutation, isRequestingUnstake } =
-    useRequestUnstake("unstake");
-  const { executeUnstakeMutation } = useExecuteUnstake("unstake");
+  const { approveMutation, isApproving } = useApprove({
+    address: stakingAddress,
+    errorOrigin: "stake",
+  });
+  const { stakeMutation } = useStake({
+    address: stakingAddress,
+    errorOrigin: "stake",
+  });
+  const { requestUnstakeMutation, isRequestingUnstake } = useRequestUnstake({
+    address: stakingAddress,
+    errorOrigin: "unstake",
+  });
+  const { executeUnstakeMutation } = useExecuteUnstake({
+    address: stakingAddress,
+    errorOrigin: "unstake",
+  });
   const cooldownEnds = canUnstakeTime;
   const hasCooldownTimeRemaining = !!cooldownEnds && cooldownEnds > new Date();
   const hasPendingUnstake = pendingUnstake?.gt(0) ?? false;

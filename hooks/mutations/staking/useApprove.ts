@@ -5,10 +5,13 @@ import { useHandleError } from "hooks";
 import { ErrorOriginT } from "types";
 import { approve } from "web3";
 
-export function useApprove(
-  address: string | undefined,
-  errorOrigin?: ErrorOriginT
-) {
+export function useApprove({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const queryClient = useQueryClient();
   const { onError, clearErrors } = useHandleError({ errorOrigin });
 

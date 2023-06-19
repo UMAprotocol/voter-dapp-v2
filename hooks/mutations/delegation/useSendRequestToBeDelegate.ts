@@ -4,10 +4,13 @@ import { useHandleError } from "hooks";
 import { DelegationEventT, ErrorOriginT, StakerDetailsT } from "types";
 import { setDelegate } from "web3";
 
-export function useSendRequestToBeDelegate(
-  address: string | undefined,
-  errorOrigin?: ErrorOriginT
-) {
+export function useSendRequestToBeDelegate({
+  address,
+  errorOrigin,
+}: {
+  address: string | undefined;
+  errorOrigin?: ErrorOriginT;
+}) {
   const { onError, clearErrors } = useHandleError({ errorOrigin });
   const queryClient = useQueryClient();
 

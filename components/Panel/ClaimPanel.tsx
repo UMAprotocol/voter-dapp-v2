@@ -27,8 +27,14 @@ export function ClaimPanel() {
   const { isDelegate, delegatorAddress, outstandingRewards } =
     useDelegationContext();
   const { address } = useAccountDetails();
-  const { withdrawRewardsMutation } = useWithdrawRewards("claim");
-  const { withdrawAndRestakeMutation } = useWithdrawAndRestake("claim");
+  const { withdrawRewardsMutation } = useWithdrawRewards({
+    address,
+    errorOrigin: "claim",
+  });
+  const { withdrawAndRestakeMutation } = useWithdrawAndRestake({
+    address,
+    errorOrigin: "claim",
+  });
   const { isLoading: stakerDetailsIsLoading } = useStakerDetails(
     isDelegate ? delegatorAddress : address
   );

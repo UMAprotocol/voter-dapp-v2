@@ -1,10 +1,10 @@
+import { BigNumber } from "ethers";
 import {
+  calculateOutstandingRewards,
   getAddress,
   truncateEthAddress,
   zeroAddress,
-  calculateOutstandingRewards,
 } from "helpers";
-import { BigNumber } from "ethers";
 import {
   useAcceptReceivedRequestToBeDelegate,
   useAccountDetails,
@@ -151,7 +151,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     isIgnoringRequestToBeDelegate,
   } = useIgnoreReceivedRequestToBeDelegate(address);
   const { sendRequestToBeDelegateMutation, isSendingRequestToBeDelegate } =
-    useSendRequestToBeDelegate(address);
+    useSendRequestToBeDelegate({ address });
   const {
     cancelSentRequestToBeDelegateMutation,
     isCancelingSentRequestToBeDelegate,
