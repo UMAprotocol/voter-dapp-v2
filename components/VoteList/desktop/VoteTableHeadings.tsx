@@ -15,17 +15,21 @@ export function VoteTableHeadings({ activityStatus }: Props) {
       ? upcomingHeadings
       : pastHeadings;
   return (
-    <Wrapper>
-      {headings.map((heading) => (
-        <Heading key={heading}>{heading}</Heading>
-      ))}
-    </Wrapper>
+    <Thead>
+      <Tr>
+        {headings.map((heading) => (
+          <Th key={heading}>{heading}</Th>
+        ))}
+      </Tr>
+    </Thead>
   );
 }
 
-const Wrapper = styled.tr``;
+const Thead = styled.thead``;
 
-const Heading = styled.th`
+const Tr = styled.tr``;
+
+const Th = styled.th`
   text-align: left;
   font: var(--text-sm);
 `;

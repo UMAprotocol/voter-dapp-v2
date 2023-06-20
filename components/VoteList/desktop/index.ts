@@ -1,0 +1,1 @@
+export { VotesDesktop } from "./VotesDesktop";

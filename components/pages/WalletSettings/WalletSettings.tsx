@@ -2,11 +2,11 @@ import {
   Banner,
   Layout,
   LoadingSpinner,
+  LoadingSpinnerWrapper,
   PageInnerWrapper,
   PageOuterWrapper,
 } from "components";
 import { useDelegationContext } from "hooks";
-import { LoadingSpinnerWrapper } from "../styles";
 import { Wallets } from "./Wallets";
 
 export function WalletSettings() {

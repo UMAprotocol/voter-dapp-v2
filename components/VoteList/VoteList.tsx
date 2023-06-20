@@ -1,36 +1,22 @@
-import { tabletAndUnder, tabletMax } from "constant";
-import { useWindowSize } from "hooks";
-import styled from "styled-components";
+import { tabletMax } from "constant";
+import { VoteT } from "types";
+import { useWindowSize } from "usehooks-ts";
+import { VotesDesktop } from "./desktop";
+import { VotesMobile } from "./mobile";
+import { VoteListProps } from "./shared";
 
-interface Props {
-  headings: JSX.Element;
-  rows: JSX.Element[];
-}
-export function VoteList({ headings, rows }: Props) {
+export function VoteList(props: VoteListProps & { votesToShow: VoteT[] }) {
   const { width } = useWindowSize();
 
-  if (!width) return null;
+  if (width === undefined || width === 0) return null;
 
-  const isTabletAndUnder = width <= tabletMax;
+  const isMobile = width <= tabletMax;
+  const isDesktop = width > tabletMax;
 
   return (
-    <Wrapper as={isTabletAndUnder ? "div" : "table"}>
-      {!isTabletAndUnder && <Thead>{headings}</Thead>}
-      {isTabletAndUnder ? <>{rows}</> : <Tbody>{rows}</Tbody>}
-    </Wrapper>
+    <>
+      {isDesktop && <VotesDesktop {...props} />}
+      {isMobile && <VotesMobile {...props} />}
+    </>
   );
 }
-
-const Wrapper = styled.table`
-  width: 100%;
-  border-spacing: 0 5px;
-
-  @media ${tabletAndUnder} {
-    display: grid;
-    gap: 5px;
-  }
-`;
-
-const Thead = styled.thead``;
-
-const Tbody = styled.tbody``;

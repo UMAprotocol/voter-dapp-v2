@@ -1,22 +1,18 @@
 import { phaseLengthMilliseconds, tabletAndUnder } from "constant";
 import { formatDistanceToNowStrict } from "date-fns";
 import { config } from "helpers";
-import { usePanelContext } from "hooks";
+import { usePanelContext, useVoteTimingContext } from "hooks";
 import Commit from "public/assets/icons/commit.svg";
 import styled from "styled-components";
 
-interface Props {
-  phase: "commit" | "reveal";
-  timeRemaining: number;
-}
-
-export function NextRoundStartsIn({ phase, timeRemaining }: Props) {
+export function NextRoundStartsIn() {
+  const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
 
   const millisecondsUntilRoundEnds =
     phase === "commit"
-      ? timeRemaining + phaseLengthMilliseconds
-      : timeRemaining;
+      ? millisecondsUntilPhaseEnds + phaseLengthMilliseconds
+      : millisecondsUntilPhaseEnds;
   const formattedTimeRemaining = formatDistanceToNowStrict(
     Date.now() + millisecondsUntilRoundEnds
   );

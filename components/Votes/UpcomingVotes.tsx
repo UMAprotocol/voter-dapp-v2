@@ -1,46 +1,56 @@
 import {
+  Button,
+  NextRoundStartsIn,
   Pagination,
-  usePagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
-  VoteTimeline,
+  usePagination,
 } from "components";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
-import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
+import { useVoteList } from "../VoteList/shared/useVoteList";
+import {
+  ButtonInnerWrapper,
+  ButtonOuterWrapper,
+  Divider,
+  PaginationWrapper,
+  Title,
+  VoteListWrapper,
+} from "./style.shared";
 
-export function UpcomingVotes() {
-  const { upcomingVoteList, activityStatus } = useVotesContext();
-  const { openPanel } = usePanelContext();
-  const { phase } = useVoteTimingContext();
-  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
-  );
+interface Props {
+  isHomePage?: boolean;
+}
+export function UpcomingVotes({ isHomePage = false }: Props) {
+  const voteListProps = useVoteList("upcoming");
+  const { voteList } = voteListProps;
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(voteList);
+  const showSeeAllButton = voteList.length > 5;
+  const votesToShow = isHomePage ? voteList.slice(0, 5) : entriesToShow;
 
   return (
     <>
       <Title>Upcoming votes:</Title>
-      {activityStatus === "upcoming" && <VoteTimeline />}
-      <VotesTableWrapper>
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="upcoming" />}
-          rows={entriesToShow.map((vote) => (
-            <VoteListItem
-              phase={phase}
-              vote={vote}
-              activityStatus="upcoming"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-            />
-          ))}
-        />
-      </VotesTableWrapper>
-      {showPagination && (
-        <PaginationWrapper>
-          <Pagination {...paginationProps} />
-        </PaginationWrapper>
-      )}
-      <Divider />
+      <NextRoundStartsIn />
+      <VoteListWrapper>
+        <VoteList {...voteListProps} votesToShow={votesToShow} />
+      </VoteListWrapper>
+      {isHomePage
+        ? showSeeAllButton && (
+            <ButtonOuterWrapper>
+              <ButtonInnerWrapper>
+                <Button
+                  label="See all"
+                  href="/upcoming-votes"
+                  variant="primary"
+                />
+              </ButtonInnerWrapper>
+            </ButtonOuterWrapper>
+          )
+        : showPagination && (
+            <PaginationWrapper>
+              <Pagination {...paginationProps} />
+            </PaginationWrapper>
+          )}
+      {isHomePage && <Divider />}
     </>
   );
 }

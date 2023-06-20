@@ -1,0 +1,1 @@
+export { VotesMobile } from "./VotesMobile";
