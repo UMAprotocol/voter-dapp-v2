@@ -1,5 +1,4 @@
 import {
-  Button,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -9,6 +8,7 @@ import {
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
+import Clickable from "public/assets/icons/clickable.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { VoteListItemProps } from "./shared.types";
@@ -47,7 +47,11 @@ export function VoteTableRow(props: VoteListItemProps) {
   } = useVoteListItem(props);
 
   return (
-    <tr className="h-[80px] rounded bg-white" style={style}>
+    <tr
+      className="group h-[80px] rounded bg-white"
+      style={style}
+      onClick={moreDetailsAction}
+    >
       <td className="rounded-l px-[--cell-padding]">
         <div className="flex items-center gap-[--cell-padding]">
           <div className="min-w-[--title-icon-size]">
@@ -56,7 +60,7 @@ export function VoteTableRow(props: VoteListItemProps) {
             </div>
           </div>
           <div>
-            <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold">
+            <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold transition duration-300 group-hover:text-red-500">
               {titleText}
             </h3>
             <div className="flex gap-2 align-baseline">
@@ -136,9 +140,12 @@ export function VoteTableRow(props: VoteListItemProps) {
           </div>
         </td>
       ) : null}
-      <td className="rounded-r pr-[--cell-padding]">
+      <td
+        className="cursor-pointer rounded-r pr-[--cell-padding]"
+        aria-label="More details"
+      >
         <div className="ml-auto w-fit">
-          <Button label="More details" onClick={moreDetailsAction} />
+          <Clickable className="transition-[fill] duration-300 group-hover:fill-red-500 [&>path]:transition-[stroke] group-hover:[&>path]:stroke-white" />
         </div>
       </td>
     </tr>
