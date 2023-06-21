@@ -170,13 +170,14 @@ export function makeMockVotesWithHistory(args?: VoteHistoryMockArgsT) {
   return makeMockVotes({ inputForAll: makeMockVoteHistory(args) });
 }
 
-export const mockPolymarketAncillaryData = `q: title: Test Polymarket Request with Early Request Option 1234
+export const mockPolymarketAncillaryData = `q: title: Test Polymarket Request with Early Request Option 1234 This is a test for the type of Polymarket request that DOES have an option for early request.
 description: This is a test for the type of Polymarket request that DOES have an option for early request.
 res_data: p1: 0, p2: 1, p3: 0.5, p4: -57896044618658097711785492504343953926634992332820282019728.792003956564819968
 Where p1 corresponds to Something, p2 to Another, p3 to unknown, and p4 to an early request`;
 
 export const polymarketVote = {
-  title: "Test Polymarket Request with Early Request Option 1234",
+  title:
+    "Test Polymarket Request with Early Request Option 1234 This is a test for the type of Polymarket request that DOES have an option for early request.",
   origin: "Polymarket" as const,
   description:
     "This is a test for the type of Polymarket request that DOES have an option for early request.",

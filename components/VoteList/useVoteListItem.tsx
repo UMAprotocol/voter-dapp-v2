@@ -1,4 +1,4 @@
-import { green, grey100, isEarlyVote, red500, tabletMax } from "constant";
+import { green, grey100, isEarlyVote, red500 } from "constant";
 import {
   decodeHexString,
   formatVoteStringWithPrecision,
@@ -11,16 +11,15 @@ import {
   useDelegationContext,
   useVotesContext,
   useWalletContext,
-  useWindowSize,
 } from "hooks";
-import NextLink from "next/link";
+import Link from "next/link";
 import Across from "public/assets/icons/across.svg";
 import OSnap from "public/assets/icons/osnap.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import UMA from "public/assets/icons/uma.svg";
-import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import { CSSProperties, useEffect, useState } from "react";
+import removeMarkdown from "remove-markdown";
 import { DropdownItemT } from "types";
 import { VoteListItemProps } from "./shared.types";
 
@@ -35,9 +34,7 @@ export function useVoteListItem({
   moreDetailsAction,
   isDirty = false,
 }: VoteListItemProps) {
-  const { width } = useWindowSize();
   const [isCustomInput, setIsCustomInput] = useState(false);
-  const [wrapperWidth, setWrapperWidth] = useState(0);
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
   const hasSigningKey = !!address && !!signingKeys[address];
@@ -63,9 +60,7 @@ export function useVoteListItem({
   } = vote;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
-  const isTabletAndUnder = width && width <= tabletMax;
   const isRolled = rollCount > 0;
-  const wrapperRef = useRef<HTMLTableRowElement>(null);
   const existingVote = getDecryptedVoteAsFormattedString();
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const {
@@ -83,6 +78,18 @@ export function useVoteListItem({
     upcomingVotesIsLoading ||
     delegationDataLoading;
 
+  const style = {
+    "--border-color": getBorderColor(),
+    "--dot-color": getDotColor(),
+    "--cell-padding": "1.5vw",
+    "--title-icon-size": "40px",
+  } as CSSProperties;
+
+  const titleOrClaim = removeMarkdown(claim ? decodeHexString(claim) : title);
+  const titleText =
+    titleOrClaim.length > 100
+      ? `${titleOrClaim.slice(0, 100)}...`
+      : titleOrClaim;
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
@@ -92,12 +99,6 @@ export function useVoteListItem({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decryptedVote]);
-
-  useEffect(() => {
-    if (wrapperRef.current) {
-      setWrapperWidth(wrapperRef.current.offsetWidth);
-    }
-  }, [width]);
 
   useEffect(() => {
     // Function returns true if the input exist and has changed from our committed value, false otherwise
@@ -244,11 +245,11 @@ export function useVoteListItem({
   }
 
   function getVoteIcon() {
-    if (origin === "Polymarket") return PolymarketIcon;
-    if (origin === "OSnap") return OsnapIcon;
-    if (origin === "Across") return AcrossIcon;
-    if (origin === "UMA" && isGovernance) return UMAGovernanceIcon;
-    return UMAIcon;
+    if (origin === "Polymarket") return Polymarket;
+    if (origin === "OSnap") return OSnap;
+    if (origin === "Across") return Across;
+    if (origin === "UMA" && isGovernance) return UMAGovernance;
+    return UMA;
   }
 
   function getDotColor() {
@@ -264,48 +265,14 @@ export function useVoteListItem({
     return "transparent";
   }
 
-  function getCellWidths() {
-    const baseCellWidths = {
-      "--title-cell-width": `${0.5 * wrapperWidth}px`,
-      "--input-cell-width": `${0.2 * wrapperWidth}px`,
-      "--output-cell-width": "auto",
-      "--status-cell-width": "auto",
-      "--more-details-cell-width": "auto",
-    };
-
-    const commitCellWidths = baseCellWidths;
-
-    const revealCellWidths = {
-      ...baseCellWidths,
-      "--title-cell-width": `${0.6 * wrapperWidth}px`,
-    };
-
-    const upcomingCellWidths = {
-      ...baseCellWidths,
-      "--title-cell-width": `${0.8 * wrapperWidth}px`,
-    };
-
-    const pastCellWidths = {
-      ...baseCellWidths,
-      "--title-cell-width": `${0.6 * wrapperWidth}px`,
-    };
-
-    if (activityStatus === "active") {
-      if (phase === "commit") return commitCellWidths;
-      if (phase === "reveal") return revealCellWidths;
-    }
-
-    if (activityStatus === "upcoming") return upcomingCellWidths;
-
-    if (activityStatus === "past") return pastCellWidths;
-
-    return baseCellWidths;
-  }
-
-  function getRelevantTransactionLink(): ReactNode | string {
+  function getRelevantTransactionLink() {
     if (phase === "commit") {
       return commitHash ? (
-        <Link href={config.makeTransactionHashLink(commitHash)} target="_blank">
+        <Link
+          className="underline hover:text-black-opacity-50"
+          href={config.makeTransactionHashLink(commitHash)}
+          target="_blank"
+        >
           {getCommittedOrRevealed()}
         </Link>
       ) : (
@@ -313,7 +280,11 @@ export function useVoteListItem({
       );
     }
     return revealHash ? (
-      <Link href={config.makeTransactionHashLink(revealHash)} target="_blank">
+      <Link
+        href={config.makeTransactionHashLink(revealHash)}
+        className="underline hover:text-black-opacity-50"
+        target="_blank"
+      >
         {getCommittedOrRevealed()}
       </Link>
     ) : (
@@ -321,23 +292,10 @@ export function useVoteListItem({
     );
   }
 
-  const style = {
-    "--border-color": getBorderColor(),
-    "--dot-color": getDotColor(),
-    "--cell-padding": "1.5vw",
-    "--title-icon-size": "40px",
-    ...getCellWidths(),
-  } as CSSProperties;
-
-  const titleOrClaim = claim ? decodeHexString(claim) : title;
-
   return {
-    width,
-    isTabletAndUnder,
     style,
-    wrapperRef,
     Icon,
-    titleOrClaim,
+    titleText,
     isRolled,
     origin,
     isV1,
@@ -366,22 +324,3 @@ export function useVoteListItem({
     moreDetailsAction,
   };
 }
-
-const Link = styled(NextLink)`
-  font: var(--text-md);
-  color: var(--black);
-  text-decoration: underline;
-  &:hover {
-    color: var(--black-opacity-50);
-  }
-`;
-
-const UMAIcon = styled(UMA)``;
-
-const UMAGovernanceIcon = styled(UMAGovernance)``;
-
-const AcrossIcon = styled(Across)``;
-
-const PolymarketIcon = styled(Polymarket)``;
-
-const OsnapIcon = styled(OSnap)``;

@@ -11,17 +11,15 @@ import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
-import { CSSProperties } from "react";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
 
 export function VoteTableRow(props: VoteListItemProps) {
   const {
-    width,
     style,
-    wrapperRef,
     Icon,
-    titleOrClaim,
+    titleText,
+    origin,
     isRolled,
     isV1,
     rollCount,
@@ -43,24 +41,23 @@ export function VoteTableRow(props: VoteListItemProps) {
     getCorrectVote,
     showVoteStatus,
     isLoading,
-    getDotColor,
     getRelevantTransactionLink,
     isDirty,
     moreDetailsAction,
   } = useVoteListItem(props);
 
-  if (!width) return null;
-
   return (
-    <tr className="h-[80px] rounded bg-white" style={style} ref={wrapperRef}>
-      <td className="w-[--title-cell-width] rounded-l px-[--cell-padding]">
+    <tr className="h-[80px] rounded bg-white" style={style}>
+      <td className="rounded-l px-[--cell-padding]">
         <div className="flex items-center gap-[--cell-padding]">
-          <div className="h-[--title-icon-size] w-[--title-icon-size]">
-            <Icon />
+          <div className="min-w-[--title-icon-size]">
+            <div className="w-[--title-icon-size]">
+              <Icon />
+            </div>
           </div>
           <div>
-            <h3 className="max-w-[calc(--title-cell-width - --title-icon-size - 3 * --cell-padding] overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">
-              {titleOrClaim}
+            <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold">
+              {titleText}
             </h3>
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
@@ -97,7 +94,7 @@ export function VoteTableRow(props: VoteListItemProps) {
         </div>
       </td>
       {showVoteInput() && selectVote ? (
-        <td className="w-[--input-cell-width] pr-[--cell-padding]">
+        <td className="pr-[--cell-padding]">
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -117,28 +114,21 @@ export function VoteTableRow(props: VoteListItemProps) {
         </td>
       ) : null}
       {showYourVote() ? (
-        <td className="w-[--output-cell-width] whitespace-nowrap pr-[--cell-padding]">
+        <td className="whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getYourVote()} />
         </td>
       ) : null}
       {showCorrectVote() ? (
-        <td className="w-[--output-cell-width] whitespace-nowrap pr-[--cell-padding]">
+        <td className="whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getCorrectVote()} />
         </td>
       ) : null}
       {showVoteStatus() ? (
-        <td className="w-[--status-cell-width] pr-[--cell-padding]">
+        <td className="pr-[--cell-padding]">
           <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
             <Loader isLoading={isLoading} width="6vw">
               <>
-                <Dot
-                  className="fill-[--dot-color]"
-                  style={
-                    {
-                      "--dot-color": getDotColor(),
-                    } as CSSProperties
-                  }
-                />{" "}
+                <Dot className="fill-[--dot-color]" />{" "}
                 {getRelevantTransactionLink()}
                 {isDirty ? "*" : ""}
               </>
@@ -146,7 +136,7 @@ export function VoteTableRow(props: VoteListItemProps) {
           </div>
         </td>
       ) : null}
-      <td className="w-[--more-details-cell-width] rounded-r pr-[--cell-padding]">
+      <td className="rounded-r pr-[--cell-padding]">
         <div className="ml-auto w-fit">
           <Button label="More details" onClick={moreDetailsAction} />
         </div>

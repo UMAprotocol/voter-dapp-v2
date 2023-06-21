@@ -11,15 +11,13 @@ import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
-import { CSSProperties } from "react";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
 
 export function VoteListItem(props: VoteListItemProps) {
   const {
-    width,
     style,
-    titleOrClaim,
+    titleText,
     isRolled,
     isV1,
     rollCount,
@@ -41,14 +39,11 @@ export function VoteListItem(props: VoteListItemProps) {
     getCorrectVote,
     showVoteStatus,
     isLoading,
-    getDotColor,
     getRelevantTransactionLink,
     isDirty,
     origin,
     moreDetailsAction,
   } = useVoteListItem(props);
-
-  if (!width) return null;
 
   return (
     <div
@@ -58,7 +53,7 @@ export function VoteListItem(props: VoteListItemProps) {
       <div className="w-full rounded-l">
         <div className="align-center flex border-b-[--border-color] pb-1">
           <div>
-            <h3 className="mb-1 text-lg font-semibold">{titleOrClaim}</h3>
+            <h3 className="mb-1 text-lg font-semibold">{titleText}</h3>
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -128,18 +123,9 @@ export function VoteListItem(props: VoteListItemProps) {
           <span>Vote status</span>
           <div className="flex max-w-max items-center gap-2 whitespace-nowrap">
             <Loader isLoading={isLoading} width="6vw">
-              <>
-                <Dot
-                  className="fill-[--dot-color]"
-                  style={
-                    {
-                      "--dot-color": getDotColor(),
-                    } as CSSProperties
-                  }
-                />{" "}
-                {getRelevantTransactionLink()}
-                {isDirty ? "*" : ""}
-              </>
+              <Dot className="fill-[--dot-color]" />{" "}
+              {getRelevantTransactionLink()}
+              {isDirty ? "*" : ""}
             </Loader>
           </div>
         </div>
