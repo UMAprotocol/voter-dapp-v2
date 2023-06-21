@@ -3,7 +3,8 @@ import { useWindowSize } from "hooks";
 import { ActivityStatusT } from "types";
 import { VoteListItem } from "./VoteListItem";
 import { VoteTableHeadings } from "./VoteTableHeadings";
-import { VoteListItemProps, VoteTableRow } from "./VoteTableRow";
+import { VoteTableRow } from "./VoteTableRow";
+import { VoteListItemProps } from "./shared.types";
 
 interface Props {
   activityStatus: ActivityStatusT;

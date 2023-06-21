@@ -12,20 +12,9 @@ import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { CSSProperties } from "react";
-import { ActivityStatusT, VotePhaseT, VoteT } from "types";
+import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
 
-export interface VoteListItemProps {
-  vote: VoteT;
-  phase: VotePhaseT;
-  selectedVote?: string | undefined;
-  selectVote?: (value: string | undefined) => void;
-  clearVote?: () => void;
-  activityStatus: ActivityStatusT | undefined;
-  moreDetailsAction: () => void;
-  setDirty?: (dirty: boolean) => void;
-  isDirty?: boolean;
-}
 export function VoteTableRow(props: VoteListItemProps) {
   const {
     width,

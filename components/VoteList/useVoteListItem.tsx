@@ -22,7 +22,7 @@ import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT } from "types";
-import { VoteListItemProps } from "./VoteTableRow";
+import { VoteListItemProps } from "./shared.types";
 
 export function useVoteListItem({
   vote,
