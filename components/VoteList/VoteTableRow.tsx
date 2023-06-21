@@ -6,14 +6,12 @@ import {
   TextInput,
   Tooltip,
 } from "components";
-import { tabletAndUnder } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { CSSProperties } from "react";
-import styled from "styled-components";
 import { ActivityStatusT, VotePhaseT, VoteT } from "types";
 import { useVoteListItem } from "./useVoteListItem";
 
@@ -28,10 +26,9 @@ export interface VoteListItemProps {
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
 }
-export function VoteListItem(props: VoteListItemProps) {
+export function VoteTableRow(props: VoteListItemProps) {
   const {
     width,
-    isTabletAndUnder,
     style,
     wrapperRef,
     Icon,
@@ -66,35 +63,34 @@ export function VoteListItem(props: VoteListItemProps) {
   if (!width) return null;
 
   return (
-    <Wrapper
-      as={isTabletAndUnder ? "div" : "tr"}
-      style={style}
-      ref={wrapperRef}
-    >
-      <VoteTitleCell as={isTabletAndUnder ? "div" : "td"}>
-        <VoteTitleWrapper>
-          <VoteIconWrapper>
+    <tr className="h-[80px] rounded bg-white" style={style} ref={wrapperRef}>
+      <td className="w-[--title-cell-width] rounded-l px-[--cell-padding]">
+        <div className="flex items-center gap-[--cell-padding]">
+          <div className="h-[--title-icon-size] w-[--title-icon-size]">
             <Icon />
-          </VoteIconWrapper>
-          <VoteDetailsWrapper>
-            <VoteTitle>{titleOrClaim}</VoteTitle>
-            <VoteDetailsInnerWrapper>
+          </div>
+          <div>
+            <h3 className="max-w-[calc(--title-cell-width - --title-icon-size - 3 * --cell-padding] overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">
+              {titleOrClaim}
+            </h3>
+            <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
-                  <RolledWrapper>
-                    <RolledIconWrapper>
-                      <RolledIcon />
-                    </RolledIconWrapper>
-                    <RolledLink
+                  <div className="flex gap-1 align-baseline">
+                    <div className="h-[7px] w-[7px]">
+                      <Rolled />
+                    </div>
+                    <NextLink
+                      className="text-sm text-red-500 underline"
                       href="https://docs.umaproject.org/protocol-overview/dvm-2.0#rolled-votes"
                       target="_blank"
                     >
                       Roll #{rollCount}
-                    </RolledLink>
-                  </RolledWrapper>
+                    </NextLink>
+                  </div>
                 </Tooltip>
               ) : null}
-              <VoteOrigin>
+              <h4 className="text-xs text-black-opacity-50">
                 {origin}{" "}
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
@@ -106,13 +102,13 @@ export function VoteListItem(props: VoteListItemProps) {
                   // yyyy-mm-dd
                   locale: enCA,
                 })}
-              </VoteOrigin>
-            </VoteDetailsInnerWrapper>
-          </VoteDetailsWrapper>
-        </VoteTitleWrapper>
-      </VoteTitleCell>
+              </h4>
+            </div>
+          </div>
+        </div>
+      </td>
       {showVoteInput() && selectVote ? (
-        <VoteInputCell as={isTabletAndUnder ? "div" : "td"}>
+        <td className="w-[--input-cell-width] pr-[--cell-padding]">
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -129,26 +125,25 @@ export function VoteListItem(props: VoteListItemProps) {
               type="number"
             />
           )}
-        </VoteInputCell>
+        </td>
       ) : null}
       {showYourVote() ? (
-        <YourVote as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Your vote</VoteLabel> <VoteText voteText={getYourVote()} />
-        </YourVote>
+        <td className="w-[--output-cell-width] whitespace-nowrap pr-[--cell-padding]">
+          <VoteText voteText={getYourVote()} />
+        </td>
       ) : null}
       {showCorrectVote() ? (
-        <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Correct vote</VoteLabel>{" "}
+        <td className="w-[--output-cell-width] whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getCorrectVote()} />
-        </CorrectVote>
+        </td>
       ) : null}
       {showVoteStatus() ? (
-        <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
-          <VoteLabel>Vote status</VoteLabel>
-          <VoteStatus>
+        <td className="w-[--status-cell-width] pr-[--cell-padding]">
+          <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
             <Loader isLoading={isLoading} width="6vw">
               <>
-                <DotIcon
+                <Dot
+                  className="fill-[--dot-color]"
                   style={
                     {
                       "--dot-color": getDotColor(),
@@ -159,15 +154,15 @@ export function VoteListItem(props: VoteListItemProps) {
                 {isDirty ? "*" : ""}
               </>
             </Loader>
-          </VoteStatus>
-        </VoteStatusCell>
+          </div>
+        </td>
       ) : null}
-      <MoreDetailsCell as={isTabletAndUnder ? "div" : "td"}>
-        <MoreDetails>
+      <td className="w-[--more-details-cell-width] rounded-r pr-[--cell-padding]">
+        <div className="ml-auto w-fit">
           <Button label="More details" onClick={moreDetailsAction} />
-        </MoreDetails>
-      </MoreDetailsCell>
-    </Wrapper>
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -178,208 +173,12 @@ function VoteText({ voteText }: { voteText: string | undefined }) {
   if (voteText.length > maxVoteTextLength) {
     return (
       <Tooltip label={voteText}>
-        <VoteTextWrapper>
+        <span className="cursor-pointer underline">
           {voteText.slice(0, maxVoteTextLength)}...
-        </VoteTextWrapper>
+        </span>
       </Tooltip>
     );
   }
 
   return <span>{voteText}</span>;
 }
-
-const VoteTextWrapper = styled.span`
-  text-decoration: underline;
-  cursor: pointer;
-`;
-
-const Wrapper = styled.tr`
-  background: var(--white);
-  height: 80px;
-  border-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    height: auto;
-    display: grid;
-    gap: 12px;
-    align-items: left;
-    padding: 15px;
-  }
-`;
-
-const VoteTitleCell = styled.td`
-  width: var(--title-cell-width);
-  padding-left: var(--cell-padding);
-  padding-right: var(--cell-padding);
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    width: 100%;
-    padding: 0;
-  }
-`;
-
-const VoteInputCell = styled.td`
-  width: var(--input-cell-width);
-  padding-right: var(--cell-padding);
-
-  @media ${tabletAndUnder} {
-    padding: 0;
-    min-width: unset;
-  }
-`;
-
-const VoteOutputCell = styled.td`
-  width: var(--output-cell-width);
-  padding-right: var(--cell-padding);
-  font: var(--text-md);
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
-
-const VoteStatusCell = styled.td`
-  width: var(--status-cell-width);
-  padding-right: var(--cell-padding);
-
-  font: var(--text-md);
-
-  @media ${tabletAndUnder} {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
-
-const MoreDetailsCell = styled.td`
-  width: var(--more-details-cell-width);
-  padding-right: var(--cell-padding);
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-
-  @media ${tabletAndUnder} {
-    padding-top: 10px;
-    border-top: 1px solid var(--border-color);
-  }
-`;
-
-const VoteTitleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: var(--cell-padding);
-
-  @media ${tabletAndUnder} {
-    gap: unset;
-    padding-bottom: 5px;
-    border-bottom: 1px solid var(--border-color);
-  }
-`;
-
-const VoteTitle = styled.h3`
-  font: var(--header-sm);
-  max-width: calc(
-    var(--title-cell-width) - var(--title-icon-size) - 3 * var(--cell-padding)
-  );
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  @media ${tabletAndUnder} {
-    max-width: unset;
-    white-space: unset;
-    overflow: unset;
-    text-overflow: unset;
-    margin-bottom: 5px;
-  }
-`;
-
-const VoteDetailsWrapper = styled.div``;
-
-const VoteDetailsInnerWrapper = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-`;
-
-const VoteIconWrapper = styled.div`
-  width: var(--title-icon-size);
-  height: var(--title-icon-size);
-
-  @media ${tabletAndUnder} {
-    display: none;
-  }
-`;
-
-const VoteOrigin = styled.h4`
-  font: var(--text-xs);
-  color: var(--black-opacity-50);
-`;
-
-const YourVote = styled(VoteOutputCell)`
-  white-space: nowrap;
-`;
-
-const CorrectVote = styled(VoteOutputCell)`
-  white-space: nowrap;
-
-  @media ${tabletAndUnder} {
-    padding-left: 0;
-  }
-`;
-
-const VoteLabel = styled.span`
-  display: none;
-
-  @media ${tabletAndUnder} {
-    display: inline;
-  }
-`;
-
-const VoteStatus = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: max-content;
-  white-space: nowrap;
-
-  @media ${tabletAndUnder} {
-    margin-left: 0;
-  }
-`;
-
-const MoreDetails = styled.div`
-  width: fit-content;
-  margin-left: auto;
-
-  @media ${tabletAndUnder} {
-    margin-left: unset;
-    margin-right: auto;
-  }
-`;
-
-const DotIcon = styled(Dot)`
-  circle {
-    fill: var(--dot-color);
-  }
-`;
-
-const RolledWrapper = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-`;
-
-const RolledIconWrapper = styled.div`
-  width: 7px;
-  height: 7px;
-`;
-
-const RolledIcon = styled(Rolled)``;
-
-const RolledLink = styled(NextLink)`
-  font: var(--text-sm);
-  color: var(--red-500);
-  text-decoration: underline;
-`;

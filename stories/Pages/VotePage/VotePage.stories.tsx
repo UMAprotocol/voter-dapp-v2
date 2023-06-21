@@ -200,27 +200,27 @@ export const ActiveRevealWithUpcomingWithPagination: Story = {
   },
 };
 
-export const Upcoming: Story = {
-  ...Template,
-  args: {
-    activityStatus: "upcoming",
-    upcomingVotes: upcomingVotes,
-    pastVotes: pastVotes,
-  },
-};
+// export const Upcoming: Story = {
+//   ...Template,
+//   args: {
+//     activityStatus: "upcoming",
+//     upcomingVotes: upcomingVotes,
+//     pastVotes: pastVotes,
+//   },
+// };
 
-export const UpcomingWithPagination: Story = {
-  ...Upcoming,
-  args: {
-    ...Upcoming.args,
-    upcomingVotes: manyUpcomingVotes,
-  },
-};
+// export const UpcomingWithPagination: Story = {
+//   ...Upcoming,
+//   args: {
+//     ...Upcoming.args,
+//     upcomingVotes: manyUpcomingVotes,
+//   },
+// };
 
-export const Past: Story = {
-  ...Template,
-  args: {
-    activityStatus: "past",
-    pastVotes: pastVotes,
-  },
-};
+// export const Past: Story = {
+//   ...Template,
+//   args: {
+//     activityStatus: "past",
+//     pastVotes: pastVotes,
+//   },
+// };

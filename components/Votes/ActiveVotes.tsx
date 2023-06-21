@@ -6,8 +6,6 @@ import {
   Tooltip,
   usePagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   VoteTimeline,
 } from "components";
 import { formatVotesToCommit } from "helpers";
@@ -311,33 +309,29 @@ export function ActiveVotes() {
     selectVote(undefined, vote);
   }
 
+  const data = entriesToShow?.map((vote, index) => ({
+    phase: phase,
+    vote: vote,
+    selectedVote: selectedVotes[vote.uniqueKey],
+    selectVote: (value: string | undefined) => selectVote(value, vote),
+    clearVote: () => clearSelectedVote(vote),
+    activityStatus: "active" as const,
+    moreDetailsAction: () => openPanel("vote", vote),
+    key: vote.uniqueKey,
+    isDirty: dirtyInputs[index],
+    setDirty: (dirty: boolean) =>
+      setDirtyInput((inputs) => {
+        inputs[index] = dirty;
+        return [...inputs];
+      }),
+  }));
+
   return (
     <>
       <Title> Active votes: </Title>
       <VoteTimeline />
       <VotesTableWrapper>
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="active" />}
-          rows={entriesToShow.map((vote, index) => (
-            <VoteListItem
-              phase={phase}
-              vote={vote}
-              selectedVote={selectedVotes[vote.uniqueKey]}
-              selectVote={(value) => selectVote(value, vote)}
-              clearVote={() => clearSelectedVote(vote)}
-              activityStatus="active"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-              isDirty={dirtyInputs[index]}
-              setDirty={(dirty: boolean) => {
-                setDirtyInput((inputs) => {
-                  inputs[index] = dirty;
-                  return [...inputs];
-                });
-              }}
-            />
-          ))}
-        />
+        <VoteList activityStatus="active" data={data} />
       </VotesTableWrapper>
       {showPagination && (
         <PaginationWrapper>
