@@ -34,6 +34,24 @@ module.exports = {
     fontFamily: {
       sans: ["Halyard Display", "sans-serif"],
     },
+    spacing: {
+      1: "5px",
+      2: "10px",
+      3: "15px",
+      4: "20px",
+      5: "25px",
+      6: "30px",
+    },
+    fontSize: {
+      xs: "12px",
+      sm: "14px",
+      base: "16px",
+      lg: "18px",
+      xl: "20px",
+      "2xl": "32px",
+      "3xl": "clamp(20px, 6vw, 40px)/clamp(25px, 4vw, 55px)",
+      "4xl": "clamp(40px, 10vw, 80px)/clamp(55px, 8vw, 110px)"
+    },
     extend: {},
   },
   plugins: [],

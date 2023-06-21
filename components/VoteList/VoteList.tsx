@@ -13,15 +13,10 @@ export function VoteList({ headings, rows }: Props) {
 
   const isTabletAndUnder = width <= tabletMax;
 
-  return (
-    <Wrapper as={isTabletAndUnder ? "div" : "table"}>
-      {!isTabletAndUnder && <Thead>{headings}</Thead>}
-      {isTabletAndUnder ? <>{rows}</> : <Tbody>{rows}</Tbody>}
-    </Wrapper>
-  );
+  return <Wrapper>{rows}</Wrapper>;
 }
 
-const Wrapper = styled.table`
+const Wrapper = styled.div`
   width: 100%;
   border-spacing: 0 5px;
 

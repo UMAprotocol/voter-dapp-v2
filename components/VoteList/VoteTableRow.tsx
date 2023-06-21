@@ -60,39 +60,41 @@ export function VoteListItem(props: VoteListItemProps) {
     getDotColor,
     getRelevantTransactionLink,
     isDirty,
-    origin,
     moreDetailsAction,
   } = useVoteListItem(props);
 
   if (!width) return null;
 
   return (
-    <div
+    <Wrapper
+      as={isTabletAndUnder ? "div" : "tr"}
       style={style}
-      className="grid h-auto w-full items-start gap-[12px] rounded bg-white p-3"
+      ref={wrapperRef}
     >
-      <div className="w-full rounded-l">
-        <div className="align-center flex border-b-[--border-color] pb-1">
-          <div>
-            <h3 className="mb-1 text-lg font-semibold">{titleOrClaim}</h3>
-            <div className="flex gap-2 align-baseline">
+      <VoteTitleCell as={isTabletAndUnder ? "div" : "td"}>
+        <VoteTitleWrapper>
+          <VoteIconWrapper>
+            <Icon />
+          </VoteIconWrapper>
+          <VoteDetailsWrapper>
+            <VoteTitle>{titleOrClaim}</VoteTitle>
+            <VoteDetailsInnerWrapper>
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
-                  <div className="flex gap-1 align-baseline">
-                    <div className="h-[7px] w-[7px]">
-                      <Rolled />
-                    </div>
-                    <NextLink
-                      className="text-sm text-red-500 underline"
+                  <RolledWrapper>
+                    <RolledIconWrapper>
+                      <RolledIcon />
+                    </RolledIconWrapper>
+                    <RolledLink
                       href="https://docs.umaproject.org/protocol-overview/dvm-2.0#rolled-votes"
                       target="_blank"
                     >
                       Roll #{rollCount}
-                    </NextLink>
-                  </div>
+                    </RolledLink>
+                  </RolledWrapper>
                 </Tooltip>
               ) : null}
-              <h4 className="text-xs text-black-opacity-50">
+              <VoteOrigin>
                 {origin}{" "}
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
@@ -104,13 +106,13 @@ export function VoteListItem(props: VoteListItemProps) {
                   // yyyy-mm-dd
                   locale: enCA,
                 })}
-              </h4>
-            </div>
-          </div>
-        </div>
-      </div>
+              </VoteOrigin>
+            </VoteDetailsInnerWrapper>
+          </VoteDetailsWrapper>
+        </VoteTitleWrapper>
+      </VoteTitleCell>
       {showVoteInput() && selectVote ? (
-        <div>
+        <VoteInputCell as={isTabletAndUnder ? "div" : "td"}>
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -127,26 +129,26 @@ export function VoteListItem(props: VoteListItemProps) {
               type="number"
             />
           )}
-        </div>
+        </VoteInputCell>
       ) : null}
       {showYourVote() ? (
-        <div className="flex justify-between">
-          <span>Your vote</span> <VoteText voteText={getYourVote()} />
-        </div>
+        <YourVote as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Your vote</VoteLabel> <VoteText voteText={getYourVote()} />
+        </YourVote>
       ) : null}
       {showCorrectVote() ? (
-        <div className="flex justify-between">
-          <span>Correct vote</span> <VoteText voteText={getCorrectVote()} />
-        </div>
+        <CorrectVote as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Correct vote</VoteLabel>{" "}
+          <VoteText voteText={getCorrectVote()} />
+        </CorrectVote>
       ) : null}
       {showVoteStatus() ? (
-        <div className="flex justify-between">
-          <span>Vote status</span>
-          <div className="flex max-w-max items-center gap-2 whitespace-nowrap">
+        <VoteStatusCell as={isTabletAndUnder ? "div" : "td"}>
+          <VoteLabel>Vote status</VoteLabel>
+          <VoteStatus>
             <Loader isLoading={isLoading} width="6vw">
               <>
-                <Dot
-                  className="fill-[--dot-color]"
+                <DotIcon
                   style={
                     {
                       "--dot-color": getDotColor(),
@@ -157,15 +159,15 @@ export function VoteListItem(props: VoteListItemProps) {
                 {isDirty ? "*" : ""}
               </>
             </Loader>
-          </div>
-        </div>
+          </VoteStatus>
+        </VoteStatusCell>
       ) : null}
-      <div className="border-t-[--border-color] pt-2">
-        <div className="mr-auto w-fit">
+      <MoreDetailsCell as={isTabletAndUnder ? "div" : "td"}>
+        <MoreDetails>
           <Button label="More details" onClick={moreDetailsAction} />
-        </div>
-      </div>
-    </div>
+        </MoreDetails>
+      </MoreDetailsCell>
+    </Wrapper>
   );
 }
 
@@ -176,9 +178,9 @@ function VoteText({ voteText }: { voteText: string | undefined }) {
   if (voteText.length > maxVoteTextLength) {
     return (
       <Tooltip label={voteText}>
-        <span className="cursor-pointer underline">
+        <VoteTextWrapper>
           {voteText.slice(0, maxVoteTextLength)}...
-        </span>
+        </VoteTextWrapper>
       </Tooltip>
     );
   }

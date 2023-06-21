@@ -22,7 +22,7 @@ import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT } from "types";
-import { VoteListItemProps } from "./VoteListItem";
+import { VoteListItemProps } from "./VoteTableRow";
 
 export function useVoteListItem({
   vote,
@@ -339,6 +339,7 @@ export function useVoteListItem({
     Icon,
     titleOrClaim,
     isRolled,
+    origin,
     isV1,
     rollCount,
     resolvedPriceRequestIndex,
