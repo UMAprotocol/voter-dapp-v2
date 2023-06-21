@@ -108,6 +108,14 @@ body {
   max-inline-size: 100%;
 }
 
+/* SVG's without a fill attribute */
+:where(svg):where(:not([fill])) {
+  /* Remove fill and set stroke color to the inherited font color */
+  stroke: currentColor;
+  fill: none;
+  stroke-linejoin: round;
+}
+
 /* Set a size for SVG's without a width attribute */
 :where(svg):where(:not([width])) {
   inline-size: 5rem;
