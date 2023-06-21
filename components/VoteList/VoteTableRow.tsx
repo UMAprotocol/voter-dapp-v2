@@ -66,8 +66,8 @@ export function VoteTableRow(props: VoteListItemProps) {
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
-                  <div className="flex gap-1 align-baseline">
-                    <div className="h-[7px] w-[7px]">
+                  <div className="flex gap-1">
+                    <div className="w-[7px] self-center">
                       <Rolled />
                     </div>
                     <NextLink
@@ -118,12 +118,12 @@ export function VoteTableRow(props: VoteListItemProps) {
         </td>
       ) : null}
       {showYourVote() ? (
-        <td className="whitespace-nowrap pr-[--cell-padding]">
+        <td className="min-w-[100px] whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getYourVote()} />
         </td>
       ) : null}
       {showCorrectVote() ? (
-        <td className="whitespace-nowrap pr-[--cell-padding]">
+        <td className="min-w-[100px] whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getCorrectVote()} />
         </td>
       ) : null}
