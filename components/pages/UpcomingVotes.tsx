@@ -7,8 +7,6 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
 } from "components";
 import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
@@ -26,6 +24,13 @@ export function UpcomingVotes() {
     upcomingVoteList ?? []
   );
   const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
+
+  const data = entriesToShow.map((vote) => ({
+    activityStatus: "upcoming" as const,
+    vote,
+    phase,
+    moreDetailsAction: () => openPanel("vote", vote),
+  }));
 
   return (
     <Layout title="UMA | Upcoming Votes">
@@ -45,21 +50,7 @@ export function UpcomingVotes() {
                     timeRemaining={millisecondsUntilPhaseEnds}
                   />
                   <VotesTableWrapper>
-                    <VoteList
-                      headings={<VoteTableHeadings activityStatus="upcoming" />}
-                      rows={entriesToShow.map((vote) => (
-                        <VoteListItem
-                          phase={phase}
-                          vote={vote}
-                          selectedVote={undefined}
-                          selectVote={() => null}
-                          clearVote={() => null}
-                          activityStatus="upcoming"
-                          moreDetailsAction={() => openPanel("vote", vote)}
-                          key={vote.uniqueKey}
-                        />
-                      ))}
-                    />
+                    <VoteList activityStatus="upcoming" data={data} />
                   </VotesTableWrapper>
                   {showPagination && (
                     <PaginationWrapper>

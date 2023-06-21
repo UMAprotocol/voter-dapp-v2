@@ -59,7 +59,6 @@ export { VoteHistoryTable } from "./VoteHistoryTable/VoteHistoryTable";
 export { VoteList } from "./VoteList/VoteList";
 export { VoteTableHeadings } from "./VoteList/VoteTableHeadings";
 export { VoteListItem } from "./VoteList/VoteListItem";
-export type { Props } from "./VoteList/VoteTableRow";
 export { CommitPhase } from "./VoteTimeline/CommitPhase";
 export { NextRoundStartsIn } from "./VoteTimeline/NextRoundStartsIn";
 export { RevealPhase } from "./VoteTimeline/RevealPhase";

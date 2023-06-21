@@ -6,8 +6,6 @@ import {
   PageOuterWrapper,
   Pagination,
   VoteList,
-  VoteListItem,
-  VoteTableHeadings,
   usePagination,
 } from "components";
 import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
@@ -22,6 +20,14 @@ export function PastVotes() {
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVoteList ?? []
   );
+
+  const data = entriesToShow.map((vote) => ({
+    activityStatus: "past" as const,
+    vote,
+    phase,
+    moreDetailsAction: () => openPanel("vote", vote),
+  }));
+
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
@@ -34,21 +40,7 @@ export function PastVotes() {
           ) : (
             <>
               <VotesTableWrapper>
-                <VoteList
-                  headings={<VoteTableHeadings activityStatus="past" />}
-                  rows={entriesToShow.map((vote) => (
-                    <VoteListItem
-                      phase={phase}
-                      vote={vote}
-                      selectedVote={undefined}
-                      selectVote={() => null}
-                      clearVote={() => null}
-                      activityStatus="past"
-                      moreDetailsAction={() => openPanel("vote", vote)}
-                      key={vote.uniqueKey}
-                    />
-                  ))}
-                />
+                <VoteList activityStatus="past" data={data} />
               </VotesTableWrapper>
               {showPagination && (
                 <PaginationWrapper>
