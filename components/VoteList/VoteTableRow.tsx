@@ -131,11 +131,11 @@ export function VoteTableRow(props: VoteListItemProps) {
         </td>
       ) : null}
       {showVoteStatus() ? (
-        <td
-          className="cursor-default pr-[--cell-padding]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
+        <td className="pr-[--cell-padding]">
+          <div
+            className="flex min-w-max cursor-default items-center gap-2 whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Loader isLoading={isLoading} width="6vw">
               <>
                 <Dot className="fill-[--dot-color]" />{" "}
