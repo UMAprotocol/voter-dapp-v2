@@ -98,7 +98,10 @@ export function VoteTableRow(props: VoteListItemProps) {
         </div>
       </td>
       {showVoteInput() && selectVote ? (
-        <td className="pr-[--cell-padding]">
+        <td
+          className="pr-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -128,7 +131,10 @@ export function VoteTableRow(props: VoteListItemProps) {
         </td>
       ) : null}
       {showVoteStatus() ? (
-        <td className="pr-[--cell-padding]">
+        <td
+          className="pr-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
             <Loader isLoading={isLoading} width="6vw">
               <>
