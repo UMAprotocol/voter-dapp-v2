@@ -48,7 +48,7 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   return (
     <tr
-      className="group h-[80px] rounded bg-white"
+      className="group h-[80px] cursor-pointer rounded bg-white"
       style={style}
       onClick={moreDetailsAction}
     >
@@ -99,7 +99,7 @@ export function VoteTableRow(props: VoteListItemProps) {
       </td>
       {showVoteInput() && selectVote ? (
         <td
-          className="pr-[--cell-padding]"
+          className="cursor-default pr-[--cell-padding]"
           onClick={(e) => e.stopPropagation()}
         >
           {options && !isCustomInput ? (
@@ -132,7 +132,7 @@ export function VoteTableRow(props: VoteListItemProps) {
       ) : null}
       {showVoteStatus() ? (
         <td
-          className="pr-[--cell-padding]"
+          className="cursor-default pr-[--cell-padding]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex min-w-max items-center gap-2 whitespace-nowrap">
