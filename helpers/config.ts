@@ -13,6 +13,7 @@ const Env = ss.object({
   NEXT_PUBLIC_INFURA_ID: ss.string(),
   NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
   NEXT_PUBLIC_CURRENT_ENV: ss.string(),
+  NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
   // optional envs
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
@@ -56,6 +57,7 @@ export const env = ss.create(
     NEXT_PUBLIC_INFURA_ID: process.env.NEXT_PUBLIC_INFURA_ID,
     NEXT_PUBLIC_ONBOARD_API_KEY: process.env.NEXT_PUBLIC_ONBOARD_API_KEY,
     NEXT_PUBLIC_CURRENT_ENV: process.env.NEXT_PUBLIC_CURRENT_ENV,
+    NEXT_PUBLIC_WALLET_CONNECT: process.env.NEXT_PUBLIC_WALLET_CONNECT,
     NEXT_PUBLIC_CONTENTFUL_SPACE_ID:
       process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN:
@@ -87,6 +89,7 @@ const AppConfig = ss.object({
   signingMessage: ss.string(),
   deployBlock: ss.number(),
   chainId: ss.number(),
+  walletConnectProjectId: ss.string(),
   graphEndpointV1: ss.optional(ss.string()),
   graphEndpoint: ss.optional(ss.string()),
   contentfulSpace: ss.optional(ss.string()),
@@ -127,6 +130,7 @@ export const appConfig = ss.create(
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
     deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
     chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
+    walletConnectProjectId: env.NEXT_PUBLIC_WALLET_CONNECT,
     graphV1Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     contentfulEnabled:
