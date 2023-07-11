@@ -107,6 +107,7 @@ export function StakeUnstakePanel() {
           stake={stake}
           unstakeCoolDown={unstakeCoolDown}
           isDelegate={isDelegate}
+          isWalletConnected={!!address}
         />
       ),
     },
