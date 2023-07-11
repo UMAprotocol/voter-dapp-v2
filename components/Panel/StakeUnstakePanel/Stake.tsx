@@ -20,6 +20,7 @@ interface Props {
   approve: (approveAmount: string) => void;
   isApproving: boolean;
   stake: (stakeAmount: string, resetStakeAmount: () => void) => void;
+  isWalletConnected: boolean;
 }
 export function Stake({
   tokenAllowance,
@@ -29,6 +30,7 @@ export function Stake({
   unstakeCoolDown,
   isDelegate,
   isApproving,
+  isWalletConnected,
 }: Props) {
   const [inputAmount, setInputAmount] = useState("");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
@@ -60,6 +62,10 @@ export function Stake({
       parseEtherSafe(inputAmount).eq(0) ||
       (unstakedBalance ? parseEtherSafe(inputAmount).gt(unstakedBalance) : true)
     );
+  }
+
+  function isInputDisabled() {
+    return !isWalletConnected;
   }
 
   function onApprove() {
@@ -103,6 +109,7 @@ export function Stake({
               onInput={setInputAmount}
               onMax={onMax}
               allowNegative={false}
+              disabled={isInputDisabled()}
             />
           </AmountInputWrapper>
           <CheckboxWrapper>
@@ -110,6 +117,7 @@ export function Stake({
               label={disclaimer}
               checked={disclaimerChecked}
               onChange={(e) => setDisclaimerChecked(e.target.checked)}
+              disabled={isInputDisabled()}
             />
           </CheckboxWrapper>
           <Button
