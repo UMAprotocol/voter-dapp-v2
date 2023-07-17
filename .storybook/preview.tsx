@@ -8,14 +8,13 @@ import {
   DelegationProvider,
   ErrorProvider,
   PanelProvider,
-  StakingProvider,
-  UserProvider,
   VoteTimingProvider,
   VotesProvider,
   WalletProvider,
 } from "../contexts";
 import { date } from "../stories/mocks/misc";
 import "../styles/fonts.css";
+import "../styles/globals.css";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -87,20 +86,16 @@ export const decorators: Decorator[] = [
       <QueryClientProvider client={queryClient}>
         <VoteTimingProvider>
           <WalletProvider>
-            <UserProvider>
-              <ContractsProvider>
-                <StakingProvider>
-                  <DelegationProvider>
-                    <VotesProvider>
-                      <PanelProvider>
-                        <GlobalStyle />
-                        <Story />
-                      </PanelProvider>
-                    </VotesProvider>
-                  </DelegationProvider>
-                </StakingProvider>
-              </ContractsProvider>
-            </UserProvider>
+            <ContractsProvider>
+              <DelegationProvider>
+                <VotesProvider>
+                  <PanelProvider>
+                    <GlobalStyle />
+                    <Story />
+                  </PanelProvider>
+                </VotesProvider>
+              </DelegationProvider>
+            </ContractsProvider>
           </WalletProvider>
         </VoteTimingProvider>
       </QueryClientProvider>

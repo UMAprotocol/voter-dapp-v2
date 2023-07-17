@@ -22,6 +22,7 @@ import {
   polymarketVoteRevealedCustomInput,
 } from "stories/mocks/votes";
 import { ActivityStatusT, VoteT } from "types";
+import { Upcoming } from "./VoteTableHeadings.stories";
 
 interface Args {
   phase: "commit" | "reveal";
@@ -200,27 +201,10 @@ export const ActiveRevealWithUpcomingWithPagination: Story = {
   },
 };
 
-export const Upcoming: Story = {
-  ...Template,
-  args: {
-    activityStatus: "upcoming",
-    upcomingVotes: upcomingVotes,
-    pastVotes: pastVotes,
-  },
-};
-
 export const UpcomingWithPagination: Story = {
   ...Upcoming,
   args: {
     ...Upcoming.args,
     upcomingVotes: manyUpcomingVotes,
-  },
-};
-
-export const Past: Story = {
-  ...Template,
-  args: {
-    activityStatus: "past",
-    pastVotes: pastVotes,
   },
 };

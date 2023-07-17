@@ -13,6 +13,7 @@ import {
 } from "contexts";
 import type { AppProps } from "next/app";
 import "styles/fonts.css";
+import "styles/globals.css";
 
 const queryClient = new QueryClient();
 

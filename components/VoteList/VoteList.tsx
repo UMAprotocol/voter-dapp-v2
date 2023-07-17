@@ -1,36 +1,41 @@
-import { tabletAndUnder, tabletMax } from "constant";
+import { tabletMax } from "constant";
 import { useWindowSize } from "hooks";
-import styled from "styled-components";
+import { ActivityStatusT } from "types";
+import { VoteListItem } from "./VoteListItem";
+import { VoteTableHeadings } from "./VoteTableHeadings";
+import { VoteTableRow } from "./VoteTableRow";
+import { VoteListItemProps } from "./shared.types";
 
 interface Props {
-  headings: JSX.Element;
-  rows: JSX.Element[];
+  activityStatus: ActivityStatusT;
+  data: VoteListItemProps[];
 }
-export function VoteList({ headings, rows }: Props) {
+export function VoteList({ data, activityStatus }: Props) {
   const { width } = useWindowSize();
 
   if (!width) return null;
 
   const isTabletAndUnder = width <= tabletMax;
 
+  if (isTabletAndUnder)
+    return (
+      <div className="grid gap-1">
+        {data.map((item) => (
+          <VoteListItem key={item.vote.uniqueKey} {...item} />
+        ))}
+      </div>
+    );
+
   return (
-    <Wrapper as={isTabletAndUnder ? "div" : "table"}>
-      {!isTabletAndUnder && <Thead>{headings}</Thead>}
-      {isTabletAndUnder ? <>{rows}</> : <Tbody>{rows}</Tbody>}
-    </Wrapper>
+    <table className="w-full border-separate border-spacing-y-1">
+      <thead>
+        <VoteTableHeadings activityStatus={activityStatus} />
+      </thead>
+      <tbody>
+        {data.map((item) => (
+          <VoteTableRow key={item.vote.uniqueKey} {...item} />
+        ))}
+      </tbody>
+    </table>
   );
 }
-
-const Wrapper = styled.table`
-  width: 100%;
-  border-spacing: 0 5px;
-
-  @media ${tabletAndUnder} {
-    display: grid;
-    gap: 5px;
-  }
-`;
-
-const Thead = styled.thead``;
-
-const Tbody = styled.tbody``;

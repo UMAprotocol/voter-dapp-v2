@@ -1,5 +1,4 @@
 import {
-  Button,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -9,15 +8,18 @@ import {
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
+import Clickable from "public/assets/icons/clickable.svg";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
 
-export function VoteListItem(props: VoteListItemProps) {
+export function VoteTableRow(props: VoteListItemProps) {
   const {
     style,
+    Icon,
     titleText,
+    origin,
     isRolled,
     isV1,
     rollCount,
@@ -41,24 +43,31 @@ export function VoteListItem(props: VoteListItemProps) {
     isLoading,
     getRelevantTransactionLink,
     isDirty,
-    origin,
     moreDetailsAction,
   } = useVoteListItem(props);
 
   return (
-    <div
+    <tr
+      className="group h-[80px] cursor-pointer rounded bg-white"
       style={style}
-      className="grid h-auto w-full items-start gap-[12px] rounded bg-white p-3"
+      onClick={moreDetailsAction}
     >
-      <div className="w-full rounded-l">
-        <div className="align-center flex border-b-[--border-color] pb-1">
+      <td className="rounded-l px-[--cell-padding]">
+        <div className="flex items-center gap-[--cell-padding]">
+          <div className="min-w-[--title-icon-size]">
+            <div className="w-[--title-icon-size]">
+              <Icon />
+            </div>
+          </div>
           <div>
-            <h3 className="mb-1 text-lg font-semibold">{titleText}</h3>
+            <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold transition duration-300 group-hover:text-red-500">
+              {titleText}
+            </h3>
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
-                  <div className="flex gap-1 align-baseline">
-                    <div className="h-[7px] w-[7px]">
+                  <div className="flex gap-1">
+                    <div className="w-[7px] self-center">
                       <Rolled />
                     </div>
                     <NextLink
@@ -87,9 +96,12 @@ export function VoteListItem(props: VoteListItemProps) {
             </div>
           </div>
         </div>
-      </div>
+      </td>
       {showVoteInput() && selectVote ? (
-        <div>
+        <td
+          className="cursor-default pr-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {options && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
@@ -106,36 +118,43 @@ export function VoteListItem(props: VoteListItemProps) {
               type="number"
             />
           )}
-        </div>
+        </td>
       ) : null}
       {showYourVote() ? (
-        <div className="flex justify-between">
-          <span>Your vote</span> <VoteText voteText={getYourVote()} />
-        </div>
+        <td className="min-w-[100px] whitespace-nowrap pr-[--cell-padding]">
+          <VoteText voteText={getYourVote()} />
+        </td>
       ) : null}
       {showCorrectVote() ? (
-        <div className="flex justify-between">
-          <span>Correct vote</span> <VoteText voteText={getCorrectVote()} />
-        </div>
+        <td className="min-w-[100px] whitespace-nowrap pr-[--cell-padding]">
+          <VoteText voteText={getCorrectVote()} />
+        </td>
       ) : null}
       {showVoteStatus() ? (
-        <div className="flex justify-between">
-          <span>Vote status</span>
-          <div className="flex max-w-max items-center gap-2 whitespace-nowrap">
+        <td className="pr-[--cell-padding]">
+          <div
+            className="flex min-w-max cursor-default items-center gap-2 whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Loader isLoading={isLoading} width="6vw">
-              <Dot className="fill-[--dot-color]" />{" "}
-              {getRelevantTransactionLink()}
-              {isDirty ? "*" : ""}
+              <>
+                <Dot className="fill-[--dot-color]" />{" "}
+                {getRelevantTransactionLink()}
+                {isDirty ? "*" : ""}
+              </>
             </Loader>
           </div>
-        </div>
+        </td>
       ) : null}
-      <div className="border-t-[--border-color] pt-2">
-        <div className="mr-auto w-fit">
-          <Button label="More details" onClick={moreDetailsAction} />
+      <td
+        className="cursor-pointer rounded-r pr-[--cell-padding]"
+        aria-label="More details"
+      >
+        <div className="ml-auto w-fit">
+          <Clickable className="transition-[fill] duration-300 group-hover:fill-red-500 [&>path]:transition-[stroke] group-hover:[&>path]:stroke-white" />
         </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }
 

@@ -25,9 +25,7 @@ const IconWrapper = styled.div`
 `;
 
 const Icon = styled(Dot)`
-  circle {
-    fill: var(--green);
-  }
+  fill: var(--green);
 `;
 
 const Label = styled.span`

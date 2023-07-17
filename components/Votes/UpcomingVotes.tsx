@@ -1,11 +1,4 @@
-import {
-  Pagination,
-  usePagination,
-  VoteList,
-  VoteListItem,
-  VoteTableHeadings,
-  VoteTimeline,
-} from "components";
+import { Pagination, usePagination, VoteList, VoteTimeline } from "components";
 import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
@@ -17,23 +10,19 @@ export function UpcomingVotes() {
     upcomingVoteList ?? []
   );
 
+  const data = entriesToShow.map((vote) => ({
+    activityStatus: "upcoming" as const,
+    vote,
+    phase,
+    moreDetailsAction: () => openPanel("vote", vote),
+  }));
+
   return (
     <>
       <Title>Upcoming votes:</Title>
       {activityStatus === "upcoming" && <VoteTimeline />}
       <VotesTableWrapper>
-        <VoteList
-          headings={<VoteTableHeadings activityStatus="upcoming" />}
-          rows={entriesToShow.map((vote) => (
-            <VoteListItem
-              phase={phase}
-              vote={vote}
-              activityStatus="upcoming"
-              moreDetailsAction={() => openPanel("vote", vote)}
-              key={vote.uniqueKey}
-            />
-          ))}
-        />
+        <VoteList activityStatus="upcoming" data={data} />
       </VotesTableWrapper>
       {showPagination && (
         <PaginationWrapper>
