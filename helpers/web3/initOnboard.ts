@@ -6,9 +6,12 @@ import { logo } from "public/assets/logo";
 import { config } from "helpers/config";
 
 const injected = injectedModule();
-const walletConnect = walletConnectModule();
+const walletConnect = walletConnectModule({
+  version: 2,
+  projectId: config.walletConnectProjectId,
+  requiredChains: [config.chainId],
+});
 const gnosis = gnosisModule();
-
 export const initOnboard = init({
   wallets: [injected, walletConnect, gnosis],
   chains: [config.onboardConfig],
