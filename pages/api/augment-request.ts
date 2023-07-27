@@ -53,14 +53,15 @@ const CommonEventData = ss.object({
   time: ss.number(),
   contractType: ss.string(),
   chainId: ss.number(),
-  domainId: ss.string(),
-  assertionId: ss.string(),
-  claim: ss.string(),
-  asserter: ss.string(),
-  callbackRecipient: ss.string(),
-  escalationManager: ss.string(),
-  expirationTime: ss.number(),
-  caller: ss.string(),
+  // oov3 things
+  assertionId: ss.optional(ss.string()),
+  domainId: ss.optional(ss.string()),
+  claim: ss.optional(ss.string()),
+  asserter: ss.optional(ss.string()),
+  callbackRecipient: ss.optional(ss.string()),
+  escalationManager: ss.optional(ss.string()),
+  expirationTime: ss.optional(ss.number()),
+  caller: ss.optional(ss.string()),
 });
 type CommonEventData = ss.Infer<typeof CommonEventData>;
 
@@ -136,14 +137,6 @@ async function getVotingRequestAdded(
             : event?.args?.time,
         contractType,
         chainId,
-        assertionId: "",
-        domainId: "",
-        claim: "",
-        asserter: "",
-        callbackRecipient: "",
-        escalationManager: "",
-        expirationTime: 0,
-        caller: "",
       },
       CommonEventData
     )
@@ -193,14 +186,6 @@ async function getOracleRequestPrices(
             : event?.args?.timestamp,
         contractType,
         chainId,
-        assertionId: "",
-        domainId: "",
-        claim: "",
-        asserter: "",
-        callbackRecipient: "",
-        escalationManager: "",
-        expirationTime: 0,
-        caller: "",
       },
       CommonEventData
     )
@@ -226,14 +211,6 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
             : event?.args?.time,
         contractType: "OptimisticOracleV2", // The event based type is only ever OOv2.
         chainId: 137,
-        assertionId: "",
-        domainId: "",
-        claim: "",
-        asserter: "",
-        callbackRecipient: "",
-        escalationManager: "",
-        expirationTime: 0,
-        caller: "",
       },
       CommonEventData
     )
@@ -243,18 +220,16 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
 async function getOov3Assertions(
   chainId: SupportedChainIds
 ): Promise<CommonEventData[]> {
-  //
   const contract = (await constructContract(
     chainId,
     "OptimisticOracleV3"
   )) as OptimisticOracleV3Ethers;
   const events = await contract.queryFilter(contract.filters.AssertionMade());
-  //
 
   const assertionDetails = await Promise.all(
     events.map((event) => contract.assertions(event?.args?.assertionId))
   );
-  //
+
   return events.map((event, index) =>
     ss.create(
       {
@@ -328,9 +303,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
     EnabledOracles,
     ooChains
   );
-  //
   const requestPriceTable = createLookupTable(requestPriceEvents);
-  //
 
   return l1Requests.map((l1Request) => {
     const votingRequestEvent =
@@ -356,15 +329,13 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       optimisticOracleV3Data:
         oracleRequestPriceEvent.contractType == "OptimisticOracleV3"
           ? {
-              domainId: oracleRequestPriceEvent?.domainId || "",
-              claim: oracleRequestPriceEvent?.claim || "",
-              asserter: oracleRequestPriceEvent?.asserter || "",
-              callbackRecipient:
-                oracleRequestPriceEvent?.callbackRecipient || "",
-              escalationManager:
-                oracleRequestPriceEvent?.escalationManager || "",
-              expirationTime: oracleRequestPriceEvent?.expirationTime || "",
-              caller: oracleRequestPriceEvent?.caller || "",
+              domainId: oracleRequestPriceEvent?.domainId,
+              claim: oracleRequestPriceEvent?.claim,
+              asserter: oracleRequestPriceEvent?.asserter,
+              callbackRecipient: oracleRequestPriceEvent?.callbackRecipient,
+              escalationManager: oracleRequestPriceEvent?.escalationManager,
+              expirationTime: oracleRequestPriceEvent?.expirationTime,
+              caller: oracleRequestPriceEvent?.caller,
             }
           : undefined,
     };

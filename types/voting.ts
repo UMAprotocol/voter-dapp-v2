@@ -240,6 +240,18 @@ export const AugmentedVoteDataResponseT = ss.object({
   originatingChainTxHash: ss.optional(ss.string()),
   originatingChainId: ss.optional(ss.number()),
   originatingOracleType: ss.optional(ss.string()),
+  optimisticOracleV3Data: ss.optional(
+    ss.object({
+      assertionId: ss.optional(ss.string()),
+      domainId: ss.optional(ss.string()),
+      claim: ss.optional(ss.string()),
+      asserter: ss.optional(ss.string()),
+      callbackRecipient: ss.optional(ss.string()),
+      escalationManager: ss.optional(ss.string()),
+      expirationTime: ss.optional(ss.number()),
+      caller: ss.optional(ss.string()),
+    })
+  ),
 });
 export type AugmentedVoteDataResponseT = ss.Infer<
   typeof AugmentedVoteDataResponseT
