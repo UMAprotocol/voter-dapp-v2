@@ -1,11 +1,12 @@
+import { OptimisticOracleV3Ethers } from "@uma/contracts-frontend";
 import assert from "assert";
 import { BigNumber } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { SupportedChainIds } from "types";
 import {
-  constructContract,
   ContractName,
+  constructContract,
   getFromBlock,
   getNodeUrls,
   isSupportedChainId,
@@ -15,7 +16,10 @@ const debug = !!process.env.DEBUG;
 
 type OracleType = Extract<
   ContractName,
-  "OptimisticOracle" | "OptimisticOracleV2" | "SkinnyOptimisticOracle"
+  | "OptimisticOracle"
+  | "OptimisticOracleV2"
+  | "OptimisticOracleV3"
+  | "SkinnyOptimisticOracle"
 >;
 type VotingType = Extract<ContractName, "Voting" | "VotingV2">;
 
@@ -23,6 +27,7 @@ const EnabledVoting: VotingType[] = ["Voting", "VotingV2"];
 const EnabledOracles: OracleType[] = [
   "OptimisticOracle",
   "OptimisticOracleV2",
+  "OptimisticOracleV3",
   "SkinnyOptimisticOracle",
 ];
 
@@ -48,6 +53,15 @@ const CommonEventData = ss.object({
   time: ss.number(),
   contractType: ss.string(),
   chainId: ss.number(),
+  // oov3 things
+  assertionId: ss.optional(ss.string()),
+  domainId: ss.optional(ss.string()),
+  claim: ss.optional(ss.string()),
+  asserter: ss.optional(ss.string()),
+  callbackRecipient: ss.optional(ss.string()),
+  escalationManager: ss.optional(ss.string()),
+  expirationTime: ss.optional(ss.number()),
+  caller: ss.optional(ss.string()),
 });
 type CommonEventData = ss.Infer<typeof CommonEventData>;
 
@@ -76,6 +90,8 @@ function castOracleNameForOOUi(oracleType: string): string {
       return "OptimisticV2";
     case "SkinnyOptimisticOracle":
       return "Skinny";
+    case "OptimisticOracleV3":
+      return "OptimisticV3";
     default:
       throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
   }
@@ -201,6 +217,47 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
   );
 }
 
+async function getOov3Assertions(
+  chainId: SupportedChainIds
+): Promise<CommonEventData[]> {
+  const contract = (await constructContract(
+    chainId,
+    "OptimisticOracleV3"
+  )) as OptimisticOracleV3Ethers;
+  const events = await contract.queryFilter(contract.filters.AssertionMade());
+
+  const assertionDetails = await Promise.all(
+    events.map((event) => contract.assertions(event?.args?.assertionId))
+  );
+
+  return events.map((event, index) =>
+    ss.create(
+      {
+        transactionHash: event?.transactionHash,
+        identifier: event?.args?.identifier,
+        contractType: "OptimisticOracleV3",
+        time:
+          assertionDetails[index].assertionTime instanceof BigNumber
+            ? assertionDetails[index].assertionTime?.toNumber()
+            : assertionDetails[index].assertionTime,
+        chainId,
+        assertionId: event?.args?.assertionId,
+        domainId: event?.args?.domainId || "",
+        claim: event?.args?.claim,
+        asserter: event?.args?.asserter,
+        callbackRecipient: event?.args?.callbackRecipient,
+        escalationManager: event?.args?.escalationManager,
+        expirationTime:
+          event?.args?.expirationTime instanceof BigNumber
+            ? event?.args?.expirationTime?.toNumber()
+            : event?.args?.expirationTime,
+        caller: event?.args?.caller,
+      },
+      CommonEventData
+    )
+  );
+}
+
 async function getManyOracleRequestsPrices(
   oracleTypes: OracleType[],
   chainIds: SupportedChainIds[]
@@ -214,8 +271,13 @@ async function getManyOracleRequestsPrices(
   // To accommodate event based expiration on polygon, we need to also query the oracle child tunnel to join
   // timestamps correctly. This should be refined in the future.
   const oracleChildTunnel = getOracleChildTunnelMessages();
+  const assertions = chainIds
+    .map((chainId) => getOov3Assertions(chainId))
+    .flat();
 
-  return (await Promise.allSettled([requests, oracleChildTunnel].flat()))
+  return (
+    await Promise.allSettled([requests, oracleChildTunnel, assertions].flat())
+  )
     .map((result) => {
       if (result.status === "fulfilled") {
         return result.value;
@@ -252,6 +314,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       requestPriceTable?.[l1Request.identifier.toLowerCase()]?.[
         l1Request.time
       ] || {};
+
     return {
       ...l1Request,
       l1RequestTxHash: votingRequestEvent.transactionHash,
@@ -263,6 +326,18 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
       originatingChainTxHash: oracleRequestPriceEvent.transactionHash,
       originatingChainId: oracleRequestPriceEvent.chainId,
       originatingOracleType: oracleRequestPriceEvent.contractType,
+      optimisticOracleV3Data:
+        oracleRequestPriceEvent.contractType == "OptimisticOracleV3"
+          ? {
+              domainId: oracleRequestPriceEvent?.domainId,
+              claim: oracleRequestPriceEvent?.claim,
+              asserter: oracleRequestPriceEvent?.asserter,
+              callbackRecipient: oracleRequestPriceEvent?.callbackRecipient,
+              escalationManager: oracleRequestPriceEvent?.escalationManager,
+              expirationTime: oracleRequestPriceEvent?.expirationTime,
+              caller: oracleRequestPriceEvent?.caller,
+            }
+          : undefined,
     };
   });
 }
