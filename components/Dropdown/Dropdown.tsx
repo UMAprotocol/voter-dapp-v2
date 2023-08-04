@@ -114,6 +114,7 @@ const DropdownList = styled(MenuPopover)`
   border-radius: 5px;
   padding: 0;
   animation: ${slideDown} 0.2s ease-in-out;
+  z-index: 9999;
 `;
 
 const DropdownItem = styled(MenuItem)<{ $isSelected: boolean }>`
