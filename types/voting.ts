@@ -282,7 +282,7 @@ export type RawDiscordMessageT = {
     avatar: string;
   };
   timestamp: string;
-  thread: { id: string };
+  thread: { id: string; name: string };
   attachments: {
     id: string;
     filename: string;

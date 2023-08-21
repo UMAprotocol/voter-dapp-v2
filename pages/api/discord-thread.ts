@@ -98,7 +98,7 @@ async function fetchDiscordThread(
   // it to the associated threadId.
   const timeToThread: { [key: string]: string } = {};
   threadMsg.forEach((message) => {
-    const time = extractValidateTimestamp(message.content);
+    const time = extractValidateTimestamp(message.thread.name);
     if (time) timeToThread[time.toString()] = message.thread.id;
   });
   // Associate the threadId with each timestamp provided in the payload.
