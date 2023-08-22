@@ -108,7 +108,7 @@ export function HowItWorks() {
                   {formatNumberForDisplay(stakedBalance)}
                 </Loader>
               </Strong>{" "}
-              {isDelegate ? "of their" : "of your"}{" "}
+              {isDelegate ? "of its" : "of your"}{" "}
               <Strong>
                 <Loader
                   isLoading={
