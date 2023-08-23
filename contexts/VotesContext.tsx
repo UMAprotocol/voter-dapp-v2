@@ -18,6 +18,7 @@ import {
   useRevealedVotes,
   useUpcomingVotes,
   useUserVotingAndStakingDetails,
+  useVoteTimingContext,
 } from "hooks";
 import { ReactNode, createContext, useMemo } from "react";
 import {
@@ -107,6 +108,7 @@ export const VotesContext = createContext<VotesContextState>(
 );
 
 export function VotesProvider({ children }: { children: ReactNode }) {
+  const { roundId } = useVoteTimingContext();
   const { address: userAddress } = useAccountDetails();
   const { isDelegate, delegatorAddress } = useDelegationContext();
   const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
@@ -136,7 +138,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     // if we are a delegate we need to override to our delegators address
   } = useRevealedVotes(userOrDelegatorAddress);
   const { data: encryptedVotes, isLoading: encryptedVotesIsLoading } =
-    useEncryptedVotes(userAddress);
+    useEncryptedVotes(userAddress, roundId);
   const { data: decryptedVotes, isLoading: decryptedVotesIsLoading } =
     useDecryptedVotes(userAddress, encryptedVotes);
   const { data: activeVoteResultsByKey } = useActiveVoteResults();
