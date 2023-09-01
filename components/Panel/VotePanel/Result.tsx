@@ -6,7 +6,11 @@ import {
   Tooltip,
 } from "components";
 import { mobileAndUnder, isEarlyVote } from "constant";
-import { formatVoteStringWithPrecision, truncateDecimals } from "helpers";
+import {
+  formatVoteStringWithPrecision,
+  truncateDecimals,
+  commify,
+} from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
 import Voting from "public/assets/icons/voting.svg";
@@ -81,7 +85,7 @@ export function Result({
                 <LegendItemData>
                   <LegendItemLabel label={label} />
                   <Strong>{(percent * 100).toFixed(2)}%</Strong> (
-                  {value ? truncateDecimals(value, 2) : 0})
+                  {value ? commify(truncateDecimals(value, 2)) : 0})
                 </LegendItemData>
               </LegendItem>
             ))}
@@ -107,7 +111,7 @@ export function Result({
           <span>Total tokens that voted</span>
           <Strong>
             {totalTokensVotedWith
-              ? truncateDecimals(totalTokensVotedWith, 2)
+              ? commify(truncateDecimals(totalTokensVotedWith, 2))
               : 0}
           </Strong>
         </ParticipationItem>
