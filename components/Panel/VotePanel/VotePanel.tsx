@@ -1,6 +1,6 @@
 import { Tabs } from "components";
 import { decodeHexString } from "helpers";
-import { useAssertionClaim, useVoteDiscussion } from "hooks";
+import { useVoteDiscussion } from "hooks";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -24,8 +24,7 @@ export function VotePanel({ content }: Props) {
     results,
     isGovernance,
     options,
-    assertionChildChainId,
-    assertionId,
+    augmentedData,
   } = content;
 
   const { data: discussion, isFetching: discussionLoading } = useVoteDiscussion(
@@ -34,8 +33,7 @@ export function VotePanel({ content }: Props) {
       time,
     }
   );
-
-  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const claim = augmentedData?.optimisticOracleV3Data?.claim;
 
   const titleOrClaimOrIdentifier = claim
     ? decodeHexString(claim)
@@ -52,7 +50,7 @@ export function VotePanel({ content }: Props) {
     const tabs = [
       {
         title: "Details",
-        content: <Details {...content} claim={claim} />,
+        content: <Details {...content} />,
       },
       {
         title: "Discussion",

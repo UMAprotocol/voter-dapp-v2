@@ -258,19 +258,13 @@ export type AugmentedVoteDataResponseT = ss.Infer<
 >;
 
 export type VoteAugmentedDataT = {
-  augmentedData: AugmentedVoteDataT | undefined;
+  augmentedData: AugmentedVoteDataResponseT | undefined;
 };
 
-export type AugmentedVoteDataT = {
-  l1RequestTxHash: string;
-  uniqueKey: UniqueKeyT;
-  ooRequestUrl: string | undefined;
-  originatingChainTxHash: string | undefined;
-  originatingChainId: SupportedChainIds | undefined;
-  originatingOracleType: OracleTypeT | undefined;
-};
-
-export type AugmentedVoteDataByKeyT = Record<UniqueKeyT, AugmentedVoteDataT>;
+export type AugmentedVoteDataByKeyT = Record<
+  UniqueKeyT,
+  AugmentedVoteDataResponseT
+>;
 
 export type TransactionHashT = string;
 

@@ -21,9 +21,10 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
-  const isAssertion = ["assertionId:", "ooAsserter:", "childChainId:"].every(
-    (lookup) => decodedAncillaryData.includes(lookup)
+  const isAssertion = ["assertionId:", "ooAsserter:"].every((lookup) =>
+    decodedAncillaryData.includes(lookup)
   );
+
   if (isAssertion) {
     const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
     const description = makeAssertionDescription(assertionData);
