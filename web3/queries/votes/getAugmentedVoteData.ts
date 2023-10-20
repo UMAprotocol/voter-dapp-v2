@@ -1,7 +1,7 @@
 import * as ss from "superstruct";
 import {
-  AugmentedVoteDataByKeyT,
   AugmentedVoteDataResponseT,
+  AugmentedVoteDataByKeyT,
   PriceRequestByKeyT,
 } from "types";
 import { config } from "helpers/config";

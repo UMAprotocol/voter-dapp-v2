@@ -24,7 +24,7 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { VoteT } from "types";
+import { VoteT, SupportedChainIds, OracleTypeT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
@@ -43,12 +43,12 @@ export function Details({
   augmentedData,
   assertionChildChainId,
   assertionAsserter,
-  claim,
-}: VoteT & { claim: string | undefined }) {
+}: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
   const [showRawClaimData, setShowRawClaimData] = useState(false);
+  const claim = augmentedData?.optimisticOracleV3Data?.claim;
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
   function toggleShowDecodedAdminTransactions() {
@@ -101,7 +101,9 @@ export function Details({
     augmentedData.originatingOracleType
       ? makeTransactionHashLink(
           `${
-            supportedChains[augmentedData.originatingChainId]
+            supportedChains[
+              augmentedData.originatingChainId as SupportedChainIds
+            ]
           } ${getOracleTypeDisplayName(
             augmentedData.originatingOracleType
           )} Request`,
@@ -116,8 +118,16 @@ export function Details({
     <Wrapper>
       <SectionWrapper>
         <RequestInfoIcons>
-          <ChainIcon chainId={augmentedData?.originatingChainId} />
-          <OoTypeIcon ooType={augmentedData?.originatingOracleType} />
+          <ChainIcon
+            chainId={
+              augmentedData?.originatingChainId as SupportedChainIds | undefined
+            }
+          />
+          <OoTypeIcon
+            ooType={
+              augmentedData?.originatingOracleType as OracleTypeT | undefined
+            }
+          />
         </RequestInfoIcons>
         <PanelSectionTitle>
           <IconWrapper>

@@ -79,7 +79,7 @@ function constructOoUiLink(
   const subDomain = Number(chainId) === 5 ? "testnet." : "";
   return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
     oracleType
-  )}`;
+  )}&eventIndex=`;
 }
 
 function castOracleNameForOOUi(oracleType: string): string {
