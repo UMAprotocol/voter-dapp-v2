@@ -24,8 +24,9 @@ function dynamicPolymarketOptions(
   const resData = decodedAncillaryData.match(
     /res_data: (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+)/
   );
+  // Match any character except commas that are followed by a space, we use ", " as a delimiter. This way we can allow a string like "$2,000" to be matched.
   const correspondence = decodedAncillaryData.match(
-    /Where (p\d) corresponds to ([^,]+), (p\d) to ([^,]+), (p\d) to ([^.,]+)/
+    /Where (p\d) corresponds to ((?:[^,]|,(?!\s))+), (p\d) to ((?:[^,]|,(?!\s))+), (p\d) to ([^.,]+)/
   );
 
   if (!resData || !correspondence) return [];
