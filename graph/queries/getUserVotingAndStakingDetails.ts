@@ -38,7 +38,7 @@ export async function getUserVotingAndStakingDetails(
         countNoVotes
         countWrongVotes
         countCorrectVotes
-        votesSlashed {
+        votesSlashed(first: 1000) {
           request {
             id
           }
