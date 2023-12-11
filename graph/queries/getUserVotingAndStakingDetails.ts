@@ -8,38 +8,7 @@ import {
   VoteHistoryByKeyT,
   VoteHistoryT,
 } from "types";
-import { DEFAULT_PAGE_SIZE, MAX_ALLOWED_SKIP } from "./constants";
 const { graphEndpoint } = config;
-
-const getUserDataQuery = (
-  address: string,
-  first: number,
-  skip: number
-): string => {
-  return gql`
-    {
-      users(where: { address: "${address}" }) {
-        annualPercentageReturn
-        annualReturn
-        cumulativeCalculatedSlash
-        cumulativeCalculatedSlashPercentage
-        countReveals
-        countNoVotes
-        countWrongVotes
-        countCorrectVotes
-        votesSlashed(first:${first}, skip: ${skip}) {
-          request {
-            id
-          }
-          voted
-          correctness
-          slashAmount
-          staking
-        }
-      }
-    }
-  `;
-};
 
 export async function getUserVotingAndStakingDetails(
   address: string | undefined
@@ -58,28 +27,31 @@ export async function getUserVotingAndStakingDetails(
       voteHistoryByKey: {},
     };
 
-  let skip = 0;
-  const first = DEFAULT_PAGE_SIZE;
-  const result = await request<UserDataQuery>(
-    graphEndpoint,
-    getUserDataQuery(address, first, skip)
-  );
-  skip += first;
-
-  while (result.users[0].votesSlashed.length === first) {
-    const nextResult = await request<UserDataQuery>(
-      graphEndpoint,
-      getUserDataQuery(address, first, skip)
-    );
-    result.users[0].votesSlashed.push(...nextResult.users[0].votesSlashed);
-    skip += first;
-
-    // Fail-safe to avoid potential infinite loop
-    if (skip > MAX_ALLOWED_SKIP) {
-      throw new Error("Exceeded maximum allowed skip limit");
+  const userDataQuery = gql`
+    {
+      users(where: { address: "${address}" }) {
+        annualPercentageReturn
+        annualReturn
+        cumulativeCalculatedSlash
+        cumulativeCalculatedSlashPercentage
+        countReveals
+        countNoVotes
+        countWrongVotes
+        countCorrectVotes
+        votesSlashed(first: 1000) {
+          request {
+            id
+          }
+          voted
+          correctness
+          slashAmount
+          staking
+        }
+      }
     }
-  }
+  `;
 
+  const result = await request<UserDataQuery>(graphEndpoint, userDataQuery);
   const userData = parseUserVotingAndStakingDetails(result.users[0]);
 
   return userData;
