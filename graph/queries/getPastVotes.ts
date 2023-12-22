@@ -1,7 +1,8 @@
 import { utils } from "ethers";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
+import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
 const { graphEndpoint } = config;
@@ -93,8 +94,14 @@ export async function getPastVotesV2() {
       }
     }
   `;
-  const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
-  return result?.priceRequests?.map(
+
+  const result = await fetchAllDocuments<PastVotesQuery>(
+    endpoint,
+    pastVotesQuery,
+    "priceRequests"
+  );
+
+  return result?.map(
     ({
       identifier: { id },
       time,
