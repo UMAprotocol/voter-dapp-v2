@@ -21,20 +21,15 @@ export async function fetchAllDocuments<
 ) {
   let allData = new Array<RequestType[keyof RequestType][number]>();
   let skip = 0;
-  let continueFetching = true;
+  let response: RequestType;
 
-  while (continueFetching) {
+  do {
     const variables = { skip, limit: pageSize };
-    const response = await request<RequestType>(endpoint, query, variables);
+    response = await request<RequestType>(endpoint, query, variables);
     allData = allData.concat(response[dataKey]);
-
+    skip += pageSize;
     // if we get less than 1000 we know we got them all
-    if (response[dataKey].length < pageSize) {
-      continueFetching = false;
-    } else {
-      skip += pageSize;
-    }
-  }
+  } while (response[dataKey].length < pageSize);
 
   return allData;
 }
