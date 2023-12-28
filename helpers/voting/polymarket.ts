@@ -65,15 +65,22 @@ function dynamicPolymarketOptions(
 export function maybeMakePolymarketOptions(
   decodedAncillaryData: string
 ): DropdownItemT[] | undefined {
+  // go from most specific to least specific
   const options1 = {
+    resData: `res_data: p1: 0, p2: 1, p3: 0.5, p4: ${earlyRequestMagicNumber}`,
+    corresponds:
+      "Where p1 corresponds to No, p2 to a Yes, p3 to unknown, and p4 to an early request",
+  };
+
+  const options2 = {
     resData: "res_data: p1: 0, p2: 1, p3: 0.5",
     corresponds: "Where p2 corresponds to Yes, p1 to a No, p3 to unknown",
   };
 
-  const options2 = {
-    resData: `res_data: p1: 0, p2: 1, p3: 0.5, p4: ${earlyRequestMagicNumber}`,
-    corresponds:
-      "Where p1 corresponds to No, p2 to a Yes, p3 to unknown, and p4 to an early request",
+  // this does not follow yes_no price identifier, its due to polymarket requesting this for "neg risk" markets
+  const options3 = {
+    resData: "res_data: p1: 0, p2: 1.",
+    corresponds: "Where p1 corresponds to No, p2 to Yes.",
   };
 
   const dynamicOptions = dynamicPolymarketOptions(decodedAncillaryData);
@@ -97,6 +104,11 @@ export function maybeMakePolymarketOptions(
         label: "Unknown",
         value: "0.5",
         secondaryLabel: "p3",
+      },
+      {
+        label: "Early request",
+        value: earlyRequestMagicNumber,
+        secondaryLabel: "p4",
       },
       {
         label: "Custom",
@@ -124,6 +136,28 @@ export function maybeMakePolymarketOptions(
         label: "Unknown",
         value: "0.5",
         secondaryLabel: "p3",
+      },
+      {
+        label: "Custom",
+        value: "custom",
+      },
+    ];
+  }
+
+  if (
+    decodedAncillaryData.includes(options3.resData) &&
+    decodedAncillaryData.includes(options3.corresponds)
+  ) {
+    return [
+      {
+        label: "No",
+        value: "0",
+        secondaryLabel: "p1",
+      },
+      {
+        label: "Yes",
+        value: "1",
+        secondaryLabel: "p2",
       },
       {
         label: "Early request",
