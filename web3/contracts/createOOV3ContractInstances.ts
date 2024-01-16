@@ -39,14 +39,6 @@ export const contractDetails = [
     ),
   },
   {
-    // boba
-    chainId: 288,
-    providerUrl: config.oov3ProviderUrl288,
-    address: ethers.utils.getAddress(
-      "0xe1C2587C1789f7D00F22931D4DBAD537405DFe1f"
-    ),
-  },
-  {
     // arbitrum
     chainId: 42161,
     providerUrl: config.oov3ProviderUrl42161,
@@ -57,13 +49,15 @@ export const contractDetails = [
 ];
 
 export function createOOV3ContractInstances() {
-  const instances = contractDetails.map(({ chainId, providerUrl, address }) => {
-    const provider = new ethers.providers.JsonRpcProvider(providerUrl);
-    return {
-      chainId,
-      instance: connect(address, provider),
-    };
-  });
+  const instances = contractDetails
+    .filter(({ providerUrl }) => new Boolean(providerUrl))
+    .map(({ chainId, providerUrl, address }) => {
+      const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+      return {
+        chainId,
+        instance: connect(address, provider),
+      };
+    });
   return instances;
 }
 
