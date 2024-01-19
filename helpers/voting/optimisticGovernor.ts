@@ -6,4 +6,4 @@ export function checkIfIsOptimisticGovernor(decodedAncillaryData: string) {
 }
 
 export const getOptimisticGovernorTitle = (explanation?: string) =>
-  `OSnap Request ${explanation ?? ""}`;
+  `oSnap Request ${explanation ?? ""}`;
