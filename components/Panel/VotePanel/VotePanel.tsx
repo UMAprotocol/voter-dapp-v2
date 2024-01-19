@@ -1,6 +1,8 @@
 import { Tabs } from "components";
 import { decodeHexString } from "helpers";
+import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import { useVoteDiscussion } from "hooks";
+import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
@@ -25,8 +27,17 @@ export function VotePanel({ content }: Props) {
     isGovernance,
     options,
     augmentedData,
+    decodedAncillaryData,
   } = content;
 
+  const { isOptimisticGovernorVote, explanationText } =
+    useOptimisticGovernorData(decodedAncillaryData);
+
+  const optimisticGovernorTitle = isOptimisticGovernorVote
+    ? getOptimisticGovernorTitle(explanationText)
+    : "";
+
+  const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
   const { data: discussion, isFetching: discussionLoading } = useVoteDiscussion(
     {
       identifier,
@@ -35,9 +46,9 @@ export function VotePanel({ content }: Props) {
   );
   const claim = augmentedData?.optimisticOracleV3Data?.claim;
 
-  const titleOrClaimOrIdentifier = claim
-    ? decodeHexString(claim)
-    : title ?? decodedIdentifier;
+  const titleOrClaimOrIdentifier =
+    optimisticGovernorTitle ||
+    (claim ? decodeHexString(claim) : title ?? decodedIdentifier);
 
   const titleToShow =
     titleOrClaimOrIdentifier.length > 100
@@ -85,7 +96,7 @@ export function VotePanel({ content }: Props) {
     <PanelWrapper>
       <PanelTitle
         title={titleToShow}
-        origin={origin}
+        origin={voteOrigin}
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />

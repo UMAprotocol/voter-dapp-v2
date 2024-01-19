@@ -7,12 +7,29 @@ import {
 } from "components";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
+import { getOptimisticGovernorTitle } from "helpers";
+import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import NextLink from "next/link";
 import Clickable from "public/assets/icons/clickable.svg";
 import Dot from "public/assets/icons/dot.svg";
+import OSnap from "public/assets/icons/osnap.svg";
 import Rolled from "public/assets/icons/rolled.svg";
+import styled from "styled-components";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
+import { mobileAndUnder } from "constant";
+
+const OSnapIcon = styled(OSnap)``;
+
+const TitleIconWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+
+  @media ${mobileAndUnder} {
+    width: max(40px, 5%);
+    height: max(40px, 5%);
+  }
+`;
 
 export function VoteTableRow(props: VoteListItemProps) {
   const {
@@ -46,6 +63,15 @@ export function VoteTableRow(props: VoteListItemProps) {
     moreDetailsAction,
   } = useVoteListItem(props);
 
+  const { isOptimisticGovernorVote, explanationText } =
+    useOptimisticGovernorData(props.vote.decodedAncillaryData);
+
+  const optimisticGovernorTitle = isOptimisticGovernorVote
+    ? getOptimisticGovernorTitle(explanationText)
+    : "";
+
+  const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
+
   return (
     <tr
       className="group h-[80px] cursor-pointer rounded bg-white"
@@ -56,12 +82,18 @@ export function VoteTableRow(props: VoteListItemProps) {
         <div className="flex items-center gap-[--cell-padding]">
           <div className="min-w-[--title-icon-size]">
             <div className="w-[--title-icon-size]">
-              <Icon />
+              {isOptimisticGovernorVote ? (
+                <TitleIconWrapper>
+                  <OSnapIcon />
+                </TitleIconWrapper>
+              ) : (
+                <Icon />
+              )}
             </div>
           </div>
           <div>
             <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold transition duration-300 group-hover:text-red-500">
-              {titleText}
+              {optimisticGovernorTitle || titleText}
             </h3>
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
@@ -81,7 +113,7 @@ export function VoteTableRow(props: VoteListItemProps) {
                 </Tooltip>
               ) : null}
               <h4 className="text-xs text-black-opacity-50">
-                {origin}{" "}
+                {voteOrigin}{" "}
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
                   `| Vote #${resolvedPriceRequestIndex}`}{" "}

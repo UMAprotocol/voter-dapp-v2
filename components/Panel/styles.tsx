@@ -15,6 +15,15 @@ export const PanelSectionTitle = styled.h2`
   font-weight: 700;
 `;
 
+export const PanelSectionSubTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font: var(--header-xs);
+  font-weight: 700;
+`;
+
 export const PanelSectionText = styled.p`
   font: var(--text-sm);
   margin-bottom: 20px;

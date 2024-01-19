@@ -100,6 +100,7 @@ const Wrapper = styled.div`
   align-items: center;
   gap: 20px;
   padding: 25px;
+  overflow: hidden;
 
   @media ${mobileAndUnder} {
     gap: max(20px, 5%);

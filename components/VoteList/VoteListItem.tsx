@@ -13,6 +13,8 @@ import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
+import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
+import { getOptimisticGovernorTitle } from "helpers";
 
 export function VoteListItem(props: VoteListItemProps) {
   const {
@@ -45,6 +47,15 @@ export function VoteListItem(props: VoteListItemProps) {
     moreDetailsAction,
   } = useVoteListItem(props);
 
+  const { isOptimisticGovernorVote, explanationText } =
+    useOptimisticGovernorData(props.vote.decodedAncillaryData);
+
+  const optimisticGovernorTitle = isOptimisticGovernorVote
+    ? getOptimisticGovernorTitle(explanationText)
+    : "";
+
+  const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
+
   return (
     <div
       style={style}
@@ -53,7 +64,9 @@ export function VoteListItem(props: VoteListItemProps) {
       <div className="w-full rounded-l">
         <div className="align-center flex border-b-[--border-color] pb-1">
           <div>
-            <h3 className="mb-1 text-lg font-semibold">{titleText}</h3>
+            <h3 className="mb-1 text-lg font-semibold">
+              {optimisticGovernorTitle || titleText}
+            </h3>
             <div className="flex gap-2 align-baseline">
               {isRolled && !isV1 ? (
                 <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
@@ -72,7 +85,7 @@ export function VoteListItem(props: VoteListItemProps) {
                 </Tooltip>
               ) : null}
               <h4 className="text-xs text-black-opacity-50">
-                {origin}{" "}
+                {voteOrigin}{" "}
                 {!isV1 &&
                   resolvedPriceRequestIndex &&
                   `| Vote #${resolvedPriceRequestIndex}`}{" "}
