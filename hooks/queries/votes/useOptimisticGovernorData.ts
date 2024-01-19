@@ -8,7 +8,7 @@ import { useWalletContext } from "hooks/contexts/useWalletContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
 import { useIpfs } from "./useIpfs";
 
-export interface OptimisticGovernorProposalData {
+interface OptimisticGovernorProposalData {
   proposal: {
     explanationText: string;
     rules: string;

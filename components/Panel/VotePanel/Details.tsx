@@ -55,10 +55,6 @@ export function Details({
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
 
-  if (ipfs) {
-    console.log(JSON.stringify(ipfs));
-  }
-
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
   }
