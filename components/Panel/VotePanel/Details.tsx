@@ -13,6 +13,7 @@ import {
   truncateEthAddress,
 } from "helpers";
 import { config } from "helpers/config";
+import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -24,8 +25,8 @@ import Time from "public/assets/icons/time-with-inner-circle.svg";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
-import { VoteT, SupportedChainIds, OracleTypeT } from "types";
-import { PanelSectionTitle } from "../styles";
+import { OracleTypeT, SupportedChainIds, VoteT } from "types";
+import { PanelSectionSubTitle, PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
 
@@ -48,9 +49,16 @@ export function Details({
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
   const [showRawClaimData, setShowRawClaimData] = useState(false);
+  const { isOptimisticGovernorVote, explanationText, rules, ipfs } =
+    useOptimisticGovernorData(decodedAncillaryData);
   const claim = augmentedData?.optimisticOracleV3Data?.claim;
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
+
+  if (ipfs) {
+    console.log(JSON.stringify(ipfs));
+  }
+
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
   }
@@ -176,6 +184,42 @@ export function Details({
                 {decodedAncillaryData === ""
                   ? "The ancillary data for this request is blank."
                   : decodedAncillaryData}
+              </>
+            )}
+          </Text>
+        </SectionWrapper>
+      )}
+      {isOptimisticGovernorVote && ipfs && (
+        <SectionWrapper>
+          <PanelSectionTitle>
+            <IconWrapper>
+              <DescriptionIcon />
+            </IconWrapper>{" "}
+            Additional Text Data
+          </PanelSectionTitle>
+          <Text className="ml-2">
+            <PanelSectionSubTitle>Proposal</PanelSectionSubTitle>
+            <Button
+              href={`https://snapshot.org/#/${ipfs.data.message.space}/proposal/${ipfs.hash}`}
+              label={ipfs.data.message.title}
+            />
+            {explanationText && (
+              <>
+                <PanelSectionSubTitle className="mt-2">
+                  Explanation
+                </PanelSectionSubTitle>
+                <Button
+                  href={`https://ipfs.io/ipfs/${explanationText}`}
+                  label={explanationText}
+                />
+              </>
+            )}
+            {rules && (
+              <>
+                <PanelSectionSubTitle className="mt-2">
+                  Rules
+                </PanelSectionSubTitle>
+                {rules}
               </>
             )}
           </Text>

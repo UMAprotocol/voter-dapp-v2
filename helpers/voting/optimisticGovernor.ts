@@ -1,7 +1,7 @@
 export function checkIfIsOptimisticGovernor(decodedAncillaryData: string) {
   return (
-    decodedAncillaryData.includes("rules:") &&
-    decodedAncillaryData.includes("explanation:")
+    decodedAncillaryData.includes("assertionId:") &&
+    decodedAncillaryData.includes("ooAsserter:")
   );
 }
 
