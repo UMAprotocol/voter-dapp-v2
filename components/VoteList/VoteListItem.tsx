@@ -51,7 +51,7 @@ export function VoteListItem(props: VoteListItemProps) {
     useOptimisticGovernorData(props.vote.decodedAncillaryData);
 
   const optimisticGovernorTitle = isOptimisticGovernorVote
-    ? getOptimisticGovernorTitle(explanationText)
+    ? getOptimisticGovernorTitle(explanationText).slice(0, 50) + "..."
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
