@@ -74,11 +74,11 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   return (
     <tr
-      className="group h-[80px] cursor-pointer rounded bg-white"
+      className="group min-h-[80px] cursor-pointer rounded bg-white"
       style={style}
       onClick={moreDetailsAction}
     >
-      <td className="rounded-l px-[--cell-padding]">
+      <td className="rounded-l p-[--cell-padding]">
         <div className="flex items-center gap-[--cell-padding]">
           <div className="min-w-[--title-icon-size]">
             <div className="w-[--title-icon-size]">
@@ -92,7 +92,7 @@ export function VoteTableRow(props: VoteListItemProps) {
             </div>
           </div>
           <div>
-            <h3 className="max-w-[500px] overflow-hidden text-ellipsis text-lg font-semibold transition duration-300 group-hover:text-red-500">
+            <h3 className="line-clamp-2 max-w-[500px] break-words text-lg font-semibold transition duration-300 group-hover:text-red-500">
               {optimisticGovernorTitle || titleText}
             </h3>
             <div className="flex gap-2 align-baseline">

@@ -51,7 +51,7 @@ export function VoteListItem(props: VoteListItemProps) {
     useOptimisticGovernorData(props.vote.decodedAncillaryData);
 
   const optimisticGovernorTitle = isOptimisticGovernorVote
-    ? getOptimisticGovernorTitle(explanationText).slice(0, 50) + "..."
+    ? getOptimisticGovernorTitle(explanationText)
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
@@ -59,12 +59,12 @@ export function VoteListItem(props: VoteListItemProps) {
   return (
     <div
       style={style}
-      className="grid h-auto w-full items-start gap-[12px] rounded bg-white p-3"
+      className="flex h-auto w-full max-w-full flex-col items-start gap-[12px] rounded bg-white p-3"
     >
       <div className="w-full rounded-l">
         <div className="align-center flex border-b-[--border-color] pb-1">
-          <div>
-            <h3 className="mb-1 text-lg font-semibold">
+          <div className="w-full">
+            <h3 className="mb-1 line-clamp-2 w-full break-words text-lg font-semibold">
               {optimisticGovernorTitle || titleText}
             </h3>
             <div className="flex gap-2 align-baseline">
