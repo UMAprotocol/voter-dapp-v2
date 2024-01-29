@@ -92,7 +92,7 @@ export function VoteTableRow(props: VoteListItemProps) {
             </div>
           </div>
           <div>
-            <h3 className="line-clamp-2 max-w-[500px] text-lg font-semibold transition duration-300 group-hover:text-red-500">
+            <h3 className="line-clamp-2 max-w-[500px] break-words text-lg font-semibold transition duration-300 group-hover:text-red-500">
               {optimisticGovernorTitle || titleText}
             </h3>
             <div className="flex gap-2 align-baseline">

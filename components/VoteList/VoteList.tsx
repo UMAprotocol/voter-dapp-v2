@@ -19,7 +19,7 @@ export function VoteList({ data, activityStatus }: Props) {
 
   if (isTabletAndUnder)
     return (
-      <div className="grid gap-1">
+      <div className="flex flex-col gap-1">
         {data.map((item) => (
           <VoteListItem key={item.vote.uniqueKey} {...item} />
         ))}
