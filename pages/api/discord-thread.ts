@@ -99,7 +99,7 @@ async function fetchDiscordThread(
 ): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
   const threadMsg = await getDiscordMessages(evidenceRationalDiscordChannelId);
-  console.log(threadMsg);
+
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
   const timeToThread: { [key: string]: string | undefined } = {};
