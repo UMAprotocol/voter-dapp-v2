@@ -3,6 +3,7 @@ import { supportedChains } from "constant";
 import { BigNumber } from "ethers";
 import { DropdownItemT, LinkT, UserVoteDataT } from "types";
 import * as ss from "superstruct";
+import { APIMessage } from "discord-api-types/v10";
 
 export type UniqueKeyT = string;
 
@@ -268,38 +269,7 @@ export type AugmentedVoteDataByKeyT = Record<
 
 export type TransactionHashT = string;
 
-export type RawDiscordMessageT = {
-  content: string;
-  author: {
-    username: string;
-    id: string;
-    avatar: string;
-  };
-  timestamp: string;
-  thread: { id: string; name: string };
-  attachments: {
-    id: string;
-    filename: string;
-    size: number;
-    url: string;
-    proxy_url: string;
-    width?: number;
-    height?: number;
-    content_type: string;
-  }[];
-  embeds: {
-    type: string;
-    url: string;
-    title: string;
-    description: string;
-  }[];
-  mentions: {
-    id: string;
-    username: string;
-    avatar: string;
-    discriminator: string;
-  }[];
-};
+export type RawDiscordMessageT = APIMessage;
 
 export type RawDiscordThreadT = RawDiscordMessageT[];
 
