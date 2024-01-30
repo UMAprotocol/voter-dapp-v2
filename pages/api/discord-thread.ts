@@ -9,6 +9,7 @@ import {
 } from "types";
 
 import * as ss from "superstruct";
+import { APIEmbed } from "discord-api-types/v10";
 
 export const DiscordThreadRequestBody = ss.object({ l1Request: L1Request });
 export type DiscordThreadRequestBody = ss.Infer<
@@ -35,7 +36,7 @@ export async function getDiscordMessages(threadId: string) {
   return discordRequest(`channels/${threadId}/messages`);
 }
 
-function discordPhoto(userId: string, userAvatar: string) {
+function discordPhoto(userId: string, userAvatar: string | null) {
   if (!userId || !userAvatar) return undefined;
   return `https://cdn.discordapp.com/avatars/${userId}/${userAvatar}`;
 }
@@ -51,16 +52,20 @@ function replaceMentions(
   }
   return result;
 }
-function replaceEmbeds(
-  message: string,
-  embeds: { url: string; title: string; type: string }[]
-) {
+
+function replaceEmbeds(message: string, embeds: APIEmbed[]) {
   let result = message;
   for (const embed of embeds) {
-    result = result.replace(`(${embed.url})`, `[${embed.title}](${embed.url})`);
+    if (embed?.url && embed?.title) {
+      result = result.replace(
+        `(${embed.url})`,
+        `[${embed.title}](${embed.url})`
+      );
+    }
   }
   return result;
 }
+
 function concatenateAttachments(
   message: string,
   attachments: {
@@ -94,22 +99,25 @@ async function fetchDiscordThread(
 ): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
   const threadMsg = await getDiscordMessages(evidenceRationalDiscordChannelId);
+
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
-  const timeToThread: { [key: string]: string } = {};
+  const timeToThread: { [key: string]: string | undefined } = {};
   threadMsg.forEach((message) => {
-    const time = extractValidateTimestamp(message.thread.name);
-    if (time) timeToThread[time.toString()] = message.thread.id;
+    const time = extractValidateTimestamp(message.content);
+    if (time) timeToThread[time.toString()] = message.thread?.id;
   });
   // Associate the threadId with each timestamp provided in the payload.
-  const requestsToThread: { [key: string]: string } = {};
+  const requestsToThread: { [key: string]: string | undefined } = {};
   const time = l1Request.time.toString();
   if (timeToThread[time]) requestsToThread[time] = timeToThread[time];
   else requestsToThread[time] = "";
 
   let messages: RawDiscordThreadT = [];
-  if (requestsToThread[time] !== "")
-    messages = await getDiscordMessages(requestsToThread[time]);
+  const thread = requestsToThread[time];
+  if (thread) {
+    messages = await getDiscordMessages(thread);
+  }
 
   const processedMessages: DiscordMessageT[] = messages
     .filter((message) => message.content != "")
@@ -140,6 +148,7 @@ export default async function handler(
 
   try {
     const body = ss.create(request.body, DiscordThreadRequestBody);
+
     const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
     );
