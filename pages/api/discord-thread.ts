@@ -11,6 +11,20 @@ import {
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
 
+// converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
+export function stripMarkdownHeaders(message: string): string {
+  return message.replace(
+    /#{1,3}\s+(.*?)$/gm,
+    (_, p1: string) => `**${p1.trim()}**`
+  );
+}
+// fixes misformated **bolds**. any whitespace between ** for some reason does not get interpreted as bold
+export function fixMarkdownBold(message: string): string {
+  return message.replace(
+    /\*\*(.*?)\*\*/g,
+    (_, p1: string) => `**${p1.trim()}**`
+  );
+}
 export const DiscordThreadRequestBody = ss.object({ l1Request: L1Request });
 export type DiscordThreadRequestBody = ss.Infer<
   typeof DiscordThreadRequestBody
@@ -122,9 +136,11 @@ async function fetchDiscordThread(
   const processedMessages: DiscordMessageT[] = messages
     .filter((message) => message.content != "")
     .map((msg: RawDiscordMessageT) => {
+      const sanitized = fixMarkdownBold(stripMarkdownHeaders(msg.content));
+
       return {
         message: concatenateAttachments(
-          replaceEmbeds(replaceMentions(msg.content, msg.mentions), msg.embeds),
+          replaceEmbeds(replaceMentions(sanitized, msg.mentions), msg.embeds),
           msg.attachments
         ),
         sender: msg.author.username,
