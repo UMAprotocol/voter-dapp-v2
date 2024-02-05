@@ -132,9 +132,9 @@ export function VoteListItem(props: VoteListItemProps) {
         </div>
       ) : null}
       {showVoteStatus() ? (
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-2">
           <span>Vote status:</span>
-          <div className="flex max-w-max items-center gap-2 whitespace-nowrap">
+          <div className="flex max-w-max items-center gap-1 whitespace-nowrap">
             <Loader isLoading={isLoading} width="6vw">
               <Dot className="fill-[--dot-color]" />{" "}
               {getRelevantTransactionLink()}
