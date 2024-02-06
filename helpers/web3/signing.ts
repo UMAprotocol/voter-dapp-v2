@@ -9,10 +9,6 @@ const { signingMessage } = config;
 export async function sign(signer: Signer): Promise<SigningKeys> {
   const address = await signer.getAddress();
   const savedSigningKeys = getSavedSigningKeys();
-  const signingKey = savedSigningKeys[address];
-  if (signingKey) {
-    return savedSigningKeys;
-  }
   const newSigningKey = await makeSigningKey(signer, signingMessage);
   const newSigningKeys = {
     ...savedSigningKeys,

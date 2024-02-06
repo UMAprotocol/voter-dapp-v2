@@ -4,6 +4,7 @@ import { IsDelegate } from "./IsDelegate";
 import { IsDelegator } from "./IsDelegator";
 import { NoDelegation } from "./NoDelegation";
 import { NoWalletConnected } from "./NoWalletConnected";
+import { Signatures } from "./Signatures";
 
 export function Wallets() {
   const {
@@ -23,6 +24,7 @@ export function Wallets() {
       {isDelegate && <IsDelegate />}
       {isDelegatorPending && <IsDelegator hasPending={true} />}
       {isDelegatePending && <IsDelegate hasPending={true} />}
+      <Signatures />
     </Wrapper>
   );
 }

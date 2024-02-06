@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
   font: var(--text-md);
-  max-width: 510px;
+  max-width: 800px;
   min-width: 224px;
 `;
 

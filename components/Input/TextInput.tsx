@@ -13,6 +13,7 @@ interface Props {
   isNumeric?: boolean;
   maxDecimals?: number;
   allowNegative?: boolean;
+  maxLength?: number;
 }
 export function TextInput({
   value,
@@ -23,6 +24,7 @@ export function TextInput({
   type = "text",
   maxDecimals = 18,
   allowNegative = true,
+  maxLength = 79,
 }: Props) {
   const inputMode = type === "text" ? "text" : "decimal";
   // treat all as text inputs to avoid unwanted automatic number formatting
@@ -46,7 +48,7 @@ export function TextInput({
         autoCorrect="off"
         placeholder={placeholder ?? "Enter value"}
         minLength={1}
-        maxLength={79}
+        maxLength={maxLength}
         spellCheck="false"
       />
       {!!onClear && (
