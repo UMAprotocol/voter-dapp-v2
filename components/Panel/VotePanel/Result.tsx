@@ -108,7 +108,7 @@ export function Result({
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
         <ParticipationItem>
-          <span>Total tokens that voted</span>
+          <span>Total tokens that revealed</span>
           <Strong>
             {totalTokensVotedWith
               ? commify(truncateDecimals(totalTokensVotedWith, 2))
