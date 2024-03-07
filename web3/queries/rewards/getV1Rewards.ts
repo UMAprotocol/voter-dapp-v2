@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
-import { MainnetOrGoerli } from "types";
+import { MainnetOrL1Testnet } from "types";
 
 export async function getV1Rewards(
   address: string | undefined,
-  chainId: MainnetOrGoerli
+  chainId: MainnetOrL1Testnet
 ) {
   if (!address)
     return {

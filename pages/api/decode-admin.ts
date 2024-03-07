@@ -10,8 +10,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
 import { constructContract } from "./_common";
+import { config } from "helpers/config";
 
 type AbiDecoder = typeof abiDecoder;
+
+const { chainId } = config;
 
 export class TransactionDataDecoder {
   private static instance: TransactionDataDecoder;
@@ -97,6 +100,8 @@ function getNameFromChainId(value: string) {
       return "Boba";
     case "42161":
       return "Arbitrum";
+    case "11155111":
+      return "Sepolia";
     default:
       return "Unknown";
   }
@@ -170,9 +175,9 @@ const _generateTransactionDataRecursive = function (
 };
 
 async function generateReadableAdminTransactionData(identifiers: string[]) {
-  const governorV1 = await constructContract(1, "Governor");
+  const governorV1 = await constructContract(chainId, "Governor");
 
-  const governorV2 = await constructContract(1, "GovernorV2");
+  const governorV2 = await constructContract(chainId, "GovernorV2");
 
   const events = (
     await Promise.all([

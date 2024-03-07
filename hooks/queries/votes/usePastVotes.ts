@@ -11,7 +11,7 @@ export function usePastVotes() {
   const queryResult = useQuery({
     queryKey: [pastVotesKey, roundId],
     queryFn: () => getPastVotesAllVersions(),
-    enabled: config.graphV1Enabled && config.graphV2Enabled,
+    enabled: config.graphV2Enabled,
     refetchInterval: oneMinute,
     onError,
   });

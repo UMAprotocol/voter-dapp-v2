@@ -42,22 +42,27 @@ export const fromBlocks: Record<string, Record<number | string, number>> = {
   OptimisticOracle: {
     1: 0,
     5: 0,
+    11155111: 5421122,
   },
   OptimisticOracleV2: {
     1: 0,
     5: 0,
+    11155111: 5421127,
   },
   SkinnyOptimisticOracle: {
     1: 0,
     5: 0,
+    11155111: 5421124,
   },
   VotingV2: {
     1: 0,
     5: 0,
+    11155111: 5421133,
   },
   Voting: {
     1: 0,
     5: 0,
+    11155111: 5427310,
   },
 };
 

@@ -1,7 +1,7 @@
 import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber, ethers } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
-import { MainnetOrGoerli } from "types";
+import { MainnetOrL1Testnet } from "types";
 import { constructContract } from "./_common";
 
 type GroupedReveals = Record<
@@ -11,7 +11,7 @@ type GroupedReveals = Record<
 
 async function generatePastRewardTx(
   voterAddress: string,
-  chainId: MainnetOrGoerli
+  chainId: MainnetOrL1Testnet
 ): Promise<{ multicallPayload: string[]; totalRewards: string }> {
   const votingV1 = (await constructContract(chainId, "Voting")) as VotingEthers;
 
@@ -56,7 +56,7 @@ async function generatePastRewardTx(
 async function constructMulticall(
   unclaimedVotes: GroupedReveals,
   voterAddress: string,
-  chainId: MainnetOrGoerli
+  chainId: MainnetOrL1Testnet
 ): Promise<{ multicallPayload: string[]; totalRewards: string }> {
   const votingV2 = (await constructContract(
     chainId,
@@ -101,7 +101,7 @@ export default async function handler(
   try {
     const body = request.body as {
       address: string;
-      chainId: MainnetOrGoerli;
+      chainId: MainnetOrL1Testnet;
     };
     ["address", "chainId"].forEach((requiredKey) => {
       if (!Object.keys(body).includes(requiredKey))

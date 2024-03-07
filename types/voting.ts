@@ -216,7 +216,7 @@ export type VoteDecodedAdminTransactionsT = {
 
 export type SupportedChainIds = keyof typeof supportedChains;
 
-export type MainnetOrGoerli = 1 | 5;
+export type MainnetOrL1Testnet = 1 | 5 | 11155111;
 
 export type NodeUrl = string;
 
