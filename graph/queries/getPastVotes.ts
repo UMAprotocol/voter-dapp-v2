@@ -5,11 +5,13 @@ import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
-const { graphEndpoint } = config;
+const { chainId, graphEndpoint } = config;
 
 export async function getPastVotesV1() {
-  const result = (await import("data/pastVotesV1.json"))
-    .default as PastVotesQuery;
+  const result =
+    chainId === 1
+      ? ((await import("data/pastVotesV1.json")).default as PastVotesQuery)
+      : { priceRequests: [] };
   return result?.priceRequests?.map(
     ({
       identifier: { id },

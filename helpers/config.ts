@@ -18,7 +18,6 @@ const Env = ss.object({
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
   NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.optional(ss.string()),
-  NEXT_PUBLIC_GRAPH_ENDPOINT_V1: ss.optional(ss.string()),
   NEXT_PUBLIC_GRAPH_ENDPOINT: ss.optional(ss.string()),
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
@@ -34,6 +33,7 @@ const Env = ss.object({
   NEXT_PUBLIC_PROVIDER_V3_42161: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -43,7 +43,6 @@ export const env = ss.create(
   {
     NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS:
       process.env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_GRAPH_ENDPOINT_V1: process.env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     NEXT_PUBLIC_SIGNING_MESSAGE: process.env.NEXT_PUBLIC_SIGNING_MESSAGE,
     NEXT_PUBLIC_GRAPH_ENDPOINT: process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     NEXT_PUBLIC_DEPLOY_BLOCK: process.env.NEXT_PUBLIC_DEPLOY_BLOCK,
@@ -75,6 +74,8 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
     NEXT_PUBLIC_PROVIDER_V3_5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     NEXT_PUBLIC_PROVIDER_V3_10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
+    NEXT_PUBLIC_PROVIDER_V3_11155111:
+      process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
   },
   Env
 );
@@ -94,7 +95,6 @@ const AppConfig = ss.object({
   graphEndpoint: ss.optional(ss.string()),
   contentfulSpace: ss.optional(ss.string()),
   contentfulAccessToken: ss.optional(ss.string()),
-  graphV1Enabled: ss.defaulted(ss.boolean(), false),
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
   contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
@@ -108,6 +108,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl42161: ss.optional(ss.string()),
   oov3ProviderUrl5: ss.optional(ss.string()),
   oov3ProviderUrl10: ss.optional(ss.string()),
+  oov3ProviderUrl11155111: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -124,14 +125,12 @@ export const appConfig = ss.create(
     votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
     contentfulSpace: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     contentfulAccessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
-    graphEndpointV1: env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
     deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
     chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
     walletConnectProjectId: env.NEXT_PUBLIC_WALLET_CONNECT,
-    graphV1Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT_V1,
     graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     contentfulEnabled:
       !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
@@ -151,6 +150,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
     oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
+    oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
   },
   AppConfig
 );
@@ -218,6 +218,21 @@ export const chainConstantsList: ChainConstantsList = [
       token: "MATIC",
       label: "Polygon",
       rpcUrl: `https://polygon.infura.io/v3/${appConfig.infuraId}`,
+    },
+  },
+  {
+    chainId: 11155111,
+    infuraName: "sepolia",
+    properName: "Sepolia",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://sepolia.etherscan.io/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://sepolia.etherscan.io/address/${address}`,
+    onboardConfig: {
+      id: "0xaa36a7",
+      token: "ETH",
+      label: "SepoliaETH",
+      rpcUrl: `https://sepolia.infura.io/v3/${appConfig.infuraId}`,
     },
   },
 ];

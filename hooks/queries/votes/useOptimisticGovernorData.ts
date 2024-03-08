@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { MainnetOrGoerli } from "types";
+import { MainnetOrL1Testnet } from "types";
 
 import { useSetChain } from "@web3-onboard/react";
 import request, { gql } from "graphql-request";
@@ -51,13 +51,28 @@ interface ProposalType {
 
 export async function getProposalData(
   assertionId: string,
-  chainId: MainnetOrGoerli
+  chainId: MainnetOrL1Testnet
 ) {
   // TODO handle different chains
-  const endpoint =
-    chainId == 1
-      ? "https://api.thegraph.com/subgraphs/name/umaprotocol/mainnet-optimistic-governor"
-      : "https://api.thegraph.com/subgraphs/name/umaprotocol/goerli-optimistic-governor";
+  let endpoint: string;
+  switch (chainId) {
+    case 1:
+      endpoint =
+        "https://api.thegraph.com/subgraphs/name/umaprotocol/mainnet-optimistic-governor";
+      break;
+    case 5:
+      endpoint =
+        "https://api.thegraph.com/subgraphs/name/umaprotocol/goerli-optimistic-governor";
+      break;
+    case 11155111:
+      endpoint =
+        "https://api.thegraph.com/subgraphs/name/reinis-frp/sepolia-optimistic-governor";
+      break;
+    default:
+      endpoint =
+        "https://api.thegraph.com/subgraphs/name/umaprotocol/mainnet-optimistic-governor";
+      break;
+  }
   const proposalQuery = gql`
     {
       proposal(
@@ -89,7 +104,7 @@ export function useOptimisticGovernorData(decodedAncillaryData: string) {
     queryFn: () =>
       getProposalData(
         `0x${assertionId}`,
-        Number(connectedChain?.id ?? 1) as MainnetOrGoerli
+        Number(connectedChain?.id ?? 1) as MainnetOrL1Testnet
       ),
     enabled: shouldFetch,
     onError,

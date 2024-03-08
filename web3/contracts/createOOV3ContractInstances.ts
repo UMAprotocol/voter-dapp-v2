@@ -46,6 +46,14 @@ export const contractDetails = [
       "0xa6147867264374F324524E30C02C331cF28aa879"
     ),
   },
+  {
+    // sepolia
+    chainId: 11155111,
+    providerUrl: config.oov3ProviderUrl11155111,
+    address: ethers.utils.getAddress(
+      "0xFd9e2642a170aDD10F53Ee14a93FcF2F31924944"
+    ),
+  },
 ];
 
 export function createOOV3ContractInstances() {

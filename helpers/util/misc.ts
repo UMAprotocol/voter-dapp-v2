@@ -48,6 +48,8 @@ function getBlockExplorerUrlForChain(chainId: number) {
       return "https://arbiscan.io";
     case 80001:
       return "https://mumbai.polygonscan.com";
+    case 11155111:
+      return "https://sepolia.etherscan.io";
   }
 }
 

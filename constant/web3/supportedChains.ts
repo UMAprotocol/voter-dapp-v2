@@ -8,6 +8,7 @@ export const supportedChains = {
   416: "SX",
   43114: "Avalanche",
   42161: "Arbitrum",
+  11155111: "Sepolia",
 };
 
 export function getOracleTypeDisplayName(oracleType:string | undefined) {

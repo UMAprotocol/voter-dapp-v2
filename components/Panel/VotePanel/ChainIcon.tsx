@@ -27,6 +27,7 @@ export function ChainIcon({
     416: SXIcon,
     43114: AvalancheIcon,
     42161: ArbitrumIcon,
+    11155111: EthereumIcon,
   };
 
   const chainName = supportedChains[chainId];
