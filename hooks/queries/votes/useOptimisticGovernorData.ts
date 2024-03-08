@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { checkIfIsOptimisticGovernor } from "helpers";
 import { MainnetOrL1Testnet } from "types";
 
 import { useSetChain } from "@web3-onboard/react";
@@ -93,16 +92,12 @@ export function useOptimisticGovernorData(decodedAncillaryData: string) {
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const isOptimisticGovernorVote =
-    checkIfIsOptimisticGovernor(decodedAncillaryData);
-
   const [_, assertionId, ooAsserter] =
     decodedAncillaryData.match(
       /assertionId:([a-f0-9]+),ooAsserter:([a-f0-9]+)/
     ) || [];
 
-  const shouldFetch =
-    isOptimisticGovernorVote && !isWrongChain && assertionId != null;
+  const shouldFetch = !isWrongChain && assertionId != null;
 
   const queryResult = useQuery({
     queryKey: [assertionId, ooAsserter, connectedChain?.id],
@@ -114,9 +109,10 @@ export function useOptimisticGovernorData(decodedAncillaryData: string) {
     enabled: shouldFetch,
     onError,
   });
+  const isOptimisticGovernorVote = !!queryResult?.data?.proposal;
 
   const ipfsData = useIpfs<SnapshotData>(
-    queryResult?.data?.proposal.explanationText
+    queryResult?.data?.proposal?.explanationText
   );
 
   return {
