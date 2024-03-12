@@ -192,10 +192,16 @@ async function getOracleRequestPrices(
   );
 }
 
-async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
-  const contract = await constructContract(137, "OracleChildTunnel");
+async function getOracleChildTunnelMessages(
+  chainId = 137
+): Promise<CommonEventData[]> {
+  if (!isSupportedChainId(chainId)) return [];
+  const contract = await constructContract(chainId, "OracleChildTunnel");
+  const blockNumber = await contract.provider.getBlockNumber();
   const events = await contract.queryFilter(
-    contract.filters.PriceRequestAdded()
+    contract.filters.PriceRequestAdded(),
+    // TODO: we will need to come up with a more efficeint way to query this, at least this will get recently finished polymarket requests.
+    blockNumber - 1000000
   );
   return events.map((event) =>
     ss.create(
@@ -210,7 +216,7 @@ async function getOracleChildTunnelMessages(): Promise<CommonEventData[]> {
             ? event?.args?.time?.toNumber()
             : event?.args?.time,
         contractType: "OptimisticOracleV2", // The event based type is only ever OOv2.
-        chainId: 137,
+        chainId,
       },
       CommonEventData
     )
