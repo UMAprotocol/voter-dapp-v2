@@ -54,6 +54,14 @@ export const contractDetails = [
       "0xFd9e2642a170aDD10F53Ee14a93FcF2F31924944"
     ),
   },
+  {
+    // base
+    chainId: 8453,
+    providerUrl: config.oov3ProviderUrl8453,
+    address: ethers.utils.getAddress(
+      "0x2aBf1Bd76655de80eDB3086114315Eec75AF500c"
+    ),
+  },
 ];
 
 export function createOOV3ContractInstances() {

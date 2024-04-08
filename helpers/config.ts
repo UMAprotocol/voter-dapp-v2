@@ -34,6 +34,7 @@ const Env = ss.object({
   NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_8453: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -76,6 +77,7 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     NEXT_PUBLIC_PROVIDER_V3_11155111:
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
+    NEXT_PUBLIC_PROVIDER_V3_8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
   },
   Env
 );
@@ -109,6 +111,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl5: ss.optional(ss.string()),
   oov3ProviderUrl10: ss.optional(ss.string()),
   oov3ProviderUrl11155111: ss.optional(ss.string()),
+  oov3ProviderUrl8453: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -151,6 +154,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
+    oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
   },
   AppConfig
 );
@@ -233,6 +237,21 @@ export const chainConstantsList: ChainConstantsList = [
       token: "ETH",
       label: "SepoliaETH",
       rpcUrl: `https://sepolia.infura.io/v3/${appConfig.infuraId}`,
+    },
+  },
+  {
+    chainId: 8453,
+    infuraName: "base",
+    properName: "Base",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://basescan.org/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://basescan.org/address/${address}`,
+    onboardConfig: {
+      id: "0x2105",
+      token: "ETH",
+      label: "BaseETH",
+      rpcUrl: "https://mainnet.base.org", // infura not supporting base yet
     },
   },
 ];
