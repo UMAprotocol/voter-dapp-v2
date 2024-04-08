@@ -7,6 +7,7 @@ import Gnosis from "public/assets/icons/gnosis.svg";
 import Optimism from "public/assets/icons/optimism.svg";
 import Polygon from "public/assets/icons/polygon.svg";
 import SX from "public/assets/icons/sx.svg";
+import Base from "public/assets/icons/base.svg";
 import styled from "styled-components";
 import { SupportedChainIds } from "types";
 
@@ -28,6 +29,7 @@ export function ChainIcon({
     43114: AvalancheIcon,
     42161: ArbitrumIcon,
     11155111: EthereumIcon,
+    8453: Base,
   };
 
   const chainName = supportedChains[chainId];
