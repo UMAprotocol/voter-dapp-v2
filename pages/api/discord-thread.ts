@@ -118,7 +118,12 @@ async function fetchDiscordThread(
   // it to the associated threadId.
   const timeToThread: { [key: string]: string | undefined } = {};
   threadMsg.forEach((message) => {
-    const time = extractValidateTimestamp(message.content);
+    // if for some reason the thread was changed, it will only reflect in thread.name.
+    // message.content only reflects the original message, not edits ( or edits by another admin)
+    // so first check for message.thread.name and fallback to message.content
+    const time = extractValidateTimestamp(
+      message?.thread?.name ?? message.content
+    );
     if (time) timeToThread[time.toString()] = message.thread?.id;
   });
   // Associate the threadId with each timestamp provided in the payload.
