@@ -42,6 +42,8 @@ function getBlockExplorerUrlForChain(chainId: number) {
       return "https://bobascan.com";
     case 416:
       return "https://explorer.sx.technology";
+    case 8453:
+      return `https://basescan.org`;
     case 43114:
       return "https://snowtrace.io";
     case 42161:
