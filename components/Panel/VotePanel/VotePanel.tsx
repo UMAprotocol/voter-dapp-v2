@@ -1,7 +1,9 @@
+import removeMarkdown from "remove-markdown";
+
 import { Tabs } from "components";
 import { decodeHexString } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
-import { useVoteDiscussion } from "hooks";
+import { useVoteDiscussion, useAssertionClaim } from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
@@ -26,8 +28,9 @@ export function VotePanel({ content }: Props) {
     results,
     isGovernance,
     options,
-    augmentedData,
     decodedAncillaryData,
+    assertionId,
+    assertionChildChainId,
   } = content;
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -44,11 +47,11 @@ export function VotePanel({ content }: Props) {
       time,
     }
   );
-  const claim = augmentedData?.optimisticOracleV3Data?.claim;
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
   const titleOrClaimOrIdentifier =
     optimisticGovernorTitle ||
-    (claim ? decodeHexString(claim) : title ?? decodedIdentifier);
+    removeMarkdown(claim ? decodeHexString(claim) : title ?? decodedIdentifier);
 
   const titleToShow =
     titleOrClaimOrIdentifier.length > 100
