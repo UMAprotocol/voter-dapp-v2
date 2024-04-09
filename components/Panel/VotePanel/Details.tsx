@@ -14,6 +14,8 @@ import {
 } from "helpers";
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
+import { useAssertionClaim } from "hooks";
+
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -44,6 +46,7 @@ export function Details({
   augmentedData,
   assertionChildChainId,
   assertionAsserter,
+  assertionId,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -51,7 +54,7 @@ export function Details({
   const [showRawClaimData, setShowRawClaimData] = useState(false);
   const { isOptimisticGovernorVote, explanationText, rules, ipfs } =
     useOptimisticGovernorData(decodedAncillaryData);
-  const claim = augmentedData?.optimisticOracleV3Data?.claim;
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
 
