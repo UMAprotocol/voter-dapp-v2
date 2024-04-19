@@ -30,6 +30,7 @@ export async function formatVotesToCommit({
   address,
   signingKey,
 }: FormatVotesToCommit) {
+  console.log("formatVotesToCommit");
   // the user's address is called `account` for legacy reasons
   const account = address;
   // we just need a random number to make the hash
@@ -52,11 +53,13 @@ export async function formatVotesToCommit({
       if (!selectedVote) return null;
 
       const { identifier, decodedIdentifier, ancillaryData, time } = vote;
+      console.log({ selectedVote, vote });
       // the selected option for a vote is called `price` for legacy reasons
       const price = parseVoteStringWithPrecision(
         selectedVote,
         decodedIdentifier
       );
+      console.log({ price });
 
       // the hash must be created with exactly these values in exactly this order
       const hash = makeVoteHash(
@@ -68,12 +71,14 @@ export async function formatVotesToCommit({
         roundId,
         identifier
       );
+      console.log({ hash });
       // encrypt the hash with the signed message we created when the user first connected their wallet
       const encryptedVote = await encryptMessage(
         signingPublicKey,
         JSON.stringify({ price, salt })
       );
 
+      console.log({ encryptedVote });
       return {
         ...vote,
         hash,
@@ -107,10 +112,16 @@ export function parseVoteStringWithPrecision(
   vote: string,
   decodedIdentifier: string
 ) {
+  console.log("parseVoteStringWithPrecision");
   // check the precision to use from our table of precisions
   const identifierPrecision = BigNumber.from(
     getPrecisionForIdentifier(decodedIdentifier)
   ).toString();
+  console.log("parseVoteStringWithPrecision", {
+    identifierPrecision,
+    vote,
+    decodedIdentifier,
+  });
   return parseFixed(vote, identifierPrecision).toString();
 }
 
