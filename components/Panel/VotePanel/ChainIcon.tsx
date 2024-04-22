@@ -8,6 +8,7 @@ import Optimism from "public/assets/icons/optimism.svg";
 import Polygon from "public/assets/icons/polygon.svg";
 import SX from "public/assets/icons/sx.svg";
 import Base from "public/assets/icons/base.svg";
+import Blast from "public/assets/icons/blast.svg";
 import styled from "styled-components";
 import { SupportedChainIds } from "types";
 
@@ -30,6 +31,7 @@ export function ChainIcon({
     42161: ArbitrumIcon,
     11155111: EthereumIcon,
     8453: Base,
+    81457: Blast,
   };
 
   const chainName = supportedChains[chainId];
