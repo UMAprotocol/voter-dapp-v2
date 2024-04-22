@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/augment-request.ts": {
+    "pages/api/augment-request.ts": {
       "maxDuration": 300
     }
   },
