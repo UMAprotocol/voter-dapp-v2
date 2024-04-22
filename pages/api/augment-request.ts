@@ -12,6 +12,8 @@ import {
   isSupportedChainId,
 } from "./_common";
 
+export const maxDuration = 300;
+
 const debug = !!process.env.DEBUG;
 
 type OracleType = Extract<
