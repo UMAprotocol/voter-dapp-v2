@@ -10,6 +10,7 @@ export const supportedChains = {
   42161: "Arbitrum",
   11155111: "Sepolia",
   8453: "Base",
+  81457: "Blast",
 };
 
 export function getOracleTypeDisplayName(oracleType: string | undefined) {

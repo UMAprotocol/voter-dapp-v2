@@ -100,6 +100,8 @@ function getNameFromChainId(value: string) {
       return "Boba";
     case "42161":
       return "Arbitrum";
+    case "81457":
+      return "Blast";
     case "11155111":
       return "Sepolia";
     default:

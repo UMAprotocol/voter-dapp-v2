@@ -35,6 +35,7 @@ const Env = ss.object({
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_8453: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_81457: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -78,6 +79,7 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_11155111:
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     NEXT_PUBLIC_PROVIDER_V3_8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
+    NEXT_PUBLIC_PROVIDER_V3_81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
   },
   Env
 );
@@ -112,6 +114,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl10: ss.optional(ss.string()),
   oov3ProviderUrl11155111: ss.optional(ss.string()),
   oov3ProviderUrl8453: ss.optional(ss.string()),
+  oov3ProviderUrl81457: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -155,6 +158,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
+    oov3ProviderUrl81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
   },
   AppConfig
 );
@@ -252,6 +256,21 @@ export const chainConstantsList: ChainConstantsList = [
       token: "ETH",
       label: "BaseETH",
       rpcUrl: "https://mainnet.base.org", // infura not supporting base yet
+    },
+  },
+  {
+    chainId: 81457,
+    infuraName: "blast",
+    properName: "Blast",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://blastscan.io/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://blastscan.io/address/${address}`,
+    onboardConfig: {
+      id: "0x13e31",
+      token: "ETH",
+      label: "BlastETH",
+      rpcUrl: "https://rpc.blast.io", // infura not supporting blast yet
     },
   },
 ];
