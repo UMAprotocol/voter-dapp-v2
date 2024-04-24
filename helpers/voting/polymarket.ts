@@ -2,16 +2,54 @@ import { earlyRequestMagicNumber } from "constant";
 import { DropdownItemT } from "types";
 import chunk from "lodash/chunk";
 
+const polymarketChainId = 137;
+
+// hard coded known poly addresses:
+// https://github.com/UMAprotocol/protocol/blob/master/packages/monitor-v2/src/monitor-polymarket/common.ts#L474
+const polymarketBinaryAdapterAddress =
+  "0xCB1822859cEF82Cd2Eb4E6276C7916e692995130";
+const polymarketCtfAdapterAddress =
+  "0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74";
+const polymarketCtfAdapterAddressV2 =
+  "0x2f5e3684cb1f318ec51b00edba38d79ac2c0aa9d";
+const polymarketCtfExchangeAddress =
+  "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E";
+export const polymarketRequesters = [
+  polymarketBinaryAdapterAddress.toLowerCase(),
+  polymarketCtfAdapterAddress.toLowerCase(),
+  polymarketCtfAdapterAddressV2.toLowerCase(),
+  polymarketCtfExchangeAddress.toLowerCase(),
+];
+
+export function isPolymarketRequester(address: string): boolean {
+  return polymarketRequesters.includes(address.toLowerCase());
+}
+
+export function getRequester(decodedAncillaryData: string): string | undefined {
+  const match = decodedAncillaryData.match(/ooRequester:(\w+)/) ?? [];
+  return match[1] ? "0x" + match[1] : undefined;
+}
+export function getChildChainId(
+  decodedAncillaryData: string
+): number | undefined {
+  const match = decodedAncillaryData.match(/childChainId:(\d+)/) ?? [];
+  return match[1] ? Number(match[1]) : undefined;
+}
 export function checkIfIsPolymarket(
   decodedIdentifier: string,
   decodedAncillaryData: string
 ) {
   const queryTitleToken = "q: title:";
   const resultDataToken = "res_data:";
+  const requester = getRequester(decodedAncillaryData);
+  const childChainId = getChildChainId(decodedAncillaryData);
   const isPolymarket =
     decodedIdentifier === "YES_OR_NO_QUERY" &&
     decodedAncillaryData.includes(queryTitleToken) &&
-    decodedAncillaryData.includes(resultDataToken);
+    decodedAncillaryData.includes(resultDataToken) &&
+    requester &&
+    isPolymarketRequester(requester) &&
+    childChainId === polymarketChainId;
 
   return isPolymarket;
 }
