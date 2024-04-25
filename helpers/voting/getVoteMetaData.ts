@@ -130,12 +130,18 @@ export function getVoteMetaData(
     const description = identifierDetails.summary;
     const umipOrUppUrl = identifierDetails.umipLink.url;
     const umipOrUppNumber = identifierDetails.umipLink.number;
+
+    const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    const options = isYesNoQuery
+      ? maybeMakePolymarketOptions(decodedAncillaryData)
+      : undefined;
+
     return {
       title,
       description,
       umipOrUppLink: maybeMakeUmipOrUppLink(umipOrUppNumber, umipOrUppUrl),
       umipOrUppNumber,
-      options: undefined,
+      options,
       origin: "UMA",
       isGovernance: false,
       discordLink,
