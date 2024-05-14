@@ -6,6 +6,7 @@ import {
   makeBlockExplorerLink,
   maybeMakePolymarketOptions,
 } from "helpers";
+import { earlyRequestMagicNumber, answerNotPossible } from "constant";
 import { ContentfulDataT, VoteMetaDataT } from "types";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
@@ -119,6 +120,47 @@ export function getVoteMetaData(
       discordLink,
       isAssertion: false,
     };
+  }
+
+  if (decodedIdentifier === "MULTIPLE_CHOICE_QUERY") {
+    try {
+      return {
+        ...decodeMultipleChoiceQuery(decodedAncillaryData),
+        umipOrUppLink: {
+          label: "Multiple Choice Query - UMIP-181",
+          href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
+        },
+        umipOrUppNumber: "UMIP-181",
+        isGovernance: false,
+        isAssertion: false,
+        discordLink,
+        origin: "UMA",
+      };
+    } catch (err) {
+      let description = `Error decoding description`;
+      if (err instanceof Error) {
+        description += `: ${err.message}`;
+      }
+      console.error(
+        "Error parsing multipechoicequery",
+        decodedAncillaryData,
+        err
+      );
+      return {
+        title: "Multiple Choice query",
+        description,
+        options: makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions()),
+        umipOrUppLink: {
+          label: "Multiple Choice Query - UMIP-181",
+          href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
+        },
+        umipOrUppNumber: "UMIP-181",
+        isGovernance: false,
+        isAssertion: false,
+        discordLink,
+        origin: "UMA",
+      };
+    }
   }
 
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
@@ -290,4 +332,98 @@ function makeAssertionDescription(
   return `${assertionIdText}
 ${chainIdText}
 ${asserterText}`;
+}
+
+type MultipleChoiceQuery = {
+  // Require a title string
+  title: string;
+  // The full description of the question, optionally using markdown.
+  description: string;
+  // Optionally specify labels and values for each option a user can select.
+  // If not specified the default is ["no", "yes"], which corresponds to prices ['0','1'] in wei.
+  // numbers must be convertible to a signed int256, and specified as integers in base 10.
+  options?: [label: string, value: string][];
+};
+
+function decodeMultipleChoiceQuery(decodedAncillaryData: string) {
+  const endOfObjectIndex = decodedAncillaryData.lastIndexOf("}");
+  const maybeJson =
+    endOfObjectIndex > 0
+      ? decodedAncillaryData.slice(0, endOfObjectIndex + 1)
+      : decodedAncillaryData;
+
+  const json = JSON.parse(maybeJson);
+  if (!isMultipleChoiceQueryFormat(json))
+    throw new Error("Malformed ancillary data");
+  return {
+    title: json.title,
+    description: json.description,
+    options: makeMultipleChoiceOptions(
+      (
+        json.options ?? [
+          ["No", "0"],
+          ["Yes", utils.formatEther("1")],
+        ]
+      ).map((opt: [string, string]) => ({
+        label: opt[0],
+        // converting wei into ether because all values are scaled to wei when proposed
+        value: utils.formatEther(ensureInteger(opt[1])),
+        secondaryLabel: `${opt[1]}`,
+      }))
+    ),
+  };
+}
+const isMultipleChoiceQueryFormat = (
+  input: unknown
+): input is MultipleChoiceQuery => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const $io0 = (input: any): boolean =>
+    "string" === typeof input?.title && //eslint-disable-line
+    "string" === typeof input?.description && //eslint-disable-line
+    (undefined === input?.options || //eslint-disable-line
+      (Array.isArray(input.options) && //eslint-disable-line
+        //eslint-disable-next-line
+        input.options.every(
+          //eslint-disable-line
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (elem: any) =>
+            Array.isArray(elem) &&
+            elem.length === 2 &&
+            "string" === typeof elem[0] &&
+            "string" === typeof elem[1]
+        )));
+  return "object" === typeof input && null !== input && $io0(input);
+};
+
+function ensureInteger(value: string): string {
+  const num = Number(value);
+  if (!Number.isInteger(num)) {
+    throw new Error(
+      `The value '${value}' needs to be specified in WEI, integers only.`
+    );
+  }
+  return value;
+}
+function makeMultipleChoiceYesOrNoOptions() {
+  return [
+    { label: "Yes", value: utils.formatEther("1"), secondaryLabel: "1" },
+    { label: "No", value: "0", secondaryLabel: "0" },
+  ];
+}
+function makeMultipleChoiceOptions(
+  options: { label: string; value: string; secondaryLabel: string }[]
+) {
+  return [
+    ...options,
+    {
+      label: "Early Request",
+      value: earlyRequestMagicNumber,
+      secondaryLabel: "type(int256).min",
+    },
+    {
+      label: "Answer not possible",
+      value: answerNotPossible,
+      secondaryLabel: "type(int256).max",
+    },
+  ];
 }
