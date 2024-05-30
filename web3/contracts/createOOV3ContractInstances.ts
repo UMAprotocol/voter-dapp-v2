@@ -74,7 +74,7 @@ export const contractDetails = [
 
 export function createOOV3ContractInstances() {
   const instances = contractDetails
-    .filter(({ providerUrl }) => new Boolean(providerUrl))
+    .filter(({ providerUrl }) => Boolean(providerUrl))
     .map(({ chainId, providerUrl, address }) => {
       const provider = new ethers.providers.JsonRpcProvider(providerUrl);
       return {
