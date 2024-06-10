@@ -3,6 +3,7 @@ import { MainnetOrL1Testnet } from "types";
 
 import { useSetChain } from "@web3-onboard/react";
 import request, { gql } from "graphql-request";
+import { appConfig } from "helpers";
 import { useWalletContext } from "hooks/contexts/useWalletContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
 import { useIpfs } from "./useIpfs";
@@ -57,20 +58,20 @@ export async function getProposalData(
   let endpoint: string;
   switch (chainId) {
     case 1:
-      endpoint =
-        "https://api.thegraph.com/subgraphs/name/umaprotocol/mainnet-optimistic-governor";
+      endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${appConfig.graphStudioApiKey}/subgraphs/id/DQpwhiRSPQJEuc8y6ZBGsFfNpfwFQ8NjmjLmfv8kBkLu`;
       break;
     case 5:
       endpoint =
+        // TODO: Consider removing as hosted service is deprecated and Studio does not support Goerli.
         "https://api.thegraph.com/subgraphs/name/umaprotocol/goerli-optimistic-governor";
       break;
     case 11155111:
       endpoint =
-        "https://api.thegraph.com/subgraphs/name/reinis-frp/sepolia-optimistic-governor";
+        // TODO: update to production endpoint once it is indexed.
+        "https://api.studio.thegraph.com/query/1057/sepolia-optimistic-governor/version/latest";
       break;
     default:
-      endpoint =
-        "https://api.thegraph.com/subgraphs/name/umaprotocol/mainnet-optimistic-governor";
+      endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${appConfig.graphStudioApiKey}/subgraphs/id/DQpwhiRSPQJEuc8y6ZBGsFfNpfwFQ8NjmjLmfv8kBkLu`;
       break;
   }
   const proposalQuery = gql`

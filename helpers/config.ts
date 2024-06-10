@@ -14,6 +14,7 @@ const Env = ss.object({
   NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
   NEXT_PUBLIC_CURRENT_ENV: ss.string(),
   NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
+  NEXT_PUBLIC_GRAPH_STUDIO_API_KEY: ss.string(),
   // optional envs
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
@@ -70,6 +71,8 @@ export const env = ss.create(
     NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
     NEXT_PUBLIC_MAILCHIMP_URL: process.env.NEXT_PUBLIC_MAILCHIMP_URL,
     NEXT_PUBLIC_MAILCHIMP_TAGS: process.env.NEXT_PUBLIC_MAILCHIMP_TAGS,
+    NEXT_PUBLIC_GRAPH_STUDIO_API_KEY:
+      process.env.NEXT_PUBLIC_GRAPH_STUDIO_API_KEY,
     NEXT_PUBLIC_PROVIDER_V3_1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
     NEXT_PUBLIC_PROVIDER_V3_137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
     NEXT_PUBLIC_PROVIDER_V3_288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
@@ -95,6 +98,7 @@ const AppConfig = ss.object({
   deployBlock: ss.number(),
   chainId: ss.number(),
   walletConnectProjectId: ss.string(),
+  graphStudioApiKey: ss.string(),
   graphEndpointV1: ss.optional(ss.string()),
   graphEndpoint: ss.optional(ss.string()),
   contentfulSpace: ss.optional(ss.string()),
@@ -150,6 +154,7 @@ export const appConfig = ss.create(
     phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
     mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL,
     mailchimpTags: env.NEXT_PUBLIC_MAILCHIMP_TAGS,
+    graphStudioApiKey: env.NEXT_PUBLIC_GRAPH_STUDIO_API_KEY,
     oov3ProviderUrl1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
     oov3ProviderUrl137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
     oov3ProviderUrl288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
