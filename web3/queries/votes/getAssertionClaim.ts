@@ -6,7 +6,8 @@ export async function getAssertionMadeEvents(
   assertionId: string
 ) {
   const filter = instance.filters.AssertionMade(assertionId);
-  return instance.queryFilter(filter);
+  const currentBlock = await instance.provider.getBlockNumber();
+  return instance.queryFilter(filter, currentBlock - 10000);
 }
 
 export async function getAssertionClaim(
