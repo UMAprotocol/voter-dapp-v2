@@ -18,7 +18,8 @@ export async function getCommittedVotesByCaller(
     null,
     null
   );
-  const result = await votingContract.queryFilter(filter);
+  const currentBlock = await votingContract.provider.getBlockNumber();
+  const result = await votingContract.queryFilter(filter, currentBlock - 10000);
   const eventData = result?.filter(({ args }) => args.roundId === roundId);
   const committedVotes: VoteExistsByKeyT = {};
   eventData?.forEach(({ args, transactionHash }) => {
