@@ -10,7 +10,8 @@ export async function getDelegateSetEvents(
   if (!address) return [];
   const args = queryFor === "delegate" ? [null, address] : [address, null];
   const filter = voting.filters.DelegateSet(...args);
-  const events = await voting.queryFilter(filter);
+  const currentBlock = await voting.provider.getBlockNumber();
+  const events = await voting.queryFilter(filter, currentBlock - 10000);
   const parsedEvents = events
     .map((event) => ({
       delegate: event.args.delegate,

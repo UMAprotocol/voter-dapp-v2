@@ -10,8 +10,12 @@ export async function getEncryptedVotes(
 ) {
   if (!address) return {};
 
+  const currentBlock = await votingContract.provider.getBlockNumber();
   const v2Filter = votingContract.filters.EncryptedVote(address, findRoundId);
-  const v2Result = await votingContract.queryFilter(v2Filter);
+  const v2Result = await votingContract.queryFilter(
+    v2Filter,
+    currentBlock - 10000
+  );
 
   const v2EventData = v2Result
     ?.map(({ args }) => args)
