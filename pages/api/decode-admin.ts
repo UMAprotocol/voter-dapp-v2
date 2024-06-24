@@ -9,13 +9,15 @@ import { getAbi, getContractNames } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
-import { constructContract } from "./_common";
+import { constructContract, getProviderByChainId } from "./_common";
 import { config } from "helpers/config";
 
 type AbiDecoder = typeof abiDecoder;
 
 const { chainId } = config;
 
+const blocksPerYear = 2253571;
+const blocksPerMonth = Math.floor(blocksPerYear / 12);
 export class TransactionDataDecoder {
   private static instance: TransactionDataDecoder;
   public readonly abiDecoder: AbiDecoder;
@@ -177,14 +179,22 @@ const _generateTransactionDataRecursive = function (
 };
 
 async function generateReadableAdminTransactionData(identifiers: string[]) {
+  const provider = getProviderByChainId(chainId);
+  const currentBlock = await provider.getBlockNumber();
   const governorV1 = await constructContract(chainId, "Governor");
 
   const governorV2 = await constructContract(chainId, "GovernorV2");
 
   const events = (
     await Promise.all([
-      governorV1.queryFilter(governorV1.filters.NewProposal()),
-      governorV2.queryFilter(governorV2.filters.NewProposal()),
+      governorV1.queryFilter(
+        governorV1.filters.NewProposal(),
+        currentBlock - blocksPerMonth
+      ),
+      governorV2.queryFilter(
+        governorV2.filters.NewProposal(),
+        currentBlock - blocksPerMonth
+      ),
     ])
   ).flat();
 

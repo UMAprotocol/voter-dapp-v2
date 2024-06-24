@@ -38,3 +38,5 @@ storybook-static
 
 cypress/videos
 cypress/screenshots
+
+*.env
