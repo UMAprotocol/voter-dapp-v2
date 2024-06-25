@@ -18,7 +18,11 @@ export async function getRevealedVotes(
     null,
     null
   );
-  const result = await votingContract.queryFilter(filter);
+  const currentBlock = await votingContract.provider.getBlockNumber();
+  const result = await votingContract.queryFilter(
+    filter,
+    currentBlock - 100000
+  );
   const eventData = result.filter(({ args }) => args.roundId === roundId);
   const revealedVotes: VoteExistsByKeyT = {};
 
