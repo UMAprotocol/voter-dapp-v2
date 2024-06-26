@@ -14,7 +14,7 @@ export async function getEncryptedVotes(
   const v2Filter = votingContract.filters.EncryptedVote(address, findRoundId);
   const v2Result = await votingContract.queryFilter(
     v2Filter,
-    currentBlock - 10000
+    currentBlock - 100000
   );
 
   const v2EventData = v2Result
@@ -29,6 +29,5 @@ export async function getEncryptedVotes(
       makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
     ] = encryptedVote;
   });
-
   return encryptedVotes;
 }

@@ -5,8 +5,9 @@ export async function getAssertionMadeEvents(
   instance: OptimisticOracleV3InterfaceEthers,
   assertionId: string
 ) {
+  const currentBlock = await instance.provider.getBlockNumber();
   const filter = instance.filters.AssertionMade(assertionId);
-  return instance.queryFilter(filter);
+  return instance.queryFilter(filter, currentBlock - 100000);
 }
 
 export async function getAssertionClaim(
