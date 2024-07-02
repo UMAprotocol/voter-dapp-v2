@@ -416,9 +416,12 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
 
   useInterval(() => {
     updateOutstandingRewards();
-  }, 100);
+  }, 1000);
 
   function updateOutstandingRewards() {
+    if (isNoWalletConnected || isNoDelegation) {
+      setOutstandingRewards(BigNumber.from(0));
+    }
     if (rewardCalculationInputs === undefined) return;
     if (stakerAddressStakerDetails === undefined) return;
     if (stakerAddressStakedBalance === undefined) return;
