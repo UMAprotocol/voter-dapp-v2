@@ -34,8 +34,12 @@ export function Result({
 
   if (!participation || !results) return null;
 
-  const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
-    participation;
+  const {
+    uniqueCommitAddresses,
+    uniqueRevealAddresses,
+    totalTokensVotedWith,
+    totalTokensCommitted,
+  } = participation;
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
@@ -106,6 +110,14 @@ export function Result({
         <ParticipationItem>
           <span>Unique reveal addresses</span>
           <Strong>{uniqueRevealAddresses}</Strong>
+        </ParticipationItem>
+        <ParticipationItem>
+          <span>Total tokens that commited</span>
+          <Strong>
+            {totalTokensCommitted
+              ? commify(truncateDecimals(totalTokensCommitted, 2))
+              : 0}
+          </Strong>
         </ParticipationItem>
         <ParticipationItem>
           <span>Total tokens that revealed</span>

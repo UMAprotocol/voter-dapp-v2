@@ -15,6 +15,9 @@ export type PastVotesQuery = {
       }[];
       committedVotes: {
         id: string;
+        voter: {
+          voterStake: string;
+        };
       }[];
       revealedVotes: {
         id: string;

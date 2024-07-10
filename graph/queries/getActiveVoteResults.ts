@@ -42,6 +42,9 @@ export async function getActiveVoteResults(): Promise<
           }
           committedVotes {
             id
+            voter {
+              voterStake
+            }
           }
           revealedVotes {
             id
@@ -54,6 +57,7 @@ export async function getActiveVoteResults(): Promise<
       }
     }
   `;
+
   const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
   return makePriceRequestsByKey(
     result?.priceRequests?.map(
@@ -68,10 +72,16 @@ export async function getActiveVoteResults(): Promise<
         const identifier = formatBytes32String(id);
         const correctVote = price;
         const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+        // no counter field in entity so we must do this calculation client side
+        const totalTokensCommitted = latestRound.committedVotes
+          .map((v) => Number(v.voter.voterStake))
+          .reduce((acc, curr) => acc + curr, 0);
+
         const participation = {
           uniqueCommitAddresses: latestRound.committedVotes.length,
           uniqueRevealAddresses: latestRound.revealedVotes.length,
           totalTokensVotedWith,
+          totalTokensCommitted,
         };
         const results = latestRound.groups.map(
           ({ price, totalVoteAmount }) => ({
