@@ -65,6 +65,11 @@ export function Result({
     return findVoteInOptions(value);
   }
 
+  const revealPercentage = (
+    (totalTokensVotedWith / totalTokensCommitted) *
+    100
+  ).toFixed(2);
+
   return (
     <Wrapper>
       <PanelSectionTitle>
@@ -112,7 +117,7 @@ export function Result({
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
         <ParticipationItem>
-          <span>Total tokens that commited</span>
+          <span>Total tokens that committed</span>
           <Strong>
             {totalTokensCommitted
               ? commify(truncateDecimals(totalTokensCommitted, 2))
@@ -122,6 +127,7 @@ export function Result({
         <ParticipationItem>
           <span>Total tokens that revealed</span>
           <Strong>
+            <Span>(%{revealPercentage})</Span>
             {totalTokensVotedWith
               ? commify(truncateDecimals(totalTokensVotedWith, 2))
               : 0}
@@ -143,6 +149,11 @@ function LegendItemLabel({ label }: { label: string }) {
   }
   return <LegendItemLabelWrapper>{label}</LegendItemLabelWrapper>;
 }
+
+const Span = styled.span`
+  color: var(--red-500);
+  margin-inline: 1em;
+`;
 
 const Wrapper = styled.div`
   margin-top: 20px;

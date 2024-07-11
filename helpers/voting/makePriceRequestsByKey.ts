@@ -61,6 +61,8 @@ function formatPriceRequest(
       priceRequest?.participation?.uniqueRevealAddresses || 0,
     totalTokensVotedWith:
       priceRequest?.participation?.totalTokensVotedWith || 0,
+    totalTokensCommitted:
+      priceRequest?.participation?.totalTokensCommitted || 0,
   };
   const results = priceRequest.results;
   const uniqueKey = makeUniqueKeyForVote(
