@@ -25,10 +25,16 @@ export async function getPastVotesV1() {
       const identifier = formatBytes32String(id);
       const correctVote = price;
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+      // no counter field in subgraph entity so we must do this calculation client side
+      const totalTokensCommitted = latestRound.committedVotes
+        .map((v) => Number(v.voter.voterStake))
+        .reduce((acc, curr) => acc + curr, 0);
+
       const participation = {
         uniqueCommitAddresses: committedVotes.length,
         uniqueRevealAddresses: revealedVotes.length,
         totalTokensVotedWith,
+        totalTokensCommitted,
       };
 
       const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
