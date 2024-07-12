@@ -65,11 +65,6 @@ export function Result({
     return findVoteInOptions(value);
   }
 
-  const revealPercentage = (
-    (totalTokensVotedWith / totalTokensCommitted) *
-    100
-  ).toFixed(2);
-
   return (
     <Wrapper>
       <PanelSectionTitle>
@@ -124,15 +119,23 @@ export function Result({
               : 0}
           </Strong>
         </ParticipationItem>
-        <ParticipationItem>
-          <span>Total tokens that revealed</span>
-          <Strong>
-            <Span>(%{revealPercentage})</Span>
-            {totalTokensVotedWith
-              ? commify(truncateDecimals(totalTokensVotedWith, 2))
-              : 0}
-          </Strong>
-        </ParticipationItem>
+        {totalTokensCommitted && (
+          <ParticipationItem>
+            <span>Total tokens that revealed</span>
+            <Strong>
+              <Span>
+                (%
+                {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
+                  2
+                )}
+                )
+              </Span>
+              {totalTokensVotedWith
+                ? commify(truncateDecimals(totalTokensVotedWith, 2))
+                : 0}
+            </Strong>
+          </ParticipationItem>
+        )}
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>

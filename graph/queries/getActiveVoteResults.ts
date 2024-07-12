@@ -72,10 +72,17 @@ export async function getActiveVoteResults(): Promise<
         const identifier = formatBytes32String(id);
         const correctVote = price;
         const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+
+        // for v1 this data is missing so we need to dynamically check this
+        const hasVoterStakeDetails = latestRound.committedVotes.some(
+          (v) => v.voter?.voterStake
+        );
         // no counter field in subgraph entity so we must do this calculation client side
-        const totalTokensCommitted = latestRound.committedVotes
-          .map((v) => Number(v.voter.voterStake))
-          .reduce((acc, curr) => acc + curr, 0);
+        const totalTokensCommitted = hasVoterStakeDetails
+          ? latestRound.committedVotes
+              .map((v) => Number(v?.voter?.voterStake))
+              .reduce((acc, curr) => acc + curr, 0)
+          : undefined;
 
         const participation = {
           uniqueCommitAddresses: latestRound.committedVotes.length,
