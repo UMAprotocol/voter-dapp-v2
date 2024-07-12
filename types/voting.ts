@@ -40,6 +40,7 @@ export type ParticipationT = {
   uniqueCommitAddresses: number;
   uniqueRevealAddresses: number;
   totalTokensVotedWith: number;
+  totalTokensCommitted?: number;
 };
 
 export type VoteParticipationT = {

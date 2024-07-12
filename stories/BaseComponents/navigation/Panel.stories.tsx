@@ -241,6 +241,7 @@ export const VotePanelWithResults: Story = {
         uniqueCommitAddresses: 100,
         uniqueRevealAddresses: 100,
         totalTokensVotedWith: 800000000.123,
+        totalTokensCommitted: 690000000.123,
       },
       results: [
         {

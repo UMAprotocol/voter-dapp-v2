@@ -34,8 +34,12 @@ export function Result({
 
   if (!participation || !results) return null;
 
-  const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
-    participation;
+  const {
+    uniqueCommitAddresses,
+    uniqueRevealAddresses,
+    totalTokensVotedWith,
+    totalTokensCommitted,
+  } = participation;
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
@@ -108,13 +112,30 @@ export function Result({
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
         <ParticipationItem>
-          <span>Total tokens that revealed</span>
+          <span>Total tokens that committed</span>
           <Strong>
-            {totalTokensVotedWith
-              ? commify(truncateDecimals(totalTokensVotedWith, 2))
+            {totalTokensCommitted
+              ? commify(truncateDecimals(totalTokensCommitted, 2))
               : 0}
           </Strong>
         </ParticipationItem>
+        {totalTokensCommitted && (
+          <ParticipationItem>
+            <span>Total tokens that revealed</span>
+            <Strong>
+              <Span>
+                (%
+                {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
+                  2
+                )}
+                )
+              </Span>
+              {totalTokensVotedWith
+                ? commify(truncateDecimals(totalTokensVotedWith, 2))
+                : 0}
+            </Strong>
+          </ParticipationItem>
+        )}
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>
@@ -131,6 +152,11 @@ function LegendItemLabel({ label }: { label: string }) {
   }
   return <LegendItemLabelWrapper>{label}</LegendItemLabelWrapper>;
 }
+
+const Span = styled.span`
+  color: var(--red-500);
+  margin-inline: 1em;
+`;
 
 const Wrapper = styled.div`
   margin-top: 20px;
