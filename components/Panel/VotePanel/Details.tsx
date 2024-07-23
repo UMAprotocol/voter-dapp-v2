@@ -14,7 +14,7 @@ import {
 } from "helpers";
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
-import { useAssertionClaim } from "hooks";
+import { useAssertionClaim, useAugmentedVoteData } from "hooks";
 
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
@@ -43,7 +43,6 @@ export function Details({
   discordLink,
   decodedAdminTransactions,
   umipOrUppLink,
-  augmentedData,
   assertionChildChainId,
   assertionAsserter,
   assertionId,
@@ -68,6 +67,13 @@ export function Details({
   function toggleShowRawClaimData() {
     setShowRawClaimData(!showRawClaimData);
   }
+
+  const augmentedDataResponse = useAugmentedVoteData({
+    time,
+    identifier: decodedIdentifier,
+    ancillaryData: ancillaryData,
+  });
+  const augmentedData = augmentedDataResponse.data;
 
   function makeOoRequestLink() {
     if (!augmentedData?.ooRequestUrl) return;

@@ -4,7 +4,6 @@ import {
   useAccountDetails,
   useActiveVoteResults,
   useActiveVotes,
-  useAugmentedVoteData,
   useCommittedVotes,
   useCommittedVotesByCaller,
   useCommittedVotesForDelegator,
@@ -146,7 +145,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     userOrDelegatorAddress
   );
   const { data: decodedAdminTransactions } = useDecodedAdminTransactions();
-  const { data: augmentedData } = useAugmentedVoteData();
   const { voteHistoryByKey } = votingAndStakingDetails || {};
 
   // This function tells you if your current logged in account can reveal this vote, ie the commit was cast by your current account.
@@ -218,7 +216,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           ? { price: pastVoteRevealed, salt: "" }
           : decryptedVotes?.[uniqueKey],
         contentfulData: contentfulData?.[uniqueKey],
-        augmentedData: augmentedData?.[uniqueKey],
         voteHistory: voteHistoryByKey?.[uniqueKey] ?? {
           uniqueKey,
           voted: false,

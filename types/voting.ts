@@ -14,8 +14,7 @@ export type VoteT = PriceRequestT &
   VoteContentfulDataT &
   VoteParticipationT &
   VoteResultsT &
-  VoteDecodedAdminTransactionsT &
-  VoteAugmentedDataT;
+  VoteDecodedAdminTransactionsT;
 
 export type PriceRequestT = {
   // raw values
@@ -231,6 +230,7 @@ export type IdentifierAndTimeStampT = {
 export type OracleTypeT =
   | "OptimisticOracle"
   | "OptimisticOracleV2"
+  | "OptimisticOracleV3"
   | "SkinnyOptimisticOracle";
 
 export const AugmentedVoteDataResponseT = ss.object({

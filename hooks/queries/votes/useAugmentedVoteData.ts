@@ -1,27 +1,32 @@
+import assert from "assert";
 import { useQuery } from "@tanstack/react-query";
 import { augmentedVoteDataKey } from "constant";
 import { getAugmentedVoteData } from "web3";
-import { useActiveVotes } from "./useActiveVotes";
-import { usePastVotes } from "./usePastVotes";
-import { useUpcomingVotes } from "./useUpcomingVotes";
 
-export function useAugmentedVoteData() {
-  const { data: activeVotes } = useActiveVotes();
-  const { data: upcomingVotes } = useUpcomingVotes();
-  const { data: pastVotes } = usePastVotes();
-
-  const allVotes = { ...activeVotes, ...upcomingVotes, ...pastVotes };
-
-  const queryResult = useQuery({
+export function useAugmentedVoteData(
+  params: Partial<{
+    ancillaryData: string;
+    time: number;
+    identifier: string;
+  }>
+) {
+  return useQuery({
     queryKey: [
       augmentedVoteDataKey,
-      activeVotes,
-      upcomingVotes,
-      pastVotes,
-      allVotes,
+      params.identifier ?? "",
+      (params.time ?? 0).toString(),
+      params.ancillaryData ?? "",
     ],
-    queryFn: () => getAugmentedVoteData(allVotes),
+    queryFn: () => {
+      assert(params.identifier, "identifier missing");
+      assert(params.time, "time missing");
+      assert(params.ancillaryData, "ancillaryData missing");
+      return getAugmentedVoteData({
+        identifier: params.identifier,
+        time: params.time,
+        ancillaryData: params.ancillaryData,
+      });
+    },
+    enabled: !!params.identifier && !!params.time && !!params.identifier,
   });
-
-  return queryResult;
 }

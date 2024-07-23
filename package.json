@@ -24,6 +24,7 @@
     "@tanstack/react-query": "^4.29.5",
     "@tanstack/react-query-devtools": "^4.29.6",
     "@uma/contracts-frontend": "^0.4.20",
+    "@vercel/kv": "^2.0.0",
     "@web3-onboard/core": "^2.20.4",
     "@web3-onboard/gnosis": "^2.1.10",
     "@web3-onboard/injected-wallets": "^2.10.1",
@@ -103,7 +104,7 @@
     "style-loader": "^3.3.1",
     "tailwindcss": "^3.3.2",
     "ts-node": "^10.9.1",
-    "typescript": "4.8.3",
+    "typescript": "^5.5.3",
     "url": "^0.11.0",
     "webpack": "^5.74.0"
   },

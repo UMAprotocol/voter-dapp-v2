@@ -39,7 +39,6 @@ export const defaultMockVote = (number = 1): VoteT => {
     decodedIdentifier,
     decodedAncillaryData,
     decodedAdminTransactions: undefined,
-    augmentedData: undefined,
     uniqueKey,
     encryptedVote: undefined,
     decryptedVote: undefined,

@@ -359,7 +359,7 @@ export default async function handler(
     const result = await augmentRequests(body);
     response.status(200).send(result);
   } catch (e) {
-    if (debug) console.error(e);
+    if (debug) console.error("augment-request error:", e);
     response.status(500).send({
       message: "Error in fetching augmented information",
       error: e instanceof Error ? e.message : e,
