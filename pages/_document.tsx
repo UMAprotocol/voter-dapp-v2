@@ -6,9 +6,10 @@ import Document, {
   NextScript,
 } from "next/document";
 import { ServerStyleSheet } from "styled-components";
-
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { config } from "helpers";
 export default class MyDocument extends Document {
-  /* 
+  /*
     This logic is required to make styled components work nicely with nextjs's ssr features
 
     For the reference implementation, see https://github.com/vercel/next.js/blob/canary/examples/with-styled-components/pages/_document.tsx
@@ -99,6 +100,7 @@ export default class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
+        {config.gaTag && <GoogleAnalytics gaId={config.gaTag} />}
       </Html>
     );
   }
