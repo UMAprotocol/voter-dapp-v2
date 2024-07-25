@@ -16,6 +16,7 @@
     "cypress:run": "cypress run e2e"
   },
   "dependencies": {
+    "@next/third-parties": "^14.2.5",
     "@radix-ui/react-tabs": "^1.0.1",
     "@reach/checkbox": "^0.18.0",
     "@reach/menu-button": "^0.18.0",

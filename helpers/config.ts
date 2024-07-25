@@ -37,6 +37,7 @@ const Env = ss.object({
   NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_8453: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_81457: ss.optional(ss.string()),
+  NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -83,6 +84,8 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     NEXT_PUBLIC_PROVIDER_V3_8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
     NEXT_PUBLIC_PROVIDER_V3_81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG:
+      process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG,
   },
   Env
 );
@@ -98,6 +101,7 @@ const AppConfig = ss.object({
   deployBlock: ss.number(),
   chainId: ss.number(),
   walletConnectProjectId: ss.string(),
+  gaTag: ss.string(),
   graphStudioApiKey: ss.string(),
   graphEndpointV1: ss.optional(ss.string()),
   graphEndpoint: ss.optional(ss.string()),
@@ -164,6 +168,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
     oov3ProviderUrl81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
+    gaTag: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG,
   },
   AppConfig
 );
