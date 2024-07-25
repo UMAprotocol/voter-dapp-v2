@@ -4,7 +4,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { makeUniqueKeyForVote, decodeHexString } from "helpers";
 import { isSupportedChainId, getSubgraphConfig } from "./_common";
+import { ethers } from "ethers";
 
+function encodeHexString(str: string): string {
+  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(str));
+}
 const debug = !!process.env.DEBUG;
 const VoteSubgraphURL =
   process.env.NEXT_PUBLIC_GRAPH_ENDPOINT ??
@@ -48,6 +52,19 @@ function extractChildChainId(ancillaryData: string): number | undefined {
   const childChainIdRegex = /childChainId:(\d+)/;
   const match = ancillaryData.match(childChainIdRegex);
   return match ? Number(match[1]) : undefined;
+}
+function extractAssertionId(ancillaryData: string): string | undefined {
+  const regex = /assertionId:([a-f0-9]+)/;
+  const match = ancillaryData.match(regex);
+  return match ? "0x" + match[1] : undefined;
+}
+function extractOriginalAncillaryData(ancillaryData: string): string {
+  const [original] = ancillaryData.split(",ooRequester");
+  return original;
+}
+function cleanSkinnyAncillary(ancillaryData: string): string {
+  const [original] = ancillaryData.split("ooRequester");
+  return original;
 }
 function constructOoUiLink(
   txHash: string | undefined,
@@ -99,7 +116,7 @@ async function voteQuery({
   };
   try {
     const data: GqlResponse = await request(VoteSubgraphURL, query, { id });
-    assert(data.priceRequest, "request not found");
+    assert(data.priceRequest, "vote query request not found");
     return data?.priceRequest;
   } catch (error) {
     if (debug) console.error("vote fetch error:", error);
@@ -110,13 +127,16 @@ async function ooSkinnyQuery({
   time,
   identifier,
   chainId,
+  ancillaryData,
 }: OracleQueryParams): Promise<ResponseBody> {
   const subgraph = getSubgraphConfig("Skinny Optimistic Oracle", chainId);
+  const cleanAncillaryData = encodeHexString(
+    cleanSkinnyAncillary(decodeHexString(ancillaryData))
+  );
+  const id = makeUniqueKeyForVote(identifier, time, cleanAncillaryData);
   const query = gql`
-    query skinnyQuery($proposalTimestamp: Int!) {
-      optimisticPriceRequests(
-        where: { proposalTimestamp: $proposalTimestamp }
-      ) {
+    query skinnyQuery($id: ID!) {
+      optimisticPriceRequest(id: $id) {
         id
         requestHash
         requestLogIndex
@@ -129,15 +149,15 @@ async function ooSkinnyQuery({
     requestLogIndex: string;
   };
   type GqlResponse = {
-    optimisticPriceRequests: GqlRequest[];
+    optimisticPriceRequest: GqlRequest;
   };
 
   try {
     const data: GqlResponse = await request(subgraph.url, query, {
-      proposalTimestamp: time,
+      id,
     });
-    assert(data.optimisticPriceRequests.length > 0, "request not found");
-    const [optimisticPriceRequest] = data.optimisticPriceRequests;
+    const { optimisticPriceRequest } = data;
+    assert(optimisticPriceRequest, "skinny request not found");
     const requestHash = optimisticPriceRequest?.requestHash;
     const requestLogIndex = optimisticPriceRequest?.requestLogIndex;
     return {
@@ -163,11 +183,14 @@ async function oov3Query({
   time,
   identifier,
   chainId,
+  ancillaryData,
 }: OracleQueryParams): Promise<ResponseBody> {
+  const assertionId = extractAssertionId(decodeHexString(ancillaryData));
+  assert(assertionId, "Unable to extract assertion id");
   const subgraph = getSubgraphConfig("Optimistic Oracle V3", chainId);
   const query = gql`
-    query oov3Query($assertionTimestamp: Int!) {
-      assertions(where: { assertionTimestamp: $assertionTimestamp }) {
+    query oov3Query($id: ID!) {
+      assertion(id: $id) {
         id
         assertionHash
         assertionLogIndex
@@ -196,19 +219,18 @@ async function oov3Query({
     caller: string;
   };
   type GqlResponse = {
-    assertions: GqlRequest[];
+    assertion: GqlRequest;
   };
 
   try {
     const data: GqlResponse = await request(subgraph.url, query, {
-      assertionTimestamp: time,
+      id: assertionId,
     });
-    assert(data.assertions.length > 0, "request not found");
-    const [assertion] = data.assertions;
+    assert(data.assertion, "oov3 query request not found");
+    const { assertion } = data;
     const assertionHash = assertion?.assertionHash;
     const assertionLogIndex = assertion?.assertionLogIndex;
 
-    const assertionId = assertion?.id;
     const domainId = assertion?.domainId;
     const claim = assertion?.claim;
     const asserter = assertion?.asserter;
@@ -249,16 +271,33 @@ async function oov2Query({
   time,
   identifier,
   chainId,
+  ancillaryData,
 }: OracleQueryParams): Promise<ResponseBody> {
   const subgraph = getSubgraphConfig("Optimistic Oracle V2", chainId);
+  const cleanAncillaryData = encodeHexString(
+    extractOriginalAncillaryData(decodeHexString(ancillaryData))
+  );
   const query = gql`
-    query oov2Query($proposalTimestamp: Int!) {
+    query oov2Query(
+      $ancillaryData: String!
+      $identifier: String!
+      $proposalTimestamp: Int!
+    ) {
       optimisticPriceRequests(
-        where: { proposalTimestamp: $proposalTimestamp }
+        where: {
+          ancillaryData: $ancillaryData
+          identifier: $identifier
+          proposalTimestamp: $proposalTimestamp
+        }
       ) {
         id
         requestHash
         requestLogIndex
+        eventBased
+        proposalExpirationTimestamp
+        customLiveness
+        time
+        proposalTimestamp
       }
     }
   `;
@@ -266,6 +305,10 @@ async function oov2Query({
     id: string;
     requestHash: string;
     requestLogIndex: string;
+    proposalExpirationTimestamp: number;
+    customLiveness: number;
+    time: number;
+    eventBased: boolean;
   };
   type GqlResponse = {
     optimisticPriceRequests: GqlRequest[];
@@ -273,10 +316,18 @@ async function oov2Query({
 
   try {
     const data: GqlResponse = await request(subgraph.url, query, {
+      ancillaryData: cleanAncillaryData,
+      identifier,
       proposalTimestamp: time,
     });
-    assert(data.optimisticPriceRequests.length > 0, "request not found");
-    const [optimisticPriceRequest] = data.optimisticPriceRequests;
+    assert(data.optimisticPriceRequests.length > 0, "oov2 request not found");
+    let optimisticPriceRequest: GqlRequest | undefined;
+    if (data.optimisticPriceRequests.length > 1) {
+      throw new Error("Multiple price requests found in query");
+    } else {
+      optimisticPriceRequest = data.optimisticPriceRequests[0];
+    }
+    assert(optimisticPriceRequest, "oov2 request not found");
     const requestHash = optimisticPriceRequest.requestHash;
     const requestLogIndex = optimisticPriceRequest.requestLogIndex;
     const uniqueKey = optimisticPriceRequest.id;
@@ -303,38 +354,44 @@ async function oov1Query({
   time,
   identifier,
   chainId,
+  ancillaryData,
 }: OracleQueryParams): Promise<ResponseBody> {
-  const subgraph = getSubgraphConfig("Optimistic Oracle V1", chainId);
-  const query = gql`
-    query oov1Query($proposalTimestamp: Int!) {
-      optimisticPriceRequests(
-        where: { proposalTimestamp: $proposalTimestamp }
-      ) {
-        id
-        requestHash
-        requestLogIndex
-        requestTimestamp
-      }
-    }
-  `;
-  type GqlRequest = {
-    id: string;
-    requestHash: string;
-    requestLogIndex: string;
-  };
-  type GqlResponse = {
-    optimisticPriceRequests: GqlRequest[];
-  };
-
   try {
+    const subgraph = getSubgraphConfig("Optimistic Oracle V1", chainId);
+    const cleanAncillaryData = extractOriginalAncillaryData(
+      decodeHexString(ancillaryData)
+    );
+    const id = makeUniqueKeyForVote(
+      identifier,
+      time,
+      encodeHexString(cleanAncillaryData)
+    );
+    const query = gql`
+      query oov1Query($id: ID!) {
+        optimisticPriceRequest(id: $id) {
+          requestHash
+          requestLogIndex
+          requestTimestamp
+        }
+      }
+    `;
+    type GqlRequest = {
+      requestHash: string;
+      requestLogIndex: string;
+      requestTimestamp: number;
+    };
+    type GqlResponse = {
+      optimisticPriceRequest: GqlRequest;
+    };
+
     const data: GqlResponse = await request(subgraph.url, query, {
-      proposalTimestamp: time,
+      id,
     });
-    assert(data.optimisticPriceRequests.length > 0, "request not found");
-    const [optimisticPriceRequest] = data.optimisticPriceRequests;
+    const { optimisticPriceRequest } = data;
+    assert(optimisticPriceRequest, "oov1 request not found");
     const requestHash = optimisticPriceRequest?.requestHash;
     const requestLogIndex = optimisticPriceRequest?.requestLogIndex;
-    const uniqueKey = optimisticPriceRequest?.id;
+    const uniqueKey = id;
     return {
       time,
       uniqueKey,
@@ -377,7 +434,7 @@ async function tryAllTypes(request: RequestBody): Promise<ResponseBody> {
 }
 
 async function augmentRequest(request: RequestBody): Promise<ResponseBody> {
-  const vote = await voteQuery(request);
+  const vote = await voteQuery(request).catch((_) => undefined);
   const l1RequestTxHash = vote?.requestTransaction;
   const result = await tryAllTypes(request);
   return {
@@ -394,12 +451,12 @@ export default async function handler(
 
   try {
     const body: RequestBody = ss.create(request.body, RequestBody);
-    if (debug) console.log(body);
+    if (debug) console.log("query", body);
     const result = await augmentRequest(body);
-    if (debug) console.log(result);
+    if (debug) console.log("result", result);
     response.status(200).send(result);
   } catch (e) {
-    if (debug) console.error("augment-request error:", e);
+    if (debug) console.error("augment-request-gql error:", e);
     response.status(500).send({
       message: "Error in fetching augmented information",
       error: e instanceof Error ? e.message : e,
