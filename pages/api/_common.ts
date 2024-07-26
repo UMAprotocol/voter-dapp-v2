@@ -4,6 +4,8 @@ import { NodeUrls, SupportedChainIds } from "types";
 import { supportedChains } from "constant";
 import * as ss from "superstruct";
 
+export const VoteSubgraphURL = ss.assert(process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,ss.string());
+
 type GetAddressParams = Parameters<typeof getAddress>;
 
 type GetAbiParams = Parameters<typeof getAbi>;
