@@ -278,17 +278,9 @@ async function oov2Query({
     extractOriginalAncillaryData(decodeHexString(ancillaryData))
   );
   const query = gql`
-    query oov2Query(
-      $ancillaryData: String!
-      $identifier: String!
-      $proposalTimestamp: Int!
-    ) {
+    query oov2Query($ancillaryData: String!, $identifier: String!) {
       optimisticPriceRequests(
-        where: {
-          ancillaryData: $ancillaryData
-          identifier: $identifier
-          proposalTimestamp: $proposalTimestamp
-        }
+        where: { ancillaryData: $ancillaryData, identifier: $identifier }
       ) {
         id
         requestHash
@@ -309,6 +301,7 @@ async function oov2Query({
     customLiveness: number;
     time: number;
     eventBased: boolean;
+    proposalTimestamp: number;
   };
   type GqlResponse = {
     optimisticPriceRequests: GqlRequest[];
@@ -318,12 +311,17 @@ async function oov2Query({
     const data: GqlResponse = await request(subgraph.url, query, {
       ancillaryData: cleanAncillaryData,
       identifier,
-      proposalTimestamp: time,
     });
     assert(data.optimisticPriceRequests.length > 0, "oov2 request not found");
     let optimisticPriceRequest: GqlRequest | undefined;
     if (data.optimisticPriceRequests.length > 1) {
-      throw new Error("Multiple price requests found in query");
+      optimisticPriceRequest = data.optimisticPriceRequests.find((req) => {
+        if (req.eventBased) {
+          return req.proposalTimestamp === time;
+        } else {
+          return req.time === time;
+        }
+      });
     } else {
       optimisticPriceRequest = data.optimisticPriceRequests[0];
     }
