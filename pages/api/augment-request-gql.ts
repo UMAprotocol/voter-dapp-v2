@@ -3,16 +3,17 @@ import assert from "assert";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { makeUniqueKeyForVote, decodeHexString } from "helpers";
-import { isSupportedChainId, getSubgraphConfig } from "./_common";
+import {
+  isSupportedChainId,
+  getSubgraphConfig,
+  VoteSubgraphURL,
+} from "./_common";
 import { ethers } from "ethers";
 
 function encodeHexString(str: string): string {
   return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(str));
 }
 const debug = !!process.env.DEBUG;
-const VoteSubgraphURL =
-  process.env.NEXT_PUBLIC_GRAPH_ENDPOINT ??
-  "https://api.thegraph.com/subgraphs/name/md0x/mainnet-voting-v2";
 
 const RequestBody = ss.object({
   ancillaryData: ss.string(),
@@ -117,7 +118,7 @@ async function voteQuery({
   try {
     const data: GqlResponse = await request(VoteSubgraphURL, query, { id });
     assert(data.priceRequest, "vote query request not found");
-    return data?.priceRequest;
+    return data.priceRequest;
   } catch (error) {
     if (debug) console.error("vote fetch error:", error);
     throw error;
@@ -317,9 +318,9 @@ async function oov2Query({
     if (data.optimisticPriceRequests.length > 1) {
       optimisticPriceRequest = data.optimisticPriceRequests.find((req) => {
         if (req.eventBased) {
-          return req.proposalTimestamp === time;
+          return Number(req.proposalTimestamp) === time;
         } else {
-          return req.time === time;
+          return Number(req.time) === time;
         }
       });
     } else {
