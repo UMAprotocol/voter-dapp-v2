@@ -113,15 +113,7 @@ export function Result({
           </Legend>
         </ResultSectionWrapper>
       </SectionWrapper>
-      <PanelSectionTitle>
-        <IconWrapper>
-          <VotingIcon />
-        </IconWrapper>
-        Quorum
-      </PanelSectionTitle>
-      <SectionWrapper>
-        <QuorumProgress quorumData={quorumData} />
-      </SectionWrapper>
+
       <PanelSectionTitle>
         <IconWrapper>
           <VotingIcon />
@@ -129,6 +121,7 @@ export function Result({
         Participation
       </PanelSectionTitle>
       <SectionWrapper>
+        <QuorumProgress quorumData={quorumData} />
         <ParticipationItem>
           <span>Unique commit addresses</span>
           <Strong>{uniqueCommitAddresses}</Strong>
@@ -212,45 +205,46 @@ function QuorumProgress({ quorumData }: QuorumData) {
   const agreementRequirementMet = agreementRate > 1;
 
   return (
-    <div className=" mt-2 flex w-full flex-col gap-2">
-      <Tooltip
-        label={`${formatToSignificantThousand(
-          quorumData.totalTokensVotedWith
-        )} / ${formatToSignificantThousand(
-          quorumData.minParticipationRequirement
-        )}`}
-      >
-        <QuorumItem>
-          Participation (
-          {`${(Math.min(participationRate, 1) * 100).toFixed(0)}%`}){" "}
-          {participationRequirementMet && <SuccessIcon />}
-        </QuorumItem>
-      </Tooltip>
+    <ParticipationItem>
+      <div className="mt-2 flex w-full flex-col gap-2">
+        <Tooltip
+          label={`${formatToSignificantThousand(
+            quorumData.totalTokensVotedWith
+          )} / ${formatToSignificantThousand(
+            quorumData.minParticipationRequirement
+          )}`}
+        >
+          <QuorumItem>
+            Quorum ({`${(Math.min(participationRate, 1) * 100).toFixed(0)}%`}){" "}
+            {participationRequirementMet && <SuccessIcon />}
+          </QuorumItem>
+        </Tooltip>
 
-      <ProgressBar
-        progress={Math.min(participationRate, 1)}
-        secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
-        primaryColor={winningVote.color}
-      />
-      <Tooltip
-        label={`${formatToSignificantThousand(
-          winningVote.value
-        )} / ${formatToSignificantThousand(
-          quorumData.minAgreementRequirement
-        )}`}
-      >
-        <QuorumItem>
-          Agreement ({`${(Math.min(agreementRate, 1) * 100).toFixed(0)}%`}){" "}
-          {agreementRequirementMet && <SuccessIcon />}
-        </QuorumItem>
-      </Tooltip>
+        <ProgressBar
+          progress={Math.min(participationRate, 1)}
+          secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+          primaryColor={winningVote.color}
+        />
+        <Tooltip
+          label={`${formatToSignificantThousand(
+            winningVote.value
+          )} / ${formatToSignificantThousand(
+            quorumData.minAgreementRequirement
+          )}`}
+        >
+          <QuorumItem>
+            Consensus ({`${(Math.min(agreementRate, 1) * 100).toFixed(0)}%`}){" "}
+            {agreementRequirementMet && <SuccessIcon />}
+          </QuorumItem>
+        </Tooltip>
 
-      <ProgressBar
-        progress={Math.min(agreementRate, 1)}
-        secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
-        primaryColor={winningVote.color}
-      />
-    </div>
+        <ProgressBar
+          progress={Math.min(agreementRate, 1)}
+          secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+          primaryColor={winningVote.color}
+        />
+      </div>
+    </ParticipationItem>
   );
 }
 
