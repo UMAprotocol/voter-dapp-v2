@@ -36,6 +36,8 @@ export async function getActiveVoteResults(): Promise<
         rollCount
         latestRound {
           totalVotesRevealed
+          minAgreementRequirement
+          minParticipationRequirement
           groups {
             price
             totalVoteAmount
@@ -89,6 +91,10 @@ export async function getActiveVoteResults(): Promise<
           uniqueRevealAddresses: latestRound.revealedVotes.length,
           totalTokensVotedWith,
           totalTokensCommitted,
+          minAgreementRequirement: Number(latestRound.minAgreementRequirement),
+          minParticipationRequirement: Number(
+            latestRound.minParticipationRequirement
+          ),
         };
 
         const results = latestRound.groups.map(

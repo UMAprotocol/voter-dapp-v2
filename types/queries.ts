@@ -9,6 +9,8 @@ export type PastVotesQuery = {
     resolvedPriceRequestIndex: string;
     latestRound: {
       totalVotesRevealed: string;
+      minAgreementRequirement: string;
+      minParticipationRequirement: string;
       groups: {
         price: string;
         totalVoteAmount: string;

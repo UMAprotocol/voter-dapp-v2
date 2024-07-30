@@ -25,3 +25,4 @@ export { initOnboard } from "./web3/initOnboard";
 export * from "./web3/signing";
 export { truncateEthAddress } from "./web3/truncateEthAddress";
 export * from "./web3/wallet";
+export * from "./typeUtilities";

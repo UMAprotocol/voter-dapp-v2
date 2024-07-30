@@ -5,14 +5,19 @@ import {
   PanelErrorBanner,
   Tooltip,
 } from "components";
+import { ProgressBar } from "components/ProgressBar/ProgressBar";
 import { mobileAndUnder, isEarlyVote } from "constant";
 import {
   formatVoteStringWithPrecision,
   truncateDecimals,
   commify,
+  addOpacityToHsl,
+  formatToSignificantThousand,
 } from "helpers";
+import { NonNullablePick } from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
+import Success from "public/assets/icons/success.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";
 import { DropdownItemT, ParticipationT, ResultsT } from "types";
@@ -55,6 +60,18 @@ export function Result({
   const resultsWithPercentages = computePercentages(resultsWithLabels);
   const resultsWithColors = computeColors(resultsWithPercentages);
 
+  const quorumData =
+    participation.minAgreementRequirement &&
+    participation.minParticipationRequirement
+      ? {
+          totalTokensVotedWith,
+          resultsWithColors,
+          minAgreementRequirement: participation.minAgreementRequirement,
+          minParticipationRequirement:
+            participation.minParticipationRequirement,
+        }
+      : undefined;
+
   function findVoteInOptions(value: string | undefined) {
     return options?.find((option) => {
       return option.value === value;
@@ -95,6 +112,15 @@ export function Result({
             ))}
           </Legend>
         </ResultSectionWrapper>
+      </SectionWrapper>
+      <PanelSectionTitle>
+        <IconWrapper>
+          <VotingIcon />
+        </IconWrapper>
+        Quorum
+      </PanelSectionTitle>
+      <SectionWrapper>
+        <QuorumProgress quorumData={quorumData} />
       </SectionWrapper>
       <PanelSectionTitle>
         <IconWrapper>
@@ -152,6 +178,93 @@ function LegendItemLabel({ label }: { label: string }) {
   }
   return <LegendItemLabelWrapper>{label}</LegendItemLabelWrapper>;
 }
+
+type QuorumData = {
+  quorumData:
+    | ({
+        resultsWithColors: ReturnType<typeof computeColors>;
+      } & NonNullablePick<
+        ParticipationT,
+        | "totalTokensVotedWith"
+        | "minAgreementRequirement"
+        | "minParticipationRequirement"
+      >)
+    | undefined;
+};
+
+function QuorumProgress({ quorumData }: QuorumData) {
+  if (!quorumData) {
+    return null;
+  }
+
+  const winningVote = quorumData.resultsWithColors.reduce(
+    (max, obj) => (obj.value > max.value ? obj : max),
+    quorumData.resultsWithColors[0]
+  );
+
+  const participationRate =
+    quorumData.totalTokensVotedWith / quorumData.minParticipationRequirement;
+
+  const participationRequirementMet = participationRate > 1;
+
+  const agreementRate = winningVote.value / quorumData.minAgreementRequirement;
+
+  const agreementRequirementMet = agreementRate > 1;
+
+  return (
+    <div className=" mt-2 flex w-full flex-col gap-2">
+      <Tooltip
+        label={`${formatToSignificantThousand(
+          quorumData.totalTokensVotedWith
+        )} / ${formatToSignificantThousand(
+          quorumData.minParticipationRequirement
+        )}`}
+      >
+        <QuorumItem>
+          Participation (
+          {`${(Math.min(participationRate, 1) * 100).toFixed(0)}%`}){" "}
+          {participationRequirementMet && <SuccessIcon />}
+        </QuorumItem>
+      </Tooltip>
+
+      <ProgressBar
+        progress={Math.min(participationRate, 1)}
+        secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+        primaryColor={winningVote.color}
+      />
+      <Tooltip
+        label={`${formatToSignificantThousand(
+          winningVote.value
+        )} / ${formatToSignificantThousand(
+          quorumData.minAgreementRequirement
+        )}`}
+      >
+        <QuorumItem>
+          Agreement ({`${(Math.min(agreementRate, 1) * 100).toFixed(0)}%`}){" "}
+          {agreementRequirementMet && <SuccessIcon />}
+        </QuorumItem>
+      </Tooltip>
+
+      <ProgressBar
+        progress={Math.min(agreementRate, 1)}
+        secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+        primaryColor={winningVote.color}
+      />
+    </div>
+  );
+}
+
+const SuccessIcon = styled(Success)`
+  width: 14px;
+  display: inline;
+`;
+
+const QuorumItem = styled.div`
+  font: var(--text-sm);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`;
 
 const Span = styled.span`
   color: var(--red-500);
