@@ -79,6 +79,8 @@ export async function getPastVotesV2() {
         rollCount
         latestRound {
           totalVotesRevealed
+          minAgreementRequirement
+          minParticipationRequirement
           groups {
             price
             totalVoteAmount
@@ -136,7 +138,12 @@ export async function getPastVotesV2() {
         uniqueRevealAddresses: latestRound.revealedVotes.length,
         totalTokensVotedWith,
         totalTokensCommitted,
+        minAgreementRequirement: Number(latestRound.minAgreementRequirement),
+        minParticipationRequirement: Number(
+          latestRound.minParticipationRequirement
+        ),
       };
+
       const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
         vote: price,
         tokensVotedWith: Number(totalVoteAmount),

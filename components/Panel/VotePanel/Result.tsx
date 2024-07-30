@@ -5,14 +5,19 @@ import {
   PanelErrorBanner,
   Tooltip,
 } from "components";
+import { ProgressBar } from "components/ProgressBar/ProgressBar";
 import { mobileAndUnder, isEarlyVote } from "constant";
 import {
   formatVoteStringWithPrecision,
   truncateDecimals,
   commify,
+  addOpacityToHsl,
+  formatToSignificantThousand,
 } from "helpers";
+import { NonNullablePick } from "helpers";
 import { usePanelWidth } from "hooks";
 import Portion from "public/assets/icons/portion.svg";
+import Success from "public/assets/icons/success.svg";
 import Voting from "public/assets/icons/voting.svg";
 import styled, { CSSProperties } from "styled-components";
 import { DropdownItemT, ParticipationT, ResultsT } from "types";
@@ -55,6 +60,18 @@ export function Result({
   const resultsWithPercentages = computePercentages(resultsWithLabels);
   const resultsWithColors = computeColors(resultsWithPercentages);
 
+  const quorumData =
+    participation.minAgreementRequirement &&
+    participation.minParticipationRequirement
+      ? {
+          totalTokensVotedWith,
+          resultsWithColors,
+          minAgreementRequirement: participation.minAgreementRequirement,
+          minParticipationRequirement:
+            participation.minParticipationRequirement,
+        }
+      : undefined;
+
   function findVoteInOptions(value: string | undefined) {
     return options?.find((option) => {
       return option.value === value;
@@ -96,6 +113,7 @@ export function Result({
           </Legend>
         </ResultSectionWrapper>
       </SectionWrapper>
+
       <PanelSectionTitle>
         <IconWrapper>
           <VotingIcon />
@@ -103,6 +121,7 @@ export function Result({
         Participation
       </PanelSectionTitle>
       <SectionWrapper>
+        <QuorumProgress quorumData={quorumData} />
         <ParticipationItem>
           <span>Unique commit addresses</span>
           <Strong>{uniqueCommitAddresses}</Strong>
@@ -152,6 +171,105 @@ function LegendItemLabel({ label }: { label: string }) {
   }
   return <LegendItemLabelWrapper>{label}</LegendItemLabelWrapper>;
 }
+
+type QuorumData = {
+  quorumData:
+    | ({
+        resultsWithColors: ReturnType<typeof computeColors>;
+      } & NonNullablePick<
+        ParticipationT,
+        | "totalTokensVotedWith"
+        | "minAgreementRequirement"
+        | "minParticipationRequirement"
+      >)
+    | undefined;
+};
+
+function QuorumProgress({ quorumData }: QuorumData) {
+  if (!quorumData) {
+    return null;
+  }
+
+  const winningVote = quorumData.resultsWithColors.reduce(
+    (max, obj) => (obj.value > max.value ? obj : max),
+    quorumData.resultsWithColors[0]
+  );
+
+  const quorumRate =
+    quorumData.totalTokensVotedWith / quorumData.minParticipationRequirement;
+
+  const quorumRequirementMet = quorumRate > 1;
+
+  const consensusRate = winningVote.value / quorumData.minAgreementRequirement;
+
+  const consensusRequirementMet = consensusRate > 1;
+
+  const quorumTooltip = `The minimum amount of tokens that must vote for a dispute to be finalized (${formatToSignificantThousand(
+    quorumData.minParticipationRequirement
+  )}).`;
+
+  const consensusTooltip = `At least ${formatToSignificantThousand(
+    quorumData.minAgreementRequirement
+  )} tokens must vote in favor of one option for a dispute to be finalized. This ensures that the required majority is achieved.`;
+
+  return (
+    <ParticipationItem>
+      <div className="mt-2 flex w-full flex-col gap-2">
+        <Tooltip label={quorumTooltip}>
+          <QuorumItem>
+            <span>
+              Quorum ({`${(Math.min(quorumRate, 1) * 100).toFixed(0)}%`})
+            </span>
+            {quorumRequirementMet && <SuccessIcon />}
+            <span className="ml-auto">
+              {formatToSignificantThousand(quorumData.totalTokensVotedWith)} /{" "}
+              {formatToSignificantThousand(
+                quorumData.minParticipationRequirement
+              )}
+            </span>
+          </QuorumItem>
+        </Tooltip>
+
+        <ProgressBar
+          progress={Math.min(consensusRate, 1)}
+          secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+          primaryColor={winningVote.color}
+        />
+        <Tooltip label={consensusTooltip}>
+          <QuorumItem>
+            <span>
+              Consensus ({`${(Math.min(consensusRate, 1) * 100).toFixed(0)}%`})
+            </span>
+            {consensusRequirementMet && <SuccessIcon />}
+            <span className="ml-auto">
+              {formatToSignificantThousand(winningVote.value)} /
+              {formatToSignificantThousand(quorumData.minAgreementRequirement)}
+            </span>
+          </QuorumItem>
+        </Tooltip>
+
+        <ProgressBar
+          progress={Math.min(consensusRate, 1)}
+          secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
+          primaryColor={winningVote.color}
+        />
+      </div>
+    </ParticipationItem>
+  );
+}
+
+const SuccessIcon = styled(Success)`
+  width: 14px;
+  display: inline;
+`;
+
+const QuorumItem = styled.div`
+  font: var(--text-sm);
+  display: flex;
+  justify-content: start;
+  gap: 8px;
+  align-items: center;
+`;
 
 const Span = styled.span`
   color: var(--red-500);

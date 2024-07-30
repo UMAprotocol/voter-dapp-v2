@@ -40,6 +40,8 @@ export type ParticipationT = {
   uniqueRevealAddresses: number;
   totalTokensVotedWith: number;
   totalTokensCommitted?: number;
+  minAgreementRequirement?: number;
+  minParticipationRequirement?: number;
 };
 
 export type VoteParticipationT = {

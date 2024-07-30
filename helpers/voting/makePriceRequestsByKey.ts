@@ -63,6 +63,10 @@ function formatPriceRequest(
       priceRequest?.participation?.totalTokensVotedWith || 0,
     totalTokensCommitted:
       priceRequest?.participation?.totalTokensCommitted || 0,
+    minAgreementRequirement:
+      priceRequest?.participation?.minAgreementRequirement || 0,
+    minParticipationRequirement:
+      priceRequest?.participation?.minParticipationRequirement || 0,
   };
   const results = priceRequest.results;
   const uniqueKey = makeUniqueKeyForVote(
