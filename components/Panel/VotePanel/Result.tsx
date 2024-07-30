@@ -195,51 +195,61 @@ function QuorumProgress({ quorumData }: QuorumData) {
     quorumData.resultsWithColors[0]
   );
 
-  const participationRate =
+  const quorumRate =
     quorumData.totalTokensVotedWith / quorumData.minParticipationRequirement;
 
-  const participationRequirementMet = participationRate > 1;
+  const quorumRequirementMet = quorumRate > 1;
 
-  const agreementRate = winningVote.value / quorumData.minAgreementRequirement;
+  const consensusRate = winningVote.value / quorumData.minAgreementRequirement;
 
-  const agreementRequirementMet = agreementRate > 1;
+  const consensusRequirementMet = consensusRate > 1;
+
+  const quorumTooltip = `The minimum amount of tokens that must vote for a dispute to be finalized (${formatToSignificantThousand(
+    quorumData.minParticipationRequirement
+  )}).`;
+
+  const consensusTooltip = `At least ${formatToSignificantThousand(
+    quorumData.minAgreementRequirement
+  )} tokens must vote in favor of one option for a dispute to be finalized. This ensures that the required majority is achieved.`;
 
   return (
     <ParticipationItem>
       <div className="mt-2 flex w-full flex-col gap-2">
-        <Tooltip
-          label={`${formatToSignificantThousand(
-            quorumData.totalTokensVotedWith
-          )} / ${formatToSignificantThousand(
-            quorumData.minParticipationRequirement
-          )}`}
-        >
+        <Tooltip label={quorumTooltip}>
           <QuorumItem>
-            Quorum ({`${(Math.min(participationRate, 1) * 100).toFixed(0)}%`}){" "}
-            {participationRequirementMet && <SuccessIcon />}
+            <span>
+              Quorum ({`${(Math.min(quorumRate, 1) * 100).toFixed(0)}%`})
+            </span>
+            {quorumRequirementMet && <SuccessIcon />}
+            <span className="ml-auto">
+              {formatToSignificantThousand(quorumData.totalTokensVotedWith)} /{" "}
+              {formatToSignificantThousand(
+                quorumData.minParticipationRequirement
+              )}
+            </span>
           </QuorumItem>
         </Tooltip>
 
         <ProgressBar
-          progress={Math.min(participationRate, 1)}
+          progress={Math.min(consensusRate, 1)}
           secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
           primaryColor={winningVote.color}
         />
-        <Tooltip
-          label={`${formatToSignificantThousand(
-            winningVote.value
-          )} / ${formatToSignificantThousand(
-            quorumData.minAgreementRequirement
-          )}`}
-        >
+        <Tooltip label={consensusTooltip}>
           <QuorumItem>
-            Consensus ({`${(Math.min(agreementRate, 1) * 100).toFixed(0)}%`}){" "}
-            {agreementRequirementMet && <SuccessIcon />}
+            <span>
+              Consensus ({`${(Math.min(consensusRate, 1) * 100).toFixed(0)}%`})
+            </span>
+            {consensusRequirementMet && <SuccessIcon />}
+            <span className="ml-auto">
+              {formatToSignificantThousand(winningVote.value)} /
+              {formatToSignificantThousand(quorumData.minAgreementRequirement)}
+            </span>
           </QuorumItem>
         </Tooltip>
 
         <ProgressBar
-          progress={Math.min(agreementRate, 1)}
+          progress={Math.min(consensusRate, 1)}
           secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
           primaryColor={winningVote.color}
         />
@@ -256,6 +266,7 @@ const SuccessIcon = styled(Success)`
 const QuorumItem = styled.div`
   font: var(--text-sm);
   display: flex;
+  justify-content: start;
   gap: 8px;
   align-items: center;
 `;
