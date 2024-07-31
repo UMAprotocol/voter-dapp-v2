@@ -11,15 +11,13 @@ export type PastVotesQuery = {
       totalVotesRevealed: string;
       minAgreementRequirement: string;
       minParticipationRequirement: string;
+      cumulativeStakeAtRound: string;
       groups: {
         price: string;
         totalVoteAmount: string;
       }[];
       committedVotes: {
         id: string;
-        voter?: {
-          voterStake: string;
-        };
       }[];
       revealedVotes: {
         id: string;

@@ -38,15 +38,13 @@ export async function getActiveVoteResults(): Promise<
           totalVotesRevealed
           minAgreementRequirement
           minParticipationRequirement
+          cumulativeStakeAtRound
           groups {
             price
             totalVoteAmount
           }
           committedVotes {
             id
-            voter {
-              voterStake
-            }
           }
           revealedVotes {
             id
@@ -75,16 +73,7 @@ export async function getActiveVoteResults(): Promise<
         const correctVote = price;
         const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
 
-        // for v1 this data is missing so we need to dynamically check this
-        const hasVoterStakeDetails = latestRound.committedVotes.some(
-          (v) => v.voter?.voterStake
-        );
-        // no counter field in subgraph entity so we must do this calculation client side
-        const totalTokensCommitted = hasVoterStakeDetails
-          ? latestRound.committedVotes
-              .map((v) => Number(v?.voter?.voterStake))
-              .reduce((acc, curr) => acc + curr, 0)
-          : undefined;
+        const totalTokensCommitted = Number(latestRound.cumulativeStakeAtRound);
 
         const participation = {
           uniqueCommitAddresses: latestRound.committedVotes.length,
