@@ -5,6 +5,7 @@ import {
   supportedChains,
 } from "constant";
 import {
+  checkIfIsPolymarket,
   decodeHexString,
   formatNumberForDisplay,
   makeBlockExplorerLink,
@@ -15,7 +16,9 @@ import {
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { useAssertionClaim, useAugmentedVoteData } from "hooks";
+import PolymarketIcon from "public/assets/icons/polymarket.svg";
 
+import ExternalLinkIcon from "public/assets/icons/external-link.svg";
 import AncillaryData from "public/assets/icons/ancillary-data.svg";
 import Chat from "public/assets/icons/chat.svg";
 import Chevron from "public/assets/icons/chevron.svg";
@@ -31,6 +34,7 @@ import { OracleTypeT, SupportedChainIds, VoteT } from "types";
 import { PanelSectionSubTitle, PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
+import { usePolymarketData } from "hooks/queries/votes";
 
 export function Details({
   decodedIdentifier,
@@ -46,6 +50,7 @@ export function Details({
   assertionChildChainId,
   assertionAsserter,
   assertionId,
+  title,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -127,6 +132,11 @@ export function Details({
     makeOoRequestLink(),
   ].filter(Boolean);
 
+  const { data: polymarketData } = usePolymarketData(
+    title,
+    checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) ? true : false
+  );
+
   return (
     <Wrapper>
       <SectionWrapper>
@@ -142,11 +152,24 @@ export function Details({
             }
           />
         </RequestInfoIcons>
+
         <PanelSectionTitle>
           <IconWrapper>
             <DescriptionIcon />
           </IconWrapper>{" "}
-          Description
+          Description{" "}
+          {polymarketData && (
+            <a
+              className="ml-auto inline-flex h-[35px] place-items-center gap-2 rounded-md border border-transparent px-2 py-1 text-sm font-normal transition-colors hover:border-grey-500 hover:underline"
+              rel="noreferrer"
+              target="_blank"
+              href={polymarketData.link}
+            >
+              <PolymarketIcon className="h-4 w-4" />
+              See on Polymarket
+              <ExternalLinkIcon />
+            </a>
+          )}
         </PanelSectionTitle>
         <Text>
           <Strong>Identifier: </Strong>

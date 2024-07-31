@@ -27,14 +27,18 @@ const nextConfig = {
 
     return config;
   },
-  images:{
-    remotePatterns:[
+  images: {
+    remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.discordapp.com',
-      }
-    ]
-  }
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
+      },
+      {
+        protocol: "https",
+        hostname: "polymarket-upload.*.amazonaws.com",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
