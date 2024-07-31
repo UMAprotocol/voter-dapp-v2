@@ -17,6 +17,16 @@ export type PolymarketData = PolymarketResponse[number] & {
   link: string;
 };
 
+function isPolymarketResponse(data: unknown): data is PolymarketResponse {
+  return Array.isArray(data) &&
+    data.length &&
+    typeof data[0] === "object" &&
+    data[0] &&
+    "slug" in data[0]
+    ? true
+    : false;
+}
+
 /**
  * Searches Polymarket's api for a a market using a market's title.
  *
@@ -33,8 +43,8 @@ async function getPolymarketData(title: string): Promise<PolymarketData> {
 
   const url = `https://polymarket.com/api/events/search?${params.toString()}`;
   const res = await fetch(url);
-  const search = (await res.json()) as PolymarketResponse;
-  if (!search.length) {
+  const search = await res.json();
+  if (!isPolymarketResponse(search)) {
     throw new Error("Unable to find market.");
   }
   const data = search[0];
