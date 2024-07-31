@@ -143,11 +143,11 @@ export function Result({
             <span>Total tokens that revealed</span>
             <Strong>
               <Span>
-                (%
+                (
                 {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
                   2
                 )}
-                )
+                %)
               </Span>
               {totalTokensVotedWith
                 ? commify(truncateDecimals(totalTokensVotedWith, 2))
