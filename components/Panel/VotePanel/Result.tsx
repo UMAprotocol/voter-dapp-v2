@@ -231,7 +231,7 @@ function QuorumProgress({ quorumData }: QuorumData) {
         </Tooltip>
 
         <ProgressBar
-          progress={Math.min(consensusRate, 1)}
+          progress={Math.min(quorumRate, 1)}
           secondaryColor={addOpacityToHsl(winningVote.color, 0.2)}
           primaryColor={winningVote.color}
         />
