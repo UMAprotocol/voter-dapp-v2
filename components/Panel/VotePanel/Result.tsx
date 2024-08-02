@@ -130,31 +130,23 @@ export function Result({
           <span>Unique reveal addresses</span>
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
-        <ParticipationItem>
+        {/* <ParticipationItem>
           <span>Total tokens that committed</span>
           <Strong>
             {totalTokensCommitted
               ? commify(truncateDecimals(totalTokensCommitted, 2))
               : 0}
           </Strong>
+        </ParticipationItem> */}
+
+        <ParticipationItem>
+          <span>Total tokens that revealed</span>
+          <Strong>
+            {totalTokensVotedWith
+              ? commify(truncateDecimals(totalTokensVotedWith, 2))
+              : 0}
+          </Strong>
         </ParticipationItem>
-        {totalTokensCommitted && (
-          <ParticipationItem>
-            <span>Total tokens that revealed</span>
-            <Strong>
-              <Span>
-                (%
-                {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
-                  2
-                )}
-                )
-              </Span>
-              {totalTokensVotedWith
-                ? commify(truncateDecimals(totalTokensVotedWith, 2))
-                : 0}
-            </Strong>
-          </ParticipationItem>
-        )}
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>
