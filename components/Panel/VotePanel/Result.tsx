@@ -39,12 +39,8 @@ export function Result({
 
   if (!participation || !results) return null;
 
-  const {
-    uniqueCommitAddresses,
-    uniqueRevealAddresses,
-    totalTokensVotedWith,
-    totalTokensCommitted,
-  } = participation;
+  const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
+    participation;
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
@@ -130,31 +126,23 @@ export function Result({
           <span>Unique reveal addresses</span>
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
-        <ParticipationItem>
+        {/* <ParticipationItem>
           <span>Total tokens that committed</span>
           <Strong>
             {totalTokensCommitted
               ? commify(truncateDecimals(totalTokensCommitted, 2))
               : 0}
           </Strong>
+        </ParticipationItem> */}
+
+        <ParticipationItem>
+          <span>Total tokens that revealed</span>
+          <Strong>
+            {totalTokensVotedWith
+              ? commify(truncateDecimals(totalTokensVotedWith, 2))
+              : 0}
+          </Strong>
         </ParticipationItem>
-        {totalTokensCommitted && (
-          <ParticipationItem>
-            <span>Total tokens that revealed</span>
-            <Strong>
-              <Span>
-                (%
-                {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
-                  2
-                )}
-                )
-              </Span>
-              {totalTokensVotedWith
-                ? commify(truncateDecimals(totalTokensVotedWith, 2))
-                : 0}
-            </Strong>
-          </ParticipationItem>
-        )}
       </SectionWrapper>
       <PanelErrorBanner errorOrigin="vote" />
     </Wrapper>
@@ -271,10 +259,10 @@ const QuorumItem = styled.div`
   align-items: center;
 `;
 
-const Span = styled.span`
-  color: var(--red-500);
-  margin-inline: 1em;
-`;
+// const Span = styled.span`
+//   color: var(--red-500);
+//   margin-inline: 1em;
+// `;
 
 const Wrapper = styled.div`
   margin-top: 20px;
