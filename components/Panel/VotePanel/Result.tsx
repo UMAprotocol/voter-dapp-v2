@@ -39,12 +39,8 @@ export function Result({
 
   if (!participation || !results) return null;
 
-  const {
-    uniqueCommitAddresses,
-    uniqueRevealAddresses,
-    totalTokensVotedWith,
-    totalTokensCommitted,
-  } = participation;
+  const { uniqueCommitAddresses, uniqueRevealAddresses, totalTokensVotedWith } =
+    participation;
 
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
@@ -263,10 +259,10 @@ const QuorumItem = styled.div`
   align-items: center;
 `;
 
-const Span = styled.span`
-  color: var(--red-500);
-  margin-inline: 1em;
-`;
+// const Span = styled.span`
+//   color: var(--red-500);
+//   margin-inline: 1em;
+// `;
 
 const Wrapper = styled.div`
   margin-top: 20px;
