@@ -79,6 +79,7 @@ export async function getPastVotesV2() {
         rollCount
         latestRound {
           totalVotesRevealed
+          totalTokensCommitted
           minAgreementRequirement
           minParticipationRequirement
           groups {
@@ -87,9 +88,6 @@ export async function getPastVotesV2() {
           }
           committedVotes {
             id
-            voter {
-              voterStake
-            }
           }
           revealedVotes {
             id
@@ -123,14 +121,8 @@ export async function getPastVotesV2() {
       const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
 
       // for v1 this data is missing so we need to dynamically check this
-      const hasVoterStakeDetails = latestRound.committedVotes.some(
-        (v) => v.voter?.voterStake
-      );
-      // no counter field in subgraph entity so we must do this calculation client side
-      const totalTokensCommitted = hasVoterStakeDetails
-        ? latestRound.committedVotes
-            .map((v) => Number(v?.voter?.voterStake))
-            .reduce((acc, curr) => acc + curr, 0)
+      const totalTokensCommitted = latestRound.totalTokensCommitted
+        ? Number(latestRound.totalTokensCommitted)
         : undefined;
 
       const participation = {
