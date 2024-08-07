@@ -19,7 +19,10 @@ export async function getDelegateSetEvents(
     }))
     .filter(({ delegate }) => delegate !== zeroAddress);
 
-  const onlyOne = onlyOneRequestPerAddress(parsedEvents, queryFor);
+  // this onlyOne function returns the oldest event by default if collisions happen, so we reverse the list
+  // to run newest requests first, ensuring we get the latest event.  previously this was not reversed
+  // causing issues with accounts that are attempting to delegate to a new delegator
+  const onlyOne = onlyOneRequestPerAddress(parsedEvents.reverse(), queryFor);
   return removeDanglingDelegateEvents(voting, onlyOne);
 }
 
