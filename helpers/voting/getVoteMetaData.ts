@@ -75,7 +75,7 @@ export function getVoteMetaData(
     const umipOrUppUrl =
       "https://github.com/UMAprotocol/UMIPs/blob/448375e1b9d2bd24dfd0627805ef6a7c2d72f74f/UMIPs/umip-157.md";
     const umipOrUppNumber = "umip-157";
-    const options = makeVoteOptions();
+    const options = makeAcrossV2Options();
 
     return {
       title,
@@ -248,8 +248,15 @@ function getDescriptionFromAncillaryData(
 
 function makeVoteOptions() {
   return [
-    { label: "Yes", value: "1" },
     { label: "No", value: "0" },
+    { label: "Yes", value: "1" },
+  ];
+}
+
+function makeAcrossV2Options() {
+  return [
+    { label: "Invalid", value: "0", secondaryLabel: "p1" },
+    { label: "Valid", value: "1", secondaryLabel: "p2" },
   ];
 }
 
@@ -284,8 +291,8 @@ function getUmipOrUppNumberFromUrl(url: string | undefined) {
 
 function makeAssertionOptions() {
   return [
-    { label: "True", value: "1" },
     { label: "False", value: "0" },
+    { label: "True", value: "1" },
   ];
 }
 
