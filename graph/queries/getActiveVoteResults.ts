@@ -43,10 +43,10 @@ export async function getActiveVoteResults(): Promise<
             price
             totalVoteAmount
           }
-          committedVotes {
+          committedVotes(first: 1000) {
             id
           }
-          revealedVotes {
+          revealedVotes(first: 1000) {
             id
             voter {
               address
