@@ -3,10 +3,9 @@ import Across from "public/assets/icons/across.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import OSnap from "public/assets/icons/osnap.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
-import PredictFunIcon from "public/assets/icons/predict-fun.png";
+import PredictFun from "public/assets/icons/predict-fun.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
-import Image from "next/image";
 import { VoteOriginT } from "types";
 
 interface Props {
@@ -72,7 +71,7 @@ function TitleIcon({
     case "Predict.Fun":
       return (
         <TitleIconWrapper>
-          <Image alt="predict.fun logo" fill src={PredictFunIcon} />
+          <PredictFunIcon />
         </TitleIconWrapper>
       );
     default:
@@ -133,6 +132,8 @@ const UMAGovernanceIcon = styled(UMAGovernance)``;
 const AcrossIcon = styled(Across)``;
 
 const PolymarketIcon = styled(Polymarket)``;
+
+const PredictFunIcon = styled(PredictFun)``;
 
 const OSnapIcon = styled(OSnap)``;
 

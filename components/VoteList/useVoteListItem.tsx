@@ -17,7 +17,7 @@ import Across from "public/assets/icons/across.svg";
 import OSnap from "public/assets/icons/osnap.svg";
 import Polymarket from "public/assets/icons/polymarket.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
-import PredictFunIcon from "public/assets/icons/predict-fun.png";
+import PredictFunIcon from "public/assets/icons/predict-fun.svg";
 import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
