@@ -3,6 +3,7 @@ import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { utils } from "ethers";
 import {
   checkIfIsPolymarket,
+  checkIfIsPredictFun,
   makeBlockExplorerLink,
   maybeMakePolymarketOptions,
 } from "helpers";
@@ -90,11 +91,16 @@ export function getVoteMetaData(
     };
   }
 
+  // Predict.Fun follows Polymarket's format
   const isPolymarket = checkIfIsPolymarket(
     decodedIdentifier,
     decodedAncillaryData
   );
-  if (isPolymarket) {
+  const isPredictFun = checkIfIsPredictFun(
+    decodedIdentifier,
+    decodedAncillaryData
+  );
+  if (isPolymarket || isPredictFun) {
     const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
     const ancillaryDataDescription =
       getDescriptionFromAncillaryData(decodedAncillaryData);
@@ -115,7 +121,7 @@ export function getVoteMetaData(
       options,
       umipOrUppLink: maybeMakeUmipOrUppLink(umipOrUppNumber, umipOrUppUrl),
       umipOrUppNumber,
-      origin: "Polymarket",
+      origin: isPolymarket ? "Polymarket" : "Predict.Fun",
       isGovernance: false,
       discordLink,
       isAssertion: false,
