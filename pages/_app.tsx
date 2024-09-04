@@ -14,6 +14,8 @@ import {
 import type { AppProps } from "next/app";
 import "styles/fonts.css";
 import "styles/globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { config } from "helpers";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       <Component {...pageProps} />
                       <Panel />
                       <Notifications />
+                      {config.gaTag && <GoogleAnalytics gaId={config.gaTag} />}
                     </PanelProvider>
                   </VotesProvider>
                 </DelegationProvider>
