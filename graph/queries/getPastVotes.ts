@@ -82,14 +82,14 @@ export async function getPastVotesV2() {
           totalTokensCommitted
           minAgreementRequirement
           minParticipationRequirement
-          groups {
+          groups(first: 1000) {
             price
             totalVoteAmount
           }
-          committedVotes {
+          committedVotes(first: 1000) {
             id
           }
-          revealedVotes {
+          revealedVotes(first: 1000) {
             id
             voter {
               address
