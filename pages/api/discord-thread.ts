@@ -47,7 +47,7 @@ export async function discordRequest(endpoint: string) {
 }
 
 export async function getDiscordMessages(threadId: string) {
-  return discordRequest(`channels/${threadId}/messages`);
+  return discordRequest(`channels/${threadId}/messages?limit=100`);
 }
 
 function discordPhoto(userId: string, userAvatar: string | null) {
@@ -142,7 +142,6 @@ async function fetchDiscordThread(
     .filter((message) => message.content != "")
     .map((msg: RawDiscordMessageT) => {
       const sanitized = fixMarkdownBold(stripMarkdownHeaders(msg.content));
-
       return {
         message: concatenateAttachments(
           replaceEmbeds(replaceMentions(sanitized, msg.mentions), msg.embeds),
