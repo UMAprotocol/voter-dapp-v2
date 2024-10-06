@@ -41,12 +41,14 @@ export function VotePanel({ content }: Props) {
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
-  const { data: discussion, isFetching: discussionLoading } = useVoteDiscussion(
-    {
-      identifier,
-      time,
-    }
-  );
+  const {
+    data: discussion,
+    isFetching: discussionLoading,
+    isError: discussionError,
+  } = useVoteDiscussion({
+    identifier,
+    time,
+  });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
   const titleOrClaimOrIdentifier =
@@ -69,7 +71,11 @@ export function VotePanel({ content }: Props) {
       {
         title: "Discussion",
         content: (
-          <Discussion discussion={discussion} loading={discussionLoading} />
+          <Discussion
+            discussion={discussion}
+            loading={discussionLoading}
+            error={discussionError}
+          />
         ),
       },
     ];
