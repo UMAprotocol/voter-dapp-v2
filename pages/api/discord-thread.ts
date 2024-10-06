@@ -43,6 +43,12 @@ export async function discordRequest(endpoint: string) {
     },
   });
 
+  if (!res.ok) {
+    throw new Error(`Unable to fetch messages from discord at ${endpoint}`, {
+      cause: await res.text(),
+    });
+  }
+
   return (await res.json()) as RawDiscordThreadT;
 }
 

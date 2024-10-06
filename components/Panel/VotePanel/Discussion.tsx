@@ -13,18 +13,36 @@ import { PanelSectionTitle } from "../styles";
 interface Props {
   discussion: VoteDiscussionT | undefined;
   loading: boolean;
+  error?: boolean;
 }
-export function Discussion({ discussion, loading }: Props) {
+
+export function Discussion({ discussion, loading, error }: Props) {
   const hasThread = Boolean(discussion?.thread?.length);
 
   return (
     <Wrapper>
       <Disclaimer>
-        <Text>
-          <Strong>Note:</Strong> These discussions are from the UMA Protocol
-          Discord. They do not reflect the opinion of Risk Labs or any other
-          entity.
-        </Text>
+        {error ? (
+          <Text>
+            <Strong>⚠️ Error:</Strong> The Discord API recently starting rate
+            limiting our access; while we work on a solution, please visit the{" "}
+            <a
+              className="underline"
+              target="_blank"
+              href="https://discord.com/channels/718590743446290492/964000735073284127"
+              rel="noreferrer"
+            >
+              #evidence-rational
+            </a>{" "}
+            channel on discord.across.to for the full discussion.
+          </Text>
+        ) : (
+          <Text>
+            <Strong>Note:</Strong> These discussions are from the UMA Protocol
+            Discord. They do not reflect the opinion of Risk Labs or any other
+            entity.
+          </Text>
+        )}
       </Disclaimer>
       <TitleSectionWrapper>
         <PanelSectionTitle>
