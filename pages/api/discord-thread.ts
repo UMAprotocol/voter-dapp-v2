@@ -46,8 +46,26 @@ export async function discordRequest(endpoint: string) {
   return (await res.json()) as RawDiscordThreadT;
 }
 
+// fetch 100 at a time until limit is reached
 export async function getDiscordMessages(threadId: string) {
-  return discordRequest(`channels/${threadId}/messages?limit=100`);
+  let allMessages: RawDiscordThreadT = [];
+  const limit = 100;
+  let lastMessageId: string | undefined = undefined;
+  while (true) {
+    let url = `channels/${threadId}/messages?limit=${limit}`;
+    if (lastMessageId) {
+      url += `&before=${lastMessageId}`;
+    }
+    const messages = await discordRequest(url);
+
+    if (messages.length === 0) {
+      break; // No more messages to fetch
+    }
+    allMessages = allMessages.concat(messages);
+
+    lastMessageId = messages[messages.length - 1]?.id; // Get the last message ID
+  }
+  return allMessages;
 }
 
 function discordPhoto(userId: string, userAvatar: string | null) {
