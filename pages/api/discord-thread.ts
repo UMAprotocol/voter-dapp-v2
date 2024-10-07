@@ -206,7 +206,12 @@ export default async function handler(
 
   try {
     const body = ss.create(
-      { l1Request: { ...request.query } },
+      {
+        l1Request: {
+          time: Number(request.query.time),
+          identifier: request.query.identifier,
+        },
+      },
       DiscordThreadRequestBody
     );
 
