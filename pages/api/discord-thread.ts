@@ -202,10 +202,18 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
-  response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
+  response.setHeader("Cache-Control", "max-age=0, s-maxage=180");
 
   try {
-    const body = ss.create(request.body, DiscordThreadRequestBody);
+    const body = ss.create(
+      {
+        l1Request: {
+          time: Number(request.query.time),
+          identifier: request.query.identifier,
+        },
+      },
+      DiscordThreadRequestBody
+    );
 
     const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
