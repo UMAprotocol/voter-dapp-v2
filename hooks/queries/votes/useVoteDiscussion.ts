@@ -9,5 +9,6 @@ export function useVoteDiscussion({ identifier, time }: L1Request) {
     queryFn: () => getVoteDiscussion({ identifier, time }),
     onError: (err) => console.error(err),
     refetchOnWindowFocus: false,
+    refetchInterval: 20_000,
   });
 }

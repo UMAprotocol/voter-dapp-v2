@@ -52,25 +52,35 @@ export async function discordRequest(endpoint: string) {
   return (await res.json()) as RawDiscordThreadT;
 }
 
+export async function getDiscordMessages(threadId: string, limit = 100) {
+  return discordRequest(`channels/${threadId}/messages?limit=${limit}`);
+}
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // fetch 100 at a time until limit is reached
-export async function getDiscordMessages(threadId: string) {
+export async function getDiscordMessagesPaginated(
+  threadId: string,
+  limit = 100
+) {
   let allMessages: RawDiscordThreadT = [];
-  const limit = 100;
   let lastMessageId: string | undefined = undefined;
-  while (true) {
+  do {
     let url = `channels/${threadId}/messages?limit=${limit}`;
     if (lastMessageId) {
       url += `&before=${lastMessageId}`;
     }
     const messages = await discordRequest(url);
 
-    if (messages.length === 0) {
-      break; // No more messages to fetch
-    }
     allMessages = allMessages.concat(messages);
 
+    if (messages.length < limit) {
+      break; // No more messages to fetch
+    }
     lastMessageId = messages[messages.length - 1]?.id; // Get the last message ID
-  }
+    await sleep(50);
+  } while (lastMessageId);
   return allMessages;
 }
 
@@ -123,9 +133,10 @@ function concatenateAttachments(
   return [message, concat.join(",  ")].join("\n");
 }
 
-function extractValidateTimestamp(msg: string) {
+function extractValidateTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
+  if (msg === undefined || msg === null) return null;
   const time = parseInt(msg.substring(msg.length - 10, msg.length));
   // All times must be newer than 2021-01-01 and older than the current time.
   const isValid = new Date(time).getTime() > 1577858461 && time < Date.now();
@@ -136,8 +147,11 @@ async function fetchDiscordThread(
   l1Request: L1Request
 ): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
-  const threadMsg = await getDiscordMessages(evidenceRationalDiscordChannelId);
-
+  // we dont really need to go back far in history
+  const threadMsg = await getDiscordMessages(
+    evidenceRationalDiscordChannelId,
+    50
+  );
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
   const timeToThread: { [key: string]: string | undefined } = {};
@@ -159,7 +173,7 @@ async function fetchDiscordThread(
   let messages: RawDiscordThreadT = [];
   const thread = requestsToThread[time];
   if (thread) {
-    messages = await getDiscordMessages(thread);
+    messages = await getDiscordMessagesPaginated(thread);
   }
 
   const processedMessages: DiscordMessageT[] = messages
@@ -188,10 +202,18 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
-  response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
+  response.setHeader("Cache-Control", "max-age=0, s-maxage=180");
 
   try {
-    const body = ss.create(request.body, DiscordThreadRequestBody);
+    const body = ss.create(
+      {
+        l1Request: {
+          time: Number(request.query.time),
+          identifier: request.query.identifier,
+        },
+      },
+      DiscordThreadRequestBody
+    );
 
     const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
