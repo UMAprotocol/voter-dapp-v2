@@ -8,7 +8,7 @@ export function useVoteDiscussion({ identifier, time }: L1Request) {
     queryKey: [voteDiscussionKey, identifier, time],
     queryFn: () => getVoteDiscussion({ identifier, time }),
     onError: (err) => console.error(err),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchInterval: 20_000,
   });
 }

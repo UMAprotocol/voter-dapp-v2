@@ -73,7 +73,7 @@ export function VotePanel({ content }: Props) {
         content: (
           <Discussion
             discussion={discussion}
-            loading={discussionLoading}
+            loading={Boolean(discussionLoading && !discussion)}
             error={discussionError}
           />
         ),
