@@ -8,7 +8,8 @@ import {
   maybeMakePolymarketOptions,
 } from "helpers";
 import { earlyRequestMagicNumber, answerNotPossible } from "constant";
-import { ContentfulDataT, VoteMetaDataT } from "types";
+import { ContentfulDataT, VoteMetaDataT, VoteOriginT } from "types";
+import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -128,45 +129,13 @@ export function getVoteMetaData(
     };
   }
 
+  // infinite games uses MULTIPLE_CHOICE_QUERY
+  if (checkIfIsInfiniteGames(decodedAncillaryData)) {
+    return tryParseMultipleChoiceQuery(decodedAncillaryData, "Infinite Games");
+  }
+
   if (decodedIdentifier === "MULTIPLE_CHOICE_QUERY") {
-    try {
-      return {
-        ...decodeMultipleChoiceQuery(decodedAncillaryData),
-        umipOrUppLink: {
-          label: "Multiple Choice Query - UMIP-181",
-          href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
-        },
-        umipOrUppNumber: "UMIP-181",
-        isGovernance: false,
-        isAssertion: false,
-        discordLink,
-        origin: "UMA",
-      };
-    } catch (err) {
-      let description = `Error decoding description`;
-      if (err instanceof Error) {
-        description += `: ${err.message}`;
-      }
-      console.error(
-        "Error parsing multipechoicequery",
-        decodedAncillaryData,
-        err
-      );
-      return {
-        title: "Multiple Choice query",
-        description,
-        options: makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions()),
-        umipOrUppLink: {
-          label: "Multiple Choice Query - UMIP-181",
-          href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
-        },
-        umipOrUppNumber: "UMIP-181",
-        isGovernance: false,
-        isAssertion: false,
-        discordLink,
-        origin: "UMA",
-      };
-    }
+    return tryParseMultipleChoiceQuery(decodedAncillaryData, "UMA");
   }
 
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
@@ -209,6 +178,50 @@ export function getVoteMetaData(
     discordLink,
     isAssertion: false,
   };
+}
+
+function tryParseMultipleChoiceQuery(
+  decodedAncillaryData: string,
+  projectName: VoteOriginT
+): VoteMetaDataT {
+  try {
+    return {
+      ...decodeMultipleChoiceQuery(decodedAncillaryData),
+      umipOrUppLink: {
+        label: "Multiple Choice Query - UMIP-181",
+        href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
+      },
+      umipOrUppNumber: "UMIP-181",
+      isGovernance: false,
+      isAssertion: false,
+      discordLink,
+      origin: projectName,
+    };
+  } catch (err) {
+    let description = `Error decoding description`;
+    if (err instanceof Error) {
+      description += `: ${err.message}`;
+    }
+    console.error(
+      "Error parsing multipechoicequery",
+      decodedAncillaryData,
+      err
+    );
+    return {
+      title: "Multiple Choice query",
+      description,
+      options: makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions()),
+      umipOrUppLink: {
+        label: "Multiple Choice Query - UMIP-181",
+        href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
+      },
+      umipOrUppNumber: "UMIP-181",
+      isGovernance: false,
+      isAssertion: false,
+      discordLink,
+      origin: "UMA",
+    };
+  }
 }
 
 function getTitleFromAncillaryData(
