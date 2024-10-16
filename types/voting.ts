@@ -152,7 +152,8 @@ export type VoteOriginT =
   | "Polymarket"
   | "Across"
   | "OSnap"
-  | "Predict.Fun";
+  | "Predict.Fun"
+  | "Infinite Games";
 
 export type SigningKey = {
   publicKey: string;

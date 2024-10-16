@@ -4,6 +4,7 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import OSnap from "public/assets/icons/osnap.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import PredictFun from "public/assets/icons/predict-fun.svg";
+import InfiniteGames from "public/assets/icons/infinite-games.svg";
 import UMA from "public/assets/icons/uma.svg";
 import styled from "styled-components";
 import { VoteOriginT } from "types";
@@ -74,6 +75,12 @@ function TitleIcon({
           <PredictFunIcon />
         </TitleIconWrapper>
       );
+    case "Infinite Games":
+      return (
+        <TitleIconWrapper>
+          <InfiniteGamesIcon />
+        </TitleIconWrapper>
+      );
     default:
       return null;
   }
@@ -134,6 +141,8 @@ const AcrossIcon = styled(Across)``;
 const PolymarketIcon = styled(Polymarket)``;
 
 const PredictFunIcon = styled(PredictFun)``;
+
+const InfiniteGamesIcon = styled(InfiniteGames)``;
 
 const OSnapIcon = styled(OSnap)``;
 
