@@ -141,8 +141,9 @@ body {
 }
 
 /* Avoid text overflows */
-:where(p, h1, h2, h3, h4, h5, h6) {
+:where(p, h1, h2, h3, h4, h5, h6, ul, li) {
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Fix h1 font size inside article, aside, nav, and section */
