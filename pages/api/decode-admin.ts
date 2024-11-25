@@ -244,7 +244,7 @@ export default async function handler(
     );
     response.status(200).send(readableTxData);
   } catch (e) {
-    console.error(e);
+    console.error("Decode admin error", e);
     response.status(500).send({
       message: "Error in decoding admin call",
       error: e instanceof Error ? e.message : e,

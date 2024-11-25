@@ -204,7 +204,7 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x1",
       token: "ETH",
       label: "Ethereum",
-      rpcUrl: `https://mainnet.infura.io/v3/${appConfig.infuraId}`,
+      rpcUrl: appConfig.oov3ProviderUrl1 as string,
     },
   },
   {

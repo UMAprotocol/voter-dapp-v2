@@ -5,9 +5,8 @@ import { config } from "helpers/config";
 export function createVotingTokenContractInstance(signer?: ethers.Signer) {
   const address = config.votingTokenContractAddress;
   if (!signer) {
-    const provider = new ethers.providers.InfuraProvider(
-      config.infuraName,
-      config.infuraId
+    const provider = new ethers.providers.JsonRpcProvider(
+      config.oov3ProviderUrl1
     );
     signer = new ethers.VoidSigner(address, provider);
   }
