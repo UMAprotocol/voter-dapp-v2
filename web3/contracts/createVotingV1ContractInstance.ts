@@ -4,9 +4,8 @@ import { config } from "helpers/config";
 
 export function createVotingV1ContractInstance(signer?: ethers.Signer) {
   if (!signer) {
-    const provider = new ethers.providers.InfuraProvider(
-      config.infuraName,
-      config.infuraId
+    const provider = new ethers.providers.JsonRpcProvider(
+      config.oov3ProviderUrl1
     );
     signer = new ethers.VoidSigner(config.votingV1ContractAddress, provider);
   }
