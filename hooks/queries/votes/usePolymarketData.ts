@@ -1,28 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
 
 type PolymarketResponse = {
-  slug: string;
-  title: string;
-  icon: string;
-  description: string;
-  startDate: string;
-  creationDate: string;
-  endDate: string;
-  volume: number;
-  createdAt: string;
-  updatedAt: string;
-}[];
+  events: {
+    slug: string;
+    title: string;
+    icon: string;
+    description: string;
+    startDate: string;
+    creationDate: string;
+    endDate: string;
+    volume: number;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+};
 
-export type PolymarketData = PolymarketResponse[number] & {
+export type PolymarketData = PolymarketResponse["events"][number] & {
   link: string;
 };
 
 function isPolymarketResponse(data: unknown): data is PolymarketResponse {
-  return Array.isArray(data) &&
-    data.length &&
-    typeof data[0] === "object" &&
-    data[0] &&
-    "slug" in data[0]
+  return typeof data === "object" &&
+    data &&
+    "events" in data &&
+    Array.isArray(data.events) &&
+    data.events.length &&
+    typeof data.events[0] === "object" &&
+    data.events[0] &&
+    "slug" in data.events[0]
     ? true
     : false;
 }
@@ -47,7 +52,8 @@ async function getPolymarketData(title: string): Promise<PolymarketData> {
   if (!isPolymarketResponse(search)) {
     throw new Error("Unable to find market.");
   }
-  const data = search[0];
+  // take highest ranking search result
+  const data = search.events[0];
 
   return {
     ...data,
