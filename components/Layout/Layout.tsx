@@ -1,7 +1,7 @@
 import {
   ErrorBanner,
+  GasRebateBanner,
   Header,
-  MigrationBanner,
   OldDesignatedVotingAccountWarningBanner,
 } from "components";
 import { useInitializeVoteTiming } from "hooks";
@@ -20,7 +20,7 @@ export function Layout({ children, title }: Props) {
     <>
       <Meta title={title} />
       <Main>
-        <MigrationBanner />
+        <GasRebateBanner />
         <ErrorBanner />
         <OldDesignatedVotingAccountWarningBanner />
         <Header />
