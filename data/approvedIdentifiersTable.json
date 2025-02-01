@@ -1935,11 +1935,27 @@
       "url": "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-152.md"
     }
   },
+  "MULTIPLE_VALUES": {
+    "identifier": "MULTIPLE_VALUES",
+    "summary": "Currently sports betting platforms are making binary requests for multiple markets that are all settled based on the scores from a single sports game. This is unnecessary and costly. This UMIP will allow the OO to report the scores of two sports teams in one encoded price. Then integrators can decode the scores from the price and evaluate the scores to settle multiple markets. Sports games are the initial motivation for this UMIP, but it is generalizable to any request for multiple integer values from a single event.",
+    "umipLink": {
+      "number": "UMIP-183",
+      "url": "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-183.md"
+    }
+  },
+  "MULTIPLE_CHOICE_QUERY ": {
+    "identifier": "MULTIPLE_CHOICE_QUERY ",
+    "summary": "MULTIPLE_CHOICE_QUERY is intended to allow any requester to pose a question with specific answers.",
+    "umipLink": {
+      "number": "UMIP-181",
+      "url": "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md"
+    }
+  },
   "Total": {
     "identifier": "Total",
     "summary": "No of Approved Price Identifiers.",
     "umipLink": {
-      "number": "244",
+      "number": "246",
       "url": "https://docs.uma.xyz/uma-tokenholders/approved-price-identifiers"
     }
   },
