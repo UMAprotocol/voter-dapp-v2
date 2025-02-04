@@ -1,6 +1,7 @@
 import { earlyRequestMagicNumber } from "constant";
 import { DropdownItemT } from "types";
 import chunk from "lodash/chunk";
+import { BigNumber, ethers } from "ethers";
 
 const polymarketChainId = 137;
 
@@ -225,4 +226,80 @@ export function maybeMakePolymarketOptions(
       },
     ];
   }
+}
+
+// input user values as regular numbers
+export function decodeMultipleQueryPriceAtIndex(
+  encodedPrice: BigNumber,
+  index: number
+): number {
+  if (index < 0 || index > 6) {
+    throw new Error("Index out of range");
+  }
+  // Shift the bits of encodedPrice to the right by (32 * index) positions.
+  // This operation effectively moves the desired 32-bit segment to the least significant position.
+  // The bitwise AND operation with 0xffffffff ensures that only the least significant 32 bits are retained,
+  // effectively extracting the 32-bit value at the specified index.
+  return encodedPrice
+    .shr(32 * index)
+    .and(BigNumber.from("0xffffffff"))
+    .toNumber();
+}
+
+export function encodeMultipleQuery(values: string[]): string {
+  if (values.length > 7) {
+    throw new Error("Maximum of 7 values allowed");
+  }
+
+  let encodedPrice = BigNumber.from(0);
+
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] === undefined || values[i] === "") {
+      throw new Error("All values must be defined");
+    }
+    const numValue = Number(values[i]);
+    if (!Number.isInteger(numValue)) {
+      throw new Error("All values must be integers");
+    }
+    if (numValue > 0xffffffff || numValue < 0) {
+      throw new Error("Values must be uint32 (0 <= value <= 2^32 - 1)");
+    }
+    // Shift the current value to its correct position in the 256-bit field.
+    // Each value is a 32-bit unsigned integer, so we shift it by 32 bits times its index.
+    // This places the first value at the least significant bits and subsequent values
+    // at increasingly higher bit positions.
+    encodedPrice = encodedPrice.or(BigNumber.from(numValue).shl(32 * i));
+  }
+
+  return encodedPrice.toString();
+}
+
+export function decodeMultipleQuery(
+  price: string,
+  length: number
+): string[] | string {
+  const result: number[] = [];
+  const bigIntPrice = BigNumber.from(price);
+
+  if (isUnresolvable(price)) {
+    return price;
+  }
+
+  for (let i = 0; i < length; i++) {
+    const value = decodeMultipleQueryPriceAtIndex(bigIntPrice, i);
+    result.push(value);
+  }
+  return result.map((x) => x.toString());
+}
+
+export function isTooEarly(price: BigNumber | string): boolean {
+  return typeof price === "string"
+    ? BigNumber.from(price).eq(ethers.constants.MinInt256)
+    : ethers.constants.MinInt256.eq(price);
+}
+
+export function isUnresolvable(price: bigint | string): boolean {
+  return typeof price === "string"
+    ? BigNumber.from(price).eq(ethers.constants.MaxInt256)
+    : ethers.constants.MaxInt256.eq(price);
 }

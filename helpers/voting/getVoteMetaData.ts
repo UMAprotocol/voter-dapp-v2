@@ -206,11 +206,8 @@ function decodeMultipleValuesQuery(decodedAncillaryData: string) {
   const json = JSON.parse(maybeJson);
   if (!isMultipleValuesQueryFormat(json))
     throw new Error("Not a valid multiple values request");
-  assert(
-    json.labels.length <= 7,
-    "MULTIPLE_VALUES only support up to 7 labels"
-  );
-
+  if (json.labels.length > 7)
+    throw new Error("MULTIPLE_VALUES only support up to 7 labels");
   return {
     title: json.title,
     description: json.description,
@@ -221,6 +218,7 @@ function decodeMultipleValuesQuery(decodedAncillaryData: string) {
     })),
   };
 }
+
 function tryParseMultipleValues(
   decodedQueryText: string,
   projectName: VoteOriginT
