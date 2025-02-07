@@ -145,7 +145,7 @@ const VoteNumberV1 = styled.span`
 
 const PendingChip = styled.span`
   display: inline-block;
-  padding: 2px 4px;
+  padding: 1px 4px;
   font-size: 10px;
   font-weight: 800;
   color: var(--white);
