@@ -8,6 +8,7 @@ import { useInitializeVoteTiming } from "hooks";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Meta } from "./Meta";
+import { VoteHistoryBanner } from "components/AnnouncementBanners/VoteHistoryBanner";
 
 interface Props {
   children: ReactNode;
@@ -21,6 +22,7 @@ export function Layout({ children, title }: Props) {
       <Meta title={title} />
       <Main>
         <GasRebateBanner />
+        <VoteHistoryBanner />
         <ErrorBanner />
         <OldDesignatedVotingAccountWarningBanner />
         <Header />

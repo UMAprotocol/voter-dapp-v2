@@ -42,7 +42,7 @@ export function AnnouncementBannerWrapper({
 
 const OuterWrapper = styled.div`
   --height: 60px;
-  height: var(--height);
+  min-height: var(--height);
   background: var(--black);
   display: grid;
   align-items: center;
@@ -56,7 +56,7 @@ const InnerWrapper = styled.div`
   align-items: center;
   width: 100%;
   max-width: var(--page-width);
-  padding-inline: var(--page-padding);
+  padding: 8px var(--page-padding);
   margin-inline: auto;
   gap: var(--page-padding);
 
@@ -75,10 +75,7 @@ const CloseButton = styled.button`
   --icon-height: 15px;
   --icon-offset: 12px;
   --icon-start-right: var(--page-padding);
-  --right: calc(var(--icon-start-right) + var(--icon-offset));
-  position: absolute;
-  top: calc(var(--height) - var(--icon-height) / 2px);
-  right: var(--right);
+  margin-left: auto;
   fill: var(--white);
   background: transparent;
 
