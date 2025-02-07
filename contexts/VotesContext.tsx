@@ -195,6 +195,15 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           vote.revealedVoteByAddress[designatedVotingV1Address]) ||
         (userOrDelegatorAddress &&
           vote.revealedVoteByAddress[userOrDelegatorAddress]);
+
+      // This resolves the graph's limitation of not reflecting the voter's latest participation until they commit to 
+      // the next vote.
+      if (voteHistoryByKey && voteHistoryByKey[uniqueKey] !== undefined) {
+        voteHistoryByKey[uniqueKey].correctness = vote.correctVote
+          ? pastVoteRevealed === vote.correctVote
+          : false;
+      }
+
       return {
         ...vote,
         // prefer active vote results first, this will either exist or not, if not we can just fall back to the default vote results
@@ -244,8 +253,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const activityStatus: ActivityStatusT = hasActiveVotes
     ? "active"
     : hasUpcomingVotes
-    ? "upcoming"
-    : "past";
+      ? "upcoming"
+      : "past";
   const isActive = activityStatus === "active";
   const isUpcoming = activityStatus === "upcoming";
   const isPast = activityStatus === "past";

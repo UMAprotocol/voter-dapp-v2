@@ -19,15 +19,19 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
 
   function makeFormattedSlashAmount() {
     const formattedSlashAmount = formatNumberForDisplay(slashAmount);
+    if (staking && (formattedSlashAmount === "0" || formattedSlashAmount === "-0")) return "pending";
     if (formattedSlashAmount === "-0") return "0";
     return formattedSlashAmount;
   }
 
   function getScoreColor() {
+    if (formattedSlashAmount === "pending") return black;
     if (formattedSlashAmount === "0") return black;
     if (formattedSlashAmount.startsWith("-")) return red500;
     return green;
   }
+
+  const pendingEarningsTooltip = "Your earnings will display as soon as you interact (commit or reveal) with the dApp."
 
   return (
     <Tr>
@@ -58,7 +62,13 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
         </Correctness>
       </CorrectnessTd>
       <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
-        {formattedSlashAmount}
+        {formattedSlashAmount === "pending" ? (
+          <Tooltip label={pendingEarningsTooltip}>
+            <PendingChip>Pending</PendingChip>
+          </Tooltip>
+        ) : (
+          formattedSlashAmount
+        )}
       </ScoreTd>
     </Tr>
   );
@@ -67,6 +77,8 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
 function getBarColor(value: boolean) {
   return value ? green : grey500;
 }
+
+// Styled Components
 const BarInnerWrapper = styled.div`
   padding-block: 4px;
   border-top: 1px solid var(--grey-500);
@@ -129,4 +141,17 @@ const VoteNumberV1 = styled.span`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const PendingChip = styled.span`
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--white);
+  background: var(--grey-500);
+  border-radius: 5px;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: default;
 `;
