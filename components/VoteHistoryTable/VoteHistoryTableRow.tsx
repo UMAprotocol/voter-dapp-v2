@@ -19,7 +19,11 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
 
   function makeFormattedSlashAmount() {
     const formattedSlashAmount = formatNumberForDisplay(slashAmount);
-    if (staking && (formattedSlashAmount === "0" || formattedSlashAmount === "-0")) return "pending";
+    if (
+      staking &&
+      (formattedSlashAmount === "0" || formattedSlashAmount === "-0")
+    )
+      return "pending";
     if (formattedSlashAmount === "-0") return "0";
     return formattedSlashAmount;
   }
@@ -31,7 +35,8 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
     return green;
   }
 
-  const pendingEarningsTooltip = "Your earnings will display as soon as you interact (commit or reveal) with the dApp."
+  const pendingEarningsTooltip =
+    "Your earnings will display as soon as you interact (commit or reveal) with the dApp.";
 
   return (
     <Tr>
