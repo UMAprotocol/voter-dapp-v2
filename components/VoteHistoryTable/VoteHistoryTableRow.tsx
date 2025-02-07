@@ -1,9 +1,10 @@
 import { Tooltip } from "components/Tooltip/Tooltip";
-import { black, green, grey500, red500 } from "constant";
+import { black, green, grey500, mobileAndUnder, red500 } from "constant";
 import { formatNumberForDisplay } from "helpers";
 import { CSSProperties } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
+import Info from "public/assets/icons/information.svg";
 
 interface Props {
   vote: VoteT;
@@ -69,7 +70,9 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
       <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
         {formattedSlashAmount === "pending" ? (
           <Tooltip label={pendingEarningsTooltip}>
-            <PendingChip>""</PendingChip>
+            <InfoWrapper>
+              <InfoIcon />
+            </InfoWrapper>
           </Tooltip>
         ) : (
           formattedSlashAmount
@@ -148,15 +151,20 @@ const VoteNumberV1 = styled.span`
   }
 `;
 
-const PendingChip = styled.span`
-  display: inline-block;
-  padding: 1px 4px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--white);
-  background: var(--grey-500);
-  border-radius: 5px;
-  text-transform: uppercase;
-  text-align: center;
-  cursor: default;
+const InfoIcon = styled(Info)`
+  --size: 16px;
+  height: var(--size);
+  width: var(--size);
+  color: var(--grey-800);
+  flex-shrink: 0;
+
+  @media ${mobileAndUnder} {
+    display: none;
+  }
+`;
+
+const InfoWrapper = styled.span`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 `;
