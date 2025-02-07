@@ -34,10 +34,6 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
     if (formattedSlashAmount.startsWith("-")) return red500;
     return green;
   }
-
-  const pendingEarningsTooltip =
-    "Your earnings will display as soon as you interact (commit or reveal) with the dApp.";
-
   return (
     <Tr>
       <VoteNumberTd>
@@ -67,13 +63,7 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
         </Correctness>
       </CorrectnessTd>
       <ScoreTd style={{ "--color": scoreColor } as CSSProperties}>
-        {formattedSlashAmount === "pending" ? (
-          <Tooltip label={pendingEarningsTooltip}>
-            <PendingChip>Pending</PendingChip>
-          </Tooltip>
-        ) : (
-          formattedSlashAmount
-        )}
+        {formattedSlashAmount === "pending" ? "" : formattedSlashAmount}
       </ScoreTd>
     </Tr>
   );
@@ -146,17 +136,4 @@ const VoteNumberV1 = styled.span`
   &:hover {
     text-decoration: underline;
   }
-`;
-
-const PendingChip = styled.span`
-  display: inline-block;
-  padding: 1px 4px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--white);
-  background: var(--grey-500);
-  border-radius: 5px;
-  text-transform: uppercase;
-  text-align: center;
-  cursor: default;
 `;
