@@ -29,14 +29,15 @@ const Env = ss.object({
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_1: ss.optional(ss.string()),
-  NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
-  NEXT_PUBLIC_PROVIDER_V3_288: ss.optional(ss.string()),
-  NEXT_PUBLIC_PROVIDER_V3_42161: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
-  NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_288: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_1514: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_8453: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_42161: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_81457: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
   NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
@@ -84,6 +85,7 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     NEXT_PUBLIC_PROVIDER_V3_8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
     NEXT_PUBLIC_PROVIDER_V3_81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
+    NEXT_PUBLIC_PROVIDER_V3_1514: process.env.NEXT_PUBLIC_PROVIDER_V3_1514,
     NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG:
       process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG,
   },
@@ -117,6 +119,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl1: ss.optional(ss.string()),
   oov3ProviderUrl137: ss.optional(ss.string()),
   oov3ProviderUrl288: ss.optional(ss.string()),
+  oov3ProviderUrl1514: ss.optional(ss.string()),
   oov3ProviderUrl42161: ss.optional(ss.string()),
   oov3ProviderUrl5: ss.optional(ss.string()),
   oov3ProviderUrl10: ss.optional(ss.string()),
@@ -162,6 +165,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
     oov3ProviderUrl137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
     oov3ProviderUrl288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
+    oov3ProviderUrl1514: process.env.NEXT_PUBLIC_PROVIDER_V3_1514,
     oov3ProviderUrl42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
     oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
@@ -205,21 +209,6 @@ export const chainConstantsList: ChainConstantsList = [
       token: "ETH",
       label: "Ethereum",
       rpcUrl: appConfig.oov3ProviderUrl1 as string,
-    },
-  },
-  {
-    chainId: 5,
-    infuraName: "goerli",
-    properName: "Görli",
-    makeTransactionHashLink: (transactionHash: string) =>
-      `https://goerli.etherscan.io/tx/${transactionHash}`,
-    makeAddressLink: (address: string) =>
-      `https://goerli.etherscan.io/address/${address}`,
-    onboardConfig: {
-      id: "0x5",
-      token: "GOR",
-      label: "Görli",
-      rpcUrl: `https://goerli.infura.io/v3/${appConfig.infuraId}`,
     },
   },
   {
@@ -283,7 +272,23 @@ export const chainConstantsList: ChainConstantsList = [
       rpcUrl: "https://rpc.blast.io", // infura not supporting blast yet
     },
   },
+  {
+    chainId: 1514,
+    infuraName: "story",
+    properName: "Story",
+    makeTransactionHashLink: (transactionHash: string) =>
+      `https://storyscan.xyz/tx/${transactionHash}`,
+    makeAddressLink: (address: string) =>
+      `https://storyscan.xyz/address/${address}`,
+    onboardConfig: {
+      id: "0x5EA",
+      token: "IP",
+      label: "IP",
+      rpcUrl: "https://mainnet.storyrpc.io",
+    },
+  },
 ];
+
 export const chainConstants = chainConstantsList.find(
   ({ chainId }) => chainId === appConfig.chainId
 );
