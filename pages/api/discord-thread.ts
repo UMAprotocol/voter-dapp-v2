@@ -134,16 +134,25 @@ function concatenateAttachments(
   return [message, concat.join(",  ")].join("\n");
 }
 
+function truncateTitle(title: string) {
+  return title.substring(0, 60);
+}
+// discord truncates the title length after 72 characters
+
 function extractValidateTItleAndTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
   if (msg === undefined || msg === null) return null;
   const time = parseInt(msg.substring(msg.length - 10, msg.length));
+  const title = msg.slice(0, -13);
+
   // All times must be newer than 2021-01-01 and older than the current time.
   const isTimeValid =
     new Date(time).getTime() > 1577858461 && time < Date.now();
-  // use "title - timstamp" to find thread
-  return isTimeValid ? msg : null;
+
+  const truncatedTitle = truncateTitle(title);
+  // use "title-timstamp" to find thread
+  return isTimeValid ? `${truncatedTitle}-${time}` : null;
 }
 
 async function fetchDiscordThread(
@@ -168,8 +177,9 @@ async function fetchDiscordThread(
 
     if (titleAndTimstamp) timeToThread[titleAndTimstamp] = message.thread?.id;
   });
+
   // Associate the threadId with each title-timestamp provided in the payload.
-  const requestedId = `${l1Request.title} - ${l1Request.time}`;
+  const requestedId = `${truncateTitle(l1Request.title)}-${l1Request.time}`;
 
   const threadId = timeToThread?.[requestedId];
 
