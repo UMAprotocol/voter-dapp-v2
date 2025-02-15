@@ -5,7 +5,7 @@ export async function getVoteDiscussion(
   l1Request: L1Request
 ): Promise<VoteDiscussionT> {
   const response = await fetch(
-    `/api/discord-thread?time=${l1Request.time}&identifier=${l1Request.identifier}`
+    `/api/discord-thread?time=${l1Request.time}&identifier=${l1Request.identifier}&title=${l1Request.title}`
   );
 
   if (!response.ok) {

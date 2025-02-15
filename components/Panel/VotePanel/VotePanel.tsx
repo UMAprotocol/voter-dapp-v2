@@ -48,6 +48,7 @@ export function VotePanel({ content }: Props) {
   } = useVoteDiscussion({
     identifier,
     time,
+    title,
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
