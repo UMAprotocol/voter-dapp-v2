@@ -168,10 +168,10 @@ async function fetchDiscordThread(
 
     if (titleAndTimstamp) timeToThread[titleAndTimstamp] = message.thread?.id;
   });
-  // Associate the threadId with each title-timestamp provided in the payload.
-  const requestedId = `${l1Request.title} - ${l1Request.time}`;
 
-  const threadId = timeToThread?.[requestedId];
+  const threadId = Object.entries(timeToThread).find(([key]) =>
+    key.startsWith(l1Request.title.substring(0, 50)) && key.endsWith(`${l1Request.time}`)
+  )?.[1];
 
   let messages: RawDiscordThreadT = [];
   if (threadId) {
