@@ -137,9 +137,13 @@ function concatenateAttachments(
 function truncateTitle(title: string) {
   return title.substring(0, 60);
 }
+
+function makeKey(title: string, timestamp: string | number) {
+  return `${truncateTitle(title)}-${String(timestamp)}`.replaceAll(" ", "");
+}
 // discord truncates the title length after 72 characters
 
-function extractValidateTItleAndTimestamp(msg?: string) {
+function extractValidateTitleAndTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
   if (msg === undefined || msg === null) return null;
@@ -150,9 +154,8 @@ function extractValidateTItleAndTimestamp(msg?: string) {
   const isTimeValid =
     new Date(time).getTime() > 1577858461 && time < Date.now();
 
-  const truncatedTitle = truncateTitle(title);
   // use "title-timstamp" to find thread
-  return isTimeValid ? `${truncatedTitle}-${time}` : null;
+  return isTimeValid ? makeKey(title, time) : null;
 }
 
 async function fetchDiscordThread(
@@ -162,7 +165,7 @@ async function fetchDiscordThread(
   // we dont really need to go back far in history
   const threadMsg = await getDiscordMessages(
     evidenceRationalDiscordChannelId,
-    50
+    100
   );
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
@@ -171,7 +174,7 @@ async function fetchDiscordThread(
     // if for some reason the thread was changed, it will only reflect in thread.name.
     // message.content only reflects the original message, not edits ( or edits by another admin)
     // so first check for message.thread.name and fallback to message.content
-    const titleAndTimstamp = extractValidateTItleAndTimestamp(
+    const titleAndTimstamp = extractValidateTitleAndTimestamp(
       message?.thread?.name ?? message.content
     );
 
@@ -179,7 +182,7 @@ async function fetchDiscordThread(
   });
 
   // Associate the threadId with each title-timestamp provided in the payload.
-  const requestedId = `${truncateTitle(l1Request.title)}-${l1Request.time}`;
+  const requestedId = makeKey(l1Request.title, l1Request.time);
 
   const threadId = timeToThread?.[requestedId];
 
