@@ -35,5 +35,4 @@ const VotePage: NextPage = () => {
     </Layout>
   );
 };
-
 export default VotePage;

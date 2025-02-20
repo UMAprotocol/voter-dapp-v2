@@ -11,6 +11,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import abiDecoder from "abi-decoder";
 import { constructContract, getProviderByChainId } from "./_common";
 import { config } from "helpers/config";
+import { supportedChains } from "constant";
 
 type AbiDecoder = typeof abiDecoder;
 
@@ -88,27 +89,8 @@ function transactionsWithS(value: number) {
   return `containing ${value} transaction${value === 1 ? "" : "s"}`;
 }
 
-function getNameFromChainId(value: string) {
-  switch (value) {
-    case "1":
-      return "Mainnet";
-    case "10":
-      return "Optimism";
-    case "100":
-      return "xDai";
-    case "137":
-      return "Polygon";
-    case "288":
-      return "Boba";
-    case "42161":
-      return "Arbitrum";
-    case "81457":
-      return "Blast";
-    case "11155111":
-      return "Sepolia";
-    default:
-      return "Unknown";
-  }
+function getNameFromChainId(value: keyof typeof supportedChains) {
+  return supportedChains?.[value] ?? "Unknown";
 }
 
 const _generateTransactionDataRecursive = function (
