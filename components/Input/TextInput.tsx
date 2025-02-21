@@ -67,6 +67,7 @@ const _Wrapper = styled(Wrapper)`
 
 const _Input = styled(Input)`
   padding-left: 15px;
+  color: var(--black);
 `;
 
 const ClearInputButton = styled.button`

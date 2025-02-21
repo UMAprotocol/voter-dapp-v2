@@ -24,6 +24,13 @@ import { CSSProperties, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
 import { DropdownItemT } from "types";
 import { VoteListItemProps } from "./shared.types";
+import { useMultipleValuesVote } from "hooks/inputs/useMultipleValuesVote";
+import { multipleValuesDropdownOptions } from "helpers/voting/getVoteMetaData";
+
+export enum InputTypes {
+  single = "single",
+  multiple = "multiple",
+}
 
 export function useVoteListItem({
   vote,
@@ -36,7 +43,11 @@ export function useVoteListItem({
   moreDetailsAction,
   isDirty = false,
 }: VoteListItemProps) {
-  const [isCustomInput, setIsCustomInput] = useState(false);
+  const [customInput, setCustomInput] = useState<InputTypes | undefined>();
+  const multipleInputProps = useMultipleValuesVote({
+    vote,
+    selectVote,
+  });
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
   const hasSigningKey = !!address && !!signingKeys[address];
@@ -60,6 +71,10 @@ export function useVoteListItem({
     assertionChildChainId,
     assertionId,
   } = vote;
+  const isMultipleValuesVote = decodedIdentifier === "MULTIPLE_VALUES";
+  const dropdownOptions = isMultipleValuesVote
+    ? multipleValuesDropdownOptions
+    : options;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
   const isRolled = rollCount > 0;
@@ -92,12 +107,14 @@ export function useVoteListItem({
     titleOrClaim.length > 100
       ? `${titleOrClaim.slice(0, 100)}...`
       : titleOrClaim;
+
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
     const decryptedVote = getDecryptedVoteAsFormattedString();
     if (decryptedVote && !findVoteInOptionsDetectEarlyVote(decryptedVote)) {
-      setIsCustomInput(true);
+      // todo check
+      setCustomInput(InputTypes.single);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decryptedVote]);
@@ -117,9 +134,12 @@ export function useVoteListItem({
   }, [selectedVote, setDirty, isDirty, existingVote, phase]);
 
   function onSelectVote(option: DropdownItemT) {
-    if (option.value === "custom") {
+    if (isMultipleValuesVote) {
+      setCustomInput(InputTypes.multiple);
+      multipleInputProps.onDropdownChange(option);
+    } else if (option.value === "custom") {
       selectVote?.("");
-      setIsCustomInput(true);
+      setCustomInput(InputTypes.single);
     } else {
       selectVote?.(option.value.toString());
     }
@@ -127,7 +147,7 @@ export function useVoteListItem({
 
   function exitCustomInput() {
     clearVote?.();
-    setIsCustomInput(false);
+    setCustomInput(undefined);
   }
 
   function getDecryptedVoteAsFormattedString() {
@@ -160,7 +180,7 @@ export function useVoteListItem({
   }
 
   function getExistingOrSelectedVoteFromOptions() {
-    return options?.find((option) => {
+    return dropdownOptions?.find((option) => {
       const existingVote = getDecryptedVoteAsFormattedString();
 
       // prefer showing the selected vote if it exists
@@ -173,6 +193,10 @@ export function useVoteListItem({
       }
     });
   }
+
+  const selectedDropdownOption = isMultipleValuesVote
+    ? multipleInputProps.selectedDropdownOption
+    : getExistingOrSelectedVoteFromOptions();
 
   function getYourVote() {
     if (!decryptedVote && isCommitted) {
@@ -204,6 +228,7 @@ export function useVoteListItem({
       return option.value === value;
     });
   }
+
   function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
     if (isEarlyVote(value)) return { label: "Early request" };
     return findVoteInOptions(value);
@@ -297,6 +322,7 @@ export function useVoteListItem({
   }
 
   return {
+    customInput,
     style,
     Icon,
     titleText,
@@ -309,7 +335,7 @@ export function useVoteListItem({
     showVoteInput,
     selectVote,
     options,
-    isCustomInput,
+    dropdownOptions,
     getExistingOrSelectedVoteFromOptions,
     onSelectVote,
     selectedVote,
@@ -326,5 +352,7 @@ export function useVoteListItem({
     getRelevantTransactionLink,
     isDirty,
     moreDetailsAction,
+    multipleInputProps,
+    selectedDropdownOption,
   };
 }

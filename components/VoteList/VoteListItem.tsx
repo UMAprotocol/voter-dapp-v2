@@ -12,9 +12,10 @@ import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { VoteListItemProps } from "./shared.types";
-import { useVoteListItem } from "./useVoteListItem";
+import { InputTypes, useVoteListItem } from "./useVoteListItem";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { getOptimisticGovernorTitle } from "helpers";
+import { MultipleValuesInputModal } from "components/Modals/MultipleValuesInputModal";
 
 export function VoteListItem(props: VoteListItemProps) {
   const {
@@ -27,9 +28,10 @@ export function VoteListItem(props: VoteListItemProps) {
     timeAsDate,
     showVoteInput,
     selectVote,
-    options,
-    isCustomInput,
-    getExistingOrSelectedVoteFromOptions,
+    dropdownOptions,
+    customInput,
+    multipleInputProps,
+    selectedDropdownOption,
     onSelectVote,
     selectedVote,
     getDecryptedVoteAsString,
@@ -101,26 +103,31 @@ export function VoteListItem(props: VoteListItemProps) {
           </div>
         </div>
       </div>
+      {<MultipleValuesInputModal {...multipleInputProps} />}
       {showVoteInput() && selectVote ? (
-        <div>
-          {options && !isCustomInput ? (
+        <td
+          className="cursor-default pr-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {dropdownOptions && customInput !== InputTypes.single ? (
             <Dropdown
               label="Choose answer"
-              items={options}
-              selected={getExistingOrSelectedVoteFromOptions()}
+              items={dropdownOptions}
+              selected={selectedDropdownOption}
               onSelect={onSelectVote}
             />
           ) : (
             <TextInput
               value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
               onInput={selectVote}
-              onClear={isCustomInput ? exitCustomInput : undefined}
+              onClear={() => exitCustomInput()}
               maxDecimals={maxDecimals}
               type="number"
             />
           )}
-        </div>
+        </td>
       ) : null}
+
       {showYourVote() ? (
         <div className="flex justify-between gap-2">
           <span>Your vote:</span> <VoteText voteText={getYourVote()} />
