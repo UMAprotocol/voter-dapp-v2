@@ -49,7 +49,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
         // set actual formatted price
         setFormattedValue(decryptedVote?.price);
       } catch (e) {
-        console.log("Committed vote invalid. Vote: ", existingVote);
+        console.warn("Committed vote invalid. Vote: ", existingVote);
       }
     }
   }, [decryptedVote?.price, options]);
@@ -116,8 +116,6 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     });
   })();
 
-  console.log(selectedDropdownOption);
-
   const canSubmitMultipleValues =
     Boolean(inputModalOpen) &&
     Object.values(inputValues).every(Boolean) &&
@@ -142,12 +140,3 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     canSubmitMultipleValues,
   };
 }
-
-// TODO
-// 1. separate multiple values state and logic into its own hook.
-// 2. ensure final vote value is propagated upstream to action
-// 3. show errors in modal if any.
-// 4. show "entered values" in dropdown if custom score is input by user.
-
-// nice to have
-// 5. enter proposed values
