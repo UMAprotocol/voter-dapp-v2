@@ -31,6 +31,7 @@
     "@web3-onboard/injected-wallets": "^2.10.1",
     "@web3-onboard/react": "^2.8.9",
     "@web3-onboard/walletconnect": "^2.4.0",
+    "class-variance-authority": "^0.7.1",
     "contentful": "^9.2.4",
     "date-fns": "^2.29.3",
     "eth-crypto": "^2.3.0",

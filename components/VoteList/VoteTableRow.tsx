@@ -16,8 +16,9 @@ import OSnap from "public/assets/icons/osnap.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import styled from "styled-components";
 import { VoteListItemProps } from "./shared.types";
-import { useVoteListItem } from "./useVoteListItem";
+import { InputTypes, useVoteListItem } from "./useVoteListItem";
 import { mobileAndUnder } from "constant";
+import { MultipleValuesInputModal } from "components/Modals/MultipleValuesInputModal";
 
 const OSnapIcon = styled(OSnap)``;
 
@@ -44,9 +45,6 @@ export function VoteTableRow(props: VoteListItemProps) {
     timeAsDate,
     showVoteInput,
     selectVote,
-    options,
-    isCustomInput,
-    getExistingOrSelectedVoteFromOptions,
     onSelectVote,
     selectedVote,
     getDecryptedVoteAsString,
@@ -61,6 +59,10 @@ export function VoteTableRow(props: VoteListItemProps) {
     getRelevantTransactionLink,
     isDirty,
     moreDetailsAction,
+    customInput,
+    multipleInputProps,
+    dropdownOptions,
+    selectedDropdownOption,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -129,23 +131,24 @@ export function VoteTableRow(props: VoteListItemProps) {
           </div>
         </div>
       </td>
+      {<MultipleValuesInputModal {...multipleInputProps} />}
       {showVoteInput() && selectVote ? (
         <td
           className="cursor-default pr-[--cell-padding]"
           onClick={(e) => e.stopPropagation()}
         >
-          {options && !isCustomInput ? (
+          {dropdownOptions && customInput !== InputTypes.single ? (
             <Dropdown
               label="Choose answer"
-              items={options}
-              selected={getExistingOrSelectedVoteFromOptions()}
+              items={dropdownOptions}
+              selected={selectedDropdownOption}
               onSelect={onSelectVote}
             />
           ) : (
             <TextInput
               value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
               onInput={selectVote}
-              onClear={isCustomInput ? exitCustomInput : undefined}
+              onClear={() => exitCustomInput()}
               maxDecimals={maxDecimals}
               type="number"
             />

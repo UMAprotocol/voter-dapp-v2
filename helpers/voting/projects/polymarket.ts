@@ -292,13 +292,19 @@ export function decodeMultipleQuery(
   return result.map((x) => x.toString());
 }
 
-export function isTooEarly(price: BigNumber | string): boolean {
+export function isTooEarly(price: BigNumber | string | undefined): boolean {
+  if (!price) {
+    return false;
+  }
   return typeof price === "string"
     ? BigNumber.from(price).eq(ethers.constants.MinInt256)
     : ethers.constants.MinInt256.eq(price);
 }
 
-export function isUnresolvable(price: bigint | string): boolean {
+export function isUnresolvable(price: bigint | string | undefined): boolean {
+  if (!price) {
+    return false;
+  }
   return typeof price === "string"
     ? BigNumber.from(price).eq(ethers.constants.MaxInt256)
     : ethers.constants.MaxInt256.eq(price);
