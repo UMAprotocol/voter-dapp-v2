@@ -112,7 +112,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     }
 
     return multipleValuesDropdownOptions?.find((option) => {
-      option.value === formattedValue;
+      return option.value === formattedValue;
     });
   })();
 
