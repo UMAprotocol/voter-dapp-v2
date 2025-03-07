@@ -1,72 +1,38 @@
 import { useQuery } from "@tanstack/react-query";
+import { buildSearchParams } from "helpers/util/buildSearchParams";
+import { string, type, create } from "superstruct";
 
-type PolymarketResponse = {
-  events: {
-    slug: string;
-    title: string;
-    icon: string;
-    description: string;
-    startDate: string;
-    creationDate: string;
-    endDate: string;
-    volume: number;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-};
+const returnData = type({
+  slug: string(),
+});
 
-export type PolymarketData = PolymarketResponse["events"][number] & {
-  link: string;
-};
-
-function isPolymarketResponse(data: unknown): data is PolymarketResponse {
-  return typeof data === "object" &&
-    data &&
-    "events" in data &&
-    Array.isArray(data.events) &&
-    data.events.length &&
-    typeof data.events[0] === "object" &&
-    data.events[0] &&
-    "slug" in data.events[0]
-    ? true
-    : false;
-}
-
-/**
- * Searches Polymarket's api for a a market using a market's title.
- *
- * @param {string} title - The title of the market.
- * @returns {PolymarketData} data - Relevant market data
- */
-async function getPolymarketData(title: string): Promise<PolymarketData> {
+async function getPolymarketLink(txHash: string): Promise<string> {
   const POLYMARKET_BASE_URL = "https://polymarket.com";
-  const params = new URLSearchParams({
-    _c: "all",
-    _p: "1",
-    _q: title,
+  const params = buildSearchParams({
+    txHash,
   });
 
-  const url = `https://polymarket.com/api/events/search?${params.toString()}`;
-  const res = await fetch(url);
-  const search = await res.json();
-  if (!isPolymarketResponse(search)) {
-    throw new Error("Unable to find market.");
-  }
-  // take highest ranking search result
-  const data = search.events[0];
+  const response = await fetch(`/api/get-polymarket-link?${params}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  return {
-    ...data,
-    link: `${POLYMARKET_BASE_URL}/event/${data.slug}`,
-  };
+  if (!response.ok) {
+    throw new Error("Getting Polymarket link failed with unknown error");
+  }
+  const data = create(await response.json(), returnData);
+
+  return `${POLYMARKET_BASE_URL}/event/${data.slug}`;
 }
 
-export function usePolymarketData(title: string, shouldFetch = true) {
+export function usePolymarketLink(txHash: string, shouldFetch = true) {
   return useQuery({
-    queryKey: [title],
-    queryFn: () => getPolymarketData(title),
+    queryKey: [txHash],
+    queryFn: () => getPolymarketLink(txHash),
     onError: (err) => console.error(err),
-    enabled: !!title && shouldFetch,
+    enabled: !!txHash && shouldFetch,
     refetchInterval: Infinity,
     refetchOnMount: false,
   });

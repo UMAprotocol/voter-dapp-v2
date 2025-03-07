@@ -266,3 +266,12 @@ export function getSubgraphConfig(
   if (found !== undefined) return found;
   throw new Error(`No subgraph information found for ${type} on ${chainId}`);
 }
+
+export class HttpError extends Error {
+  status: number;
+
+  constructor(args: { status: number; message: string }) {
+    super(args.message);
+    this.status = args.status;
+  }
+}
