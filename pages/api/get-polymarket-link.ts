@@ -29,9 +29,9 @@ export default async function handler(
     }
 
     const tx = await provider.getTransactionReceipt(hash);
-    console.log(tx);
+
     const log = tx.logs.find((log) => log.topics?.[0] === topicHash);
-    console.log(tx.logs);
+
     if (!log) {
       throw new HttpError({
         status: 404,
