@@ -30,6 +30,13 @@ export default async function handler(
 
     const tx = await provider.getTransactionReceipt(hash);
 
+    if (!tx) {
+      throw new HttpError({
+        status: 404,
+        message: `Transaction not found: Unable to find transaction receipt for hash ${hash}`,
+      });
+    }
+
     const log = tx.logs.find((log) => log.topics?.[0] === topicHash);
 
     if (!log) {
