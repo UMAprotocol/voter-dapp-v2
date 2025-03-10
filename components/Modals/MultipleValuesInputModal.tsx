@@ -3,12 +3,22 @@ import { Modal } from "./Modal";
 import { cn } from "lib/utils";
 import { TextInput } from "components/Input/TextInput";
 import { Button } from "components/Button";
-import { Error } from "components/ErrorBanner";
+import PencilIcon from "public/assets/icons/pencil.svg";
+import Warning from "public/assets/icons/warning.svg";
 
 export function MultipleValuesInputModal(props: MultipleInputProps) {
   const items = Object.entries(props?.inputValues);
+
   return (
-    <Modal isOpen={props.inputModalOpen} onDismiss={props.closeInputModal}>
+    <Modal
+      className="max-w-[540px]"
+      isOpen={props.inputModalOpen}
+      onDismiss={props.closeInputModal}
+    >
+      <div className="mb-4 flex items-center gap-2">
+        <PencilIcon className="h-5 w-5" />
+        <span className="text-lg font-semibold">Enter values</span>
+      </div>
       <div className="relative mb-2 flex w-full flex-col items-start justify-between gap-2">
         <div
           className={cn(
@@ -47,9 +57,22 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
           onClick={props.onSubmitMultipleValues}
           variant="primary"
           label="Save"
+          width="100%"
         />
-        <Error message={props.inputError} />
+        <Error err={props.inputError} />
       </div>
     </Modal>
+  );
+}
+
+function Error({ err }: { err: string | undefined }) {
+  if (!err) {
+    return null;
+  }
+  return (
+    <div className="flex items-start gap-2 leading-4">
+      <Warning className="mt-[2px] h-4 w-4 shrink-0" />
+      <span>{err}</span>
+    </div>
   );
 }

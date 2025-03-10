@@ -60,6 +60,7 @@ export function TextInput({
 
 const _Wrapper = styled(Wrapper)`
   position: relative;
+  width: 100%;
   &[aria-disabled="true"] {
     opacity: 0.25;
   }

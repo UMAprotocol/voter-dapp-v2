@@ -29,7 +29,7 @@ export function Modal({ children, className, ...props }: ModalProps) {
     >
       <DialogContent
         className={cn(
-          "m-auto w-auto min-w-[50vw] max-w-[1000px] rounded-[5px] bg-white p-4 shadow-md",
+          "m-auto w-full rounded-[5px] bg-[#EFEFEF] p-4 shadow-md",
           className
         )}
       >
