@@ -33,10 +33,11 @@ export default async function handler(
     const log = tx.logs.find((log) => log.topics?.[0] === topicHash);
 
     if (!log) {
-      throw new HttpError({
-        status: 404,
-        message: "Log not found: Unable to find link for this tx hash",
-      });
+      // ConditionPreparation is not always emitted in the same transaction as requestPrice.
+      // cache this valid response to avoid re-running th same lookup
+      response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
+      response.status(200).send({});
+      return;
     }
 
     const conditionId = utils.hexlify(log.topics[1]);
@@ -45,13 +46,6 @@ export default async function handler(
     ).then((res) => res.json())) as Array<{ slug: string }>;
 
     const slug = data?.[0]?.slug;
-
-    if (!slug) {
-      throw new HttpError({
-        status: 404,
-        message: "Log not found: Unable to find link for this tx hash",
-      });
-    }
 
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
