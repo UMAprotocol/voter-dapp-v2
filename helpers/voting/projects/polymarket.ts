@@ -51,7 +51,7 @@ export function checkIfIsPolymarket(
     isPolymarketRequester(requester) &&
     childChainId === polymarketChainId;
 
-  return isPolymarket;
+  return Boolean(isPolymarket);
 }
 
 // this will only work when there are exactly 3 or more options, which should match most polymarket requests

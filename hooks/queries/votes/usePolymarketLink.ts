@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
-import { string, type, create } from "superstruct";
+import { string, type, create, optional } from "superstruct";
 
 const returnData = type({
-  slug: string(),
+  slug: optional(string()),
 });
 
-async function getPolymarketLink(txHash: string): Promise<string> {
+async function getPolymarketLink(txHash: string): Promise<string | undefined> {
   const POLYMARKET_BASE_URL = "https://polymarket.com";
   const params = buildSearchParams({
     txHash,
@@ -23,8 +23,9 @@ async function getPolymarketLink(txHash: string): Promise<string> {
     throw new Error("Getting Polymarket link failed with unknown error");
   }
   const data = create(await response.json(), returnData);
-
-  return `${POLYMARKET_BASE_URL}/event/${data.slug}`;
+  if (data.slug) {
+    return `${POLYMARKET_BASE_URL}/event/${data.slug}`;
+  }
 }
 
 export function usePolymarketLink(txHash: string, shouldFetch = true) {

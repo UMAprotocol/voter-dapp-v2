@@ -133,13 +133,12 @@ export function Details({
 
   const hash = augmentedData?.originatingChainTxHash ?? "";
 
-  const { data: polymarketLink } = usePolymarketLink(
-    hash,
+  const shouldFetch =
     checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) &&
-      Boolean(hash)
-      ? true
-      : false
-  );
+    Boolean(hash) &&
+    Boolean(config.chainId === 1); // skip testnet
+
+  const { data: polymarketLink } = usePolymarketLink(hash, shouldFetch);
 
   return (
     <Wrapper>
