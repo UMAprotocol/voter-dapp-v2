@@ -16,7 +16,7 @@ import OSnap from "public/assets/icons/osnap.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import styled from "styled-components";
 import { VoteListItemProps } from "./shared.types";
-import { InputTypes, useVoteListItem } from "./useVoteListItem";
+import { useVoteListItem } from "./useVoteListItem";
 import { mobileAndUnder } from "constant";
 import { MultipleValuesInputModal } from "components/Modals/MultipleValuesInputModal";
 
@@ -59,7 +59,7 @@ export function VoteTableRow(props: VoteListItemProps) {
     getRelevantTransactionLink,
     isDirty,
     moreDetailsAction,
-    customInput,
+    isCustomInput,
     multipleInputProps,
     dropdownOptions,
     selectedDropdownOption,
@@ -137,7 +137,7 @@ export function VoteTableRow(props: VoteListItemProps) {
           className="cursor-default pr-[--cell-padding]"
           onClick={(e) => e.stopPropagation()}
         >
-          {dropdownOptions && customInput !== InputTypes.single ? (
+          {dropdownOptions && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
               items={dropdownOptions}

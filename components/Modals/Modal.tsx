@@ -15,7 +15,7 @@ export function Modal({ children, className, ...props }: ModalProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "hsla(0, 0%, 0%, 0.33)",
+          background: "hsla(280, 4%, 15%, 0.75)",
           position: "fixed",
           top: 0,
           right: 0,

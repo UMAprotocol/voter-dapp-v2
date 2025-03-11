@@ -5,13 +5,14 @@ import { TextInput } from "components/Input/TextInput";
 import { Button } from "components/Button";
 import PencilIcon from "public/assets/icons/pencil.svg";
 import Warning from "public/assets/icons/warning.svg";
+import React from "react";
 
 export function MultipleValuesInputModal(props: MultipleInputProps) {
   const items = Object.entries(props?.inputValues);
 
   return (
     <Modal
-      className="max-w-[540px]"
+      className={cn(items?.length > 2 ? "max-w-[540px]" : "max-w-[560px]")}
       isOpen={props.inputModalOpen}
       onDismiss={props.closeInputModal}
     >
@@ -27,7 +28,7 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
           )}
         >
           {items.map(([label, value], i) => (
-            <>
+            <React.Fragment key={label}>
               <label
                 key={label}
                 htmlFor={`input-${label}`}
@@ -35,6 +36,8 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
               >
                 {label}
                 <TextInput
+                  key={`input-${label}`}
+                  id={`input-${label}`}
                   value={value}
                   onInput={(_val) =>
                     props.onInputChange({ label, value: _val })
@@ -45,11 +48,11 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
                 />
               </label>
               {i === 0 && items?.length === 2 && (
-                <span className="top-8 relative text-4xl font-normal text-[#A2A1A5]">
+                <span className="relative top-[26px] text-[40px] font-normal text-[#A2A1A5]">
                   -
                 </span>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
         <Button

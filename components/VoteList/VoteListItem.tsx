@@ -12,7 +12,7 @@ import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
 import { VoteListItemProps } from "./shared.types";
-import { InputTypes, useVoteListItem } from "./useVoteListItem";
+import { useVoteListItem } from "./useVoteListItem";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { getOptimisticGovernorTitle } from "helpers";
 import { MultipleValuesInputModal } from "components/Modals/MultipleValuesInputModal";
@@ -29,7 +29,7 @@ export function VoteListItem(props: VoteListItemProps) {
     showVoteInput,
     selectVote,
     dropdownOptions,
-    customInput,
+    isCustomInput,
     multipleInputProps,
     selectedDropdownOption,
     onSelectVote,
@@ -105,11 +105,11 @@ export function VoteListItem(props: VoteListItemProps) {
       </div>
       {<MultipleValuesInputModal {...multipleInputProps} />}
       {showVoteInput() && selectVote ? (
-        <td
+        <div
           className="cursor-default pr-[--cell-padding]"
           onClick={(e) => e.stopPropagation()}
         >
-          {dropdownOptions && customInput !== InputTypes.single ? (
+          {dropdownOptions && !isCustomInput ? (
             <Dropdown
               label="Choose answer"
               items={dropdownOptions}
@@ -125,7 +125,7 @@ export function VoteListItem(props: VoteListItemProps) {
               type="number"
             />
           )}
-        </td>
+        </div>
       ) : null}
 
       {showYourVote() ? (

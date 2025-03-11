@@ -13,6 +13,7 @@ interface Props {
   isNumeric?: boolean;
   maxDecimals?: number;
   allowNegative?: boolean;
+  id?: string;
 }
 export function TextInput({
   value,
@@ -20,6 +21,7 @@ export function TextInput({
   onClear,
   disabled,
   placeholder,
+  id,
   type = "text",
   maxDecimals = 18,
   allowNegative = true,
@@ -48,6 +50,7 @@ export function TextInput({
         minLength={1}
         maxLength={79}
         spellCheck="false"
+        id={id}
       />
       {!!onClear && (
         <ClearInputButton aria-label="exit custom input" onClick={onClear}>

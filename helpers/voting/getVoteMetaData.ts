@@ -239,6 +239,11 @@ export const multipleValuesDropdownOptions = [
     value: "OPEN_MULTIPLE_VALUES_MODAL",
     secondaryLabel: "Enter values",
   },
+  {
+    label: "Proposed values",
+    value: "SET_PROPOSED_PRICE",
+    secondaryLabel: "Proposed values",
+  },
 ];
 
 function tryParseMultipleValues(

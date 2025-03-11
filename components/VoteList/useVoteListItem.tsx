@@ -25,12 +25,6 @@ import removeMarkdown from "remove-markdown";
 import { DropdownItemT } from "types";
 import { VoteListItemProps } from "./shared.types";
 import { useMultipleValuesVote } from "hooks/inputs/useMultipleValuesVote";
-import { multipleValuesDropdownOptions } from "helpers/voting/getVoteMetaData";
-
-export enum InputTypes {
-  single = "single",
-  multiple = "multiple",
-}
 
 export function useVoteListItem({
   vote,
@@ -43,7 +37,7 @@ export function useVoteListItem({
   moreDetailsAction,
   isDirty = false,
 }: VoteListItemProps) {
-  const [customInput, setCustomInput] = useState<InputTypes | undefined>();
+  const [isCustomInput, setIsCustomInput] = useState(false);
   const multipleInputProps = useMultipleValuesVote({
     vote,
     selectVote,
@@ -73,7 +67,7 @@ export function useVoteListItem({
   } = vote;
   const isMultipleValuesVote = decodedIdentifier === "MULTIPLE_VALUES";
   const dropdownOptions = isMultipleValuesVote
-    ? multipleValuesDropdownOptions
+    ? multipleInputProps.dropdownOptions
     : options;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
@@ -113,8 +107,9 @@ export function useVoteListItem({
     // then we must be using a custom input
     const decryptedVote = getDecryptedVoteAsFormattedString();
     if (decryptedVote && !findVoteInOptionsDetectEarlyVote(decryptedVote)) {
-      // todo check
-      setCustomInput(InputTypes.single);
+      if (!isMultipleValuesVote) {
+        setIsCustomInput(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decryptedVote]);
@@ -135,11 +130,11 @@ export function useVoteListItem({
 
   function onSelectVote(option: DropdownItemT) {
     if (isMultipleValuesVote) {
-      setCustomInput(InputTypes.multiple);
+      setIsCustomInput(false);
       multipleInputProps.onDropdownChange(option);
     } else if (option.value === "custom") {
       selectVote?.("");
-      setCustomInput(InputTypes.single);
+      setIsCustomInput(true);
     } else {
       selectVote?.(option.value.toString());
     }
@@ -147,7 +142,7 @@ export function useVoteListItem({
 
   function exitCustomInput() {
     clearVote?.();
-    setCustomInput(undefined);
+    setIsCustomInput(false);
   }
 
   function getDecryptedVoteAsFormattedString() {
@@ -199,6 +194,9 @@ export function useVoteListItem({
     : getExistingOrSelectedVoteFromOptions();
 
   function getYourVote() {
+    if (isMultipleValuesVote && multipleInputProps.committedVote) {
+      return multipleInputProps.getVoteForDisplay();
+    }
     if (!decryptedVote && isCommitted) {
       return "Unknown";
     }
@@ -322,7 +320,6 @@ export function useVoteListItem({
   }
 
   return {
-    customInput,
     style,
     Icon,
     titleText,
@@ -340,6 +337,7 @@ export function useVoteListItem({
     onSelectVote,
     selectedVote,
     getDecryptedVoteAsString,
+    isCustomInput,
     exitCustomInput,
     maxDecimals,
     showYourVote,
