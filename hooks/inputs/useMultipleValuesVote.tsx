@@ -32,6 +32,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
       options?.map((o) => [o.label, (o.value ?? "").toString()]) ?? []
     )
   );
+
   const [formattedValue, setFormattedValue] = useState<string | undefined>();
   const [committedVote, setCommittedVote] = useState<string | undefined>();
   const isUnresolvable = _isUnresolvable(formattedValue);
@@ -44,6 +45,15 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
       !isTooEarly && !isUnresolvable && !!formattedValue && !isProposedPrice
     );
   }, [formattedValue, isTooEarly, isUnresolvable, isProposedPrice]);
+
+  function clearInputValues() {
+    setFormattedValue(undefined);
+    setInputValues(
+      Object.fromEntries(
+        options?.map((o) => [o.label, (o.value ?? "").toString()]) ?? []
+      )
+    );
+  }
 
   // get decrypted vote on load
   useEffect(() => {
@@ -78,7 +88,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   function setProposedPrice() {
     if (proposedPrice && options) {
       setValuesFromPrice(proposedPrice, options);
-      setFormattedValue(proposedPrice);
+      openInputModal();
     }
   }
 
@@ -122,7 +132,8 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   function onDropdownChange(item: DropdownItemT) {
     if (item.value === "OPEN_MULTIPLE_VALUES_MODAL") {
-      setInputModalOpen(true);
+      clearInputValues();
+      openInputModal();
     } else if (item.value === "SET_PROPOSED_PRICE") {
       setProposedPrice();
     } else if (
