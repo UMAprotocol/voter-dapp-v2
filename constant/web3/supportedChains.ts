@@ -6,6 +6,7 @@ export const supportedChains = {
   137: "Polygon",
   288: "Boba",
   416: "SX",
+  1514: "Story",
   43114: "Avalanche",
   42161: "Arbitrum",
   11155111: "Sepolia",
