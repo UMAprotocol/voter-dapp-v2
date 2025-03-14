@@ -301,7 +301,7 @@ export function isTooEarly(price: BigNumber | string | undefined): boolean {
     : ethers.constants.MinInt256.eq(price);
 }
 
-export function isUnresolvable(price: bigint | string | undefined): boolean {
+export function isUnresolvable(price: BigNumber | string | undefined): boolean {
   if (!price) {
     return false;
   }

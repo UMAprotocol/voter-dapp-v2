@@ -213,6 +213,9 @@ export function useVoteListItem({
 
   function getCorrectVote() {
     if (correctVote === undefined || correctVote === null) return;
+    if (isMultipleValuesVote) {
+      return multipleInputProps.getCorrectVote();
+    }
     const formatted = formatVoteStringWithPrecision(
       correctVote,
       decodedIdentifier

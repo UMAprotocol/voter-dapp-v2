@@ -18,7 +18,7 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
     >
       <div className="mb-4 flex items-center gap-2">
         <PencilIcon className="h-5 w-5" />
-        <span className="text-lg font-semibold">Enter values</span>
+        <span className="text-lg font-semibold">Custom values</span>
       </div>
       <div className="relative mb-2 flex w-full flex-col items-start justify-between gap-2">
         <div

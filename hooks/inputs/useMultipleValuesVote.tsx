@@ -23,7 +23,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     ancillaryData: vote.ancillaryData,
   });
   const proposedPrice = augmentedData?.proposedPrice;
-  const { options, decryptedVote } = vote;
+  const { options, decryptedVote, correctVote } = vote;
   const [inputModalOpen, setInputModalOpen] = useState(false);
   const openInputModal = () => void setInputModalOpen(true);
   const closeInputModal = () => void setInputModalOpen(false);
@@ -145,21 +145,16 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   }
 
   function getCommittedVoteDropdownValue() {
-    if (committedVote) {
-      if (
-        !_isTooEarly(String(committedVote)) &&
-        !_isUnresolvable(String(committedVote))
-      ) {
-        return {
-          label: "Entered values",
-          value: "OPEN_MULTIPLE_VALUES_MODAL",
-        };
-      }
-      return multipleValuesDropdownOptions?.find((option) => {
+    return (
+      multipleValuesDropdownOptions?.find((option) => {
         return option.value === committedVote;
-      });
-    }
+      }) ?? {
+        label: "Custom values",
+        value: "OPEN_MULTIPLE_VALUES_MODAL",
+      }
+    );
   }
+
   // remove "Proposed values" options if unable to find this value from the oracle
   const dropdownOptions = (() => {
     return multipleValuesDropdownOptions.filter((o) => {
@@ -174,6 +169,14 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     return getCommittedVoteDropdownValue()?.label;
   }
 
+  function getCorrectVote() {
+    return (
+      multipleValuesDropdownOptions?.find((option) => {
+        return option.value === correctVote;
+      })?.label ?? "Custom values"
+    );
+  }
+
   const selectedDropdownOption = (() => {
     if (committedVote) {
       return getCommittedVoteDropdownValue();
@@ -181,7 +184,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
     if (isValuesEntered) {
       return {
-        label: "Entered values",
+        label: "Custom values",
         value: "OPEN_MULTIPLE_VALUES_MODAL",
       };
     }
@@ -203,6 +206,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     !inputError;
 
   return {
+    getCorrectVote,
     dropdownOptions,
     proposedPrice,
     isProposedPrice,

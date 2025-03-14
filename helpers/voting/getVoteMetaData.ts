@@ -235,9 +235,9 @@ export const multipleValuesDropdownOptions = [
     secondaryLabel: "Early Request",
   },
   {
-    label: "Enter values",
+    label: "Custom values",
     value: "OPEN_MULTIPLE_VALUES_MODAL",
-    secondaryLabel: "Enter values",
+    secondaryLabel: "Custom values",
   },
   {
     label: "Proposed values",
