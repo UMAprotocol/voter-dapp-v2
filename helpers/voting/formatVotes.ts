@@ -107,6 +107,9 @@ export function parseVoteStringWithPrecision(
   vote: string,
   decodedIdentifier: string
 ) {
+  if (decodedIdentifier === "MULTIPLE_VALUES") {
+    return vote;
+  }
   // check the precision to use from our table of precisions
   const identifierPrecision = BigNumber.from(
     getPrecisionForIdentifier(decodedIdentifier)

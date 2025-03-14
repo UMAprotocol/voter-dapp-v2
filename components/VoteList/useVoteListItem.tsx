@@ -24,6 +24,7 @@ import { CSSProperties, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
 import { DropdownItemT } from "types";
 import { VoteListItemProps } from "./shared.types";
+import { useMultipleValuesVote } from "hooks/inputs/useMultipleValuesVote";
 
 export function useVoteListItem({
   vote,
@@ -37,6 +38,10 @@ export function useVoteListItem({
   isDirty = false,
 }: VoteListItemProps) {
   const [isCustomInput, setIsCustomInput] = useState(false);
+  const multipleInputProps = useMultipleValuesVote({
+    vote,
+    selectVote,
+  });
   const { address } = useAccountDetails();
   const { signingKeys } = useWalletContext();
   const hasSigningKey = !!address && !!signingKeys[address];
@@ -60,6 +65,10 @@ export function useVoteListItem({
     assertionChildChainId,
     assertionId,
   } = vote;
+  const isMultipleValuesVote = decodedIdentifier === "MULTIPLE_VALUES";
+  const dropdownOptions = isMultipleValuesVote
+    ? multipleInputProps.dropdownOptions
+    : options;
   const maxDecimals = getPrecisionForIdentifier(decodedIdentifier);
   const Icon = getVoteIcon();
   const isRolled = rollCount > 0;
@@ -92,12 +101,15 @@ export function useVoteListItem({
     titleOrClaim.length > 100
       ? `${titleOrClaim.slice(0, 100)}...`
       : titleOrClaim;
+
   useEffect(() => {
     // if options exist but the existing decrypted vote is not one from the list,
     // then we must be using a custom input
     const decryptedVote = getDecryptedVoteAsFormattedString();
     if (decryptedVote && !findVoteInOptionsDetectEarlyVote(decryptedVote)) {
-      setIsCustomInput(true);
+      if (!isMultipleValuesVote) {
+        setIsCustomInput(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decryptedVote]);
@@ -117,7 +129,10 @@ export function useVoteListItem({
   }, [selectedVote, setDirty, isDirty, existingVote, phase]);
 
   function onSelectVote(option: DropdownItemT) {
-    if (option.value === "custom") {
+    if (isMultipleValuesVote) {
+      setIsCustomInput(false);
+      multipleInputProps.onDropdownChange(option);
+    } else if (option.value === "custom") {
       selectVote?.("");
       setIsCustomInput(true);
     } else {
@@ -160,7 +175,7 @@ export function useVoteListItem({
   }
 
   function getExistingOrSelectedVoteFromOptions() {
-    return options?.find((option) => {
+    return dropdownOptions?.find((option) => {
       const existingVote = getDecryptedVoteAsFormattedString();
 
       // prefer showing the selected vote if it exists
@@ -174,7 +189,14 @@ export function useVoteListItem({
     });
   }
 
+  const selectedDropdownOption = isMultipleValuesVote
+    ? multipleInputProps.selectedDropdownOption
+    : getExistingOrSelectedVoteFromOptions();
+
   function getYourVote() {
+    if (isMultipleValuesVote && multipleInputProps.committedVote) {
+      return multipleInputProps.getVoteForDisplay();
+    }
     if (!decryptedVote && isCommitted) {
       return "Unknown";
     }
@@ -204,6 +226,7 @@ export function useVoteListItem({
       return option.value === value;
     });
   }
+
   function findVoteInOptionsDetectEarlyVote(value: string | undefined) {
     if (isEarlyVote(value)) return { label: "Early request" };
     return findVoteInOptions(value);
@@ -309,11 +332,12 @@ export function useVoteListItem({
     showVoteInput,
     selectVote,
     options,
-    isCustomInput,
+    dropdownOptions,
     getExistingOrSelectedVoteFromOptions,
     onSelectVote,
     selectedVote,
     getDecryptedVoteAsString,
+    isCustomInput,
     exitCustomInput,
     maxDecimals,
     showYourVote,
@@ -326,5 +350,7 @@ export function useVoteListItem({
     getRelevantTransactionLink,
     isDirty,
     moreDetailsAction,
+    multipleInputProps,
+    selectedDropdownOption,
   };
 }

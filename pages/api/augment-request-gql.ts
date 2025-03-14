@@ -31,6 +31,7 @@ export const ResponseBody = ss.object({
   identifier: ss.string(),
   l1RequestTxHash: ss.optional(ss.string()),
   ooRequestUrl: ss.optional(ss.string()),
+  proposedPrice: ss.optional(ss.string()),
   originatingChainTxHash: ss.optional(ss.string()),
   originatingChainId: ss.optional(ss.number()),
   originatingOracleType: ss.optional(ss.string()),
@@ -291,6 +292,7 @@ async function oov2Query({
         customLiveness
         time
         proposalTimestamp
+        proposedPrice
       }
     }
   `;
@@ -303,6 +305,7 @@ async function oov2Query({
     time: number;
     eventBased: boolean;
     proposalTimestamp: number;
+    proposedPrice: string;
   };
   type GqlResponse = {
     optimisticPriceRequests: GqlRequest[];
@@ -330,6 +333,7 @@ async function oov2Query({
     const requestHash = optimisticPriceRequest.requestHash;
     const requestLogIndex = optimisticPriceRequest.requestLogIndex;
     const uniqueKey = optimisticPriceRequest.id;
+
     return {
       time,
       uniqueKey,
@@ -340,6 +344,7 @@ async function oov2Query({
         "OptimisticOracleV2",
         requestLogIndex
       ),
+      proposedPrice: optimisticPriceRequest.proposedPrice,
       originatingChainTxHash: requestHash,
       originatingChainId: chainId,
       originatingOracleType: "OptimisticOracleV2",

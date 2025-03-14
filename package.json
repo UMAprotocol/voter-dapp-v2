@@ -19,6 +19,7 @@
     "@next/third-parties": "^14.2.5",
     "@radix-ui/react-tabs": "^1.0.1",
     "@reach/checkbox": "^0.18.0",
+    "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
     "@reach/portal": "^0.18.0",
     "@reach/tooltip": "^0.18.0",
@@ -30,6 +31,7 @@
     "@web3-onboard/injected-wallets": "^2.10.1",
     "@web3-onboard/react": "^2.8.9",
     "@web3-onboard/walletconnect": "^2.4.0",
+    "class-variance-authority": "^0.7.1",
     "contentful": "^9.2.4",
     "date-fns": "^2.29.3",
     "eth-crypto": "^2.3.0",
@@ -47,6 +49,7 @@
     "remove-markdown": "^0.5.0",
     "styled-components": "^5.3.5",
     "superstruct": "^2.0.2",
+    "tailwind-merge": "^3.0.1",
     "use-mailchimp-form": "^3.1.0",
     "usehooks-ts": "^2.9.1"
   },

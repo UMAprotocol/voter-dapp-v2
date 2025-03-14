@@ -11,6 +11,7 @@ import { earlyRequestMagicNumber, answerNotPossible } from "constant";
 import { ContentfulDataT, VoteMetaDataT, VoteOriginT } from "types";
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
 import * as s from "superstruct";
+import { maxInt256, minInt256 } from "constant/web3/numbers";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -206,21 +207,45 @@ function decodeMultipleValuesQuery(decodedAncillaryData: string) {
   const json = JSON.parse(maybeJson);
   if (!isMultipleValuesQueryFormat(json))
     throw new Error("Not a valid multiple values request");
-  assert(
-    json.labels.length <= 7,
-    "MULTIPLE_VALUES only support up to 7 labels"
-  );
+  if (json.labels.length > 7)
+    throw new Error("MULTIPLE_VALUES only support up to 7 labels");
 
   return {
     title: json.title,
     description: json.description,
-    options: json.labels.map((opt: string) => ({
-      label: opt,
-      value: "",
-      secondaryLabel: opt,
-    })),
+    options: json.labels.map((label) => {
+      return {
+        label,
+        value: "",
+        secondaryLabel: label,
+      };
+    }),
   };
 }
+
+export const multipleValuesDropdownOptions = [
+  {
+    label: "Unresolvable",
+    value: maxInt256.toString(),
+    secondaryLabel: "Unresolvable",
+  },
+  {
+    label: "Early Request",
+    value: minInt256.toString(),
+    secondaryLabel: "Early Request",
+  },
+  {
+    label: "Enter values",
+    value: "OPEN_MULTIPLE_VALUES_MODAL",
+    secondaryLabel: "Enter values",
+  },
+  {
+    label: "Proposed values",
+    value: "SET_PROPOSED_PRICE",
+    secondaryLabel: "Proposed values",
+  },
+];
+
 function tryParseMultipleValues(
   decodedQueryText: string,
   projectName: VoteOriginT
