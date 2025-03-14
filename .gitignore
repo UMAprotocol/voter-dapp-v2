@@ -40,3 +40,4 @@ cypress/videos
 cypress/screenshots
 
 *.env
+.env*.local

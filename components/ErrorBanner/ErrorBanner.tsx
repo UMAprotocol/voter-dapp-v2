@@ -37,13 +37,17 @@ export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
   );
 }
 
-function Error({
+export function Error({
   message,
   removeErrorMessage,
 }: {
-  message: string;
+  message: string | undefined;
   removeErrorMessage?: (message: string) => void;
 }) {
+  if (!message) {
+    return null;
+  }
+
   return (
     <ErrorMessageWrapper>
       <IconWrapper>

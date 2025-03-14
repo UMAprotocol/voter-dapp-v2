@@ -250,6 +250,7 @@ export const AugmentedVoteDataResponseT = ss.object({
   originatingChainTxHash: ss.optional(ss.string()),
   originatingChainId: ss.optional(ss.number()),
   originatingOracleType: ss.optional(ss.string()),
+  proposedPrice: ss.optional(ss.string()),
   optimisticOracleV3Data: ss.optional(
     ss.object({
       assertionId: ss.optional(ss.string()),
