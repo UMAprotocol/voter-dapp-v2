@@ -32,7 +32,8 @@ export function usePolymarketLink(txHash: string, shouldFetch = true) {
   return useQuery({
     queryKey: [txHash],
     queryFn: () => getPolymarketLink(txHash),
-    onError: (err) => console.error(err),
+    onError: (err) =>
+      console.warn(`Unable to fetch slug for tx ${txHash}`, { cause: err }),
     enabled: !!txHash && shouldFetch,
     refetchInterval: Infinity,
     refetchOnMount: false,

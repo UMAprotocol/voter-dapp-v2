@@ -37,7 +37,9 @@ export default async function handler(
       });
     }
 
-    const log = tx.logs.find((log) => log.topics?.[0] === topicHash);
+    const log = tx.logs.find(
+      (log) => log.topics?.[0]?.toLowerCase() === topicHash.toLowerCase()
+    );
 
     if (!log) {
       // ConditionPreparation is not always emitted in the same transaction as requestPrice.
