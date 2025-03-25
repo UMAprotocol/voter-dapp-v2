@@ -18,7 +18,11 @@ export * from "./voting/optimisticGovernor";
 export * from "./voting/projects";
 export * from "./voting/voteTiming";
 export * from "./web3/crypto";
-export { decodeHexString } from "./web3/decodeHexString";
+export {
+  decodeHexString,
+  getClaimTitle,
+  getClaimDescription,
+} from "./web3/decodeHexString";
 export * from "./web3/ethers";
 export * from "./web3/events";
 export { initOnboard } from "./web3/initOnboard";

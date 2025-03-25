@@ -27,12 +27,12 @@ export function getVoteMetaData(
   const isAssertion = ["assertionId:", "ooAsserter:"].every((lookup) =>
     decodedAncillaryData.includes(lookup)
   );
-
   if (isAssertion) {
     const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
+    const title = decodedIdentifier;
     const description = makeAssertionDescription(assertionData);
     return {
-      title: decodedIdentifier,
+      title,
       description,
       umipOrUppLink: {
         label: "UMIP-170",
