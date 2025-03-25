@@ -12,6 +12,7 @@ import {
   makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
+  getClaimDescription,
 } from "helpers";
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
@@ -61,6 +62,10 @@ export function Details({
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
+
+  const claimDescription = claim
+    ? getClaimDescription(decodeHexString(claim))
+    : "";
 
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
@@ -136,7 +141,6 @@ export function Details({
     title,
     checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) ? true : false
   );
-
   return (
     <Wrapper>
       <SectionWrapper>
@@ -189,7 +193,7 @@ export function Details({
             </ToggleText>
           </PanelSectionTitle>
           <DecodedTextAsMarkdown>
-            {showRawClaimData ? claim : decodeHexString(claim)}
+            {showRawClaimData ? claim : claimDescription}
           </DecodedTextAsMarkdown>
         </SectionWrapper>
       )}

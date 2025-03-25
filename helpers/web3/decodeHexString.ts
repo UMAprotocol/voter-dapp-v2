@@ -1,4 +1,5 @@
 import { toUtf8String } from "helpers";
+import { object, string, optional } from "superstruct";
 
 export function decodeHexString(hexString: string) {
   try {
@@ -14,4 +15,39 @@ export function decodeHexString(hexString: string) {
       throw new Error(`Invalid hex string: ${e}`);
     }
   }
+}
+
+export const StructuredClaim = object({
+  title: optional(string()),
+  description: optional(string()),
+});
+// check if claim is structured, return title, or shortened entire claim
+export function getClaimTitle(claim: string): string {
+  let title = claim;
+  try {
+    const parsedClaim = JSON.parse(claim);
+    if (StructuredClaim.is(parsedClaim)) {
+      if (parsedClaim.title) {
+        title = parsedClaim.title;
+      }
+    }
+  } catch (error) {
+    // If JSON parsing fails, fall back to returning the entire claim
+  }
+  return title;
+}
+
+export function getClaimDescription(claim: string): string {
+  let description = claim;
+  try {
+    const parsedClaim = JSON.parse(claim);
+    if (StructuredClaim.is(parsedClaim)) {
+      if (parsedClaim.description) {
+        description = parsedClaim.description;
+      }
+    }
+  } catch (error) {
+    // If JSON parsing fails, fall back to returning the entire claim
+  }
+  return description;
 }

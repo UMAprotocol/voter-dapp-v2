@@ -1,7 +1,7 @@
 import removeMarkdown from "remove-markdown";
 
 import { Tabs } from "components";
-import { decodeHexString } from "helpers";
+import { decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import { useVoteDiscussion, useAssertionClaim } from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
@@ -52,9 +52,13 @@ export function VotePanel({ content }: Props) {
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
 
+  if (claim) console.log("claim", claim);
+
+  const claimTitle = claim ? getClaimTitle(decodeHexString(claim)) : undefined;
+
   const titleOrClaimOrIdentifier =
     optimisticGovernorTitle ||
-    removeMarkdown(claim ? decodeHexString(claim) : title ?? decodedIdentifier);
+    removeMarkdown(claimTitle ?? claim ?? title ?? decodedIdentifier);
 
   const titleToShow =
     titleOrClaimOrIdentifier.length > 100
