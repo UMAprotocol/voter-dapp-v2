@@ -1,6 +1,7 @@
 import { earlyRequestMagicNumber } from "constant";
-import { DropdownItemT } from "types";
+import { DropdownItemT, VoteT } from "types";
 import chunk from "lodash/chunk";
+import { solidityKeccak256 } from "ethers/lib/utils";
 
 const polymarketChainId = 137;
 
@@ -224,5 +225,30 @@ export function maybeMakePolymarketOptions(
         value: "custom",
       },
     ];
+  }
+}
+
+/**
+ * Strips the following keys from ancillary data (and any possible preceding commas):
+ * 1. ooRequester
+ * 2. initializer
+ * 3. childRequester
+ * 4. childChainId
+ */
+export function sanitizeAncillaryData(decodedAncillaryData: string): string {
+  const regex =
+    /(?:,\s*)?(initializer|ooRequester|childChainId|childRequester):[^,]+/g;
+  const stripped = decodedAncillaryData.replace(regex, "");
+  return stripped;
+}
+
+export function getQuestionId({
+  decodedAncillaryData,
+}: Partial<Pick<VoteT, "decodedAncillaryData">>): string | undefined {
+  if (decodedAncillaryData) {
+    return solidityKeccak256(
+      ["string"],
+      [sanitizeAncillaryData(decodedAncillaryData)]
+    );
   }
 }
