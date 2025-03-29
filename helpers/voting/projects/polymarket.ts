@@ -231,13 +231,13 @@ export function maybeMakePolymarketOptions(
 /**
  * Strips the following keys from ancillary data (and any possible preceding commas):
  * 1. ooRequester
- * 2. initializer
- * 3. childRequester
- * 4. childChainId
+ * 2. childRequester
+ * 3. childChainId
  */
+
+// questionId is a hash of ancillaryData + initializer EOA
 export function sanitizeAncillaryData(decodedAncillaryData: string): string {
-  const regex =
-    /(?:,\s*)?(initializer|ooRequester|childChainId|childRequester):[^,]+/g;
+  const regex = /(?:,\s*)?(ooRequester|childChainId|childRequester):[^,]+/g;
   const stripped = decodedAncillaryData.replace(regex, "");
   return stripped;
 }
