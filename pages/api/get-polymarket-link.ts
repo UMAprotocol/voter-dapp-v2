@@ -30,11 +30,16 @@ export default async function handler(
       `https://gamma-api.polymarket.com/markets?${buildSearchParams({
         question_ids: questionId,
       })}`
-    ).then((res) => res.json())) as Array<{ slug: string }>;
+    ).then((res) => res.json())) as Array<{
+      events: Array<{
+        slug: string;
+      }>;
+    }>;
 
     console.log(`Found DATA for question ID: ${questionId}`, data);
+    console.log("events", data[0]["events"]);
 
-    const slug = data?.[0]?.slug;
+    const slug = data?.[0]?.events?.[0]?.slug;
 
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
