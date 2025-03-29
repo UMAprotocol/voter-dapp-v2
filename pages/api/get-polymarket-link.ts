@@ -24,8 +24,6 @@ export default async function handler(
       });
     }
 
-    console.log(`Fetching data for question ID: ${questionId}`);
-
     const data = (await fetch(
       `https://gamma-api.polymarket.com/markets?${buildSearchParams({
         question_ids: questionId,
@@ -36,10 +34,9 @@ export default async function handler(
       }>;
     }>;
 
-    console.log(`Found DATA for question ID: ${questionId}`, data);
-    console.log("events", data[0]["events"]);
-
     const slug = data?.[0]?.events?.[0]?.slug;
+
+    console.log(`Found polymarket slug for question ID: ${questionId}`, slug);
 
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
