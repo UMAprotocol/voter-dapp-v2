@@ -1,16 +1,11 @@
 import { hexString } from "helpers/validators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { type, create } from "superstruct";
-import { getProviderByChainId, HttpError } from "./_common";
-import { utils } from "ethers";
-
-// event ConditionPreparation
-const topicHash =
-  "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177";
-const provider = getProviderByChainId(137);
+import { HttpError } from "./_common";
+import { buildSearchParams } from "helpers/util/buildSearchParams";
 
 const querySchema = type({
-  txHash: hexString(),
+  questionId: hexString(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -20,41 +15,28 @@ export default async function handler(
 ) {
   try {
     const query = create(request.query, querySchema);
-    const hash = query?.txHash;
-    if (!hash) {
+    const questionId = query?.questionId;
+
+    if (!questionId) {
       throw new HttpError({
         status: 400,
-        message: "Invalid Param: txHash must be valid hex string",
+        message: "Invalid Param: questionId must be valid hex string",
       });
     }
 
-    const tx = await provider.getTransactionReceipt(hash);
-
-    if (!tx) {
-      throw new HttpError({
-        status: 404,
-        message: `Transaction not found: Unable to find transaction receipt for hash ${hash}`,
-      });
-    }
-
-    const log = tx.logs.find(
-      (log) => log.topics?.[0]?.toLowerCase() === topicHash.toLowerCase()
-    );
-
-    if (!log) {
-      // ConditionPreparation is not always emitted in the same transaction as requestPrice.
-      // cache this valid response to avoid re-running th same lookup
-      response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
-      response.status(200).send({});
-      return;
-    }
-
-    const conditionId = utils.hexlify(log.topics[1]);
     const data = (await fetch(
-      `https://gamma-api.polymarket.com/markets?condition_ids=${conditionId}`
-    ).then((res) => res.json())) as Array<{ slug: string }>;
+      `https://gamma-api.polymarket.com/markets?${buildSearchParams({
+        question_ids: questionId,
+      })}`
+    ).then((res) => res.json())) as Array<{
+      events: Array<{
+        slug: string;
+      }>;
+    }>;
 
-    const slug = data?.[0]?.slug;
+    const slug = data?.[0]?.events?.[0]?.slug;
+
+    console.log(`Found polymarket slug for question ID: ${questionId}`, slug);
 
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });

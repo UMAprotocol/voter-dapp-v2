@@ -8,6 +8,7 @@ import {
   checkIfIsPolymarket,
   decodeHexString,
   formatNumberForDisplay,
+  getQuestionId,
   makeBlockExplorerLink,
   makeTransactionHashLink,
   parseEtherSafe,
@@ -138,7 +139,12 @@ export function Details({
     Boolean(hash) &&
     Boolean(config.chainId === 1); // skip testnet
 
-  const { data: polymarketLink } = usePolymarketLink(hash, shouldFetch);
+  const { data: polymarketLink } = usePolymarketLink(
+    getQuestionId({
+      decodedAncillaryData,
+    }),
+    shouldFetch
+  );
 
   return (
     <Wrapper>

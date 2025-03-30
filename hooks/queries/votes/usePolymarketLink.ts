@@ -6,10 +6,16 @@ const returnData = type({
   slug: optional(string()),
 });
 
-async function getPolymarketLink(txHash: string): Promise<string | undefined> {
+async function getPolymarketLink(
+  questionId: string | undefined
+): Promise<string | undefined> {
+  if (!questionId) {
+    throw new Error("Unable to fetch polymarket link. Missing Question ID");
+  }
+
   const POLYMARKET_BASE_URL = "https://polymarket.com";
   const params = buildSearchParams({
-    txHash,
+    questionId,
   });
 
   const response = await fetch(`/api/get-polymarket-link?${params}`, {
@@ -28,13 +34,19 @@ async function getPolymarketLink(txHash: string): Promise<string | undefined> {
   }
 }
 
-export function usePolymarketLink(txHash: string, shouldFetch = true) {
+export function usePolymarketLink(
+  questionId: string | undefined,
+  shouldFetch = true
+) {
   return useQuery({
-    queryKey: [txHash],
-    queryFn: () => getPolymarketLink(txHash),
+    queryKey: [questionId],
+    queryFn: () => getPolymarketLink(questionId),
     onError: (err) =>
-      console.warn(`Unable to fetch slug for tx ${txHash}`, { cause: err }),
-    enabled: !!txHash && shouldFetch,
+      console.warn(
+        `Unable to fetch slug for tx ${questionId ?? "MISSING PARAM"}`,
+        { cause: err }
+      ),
+    enabled: !!questionId && shouldFetch,
     refetchInterval: Infinity,
     refetchOnMount: false,
   });
