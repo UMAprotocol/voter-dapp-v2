@@ -35,13 +35,13 @@ export default async function handler(
     }>;
 
     const slug = data?.[0]?.events?.[0]?.slug;
-
-    console.log(`Found polymarket slug for question ID: ${questionId}`, slug);
-
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
   } catch (e) {
-    console.error(e);
+    console.error("Error fetching Polymarket link", {
+      at: "api/get-polymarket-link",
+      cause: e,
+    });
 
     response.status(e instanceof HttpError ? e.status : 500).send({
       message: "Server error",
