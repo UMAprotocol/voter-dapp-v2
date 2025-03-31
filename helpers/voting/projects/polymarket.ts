@@ -1,6 +1,7 @@
 import { earlyRequestMagicNumber } from "constant";
-import { DropdownItemT } from "types";
+import { DropdownItemT, VoteT } from "types";
 import chunk from "lodash/chunk";
+import { solidityKeccak256 } from "ethers/lib/utils";
 
 const polymarketChainId = 137;
 
@@ -51,7 +52,7 @@ export function checkIfIsPolymarket(
     isPolymarketRequester(requester) &&
     childChainId === polymarketChainId;
 
-  return isPolymarket;
+  return Boolean(isPolymarket);
 }
 
 // this will only work when there are exactly 3 or more options, which should match most polymarket requests
@@ -224,5 +225,30 @@ export function maybeMakePolymarketOptions(
         value: "custom",
       },
     ];
+  }
+}
+
+/**
+ * Strips the following keys from ancillary data (and any possible preceding commas):
+ * 1. ooRequester
+ * 2. childRequester
+ * 3. childChainId
+ */
+
+// questionId is a hash of ancillaryData + initializer EOA
+export function sanitizeAncillaryData(decodedAncillaryData: string): string {
+  const regex = /(?:,\s*)?(ooRequester|childChainId|childRequester):[^,]+/g;
+  const stripped = decodedAncillaryData.replace(regex, "");
+  return stripped;
+}
+
+export function getQuestionId({
+  decodedAncillaryData,
+}: Partial<Pick<VoteT, "decodedAncillaryData">>): string | undefined {
+  if (decodedAncillaryData) {
+    return solidityKeccak256(
+      ["string"],
+      [sanitizeAncillaryData(decodedAncillaryData)]
+    );
   }
 }
