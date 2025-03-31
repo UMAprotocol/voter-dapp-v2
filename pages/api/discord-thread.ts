@@ -209,7 +209,7 @@ async function fetchDiscordThread(
   return {
     identifier: l1Request.identifier,
     time: l1Request.time,
-    thread: processedMessages.reverse(),
+    thread: processedMessages,
   };
 }
 
