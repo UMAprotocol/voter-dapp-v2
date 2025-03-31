@@ -3,6 +3,7 @@ import {
   decodeHexString,
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
+  getClaimTitle,
 } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -96,7 +97,9 @@ export function useVoteListItem({
     "--title-icon-size": "40px",
   } as CSSProperties;
 
-  const titleOrClaim = removeMarkdown(claim ? decodeHexString(claim) : title);
+  const titleOrClaim = removeMarkdown(
+    claim ? getClaimTitle(decodeHexString(claim)) : title
+  );
   const titleText =
     titleOrClaim.length > 100
       ? `${titleOrClaim.slice(0, 100)}...`

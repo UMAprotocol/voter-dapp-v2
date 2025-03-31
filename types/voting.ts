@@ -301,5 +301,6 @@ export type VoteDiscussionT = ss.Infer<typeof VoteDiscussionT>;
 export const L1Request = ss.object({
   time: ss.number(),
   identifier: ss.string(),
+  title: ss.string(),
 });
 export type L1Request = ss.Infer<typeof L1Request>;

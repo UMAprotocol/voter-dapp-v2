@@ -8,10 +8,12 @@ import {
   checkIfIsPolymarket,
   decodeHexString,
   formatNumberForDisplay,
+  getQuestionId,
   makeBlockExplorerLink,
   makeTransactionHashLink,
   parseEtherSafe,
   truncateEthAddress,
+  getClaimDescription,
 } from "helpers";
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
@@ -34,7 +36,7 @@ import { OracleTypeT, SupportedChainIds, VoteT } from "types";
 import { PanelSectionSubTitle, PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
-import { usePolymarketData } from "hooks/queries/votes";
+import { usePolymarketLink } from "hooks/queries/votes";
 
 export function Details({
   decodedIdentifier,
@@ -50,7 +52,6 @@ export function Details({
   assertionChildChainId,
   assertionAsserter,
   assertionId,
-  title,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -61,6 +62,10 @@ export function Details({
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
+
+  const claimDescription = claim
+    ? getClaimDescription(decodeHexString(claim))
+    : "";
 
   function toggleShowDecodedAdminTransactions() {
     setShowDecodedAdminTransactions(!showDecodedAdminTransactions);
@@ -132,11 +137,19 @@ export function Details({
     makeOoRequestLink(),
   ].filter(Boolean);
 
-  const { data: polymarketData } = usePolymarketData(
-    title,
-    checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) ? true : false
-  );
+  const hash = augmentedData?.originatingChainTxHash ?? "";
 
+  const shouldFetch =
+    checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) &&
+    Boolean(hash) &&
+    Boolean(config.chainId === 1); // skip testnet
+
+  const { data: polymarketLink } = usePolymarketLink(
+    getQuestionId({
+      decodedAncillaryData,
+    }),
+    shouldFetch
+  );
   return (
     <Wrapper>
       <SectionWrapper>
@@ -158,12 +171,12 @@ export function Details({
             <DescriptionIcon />
           </IconWrapper>{" "}
           Description{" "}
-          {polymarketData && (
+          {polymarketLink && (
             <a
               className="ml-auto inline-flex h-[35px] place-items-center gap-2 rounded-md border border-transparent px-2 py-1 text-sm font-normal transition-colors hover:border-grey-500 hover:underline"
               rel="noreferrer"
               target="_blank"
-              href={polymarketData.link}
+              href={polymarketLink}
             >
               <PolymarketIcon className="h-4 w-4" />
               See on Polymarket
@@ -189,7 +202,7 @@ export function Details({
             </ToggleText>
           </PanelSectionTitle>
           <DecodedTextAsMarkdown>
-            {showRawClaimData ? claim : decodeHexString(claim)}
+            {showRawClaimData ? claim : claimDescription}
           </DecodedTextAsMarkdown>
         </SectionWrapper>
       )}

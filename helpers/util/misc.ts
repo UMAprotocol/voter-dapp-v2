@@ -30,8 +30,6 @@ function getBlockExplorerUrlForChain(chainId: number) {
       return;
     case 1:
       return "https://etherscan.io";
-    case 5:
-      return "https://goerli.etherscan.io";
     case 10:
       return "https://optimistic.etherscan.io";
     case 100:
@@ -42,6 +40,8 @@ function getBlockExplorerUrlForChain(chainId: number) {
       return "https://bobascan.com";
     case 416:
       return "https://explorer.sx.technology";
+    case 1514:
+      return "https://storyscan.xyz";
     case 8453:
       return `https://basescan.org`;
     case 43114:

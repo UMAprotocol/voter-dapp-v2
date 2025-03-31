@@ -55,6 +55,7 @@ export async function discordRequest(endpoint: string) {
 export async function getDiscordMessages(threadId: string, limit = 100) {
   return discordRequest(`channels/${threadId}/messages?limit=${limit}`);
 }
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -133,14 +134,28 @@ function concatenateAttachments(
   return [message, concat.join(",  ")].join("\n");
 }
 
-function extractValidateTimestamp(msg?: string) {
+function truncateTitle(title: string) {
+  return title.substring(0, 60);
+}
+
+function makeKey(title: string, timestamp: string | number) {
+  return `${truncateTitle(title)}-${String(timestamp)}`.replaceAll(" ", "");
+}
+// discord truncates the title length after 72 characters
+
+function extractValidateTitleAndTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
   if (msg === undefined || msg === null) return null;
   const time = parseInt(msg.substring(msg.length - 10, msg.length));
+  const title = msg.slice(0, -13);
+
   // All times must be newer than 2021-01-01 and older than the current time.
-  const isValid = new Date(time).getTime() > 1577858461 && time < Date.now();
-  return isValid ? time : null;
+  const isTimeValid =
+    new Date(time).getTime() > 1577858461 && time < Date.now();
+
+  // use "title-timstamp" to find thread
+  return isTimeValid ? makeKey(title, time) : null;
 }
 
 async function fetchDiscordThread(
@@ -150,7 +165,7 @@ async function fetchDiscordThread(
   // we dont really need to go back far in history
   const threadMsg = await getDiscordMessages(
     evidenceRationalDiscordChannelId,
-    50
+    100
   );
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
@@ -159,21 +174,21 @@ async function fetchDiscordThread(
     // if for some reason the thread was changed, it will only reflect in thread.name.
     // message.content only reflects the original message, not edits ( or edits by another admin)
     // so first check for message.thread.name and fallback to message.content
-    const time = extractValidateTimestamp(
+    const titleAndTimstamp = extractValidateTitleAndTimestamp(
       message?.thread?.name ?? message.content
     );
-    if (time) timeToThread[time.toString()] = message.thread?.id;
+
+    if (titleAndTimstamp) timeToThread[titleAndTimstamp] = message.thread?.id;
   });
-  // Associate the threadId with each timestamp provided in the payload.
-  const requestsToThread: { [key: string]: string | undefined } = {};
-  const time = l1Request.time.toString();
-  if (timeToThread[time]) requestsToThread[time] = timeToThread[time];
-  else requestsToThread[time] = "";
+
+  // Associate the threadId with each title-timestamp provided in the payload.
+  const requestedId = makeKey(l1Request.title, l1Request.time);
+
+  const threadId = timeToThread?.[requestedId];
 
   let messages: RawDiscordThreadT = [];
-  const thread = requestsToThread[time];
-  if (thread) {
-    messages = await getDiscordMessagesPaginated(thread);
+  if (threadId) {
+    messages = await getDiscordMessagesPaginated(threadId);
   }
 
   const processedMessages: DiscordMessageT[] = messages
@@ -210,6 +225,7 @@ export default async function handler(
         l1Request: {
           time: Number(request.query.time),
           identifier: request.query.identifier,
+          title: request.query.title,
         },
       },
       DiscordThreadRequestBody
