@@ -3,7 +3,6 @@ import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import { addOpacityToHsl } from "helpers";
-import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
@@ -60,51 +59,32 @@ export function Discussion({ discussion, loading, error }: Props) {
         <>
           {hasThread ? (
             <>
-              {discussion?.thread.map(
-                ({ message, sender, senderPicture, time }) => (
-                  <SectionWrapper key={time}>
-                    <MessageWrapper>
-                      <ImageWrapper>
-                        {senderPicture ? (
-                          <Image
-                            src={senderPicture}
-                            alt="Discord user avatar"
-                            width={20}
-                            height={20}
-                          />
-                        ) : null}
-                      </ImageWrapper>
-                      <MessageContentWrapper>
-                        <SenderWrapper>
-                          <Sender>
-                            <Strong>{sender}</Strong>
-                          </Sender>{" "}
-                          <Time>
-                            {format(new Date(Number(time) * 1000), "Pp", {
-                              // en-CA is the only locale that uses the correct
-                              // format for the date
-                              // yyyy-mm-dd
-                              locale: enCA,
-                            })}
-                          </Time>
-                        </SenderWrapper>
-                        <MessageTextWrapper>
-                          <ReactMarkdown
-                            components={{
-                              a: (props) => <A {...props} target="_blank" />,
-                              p: (props) => <MessageText {...props} />,
-                              pre: (props) => <Pre {...props} />,
-                              code: (props) => <Code {...props} />,
-                            }}
-                          >
-                            {message}
-                          </ReactMarkdown>
-                        </MessageTextWrapper>
-                      </MessageContentWrapper>
-                    </MessageWrapper>
-                  </SectionWrapper>
-                )
-              )}
+              {discussion?.thread.map(({ message, time }) => (
+                <SectionWrapper key={time}>
+                  <MessageContentWrapper>
+                    <Time>
+                      {format(new Date(Number(time) * 1000), "Pp", {
+                        // en-CA is the only locale that uses the correct
+                        // format for the date
+                        // yyyy-mm-dd
+                        locale: enCA,
+                      })}
+                    </Time>
+                    <MessageTextWrapper>
+                      <ReactMarkdown
+                        components={{
+                          a: (props) => <A {...props} target="_blank" />,
+                          p: (props) => <MessageText {...props} />,
+                          pre: (props) => <Pre {...props} />,
+                          code: (props) => <Code {...props} />,
+                        }}
+                      >
+                        {message}
+                      </ReactMarkdown>
+                    </MessageTextWrapper>
+                  </MessageContentWrapper>
+                </SectionWrapper>
+              ))}
             </>
           ) : (
             <Text>No discussion found for this vote.</Text>
@@ -143,30 +123,11 @@ const TitleSectionWrapper = styled(SectionWrapper)`
   padding-bottom: 5px;
 `;
 
-const MessageWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 10px;
+const MessageContentWrapper = styled.div`
   padding-left: 10px;
 `;
 
-const MessageContentWrapper = styled.div``;
-
 const MessageTextWrapper = styled.div``;
-
-const ImageWrapper = styled.div`
-  width: 20px;
-  height: 20px;
-  margin-top: 5px;
-  border-radius: 50%;
-  background: var(--grey-100);
-`;
-
-const Image = styled(NextImage)`
-  border-radius: 50%;
-`;
-
-const SenderWrapper = styled.div``;
 
 const handleWordBreak = css`
   overflow-x: auto;
@@ -214,10 +175,6 @@ const A = styled.a`
   &:hover {
     text-decoration: underline;
   }
-`;
-
-const Sender = styled(Text)`
-  display: inline;
 `;
 
 const Strong = styled.strong`
