@@ -1,1 +1,1 @@
-export { ErrorBanner } from "./ErrorBanner";
+export * from "./ErrorBanner";
