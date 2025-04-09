@@ -72,3 +72,4 @@ export { UpcomingVotes } from "./pages/UpcomingVotes";
 export { WalletSettings } from "./pages/WalletSettings/WalletSettings";
 export { Wallets } from "./pages/WalletSettings/Wallets";
 export { PageInnerWrapper, PageOuterWrapper } from "./pages/styles";
+export * from "./PolymarketBulletin";
