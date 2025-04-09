@@ -38,9 +38,20 @@ export function Discussion({ discussion, loading, error }: Props) {
           </Text>
         ) : (
           <Text>
-            <Strong>Note:</Strong> These discussions are from the UMA Protocol
-            Discord. They do not reflect the opinion of Risk Labs or any other
-            entity.
+            <Strong>Warning:</Strong> These discussions are from the UMA
+            Protocol Discord. They do not reflect the opinion of Risk Labs or
+            any other entity. Be aware that some commenters attempt to influence
+            vote outcomes for their own profit. Always independently verify any
+            claims before relying on them. View our{" "}
+            <a
+              href="https://docs.uma.xyz/using-uma/voting-walkthrough"
+              className="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voter&apos;s Guide
+            </a>{" "}
+            for best practices.
           </Text>
         )}
       </Disclaimer>
