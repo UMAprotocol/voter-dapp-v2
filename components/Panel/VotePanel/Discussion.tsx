@@ -44,7 +44,7 @@ export function Discussion({ discussion, loading, error }: Props) {
             vote outcomes for their own profit. Always independently verify any
             claims before relying on them. View our{" "}
             <a
-              href="https://docs.uma.xyz/using-uma/voting-walkthrough"
+              href="https://docs.uma.xyz/using-uma/voting-walkthrough/voter-guide"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
