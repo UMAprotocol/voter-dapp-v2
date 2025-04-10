@@ -1,16 +1,19 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
 import { OracleRootTunnel, OracleHub } from "constant/web3/contracts";
-import { solidityKeccak256 } from "ethers/lib/utils";
+import { BytesLike, defaultAbiCoder, keccak256 } from "ethers/lib/utils";
+import { getProvider } from "helpers/config";
 import { addressEqualSafe } from "helpers/util/misc";
 import { decodeHexString } from "helpers/web3/decodeHexString";
+import { OracleSpoke__factory } from "types/contracts/OracleSpoke__factory";
 
 // bytes, bytes32, address do NOT have "0x" prefix
 // uint are represented as decimal string
+
 export async function resolveAncillaryData({
   requestAddedEvent,
 }: {
   requestAddedEvent: RequestAddedEvent;
-}) {
+}): Promise<string> {
   const { requester, ancillaryData, identifier, time } = requestAddedEvent.args;
   const decodedAncillaryData = decodeHexString(ancillaryData);
 
@@ -28,9 +31,11 @@ export async function resolveAncillaryData({
         const _childChainId = Number(childChainId);
         const _childBlockNumber = Number(childBlockNumber);
 
-        const parentRequestId = solidityKeccak256(
-          ["bytes32", "uint256", "bytes"],
-          [identifier, time, ancillaryData]
+        const parentRequestId = keccak256(
+          defaultAbiCoder.encode(
+            ["bytes32", "uint256", "bytes"],
+            [identifier, time, ancillaryData]
+          )
         );
 
         return fetchAncillaryDataFromSpoke({
@@ -40,6 +45,7 @@ export async function resolveAncillaryData({
           childBlockNumber: _childBlockNumber,
         });
       }
+      return ancillaryData;
     } catch (error) {
       console.error(
         `Unable to resolve original ancillary data for tx ${requestAddedEvent.transactionHash}`,
@@ -103,10 +109,36 @@ function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
 }
 
 async function fetchAncillaryDataFromSpoke(args: {
-  parentRequestId: string;
+  parentRequestId: BytesLike;
   childOracle: string;
   childChainId: number;
   childBlockNumber: number;
-}) {
-  // TODO: implemment
+}): Promise<string> {
+  const provider = getProvider(args.childChainId);
+  // TODO: install from upgraded @uma/contracts-frontend pkg
+  const OracleSpoke = OracleSpoke__factory.connect(args.childOracle, provider);
+  const filter = OracleSpoke.filters.PriceRequestBridged(
+    null,
+    null,
+    null,
+    null,
+    null,
+    args.parentRequestId
+  );
+
+  const events = await OracleSpoke.queryFilter(
+    filter,
+    args.childBlockNumber - 1,
+    args.childBlockNumber + 1
+  );
+
+  if (!events.length) {
+    throw new Error(
+      `Unable to find event with request Id: ${String(
+        args.parentRequestId
+      )} on chain ${args.childChainId}`
+    );
+  }
+
+  return events[0].args.ancillaryData;
 }
