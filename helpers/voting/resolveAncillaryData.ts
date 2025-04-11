@@ -1,11 +1,62 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
-import { BytesLike, defaultAbiCoder, keccak256 } from "ethers/lib/utils";
+import { Contract } from "ethers";
+import {
+  BytesLike,
+  defaultAbiCoder,
+  Interface,
+  keccak256,
+} from "ethers/lib/utils";
 import { getProvider } from "helpers/config";
 import { decodeHexString } from "helpers/web3/decodeHexString";
-import { OracleSpoke__factory } from "types/contracts/OracleSpoke__factory";
 
 // bytes, bytes32, address do NOT have "0x" prefix
 // uint are represented as decimal string
+
+const abi = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "identifier",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "time",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "ancillaryData",
+        type: "bytes",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "requester",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "bridgeAdminIdentifier",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "parentRequestId",
+        type: "bytes32",
+      },
+    ],
+    name: "PriceRequestBridged",
+    type: "event",
+  },
+];
 
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
@@ -100,7 +151,11 @@ async function fetchAncillaryDataFromSpoke(args: {
 }): Promise<string> {
   const provider = getProvider(args.childChainId);
   // TODO: install from upgraded @uma/contracts-frontend pkg
-  const OracleSpoke = OracleSpoke__factory.connect(args.childOracle, provider);
+  const OracleSpoke = new Contract(
+    args.childOracle,
+    new Interface(abi),
+    provider
+  );
   const filter = OracleSpoke.filters.PriceRequestBridged(
     null,
     null,
@@ -124,5 +179,5 @@ async function fetchAncillaryDataFromSpoke(args: {
     );
   }
 
-  return events[0].args.ancillaryData;
+  return events[0]?.args?.ancillaryData as string;
 }
