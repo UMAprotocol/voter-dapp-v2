@@ -135,12 +135,26 @@ export function getAncillaryDataField(
 }
 
 function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
-  return Object.fromEntries(
-    Object.keys(AncillaryDataFieldsTypes).map((key) => [
-      key as AncillaryDataField,
-      getAncillaryDataField(decodedAncillaryData, key as AncillaryDataField),
-    ])
+  const pattern = new RegExp(
+    "^" +
+      "ancillaryDataHash:(\\w+),\\s*" +
+      "childBlockNumber:(\\d+),\\s*" +
+      "childOracle:(\\w+),\\s*" +
+      "childRequester:(\\w+),\\s*" +
+      "childChainId:(\\d+)" +
+      "$"
   );
+
+  const match = decodedAncillaryData.match(pattern);
+  if (!match) return {};
+
+  return {
+    ancillaryDataHash: match[1],
+    childBlockNumber: match[2],
+    childOracle: match[3],
+    childRequester: match[4],
+    childChainId: match[5],
+  };
 }
 
 async function fetchAncillaryDataFromSpoke(args: {
