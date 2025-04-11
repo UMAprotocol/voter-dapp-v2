@@ -1,5 +1,6 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { makePriceRequestsByKey } from "helpers";
+import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 
 export async function getUpcomingVotes(
   voting: VotingV2Ethers,
@@ -11,7 +12,10 @@ export async function getUpcomingVotes(
   const result = await voting.queryFilter(filter, currentBlock - 30000);
   const eventData = result?.map(({ args }) => args);
   const onlyUpcoming = eventData?.filter((event) => event.roundId > roundId);
-  const upcomingVotes = makePriceRequestsByKey(onlyUpcoming);
+  const requestsWithResolvedData = await resolveAncillaryDataForRequests(
+    onlyUpcoming
+  );
+  const upcomingVotes = makePriceRequestsByKey(requestsWithResolvedData);
 
   return upcomingVotes;
 }

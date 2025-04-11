@@ -72,3 +72,7 @@ export function makeBlockExplorerLink(
 export function isAnyUndefined<Item>(...items: (Item | undefined)[]) {
   return items.some(isUndefined);
 }
+
+export function addressEqualSafe(address1: string, address2: string): boolean {
+  return address1.toLowerCase() === address2.toLowerCase();
+}
