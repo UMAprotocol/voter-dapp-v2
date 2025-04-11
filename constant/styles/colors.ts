@@ -16,3 +16,4 @@ export const grey500 = "hsla(0, 0%, 84%, 1)";
 export const grey800 = "hsla(0, 0%, 34%, 1)";
 export const loadingSkeletonOpacity100 = "hsl(270, 1%, 47%, 1)";
 export const loadingSkeletonOpacity10 = "hsl(270, 1%, 47%, 0.1)";
+export const yellow500 = "hsla(45, 100%, 51%, 1)";
