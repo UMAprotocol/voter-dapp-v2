@@ -1,66 +1,63 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
-import { OracleRootTunnel, OracleHub } from "constant/web3/contracts";
 import { BytesLike, defaultAbiCoder, keccak256 } from "ethers/lib/utils";
 import { getProvider } from "helpers/config";
-import { addressEqualSafe } from "helpers/util/misc";
 import { decodeHexString } from "helpers/web3/decodeHexString";
 import { OracleSpoke__factory } from "types/contracts/OracleSpoke__factory";
 
 // bytes, bytes32, address do NOT have "0x" prefix
 // uint are represented as decimal string
 
-export async function resolveAncillaryData({
-  requestAddedEvent,
-}: {
-  requestAddedEvent: RequestAddedEvent;
-}): Promise<string> {
-  const { requester, ancillaryData, identifier, time } = requestAddedEvent.args;
-  const decodedAncillaryData = decodeHexString(ancillaryData);
+export async function resolveAncillaryDataForRequests<
+  T extends Parameters<typeof resolveAncillaryData>[0]
+>(requests: T[]): Promise<T[]> {
+  const resolvedAncillaryData = await Promise.all(
+    requests.map((request) => resolveAncillaryData(request))
+  );
+  return requests.map((request, i) => ({
+    ...request,
+    ancillaryData: resolvedAncillaryData[i],
+  }));
+}
 
-  if (
-    addressEqualSafe(requester, OracleRootTunnel) ||
-    addressEqualSafe(requester, OracleHub)
-  ) {
+export async function resolveAncillaryData(
+  args: Pick<RequestAddedEvent["args"], "ancillaryData" | "time" | "identifier">
+): Promise<string> {
+  const decodedAncillaryData = decodeHexString(args.ancillaryData);
+  const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
+    extractMaybeAncillaryDataFields(decodedAncillaryData);
+
+  if (ancillaryDataHash && childOracle && childChainId && childBlockNumber) {
     try {
-      const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
-        extractMaybeAncillaryDataFields(decodedAncillaryData);
-
       // if decoded ancillary data contains these fields, then we must extract from spoke
-      if (ancillaryDataHash && childBlockNumber && childOracle) {
-        const _childOracle = `0x${childOracle}`;
-        const _childChainId = Number(childChainId);
-        const _childBlockNumber = Number(childBlockNumber);
+      const _childOracle = `0x${childOracle}`;
+      const _childChainId = Number(childChainId);
+      const _childBlockNumber = Number(childBlockNumber);
 
-        const parentRequestId = keccak256(
-          defaultAbiCoder.encode(
-            ["bytes32", "uint256", "bytes"],
-            [identifier, time, ancillaryData]
-          )
-        );
-
-        return fetchAncillaryDataFromSpoke({
-          parentRequestId,
-          childOracle: _childOracle,
-          childChainId: _childChainId,
-          childBlockNumber: _childBlockNumber,
-        });
-      }
-      return ancillaryData;
-    } catch (error) {
-      console.error(
-        `Unable to resolve original ancillary data for tx ${requestAddedEvent.transactionHash}`,
-        {
-          at: "resolveAncillaryData()",
-          data: requestAddedEvent.args,
-          cause: error,
-        }
+      const parentRequestId = keccak256(
+        defaultAbiCoder.encode(
+          ["bytes32", "uint256", "bytes"],
+          [args.identifier, args.time, args.ancillaryData]
+        )
       );
 
-      return ancillaryData;
+      return fetchAncillaryDataFromSpoke({
+        parentRequestId,
+        childOracle: _childOracle,
+        childChainId: _childChainId,
+        childBlockNumber: _childBlockNumber,
+      });
+    } catch (error) {
+      console.error("Unable to resolve original ancillary data", {
+        at: "resolveAncillaryData()",
+        data: args,
+        cause: error,
+      });
+
+      return args.ancillaryData;
     }
   }
 
-  return ancillaryData;
+  return args.ancillaryData;
 }
 
 const AncillaryDataFieldsTypes = {
@@ -82,30 +79,17 @@ export function getAncillaryDataField(
   const pattern = new RegExp(
     `${field}:(\\${AncillaryDataFieldsTypes[field]}+)`
   );
-
   const match = decodedAncillaryData.match(pattern) ?? [];
-
   return match?.[1];
 }
 
 function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
-  return {
-    ancillaryDataHash: getAncillaryDataField(
-      decodedAncillaryData,
-      "ancillaryDataHash"
-    ),
-    childBlockNumber: getAncillaryDataField(
-      decodedAncillaryData,
-      "childBlockNumber"
-    ),
-    childOracle: getAncillaryDataField(decodedAncillaryData, "childOracle"),
-
-    childRequester: getAncillaryDataField(
-      decodedAncillaryData,
-      "childRequester"
-    ),
-    childChainId: getAncillaryDataField(decodedAncillaryData, "childChainId"),
-  };
+  return Object.fromEntries(
+    Object.keys(AncillaryDataFieldsTypes).map((key) => [
+      key as AncillaryDataField,
+      getAncillaryDataField(decodedAncillaryData, key as AncillaryDataField),
+    ])
+  );
 }
 
 async function fetchAncillaryDataFromSpoke(args: {
@@ -129,7 +113,7 @@ async function fetchAncillaryDataFromSpoke(args: {
   const events = await OracleSpoke.queryFilter(
     filter,
     args.childBlockNumber - 1,
-    args.childBlockNumber + 1
+    args.childBlockNumber
   );
 
   if (!events.length) {
