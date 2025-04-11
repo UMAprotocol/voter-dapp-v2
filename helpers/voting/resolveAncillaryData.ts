@@ -91,7 +91,7 @@ export async function resolveAncillaryData(
         )
       );
 
-      return fetchAncillaryDataFromSpoke({
+      return await fetchAncillaryDataFromSpoke({
         parentRequestId,
         childOracle: _childOracle,
         childChainId: _childChainId,
