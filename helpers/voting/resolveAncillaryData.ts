@@ -18,6 +18,12 @@ const abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "address",
+        name: "requester",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "bytes32",
         name: "identifier",
         type: "bytes32",
@@ -36,18 +42,12 @@ const abi = [
       },
       {
         indexed: true,
-        internalType: "address",
-        name: "requester",
-        type: "address",
-      },
-      {
-        indexed: false,
         internalType: "bytes32",
-        name: "bridgeAdminIdentifier",
+        name: "childRequestId",
         type: "bytes32",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "bytes32",
         name: "parentRequestId",
         type: "bytes32",
