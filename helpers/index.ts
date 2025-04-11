@@ -10,7 +10,11 @@ export { logTruthy } from "./util/logTruthy";
 export * from "./util/misc";
 export { unixTimestampToDate } from "./util/unixTimestampToDate";
 export * from "./voting/formatVotes";
-export { getVoteMetaData } from "./voting/getVoteMetaData";
+export {
+  getVoteMetaData,
+  getDescriptionFromAncillaryData,
+  getTitleFromAncillaryData,
+} from "./voting/getVoteMetaData";
 export { makePriceRequestsByKey } from "./voting/makePriceRequestsByKey";
 export { makeUniqueKeyForVote } from "./voting/makeUniqueKeyForVote";
 export { onlyOneRequestPerAddress } from "./voting/onlyOneRequestPerAddress";

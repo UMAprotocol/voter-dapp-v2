@@ -224,7 +224,7 @@ function tryParseMultipleChoiceQuery(
   }
 }
 
-function getTitleFromAncillaryData(
+export function getTitleFromAncillaryData(
   decodedAncillaryData: string,
   titleIdentifier = "title:",
   descriptionIdentifier = "description:"
@@ -245,7 +245,7 @@ function getTitleFromAncillaryData(
   return title.endsWith(",") ? title.slice(0, -1) : title;
 }
 
-function getDescriptionFromAncillaryData(
+export function getDescriptionFromAncillaryData(
   decodedAncillaryData: string,
   descriptionIdentifier = "description:"
 ) {

@@ -1,40 +1,12 @@
 import { createPolymarketBulletinContract } from "../contracts/createPolymarketBulletin";
 import { ethers, utils } from "ethers";
 import assert from "assert";
+import {
+  decodeHexString,
+  getDescriptionFromAncillaryData,
+  sanitizeAncillaryData,
+} from "helpers";
 
-export function decodeHexString(hexString: string) {
-  try {
-    const utf8String = ethers.utils.toUtf8String(hexString);
-    // eslint-disable-next-line no-control-regex
-    return utf8String.replace(/\u0000/g, "");
-  } catch (e) {
-    if (e instanceof Error) {
-      throw new Error(`Invalid hex string: ${e.message}`);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      throw new Error(`Invalid hex string: ${e}`);
-    }
-  }
-}
-function getDescriptionFromAncillaryData(
-  decodedAncillaryData: string,
-  descriptionIdentifier = "description:"
-): string | undefined {
-  if (!decodedAncillaryData) {
-    return undefined;
-  }
-  const start = decodedAncillaryData.indexOf(descriptionIdentifier);
-  const end = decodedAncillaryData.length;
-
-  if (start === -1) {
-    return undefined;
-  }
-
-  return decodedAncillaryData.substring(
-    start + descriptionIdentifier.length,
-    end
-  );
-}
 export function getPolymarketBulletinContractFromAncillaryData(
   queryText: string
 ): string | undefined {
@@ -46,17 +18,9 @@ export function getPolymarketBulletinContractFromAncillaryData(
 
 function cleanAncillaryData(ancillaryHex: string): string {
   const decodedString = decodeHexString(ancillaryHex);
-  const initializerIndex = decodedString.indexOf("initializer:");
-
-  if (initializerIndex === -1) return ancillaryHex;
-
-  const endIndex =
-    decodedString.indexOf(",", initializerIndex) !== -1
-      ? decodedString.indexOf(",", initializerIndex)
-      : decodedString.length;
 
   return ethers.utils.hexlify(
-    ethers.utils.toUtf8Bytes(decodedString.substring(0, endIndex))
+    ethers.utils.toUtf8Bytes(sanitizeAncillaryData(decodedString))
   );
 }
 

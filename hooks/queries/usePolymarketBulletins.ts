@@ -7,6 +7,7 @@ export function usePolymarketBulletins(ancillaryData?: string) {
       queryKey: ["polymarketBulletins", ancillaryData],
       queryFn: () => getPolymarketBulletins(ancillaryData!),
       enabled: !!ancillaryData,
+      refetchInterval: 30_000,
     });
   } catch (e) {
     if (e instanceof Error) {

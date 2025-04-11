@@ -39,7 +39,6 @@ const ImageWrapper = styled.div`
 
 const BulletinWrapper = styled.div`
   background-color: ${addOpacityToHsl(yellow500, 0.15)};
-  border: 1px solid #e9ecef;
   border-radius: 5px;
   padding: 15px;
   margin-bottom: 20px;
