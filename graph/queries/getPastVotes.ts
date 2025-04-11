@@ -1,8 +1,9 @@
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
+import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
 const { chainId, graphEndpoint } = config;
@@ -107,7 +108,7 @@ export async function getPastVotesV2() {
     "priceRequests"
   );
 
-  return result?.map(
+  const results = result?.map(
     ({
       identifier: { id },
       time,
@@ -160,6 +161,15 @@ export async function getPastVotesV2() {
         revealedVoteByAddress,
       };
     }
+  );
+
+  return resolveAncillaryDataForRequests(
+    results.map((request) => {
+      return {
+        ...request,
+        time: BigNumber.from(request.time),
+      };
+    })
   );
 }
 
