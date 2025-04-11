@@ -111,29 +111,6 @@ export async function resolveAncillaryData(
   return args.ancillaryData;
 }
 
-const AncillaryDataFieldsTypes = {
-  // strings
-  ancillaryDataHash: "w",
-  childOracle: "w",
-  childRequester: "w",
-  // numbers
-  childBlockNumber: "d",
-  childChainId: "d",
-} as const;
-
-type AncillaryDataField = keyof typeof AncillaryDataFieldsTypes;
-
-export function getAncillaryDataField(
-  decodedAncillaryData: string,
-  field: AncillaryDataField
-): string | undefined {
-  const pattern = new RegExp(
-    `${field}:(\\${AncillaryDataFieldsTypes[field]}+)`
-  );
-  const match = decodedAncillaryData.match(pattern) ?? [];
-  return match?.[1];
-}
-
 function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
   const pattern = new RegExp(
     "^" +
