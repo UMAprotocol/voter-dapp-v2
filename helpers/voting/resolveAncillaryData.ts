@@ -7,7 +7,7 @@ import {
   keccak256,
 } from "ethers/lib/utils";
 import { getProvider } from "helpers/config";
-import { decodeHexString } from "helpers/web3/decodeHexString";
+import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 
 // bytes, bytes32, address do NOT have "0x" prefix
 // uint are represented as decimal string
@@ -91,12 +91,17 @@ export async function resolveAncillaryData(
         )
       );
 
-      return await fetchAncillaryDataFromSpoke({
+      const resolved = await fetchAncillaryDataFromSpoke({
         parentRequestId,
         childOracle: _childOracle,
         childChainId: _childChainId,
         childBlockNumber: _childBlockNumber,
       });
+
+      return mergeAncillaryData(
+        decodedAncillaryData,
+        decodeHexString(resolved)
+      );
     } catch (error) {
       console.error("Unable to resolve original ancillary data", {
         at: "resolveAncillaryData()",
@@ -109,6 +114,16 @@ export async function resolveAncillaryData(
   }
 
   return args.ancillaryData;
+}
+
+function mergeAncillaryData(
+  decodedL1Data: string,
+  decodedL2Data: string
+): string {
+  const pattern =
+    /^ancillaryDataHash:\w+,childBlockNumber:\d+,childOracle:\w+,/;
+  const merged = decodedL1Data.replace(pattern, `${decodedL2Data},`);
+  return encodeHexString(merged);
 }
 
 function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
