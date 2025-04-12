@@ -306,16 +306,6 @@ export const config: AppConfig & ChainConstants = {
 
 // primary provider looks at what chainId we have specified as our primary chain,
 // this is typically 1, but for testnetswe would use the testnet id
-const providerUrlKey =
-  `oov3ProviderUrl${config.chainId}` as keyof typeof config;
-const providerUrl = config[providerUrlKey] as string | undefined;
-if (!providerUrl) {
-  throw new Error(`Provider URL not found for chain Id ${config.chainId}`);
-}
-
-// TODO: cherry pick from @daywiss's PR
-// primary provider looks at what chainId we have specified as our primary chain,
-// this is typically 1, but for testnetswe would use the testnet id
 export const primaryProvider = getProvider(config.chainId);
 
 // get provider for other chains

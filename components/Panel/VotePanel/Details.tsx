@@ -1,4 +1,4 @@
-import { Button, PanelErrorBanner } from "components";
+import { Button, PanelErrorBanner, BulletinList } from "components";
 import {
   getOracleTypeDisplayName,
   mobileAndUnder,
@@ -17,7 +17,11 @@ import {
 } from "helpers";
 import { config } from "helpers/config";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
-import { useAssertionClaim, useAugmentedVoteData } from "hooks";
+import {
+  useAssertionClaim,
+  useAugmentedVoteData,
+  usePolymarketBulletins,
+} from "hooks";
 import PolymarketIcon from "public/assets/icons/polymarket.svg";
 
 import ExternalLinkIcon from "public/assets/icons/external-link.svg";
@@ -62,6 +66,7 @@ export function Details({
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
+  const { data: bulletins } = usePolymarketBulletins(ancillaryData);
 
   const claimDescription = claim
     ? getClaimDescription(decodeHexString(claim))
@@ -189,6 +194,9 @@ export function Details({
           {decodedIdentifier}
         </Text>
         <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
+        {bulletins && bulletins.length > 0 && (
+          <BulletinList bulletins={bulletins} />
+        )}
       </SectionWrapper>
       {isClaim && (
         <SectionWrapper>
