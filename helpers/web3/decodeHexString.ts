@@ -1,5 +1,10 @@
+import { ethers } from "ethers";
 import { toUtf8String } from "helpers";
 import { object, string, optional } from "superstruct";
+
+export function encodeHexString(str: string): string {
+  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(str));
+}
 
 export function decodeHexString(hexString: string) {
   try {
