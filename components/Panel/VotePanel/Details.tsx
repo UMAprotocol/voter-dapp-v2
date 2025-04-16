@@ -56,7 +56,7 @@ export function Details({
   assertionChildChainId,
   assertionAsserter,
   assertionId,
-  displayAncillaryData
+  displayAncillaryData,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
