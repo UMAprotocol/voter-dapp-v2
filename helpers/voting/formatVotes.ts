@@ -58,6 +58,7 @@ export async function formatVotesToCommit({
         decodedIdentifier
       );
 
+      // the hash must be created with exactly these values in exactly this order
       const hash = makeVoteHash(
         price,
         salt,
@@ -85,7 +86,6 @@ export async function formatVotesToCommit({
     Boolean(vote)
   );
 }
-
 export function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   return decryptedVotesForUser.flatMap((vote) => {
     if (vote.isRevealed || !vote.isCommitted || !vote.decryptedVote) return [];
