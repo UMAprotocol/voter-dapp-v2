@@ -56,6 +56,7 @@ export function Details({
   assertionChildChainId,
   assertionAsserter,
   assertionId,
+  displayAncillaryData,
 }: VoteT) {
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
@@ -86,7 +87,7 @@ export function Details({
   const augmentedDataResponse = useAugmentedVoteData({
     time,
     identifier: decodedIdentifier,
-    ancillaryData: ancillaryData,
+    ancillaryData: displayAncillaryData,
   });
   const augmentedData = augmentedDataResponse.data;
 
