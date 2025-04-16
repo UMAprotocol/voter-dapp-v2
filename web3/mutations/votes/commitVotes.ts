@@ -9,12 +9,19 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
 
     if (!vote) return;
 
-    const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
+    const {
+      identifier,
+      time,
+      ancillaryData,
+      ancillaryDataL1,
+      hash,
+      encryptedVote,
+    } = vote;
 
     const tx = await voting.functions.commitAndEmitEncryptedVote(
       identifier,
       time,
-      ancillaryData,
+      ancillaryDataL1 ?? ancillaryData,
       hash,
       encryptedVote
     );
@@ -32,12 +39,20 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   const calldata = formattedVotes.flatMap((vote) => {
     if (!vote) return [];
 
-    const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
+    const {
+      identifier,
+      time,
+      ancillaryData,
+      ancillaryDataL1,
+      hash,
+      encryptedVote,
+    } = vote;
+
     // @ts-expect-error todo figure out why it thinks this doesn't exist
     return voting.interface.encodeFunctionData(commitVoteFunctionFragment, [
       identifier,
       time,
-      ancillaryData,
+      ancillaryDataL1 ?? ancillaryData,
       hash,
       encryptedVote,
     ]);

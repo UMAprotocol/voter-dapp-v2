@@ -51,7 +51,13 @@ export async function formatVotesToCommit({
       // if not, exclude this vote from the final array
       if (!selectedVote) return null;
 
-      const { identifier, decodedIdentifier, ancillaryData, time } = vote;
+      const {
+        identifier,
+        decodedIdentifier,
+        ancillaryData,
+        time,
+        ancillaryDataL1,
+      } = vote;
       // the selected option for a vote is called `price` for legacy reasons
       const price = parseVoteStringWithPrecision(
         selectedVote,
@@ -64,7 +70,7 @@ export async function formatVotesToCommit({
         salt,
         account,
         time,
-        ancillaryData,
+        ancillaryDataL1 ?? ancillaryData,
         roundId,
         identifier
       );
@@ -90,14 +96,15 @@ export function formatVotesToReveal(decryptedVotesForUser: VoteT[]) {
   return decryptedVotesForUser.flatMap((vote) => {
     if (vote.isRevealed || !vote.isCommitted || !vote.decryptedVote) return [];
 
-    const { identifier, decryptedVote, ancillaryData, time } = vote;
+    const { identifier, decryptedVote, ancillaryData, ancillaryDataL1, time } =
+      vote;
     const { price, salt } = decryptedVote;
 
     return {
       identifier,
       time,
       price,
-      ancillaryData,
+      ancillaryData: ancillaryDataL1 ?? ancillaryData,
       salt,
     };
   });

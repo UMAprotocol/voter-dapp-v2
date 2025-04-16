@@ -66,6 +66,7 @@ export async function resolveAncillaryDataForRequests<
   );
   return requests.map((request, i) => ({
     ...request,
+    ancillaryDataL1: request.ancillaryData,
     ancillaryData: resolvedAncillaryData[i],
   }));
 }

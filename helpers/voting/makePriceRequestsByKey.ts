@@ -40,6 +40,7 @@ function formatPriceRequest(
   const timeAsDate = new Date(timeMilliseconds);
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
+  const ancillaryDataL1 = priceRequest.ancillaryDataL1;
   let decodedIdentifier = "";
   let decodedAncillaryData = "";
   const revealedVoteByAddress = priceRequest.revealedVoteByAddress || {};
@@ -85,6 +86,7 @@ function formatPriceRequest(
     time,
     identifier,
     ancillaryData,
+    ancillaryDataL1,
     timeMilliseconds,
     timeAsDate,
     decodedIdentifier,
