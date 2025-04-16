@@ -21,6 +21,7 @@ export type PriceRequestT = {
   time: number;
   identifier: string;
   ancillaryData: string;
+  displayAncillaryData: string;
   correctVote?: string;
   // computed values
   timeMilliseconds: number;
@@ -63,6 +64,7 @@ export type RawPriceRequestDataT = {
   time: BigNumber | number;
   identifier: string;
   ancillaryData: string;
+  displayAncillaryData: string;
   lastVotingRound?: number;
   correctVote?: string;
   participation?: ParticipationT;

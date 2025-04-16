@@ -60,13 +60,14 @@ const abi = [
 
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
->(requests: T[]): Promise<T[]> {
+>(requests: T[]): Promise<(T & { displayAncillaryData: string })[]> {
   const resolvedAncillaryData = await Promise.all(
     requests.map((request) => resolveAncillaryData(request))
   );
   return requests.map((request, i) => ({
     ...request,
-    ancillaryData: resolvedAncillaryData[i],
+    displayAncillaryData: resolvedAncillaryData[i],
+    ancillaryData: request.ancillaryData,
   }));
 }
 
