@@ -49,6 +49,7 @@ export async function getPastVotesV1() {
         time: Number(time),
         correctVote,
         ancillaryData,
+        displayAncillaryData: ancillaryData,
         priceRequestIndex: undefined,
         participation,
         results,
