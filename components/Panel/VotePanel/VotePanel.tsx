@@ -32,13 +32,13 @@ export function VotePanel({ content }: Props) {
     decodedAncillaryData,
     assertionId,
     assertionChildChainId,
-    ancillaryData,
+    displayAncillaryData,
   } = content;
 
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
 
-  const bulletins = usePolymarketBulletins(ancillaryData);
+  const bulletins = usePolymarketBulletins(displayAncillaryData);
 
   const optimisticGovernorTitle = isOptimisticGovernorVote
     ? getOptimisticGovernorTitle(explanationText)
