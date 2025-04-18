@@ -183,7 +183,6 @@ async function fetchDiscordThread(
 
   // Associate the threadId with each title-timestamp provided in the payload.
   const requestedId = makeKey(l1Request.title, l1Request.time);
-
   const threadId = timeToThread?.[requestedId];
 
   let messages: RawDiscordThreadT = [];
@@ -218,6 +217,10 @@ export default async function handler(
   response: NextApiResponse
 ) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=180");
+  // TODO: remove this temporary fix
+  const titleOverride = request.query.title?.includes("Across V2")
+    ? "Across V2 Request"
+    : request.query.title;
 
   try {
     const body = ss.create(
@@ -225,7 +228,7 @@ export default async function handler(
         l1Request: {
           time: Number(request.query.time),
           identifier: request.query.identifier,
-          title: request.query.title,
+          title: titleOverride,
         },
       },
       DiscordThreadRequestBody
