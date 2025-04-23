@@ -13,6 +13,7 @@ import {
   commify,
   addOpacityToHsl,
   formatToSignificantThousand,
+  isDefined,
 } from "helpers";
 import { NonNullablePick } from "helpers";
 import { usePanelWidth } from "hooks";
@@ -130,7 +131,7 @@ export function Result({
           <span>Unique reveal addresses</span>
           <Strong>{uniqueRevealAddresses}</Strong>
         </ParticipationItem>
-        {totalTokensCommitted && (
+        {isDefined(totalTokensCommitted) && totalTokensCommitted > 0 && (
           <ParticipationItem>
             <span>Total tokens that committed</span>
             <Strong>
