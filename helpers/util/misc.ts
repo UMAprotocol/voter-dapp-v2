@@ -76,3 +76,7 @@ export function isAnyUndefined<Item>(...items: (Item | undefined)[]) {
 export function addressEqualSafe(address1: string, address2: string): boolean {
   return address1.toLowerCase() === address2.toLowerCase();
 }
+
+export function isDefined<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined;
+}
