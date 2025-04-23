@@ -141,11 +141,10 @@ export function Result({
             </Strong>
           </ParticipationItem>
         )}
-
         <ParticipationItem>
           <span>Total tokens that revealed</span>
           <Strong>
-            {totalTokensCommitted && (
+            {isDefined(totalTokensCommitted) && totalTokensCommitted > 0 && (
               <Span>
                 {((totalTokensVotedWith / totalTokensCommitted) * 100).toFixed(
                   1
