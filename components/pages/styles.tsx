@@ -15,6 +15,7 @@ export const PageInnerWrapper = styled.div`
   @media ${tabletAndUnder} {
     padding-inline: 0;
     padding-block: 10px;
+    padding-bottom: 45px;
   }
 `;
 
