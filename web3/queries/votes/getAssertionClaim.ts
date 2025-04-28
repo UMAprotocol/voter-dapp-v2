@@ -1,5 +1,10 @@
 import { OptimisticOracleV3InterfaceEthers } from "@uma/contracts-frontend";
 import { getInstance } from "web3/contracts/createOOV3ContractInstances";
+import {
+  rangeStart,
+  rangeSuccessDescending,
+  rangeFailureDescending,
+} from "helpers";
 
 export async function getAssertionMadeEvents(
   instance: OptimisticOracleV3InterfaceEthers,
@@ -7,14 +12,40 @@ export async function getAssertionMadeEvents(
 ) {
   const currentBlock = await instance.provider.getBlockNumber();
   const filter = instance.filters.AssertionMade(assertionId);
-  return instance.queryFilter(filter, currentBlock - 1000000);
+
+  let state = rangeStart({
+    startBlock: currentBlock - 100000000,
+    endBlock: currentBlock,
+    multiplier: 2,
+  });
+
+  let allEvents;
+  while (!state.done) {
+    try {
+      const events = await instance.queryFilter(
+        filter,
+        state.currentStart,
+        state.currentEnd
+      );
+      if (!allEvents) {
+        allEvents = events;
+      } else {
+        allEvents = allEvents.concat(events);
+      }
+      state = rangeSuccessDescending(state);
+    } catch (error) {
+      state = rangeFailureDescending(state);
+    }
+  }
+  allEvents = allEvents || [];
+
+  return allEvents;
 }
 
 export async function getAssertionClaim(
   chainId: number | undefined,
   assertionId: string | undefined
 ) {
-  console.log("getclaim", { chainId, assertionId });
   if (!chainId || !assertionId) return undefined;
   const instance = getInstance(chainId);
   const events = await getAssertionMadeEvents(instance, assertionId);
