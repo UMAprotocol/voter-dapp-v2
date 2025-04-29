@@ -1,4 +1,4 @@
-import { Button, LoadingSpinner } from "components";
+import { Button, LoadingSpinner, BulletinList } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
@@ -9,14 +9,16 @@ import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
 import { VoteDiscussionT } from "types";
 import { PanelSectionTitle } from "../styles";
+import { Bulletin } from "web3/queries/getPolymarketBulletins";
 
 interface Props {
   discussion: VoteDiscussionT | undefined;
+  bulletins?: Bulletin[];
   loading: boolean;
   error?: boolean;
 }
 
-export function Discussion({ discussion, loading, error }: Props) {
+export function Discussion({ discussion, loading, error, bulletins }: Props) {
   const hasThread = Boolean(discussion?.thread?.length);
 
   return (
@@ -38,9 +40,20 @@ export function Discussion({ discussion, loading, error }: Props) {
           </Text>
         ) : (
           <Text>
-            <Strong>Note:</Strong> These discussions are from the UMA Protocol
-            Discord. They do not reflect the opinion of Risk Labs or any other
-            entity.
+            <Strong>Warning:</Strong> These discussions are from the UMA
+            Protocol Discord. They do not reflect the opinion of Risk Labs or
+            any other entity. Be aware that some commenters attempt to influence
+            vote outcomes for their own profit. Always independently verify any
+            claims before relying on them. View our{" "}
+            <a
+              href="https://docs.uma.xyz/using-uma/voting-walkthrough/voter-guide"
+              className="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voter&apos;s Guide
+            </a>{" "}
+            for best practices.
           </Text>
         )}
       </Disclaimer>
@@ -58,6 +71,9 @@ export function Discussion({ discussion, loading, error }: Props) {
         </LoadingSpinnerWrapper>
       ) : (
         <>
+          {bulletins && bulletins.length > 0 && (
+            <BulletinList bulletins={bulletins} />
+          )}
           {hasThread ? (
             <>
               {discussion?.thread.map(
@@ -81,9 +97,6 @@ export function Discussion({ discussion, loading, error }: Props) {
                           </Sender>{" "}
                           <Time>
                             {format(new Date(Number(time) * 1000), "Pp", {
-                              // en-CA is the only locale that uses the correct
-                              // format for the date
-                              // yyyy-mm-dd
                               locale: enCA,
                             })}
                           </Time>

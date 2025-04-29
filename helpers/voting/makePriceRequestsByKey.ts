@@ -40,6 +40,7 @@ function formatPriceRequest(
   const timeAsDate = new Date(timeMilliseconds);
   const identifier = priceRequest.identifier;
   const ancillaryData = priceRequest.ancillaryData;
+  const ancillaryDataL2 = priceRequest.ancillaryDataL2;
   let decodedIdentifier = "";
   let decodedAncillaryData = "";
   const revealedVoteByAddress = priceRequest.revealedVoteByAddress || {};
@@ -49,9 +50,9 @@ function formatPriceRequest(
     decodedIdentifier = "WARNING - INVALID IDENTIFIER";
   }
   try {
-    decodedAncillaryData = decodeHexString(ancillaryData);
+    decodedAncillaryData = decodeHexString(ancillaryDataL2);
   } catch (e) {
-    decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryData}`;
+    decodedAncillaryData = `The ancillary data for this request is malformed and could not be decoded. Raw ancillary data: ${ancillaryDataL2}`;
   }
   const correctVote = priceRequest.correctVote;
   const participation = {
@@ -98,5 +99,6 @@ function formatPriceRequest(
     isGovernance,
     rollCount,
     revealedVoteByAddress,
+    ancillaryDataL2,
   };
 }

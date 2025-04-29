@@ -7,6 +7,7 @@ import { useInitializeVoteTiming } from "hooks";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Meta } from "./Meta";
+import { Footer } from "components/Footer/Footer";
 
 interface Props {
   children: ReactNode;
@@ -23,6 +24,7 @@ export function Layout({ children, title }: Props) {
         <OldDesignatedVotingAccountWarningBanner />
         <Header />
         {children}
+        <Footer />
       </Main>
     </>
   );

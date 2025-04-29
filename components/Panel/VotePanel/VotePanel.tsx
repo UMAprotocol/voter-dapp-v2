@@ -12,6 +12,7 @@ import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { usePolymarketBulletins } from "hooks";
 
 interface Props {
   content: VoteT;
@@ -31,10 +32,13 @@ export function VotePanel({ content }: Props) {
     decodedAncillaryData,
     assertionId,
     assertionChildChainId,
+    ancillaryDataL2,
   } = content;
 
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
+
+  const bulletins = usePolymarketBulletins(ancillaryDataL2);
 
   const optimisticGovernorTitle = isOptimisticGovernorVote
     ? getOptimisticGovernorTitle(explanationText)
@@ -79,6 +83,7 @@ export function VotePanel({ content }: Props) {
           <Discussion
             discussion={discussion}
             loading={Boolean(discussionLoading && !discussion)}
+            bulletins={bulletins.data}
             error={discussionError}
           />
         ),

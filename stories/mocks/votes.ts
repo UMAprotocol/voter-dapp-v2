@@ -36,6 +36,7 @@ export const defaultMockVote = (number = 1): VoteT => {
     timeMilliseconds,
     identifier,
     ancillaryData,
+    ancillaryDataL2: ancillaryData,
     decodedIdentifier,
     decodedAncillaryData,
     decodedAdminTransactions: undefined,

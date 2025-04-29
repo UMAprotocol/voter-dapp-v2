@@ -14,6 +14,7 @@ export async function getAssertionClaim(
   chainId: number | undefined,
   assertionId: string | undefined
 ) {
+  console.log("getclaim", { chainId, assertionId });
   if (!chainId || !assertionId) return undefined;
   const instance = getInstance(chainId);
   const events = await getAssertionMadeEvents(instance, assertionId);

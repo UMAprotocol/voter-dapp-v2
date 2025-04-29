@@ -67,3 +67,4 @@ export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
 export { useVoteDiscussion } from "./queries/votes/useVoteDiscussion";
 export { useActiveVoteResults } from "./queries/votes/useActiveVoteResults";
+export { usePolymarketBulletins } from "./queries/usePolymarketBulletins";

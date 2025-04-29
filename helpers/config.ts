@@ -306,12 +306,14 @@ export const config: AppConfig & ChainConstants = {
 
 // primary provider looks at what chainId we have specified as our primary chain,
 // this is typically 1, but for testnetswe would use the testnet id
-const providerUrlKey =
-  `oov3ProviderUrl${config.chainId}` as keyof typeof config;
-const providerUrl = config[providerUrlKey] as string | undefined;
-if (!providerUrl) {
-  throw new Error(`Provider URL not found for chain Id ${config.chainId}`);
+export const primaryProvider = getProvider(config.chainId);
+
+// get provider for other chains
+export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
+  const providerUrlKey = `oov3ProviderUrl${chainId}` as keyof typeof config;
+  const providerUrl = config[providerUrlKey] as string | undefined;
+  if (!providerUrl) {
+    throw new Error(`Provider URL not found for chain Id ${chainId}`);
+  }
+  return new ethers.providers.JsonRpcProvider(providerUrl);
 }
-export const primaryProvider = new ethers.providers.JsonRpcProvider(
-  providerUrl
-);

@@ -8,11 +8,8 @@ import {
   getSubgraphConfig,
   VoteSubgraphURL,
 } from "./_common";
-import { ethers } from "ethers";
+import { encodeHexString } from "helpers/web3/decodeHexString";
 
-function encodeHexString(str: string): string {
-  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(str));
-}
 const debug = !!process.env.DEBUG;
 
 const RequestBody = ss.object({
