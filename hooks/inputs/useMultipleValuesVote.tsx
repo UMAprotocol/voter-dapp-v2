@@ -20,7 +20,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   const { data: augmentedData } = useAugmentedVoteData({
     time: vote.time,
     identifier: vote.decodedIdentifier,
-    ancillaryData: vote.ancillaryData,
+    ancillaryData: vote.ancillaryDataL2,
   });
   const proposedPrice = augmentedData?.proposedPrice;
   const { options, decryptedVote, correctVote } = vote;
