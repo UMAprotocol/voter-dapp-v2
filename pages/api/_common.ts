@@ -271,7 +271,9 @@ export function getSubgraphConfig(
     (config) => config.chainId === chainId && config.type === type
   );
   if (found !== undefined) return found;
-  throw new Error(`No subgraph information found for ${type} on ${chainId}`);
+  throw new Error(
+    `No subgraph information found for ${type} on chainId ${chainId}`
+  );
 }
 
 export class HttpError extends Error {

@@ -14,6 +14,7 @@ import {
   addOpacityToHsl,
   formatToSignificantThousand,
   isDefined,
+  formatMultipleValuesVote,
 } from "helpers";
 import { NonNullablePick } from "helpers";
 import { usePanelWidth } from "hooks";
@@ -29,12 +30,14 @@ interface Props {
   results: ResultsT | undefined;
   options: DropdownItemT[] | undefined;
   decodedIdentifier: string;
+  proposedPrice: string | undefined;
 }
 export function Result({
   participation,
   results,
   options,
   decodedIdentifier,
+  proposedPrice,
 }: Props) {
   const panelWidth = usePanelWidth();
 
@@ -47,7 +50,16 @@ export function Result({
     totalTokensCommitted,
   } = participation;
 
+  const isMultipleValues = decodedIdentifier === "MULTIPLE_VALUES";
+
   const resultsWithLabels = results.map(({ vote, tokensVotedWith }) => {
+    if (isMultipleValues) {
+      return formatMultipleValuesVote(
+        { vote, tokensVotedWith },
+        options,
+        proposedPrice
+      );
+    }
     const formatted = formatVoteStringWithPrecision(vote, decodedIdentifier);
     const label =
       findVoteInOptionsDetectEarlyVote(formatted)?.label ?? formatted;
@@ -56,8 +68,10 @@ export function Result({
     return {
       label,
       value,
+      formattedValue: undefined,
     };
   });
+
   const resultsWithPercentages = computePercentages(resultsWithLabels);
   const resultsWithColors = computeColors(resultsWithPercentages);
 
@@ -101,16 +115,23 @@ export function Result({
             />
           </Chart>
           <Legend>
-            {resultsWithColors.map(({ label, value, percent, color }) => (
-              <LegendItem key={label}>
-                <LegendItemDot style={{ "--color": color } as CSSProperties} />
-                <LegendItemData>
-                  <LegendItemLabel label={label} />
-                  <Strong>{(percent * 100).toFixed(2)}%</Strong> (
-                  {value ? commify(truncateDecimals(value, 2)) : 0})
-                </LegendItemData>
-              </LegendItem>
-            ))}
+            {resultsWithColors.map(
+              ({ label, value, percent, color, formattedValue }) => (
+                <LegendItem key={label}>
+                  <LegendItemDot
+                    style={{ "--color": color } as CSSProperties}
+                  />
+                  <LegendItemData>
+                    <LegendItemLabel
+                      tooltip={formattedValue ?? label}
+                      label={label}
+                    />
+                    <Strong>{(percent * 100).toFixed(2)}%</Strong> (
+                    {value ? commify(truncateDecimals(value, 2)) : 0})
+                  </LegendItemData>
+                </LegendItem>
+              )
+            )}
           </Legend>
         </ResultSectionWrapper>
       </SectionWrapper>
@@ -163,10 +184,31 @@ export function Result({
   );
 }
 
-function LegendItemLabel({ label }: { label: string }) {
-  if (label.length > 10) {
+function LegendItemLabel({
+  label,
+  tooltip,
+}: {
+  tooltip: string | Record<string, string>;
+  label: string;
+}) {
+  function TooltipContent() {
+    if (typeof tooltip === "string") {
+      return tooltip;
+    }
     return (
-      <Tooltip label={label}>
+      <div className="flex flex-col gap-1">
+        {Object.entries(tooltip).map(([key, value]) => (
+          <span key={key}>
+            {key}: <strong>{value}</strong>
+          </span>
+        ))}
+      </div>
+    );
+  }
+  // always show tooltip if complex
+  if (label.length > 10 || typeof tooltip !== "string") {
+    return (
+      <Tooltip label={TooltipContent()}>
         <LegendItemLabelWrapper>{label.slice(0, 10)}...</LegendItemLabelWrapper>
       </Tooltip>
     );
