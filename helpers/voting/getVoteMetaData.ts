@@ -4,11 +4,17 @@ import { utils } from "ethers";
 import {
   checkIfIsPolymarket,
   checkIfIsPredictFun,
+  encodeMultipleQuery,
   makeBlockExplorerLink,
   maybeMakePolymarketOptions,
 } from "helpers";
 import { earlyRequestMagicNumber, answerNotPossible } from "constant";
-import { ContentfulDataT, VoteMetaDataT, VoteOriginT } from "types";
+import {
+  ContentfulDataT,
+  DropdownItemT,
+  VoteMetaDataT,
+  VoteOriginT,
+} from "types";
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
 import * as s from "superstruct";
 import { maxInt256, minInt256 } from "constant/web3/numbers";
@@ -223,28 +229,37 @@ function decodeMultipleValuesQuery(decodedAncillaryData: string) {
   };
 }
 
-export const multipleValuesDropdownOptions = [
-  {
-    label: "Unresolvable",
-    value: maxInt256.toString(),
-    secondaryLabel: "Unresolvable",
-  },
-  {
-    label: "Early Request",
-    value: minInt256.toString(),
-    secondaryLabel: "Early Request",
-  },
-  {
-    label: "Custom values",
-    value: "OPEN_MULTIPLE_VALUES_MODAL",
-    secondaryLabel: "Custom values",
-  },
-  {
-    label: "Proposed values",
-    value: "SET_PROPOSED_PRICE",
-    secondaryLabel: "Proposed values",
-  },
-];
+export function makeMultipleValuesDropdownOptions(
+  proposedPrice: string | undefined,
+  options: DropdownItemT[] | undefined
+) {
+  return [
+    {
+      label: "Unresolvable",
+      value: maxInt256.toString(),
+      secondaryLabel: "Unresolvable",
+      action: undefined,
+    },
+    {
+      label: "Early Request",
+      value: minInt256.toString(),
+      secondaryLabel: "Early Request",
+      action: undefined,
+    },
+    {
+      label: "Custom values",
+      value: encodeMultipleQuery(options?.map(() => "0") ?? ["0"]),
+      secondaryLabel: "Custom values",
+      action: "OPEN_MULTIPLE_VALUES_MODAL",
+    },
+    {
+      label: "Proposed values",
+      value: proposedPrice ?? "0",
+      secondaryLabel: "Proposed values",
+      action: "SET_PROPOSED_PRICE",
+    },
+  ];
+}
 
 function tryParseMultipleValues(
   decodedQueryText: string,

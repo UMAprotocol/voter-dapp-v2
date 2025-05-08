@@ -7,8 +7,9 @@ import {
   decodeMultipleQuery,
 } from "helpers";
 import { VoteListItemProps } from "components/VoteList/shared.types";
-import { multipleValuesDropdownOptions } from "helpers/voting/getVoteMetaData";
+import { makeMultipleValuesDropdownOptions } from "helpers/voting/getVoteMetaData";
 import { useAugmentedVoteData } from "hooks/queries/votes/useAugmentedVoteData";
+import { maxInt256 } from "constant/web3/numbers";
 
 export type MultipleInputProps = ReturnType<typeof useMultipleValuesVote>;
 type Props = {
@@ -26,6 +27,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     },
   });
   const proposedPrice = augmentedData?.proposedPrice;
+
   const { options, decryptedVote, correctVote } = vote;
   const [inputModalOpen, setInputModalOpen] = useState(false);
   const openInputModal = () => void setInputModalOpen(true);
@@ -48,6 +50,11 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
       !isTooEarly && !isUnresolvable && !!formattedValue && !isProposedPrice
     );
   }, [formattedValue, isTooEarly, isUnresolvable, isProposedPrice]);
+
+  const multipleValuesDropdownActionOptions = makeMultipleValuesDropdownOptions(
+    proposedPrice,
+    options
+  );
 
   function clearInputValues() {
     setFormattedValue(undefined);
@@ -134,11 +141,16 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   }, [formattedValue]);
 
   function onDropdownChange(item: DropdownItemT) {
-    if (item.value === "OPEN_MULTIPLE_VALUES_MODAL") {
+    if (item.action === "OPEN_MULTIPLE_VALUES_MODAL") {
       clearInputValues();
       openInputModal();
-    } else if (item.value === "SET_PROPOSED_PRICE") {
-      setProposedPrice();
+    } else if (item.action === "SET_PROPOSED_PRICE") {
+      // if request was proposed as "Unresolvable" we want to display "Unresolvable" in the dropdown
+      if (_isUnresolvable(proposedPrice)) {
+        setFormattedValue(String(item.value));
+      } else {
+        setProposedPrice();
+      }
     } else if (
       _isTooEarly(String(item.value)) ||
       _isUnresolvable(String(item.value))
@@ -148,8 +160,14 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   }
 
   function getCommittedVoteDropdownValue() {
+    if (_isUnresolvable(committedVote)) {
+      return {
+        label: "Unresolvable",
+        value: maxInt256.toString(),
+      };
+    }
     return (
-      multipleValuesDropdownOptions?.find((option) => {
+      multipleValuesDropdownActionOptions?.find((option) => {
         return option.value === committedVote;
       }) ?? {
         label: "Custom values",
@@ -160,7 +178,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   // remove "Proposed values" options if unable to find this value from the oracle
   const dropdownOptions = (() => {
-    return multipleValuesDropdownOptions.filter((o) => {
+    return multipleValuesDropdownActionOptions.filter((o) => {
       if (!proposedPrice) {
         return o.label !== "Proposed values";
       }
@@ -174,7 +192,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   function getCorrectVote() {
     return (
-      multipleValuesDropdownOptions?.find((option) => {
+      multipleValuesDropdownActionOptions?.find((option) => {
         return option.value === correctVote;
       })?.label ?? "Custom values"
     );
@@ -192,13 +210,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
       };
     }
 
-    if (isProposedPrice) {
-      return multipleValuesDropdownOptions.find(
-        (o) => o.label === "Proposed values"
-      );
-    }
-
-    return multipleValuesDropdownOptions?.find((option) => {
+    return multipleValuesDropdownActionOptions?.find((option) => {
       return option.value === formattedValue;
     });
   })();

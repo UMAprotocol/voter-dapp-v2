@@ -10,6 +10,7 @@ export type LinkT = {
 };
 
 export type DropdownItemT = InputDataT & {
+  action?: string | undefined;
   secondaryLabel?: string;
 };
 
