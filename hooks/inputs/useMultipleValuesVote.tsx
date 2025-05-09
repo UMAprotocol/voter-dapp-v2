@@ -30,8 +30,12 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   const { options, decryptedVote, correctVote } = vote;
   const [inputModalOpen, setInputModalOpen] = useState(false);
+  const [inputsDisabled, setInputsDisabled] = useState(false);
   const openInputModal = () => void setInputModalOpen(true);
-  const closeInputModal = () => void setInputModalOpen(false);
+  const closeInputModal = () => {
+    setInputsDisabled(false);
+    setInputModalOpen(false);
+  };
   const [inputValues, setInputValues] = useState(
     Object.fromEntries(
       options?.map((o) => [o.label, (o.value ?? "").toString()]) ?? []
@@ -98,6 +102,8 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   function setProposedPrice() {
     if (proposedPrice && options) {
       setValuesFromPrice(proposedPrice, options);
+      // show as read only inputs
+      setInputsDisabled(true);
       openInputModal();
     }
   }
@@ -224,6 +230,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     !inputError;
 
   return {
+    inputsDisabled,
     getCorrectVote,
     dropdownOptions,
     proposedPrice,

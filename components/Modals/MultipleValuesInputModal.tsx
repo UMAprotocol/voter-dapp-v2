@@ -36,6 +36,7 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
               >
                 {label}
                 <TextInput
+                  disabled={props.inputsDisabled}
                   key={`input-${label}`}
                   id={`input-${label}`}
                   value={value}
