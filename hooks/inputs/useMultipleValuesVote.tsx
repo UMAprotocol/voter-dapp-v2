@@ -142,7 +142,10 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   function onDropdownChange(item: DropdownItemT) {
     if (item.action === "OPEN_MULTIPLE_VALUES_MODAL") {
-      clearInputValues();
+      if (_isTooEarly(formattedValue) || _isUnresolvable(formattedValue)) {
+        clearInputValues();
+      }
+
       openInputModal();
     } else if (item.action === "SET_PROPOSED_PRICE") {
       // if request was proposed as "Unresolvable" we want to display "Unresolvable" in the dropdown
