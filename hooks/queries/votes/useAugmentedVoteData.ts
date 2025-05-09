@@ -2,12 +2,14 @@ import assert from "assert";
 import { useQuery } from "@tanstack/react-query";
 import { augmentedVoteDataKey } from "constant";
 import { getAugmentedVoteData } from "web3";
+import { MakeQueryOptions } from "helpers";
 
 export function useAugmentedVoteData(
   params: Partial<{
     ancillaryData: string;
     time: number;
     identifier: string;
+    queryOptions?: MakeQueryOptions<typeof getAugmentedVoteData>;
   }>
 ) {
   return useQuery({
@@ -28,5 +30,6 @@ export function useAugmentedVoteData(
       });
     },
     enabled: !!params.identifier && !!params.time && !!params.identifier,
+    ...params?.queryOptions,
   });
 }

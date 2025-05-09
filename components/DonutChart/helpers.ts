@@ -4,7 +4,7 @@ export const degreesToRadians = (degrees: number) => degrees * (Math.PI / 180);
 export const radiansToDegrees = (radians: number) => radians / (Math.PI / 180);
 
 export function convertToNumbers(data: InputDataT[]) {
-  return data.map(({ value, label }) => {
+  return data.map(({ value, label, ...rest }) => {
     const numberValue = Number(value);
     if (Number.isNaN(numberValue)) {
       throw new Error(
@@ -12,6 +12,7 @@ export function convertToNumbers(data: InputDataT[]) {
       );
     }
     return {
+      ...rest,
       value: numberValue,
       label,
     };
@@ -36,6 +37,7 @@ export function computeColors(
     percent: number;
     value: number;
     label: string;
+    formattedValue?: Record<string, string> | undefined | string;
   }[]
 ) {
   const lightest = 90;

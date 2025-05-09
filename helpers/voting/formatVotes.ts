@@ -1,12 +1,20 @@
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { maxInt256, minInt256 } from "constant/web3/numbers";
 import { BigNumber, BigNumberish } from "ethers";
 import {
+  decodeMultipleQuery,
   encryptMessage,
   getPrecisionForIdentifier,
   getRandomSignedInt,
   solidityKeccak256,
 } from "helpers";
-import { FormatVotesToCommit, VoteFormattedToCommitT, VoteT } from "types";
+import {
+  DropdownItemT,
+  FormatVotesToCommit,
+  ResultsT,
+  VoteFormattedToCommitT,
+  VoteT,
+} from "types";
 
 function makeVoteHash(
   price: string,
@@ -107,6 +115,9 @@ export function parseVoteStringWithPrecision(
   vote: string,
   decodedIdentifier: string
 ) {
+  if (decodedIdentifier === "MULTIPLE_VALUES") {
+    return vote;
+  }
   // check the precision to use from our table of precisions
   const identifierPrecision = BigNumber.from(
     getPrecisionForIdentifier(decodedIdentifier)
@@ -125,4 +136,58 @@ export function formatVoteStringWithPrecision(
   const formatted = formatFixed(vote, identifierPrecision).toString();
   // if the formatted number ends with .0, remove the .0
   return formatted.endsWith(".0") ? formatted.slice(0, -2) : formatted;
+}
+
+export function formatMultipleValuesVote(
+  result: ResultsT[number],
+  options: DropdownItemT[] | undefined,
+  proposedPrice: string | undefined
+): {
+  label: string;
+  value: number;
+  formattedValue: Record<string, string> | undefined | string;
+} {
+  function formatOptionsFromVote(
+    vote: string | undefined,
+    options: DropdownItemT[] | undefined
+  ) {
+    if (options && options?.length && vote) {
+      const values = decodeMultipleQuery(vote, options.length);
+      // set input values for display purposes
+      return Object.fromEntries(
+        options?.map((o, i) => [o.label, values[i].toString()])
+      );
+    }
+  }
+
+  const formattedVoteResults = [
+    {
+      label: "Unresolvable",
+      price: maxInt256.toString(),
+      formattedValue: undefined,
+    },
+    {
+      label: "Early Request",
+      price: minInt256.toString(),
+      formattedValue: undefined,
+    },
+    {
+      label: "Proposed Price",
+      price: proposedPrice,
+      formattedValue: formatOptionsFromVote(proposedPrice, options),
+    },
+  ].find((o) => o.price === result.vote);
+
+  const formattedValue =
+    result.vote === maxInt256.toString()
+      ? "Unresolvable"
+      : result.vote === minInt256.toString()
+      ? "Early Request"
+      : formatOptionsFromVote(result.vote, options);
+
+  return {
+    label: formattedVoteResults?.label ?? "Custom values",
+    value: result.tokensVotedWith,
+    formattedValue,
+  };
 }

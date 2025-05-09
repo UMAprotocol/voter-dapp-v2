@@ -4,12 +4,20 @@ import { utils } from "ethers";
 import {
   checkIfIsPolymarket,
   checkIfIsPredictFun,
+  encodeMultipleQuery,
   makeBlockExplorerLink,
   maybeMakePolymarketOptions,
 } from "helpers";
 import { earlyRequestMagicNumber, answerNotPossible } from "constant";
-import { ContentfulDataT, VoteMetaDataT, VoteOriginT } from "types";
+import {
+  ContentfulDataT,
+  DropdownItemT,
+  VoteMetaDataT,
+  VoteOriginT,
+} from "types";
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
+import * as s from "superstruct";
+import { maxInt256, minInt256 } from "constant/web3/numbers";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -138,6 +146,10 @@ export function getVoteMetaData(
     return tryParseMultipleChoiceQuery(decodedAncillaryData, "UMA");
   }
 
+  if (decodedIdentifier === "MULTIPLE_VALUES") {
+    return tryParseMultipleValues(decodedAncillaryData, "Polymarket");
+  }
+
   // if we are dealing with a request for an approved price identifier, get the title, description and UMIP url from the hard-coded approvedIdentifiersTable json file
   // we know we are dealing with a request for an approved price identifier if the decodedIdentifier matches an approved identifier
   const identifierDetails = approvedIdentifiers[decodedIdentifier];
@@ -179,7 +191,110 @@ export function getVoteMetaData(
     isAssertion: false,
   };
 }
+const MultipleValuesQuery = s.object({
+  // The title of the request
+  title: s.string(),
+  // Description of the request
+  description: s.string(),
+  // Values will be encoded into the settled price in the same order as the provided labels. The oracle UI will display each Label along with an input field. 7 labels maximum.
+  labels: s.array(s.string()),
+});
+type MultipleValuesQuery = s.Infer<typeof MultipleValuesQuery>;
 
+const isMultipleValuesQueryFormat = (q: unknown) =>
+  s.is(q, MultipleValuesQuery);
+function decodeMultipleValuesQuery(decodedAncillaryData: string) {
+  const endOfObjectIndex = decodedAncillaryData.lastIndexOf("}");
+  const maybeJson =
+    endOfObjectIndex > 0
+      ? decodedAncillaryData.slice(0, endOfObjectIndex + 1)
+      : decodedAncillaryData;
+
+  const json = JSON.parse(maybeJson);
+  if (!isMultipleValuesQueryFormat(json))
+    throw new Error("Not a valid multiple values request");
+  if (json.labels.length > 7)
+    throw new Error("MULTIPLE_VALUES only support up to 7 labels");
+
+  return {
+    title: json.title,
+    description: json.description,
+    options: json.labels.map((label) => {
+      return {
+        label,
+        value: "",
+        secondaryLabel: label,
+      };
+    }),
+  };
+}
+
+export function makeMultipleValuesDropdownOptions(
+  proposedPrice: string | undefined,
+  options: DropdownItemT[] | undefined
+) {
+  return [
+    {
+      label: "Unresolvable",
+      value: maxInt256.toString(),
+      secondaryLabel: "Unresolvable",
+      action: undefined,
+    },
+    {
+      label: "Early Request",
+      value: minInt256.toString(),
+      secondaryLabel: "Early Request",
+      action: undefined,
+    },
+    {
+      label: "Custom values",
+      value: encodeMultipleQuery(options?.map(() => "0") ?? ["0"]),
+      secondaryLabel: "Custom values",
+      action: "OPEN_MULTIPLE_VALUES_MODAL",
+    },
+    {
+      label: "Proposed values",
+      value: proposedPrice ?? "0",
+      secondaryLabel: "Proposed values",
+      action: "SET_PROPOSED_PRICE",
+    },
+  ];
+}
+
+function tryParseMultipleValues(
+  decodedQueryText: string,
+  projectName: VoteOriginT
+): VoteMetaDataT {
+  const common = {
+    umipOrUppLink: {
+      label: "Multiple Value - UMIP-183",
+      href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-183.md",
+    },
+    umipOrUppNumber: "UMIP-183",
+    isGovernance: false,
+    isAssertion: false,
+    origin: projectName,
+    discordLink,
+    options: [],
+  };
+  try {
+    return {
+      ...common,
+      ...decodeMultipleValuesQuery(decodedQueryText),
+    };
+  } catch (err) {
+    let description = `Error decoding description`;
+    if (err instanceof Error) {
+      description += `: ${err.message}`;
+    }
+    console.error(`Error parsing MULTIPLE_VALUES`, decodedQueryText, err);
+    return {
+      ...common,
+      title: "Multiple Values",
+      description,
+    };
+  }
+}
 function tryParseMultipleChoiceQuery(
   decodedAncillaryData: string,
   projectName: VoteOriginT

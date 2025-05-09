@@ -1,6 +1,7 @@
 export type InputDataT = {
   value: string | number;
   label: string;
+  formattedValue?: Record<string, string> | undefined | string;
 };
 
 export type LinkT = {
@@ -9,6 +10,7 @@ export type LinkT = {
 };
 
 export type DropdownItemT = InputDataT & {
+  action?: string | undefined;
   secondaryLabel?: string;
 };
 

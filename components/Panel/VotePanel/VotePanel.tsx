@@ -3,7 +3,11 @@ import removeMarkdown from "remove-markdown";
 import { Tabs } from "components";
 import { decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
-import { useVoteDiscussion, useAssertionClaim } from "hooks";
+import {
+  useVoteDiscussion,
+  useAssertionClaim,
+  useAugmentedVoteData,
+} from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
@@ -55,8 +59,11 @@ export function VotePanel({ content }: Props) {
     title,
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
-
-  if (claim) console.log("claim", claim);
+  const { data: augmentedVoteData } = useAugmentedVoteData({
+    time,
+    identifier: decodedIdentifier,
+    ancillaryData: ancillaryDataL2,
+  });
 
   const claimTitle = claim ? getClaimTitle(decodeHexString(claim)) : undefined;
 
@@ -101,6 +108,7 @@ export function VotePanel({ content }: Props) {
             participation={participation}
             results={results}
             options={options}
+            proposedPrice={augmentedVoteData?.proposedPrice}
           />
         ),
       });
