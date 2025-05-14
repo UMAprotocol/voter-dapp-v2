@@ -18,12 +18,14 @@ type Props = {
 };
 
 export function useMultipleValuesVote({ vote, selectVote }: Props) {
+  const enabled = vote.decodedIdentifier === "MULTIPLE_VALUES";
+
   const { data: augmentedData } = useAugmentedVoteData({
     time: vote.time,
     identifier: vote.decodedIdentifier,
     ancillaryData: vote.ancillaryDataL2,
     queryOptions: {
-      enabled: vote.decodedIdentifier === "MULTIPLE_VALUES",
+      enabled,
     },
   });
   const proposedPrice = augmentedData?.proposedPrice;
@@ -71,6 +73,9 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   // get decrypted vote on load
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     const existingVote = decryptedVote?.price;
     if (existingVote && options?.length) {
       try {
@@ -140,6 +145,9 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
 
   // set value upstream if a valid answer has been entered
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (formattedValue && selectVote) {
       selectVote?.(formattedValue);
     }
