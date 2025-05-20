@@ -33,7 +33,7 @@ export function TextInput({
     onInput,
     maxDecimals,
     allowNegative,
-    _type
+    type
   );
 
   return (
@@ -46,6 +46,8 @@ export function TextInput({
         type={_type}
         autoComplete="off"
         autoCorrect="off"
+        lang="en"
+        data-decimal-separator="."
         placeholder={placeholder ?? "Enter value"}
         minLength={1}
         maxLength={79}
