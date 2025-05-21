@@ -22,6 +22,9 @@ export function useHandleDecimalInput(
       value = value.replace(maximumApprovalAmountString, "");
     }
 
+    // Replace commas with periods for decimal handling
+    value = value.replace(/,/g, ".");
+
     const decimalsErrorMessage = `Cannot have more than ${maxDecimals} decimals.`;
     const negativeAllowedDecimalRegex = /^-?\d*\.?\d{0,}$/;
     const onlyPositiveDecimalsRegex = /^\d*\.?\d{0,}$/;
