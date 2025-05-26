@@ -225,7 +225,7 @@ export default async function handler(
         l1Request: {
           time: Number(request.query.time),
           identifier: request.query.identifier,
-          title: request.query.title,
+          title: request.query.title?.toString().trim(),
         },
       },
       DiscordThreadRequestBody
