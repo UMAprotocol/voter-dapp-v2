@@ -231,10 +231,6 @@ export default async function handler(
       DiscordThreadRequestBody
     );
 
-    console.log("time", body.l1Request.time, "end");
-    console.log("identifier", body.l1Request.identifier, "end");
-    console.log("title", body.l1Request.title, "end");
-
     const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
     );
