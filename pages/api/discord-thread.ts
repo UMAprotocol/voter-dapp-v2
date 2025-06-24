@@ -138,11 +138,26 @@ function truncateTitle(title: string) {
   return title.substring(0, 60);
 }
 
-function makeKey(title: string, timestamp: string | number) {
-  return `${truncateTitle(title)}-${String(timestamp)}`.replaceAll(" ", "");
-}
-// discord truncates the title length after 72 characters
+const invalidCharacters = [
+  "\u202f", // narrow no-break space
+  // Add more characters here as needed
+];
 
+// Strip invalid characters that Discord strips from titles
+function sanitizeTitle(title: string): string {
+  let result = title;
+  for (const char of invalidCharacters) {
+    result = result.replace(new RegExp(char, "g"), "");
+  }
+  return result;
+}
+
+function makeKey(title: string, timestamp: string | number) {
+  const cleanedTitle = sanitizeTitle(truncateTitle(title));
+  return `${cleanedTitle}-${String(timestamp)}`.replaceAll(" ", "");
+}
+
+// discord truncates the title length after 72 characters
 function extractValidateTitleAndTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
@@ -225,7 +240,7 @@ export default async function handler(
         l1Request: {
           time: Number(request.query.time),
           identifier: request.query.identifier,
-          title: request.query.title?.toString().trim(),
+          title: sanitizeTitle(request.query.title?.toString().trim() || ""),
         },
       },
       DiscordThreadRequestBody
