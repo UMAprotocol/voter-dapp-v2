@@ -18,6 +18,7 @@ import {
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
 import * as s from "superstruct";
 import { maxInt256, minInt256 } from "constant/web3/numbers";
+import { stripInvalidCharacters } from "lib/utils";
 
 /** Finds a title and description, and UMIP link (if it exists) for a decodedIdentifier.
  *
@@ -37,7 +38,7 @@ export function getVoteMetaData(
   );
   if (isAssertion) {
     const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
-    const title = decodedIdentifier;
+    const title = stripInvalidCharacters(decodedIdentifier);
     const description = makeAssertionDescription(assertionData);
     return {
       title,
@@ -58,7 +59,9 @@ export function getVoteMetaData(
   // if we are dealing with a UMIP, get the title, description and UMIP url from Contentful
   const isUmip = decodedIdentifier.includes("Admin");
   if (isUmip) {
-    const title = umipDataFromContentful?.title ?? decodedIdentifier;
+    const title = stripInvalidCharacters(
+      umipDataFromContentful?.title ?? decodedIdentifier
+    );
     const description =
       umipDataFromContentful?.description ??
       "No description was found for this UMIP.";
@@ -113,7 +116,9 @@ export function getVoteMetaData(
     const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
     const ancillaryDataDescription =
       getDescriptionFromAncillaryData(decodedAncillaryData);
-    const title = ancillaryDataTitle ?? decodedIdentifier;
+    const title = stripInvalidCharacters(
+      ancillaryDataTitle ?? decodedIdentifier
+    );
     const description =
       ancillaryDataDescription ?? "No description was found for this request.";
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
@@ -155,7 +160,7 @@ export function getVoteMetaData(
   const identifierDetails = approvedIdentifiers[decodedIdentifier];
   const isApprovedIdentifier = Boolean(identifierDetails);
   if (isApprovedIdentifier) {
-    const title = identifierDetails.identifier;
+    const title = stripInvalidCharacters(identifierDetails.identifier);
     const description = identifierDetails.summary;
     const umipOrUppUrl = identifierDetails.umipLink.url;
     const umipOrUppNumber = identifierDetails.umipLink.number;
@@ -180,7 +185,7 @@ export function getVoteMetaData(
 
   // if all checks fail, return with generic values generated from the data we have
   return {
-    title: decodedIdentifier,
+    title: stripInvalidCharacters(decodedIdentifier),
     description: "No description found for this request.",
     umipOrUppLink: undefined,
     umipOrUppNumber: undefined,
@@ -217,7 +222,7 @@ function decodeMultipleValuesQuery(decodedAncillaryData: string) {
     throw new Error("MULTIPLE_VALUES only support up to 7 labels");
 
   return {
-    title: json.title,
+    title: stripInvalidCharacters(json.title),
     description: json.description,
     options: json.labels.map((label) => {
       return {
@@ -497,7 +502,7 @@ function decodeMultipleChoiceQuery(decodedAncillaryData: string) {
   if (!isMultipleChoiceQueryFormat(json))
     throw new Error("Malformed ancillary data");
   return {
-    title: json.title,
+    title: stripInvalidCharacters(json.title),
     description: json.description,
     options: makeMultipleChoiceOptions(
       (

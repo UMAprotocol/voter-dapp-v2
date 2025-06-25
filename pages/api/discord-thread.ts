@@ -10,6 +10,7 @@ import {
 
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
+import { stripInvalidCharacters } from "lib/utils";
 
 // converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
 export function stripMarkdownHeaders(message: string): string {
@@ -138,22 +139,8 @@ function truncateTitle(title: string) {
   return title.substring(0, 60);
 }
 
-const invalidCharacters = [
-  "\u202f", // narrow no-break space
-  // Add more characters here as needed
-];
-
-// Strip invalid characters that Discord strips from titles
-function sanitizeTitle(title: string): string {
-  let result = title;
-  for (const char of invalidCharacters) {
-    result = result.replace(new RegExp(char, "g"), "");
-  }
-  return result;
-}
-
 function makeKey(title: string, timestamp: string | number) {
-  const cleanedTitle = sanitizeTitle(truncateTitle(title));
+  const cleanedTitle = stripInvalidCharacters(truncateTitle(title));
   return `${cleanedTitle}-${String(timestamp)}`.replaceAll(" ", "");
 }
 
@@ -240,7 +227,9 @@ export default async function handler(
         l1Request: {
           time: Number(request.query.time),
           identifier: request.query.identifier,
-          title: sanitizeTitle(request.query.title?.toString().trim() || ""),
+          title: stripInvalidCharacters(
+            request.query.title?.toString().trim() || ""
+          ),
         },
       },
       DiscordThreadRequestBody
