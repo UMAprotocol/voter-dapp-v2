@@ -1,0 +1,8 @@
+# CODEOWNERS file for UMA Voter dApp v2
+# This file defines who is responsible for reviewing changes to different parts of the codebase
+
+# Global owners - All changes
+* @gsteenkamp89 @mrice32 @james-a-morris 
+
+# CI & Automation
+/.github/ @evaldofelipe @james-a-morris @gsteenkamp89 @mrice32
