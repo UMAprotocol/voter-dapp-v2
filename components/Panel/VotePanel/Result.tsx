@@ -282,12 +282,12 @@ function QuorumProgress({ quorumData }: QuorumData) {
         <Tooltip label={consensusTooltip}>
           <QuorumItem>
             <span>
-              Consensus ({`${(Math.min(consensusRate, 1) * 100).toFixed(0)}%`})
+              Consensus ({`${(Math.min(consensusRate, 1) * 100).toFixed(5)}%`})
             </span>
             {consensusRequirementMet && <SuccessIcon />}
             <span className="ml-auto">
-              {formatToSignificantThousand(winningVote.value)} /
-              {formatToSignificantThousand(quorumData.minAgreementRequirement)}
+              {formatToSignificantThousand(winningVote.value, 5)} /
+              {formatToSignificantThousand(quorumData.minAgreementRequirement, 5)}
             </span>
           </QuorumItem>
         </Tooltip>
