@@ -287,7 +287,10 @@ function QuorumProgress({ quorumData }: QuorumData) {
             {consensusRequirementMet && <SuccessIcon />}
             <span className="ml-auto">
               {formatToSignificantThousand(winningVote.value, 5)} /
-              {formatToSignificantThousand(quorumData.minAgreementRequirement, 5)}
+              {formatToSignificantThousand(
+                quorumData.minAgreementRequirement,
+                5
+              )}
             </span>
           </QuorumItem>
         </Tooltip>
