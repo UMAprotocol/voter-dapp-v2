@@ -41,7 +41,8 @@ export function bigNumberFromFloatString(value: string | undefined) {
  */
 export function formatToSignificantThousand(
   num: number,
-  precision?: number
+  precision?: number,
+  outputPrecision?: number
 ): string {
   const SI_SYMBOL = ["", "k", "M", "B", "T"];
 
@@ -66,7 +67,7 @@ export function formatToSignificantThousand(
   const formattedNumber = scaledNumber.toFixed(decimals);
 
   // Remove unnecessary trailing zeroes and decimal point
-  const cleanNumber = parseFloat(formattedNumber).toLocaleString();
+  const cleanNumber = parseFloat(formattedNumber).toFixed(outputPrecision ?? 3);
 
   return `${cleanNumber}${suffix}`;
 }
