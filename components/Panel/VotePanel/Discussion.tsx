@@ -2,7 +2,7 @@ import { Button, LoadingSpinner, BulletinList } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
-import { addOpacityToHsl, appConfig } from "helpers";
+import { addOpacityToHsl } from "helpers";
 import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
@@ -16,36 +16,21 @@ interface Props {
   bulletins?: Bulletin[];
   loading: boolean;
   error?: boolean;
+  disableThread?: boolean;
 }
 
-export function Discussion({ discussion, loading, error, bulletins }: Props) {
-  const hasThread = Boolean(discussion?.thread?.length);
-
-  const isThreadDisabled =
-    discussion?.identifier &&
-    appConfig.disableDiscordThreadIds
-      ?.toLowerCase()
-      ?.split(",")
-      ?.includes(discussion.identifier);
-
+export function Discussion({
+  discussion,
+  loading,
+  error,
+  bulletins,
+  disableThread,
+}: Props) {
+  const hasThread = Boolean(discussion?.thread?.length) && !disableThread;
   return (
     <Wrapper>
       <Disclaimer>
-        {error ? (
-          <Text>
-            <Strong>⚠️ Error:</Strong> The Discord API recently starting rate
-            limiting our access; while we work on a solution, please visit the{" "}
-            <a
-              className="underline"
-              target="_blank"
-              href="https://discord.com/channels/718590743446290492/964000735073284127"
-              rel="noreferrer"
-            >
-              #evidence-rational
-            </a>{" "}
-            channel on discord.across.to for the full discussion.
-          </Text>
-        ) : isThreadDisabled ? (
+        {disableThread ? (
           <Text>
             <Strong>Warning:</Strong> Discord comments for this vote have been
             removed due to a high number of suspicious comments. Please do your
@@ -59,6 +44,20 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
               here
             </a>
             .
+          </Text>
+        ) : error ? (
+          <Text>
+            <Strong>⚠️ Error:</Strong> The Discord API recently starting rate
+            limiting our access; while we work on a solution, please visit the{" "}
+            <a
+              className="underline"
+              target="_blank"
+              href="https://discord.com/channels/718590743446290492/964000735073284127"
+              rel="noreferrer"
+            >
+              #evidence-rational
+            </a>{" "}
+            channel on discord.across.to for the full discussion.
           </Text>
         ) : (
           <Text>
@@ -87,7 +86,7 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           Discussion
         </PanelSectionTitle>
       </TitleSectionWrapper>
-      {loading ? (
+      {loading && !disableThread ? (
         <LoadingSpinnerWrapper>
           <LoadingSpinner size={40} variant="black" />
         </LoadingSpinnerWrapper>
@@ -96,59 +95,53 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {bulletins && bulletins.length > 0 && (
             <BulletinList bulletins={bulletins} />
           )}
-          {!isThreadDisabled && (
+          {hasThread ? (
             <>
-              {hasThread ? (
-                <>
-                  {discussion?.thread.map(
-                    ({ message, sender, senderPicture, time }) => (
-                      <SectionWrapper key={time}>
-                        <MessageWrapper>
-                          <ImageWrapper>
-                            {senderPicture ? (
-                              <Image
-                                src={senderPicture}
-                                alt="Discord user avatar"
-                                width={20}
-                                height={20}
-                              />
-                            ) : null}
-                          </ImageWrapper>
-                          <MessageContentWrapper>
-                            <SenderWrapper>
-                              <Sender>
-                                <Strong>{sender}</Strong>
-                              </Sender>{" "}
-                              <Time>
-                                {format(new Date(Number(time) * 1000), "Pp", {
-                                  locale: enCA,
-                                })}
-                              </Time>
-                            </SenderWrapper>
-                            <MessageTextWrapper>
-                              <ReactMarkdown
-                                components={{
-                                  a: (props) => (
-                                    <A {...props} target="_blank" />
-                                  ),
-                                  p: (props) => <MessageText {...props} />,
-                                  pre: (props) => <Pre {...props} />,
-                                  code: (props) => <Code {...props} />,
-                                }}
-                              >
-                                {message}
-                              </ReactMarkdown>
-                            </MessageTextWrapper>
-                          </MessageContentWrapper>
-                        </MessageWrapper>
-                      </SectionWrapper>
-                    )
-                  )}
-                </>
-              ) : (
-                <Text>No discussion found for this vote.</Text>
+              {discussion?.thread.map(
+                ({ message, sender, senderPicture, time }) => (
+                  <SectionWrapper key={time}>
+                    <MessageWrapper>
+                      <ImageWrapper>
+                        {senderPicture ? (
+                          <Image
+                            src={senderPicture}
+                            alt="Discord user avatar"
+                            width={20}
+                            height={20}
+                          />
+                        ) : null}
+                      </ImageWrapper>
+                      <MessageContentWrapper>
+                        <SenderWrapper>
+                          <Sender>
+                            <Strong>{sender}</Strong>
+                          </Sender>{" "}
+                          <Time>
+                            {format(new Date(Number(time) * 1000), "Pp", {
+                              locale: enCA,
+                            })}
+                          </Time>
+                        </SenderWrapper>
+                        <MessageTextWrapper>
+                          <ReactMarkdown
+                            components={{
+                              a: (props) => <A {...props} target="_blank" />,
+                              p: (props) => <MessageText {...props} />,
+                              pre: (props) => <Pre {...props} />,
+                              code: (props) => <Code {...props} />,
+                            }}
+                          >
+                            {message}
+                          </ReactMarkdown>
+                        </MessageTextWrapper>
+                      </MessageContentWrapper>
+                    </MessageWrapper>
+                  </SectionWrapper>
+                )
               )}
             </>
+          ) : (
+            !disableThread && <Text>No discussion found for this vote.</Text>
           )}
         </>
       )}

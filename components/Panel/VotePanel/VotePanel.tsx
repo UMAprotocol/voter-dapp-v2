@@ -1,7 +1,7 @@
 import removeMarkdown from "remove-markdown";
 
 import { Tabs } from "components";
-import { decodeHexString, getClaimTitle } from "helpers";
+import { appConfig, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
   useVoteDiscussion,
@@ -76,6 +76,11 @@ export function VotePanel({ content }: Props) {
       ? titleOrClaimOrIdentifier.slice(0, 50) + "..."
       : titleOrClaimOrIdentifier;
 
+  const isThreadDisabled = appConfig.disableDiscordThreadIds
+    ?.toLowerCase()
+    ?.split(",")
+    ?.includes(`${time}#${identifier}`);
+
   function makeTabs() {
     const hasResults = Boolean(results?.length);
 
@@ -92,6 +97,7 @@ export function VotePanel({ content }: Props) {
             loading={Boolean(discussionLoading && !discussion)}
             bulletins={bulletins.data}
             error={discussionError}
+            disableThread={isThreadDisabled}
           />
         ),
       },
