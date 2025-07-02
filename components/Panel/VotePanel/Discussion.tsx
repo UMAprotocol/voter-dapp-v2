@@ -40,11 +40,12 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           </Text>
         ) : (
           <Text>
-            <Strong>Warning:</Strong> These discussions are from the UMA
-            Protocol Discord. They do not reflect the opinion of Risk Labs or
-            any other entity. Be aware that some commenters attempt to influence
-            vote outcomes for their own profit. Always independently verify any
-            claims before relying on them. View our{" "}
+            <Strong>Warning:</Strong> These comments are from the public UMA
+            Protocol Discord server, where anyone can comment. They do not
+            necessarily represent the opinions of UMA voters, Risk Labs, or any
+            other entity. Be aware that some commenters may attempt to influence
+            vote outcomes for their own profit. Always verify any and all claims
+            before relying on them to inform your own votes. View our{" "}
             <a
               href="https://docs.uma.xyz/using-uma/voting-walkthrough/voter-guide"
               className="underline"
@@ -62,7 +63,7 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           <IconWrapper>
             <MessageIcon />
           </IconWrapper>{" "}
-          Discussion
+          Discord Comments
         </PanelSectionTitle>
       </TitleSectionWrapper>
       {loading ? (
