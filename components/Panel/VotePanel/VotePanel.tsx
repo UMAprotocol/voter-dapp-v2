@@ -85,7 +85,7 @@ export function VotePanel({ content }: Props) {
         content: <Details {...content} />,
       },
       {
-        title: "Discussion",
+        title: "Discord Comments",
         content: (
           <Discussion
             discussion={discussion}
@@ -115,7 +115,10 @@ export function VotePanel({ content }: Props) {
     }
 
     return (
-      <Tabs tabs={tabs} defaultValue={hasResults ? "Result" : "Discussion"} />
+      <Tabs
+        tabs={tabs}
+        defaultValue={hasResults ? "Result" : "Discord Comments"}
+      />
     );
   }
 
