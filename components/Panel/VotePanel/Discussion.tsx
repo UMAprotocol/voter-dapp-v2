@@ -96,53 +96,59 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {bulletins && bulletins.length > 0 && (
             <BulletinList bulletins={bulletins} />
           )}
-          {hasThread && !isThreadDisabled ? (
+          {!isThreadDisabled && (
             <>
-              {discussion?.thread.map(
-                ({ message, sender, senderPicture, time }) => (
-                  <SectionWrapper key={time}>
-                    <MessageWrapper>
-                      <ImageWrapper>
-                        {senderPicture ? (
-                          <Image
-                            src={senderPicture}
-                            alt="Discord user avatar"
-                            width={20}
-                            height={20}
-                          />
-                        ) : null}
-                      </ImageWrapper>
-                      <MessageContentWrapper>
-                        <SenderWrapper>
-                          <Sender>
-                            <Strong>{sender}</Strong>
-                          </Sender>{" "}
-                          <Time>
-                            {format(new Date(Number(time) * 1000), "Pp", {
-                              locale: enCA,
-                            })}
-                          </Time>
-                        </SenderWrapper>
-                        <MessageTextWrapper>
-                          <ReactMarkdown
-                            components={{
-                              a: (props) => <A {...props} target="_blank" />,
-                              p: (props) => <MessageText {...props} />,
-                              pre: (props) => <Pre {...props} />,
-                              code: (props) => <Code {...props} />,
-                            }}
-                          >
-                            {message}
-                          </ReactMarkdown>
-                        </MessageTextWrapper>
-                      </MessageContentWrapper>
-                    </MessageWrapper>
-                  </SectionWrapper>
-                )
+              {hasThread ? (
+                <>
+                  {discussion?.thread.map(
+                    ({ message, sender, senderPicture, time }) => (
+                      <SectionWrapper key={time}>
+                        <MessageWrapper>
+                          <ImageWrapper>
+                            {senderPicture ? (
+                              <Image
+                                src={senderPicture}
+                                alt="Discord user avatar"
+                                width={20}
+                                height={20}
+                              />
+                            ) : null}
+                          </ImageWrapper>
+                          <MessageContentWrapper>
+                            <SenderWrapper>
+                              <Sender>
+                                <Strong>{sender}</Strong>
+                              </Sender>{" "}
+                              <Time>
+                                {format(new Date(Number(time) * 1000), "Pp", {
+                                  locale: enCA,
+                                })}
+                              </Time>
+                            </SenderWrapper>
+                            <MessageTextWrapper>
+                              <ReactMarkdown
+                                components={{
+                                  a: (props) => (
+                                    <A {...props} target="_blank" />
+                                  ),
+                                  p: (props) => <MessageText {...props} />,
+                                  pre: (props) => <Pre {...props} />,
+                                  code: (props) => <Code {...props} />,
+                                }}
+                              >
+                                {message}
+                              </ReactMarkdown>
+                            </MessageTextWrapper>
+                          </MessageContentWrapper>
+                        </MessageWrapper>
+                      </SectionWrapper>
+                    )
+                  )}
+                </>
+              ) : (
+                <Text>No discussion found for this vote.</Text>
               )}
             </>
-          ) : (
-            <Text>No discussion found for this vote.</Text>
           )}
         </>
       )}
