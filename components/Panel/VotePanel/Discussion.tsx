@@ -2,7 +2,7 @@ import { Button, LoadingSpinner, BulletinList } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
-import { addOpacityToHsl } from "helpers";
+import { addOpacityToHsl, appConfig } from "helpers";
 import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +21,13 @@ interface Props {
 export function Discussion({ discussion, loading, error, bulletins }: Props) {
   const hasThread = Boolean(discussion?.thread?.length);
 
+  const isThreadDisabled =
+    discussion?.identifier &&
+    appConfig.disableDiscordThreadIds
+      ?.toLowerCase()
+      ?.split(",")
+      ?.includes(discussion.identifier);
+
   return (
     <Wrapper>
       <Disclaimer>
@@ -37,6 +44,21 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
               #evidence-rational
             </a>{" "}
             channel on discord.across.to for the full discussion.
+          </Text>
+        ) : isThreadDisabled ? (
+          <Text>
+            <Strong>Warning:</Strong> Discord comments for this vote have been
+            removed due to a high number of suspicious comments. Please do your
+            own research. All comments can be viewed{" "}
+            <a
+              className="underline"
+              target="_blank"
+              href="https://discord.com/channels/718590743446290492/964000735073284127"
+              rel="noreferrer"
+            >
+              here
+            </a>
+            .
           </Text>
         ) : (
           <Text>
@@ -74,7 +96,7 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {bulletins && bulletins.length > 0 && (
             <BulletinList bulletins={bulletins} />
           )}
-          {hasThread ? (
+          {hasThread && !isThreadDisabled ? (
             <>
               {discussion?.thread.map(
                 ({ message, sender, senderPicture, time }) => (
