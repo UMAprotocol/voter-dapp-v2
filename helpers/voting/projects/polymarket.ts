@@ -16,11 +16,15 @@ const polymarketCtfAdapterAddressV2 =
   "0x2f5e3684cb1f318ec51b00edba38d79ac2c0aa9d";
 const polymarketCtfExchangeAddress =
   "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E";
+const polymarketCtfAdapterAddressV3 =
+  "0x157ce2d672854c848c9b79c49a8cc6cc89176a49";
+
 export const polymarketRequesters = [
   polymarketBinaryAdapterAddress.toLowerCase(),
   polymarketCtfAdapterAddress.toLowerCase(),
   polymarketCtfAdapterAddressV2.toLowerCase(),
   polymarketCtfExchangeAddress.toLowerCase(),
+  polymarketCtfAdapterAddressV3.toLowerCase(),
 ];
 
 export function isPolymarketRequester(address: string): boolean {
