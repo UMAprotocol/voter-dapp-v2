@@ -345,7 +345,7 @@ export function Details({
           <IconWrapper>
             <TimestampIcon />
           </IconWrapper>
-          Timestamp
+          Proposal Timestamp
         </PanelSectionTitle>
         <Timestamp>
           <span>UTC</span> <span>{timeAsDate.toUTCString()}</span>
