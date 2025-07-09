@@ -16,3 +16,7 @@ export function stripInvalidCharacters(str: string): string {
   }
   return sanitized;
 }
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
