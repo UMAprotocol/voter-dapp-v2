@@ -34,23 +34,28 @@ export type DiscordThreadRequestBody = ss.Infer<
 if (discordToken === "") throw Error("DISCORD_TOKEN env variable not set!");
 
 export async function discordRequest(endpoint: string) {
-  const url = "https://discord.com/api/v10/" + endpoint;
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bot ${discordToken}`,
-      "Content-Type": "application/json; charset=UTF-8",
-      "User-Agent":
-        "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Unable to fetch messages from discord at ${endpoint}`, {
-      cause: await res.text(),
+  return backoffWithRetry(async () => {
+    const url = "https://discord.com/api/v10/" + endpoint;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bot ${discordToken}`,
+        "Content-Type": "application/json; charset=UTF-8",
+        "User-Agent":
+          "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
+      },
     });
-  }
 
-  return (await res.json()) as RawDiscordThreadT;
+    if (!res.ok) {
+      throw new Error(
+        `Unable to fetch messages from discord at ${endpoint} (${res.status})`,
+        {
+          cause: await res.text(),
+        }
+      );
+    }
+
+    return (await res.json()) as RawDiscordThreadT;
+  });
 }
 
 export async function getDiscordMessages(threadId: string, limit = 100) {
@@ -61,40 +66,54 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// fetch 100 at a time until limit is reached
-export async function getDiscordMessagesPaginated(
-  threadId: string,
-  limit = 100
-) {
-  let allMessages: RawDiscordThreadT = [];
-  let lastMessageId: string | undefined = undefined;
-  do {
-    let url = `channels/${threadId}/messages?limit=${limit}`;
-    if (lastMessageId) {
-      url += `&before=${lastMessageId}`;
-    }
-    const messages = await discordRequest(url);
+// Exponential backoff with jitter to handle rate limiting
+async function backoffWithRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 5,
+  baseDelay = 1000
+): Promise<T> {
+  let lastError: Error;
 
-    allMessages = allMessages.concat(messages);
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
 
-    if (messages.length < limit) {
-      break; // No more messages to fetch
+      // Check if it's a rate limit error (429 status)
+      if (error instanceof Error && error.message.includes("429")) {
+        if (attempt === maxRetries) {
+          throw error; // Give up after max retries
+        }
+
+        // Calculate exponential backoff with jitter
+        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+        console.log(
+          `Rate limited, retrying in ${Math.round(delay)}ms (attempt ${
+            attempt + 1
+          }/${maxRetries + 1})`
+        );
+        await sleep(delay);
+        continue;
+      }
+
+      // For non-rate-limit errors, throw immediately
+      throw error;
     }
-    lastMessageId = messages[messages.length - 1]?.id; // Get the last message ID
-    await sleep(50);
-  } while (lastMessageId);
-  return allMessages;
+  }
+
+  throw lastError!;
 }
 
-// fetch channel messages (threads) 100 at a time until all are retrieved
-export async function getDiscordChannelMessagesPaginated(
-  channelId: string,
+// fetch messages from any Discord channel/thread 100 at a time until limit is reached
+export async function getDiscordMessagesPaginated(
+  channelOrThreadId: string,
   limit = 100
 ) {
   let allMessages: RawDiscordThreadT = [];
   let lastMessageId: string | undefined = undefined;
   do {
-    let url = `channels/${channelId}/messages?limit=${limit}`;
+    let url = `channels/${channelOrThreadId}/messages?limit=${limit}`;
     if (lastMessageId) {
       url += `&before=${lastMessageId}`;
     }
@@ -106,7 +125,7 @@ export async function getDiscordChannelMessagesPaginated(
       break; // No more messages to fetch
     }
     lastMessageId = messages[messages.length - 1]?.id; // Get the last message ID
-    await sleep(50);
+    await sleep(100); // Reduced sleep time since we have proper backoff handling
   } while (lastMessageId);
   return allMessages;
 }
@@ -190,7 +209,7 @@ async function fetchDiscordThread(
 ): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
   // Paginate through all available messages to ensure we don't miss any threads
-  const threadMsg = await getDiscordChannelMessagesPaginated(
+  const threadMsg = await getDiscordMessagesPaginated(
     evidenceRationalDiscordChannelId
   );
   // Then, extract the timestamp from each message and for each timestamp relate
@@ -243,7 +262,7 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
-  response.setHeader("Cache-Control", "max-age=0, s-maxage=180");
+  response.setHeader("Cache-Control", "max-age=604800, s-maxage=604800");
 
   try {
     const body = ss.create(
