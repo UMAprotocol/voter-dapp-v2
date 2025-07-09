@@ -14,62 +14,25 @@ type ThreadCache = {
 const redis = Redis.fromEnv();
 
 // Cache functions for thread cache object
-export async function getCachedThreadData(): Promise<ThreadCache | null> {
-  try {
-    const cached = await redis.get(THREAD_CACHE_KEY);
-    if (!cached) return null;
-
-    // Handle both string and parsed object responses from Redis
-    if (typeof cached === "string") {
-      return JSON.parse(cached) as ThreadCache;
-    } else if (typeof cached === "object" && cached !== null) {
-      return cached as ThreadCache;
-    }
-
-    return null;
-  } catch (error) {
-    console.warn("Failed to get cached thread data:", error);
-    return null;
-  }
+export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
+  return await redis.get<ThreadCache>(THREAD_CACHE_KEY);
 }
 
-export async function setCachedThreadData(
+export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
   latestThreadId: string | null
 ): Promise<void> {
   try {
-    const cacheData: ThreadCache = {
+    const result = await redis.set(THREAD_CACHE_KEY, {
       threadIdMap,
       latestThreadId,
-    };
-    await redis.set(THREAD_CACHE_KEY, JSON.stringify(cacheData));
+    });
+    if (!result) {
+      throw new Error("Setting threadIdMap cache failed");
+    }
   } catch (error) {
-    console.warn("Failed to cache thread data:", error);
+    throw error;
   }
-}
-
-export async function getCachedThreadMapping(): Promise<ThreadIdMap | null> {
-  const cached = await getCachedThreadData();
-  return cached?.threadIdMap || null;
-}
-
-export async function setCachedThreadMapping(
-  mapping: ThreadIdMap
-): Promise<void> {
-  const cached = await getCachedThreadData();
-  await setCachedThreadData(mapping, cached?.latestThreadId || null);
-}
-
-export async function setCachedLatestThreadId(
-  latestThreadId: string
-): Promise<void> {
-  const cached = await getCachedThreadData();
-  await setCachedThreadData(cached?.threadIdMap || {}, latestThreadId);
-}
-
-export async function getCachedLatestThreadId(): Promise<string | null> {
-  const cached = await getCachedThreadData();
-  return cached?.latestThreadId || null;
 }
 
 const MAX_RETRIES = 5;
@@ -246,7 +209,7 @@ export async function buildThreadIdMap(
   );
 
   // Use the unified cache to store both thread mapping and latest thread ID atomically
-  await setCachedThreadData(
+  await setCachedThreadIdMap(
     threadIdMap,
     allThreadMessages.latestMessageId || null
   );
@@ -261,45 +224,26 @@ export async function getThreadMessagesForRequest(requestKey: string): Promise<{
 }> {
   // Try to get thread ID from cache first
   const threadId = await getThreadIdFromCache(requestKey);
-  if (threadId) {
-    const messages = await getDiscordMessagesPaginated(threadId);
-    return { threadId, messages: messages.messages };
+  if (!threadId) {
+    return { threadId: null, messages: [] };
   }
 
-  // Thread not found in cache, try to update mapping and find it
-  const updatedThreadId = await findThreadIdAfterCacheUpdate(requestKey);
-  if (updatedThreadId) {
-    const messages = await getDiscordMessagesPaginated(updatedThreadId);
-    return { threadId: updatedThreadId, messages: messages.messages };
-  }
-
-  // Thread not found even after updating the map
-  return { threadId: null, messages: [] };
+  const { messages } = await getDiscordMessagesPaginated(threadId);
+  return { threadId, messages };
 }
 
-// Helper function to get thread ID from cache
 async function getThreadIdFromCache(
   requestKey: string
 ): Promise<string | null> {
-  const cachedThreadMapping = await getCachedThreadMapping();
-  return cachedThreadMapping?.[requestKey] || null;
-}
-
-// Helper function to find thread ID after updating cache
-async function findThreadIdAfterCacheUpdate(
-  requestKey: string
-): Promise<string | null> {
-  const latestThreadId = await getCachedLatestThreadId();
-
-  if (latestThreadId) {
-    // Rebuild the thread ID map with messages after the latest cached message
-    const updatedThreadMapping = await buildThreadIdMap(latestThreadId);
-    return updatedThreadMapping[requestKey] || null;
-  } else {
-    // No latest thread ID in cache, rebuild the entire map
-    const fullThreadMapping = await buildThreadIdMap();
-    return fullThreadMapping[requestKey] || null;
+  const cachedThreadMapping = await getCachedThreadIdMap();
+  const threadId = cachedThreadMapping?.threadIdMap[requestKey];
+  if (!threadId) {
+    const updatedThreadMapping = await buildThreadIdMap(
+      cachedThreadMapping?.latestThreadId ?? undefined
+    );
+    return updatedThreadMapping?.[requestKey] ?? null;
   }
+  return threadId;
 }
 
 // discord truncates the title length after 72 characters
