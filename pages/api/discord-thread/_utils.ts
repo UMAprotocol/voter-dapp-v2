@@ -4,58 +4,73 @@ import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep, stripInvalidCharacters } from "lib/utils";
 
 // Cache configuration
-export const THREAD_MAPPING_CACHE_KEY = "discord:thread_mapping";
-export const LATEST_THREAD_ID = "discord:latest_thread_id";
+export const THREAD_CACHE_KEY = "discord:thread_cache";
+
+type ThreadCache = {
+  threadIdMap: ThreadIdMap;
+  latestThreadId: string | null;
+};
 
 const redis = Redis.fromEnv();
 
-// Cache functions for entire thread mapping
-export async function getCachedThreadMapping(): Promise<ThreadIdMap | null> {
+// Cache functions for thread cache object
+export async function getCachedThreadData(): Promise<ThreadCache | null> {
   try {
-    const cached = await redis.get(THREAD_MAPPING_CACHE_KEY);
+    const cached = await redis.get(THREAD_CACHE_KEY);
     if (!cached) return null;
 
     // Handle both string and parsed object responses from Redis
     if (typeof cached === "string") {
-      return JSON.parse(cached) as ThreadIdMap;
+      return JSON.parse(cached) as ThreadCache;
     } else if (typeof cached === "object" && cached !== null) {
-      return cached as ThreadIdMap;
+      return cached as ThreadCache;
     }
 
     return null;
   } catch (error) {
-    console.warn("Failed to get cached thread mapping:", error);
+    console.warn("Failed to get cached thread data:", error);
     return null;
   }
+}
+
+export async function setCachedThreadData(
+  threadIdMap: ThreadIdMap,
+  latestThreadId: string | null
+): Promise<void> {
+  try {
+    const cacheData: ThreadCache = {
+      threadIdMap,
+      latestThreadId,
+    };
+    await redis.set(THREAD_CACHE_KEY, JSON.stringify(cacheData));
+  } catch (error) {
+    console.warn("Failed to cache thread data:", error);
+  }
+}
+
+// Legacy functions for backward compatibility - now use the unified cache
+export async function getCachedThreadMapping(): Promise<ThreadIdMap | null> {
+  const cached = await getCachedThreadData();
+  return cached?.threadIdMap || null;
 }
 
 export async function setCachedThreadMapping(
   mapping: ThreadIdMap
 ): Promise<void> {
-  try {
-    await redis.set(THREAD_MAPPING_CACHE_KEY, JSON.stringify(mapping));
-  } catch (error) {
-    console.warn("Failed to cache thread mapping:", error);
-  }
+  const cached = await getCachedThreadData();
+  await setCachedThreadData(mapping, cached?.latestThreadId || null);
 }
 
 export async function setCachedLatestThreadId(
   latestThreadId: string
 ): Promise<void> {
-  try {
-    await redis.set(LATEST_THREAD_ID, latestThreadId);
-  } catch (error) {
-    console.warn("Failed to cache latest thread ID:", error);
-  }
+  const cached = await getCachedThreadData();
+  await setCachedThreadData(cached?.threadIdMap || {}, latestThreadId);
 }
 
 export async function getCachedLatestThreadId(): Promise<string | null> {
-  try {
-    return await redis.get(LATEST_THREAD_ID);
-  } catch (error) {
-    console.warn("Failed to get latest thread ID:", error);
-    return null;
-  }
+  const cached = await getCachedThreadData();
+  return cached?.latestThreadId || null;
 }
 
 // Retry configuration
@@ -231,12 +246,12 @@ export async function buildThreadIdMap(
     },
     {} as ThreadIdMap
   );
-  await Promise.all([
-    setCachedThreadMapping(threadIdMap),
-    ...(allThreadMessages.latestMessageId
-      ? [setCachedLatestThreadId(allThreadMessages.latestMessageId)]
-      : []),
-  ]);
+
+  // Use the unified cache to store both thread mapping and latest thread ID atomically
+  await setCachedThreadData(
+    threadIdMap,
+    allThreadMessages.latestMessageId || null
+  );
 
   return threadIdMap;
 }
