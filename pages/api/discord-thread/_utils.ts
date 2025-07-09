@@ -48,7 +48,6 @@ export async function setCachedThreadData(
   }
 }
 
-// Legacy functions for backward compatibility - now use the unified cache
 export async function getCachedThreadMapping(): Promise<ThreadIdMap | null> {
   const cached = await getCachedThreadData();
   return cached?.threadIdMap || null;
@@ -73,7 +72,6 @@ export async function getCachedLatestThreadId(): Promise<string | null> {
   return cached?.latestThreadId || null;
 }
 
-// Retry configuration
 const MAX_RETRIES = 10;
 const BASE_DELAY = 2_000; // 2 seconds
 const MAX_DELAY = 30_000; // 30 seconds
