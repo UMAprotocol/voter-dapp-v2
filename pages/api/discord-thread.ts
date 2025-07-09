@@ -86,6 +86,31 @@ export async function getDiscordMessagesPaginated(
   return allMessages;
 }
 
+// fetch channel messages (threads) 100 at a time until all are retrieved
+export async function getDiscordChannelMessagesPaginated(
+  channelId: string,
+  limit = 100
+) {
+  let allMessages: RawDiscordThreadT = [];
+  let lastMessageId: string | undefined = undefined;
+  do {
+    let url = `channels/${channelId}/messages?limit=${limit}`;
+    if (lastMessageId) {
+      url += `&before=${lastMessageId}`;
+    }
+    const messages = await discordRequest(url);
+
+    allMessages = allMessages.concat(messages);
+
+    if (messages.length < limit) {
+      break; // No more messages to fetch
+    }
+    lastMessageId = messages[messages.length - 1]?.id; // Get the last message ID
+    await sleep(50);
+  } while (lastMessageId);
+  return allMessages;
+}
+
 function discordPhoto(userId: string, userAvatar: string | null) {
   if (!userId || !userAvatar) return undefined;
   return `https://cdn.discordapp.com/avatars/${userId}/${userAvatar}`;
@@ -164,10 +189,9 @@ async function fetchDiscordThread(
   l1Request: L1Request
 ): Promise<VoteDiscussionT> {
   // First, fetch all messages in the evidence rational channel.
-  // we dont really need to go back far in history
-  const threadMsg = await getDiscordMessages(
-    evidenceRationalDiscordChannelId,
-    100
+  // Paginate through all available messages to ensure we don't miss any threads
+  const threadMsg = await getDiscordChannelMessagesPaginated(
+    evidenceRationalDiscordChannelId
   );
   // Then, extract the timestamp from each message and for each timestamp relate
   // it to the associated threadId.
