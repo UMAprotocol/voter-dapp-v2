@@ -1,4 +1,5 @@
+import { Struct } from "superstruct";
+
 declare module "superstruct" {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function defaulted<S extends any>(struct: S, defaultValue: any): S;
+  export function defaulted<T, S extends Struct<T>>(struct: S, defaultValue: T): S;
 }
