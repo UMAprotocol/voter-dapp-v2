@@ -11,3 +11,12 @@ declare module "@uma/contracts-frontend" {
   // eslint-disable-next-line import/no-default-export
   export default _others;
 }
+
+// Provide locale module typing if not resolved
+declare module "date-fns/locale" {
+  import { Locale } from "date-fns";
+  export const enCA: Locale;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _locales: any;
+  export default _locales;
+}
