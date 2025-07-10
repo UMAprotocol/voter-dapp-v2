@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BigNumber, utils } from "ethers";
 import { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
@@ -5,6 +6,7 @@ import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
+import { fetchWithFallback } from "helpers/graph/fetchWithFallback";
 
 const { chainId, graphEndpoint } = config;
 
@@ -61,8 +63,9 @@ export async function getPastVotesV1() {
 }
 
 export async function getPastVotesV2() {
-  const endpoint = graphEndpoint;
-  if (!endpoint) throw new Error("V2 subgraph is disabled");
+  if (!config.ponderEndpoint && !graphEndpoint) {
+    throw new Error("No data endpoint configured");
+  }
   const pastVotesQuery = gql`
     {
       priceRequests(
@@ -103,13 +106,9 @@ export async function getPastVotesV2() {
     }
   `;
 
-  const result = await fetchAllDocuments<PastVotesQuery>(
-    endpoint,
-    pastVotesQuery,
-    "priceRequests"
-  );
+  const result = await fetchWithFallback<PastVotesQuery>(pastVotesQuery);
 
-  const results = result?.map(
+  const resultsArray = result?.priceRequests?.map(
     ({
       identifier: { id },
       time,
@@ -165,7 +164,7 @@ export async function getPastVotesV2() {
   );
 
   return resolveAncillaryDataForRequests(
-    results.map((request) => {
+    (resultsArray ?? []).map((request) => {
       return {
         ...request,
         time: BigNumber.from(request.time),

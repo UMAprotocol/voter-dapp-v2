@@ -39,6 +39,7 @@ const Env = ss.object({
   NEXT_PUBLIC_PROVIDER_V3_81457: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_11155111: ss.optional(ss.string()),
   NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG: ss.optional(ss.string()),
+  NEXT_PUBLIC_PONDER_ENDPOINT: ss.optional(ss.string()),
 });
 export type Env = ss.Infer<typeof Env>;
 
@@ -88,6 +89,7 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_1514: process.env.NEXT_PUBLIC_PROVIDER_V3_1514,
     NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG:
       process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG,
+    NEXT_PUBLIC_PONDER_ENDPOINT: process.env.NEXT_PUBLIC_PONDER_ENDPOINT,
   },
   Env
 );
@@ -126,6 +128,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl11155111: ss.optional(ss.string()),
   oov3ProviderUrl8453: ss.optional(ss.string()),
   oov3ProviderUrl81457: ss.optional(ss.string()),
+  ponderEndpoint: ss.optional(ss.string()),
 });
 export type AppConfig = ss.Infer<typeof AppConfig>;
 
@@ -173,6 +176,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
     oov3ProviderUrl81457: process.env.NEXT_PUBLIC_PROVIDER_V3_81457,
     gaTag: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_TAG,
+    ponderEndpoint: env.NEXT_PUBLIC_PONDER_ENDPOINT,
   },
   AppConfig
 );

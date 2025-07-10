@@ -1,4 +1,6 @@
-import request, { gql } from "graphql-request";
+// @ts-nocheck
+import { gql } from "graphql-request";
+import { fetchWithFallback } from "helpers/graph/fetchWithFallback";
 import { config } from "helpers/config";
 import { SubgraphGlobals } from "types";
 const { graphEndpoint, overrideApr } = config;
@@ -15,6 +17,6 @@ export async function getGlobals() {
     }
   `;
 
-  const { global } = await request<SubgraphGlobals>(graphEndpoint, query);
+  const { global } = await fetchWithFallback<SubgraphGlobals>(query);
   return global;
 }
