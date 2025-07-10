@@ -7,7 +7,7 @@ import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
-import { VoteDiscussionT } from "types";
+import { VoteDiscussionT, DiscordMessageT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { Bulletin } from "web3/queries/getPolymarketBulletins";
 
@@ -78,7 +78,7 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {hasThread ? (
             <>
               {discussion?.thread.map(
-                ({ message, sender, senderPicture, time }) => (
+                ({ message, sender, senderPicture, time }: DiscordMessageT) => (
                   <SectionWrapper key={time}>
                     <MessageWrapper>
                       <ImageWrapper>
