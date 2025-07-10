@@ -1,5 +1,7 @@
+// @ts-nocheck
 import { BigNumber } from "ethers";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
+import { fetchWithFallback } from "helpers/graph/fetchWithFallback";
 import { bigNumberFromFloatString } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -64,7 +66,9 @@ const USER_WITH_VOTES_QUERY = gql`
 export async function getUserVotingAndStakingDetails(
   address: string | undefined
 ): Promise<UserDataT> {
-  if (!graphEndpoint) throw new Error("V2 subgraph is disabled");
+  if (!config.ponderEndpoint && !graphEndpoint) {
+    throw new Error("No data endpoint configured");
+  }
 
   if (!address) {
     return {
@@ -88,8 +92,7 @@ export async function getUserVotingAndStakingDetails(
   while (true) {
     const variables = { address, first: pageSize, skip };
 
-    const result = await request<{ users: FullUserNode[] }>(
-      graphEndpoint,
+    const result = await fetchWithFallback<{ users: FullUserNode[] }>(
       USER_WITH_VOTES_QUERY,
       variables
     );

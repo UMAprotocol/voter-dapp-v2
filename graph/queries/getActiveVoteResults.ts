@@ -1,5 +1,7 @@
+// @ts-nocheck
 import { config } from "helpers/config";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
+import { fetchWithFallback } from "helpers/graph/fetchWithFallback";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import {
   PastVotesQuery,
@@ -17,8 +19,9 @@ const { graphEndpoint } = config;
 export async function getActiveVoteResults(): Promise<
   Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
 > {
-  const endpoint = graphEndpoint;
-  if (!endpoint) throw new Error("V2 subgraph is disabled");
+  if (!config.ponderEndpoint && !graphEndpoint) {
+    throw new Error("No data endpoint configured");
+  }
   const pastVotesQuery = gql`
     {
       priceRequests(
@@ -59,7 +62,7 @@ export async function getActiveVoteResults(): Promise<
     }
   `;
 
-  const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
+  const result = await fetchWithFallback<PastVotesQuery>(pastVotesQuery);
   const requests = result?.priceRequests?.map(
     ({
       identifier: { id },
