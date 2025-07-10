@@ -14,7 +14,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": ["react", "react-dom", "node"]
   },
   "include": ["custom-next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["next-env.d.ts","node_modules","cypress"],
