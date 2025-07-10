@@ -111,7 +111,7 @@
     "typescript": "^5.5.3",
     "url": "^0.11.0",
     "webpack": "^5.74.0",
-    "@ponder/core": "^0.11.27"
+    "ponder": "^0.11.27"
   },
   "readme": "ERROR: No README data found!",
   "_id": "uma-v2-dapp@0.1.0"

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { defineConfig } from "@ponder/core";
+import { defineConfig } from "ponder";
 // We import the VotingV2 ABI directly from the UMA contracts package. If the path changes, update accordingly.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
