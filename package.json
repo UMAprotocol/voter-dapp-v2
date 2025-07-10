@@ -13,7 +13,8 @@
     "build-storybook": "storybook build",
     "chromatic": "npx chromatic --project-token=9e9ed15fd825",
     "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts",
-    "cypress:run": "cypress run e2e"
+    "cypress:run": "cypress run e2e",
+    "ponder": "ponder dev"
   },
   "dependencies": {
     "@next/third-parties": "^14.2.5",
@@ -109,7 +110,8 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.5.3",
     "url": "^0.11.0",
-    "webpack": "^5.74.0"
+    "webpack": "^5.74.0",
+    "@ponder/core": "^0.11.27"
   },
   "readme": "ERROR: No README data found!",
   "_id": "uma-v2-dapp@0.1.0"
