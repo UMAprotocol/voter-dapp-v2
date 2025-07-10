@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, LoadingSpinner, BulletinList } from "components";
 import { discordLink, mobileAndUnder, red500 } from "constant";
 import { format } from "date-fns";
