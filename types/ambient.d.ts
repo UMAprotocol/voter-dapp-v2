@@ -20,3 +20,10 @@ declare module "date-fns/locale" {
   const _locales: any;
   export default _locales;
 }
+
+// next-image fallback if type package is absent
+declare module "next-image" {
+  import { ImgHTMLAttributes, DetailedHTMLProps } from "react";
+  const NextImage: (props: DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>) => JSX.Element;
+  export default NextImage;
+}
