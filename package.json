@@ -78,7 +78,6 @@
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/node": "^20.11.30",
     "@types/date-fns": "^2.6.0",
-    "@types/date-fns__locale": "^0.0.1",
     "@types/remove-markdown": "^0.3.1",
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
