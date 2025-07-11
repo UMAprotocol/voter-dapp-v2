@@ -47,49 +47,53 @@ function calculateBackoffDelay(attempt: number): number {
 }
 
 export async function discordRequest(
-  endpoint: string,
-  attempt = 0
+  endpoint: string
 ): Promise<RawDiscordThreadT> {
+  let attempt = 1;
+  let finalError: unknown;
   const url = "https://discord.com/api/v10/" + endpoint;
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bot ${discordToken}`,
-        "Content-Type": "application/json; charset=UTF-8",
-        "User-Agent":
-          "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
-      },
-    });
+  while (attempt <= MAX_RETRIES) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bot ${discordToken}`,
+          "Content-Type": "application/json; charset=UTF-8",
+          "User-Agent":
+            "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
+        },
+      });
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(
-        `Discord API error ${res.status} at ${endpoint}: ${errorText}`
-      );
-    }
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          `Discord API error ${res.status} at ${endpoint}: ${errorText}`
+        );
+      }
 
-    return (await res.json()) as RawDiscordThreadT;
-  } catch (error) {
-    if (attempt >= MAX_RETRIES) {
-      console.error(
-        `Failed to fetch from Discord API after ${MAX_RETRIES} retries at ${endpoint}:`,
+      return (await res.json()) as RawDiscordThreadT;
+    } catch (error) {
+      finalError = error;
+      if (attempt >= MAX_RETRIES) {
+        break;
+      }
+
+      const delay = calculateBackoffDelay(attempt);
+      console.warn(
+        `Discord API error at ${endpoint}, retrying in ${delay}ms (attempt ${
+          attempt + 1
+        }/${MAX_RETRIES}):`,
         error
       );
-      throw error;
+      await sleep(delay);
+      attempt += 1;
     }
-
-    const delay = calculateBackoffDelay(attempt);
-    console.warn(
-      `Discord API error at ${endpoint}, retrying in ${delay}ms (attempt ${
-        attempt + 1
-      }/${MAX_RETRIES}):`,
-      error
-    );
-    await sleep(delay);
-
-    return await discordRequest(endpoint, attempt + 1);
   }
+  console.error(
+    `Failed to fetch from Discord API after ${MAX_RETRIES} retries at ${endpoint}:`,
+    finalError
+  );
+  throw finalError;
 }
 
 // fetches messages for thread (or channel) in batches
