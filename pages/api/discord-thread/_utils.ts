@@ -5,7 +5,7 @@ import { sleep, stripInvalidCharacters } from "lib/utils";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = "discord:thread_cache";
-
+const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
   latestThreadId: string | null;
@@ -99,8 +99,7 @@ export async function discordRequest(
 // fetches messages for thread (or channel) in batches
 // starts from latest
 export async function getDiscordMessagesPaginated(
-  channelOrThreadId: string,
-  batchSize = 100 // 0-100
+  channelOrThreadId: string
 ): Promise<{
   messages: RawDiscordThreadT;
   latestMessageId: string | undefined;
@@ -110,7 +109,7 @@ export async function getDiscordMessagesPaginated(
   let lastMessageId: string | undefined = undefined;
 
   do {
-    let url = `channels/${channelOrThreadId}/messages?limit=${batchSize}`;
+    let url = `channels/${channelOrThreadId}/messages?limit=${MAX_DISCORD_MESSAGE}`;
 
     if (lastMessageId) {
       // For subsequent requests, use 'before' to get older messages
@@ -121,7 +120,7 @@ export async function getDiscordMessagesPaginated(
 
     allMessages = allMessages.concat(messages);
 
-    if (messages.length < batchSize) {
+    if (messages.length < MAX_DISCORD_MESSAGE) {
       break; // No more messages to fetch
     }
 
