@@ -253,7 +253,7 @@ async function getThreadIdFromCache(
 function extractValidateTitleAndTimestamp(msg?: string) {
   // All messages are structured with the unixtimestamp at the end, such as
   // Across Dispute November 24th 2022 at 1669328675
-  if (msg === undefined || msg === null) return null;
+  if (!msg) return null;
   const time = parseInt(msg.substring(msg.length - 10, msg.length));
   const title = msg.slice(0, -13);
 
