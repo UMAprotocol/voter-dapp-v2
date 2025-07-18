@@ -21,18 +21,15 @@ export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
 export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
   latestThreadId: string | null
-): Promise<void> {
-  try {
-    const result = await redis.set(THREAD_CACHE_KEY, {
-      threadIdMap,
-      latestThreadId,
-    });
-    if (!result) {
-      throw new Error("Setting threadIdMap cache failed");
-    }
-  } catch (error) {
-    throw error;
+) {
+  const result = await redis.set(THREAD_CACHE_KEY, {
+    threadIdMap,
+    latestThreadId,
+  });
+  if (!result) {
+    throw new Error("Setting threadIdMap cache failed");
   }
+  return result;
 }
 
 const MAX_RETRIES = 5;
