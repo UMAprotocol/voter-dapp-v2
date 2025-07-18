@@ -285,6 +285,8 @@ export type RawDiscordMessageT = APIMessage;
 
 export type RawDiscordThreadT = RawDiscordMessageT[];
 
+export type ThreadIdMap = Record<string, string>;
+
 export const DiscordMessageT = ss.object({
   message: ss.string(),
   sender: ss.string(),
