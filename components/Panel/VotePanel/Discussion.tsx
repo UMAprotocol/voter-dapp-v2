@@ -78,8 +78,8 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {hasThread ? (
             <>
               {discussion?.thread.map(
-                ({ message, sender, senderPicture, time }) => (
-                  <SectionWrapper key={time}>
+                ({ message, sender, senderPicture, time, id }) => (
+                  <SectionWrapper key={id}>
                     <MessageWrapper>
                       <ImageWrapper>
                         {senderPicture ? (

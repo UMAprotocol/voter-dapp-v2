@@ -292,6 +292,7 @@ export const DiscordMessageT = ss.object({
   sender: ss.string(),
   senderPicture: ss.optional(ss.string()),
   time: ss.number(),
+  id: ss.string(),
 });
 export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 

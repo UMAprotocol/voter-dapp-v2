@@ -104,6 +104,7 @@ async function fetchDiscordThread(
           sender: msg.author?.username || "Unknown",
           senderPicture: discordPhoto(msg.author?.id, msg.author?.avatar),
           time: Math.floor(new Date(msg.timestamp).getTime() / 1000),
+          id: msg.id,
         };
       } catch (error) {
         console.warn("Failed to process Discord message:", error, msg);
