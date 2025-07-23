@@ -67,7 +67,14 @@ export default async function handler(
   const { time, identifier, title } = req.query;
 
   // Validate required parameters
-  if (!time || !identifier || !title) {
+  if (
+    !time ||
+    !identifier ||
+    !title ||
+    Array.isArray(time) ||
+    Array.isArray(identifier) ||
+    Array.isArray(title)
+  ) {
     return res.status(400).json({
       error:
         "Missing required parameters: time, identifier, and title are required",
@@ -102,9 +109,9 @@ export default async function handler(
 
     // Call UMA API
     const umaUrl = new URL("https://vote.uma.xyz/api/discord-thread");
-    umaUrl.searchParams.set("time", time as string);
-    umaUrl.searchParams.set("identifier", identifier as string);
-    umaUrl.searchParams.set("title", title as string);
+    umaUrl.searchParams.set("time", time);
+    umaUrl.searchParams.set("identifier", identifier);
+    umaUrl.searchParams.set("title", title);
 
     const umaResponse = await fetch(umaUrl.toString());
 
@@ -114,7 +121,7 @@ export default async function handler(
       );
     }
 
-    const umaData = await umaResponse.json() as UMAApiResponse;
+    const umaData = (await umaResponse.json()) as UMAApiResponse;
 
     if (!umaData.thread || !Array.isArray(umaData.thread)) {
       throw new Error(
@@ -150,7 +157,9 @@ ${msg.message}
       })
       .join("\n\n");
 
-    const commentsHash = createHash('sha256').update(formattedComments).digest('hex');
+    const commentsHash = createHash("sha256")
+      .update(formattedComments)
+      .digest("hex");
 
     // Check cache
     const cachedData = await redis.get<CachedSummary>(cacheKey);

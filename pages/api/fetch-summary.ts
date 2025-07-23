@@ -44,7 +44,7 @@ export default async function handler(
   const { identifier } = req.query;
 
   // Validate required parameters
-  if (!identifier) {
+  if (!identifier || Array.isArray(identifier)) {
     return res.status(400).json({
       error: "Missing required parameter: identifier is required",
     });
