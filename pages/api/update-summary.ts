@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
 import OpenAI from "openai";
-import CryptoJS from "crypto-js";
+import { createHash } from "crypto";
 
 interface DiscordMessage {
   message: string;
@@ -114,7 +114,7 @@ export default async function handler(
       );
     }
 
-    const umaData: UMAApiResponse = await umaResponse.json();
+    const umaData = await umaResponse.json() as UMAApiResponse;
 
     if (!umaData.thread || !Array.isArray(umaData.thread)) {
       throw new Error(
@@ -150,7 +150,7 @@ ${msg.message}
       })
       .join("\n\n");
 
-    const commentsHash = CryptoJS.SHA256(formattedComments).toString();
+    const commentsHash = createHash('sha256').update(formattedComments).digest('hex');
 
     // Check cache
     const cachedData = await redis.get<CachedSummary>(cacheKey);
@@ -202,7 +202,7 @@ ${msg.message}
 
     let parsedSummary: StructuredSummary;
     try {
-      parsedSummary = JSON.parse(summaryText);
+      parsedSummary = JSON.parse(summaryText) as StructuredSummary;
     } catch (parseError) {
       throw new Error("Failed to parse OpenAI response as JSON");
     }

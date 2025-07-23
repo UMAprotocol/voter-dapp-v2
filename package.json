@@ -32,7 +32,6 @@
     "@web3-onboard/react": "^2.8.9",
     "@web3-onboard/walletconnect": "^2.4.0",
     "@upstash/redis": "^1.35.1",
-    "crypto-js": "^4.2.0",
     "openai": "^5.10.2",
     "class-variance-authority": "^0.7.1",
     "contentful": "^9.2.4",
