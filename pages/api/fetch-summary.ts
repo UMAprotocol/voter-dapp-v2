@@ -27,7 +27,16 @@ interface SummaryResponse {
   promptVersion: string;
 }
 
-interface CachedSummary extends SummaryResponse {
+// Use the same simplified cache structure as update-summary
+interface CacheData {
+  P1: OutcomeData;
+  P2: OutcomeData;
+  P3: OutcomeData;
+  P4: OutcomeData;
+  Uncategorized: UncategorizedData;
+  generatedAt: string;
+  commentsHash: string;
+  promptVersion: string;
   cachedAt: string;
 }
 
@@ -65,7 +74,7 @@ export default async function handler(
     const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Get cached data
-    const cachedData = await redis.get<CachedSummary>(cacheKey);
+    const cachedData = await redis.get<CacheData>(cacheKey);
 
     if (!cachedData) {
       return res.status(404).json({
@@ -74,9 +83,15 @@ export default async function handler(
       });
     }
 
-    // Return cached data
+    // Return cached data with correct structure
     const response: SummaryResponse = {
-      summary: cachedData.summary,
+      summary: {
+        P1: cachedData.P1,
+        P2: cachedData.P2,
+        P3: cachedData.P3,
+        P4: cachedData.P4,
+        Uncategorized: cachedData.Uncategorized,
+      },
       generatedAt: cachedData.generatedAt,
       commentsHash: cachedData.commentsHash,
       promptVersion: cachedData.promptVersion,

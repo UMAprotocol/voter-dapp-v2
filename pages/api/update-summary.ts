@@ -39,6 +39,14 @@ interface StructuredSummary {
   Uncategorized: UncategorizedData;
 }
 
+// Interface for what OpenAI actually returns (which includes metadata)
+interface OpenAIResponse {
+  summary: StructuredSummary;
+  generatedAt?: string;
+  commentsHash?: string;
+  promptVersion?: string;
+}
+
 interface SummaryResponse {
   summary: StructuredSummary;
   generatedAt: string;
@@ -55,7 +63,16 @@ interface UpdateResponse {
   processingTimeMs: number;
 }
 
-interface CachedSummary extends SummaryResponse {
+// Change this to be simpler and avoid nesting issues
+interface CacheData {
+  P1: OutcomeData;
+  P2: OutcomeData;
+  P3: OutcomeData;
+  P4: OutcomeData;
+  Uncategorized: UncategorizedData;
+  generatedAt: string;
+  commentsHash: string;
+  promptVersion: string;
   cachedAt: string;
 }
 
@@ -112,7 +129,7 @@ export default async function handler(
     const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Check cache first to see if we need to respect the update interval
-    const cachedData = await redis.get<CachedSummary>(cacheKey);
+    const cachedData = await redis.get<CacheData>(cacheKey);
 
     if (cachedData) {
       const timeSinceLastUpdate = Date.now() - new Date(cachedData.generatedAt).getTime();
@@ -232,25 +249,27 @@ ${msg.message}
       throw new Error("OpenAI returned empty response");
     }
 
-    let parsedSummary: StructuredSummary;
+    let openAIResponse: OpenAIResponse;
     try {
-      parsedSummary = JSON.parse(summaryText) as StructuredSummary;
+      openAIResponse = JSON.parse(summaryText) as OpenAIResponse;
     } catch (parseError) {
       throw new Error("Failed to parse OpenAI response as JSON");
     }
 
-    // Create summary data for caching
+    // Extract just the P1/P2/P3/P4 data from the OpenAI response
+    const summaryData = openAIResponse.summary;
+
+    // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
     const now = new Date().toISOString();
-    const summaryData: SummaryResponse = {
-      summary: parsedSummary,
+    const cacheData: CacheData = {
+      P1: summaryData.P1,
+      P2: summaryData.P2,
+      P3: summaryData.P3,
+      P4: summaryData.P4,
+      Uncategorized: summaryData.Uncategorized,
       generatedAt: now,
       commentsHash,
       promptVersion,
-    };
-
-    // Cache the result
-    const cacheData: CachedSummary = {
-      ...summaryData,
       cachedAt: now,
     };
 
