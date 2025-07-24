@@ -108,7 +108,8 @@ export default async function handler(
 
     // Initialize Redis
     const redis = Redis.fromEnv();
-    const cacheKey = `discord-summary:${identifier}`;
+    // Create unique cache key using all three parameters
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Check cache first to see if we need to respect the update interval
     const cachedData = await redis.get<CachedSummary>(cacheKey);

@@ -41,19 +41,28 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { identifier } = req.query;
+  const { time, identifier, title } = req.query;
 
   // Validate required parameters
-  if (!identifier || Array.isArray(identifier)) {
+  if (
+    !time ||
+    !identifier ||
+    !title ||
+    Array.isArray(time) ||
+    Array.isArray(identifier) ||
+    Array.isArray(title)
+  ) {
     return res.status(400).json({
-      error: "Missing required parameter: identifier is required",
+      error:
+        "Missing required parameters: time, identifier, and title are required",
     });
   }
 
   try {
     // Initialize Redis
     const redis = Redis.fromEnv();
-    const cacheKey = `discord-summary:${identifier}`;
+    // Create unique cache key using all three parameters (same format as update-summary)
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Get cached data
     const cachedData = await redis.get<CachedSummary>(cacheKey);
