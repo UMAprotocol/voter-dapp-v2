@@ -47,13 +47,6 @@ interface OpenAIResponse {
   promptVersion?: string;
 }
 
-interface SummaryResponse {
-  summary: StructuredSummary;
-  generatedAt: string;
-  commentsHash: string;
-  promptVersion: string;
-}
-
 interface UpdateResponse {
   updated: boolean;
   cached: boolean;
@@ -132,8 +125,9 @@ export default async function handler(
     const cachedData = await redis.get<CacheData>(cacheKey);
 
     if (cachedData) {
-      const timeSinceLastUpdate = Date.now() - new Date(cachedData.generatedAt).getTime();
-      
+      const timeSinceLastUpdate =
+        Date.now() - new Date(cachedData.generatedAt).getTime();
+
       if (timeSinceLastUpdate < MAX_UPDATE_INTERVAL) {
         // Too soon to update, return existing data without fetching comments
         const processingTimeMs = Date.now() - startTime;

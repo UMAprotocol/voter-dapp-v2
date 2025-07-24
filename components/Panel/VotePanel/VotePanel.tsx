@@ -16,7 +16,10 @@ import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { DiscussionSummary } from "components";
 import { usePolymarketBulletins } from "hooks";
+import { mobileAndUnder } from "constant";
+import styled from "styled-components";
 
 interface Props {
   content: VoteT;
@@ -85,6 +88,10 @@ export function VotePanel({ content }: Props) {
         content: <Details {...content} />,
       },
       {
+        title: "Discussion Summary",
+        content: <DiscussionSummary query={content} />,
+      },
+      {
         title: "Discord Comments",
         content: (
           <Discussion
@@ -115,10 +122,7 @@ export function VotePanel({ content }: Props) {
     }
 
     return (
-      <Tabs
-        tabs={tabs}
-        defaultValue={hasResults ? "Result" : "Discord Comments"}
-      />
+      <Tabs tabs={tabs} defaultValue={hasResults ? "Result" : "Details"} />
     );
   }
 
@@ -135,3 +139,13 @@ export function VotePanel({ content }: Props) {
     </PanelWrapper>
   );
 }
+
+export const PanelContentWrapper = styled.div`
+  margin-top: 20px;
+  padding-inline: 30px;
+  width: calc(var(--panel-width) - 15px);
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
+`;
