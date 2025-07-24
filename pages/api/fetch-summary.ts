@@ -1,23 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
 
-interface OutcomeData {
-  description: string;
+export interface OutcomeData {
   summary: string;
   sources: [string, number][];
 }
 
-interface UncategorizedData {
-  summary: string;
-  sources: [string, number][];
-}
-
-interface StructuredSummary {
+export interface StructuredSummary {
   P1: OutcomeData;
   P2: OutcomeData;
   P3: OutcomeData;
   P4: OutcomeData;
-  Uncategorized: UncategorizedData;
+  Uncategorized?: OutcomeData;
 }
 
 export interface SummaryResponse {
@@ -33,7 +27,7 @@ interface CacheData {
   P2: OutcomeData;
   P3: OutcomeData;
   P4: OutcomeData;
-  Uncategorized: UncategorizedData;
+  Uncategorized: OutcomeData;
   generatedAt: string;
   commentsHash: string;
   promptVersion: string;
