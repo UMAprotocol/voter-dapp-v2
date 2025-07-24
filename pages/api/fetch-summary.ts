@@ -20,7 +20,7 @@ interface StructuredSummary {
   Uncategorized: UncategorizedData;
 }
 
-interface SummaryResponse {
+export interface SummaryResponse {
   summary: StructuredSummary;
   generatedAt: string;
   commentsHash: string;
