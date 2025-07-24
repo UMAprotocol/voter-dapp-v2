@@ -3,6 +3,9 @@ import { Redis } from "@upstash/redis";
 import OpenAI from "openai";
 import { createHash } from "crypto";
 
+// Maximum interval between summary updates (5 minutes in milliseconds)
+const MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
+
 interface DiscordMessage {
   message: string;
   sender: string;
@@ -107,7 +110,28 @@ export default async function handler(
     const redis = Redis.fromEnv();
     const cacheKey = `discord-summary:${identifier}`;
 
-    // Call UMA API
+    // Check cache first to see if we need to respect the update interval
+    const cachedData = await redis.get<CachedSummary>(cacheKey);
+
+    if (cachedData) {
+      const timeSinceLastUpdate = Date.now() - new Date(cachedData.generatedAt).getTime();
+      
+      if (timeSinceLastUpdate < MAX_UPDATE_INTERVAL) {
+        // Too soon to update, return existing data without fetching comments
+        const processingTimeMs = Date.now() - startTime;
+        const response: UpdateResponse = {
+          updated: false,
+          cached: true,
+          generatedAt: cachedData.generatedAt,
+          commentsHash: cachedData.commentsHash,
+          promptVersion: cachedData.promptVersion,
+          processingTimeMs,
+        };
+        return res.status(200).json(response);
+      }
+    }
+
+    // Call UMA API (only if we passed the time check)
     const umaUrl = new URL("https://vote.uma.xyz/api/discord-thread");
     umaUrl.searchParams.set("time", time);
     umaUrl.searchParams.set("identifier", identifier);
@@ -161,9 +185,7 @@ ${msg.message}
       .update(formattedComments)
       .digest("hex");
 
-    // Check cache
-    const cachedData = await redis.get<CachedSummary>(cacheKey);
-
+    // Check if content or prompt has changed (we already passed the time check)
     if (
       cachedData &&
       cachedData.commentsHash === commentsHash &&
