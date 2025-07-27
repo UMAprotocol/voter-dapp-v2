@@ -4,16 +4,21 @@ import assert from "assert";
 import {
   decodeHexString,
   getDescriptionFromAncillaryData,
+  getInitializer,
+  getRequester,
   sanitizeAncillaryData,
 } from "helpers";
 
 export function getPolymarketBulletinContractFromAncillaryData(
   queryText: string
 ): string | undefined {
-  const match = queryText.match(
-    /Updates made by the question creator via the bulletin board at (0x[a-fA-F0-9]{40})/
-  );
-  return match && utils.isAddress(match[1]) ? match[1] : undefined;
+  // const match = queryText.match(
+  //   /Updates made by the question creator via the bulletin board at (0x[a-fA-F0-9]{40})/
+  // );
+  // return match && utils.isAddress(match[1]) ? match[1] : undefined;
+
+  // use ooRequester address
+  return getRequester(queryText);
 }
 
 function cleanAncillaryData(ancillaryHex: string): string {
@@ -43,11 +48,7 @@ export async function getPolymarketBulletins(
   assert(bulletinAddress, "Bulletin address not found in ancillary data.");
 
   const contract = createPolymarketBulletinContract(bulletinAddress);
-
-  const matchOwnerAddress = description.match(/initializer:([a-fA-F0-9]{40})/);
-  const ownerAddress = matchOwnerAddress
-    ? "0x" + matchOwnerAddress[1]
-    : undefined;
+  const ownerAddress = getInitializer(ancillaryData);
 
   assert(ownerAddress, "Bulletin owner address not found.");
   // ancillary data has stuff appended to it, which needs to be removed before calculating question id.
