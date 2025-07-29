@@ -8,6 +8,54 @@ type Props = {
   query: VoteT;
 };
 
+// Helper function to process summary text and convert sources to links
+function processSummaryText(text: string) {
+  // Split by \ to handle line breaks (space-backslash-space pattern)
+  const lines = text.split(' \\ ').map(line => line.trim().replace(/^• /, '')).filter(line => line.length > 0);
+  
+  return lines.map((line, lineIndex) => {
+    // Find source patterns like [Source: URL] and convert to [source] format
+    const sourcePattern = /\[Source:\s*(https?:\/\/[^\]]+)\]/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = sourcePattern.exec(line)) !== null) {
+      // Add text before the source
+      if (match.index > lastIndex) {
+        parts.push(line.slice(lastIndex, match.index));
+      }
+      
+      // Add [source] where "source" is clickable
+      parts.push(
+        <span key={`${lineIndex}-${match.index}`}>
+          [<a
+            href={match[1]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#17b38c] underline hover:text-[#15a078]"
+          >
+            source
+          </a>]
+        </span>
+      );
+      
+      lastIndex = sourcePattern.lastIndex;
+    }
+    
+    // Add remaining text after the last source
+    if (lastIndex < line.length) {
+      parts.push(line.slice(lastIndex));
+    }
+    
+    return (
+      <div key={lineIndex} className="mb-3 last:mb-0">
+        {parts.length > 0 ? parts : line}
+      </div>
+    );
+  });
+}
+
 export function DiscussionSummary({ query }: Props) {
   const { data: summaryData, isLoading, isError } = useDiscussionSummary(query);
 
@@ -52,52 +100,58 @@ export function DiscussionSummary({ query }: Props) {
           before voting.
         </p>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col">
         {Object.entries(summaryData.summary).map(
-          ([pValue, outcomeData]: [string, OutcomeData]) => {
-            if (
-              !outcomeData?.summary &&
-              (!outcomeData?.sources || outcomeData.sources.length === 0)
-            ) {
-              return null;
-            }
+          ([pValue, outcomeData]: [string, OutcomeData], index: number, array: [string, OutcomeData][]) => {
+            const hasContent = outcomeData?.summary || (outcomeData?.sources && outcomeData.sources.length > 0);
 
             return (
               <div key={pValue}>
-                <h3 className="text-xl font-bold uppercase tracking-wider">
-                  {pValue}
-                </h3>
+                <div className="pb-5">
+                  <h3 className="text-xl font-bold uppercase tracking-wider mb-3">
+                    {pValue}
+                  </h3>
 
-                {outcomeData?.summary && (
-                  <p className="text-base leading-relaxed text-black">
-                    {outcomeData.summary}
-                  </p>
-                )}
-
-                {outcomeData?.sources && outcomeData.sources.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <span className="text-sm font-semibold uppercase tracking-wider ">
-                      Sources:
-                    </span>
-                    <div className="m-0 flex flex-wrap gap-2 p-0">
-                      {outcomeData.sources.map(
-                        (
-                          [source, timestamp]: [string, number],
-                          index: number
-                        ) => (
-                          <div
-                            key={`${source}-${timestamp}-${index}`}
-                            className="flex items-center justify-center gap-1 rounded-full border border-[#17b38c80] bg-[#17b38c33] px-2 py-[2px] text-sm text-black"
-                          >
-                            <span className="h-2 w-2 rounded-full bg-[#17b38c]" />
-                            <span className="text-center font-medium">
-                              {source}
-                            </span>
-                          </div>
-                        )
-                      )}
+                  {outcomeData?.summary ? (
+                    <div className="text-base leading-relaxed text-black">
+                      {processSummaryText(outcomeData.summary)}
                     </div>
-                  </div>
+                  ) : (
+                    <p className="text-base leading-relaxed text-gray-500 italic">
+                      No comments argued for this outcome
+                    </p>
+                  )}
+
+                  {outcomeData?.sources && outcomeData.sources.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-3">
+                      <span className="text-sm font-semibold uppercase tracking-wider ">
+                        Sources:
+                      </span>
+                      <div className="m-0 flex flex-wrap gap-2 p-0">
+                        {outcomeData.sources.map(
+                          (
+                            [source, timestamp]: [string, number],
+                            sourceIndex: number
+                          ) => (
+                            <div
+                              key={`${source}-${timestamp}-${sourceIndex}`}
+                              className="flex items-center justify-center gap-1 rounded-full border border-[#17b38c80] bg-[#17b38c33] px-2 py-[2px] text-sm text-black"
+                            >
+                              <span className="h-2 w-2 rounded-full bg-[#17b38c]" />
+                              <span className="text-center font-medium">
+                                {source}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Add horizontal rule between sections, but not after the last one */}
+                {index < array.length - 1 && (
+                  <hr className="border-gray-300 mb-5" />
                 )}
               </div>
             );
