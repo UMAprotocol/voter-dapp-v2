@@ -19,6 +19,7 @@ export interface SummaryResponse {
   generatedAt: string;
   commentsHash: string;
   promptVersion: string;
+  summaryBatchSize: number;
 }
 
 // Use the same simplified cache structure as update-summary
@@ -32,6 +33,7 @@ interface CacheData {
   commentsHash: string;
   promptVersion: string;
   cachedAt: string;
+  summaryBatchSize: number;
 }
 
 export default async function handler(
@@ -89,6 +91,7 @@ export default async function handler(
       generatedAt: cachedData.generatedAt,
       commentsHash: cachedData.commentsHash,
       promptVersion: cachedData.promptVersion,
+      summaryBatchSize: cachedData.summaryBatchSize,
     };
 
     res.status(200).json(response);
