@@ -8,6 +8,16 @@ type Props = {
   query: VoteT;
 };
 
+// Helper function to get decoded option label for a p-value
+function getDecodedOptionLabel(pValue: string, options?: { label: string }[]): string | null {
+  if (!options || !pValue.toUpperCase().startsWith('P')) return null;
+  
+  const pNumber = parseInt(pValue.substring(1), 10);
+  if (isNaN(pNumber) || pNumber < 1 || pNumber > options.length) return null;
+  
+  return options[pNumber - 1]?.label || null;
+}
+
 // Helper function to process summary text and convert sources to links
 function processSummaryText(text: string) {
   // Split by \ to handle line breaks (space-backslash-space pattern)
@@ -58,6 +68,7 @@ function processSummaryText(text: string) {
 
 export function DiscussionSummary({ query }: Props) {
   const { data: summaryData, isLoading, isError } = useDiscussionSummary(query);
+  const { options } = query;
 
   if (!summaryData && isError) {
     return (
@@ -104,12 +115,13 @@ export function DiscussionSummary({ query }: Props) {
         {Object.entries(summaryData.summary).map(
           ([pValue, outcomeData]: [string, OutcomeData], index: number, array: [string, OutcomeData][]) => {
             const hasContent = outcomeData?.summary || (outcomeData?.sources && outcomeData.sources.length > 0);
+            const decodedLabel = getDecodedOptionLabel(pValue, options);
 
             return (
               <div key={pValue}>
                 <div className="pb-5">
                   <h3 className="text-xl font-bold uppercase tracking-wider mb-3">
-                    {pValue}
+                    {pValue.toUpperCase()}{decodedLabel ? ` (${decodedLabel})` : ''}
                   </h3>
 
                   {outcomeData?.summary ? (
