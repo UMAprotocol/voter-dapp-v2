@@ -90,9 +90,9 @@ interface WarmSummaryResponse {
 
 const ORACLE_CHILD_TUNNEL_ADDRESS =
   "0xac60353a54873c446101216829a6A98cDbbC3f3D";
-const BATCH_SIZE = 5;
+const WARM_SUMMARY_CONCURRENCY_SIZE = parseInt(process.env.WARM_SUMMARY_CONCURRENCY_SIZE || "5", 10);
 const MAX_EVENTS = 1000;
-const MAX_AGE_DAYS = 5;
+const WARM_SUMMARY_MAX_AGE_DAYS = parseInt(process.env.WARM_SUMMARY_MAX_AGE_DAYS || "5", 10);
 
 function decodeAncillaryData(ancillaryData: string): string {
   try {
@@ -153,9 +153,7 @@ function buildUpdateSummaryUrl(
   event: PriceRequestEvent,
   title: string
 ): string {
-  const baseUrl = `${
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-  }/api/update-summary`;
+  const baseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/update-summary`;
 
   // Build URL manually to control encoding format
   // Replace spaces with + and encode special characters
@@ -261,7 +259,7 @@ export default async function handler(
     // Calculate block range (approximately 3 days worth of blocks)
     // Polygon averages ~2 second block time, so 3 days = ~129,600 blocks
     const blocksPerDay = 43200; // 24 * 60 * 60 / 2
-    const fromBlock = Math.max(0, currentBlock - blocksPerDay * MAX_AGE_DAYS);
+    const fromBlock = Math.max(0, currentBlock - blocksPerDay * WARM_SUMMARY_MAX_AGE_DAYS);
 
     console.log(
       `🔍 Querying events from block ${fromBlock} to ${currentBlock}...`
@@ -286,7 +284,7 @@ export default async function handler(
     // Parse and filter events
     const parsedEvents: PriceRequestEvent[] = [];
     const cutoffTime =
-      Math.floor(Date.now() / 1000) - MAX_AGE_DAYS * 24 * 60 * 60;
+      Math.floor(Date.now() / 1000) - WARM_SUMMARY_MAX_AGE_DAYS * 24 * 60 * 60;
 
     for (const log of logs.slice(-MAX_EVENTS)) {
       // Take most recent events
@@ -318,7 +316,7 @@ export default async function handler(
     }
 
     console.log(
-      `✅ Parsed ${parsedEvents.length} valid events (filtered for last ${MAX_AGE_DAYS} days)`
+      `✅ Parsed ${parsedEvents.length} valid events (filtered for last ${WARM_SUMMARY_MAX_AGE_DAYS} days)`
     );
 
     if (parsedEvents.length === 0) {
@@ -357,17 +355,17 @@ export default async function handler(
     }
 
     console.log(
-      `🚀 Processing ${updateUrls.length} URLs in batches of ${BATCH_SIZE}...`
+      `🚀 Processing ${updateUrls.length} URLs in batches of ${WARM_SUMMARY_CONCURRENCY_SIZE}...`
     );
 
     // Process in batches
     const allSuccessful: string[] = [];
     const allErrors: { url: string; error: string }[] = [];
 
-    for (let i = 0; i < updateUrls.length; i += BATCH_SIZE) {
-      const batch = updateUrls.slice(i, i + BATCH_SIZE);
-      const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
-      const totalBatches = Math.ceil(updateUrls.length / BATCH_SIZE);
+    for (let i = 0; i < updateUrls.length; i += WARM_SUMMARY_CONCURRENCY_SIZE) {
+      const batch = updateUrls.slice(i, i + WARM_SUMMARY_CONCURRENCY_SIZE);
+      const batchNumber = Math.floor(i / WARM_SUMMARY_CONCURRENCY_SIZE) + 1;
+      const totalBatches = Math.ceil(updateUrls.length / WARM_SUMMARY_CONCURRENCY_SIZE);
 
       console.log(
         `📦 Processing batch ${batchNumber}/${totalBatches} (${batch.length} URLs)...`
@@ -382,7 +380,7 @@ export default async function handler(
       );
 
       // Add small delay between batches to be nice to the API
-      if (i + BATCH_SIZE < updateUrls.length) {
+      if (i + WARM_SUMMARY_CONCURRENCY_SIZE < updateUrls.length) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }

@@ -395,13 +395,12 @@ export default async function handler(
     const redis = Redis.fromEnv();
 
     // Call UMA API first to get comment count for cache key determination
-    //TEMP: change this to canonical link when the main summary logic supports replies.
-    const umaUrl = new URL(
-      "https://voter-dapp-v2-bbyt3w8b3-uma.vercel.app/api/discord-thread"
-    );
+    const discordThreadBaseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/discord-thread`;
+    
+    const umaUrl = new URL(discordThreadBaseUrl);
     umaUrl.searchParams.set("time", time);
     umaUrl.searchParams.set("identifier", identifier);
-    umaUrl.searchParams.set("title", title);
+    umaUrl.searchParams.set("title", title)
 
     const umaResponse = await fetch(umaUrl.toString());
 
