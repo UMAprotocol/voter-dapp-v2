@@ -9,9 +9,10 @@ const MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
 interface DiscordMessage {
   message: string;
   sender: string;
-  senderPicture: string;
+  senderPicture?: string;
   time: number;
   id: string;
+  replies?: DiscordMessage[];
 }
 
 interface UMAApiResponse {
@@ -184,8 +185,11 @@ export default async function handler(
       });
     }
 
-    // Format messages for OpenAI and compute hash
-    const formattedComments = umaData.thread
+    // Only use top-level comments for summary - ignore all replies
+    const topLevelComments = umaData.thread; // These are already top-level from the API
+
+    // Format messages for OpenAI and compute hash (top-level comments only)
+    const formattedComments = topLevelComments
       .map((msg) => {
         return `<Comment>
 <Metadata>
@@ -228,7 +232,7 @@ ${msg.message}
     });
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       messages: [
         {
           role: "system",
