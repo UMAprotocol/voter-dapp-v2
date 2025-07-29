@@ -396,7 +396,9 @@ export default async function handler(
 
     // Call UMA API first to get comment count for cache key determination
     //TEMP: change this to canonical link when the main summary logic supports replies.
-    const umaUrl = new URL("https://voter-dapp-v2-bbyt3w8b3-uma.vercel.app/api/discord-thread");
+    const umaUrl = new URL(
+      "https://voter-dapp-v2-bbyt3w8b3-uma.vercel.app/api/discord-thread"
+    );
     umaUrl.searchParams.set("time", time);
     umaUrl.searchParams.set("identifier", identifier);
     umaUrl.searchParams.set("title", title);
