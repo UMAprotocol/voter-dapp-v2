@@ -21,45 +21,44 @@ interface UMAApiResponse {
   thread: DiscordMessage[];
 }
 
-interface OutcomeData {
-  description: string;
+// Summary data structures
+interface SummaryOutcomeData {
   summary: string;
   sources: [string, number][];
 }
 
-interface UncategorizedData {
-  summary: string;
-  sources: [string, number][];
+interface SummaryData {
+  P1: SummaryOutcomeData;
+  P2: SummaryOutcomeData;
+  P3: SummaryOutcomeData;
+  P4: SummaryOutcomeData;
+  Uncategorized: SummaryOutcomeData;
 }
 
-interface StructuredSummary {
-  P1: OutcomeData;
-  P2: OutcomeData;
-  P3: OutcomeData;
-  P4: OutcomeData;
-  Uncategorized: UncategorizedData;
-}
-
-// Interface for what OpenAI actually returns (which includes metadata)
-interface OpenAIResponse {
-  summary: StructuredSummary;
-  generatedAt?: string;
-  commentsHash?: string;
-  promptVersion?: string;
+// Interface for what OpenAI returns (JSON response)
+interface OpenAIJsonResponse {
+  summary?: {
+    P1?: { summary?: string } | string;
+    P2?: { summary?: string } | string;
+    P3?: { summary?: string } | string;
+    P4?: { summary?: string } | string;
+    Uncategorized?: { summary?: string } | string;
+  };
+  P1?: { summary?: string } | string;
+  P2?: { summary?: string } | string;
+  P3?: { summary?: string } | string;
+  P4?: { summary?: string } | string;
+  Uncategorized?: { summary?: string } | string;
+  sources?: Record<string, [string, number][]>;
 }
 
 // Interface for batch processing
 interface BatchResult {
   batchNumber: number;
-  summary: StructuredSummary;
+  summary: OpenAIJsonResponse;
   commentCount: number;
   startIndex: number;
   endIndex: number;
-}
-
-// Interface for parsed JSON data from OpenAI condensation
-interface ParsedCondensationData {
-  summary: StructuredSummary;
 }
 
 interface UpdateResponse {
@@ -71,13 +70,13 @@ interface UpdateResponse {
   processingTimeMs: number;
 }
 
-// Change this to be simpler and avoid nesting issues
+// Simplified cache data structure
 interface CacheData {
-  P1: OutcomeData;
-  P2: OutcomeData;
-  P3: OutcomeData;
-  P4: OutcomeData;
-  Uncategorized: UncategorizedData;
+  P1: SummaryOutcomeData;
+  P2: SummaryOutcomeData;
+  P3: SummaryOutcomeData;
+  P4: SummaryOutcomeData;
+  Uncategorized: SummaryOutcomeData;
   generatedAt: string;
   commentsHash: string;
   promptVersion: string;
@@ -151,9 +150,9 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 
     // Extract only summary text for each outcome
     Object.entries(batchResult.summary).forEach(
-      ([outcome, data]: [string, OutcomeData | UncategorizedData]) => {
-        if (data.summary && data.summary.trim()) {
-          summariesText += `${outcome}: ${data.summary}\n`;
+      ([outcome, data]: [string, string]) => {
+        if (outcome !== "sources" && data && data.trim()) {
+          summariesText += `${outcome}: ${data}\n`;
         }
       }
     );
@@ -185,18 +184,20 @@ function aggregateSources(
 
   // Collect all user appearances across all batches
   batchResults.forEach((batch) => {
-    Object.entries(batch.summary).forEach(
-      ([outcome, data]: [string, OutcomeData | UncategorizedData]) => {
-        if (data.sources && Array.isArray(data.sources)) {
-          data.sources.forEach(([username, timestamp]: [string, number]) => {
-            if (!userAppearances[username]) {
-              userAppearances[username] = [];
-            }
-            userAppearances[username].push({ outcome, timestamp });
-          });
+    if (batch.summary.sources) {
+      Object.entries(batch.summary.sources).forEach(
+        ([outcome, sources]: [string, [string, number][]]) => {
+          if (sources && Array.isArray(sources)) {
+            sources.forEach(([username, timestamp]: [string, number]) => {
+              if (!userAppearances[username]) {
+                userAppearances[username] = [];
+              }
+              userAppearances[username].push({ outcome, timestamp });
+            });
+          }
         }
-      }
-    );
+      );
+    }
   });
 
   // Place each user in their most recent outcome only
@@ -223,57 +224,112 @@ function aggregateSources(
   return aggregated;
 }
 
-function injectSourcesIntoSummary(
-  condensedSummary: string,
+function parseResponse(
+  response: string,
   aggregatedSources: Record<string, [string, number][]>
-): StructuredSummary {
+): SummaryData {
   try {
-    let cleanedSummary = condensedSummary.trim();
+    let cleanedResponse = response.trim();
 
     // Remove markdown code block formatting if present
-    if (cleanedSummary.startsWith("```json")) {
-      cleanedSummary = cleanedSummary.substring(7);
-    } else if (cleanedSummary.startsWith("```")) {
-      cleanedSummary = cleanedSummary.substring(3);
-    }
-    if (cleanedSummary.endsWith("```")) {
-      cleanedSummary = cleanedSummary.substring(0, cleanedSummary.length - 3);
-    }
-    cleanedSummary = cleanedSummary.trim();
-
-    const data = JSON.parse(cleanedSummary) as ParsedCondensationData;
-
-    // Ensure structure exists
-    if (!data.summary) {
-      data.summary = {
-        P1: { description: "", summary: "", sources: [] },
-        P2: { description: "", summary: "", sources: [] },
-        P3: { description: "", summary: "", sources: [] },
-        P4: { description: "", summary: "", sources: [] },
-        Uncategorized: { summary: "", sources: [] },
-      };
-    }
-
-    // Inject sources into each outcome
-    (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
-      if (!data.summary[outcome]) {
-        if (outcome === "Uncategorized") {
-          data.summary[outcome] = { summary: "", sources: [] };
-        } else {
-          data.summary[outcome] = {
-            description: "",
-            summary: "",
-            sources: [],
-          };
-        }
+    if (cleanedResponse.startsWith("```")) {
+      const firstNewline = cleanedResponse.indexOf("\n");
+      if (firstNewline !== -1) {
+        cleanedResponse = cleanedResponse.substring(firstNewline + 1);
       }
-      data.summary[outcome].sources = aggregatedSources[outcome] || [];
-    });
+    }
+    if (cleanedResponse.endsWith("```")) {
+      cleanedResponse = cleanedResponse.substring(
+        0,
+        cleanedResponse.length - 3
+      );
+    }
+    cleanedResponse = cleanedResponse.trim();
 
-    return data.summary;
+    // Try to parse as JSON first
+    try {
+      const jsonResponse = JSON.parse(cleanedResponse) as OpenAIJsonResponse;
+
+      // Handle nested summary structure
+      const summaryData = jsonResponse.summary || jsonResponse;
+
+      // Helper function to extract summary text
+      const extractSummary = (data: unknown): string => {
+        if (typeof data === "string") return data;
+        if (data && typeof data === "object" && "summary" in data) {
+          const obj = data as { summary: unknown };
+          return typeof obj.summary === "string" ? obj.summary : "";
+        }
+        return "";
+      };
+
+      const outcomes: SummaryData = {
+        P1: {
+          summary: extractSummary(summaryData.P1),
+          sources: aggregatedSources.P1 || [],
+        },
+        P2: {
+          summary: extractSummary(summaryData.P2),
+          sources: aggregatedSources.P2 || [],
+        },
+        P3: {
+          summary: extractSummary(summaryData.P3),
+          sources: aggregatedSources.P3 || [],
+        },
+        P4: {
+          summary: extractSummary(summaryData.P4),
+          sources: aggregatedSources.P4 || [],
+        },
+        Uncategorized: {
+          summary: extractSummary(summaryData.Uncategorized),
+          sources: aggregatedSources.Uncategorized || [],
+        },
+      };
+
+      return outcomes;
+    } catch (jsonError) {
+      // Fall back to markdown parsing if JSON parsing fails
+      const sections = {
+        P1: "",
+        P2: "",
+        P3: "",
+        P4: "",
+        Uncategorized: "",
+      };
+
+      // Split by section headers and extract content
+      const sectionRegex =
+        /^## (P[1-4]|Uncategorized)\s*\n([\s\S]*?)(?=^## |$)/gm;
+      let match;
+
+      while ((match = sectionRegex.exec(cleanedResponse)) !== null) {
+        const sectionName = match[1] as keyof typeof sections;
+        const sectionContent = match[2].trim();
+        sections[sectionName] = sectionContent;
+      }
+
+      // If no sections found, put everything in Uncategorized
+      if (Object.values(sections).every((s) => s === "")) {
+        sections.Uncategorized = cleanedResponse;
+      }
+
+      // Create final structure
+      const outcomes: SummaryData = {
+        P1: { summary: sections.P1, sources: aggregatedSources.P1 || [] },
+        P2: { summary: sections.P2, sources: aggregatedSources.P2 || [] },
+        P3: { summary: sections.P3, sources: aggregatedSources.P3 || [] },
+        P4: { summary: sections.P4, sources: aggregatedSources.P4 || [] },
+        Uncategorized: {
+          summary: sections.Uncategorized,
+          sources: aggregatedSources.Uncategorized || [],
+        },
+      };
+
+      return outcomes;
+    }
   } catch (error) {
     throw new Error(
-      `Failed to inject sources: ${
+      `Failed to parse response: ${
         error instanceof Error ? error.message : "Unknown error"
       }`
     );
@@ -281,7 +337,7 @@ function injectSourcesIntoSummary(
 }
 
 // Helper function to clean placeholder source links from summary text
-function cleanSummaryText(summaryData: StructuredSummary): StructuredSummary {
+function cleanSummaryText(summaryData: SummaryData): SummaryData {
   // Regex pattern to match [Source: ...] patterns that don't contain valid URLs
   // This will match [Source: anything] that doesn't contain http:// or https://
   const invalidSourcePattern =
@@ -496,10 +552,10 @@ ${msg.message}
       apiKey: openaiApiKey,
     });
 
-    let summaryData: StructuredSummary;
+    let summaryData: SummaryData;
 
     if (topLevelComments.length <= batchSize) {
-      // Single-pass processing (existing logic)
+      // Single-pass processing for markdown
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
@@ -516,22 +572,31 @@ ${msg.message}
         response_format: { type: "json_object" },
       });
 
-      const summaryText = completion.choices[0]?.message?.content;
+      const markdownResponse = completion.choices[0]?.message?.content;
 
-      if (!summaryText) {
+      if (!markdownResponse) {
         throw new Error("OpenAI returned empty response");
       }
 
-      let openAIResponse: OpenAIResponse;
-      try {
-        openAIResponse = JSON.parse(summaryText) as OpenAIResponse;
-      } catch (parseError) {
-        throw new Error("Failed to parse OpenAI response as JSON");
-      }
+      // For single-pass, we need to parse the markdown response and extract sources
+      // Create a simple aggregated sources structure from the comments
+      const aggregatedSources: Record<string, [string, number][]> = {
+        P1: [],
+        P2: [],
+        P3: [],
+        P4: [],
+        Uncategorized: [],
+      };
 
-      summaryData = openAIResponse.summary;
+      // Add all commenters to uncategorized for now (the AI will categorize them in the markdown)
+      topLevelComments.forEach((comment) => {
+        aggregatedSources.Uncategorized.push([comment.sender, comment.time]);
+      });
+
+      // Create summary structure
+      summaryData = parseResponse(markdownResponse, aggregatedSources);
     } else {
-      // Batched processing
+      // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
       const batchResults: BatchResult[] = [];
 
@@ -576,18 +641,30 @@ ${msg.message}
           );
         }
 
-        let batchSummary: OpenAIResponse;
-        try {
-          batchSummary = JSON.parse(batchSummaryText) as OpenAIResponse;
-        } catch (parseError) {
-          throw new Error(
-            `Failed to parse batch ${batchNumber} response as JSON`
-          );
-        }
+        // Create dummy batch result structure for now - we'll handle condensation differently
+        const batchSources: Record<string, [string, number][]> = {
+          P1: [],
+          P2: [],
+          P3: [],
+          P4: [],
+          Uncategorized: [],
+        };
+
+        // Add batch commenters to uncategorized for now
+        batch.forEach((comment) => {
+          batchSources.Uncategorized.push([comment.sender, comment.time]);
+        });
 
         batchResults.push({
           batchNumber,
-          summary: batchSummary.summary,
+          summary: {
+            P1: "",
+            P2: "",
+            P3: "",
+            P4: "",
+            Uncategorized: batchSummaryText,
+            sources: batchSources,
+          },
           commentCount: batch.length,
           startIndex,
           endIndex,
@@ -623,11 +700,8 @@ ${msg.message}
       // Aggregate sources from all batches
       const aggregatedSources = aggregateSources(batchResults);
 
-      // Inject sources into condensed summary
-      summaryData = injectSourcesIntoSummary(
-        condensedSummaryText,
-        aggregatedSources
-      );
+      // Parse the condensed response
+      summaryData = parseResponse(condensedSummaryText, aggregatedSources);
     }
 
     // Clean placeholder source links from the summary data
