@@ -9,20 +9,26 @@ type Props = {
 };
 
 // Helper function to get decoded option label for a p-value
-function getDecodedOptionLabel(pValue: string, options?: { label: string }[]): string | null {
-  if (!options || !pValue.toUpperCase().startsWith('P')) return null;
-  
+function getDecodedOptionLabel(
+  pValue: string,
+  options?: { label: string }[]
+): string | null {
+  if (!options || !pValue.toUpperCase().startsWith("P")) return null;
+
   const pNumber = parseInt(pValue.substring(1), 10);
   if (isNaN(pNumber) || pNumber < 1 || pNumber > options.length) return null;
-  
+
   return options[pNumber - 1]?.label || null;
 }
 
 // Helper function to process summary text and convert sources to links
 function processSummaryText(text: string) {
   // Split by \ to handle line breaks (space-backslash-space pattern)
-  const lines = text.split(' \\ ').map(line => line.trim().replace(/^• /, '')).filter(line => line.length > 0);
-  
+  const lines = text
+    .split(" \\ ")
+    .map((line) => line.trim().replace(/^• /, ""))
+    .filter((line) => line.length > 0);
+
   return lines.map((line, lineIndex) => {
     // Find source patterns like [Source: URL] and convert to [source] format
     const sourcePattern = /\[Source:\s*(https?:\/\/[^\]]+)\]/g;
@@ -35,29 +41,31 @@ function processSummaryText(text: string) {
       if (match.index > lastIndex) {
         parts.push(line.slice(lastIndex, match.index));
       }
-      
+
       // Add [source] where "source" is clickable
       parts.push(
         <span key={`${lineIndex}-${match.index}`}>
-          [<a
+          [
+          <a
             href={match[1]}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#17b38c] underline hover:text-[#15a078]"
           >
             source
-          </a>]
+          </a>
+          ]
         </span>
       );
-      
+
       lastIndex = sourcePattern.lastIndex;
     }
-    
+
     // Add remaining text after the last source
     if (lastIndex < line.length) {
       parts.push(line.slice(lastIndex));
     }
-    
+
     return (
       <div key={lineIndex} className="mb-3 last:mb-0">
         {parts.length > 0 ? parts : line}
@@ -113,15 +121,18 @@ export function DiscussionSummary({ query }: Props) {
       </div>
       <div className="flex flex-col">
         {Object.entries(summaryData.summary).map(
-          ([pValue, outcomeData]: [string, OutcomeData], index: number, array: [string, OutcomeData][]) => {
-            const hasContent = outcomeData?.summary || (outcomeData?.sources && outcomeData.sources.length > 0);
+          (
+            [pValue, outcomeData]: [string, OutcomeData],
+            index: number,
+            array: [string, OutcomeData][]
+          ) => {
             const decodedLabel = getDecodedOptionLabel(pValue, options);
-
             return (
               <div key={pValue}>
                 <div className="pb-5">
-                  <h3 className="text-xl font-bold uppercase tracking-wider mb-3">
-                    {pValue.toUpperCase()}{decodedLabel ? ` (${decodedLabel})` : ''}
+                  <h3 className="mb-3 text-xl font-bold uppercase tracking-wider">
+                    {pValue.toUpperCase()}
+                    {decodedLabel ? ` (${decodedLabel})` : ""}
                   </h3>
 
                   {outcomeData?.summary ? (
@@ -129,13 +140,13 @@ export function DiscussionSummary({ query }: Props) {
                       {processSummaryText(outcomeData.summary)}
                     </div>
                   ) : (
-                    <p className="text-base leading-relaxed text-gray-500 italic">
+                    <p className="text-base italic leading-relaxed text-gray-500">
                       No comments argued for this outcome
                     </p>
                   )}
 
                   {outcomeData?.sources && outcomeData.sources.length > 0 && (
-                    <div className="flex flex-col gap-2 mt-3">
+                    <div className="mt-3 flex flex-col gap-2">
                       <span className="text-sm font-semibold uppercase tracking-wider ">
                         Sources:
                       </span>
@@ -160,10 +171,10 @@ export function DiscussionSummary({ query }: Props) {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Add horizontal rule between sections, but not after the last one */}
                 {index < array.length - 1 && (
-                  <hr className="border-gray-300 mb-5" />
+                  <hr className="mb-5 border-gray-300" />
                 )}
               </div>
             );
