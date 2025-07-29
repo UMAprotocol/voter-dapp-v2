@@ -114,7 +114,7 @@ export function DiscussionSummary({ query }: Props) {
         </div>
         <p className="py-1 text-base text-black/70">
           <span className="text-xl">⚠️</span> This is a convenience feature that
-          summarizes Discord discussions. This summary does not represent the
+          summarizes Discord discussions using an LLM. This summary does not represent the
           opinion of UMA. Always conduct your own research and due diligence
           before voting.
         </p>
