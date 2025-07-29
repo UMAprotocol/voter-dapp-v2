@@ -283,8 +283,9 @@ function injectSourcesIntoSummary(
 // Helper function to clean placeholder source links from summary text
 function cleanSummaryText(summaryData: StructuredSummary): StructuredSummary {
   // Regex pattern to match [Source: ...] patterns that don't contain valid URLs
-  // This will match [Source: anything] unless it contains http:// or https://
-  const invalidSourcePattern = /\s*\[Source:\s*(?!https?:\/\/)[^\]]*\]\.?/gi;
+  // This will match [Source: anything] that doesn't contain http:// or https://
+  const invalidSourcePattern =
+    /\s*\[Source:[^\]]*(?<!https?:\/\/[^\]]*)\]\.?/gi;
 
   const cleanedSummary = { ...summaryData };
 
