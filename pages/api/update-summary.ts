@@ -395,12 +395,18 @@ export default async function handler(
     const redis = Redis.fromEnv();
 
     // Call UMA API first to get comment count for cache key determination
-    const discordThreadBaseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/discord-thread`;
-    
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    if (!siteUrl) {
+      return res
+        .status(500)
+        .json({ error: "NEXT_PUBLIC_SITE_URL not configured" });
+    }
+    const discordThreadBaseUrl = `${siteUrl}/api/discord-thread`;
+
     const umaUrl = new URL(discordThreadBaseUrl);
     umaUrl.searchParams.set("time", time);
     umaUrl.searchParams.set("identifier", identifier);
-    umaUrl.searchParams.set("title", title)
+    umaUrl.searchParams.set("title", title);
 
     const umaResponse = await fetch(umaUrl.toString());
 

@@ -67,7 +67,12 @@ function processSummaryText(text: string) {
     }
 
     return (
-      <div key={lineIndex} className={`mb-3 last:mb-0 ${line.trim().startsWith('•') ? 'ml-4' : ''}`}>
+      <div
+        key={lineIndex}
+        className={`mb-3 last:mb-0 ${
+          line.trim().startsWith("•") ? "ml-4" : ""
+        }`}
+      >
         {parts.length > 0 ? parts : line}
       </div>
     );
@@ -77,6 +82,19 @@ function processSummaryText(text: string) {
 export function DiscussionSummary({ query }: Props) {
   const { data: summaryData, isLoading, isError } = useDiscussionSummary(query);
   const { options } = query;
+
+  // Format the generated timestamp
+  const formatTimestamp = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
+  };
 
   if (!summaryData && isError) {
     return (
@@ -112,6 +130,11 @@ export function DiscussionSummary({ query }: Props) {
             AI Summary
           </span>
         </div>
+        {summaryData?.generatedAt && (
+          <p className="mb-2 text-sm text-black/50">
+            Generated on {formatTimestamp(summaryData.generatedAt)}
+          </p>
+        )}
         <p className="py-1 text-base text-black/70">
           <span className="text-xl">⚠️</span> This is a convenience feature that
           summarizes Discord discussions using an LLM. This summary does not
