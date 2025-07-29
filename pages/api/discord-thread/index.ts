@@ -89,7 +89,9 @@ async function fetchDiscordThread(
   const { messages } = await getThreadMessagesForRequest(requestedId);
 
   // First, process all messages into a flat structure
-  const allProcessedMessages: (DiscordMessageT & { referencedMessageId?: string })[] = messages
+  const allProcessedMessages: (DiscordMessageT & {
+    referencedMessageId?: string;
+  })[] = messages
     .filter((message) => message.content != "")
     .map((msg: RawDiscordMessageT) => {
       try {
@@ -116,8 +118,11 @@ async function fetchDiscordThread(
     .filter(Boolean) as (DiscordMessageT & { referencedMessageId?: string })[];
 
   // Create a map of all messages by ID for quick lookup
-  const messageMap = new Map<string, DiscordMessageT & { referencedMessageId?: string }>();
-  allProcessedMessages.forEach(msg => messageMap.set(msg.id, msg));
+  const messageMap = new Map<
+    string,
+    DiscordMessageT & { referencedMessageId?: string }
+  >();
+  allProcessedMessages.forEach((msg) => messageMap.set(msg.id, msg));
 
   // Helper function to find the root parent message ID
   function findRootParentId(messageId: string): string {
@@ -136,15 +141,21 @@ async function fetchDiscordThread(
 
   for (const message of allProcessedMessages) {
     const { referencedMessageId, ...cleanMessage } = message;
-    
+
     if (!referencedMessageId) {
       // This is a top-level message
-      topLevelMessages.push({ ...cleanMessage, replies: [] } as DiscordMessageT);
+      topLevelMessages.push({
+        ...cleanMessage,
+        replies: [],
+      } as DiscordMessageT);
     } else {
       // This is a reply - find the root parent message
       const rootParentId = findRootParentId(referencedMessageId);
-      
-      if (messageMap.has(rootParentId) && !messageMap.get(rootParentId)!.referencedMessageId) {
+
+      if (
+        messageMap.has(rootParentId) &&
+        !messageMap.get(rootParentId)!.referencedMessageId
+      ) {
         // Root parent exists and is a top-level message, add to replies map
         if (!repliesMap.has(rootParentId)) {
           repliesMap.set(rootParentId, []);
@@ -152,14 +163,16 @@ async function fetchDiscordThread(
         repliesMap.get(rootParentId)!.push(cleanMessage);
       } else {
         // Root parent doesn't exist in our current batch or isn't top-level - treat as orphaned reply
-        console.warn(`Orphaned reply found: ${message.id} references missing or non-top-level parent chain ending at ${rootParentId}`);
+        console.warn(
+          `Orphaned reply found: ${message.id} references missing or non-top-level parent chain ending at ${rootParentId}`
+        );
         orphanedReplies.push(cleanMessage);
       }
     }
   }
 
   // Attach replies to their parent messages
-  const finalMessages = topLevelMessages.map(message => {
+  const finalMessages = topLevelMessages.map((message) => {
     const replies = repliesMap.get(message.id) || [];
     return {
       ...message,
@@ -169,7 +182,7 @@ async function fetchDiscordThread(
 
   // Add orphaned replies as top-level messages at the end
   // This ensures no replies are lost even if their parent isn't in our batch
-  orphanedReplies.forEach(orphanedReply => {
+  orphanedReplies.forEach((orphanedReply) => {
     finalMessages.push({ ...orphanedReply, replies: [] });
   });
 

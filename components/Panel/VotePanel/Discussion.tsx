@@ -28,11 +28,17 @@ interface MessageItemProps {
   isReply?: boolean;
 }
 
-function MessageItem({ message, sender, senderPicture, time, id, replies, isReply = false }: MessageItemProps) {
+function MessageItem({
+  message,
+  sender,
+  senderPicture,
+  time,
+  id: _id,
+  replies,
+  isReply = false,
+}: MessageItemProps) {
   const hasReplies = replies && replies.length > 0;
-  
 
-  
   return (
     <MessageItemWrapper isReply={isReply} hasReplies={hasReplies}>
       {isReply && <ThreadLine />}
@@ -75,11 +81,7 @@ function MessageItem({ message, sender, senderPicture, time, id, replies, isRepl
       {hasReplies && (
         <RepliesWrapper>
           {replies.map((reply) => (
-            <MessageItem
-              key={reply.id}
-              {...reply}
-              isReply={true}
-            />
+            <MessageItem key={reply.id} {...reply} isReply={true} />
           ))}
         </RepliesWrapper>
       )}
@@ -147,7 +149,11 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           {hasThread ? (
             <>
               {discussion?.thread.map((messageData, index, array) => (
-                <SectionWrapper key={messageData.id} hasReplies={Boolean(messageData.replies?.length)} isLast={index === array.length - 1}>
+                <SectionWrapper
+                  key={messageData.id}
+                  hasReplies={Boolean(messageData.replies?.length)}
+                  isLast={index === array.length - 1}
+                >
                   <MessageItem {...messageData} />
                 </SectionWrapper>
               ))}
@@ -187,7 +193,7 @@ const SectionWrapper = styled.div<{ hasReplies?: boolean; isLast?: boolean }>`
     if (!hasReplies && !isLast) {
       return `border-bottom: 1px solid var(--black-opacity-25);`;
     }
-    return '';
+    return "";
   }}
 `;
 
@@ -309,9 +315,14 @@ const LoadingSpinnerWrapper = styled.div`
   place-items: center;
 `;
 
-const MessageItemWrapper = styled.div<{ isReply: boolean; hasReplies?: boolean }>`
+const MessageItemWrapper = styled.div<{
+  isReply: boolean;
+  hasReplies?: boolean;
+}>`
   position: relative;
-  ${({ isReply }) => isReply && `
+  ${({ isReply }) =>
+    isReply &&
+    `
     margin-left: 30px;
     padding-top: 10px;
     padding-left: 15px;
@@ -326,9 +337,9 @@ const ThreadLine = styled.div`
   height: calc(100% + 5px);
   background: var(--black-opacity-25);
   border-radius: 1px;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 25px;
     left: 0;
