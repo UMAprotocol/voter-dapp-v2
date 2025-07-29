@@ -23,10 +23,10 @@ function getDecodedOptionLabel(
 
 // Helper function to process summary text and convert sources to links
 function processSummaryText(text: string) {
-  // Split by \ to handle line breaks (space-backslash-space pattern)
+  // Split by both \ and \n to handle different line break patterns
   const lines = text
-    .split(" \\ ")
-    .map((line) => line.trim().replace(/^• /, ""))
+    .split(/\s\\\s|\\n|\n/)
+    .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
   return lines.map((line, lineIndex) => {
@@ -67,7 +67,7 @@ function processSummaryText(text: string) {
     }
 
     return (
-      <div key={lineIndex} className="mb-3 last:mb-0">
+      <div key={lineIndex} className={`mb-3 last:mb-0 ${line.trim().startsWith('•') ? 'ml-4' : ''}`}>
         {parts.length > 0 ? parts : line}
       </div>
     );
