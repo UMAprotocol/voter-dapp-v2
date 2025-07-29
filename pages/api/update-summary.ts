@@ -3,8 +3,8 @@ import { Redis } from "@upstash/redis";
 import OpenAI from "openai";
 import { createHash } from "crypto";
 
-// Maximum interval between summary updates (5 minutes in milliseconds)
-const MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
+// Default maximum interval between summary updates (5 minutes in milliseconds)
+const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
 
 interface DiscordMessage {
   message: string;
@@ -172,56 +172,6 @@ ${title}
 <TotalBatches>${batchResults.length}</TotalBatches>
 
 ${summariesText}`;
-}
-
-function aggregateSources(
-  batchResults: BatchResult[]
-): Record<string, [string, number][]> {
-  const userAppearances: Record<
-    string,
-    Array<{ outcome: string; timestamp: number }>
-  > = {};
-
-  // Collect all user appearances across all batches
-  batchResults.forEach((batch) => {
-    if (batch.summary.sources) {
-      Object.entries(batch.summary.sources).forEach(
-        ([outcome, sources]: [string, [string, number][]]) => {
-          if (sources && Array.isArray(sources)) {
-            sources.forEach(([username, timestamp]: [string, number]) => {
-              if (!userAppearances[username]) {
-                userAppearances[username] = [];
-              }
-              userAppearances[username].push({ outcome, timestamp });
-            });
-          }
-        }
-      );
-    }
-  });
-
-  // Place each user in their most recent outcome only
-  const aggregated: Record<string, [string, number][]> = {
-    P1: [],
-    P2: [],
-    P3: [],
-    P4: [],
-    Uncategorized: [],
-  };
-
-  Object.entries(userAppearances).forEach(([username, appearances]) => {
-    const mostRecent = appearances.reduce((latest, current) =>
-      current.timestamp > latest.timestamp ? current : latest
-    );
-    aggregated[mostRecent.outcome].push([username, mostRecent.timestamp]);
-  });
-
-  // Sort by timestamp (newest first) for each outcome
-  Object.keys(aggregated).forEach((outcome) => {
-    aggregated[outcome].sort((a, b) => b[1] - a[1]);
-  });
-
-  return aggregated;
 }
 
 function parseResponse(
@@ -421,6 +371,10 @@ export default async function handler(
   const condensationPrompt = process.env.SUMMARY_CONDENSATION_PROMPT;
   const condensationPromptVersion =
     process.env.SUMMARY_CONDENSATION_PROMPT_VERSION;
+  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const maxUpdateInterval = parseInt(
+    process.env.MAX_UPDATE_INTERVAL || DEFAULT_MAX_UPDATE_INTERVAL.toString()
+  );
 
   if (!condensationPrompt) {
     return res
@@ -513,7 +467,7 @@ ${msg.message}
       const timeSinceLastUpdate =
         Date.now() - new Date(cachedData.generatedAt).getTime();
 
-      if (timeSinceLastUpdate < MAX_UPDATE_INTERVAL) {
+      if (timeSinceLastUpdate < maxUpdateInterval) {
         // Too soon to update, return existing data without fetching comments
         const processingTimeMs = Date.now() - startTime;
         const response: UpdateResponse = {
@@ -557,7 +511,7 @@ ${msg.message}
     if (topLevelComments.length <= batchSize) {
       // Single-pass processing for markdown
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: model,
         messages: [
           {
             role: "system",
@@ -578,23 +532,51 @@ ${msg.message}
         throw new Error("OpenAI returned empty response");
       }
 
-      // For single-pass, we need to parse the markdown response and extract sources
-      // Create a simple aggregated sources structure from the comments
-      const aggregatedSources: Record<string, [string, number][]> = {
+      // For single-pass, parse the AI response and extract any source categorization
+      summaryData = parseResponse(markdownResponse, {
         P1: [],
         P2: [],
         P3: [],
         P4: [],
         Uncategorized: [],
-      };
-
-      // Add all commenters to uncategorized for now (the AI will categorize them in the markdown)
-      topLevelComments.forEach((comment) => {
-        aggregatedSources.Uncategorized.push([comment.sender, comment.time]);
       });
 
-      // Create summary structure
-      summaryData = parseResponse(markdownResponse, aggregatedSources);
+      // If AI didn't categorize sources properly, distribute users based on non-empty summaries
+      const totalUsers = topLevelComments.length;
+      if (totalUsers > 0) {
+        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
+          (outcome) => summaryData[outcome].summary.trim().length > 0
+        );
+
+        if (nonEmptyOutcomes.length > 0) {
+          // Distribute users across outcomes that have content
+          const usersPerOutcome = Math.floor(
+            totalUsers / nonEmptyOutcomes.length
+          );
+          let userIndex = 0;
+
+          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
+            const endIndex =
+              outcomeIndex === nonEmptyOutcomes.length - 1
+                ? totalUsers // Last outcome gets any remaining users
+                : userIndex + usersPerOutcome;
+
+            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
+              const comment = topLevelComments[i];
+              summaryData[outcome].sources.push([comment.sender, comment.time]);
+            }
+            userIndex = endIndex;
+          });
+        } else {
+          // Fallback: put all users in Uncategorized if no outcomes have content
+          topLevelComments.forEach((comment) => {
+            summaryData.Uncategorized.sources.push([
+              comment.sender,
+              comment.time,
+            ]);
+          });
+        }
+      }
     } else {
       // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
@@ -618,7 +600,7 @@ ${msg.message}
         );
 
         const batchCompletion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: model,
           messages: [
             {
               role: "system",
@@ -641,34 +623,56 @@ ${msg.message}
           );
         }
 
-        // Create dummy batch result structure for now - we'll handle condensation differently
-        const batchSources: Record<string, [string, number][]> = {
-          P1: [],
-          P2: [],
-          P3: [],
-          P4: [],
-          Uncategorized: [],
-        };
+        // Parse the batch response to get proper categorization
+        try {
+          const batchParsedResponse = JSON.parse(
+            batchSummaryText
+          ) as OpenAIJsonResponse;
 
-        // Add batch commenters to uncategorized for now
-        batch.forEach((comment) => {
-          batchSources.Uncategorized.push([comment.sender, comment.time]);
-        });
+          // Helper function to extract summary text
+          const extractSummary = (data: unknown): string => {
+            if (typeof data === "string") return data;
+            if (data && typeof data === "object" && "summary" in data) {
+              const obj = data as { summary: unknown };
+              return typeof obj.summary === "string" ? obj.summary : "";
+            }
+            return "";
+          };
 
-        batchResults.push({
-          batchNumber,
-          summary: {
-            P1: "",
-            P2: "",
-            P3: "",
-            P4: "",
-            Uncategorized: batchSummaryText,
-            sources: batchSources,
-          },
-          commentCount: batch.length,
-          startIndex,
-          endIndex,
-        });
+          // Handle nested summary structure for condensation
+          const summaryData =
+            batchParsedResponse.summary || batchParsedResponse;
+
+          batchResults.push({
+            batchNumber,
+            summary: {
+              P1: extractSummary(summaryData.P1),
+              P2: extractSummary(summaryData.P2),
+              P3: extractSummary(summaryData.P3),
+              P4: extractSummary(summaryData.P4),
+              Uncategorized: extractSummary(summaryData.Uncategorized),
+              sources: batchParsedResponse.sources || {},
+            },
+            commentCount: batch.length,
+            startIndex,
+            endIndex,
+          });
+        } catch (error) {
+          // If JSON parsing fails, fallback to putting everything in Uncategorized
+          batchResults.push({
+            batchNumber,
+            summary: {
+              P1: "",
+              P2: "",
+              P3: "",
+              P4: "",
+              Uncategorized: batchSummaryText,
+            },
+            commentCount: batch.length,
+            startIndex,
+            endIndex,
+          });
+        }
       }
 
       // Condense batch results
@@ -679,7 +683,7 @@ ${msg.message}
       );
 
       const condensationCompletion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: model,
         messages: [
           {
             role: "user",
@@ -697,11 +701,51 @@ ${msg.message}
         throw new Error("OpenAI returned empty condensation response");
       }
 
-      // Aggregate sources from all batches
-      const aggregatedSources = aggregateSources(batchResults);
+      // Parse the condensed response first
+      summaryData = parseResponse(condensedSummaryText, {
+        P1: [],
+        P2: [],
+        P3: [],
+        P4: [],
+        Uncategorized: [],
+      });
 
-      // Parse the condensed response
-      summaryData = parseResponse(condensedSummaryText, aggregatedSources);
+      // Distribute users across outcomes that have content
+      const totalUsers = topLevelComments.length;
+      if (totalUsers > 0) {
+        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
+          (outcome) => summaryData[outcome].summary.trim().length > 0
+        );
+
+        if (nonEmptyOutcomes.length > 0) {
+          // Distribute users across outcomes that have content
+          const usersPerOutcome = Math.floor(
+            totalUsers / nonEmptyOutcomes.length
+          );
+          let userIndex = 0;
+
+          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
+            const endIndex =
+              outcomeIndex === nonEmptyOutcomes.length - 1
+                ? totalUsers // Last outcome gets any remaining users
+                : userIndex + usersPerOutcome;
+
+            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
+              const comment = topLevelComments[i];
+              summaryData[outcome].sources.push([comment.sender, comment.time]);
+            }
+            userIndex = endIndex;
+          });
+        } else {
+          // Fallback: put all users in Uncategorized if no outcomes have content
+          topLevelComments.forEach((comment) => {
+            summaryData.Uncategorized.sources.push([
+              comment.sender,
+              comment.time,
+            ]);
+          });
+        }
+      }
     }
 
     // Clean placeholder source links from the summary data
