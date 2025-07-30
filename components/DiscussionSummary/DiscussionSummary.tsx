@@ -30,13 +30,13 @@ function processSummaryText(text: string) {
     .filter((line) => line.length > 0)
     .map((line) => {
       // Remove trailing backslashes and ensure lines end with a period
-      let cleanLine = line.replace(/\\+$/, '').trim();
-      
+      let cleanLine = line.replace(/\\+$/, "").trim();
+
       // If line doesn't end with punctuation, add a period
       if (cleanLine && !/[.!?]$/.test(cleanLine)) {
-        cleanLine += '.';
+        cleanLine += ".";
       }
-      
+
       return cleanLine;
     })
     .filter((line) => line.length > 0);
@@ -80,16 +80,16 @@ function processSummaryText(text: string) {
 
     // Check if this line already has a bullet point
     const hasBulletPoint = line.trim().startsWith("•");
-    
+
     // For non-empty content lines, ensure they have bullet points
     let bulletContent;
-    
+
     if (hasBulletPoint) {
       // Handle existing bullet points - remove bullet from processing
       if (parts.length > 0) {
         bulletContent = parts.map((part, partIndex) => {
-          if (partIndex === 0 && typeof part === 'string') {
-            return part.replace(/^•\s*/, '');
+          if (partIndex === 0 && typeof part === "string") {
+            return part.replace(/^•\s*/, "");
           }
           return part;
         });
@@ -100,13 +100,11 @@ function processSummaryText(text: string) {
       // Add bullet point to lines that don't have one
       bulletContent = parts.length > 0 ? parts : line;
     }
-    
+
     return (
-      <div key={lineIndex} className="mb-3 last:mb-0 flex">
+      <div key={lineIndex} className="mb-3 flex last:mb-0">
         <span className="mr-2 mt-0 flex-shrink-0">•</span>
-        <div className="flex-1">
-          {bulletContent}
-        </div>
+        <div className="flex-1">{bulletContent}</div>
       </div>
     );
   });
