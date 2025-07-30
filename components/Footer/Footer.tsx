@@ -6,7 +6,7 @@ import React from "react";
 export function Footer() {
   return (
     <footer className="mt-auto max-h-[400px] w-full bg-white py-6">
-      <div className="md:gap-8 mx-auto flex w-full max-w-[--page-width] flex-col items-center justify-start gap-4 px-[--page-padding] md:flex-row">
+      <div className="mx-auto flex w-full max-w-[--page-width] flex-col items-center justify-start gap-4 px-[--page-padding] md:flex-row md:gap-8">
         <div className="flex items-center justify-center gap-4 md:justify-end">
           <Link
             className="group"
