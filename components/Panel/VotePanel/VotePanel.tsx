@@ -87,10 +87,14 @@ export function VotePanel({ content }: Props) {
         title: "Details",
         content: <Details {...content} />,
       },
-      {
-        title: "Discussion Summary",
-        content: <DiscussionSummary query={content} />,
-      },
+      ...(content.origin === "Polymarket"
+        ? [
+            {
+              title: "Discussion Summary",
+              content: <DiscussionSummary query={content} />,
+            },
+          ]
+        : []),
       {
         title: "Discord Comments",
         content: (
