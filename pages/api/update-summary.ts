@@ -96,6 +96,76 @@ function splitIntoBatches(
   return batches;
 }
 
+
+
+// Helper function to aggregate sources from batch results
+function aggregateSourcesFromBatches(
+  summaryData: SummaryData,
+  batchResults: BatchResult[]
+): SummaryData {
+  const result = { ...summaryData };
+  
+  // Initialize aggregated sources
+  const aggregatedSources: Record<string, [string, number][]> = {
+    P1: [],
+    P2: [],
+    P3: [],
+    P4: [],
+    Uncategorized: []
+  };
+
+  // Aggregate sources from all batches
+  batchResults.forEach(batch => {
+    if (batch.summary.sources) {
+      Object.entries(batch.summary.sources).forEach(([outcome, sources]) => {
+        if (aggregatedSources[outcome] && Array.isArray(sources)) {
+          aggregatedSources[outcome].push(...sources);
+        }
+      });
+    }
+  });
+
+  // Assign aggregated sources to final summary data
+  (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach(outcome => {
+    result[outcome] = {
+      ...result[outcome],
+      sources: aggregatedSources[outcome] || []
+    };
+  });
+
+  return result;
+}
+
+// Helper function to deduplicate sources within each category and across categories
+function deduplicateAllSources(summaryData: SummaryData): SummaryData {
+  const result = { ...summaryData };
+  const seenUsernames = new Set<string>();
+  
+  // Process categories in priority order: P1, P2, P3, P4, Uncategorized
+  const categories = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
+  
+  categories.forEach((category) => {
+    if (result[category] && result[category].sources) {
+      // Deduplicate within category and remove usernames already seen in other categories
+      const uniqueSources: [string, number][] = [];
+      
+      result[category].sources.forEach(([username, timestamp]) => {
+        if (!seenUsernames.has(username)) {
+          uniqueSources.push([username, timestamp]);
+          seenUsernames.add(username);
+        }
+      });
+      
+      result[category] = {
+        ...result[category],
+        sources: uniqueSources
+      };
+    }
+  });
+  
+  return result;
+}
+
 function formatBatchPrompt(
   systemPrompt: string,
   batchComments: DiscordMessage[],
@@ -213,26 +283,43 @@ function parseResponse(
         return "";
       };
 
+      // Helper function to extract sources from nested structure
+      const extractSources = (data: unknown): [string, number][] => {
+        if (data && typeof data === "object" && "sources" in data) {
+          const obj = data as { sources: unknown };
+          if (Array.isArray(obj.sources)) {
+            // Validate each source is a [string, number] tuple
+            return obj.sources.filter((source): source is [string, number] => 
+              Array.isArray(source) && 
+              source.length === 2 && 
+              typeof source[0] === "string" && 
+              typeof source[1] === "number"
+            );
+          }
+        }
+        return [];
+      };
+
       const outcomes: SummaryData = {
         P1: {
           summary: extractSummary(summaryData.P1),
-          sources: aggregatedSources.P1 || [],
+          sources: extractSources(summaryData.P1) || aggregatedSources.P1 || [],
         },
         P2: {
           summary: extractSummary(summaryData.P2),
-          sources: aggregatedSources.P2 || [],
+          sources: extractSources(summaryData.P2) || aggregatedSources.P2 || [],
         },
         P3: {
           summary: extractSummary(summaryData.P3),
-          sources: aggregatedSources.P3 || [],
+          sources: extractSources(summaryData.P3) || aggregatedSources.P3 || [],
         },
         P4: {
           summary: extractSummary(summaryData.P4),
-          sources: aggregatedSources.P4 || [],
+          sources: extractSources(summaryData.P4) || aggregatedSources.P4 || [],
         },
         Uncategorized: {
           summary: extractSummary(summaryData.Uncategorized),
-          sources: aggregatedSources.Uncategorized || [],
+          sources: extractSources(summaryData.Uncategorized) || aggregatedSources.Uncategorized || [],
         },
       };
 
@@ -286,24 +373,48 @@ function parseResponse(
   }
 }
 
-// Helper function to clean placeholder source links from summary text
+// Helper function to clean username/timestamp source references from summary text
 function cleanSummaryText(summaryData: SummaryData): SummaryData {
-  // Regex pattern to match [Source: ...] patterns that don't contain valid URLs
-  // This will match [Source: anything] that doesn't contain http:// or https://
-  const invalidSourcePattern =
-    /\s*\[Source:[^\]]*(?<!https?:\/\/[^\]]*)\]\.?/gi;
+  // Pattern to match username/timestamp sources but preserve URL sources
+  // This matches [Source: word] or [Source: word, number] but NOT URLs
+  const usernameSourcePattern = /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
+  
+  // Test the pattern with some examples
+  console.log("=== REGEX TESTING ===");
+  const testCases = [
+    "[Source: aenews, 1753774056]",
+    "[Source: reaper732, 1753774930]", 
+    "[Source: comment]",
+    "[Source: https://www.janes.com/osint-insights/defence-news/security/thailand-cambodia-border-skirmish-continues-into-second-day]",
+    "[Source: https://www.thaigov.go.th/news/contents/details/98884]",
+    "[Source: https://www.khmertimeskh.com/501724968/cambodian-defense-ministry-thai-f-16-fighter-jets-bomb-preah-vihear-temple-wat-keo-sikha-kiriswar-and-ta-krabey-temple-today/]"
+  ];
+  testCases.forEach(test => {
+    const matches = test.match(usernameSourcePattern);
+    console.log(`"${test}" -> matches: ${matches ? 'YES (will be removed)' : 'NO (will be preserved)'}`);
+  });
+  
+  // Regex pattern to remove @https://vote.uma.xyz references
+  const umaVotePattern = /\s*@https:\/\/vote\.uma\.xyz\s*/gi;
 
   const cleanedSummary = { ...summaryData };
 
   // Clean P1, P2, P3, P4 outcomes
   (["P1", "P2", "P3", "P4"] as const).forEach((outcome) => {
     if (cleanedSummary[outcome] && cleanedSummary[outcome].summary) {
+      const originalSummary = cleanedSummary[outcome].summary;
+      const cleanedSummaryText = originalSummary
+        .replace(usernameSourcePattern, "")
+        .replace(umaVotePattern, "");
+      
+      console.log(`=== CLEANING ${outcome} ===`);
+      console.log("Original:", originalSummary.substring(0, 200) + "...");
+      console.log("After username pattern:", originalSummary.replace(usernameSourcePattern, "").substring(0, 200) + "...");
+      console.log("Final cleaned:", cleanedSummaryText.substring(0, 200) + "...");
+      
       cleanedSummary[outcome] = {
         ...cleanedSummary[outcome],
-        summary: cleanedSummary[outcome].summary.replace(
-          invalidSourcePattern,
-          ""
-        ),
+        summary: cleanedSummaryText,
       };
     }
   });
@@ -312,10 +423,9 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   if (cleanedSummary.Uncategorized && cleanedSummary.Uncategorized.summary) {
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
-      summary: cleanedSummary.Uncategorized.summary.replace(
-        invalidSourcePattern,
-        ""
-      ),
+      summary: cleanedSummary.Uncategorized.summary
+        .replace(usernameSourcePattern, "")
+        .replace(umaVotePattern, ""),
     };
   }
 
@@ -534,6 +644,9 @@ ${msg.message}
         throw new Error("OpenAI returned empty response");
       }
 
+      console.log("=== SINGLE-PASS AI RESPONSE ===");
+      console.log("Raw AI response:", markdownResponse);
+
       // For single-pass, parse the AI response and extract any source categorization
       summaryData = parseResponse(markdownResponse, {
         P1: [],
@@ -543,42 +656,24 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      // If AI didn't categorize sources properly, distribute users based on non-empty summaries
-      const totalUsers = topLevelComments.length;
-      if (totalUsers > 0) {
-        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
-          (outcome) => summaryData[outcome].summary.trim().length > 0
-        );
+      console.log("=== PARSED SINGLE-PASS SOURCES ===");
+      console.log("P1 sources:", summaryData.P1.sources);
+      console.log("P2 sources:", summaryData.P2.sources);
+      console.log("P3 sources:", summaryData.P3.sources);
+      console.log("P4 sources:", summaryData.P4.sources);
+      console.log("Uncategorized sources:", summaryData.Uncategorized.sources);
 
-        if (nonEmptyOutcomes.length > 0) {
-          // Distribute users across outcomes that have content
-          const usersPerOutcome = Math.floor(
-            totalUsers / nonEmptyOutcomes.length
-          );
-          let userIndex = 0;
+      // Deduplicate sources for single-pass processing too
+      summaryData = deduplicateAllSources(summaryData);
 
-          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
-            const endIndex =
-              outcomeIndex === nonEmptyOutcomes.length - 1
-                ? totalUsers // Last outcome gets any remaining users
-                : userIndex + usersPerOutcome;
-
-            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
-              const comment = topLevelComments[i];
-              summaryData[outcome].sources.push([comment.sender, comment.time]);
-            }
-            userIndex = endIndex;
-          });
-        } else {
-          // Fallback: put all users in Uncategorized if no outcomes have content
-          topLevelComments.forEach((comment) => {
-            summaryData.Uncategorized.sources.push([
-              comment.sender,
-              comment.time,
-            ]);
-          });
-        }
-      }
+      console.log("=== AFTER SINGLE-PASS DEDUPLICATION ===");
+      console.log("Summary data after deduplication:", {
+        P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
+        P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
+        P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
+        P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
+        Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
+      });
     } else {
       // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
@@ -625,6 +720,9 @@ ${msg.message}
           );
         }
 
+        console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
+        console.log("Raw batch response:", batchSummaryText);
+
         // Parse the batch response to get proper categorization
         try {
           const batchParsedResponse = JSON.parse(
@@ -641,9 +739,38 @@ ${msg.message}
             return "";
           };
 
+          // Helper function to extract sources from nested structure
+          const extractBatchSources = (data: unknown): [string, number][] => {
+            if (data && typeof data === "object" && "sources" in data) {
+              const obj = data as { sources: unknown };
+              if (Array.isArray(obj.sources)) {
+                // Validate each source is a [string, number] tuple
+                return obj.sources.filter((source): source is [string, number] => 
+                  Array.isArray(source) && 
+                  source.length === 2 && 
+                  typeof source[0] === "string" && 
+                  typeof source[1] === "number"
+                );
+              }
+            }
+            return [];
+          };
+
           // Handle nested summary structure for condensation
           const summaryData =
             batchParsedResponse.summary || batchParsedResponse;
+
+          // Extract sources from each outcome in the nested structure
+          const extractedSources = {
+            P1: extractBatchSources(summaryData.P1),
+            P2: extractBatchSources(summaryData.P2),
+            P3: extractBatchSources(summaryData.P3),
+            P4: extractBatchSources(summaryData.P4),
+            Uncategorized: extractBatchSources(summaryData.Uncategorized),
+          };
+
+          console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
+          console.log("Extracted sources:", extractedSources);
 
           batchResults.push({
             batchNumber,
@@ -653,7 +780,7 @@ ${msg.message}
               P3: extractSummary(summaryData.P3),
               P4: extractSummary(summaryData.P4),
               Uncategorized: extractSummary(summaryData.Uncategorized),
-              sources: batchParsedResponse.sources || {},
+              sources: extractedSources,
             },
             commentCount: batch.length,
             startIndex,
@@ -703,6 +830,9 @@ ${msg.message}
         throw new Error("OpenAI returned empty condensation response");
       }
 
+      console.log("=== CONDENSATION AI RESPONSE ===");
+      console.log("Raw condensation response:", condensedSummaryText);
+
       // Parse the condensed response first
       summaryData = parseResponse(condensedSummaryText, {
         P1: [],
@@ -712,46 +842,60 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      // Distribute users across outcomes that have content
-      const totalUsers = topLevelComments.length;
-      if (totalUsers > 0) {
-        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
-          (outcome) => summaryData[outcome].summary.trim().length > 0
-        );
+      console.log("=== BEFORE SOURCE AGGREGATION ===");
+      console.log("Summary data sources before aggregation:", {
+        P1: summaryData.P1.sources,
+        P2: summaryData.P2.sources,
+        P3: summaryData.P3.sources,
+        P4: summaryData.P4.sources,
+        Uncategorized: summaryData.Uncategorized.sources
+      });
 
-        if (nonEmptyOutcomes.length > 0) {
-          // Distribute users across outcomes that have content
-          const usersPerOutcome = Math.floor(
-            totalUsers / nonEmptyOutcomes.length
-          );
-          let userIndex = 0;
+      // Aggregate sources from all batch results
+      summaryData = aggregateSourcesFromBatches(summaryData, batchResults);
 
-          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
-            const endIndex =
-              outcomeIndex === nonEmptyOutcomes.length - 1
-                ? totalUsers // Last outcome gets any remaining users
-                : userIndex + usersPerOutcome;
-
-            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
-              const comment = topLevelComments[i];
-              summaryData[outcome].sources.push([comment.sender, comment.time]);
-            }
-            userIndex = endIndex;
-          });
-        } else {
-          // Fallback: put all users in Uncategorized if no outcomes have content
-          topLevelComments.forEach((comment) => {
-            summaryData.Uncategorized.sources.push([
-              comment.sender,
-              comment.time,
-            ]);
-          });
-        }
-      }
+      console.log("=== AFTER SOURCE AGGREGATION ===");
+      console.log("Summary data sources after aggregation:", {
+        P1: summaryData.P1.sources,
+        P2: summaryData.P2.sources,
+        P3: summaryData.P3.sources,
+        P4: summaryData.P4.sources,
+        Uncategorized: summaryData.Uncategorized.sources
+      });
     }
+
+    // Deduplicate sources to ensure no commenter appears multiple times
+    summaryData = deduplicateAllSources(summaryData);
+
+    console.log("=== AFTER DEDUPLICATION ===");
+    console.log("Summary data after deduplication:", {
+      P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
+      P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
+      P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
+      P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
+      Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
+    });
+
+    console.log("=== BEFORE CLEANING ===");
+    console.log("Summary data before cleaning:", {
+      P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
+      P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
+      P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
+      P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
+      Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
+    });
 
     // Clean placeholder source links from the summary data
     const cleanedSummaryData = cleanSummaryText(summaryData);
+
+    console.log("=== AFTER CLEANING ===");
+    console.log("Summary data after cleaning:", {
+      P1: { sources: cleanedSummaryData.P1.sources, summaryLength: cleanedSummaryData.P1.summary.length },
+      P2: { sources: cleanedSummaryData.P2.sources, summaryLength: cleanedSummaryData.P2.summary.length },
+      P3: { sources: cleanedSummaryData.P3.sources, summaryLength: cleanedSummaryData.P3.summary.length },
+      P4: { sources: cleanedSummaryData.P4.sources, summaryLength: cleanedSummaryData.P4.summary.length },
+      Uncategorized: { sources: cleanedSummaryData.Uncategorized.sources, summaryLength: cleanedSummaryData.Uncategorized.summary.length }
+    });
 
     // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
     const now = new Date().toISOString();
