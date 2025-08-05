@@ -68,6 +68,8 @@ interface UpdateResponse {
   commentsHash: string;
   promptVersion: string;
   processingTimeMs: number;
+  processing?: boolean;
+  error?: string;
 }
 
 // Simplified cache data structure
@@ -96,26 +98,24 @@ function splitIntoBatches(
   return batches;
 }
 
-
-
 // Helper function to aggregate sources from batch results
 function aggregateSourcesFromBatches(
   summaryData: SummaryData,
   batchResults: BatchResult[]
 ): SummaryData {
   const result = { ...summaryData };
-  
+
   // Initialize aggregated sources
   const aggregatedSources: Record<string, [string, number][]> = {
     P1: [],
     P2: [],
     P3: [],
     P4: [],
-    Uncategorized: []
+    Uncategorized: [],
   };
 
   // Aggregate sources from all batches
-  batchResults.forEach(batch => {
+  batchResults.forEach((batch) => {
     if (batch.summary.sources) {
       Object.entries(batch.summary.sources).forEach(([outcome, sources]) => {
         if (aggregatedSources[outcome] && Array.isArray(sources)) {
@@ -126,10 +126,10 @@ function aggregateSourcesFromBatches(
   });
 
   // Assign aggregated sources to final summary data
-  (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach(outcome => {
+  (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
     result[outcome] = {
       ...result[outcome],
-      sources: aggregatedSources[outcome] || []
+      sources: aggregatedSources[outcome] || [],
     };
   });
 
@@ -140,29 +140,29 @@ function aggregateSourcesFromBatches(
 function deduplicateAllSources(summaryData: SummaryData): SummaryData {
   const result = { ...summaryData };
   const seenUsernames = new Set<string>();
-  
+
   // Process categories in priority order: P1, P2, P3, P4, Uncategorized
   const categories = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
-  
+
   categories.forEach((category) => {
     if (result[category] && result[category].sources) {
       // Deduplicate within category and remove usernames already seen in other categories
       const uniqueSources: [string, number][] = [];
-      
+
       result[category].sources.forEach(([username, timestamp]) => {
         if (!seenUsernames.has(username)) {
           uniqueSources.push([username, timestamp]);
           seenUsernames.add(username);
         }
       });
-      
+
       result[category] = {
         ...result[category],
-        sources: uniqueSources
+        sources: uniqueSources,
       };
     }
   });
-  
+
   return result;
 }
 
@@ -289,11 +289,12 @@ function parseResponse(
           const obj = data as { sources: unknown };
           if (Array.isArray(obj.sources)) {
             // Validate each source is a [string, number] tuple
-            return obj.sources.filter((source): source is [string, number] => 
-              Array.isArray(source) && 
-              source.length === 2 && 
-              typeof source[0] === "string" && 
-              typeof source[1] === "number"
+            return obj.sources.filter(
+              (source): source is [string, number] =>
+                Array.isArray(source) &&
+                source.length === 2 &&
+                typeof source[0] === "string" &&
+                typeof source[1] === "number"
             );
           }
         }
@@ -319,7 +320,10 @@ function parseResponse(
         },
         Uncategorized: {
           summary: extractSummary(summaryData.Uncategorized),
-          sources: extractSources(summaryData.Uncategorized) || aggregatedSources.Uncategorized || [],
+          sources:
+            extractSources(summaryData.Uncategorized) ||
+            aggregatedSources.Uncategorized ||
+            [],
         },
       };
 
@@ -377,23 +381,28 @@ function parseResponse(
 function cleanSummaryText(summaryData: SummaryData): SummaryData {
   // Pattern to match username/timestamp sources but preserve URL sources
   // This matches [Source: word] or [Source: word, number] but NOT URLs
-  const usernameSourcePattern = /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
-  
+  const usernameSourcePattern =
+    /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
+
   // Test the pattern with some examples
   console.log("=== REGEX TESTING ===");
   const testCases = [
     "[Source: aenews, 1753774056]",
-    "[Source: reaper732, 1753774930]", 
+    "[Source: reaper732, 1753774930]",
     "[Source: comment]",
     "[Source: https://www.janes.com/osint-insights/defence-news/security/thailand-cambodia-border-skirmish-continues-into-second-day]",
     "[Source: https://www.thaigov.go.th/news/contents/details/98884]",
-    "[Source: https://www.khmertimeskh.com/501724968/cambodian-defense-ministry-thai-f-16-fighter-jets-bomb-preah-vihear-temple-wat-keo-sikha-kiriswar-and-ta-krabey-temple-today/]"
+    "[Source: https://www.khmertimeskh.com/501724968/cambodian-defense-ministry-thai-f-16-fighter-jets-bomb-preah-vihear-temple-wat-keo-sikha-kiriswar-and-ta-krabey-temple-today/]",
   ];
-  testCases.forEach(test => {
+  testCases.forEach((test) => {
     const matches = test.match(usernameSourcePattern);
-    console.log(`"${test}" -> matches: ${matches ? 'YES (will be removed)' : 'NO (will be preserved)'}`);
+    console.log(
+      `"${test}" -> matches: ${
+        matches ? "YES (will be removed)" : "NO (will be preserved)"
+      }`
+    );
   });
-  
+
   // Regex pattern to remove @https://vote.uma.xyz references
   const umaVotePattern = /\s*@https:\/\/vote\.uma\.xyz\s*/gi;
 
@@ -406,12 +415,19 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       const cleanedSummaryText = originalSummary
         .replace(usernameSourcePattern, "")
         .replace(umaVotePattern, "");
-      
+
       console.log(`=== CLEANING ${outcome} ===`);
       console.log("Original:", originalSummary.substring(0, 200) + "...");
-      console.log("After username pattern:", originalSummary.replace(usernameSourcePattern, "").substring(0, 200) + "...");
-      console.log("Final cleaned:", cleanedSummaryText.substring(0, 200) + "...");
-      
+      console.log(
+        "After username pattern:",
+        originalSummary.replace(usernameSourcePattern, "").substring(0, 200) +
+          "..."
+      );
+      console.log(
+        "Final cleaned:",
+        cleanedSummaryText.substring(0, 200) + "..."
+      );
+
       cleanedSummary[outcome] = {
         ...cleanedSummary[outcome],
         summary: cleanedSummaryText,
@@ -504,59 +520,89 @@ export default async function handler(
     // Initialize Redis
     const redis = Redis.fromEnv();
 
-    // Call UMA API first to get comment count for cache key determination
-    const discordThreadBaseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/discord-thread`;
-    
-    const umaUrl = new URL(discordThreadBaseUrl);
-    umaUrl.searchParams.set("time", time);
-    umaUrl.searchParams.set("identifier", identifier);
-    umaUrl.searchParams.set("title", title)
+    // Create processing lock key to prevent concurrent processing
+    const lockKey = `processing:discord-summary:${time}:${identifier}:${title}`;
+    const lockTTL = 15 * 60; // 15 minutes in seconds
 
-    const umaResponse = await fetch(umaUrl.toString());
+    // Try to acquire lock atomically
+    const lockAcquired = await redis.set(
+      lockKey,
+      JSON.stringify({
+        startedAt: new Date().toISOString(),
+        startedBy: "update-summary-api",
+      }),
+      { nx: true, ex: lockTTL }
+    );
 
-    if (!umaResponse.ok) {
-      throw new Error(
-        `UMA API returned ${umaResponse.status}: ${umaResponse.statusText}`
-      );
-    }
-
-    const umaData = (await umaResponse.json()) as UMAApiResponse;
-
-    if (!umaData.thread || !Array.isArray(umaData.thread)) {
-      throw new Error(
-        "Invalid response from UMA API: missing or invalid thread data"
-      );
-    }
-
-    // Check if there are any comments to summarize
-    if (umaData.thread.length === 0) {
+    if (!lockAcquired) {
+      // Another process is already working on this summary
       const processingTimeMs = Date.now() - startTime;
-      return res.status(200).json({
-        updated: false,
-        cached: false,
-        generatedAt: new Date().toISOString(),
-        commentsHash: "empty",
-        promptVersion,
+      return res.status(409).json({
+        error: "Summary is already being processed",
+        processing: true,
         processingTimeMs,
       });
     }
 
-    // Only use top-level comments for summary - ignore all replies
-    const topLevelComments = umaData.thread; // These are already top-level from the API
+    // Wrap main processing in try/finally to ensure lock cleanup
+    // Only clean up the lock if we successfully acquired it
+    try {
+      // Call UMA API first to get comment count for cache key determination
+      if (!process.env.NEXT_PUBLIC_SITE_URL) {
+        throw new Error("NEXT_PUBLIC_SITE_URL environment variable is not set");
+      }
+      const discordThreadBaseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/discord-thread`;
 
-    // Update cache key logic based on comment count
-    const isBatched = topLevelComments.length > batchSize;
-    const promptVersionForCache = isBatched
-      ? `${promptVersion}:${condensationPromptVersion}`
-      : promptVersion;
+      const umaUrl = new URL(discordThreadBaseUrl);
+      umaUrl.searchParams.set("time", time);
+      umaUrl.searchParams.set("identifier", identifier);
+      umaUrl.searchParams.set("title", title);
 
-    // Create unique cache key using all three parameters (simple format)
-    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+      const umaResponse = await fetch(umaUrl.toString());
 
-    // Format messages for OpenAI and compute hash (top-level comments only)
-    const formattedComments = topLevelComments
-      .map((msg) => {
-        return `<Comment>
+      if (!umaResponse.ok) {
+        throw new Error(
+          `UMA API returned ${umaResponse.status}: ${umaResponse.statusText}`
+        );
+      }
+
+      const umaData = (await umaResponse.json()) as UMAApiResponse;
+
+      if (!umaData.thread || !Array.isArray(umaData.thread)) {
+        throw new Error(
+          "Invalid response from UMA API: missing or invalid thread data"
+        );
+      }
+
+      // Check if there are any comments to summarize
+      if (umaData.thread.length === 0) {
+        const processingTimeMs = Date.now() - startTime;
+        return res.status(200).json({
+          updated: false,
+          cached: false,
+          generatedAt: new Date().toISOString(),
+          commentsHash: "empty",
+          promptVersion,
+          processingTimeMs,
+        });
+      }
+
+      // Only use top-level comments for summary - ignore all replies
+      const topLevelComments = umaData.thread; // These are already top-level from the API
+
+      // Update cache key logic based on comment count
+      const isBatched = topLevelComments.length > batchSize;
+      const promptVersionForCache = isBatched
+        ? `${promptVersion}:${condensationPromptVersion}`
+        : promptVersion;
+
+      // Create unique cache key using all three parameters (simple format)
+      const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+
+      // Format messages for OpenAI and compute hash (top-level comments only)
+      const formattedComments = topLevelComments
+        .map((msg) => {
+          return `<Comment>
 <Metadata>
 Author: ${msg.sender}
 Timestamp: ${msg.time}
@@ -565,22 +611,42 @@ Timestamp: ${msg.time}
 ${msg.message}
 </Content>
 </Comment>`;
-      })
-      .join("\n\n");
+        })
+        .join("\n\n");
 
-    const commentsHash = createHash("sha256")
-      .update(formattedComments)
-      .digest("hex");
+      const commentsHash = createHash("sha256")
+        .update(formattedComments)
+        .digest("hex");
 
-    // Check cache first to see if we need to respect the update interval
-    const cachedData = await redis.get<CacheData>(cacheKey);
+      // Check cache first to see if we need to respect the update interval
+      const cachedData = await redis.get<CacheData>(cacheKey);
 
-    if (cachedData) {
-      const timeSinceLastUpdate =
-        Date.now() - new Date(cachedData.generatedAt).getTime();
+      if (cachedData) {
+        const timeSinceLastUpdate =
+          Date.now() - new Date(cachedData.generatedAt).getTime();
 
-      if (timeSinceLastUpdate < maxUpdateInterval) {
-        // Too soon to update, return existing data without fetching comments
+        if (timeSinceLastUpdate < maxUpdateInterval) {
+          // Too soon to update, return existing data without fetching comments
+          const processingTimeMs = Date.now() - startTime;
+          const response: UpdateResponse = {
+            updated: false,
+            cached: true,
+            generatedAt: cachedData.generatedAt,
+            commentsHash: cachedData.commentsHash,
+            promptVersion: cachedData.promptVersion,
+            processingTimeMs,
+          };
+          return res.status(200).json(response);
+        }
+      }
+
+      // Check if content or prompt has changed (we already passed the time check)
+      if (
+        cachedData &&
+        cachedData.commentsHash === commentsHash &&
+        cachedData.promptVersion === promptVersionForCache
+      ) {
+        // Return metadata if hash and prompt version match (cached)
         const processingTimeMs = Date.now() - startTime;
         const response: UpdateResponse = {
           updated: false,
@@ -592,111 +658,17 @@ ${msg.message}
         };
         return res.status(200).json(response);
       }
-    }
 
-    // Check if content or prompt has changed (we already passed the time check)
-    if (
-      cachedData &&
-      cachedData.commentsHash === commentsHash &&
-      cachedData.promptVersion === promptVersionForCache
-    ) {
-      // Return metadata if hash and prompt version match (cached)
-      const processingTimeMs = Date.now() - startTime;
-      const response: UpdateResponse = {
-        updated: false,
-        cached: true,
-        generatedAt: cachedData.generatedAt,
-        commentsHash: cachedData.commentsHash,
-        promptVersion: cachedData.promptVersion,
-        processingTimeMs,
-      };
-      return res.status(200).json(response);
-    }
-
-    // Generate new summary if cache miss, hash mismatch, or prompt version changed
-    const openai = new OpenAI({
-      apiKey: openaiApiKey,
-    });
-
-    let summaryData: SummaryData;
-
-    if (topLevelComments.length <= batchSize) {
-      // Single-pass processing for markdown
-      const completion = await openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: formattedComments,
-          },
-        ],
-        temperature: 0.3,
-        response_format: { type: "json_object" },
+      // Generate new summary if cache miss, hash mismatch, or prompt version changed
+      const openai = new OpenAI({
+        apiKey: openaiApiKey,
       });
 
-      const markdownResponse = completion.choices[0]?.message?.content;
+      let summaryData: SummaryData;
 
-      if (!markdownResponse) {
-        throw new Error("OpenAI returned empty response");
-      }
-
-      console.log("=== SINGLE-PASS AI RESPONSE ===");
-      console.log("Raw AI response:", markdownResponse);
-
-      // For single-pass, parse the AI response and extract any source categorization
-      summaryData = parseResponse(markdownResponse, {
-        P1: [],
-        P2: [],
-        P3: [],
-        P4: [],
-        Uncategorized: [],
-      });
-
-      console.log("=== PARSED SINGLE-PASS SOURCES ===");
-      console.log("P1 sources:", summaryData.P1.sources);
-      console.log("P2 sources:", summaryData.P2.sources);
-      console.log("P3 sources:", summaryData.P3.sources);
-      console.log("P4 sources:", summaryData.P4.sources);
-      console.log("Uncategorized sources:", summaryData.Uncategorized.sources);
-
-      // Deduplicate sources for single-pass processing too
-      summaryData = deduplicateAllSources(summaryData);
-
-      console.log("=== AFTER SINGLE-PASS DEDUPLICATION ===");
-      console.log("Summary data after deduplication:", {
-        P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
-        P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
-        P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
-        P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
-        Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
-      });
-    } else {
-      // Batched processing for markdown
-      const commentBatches = splitIntoBatches(topLevelComments, batchSize);
-      const batchResults: BatchResult[] = [];
-
-      // Process each batch
-      for (let i = 0; i < commentBatches.length; i++) {
-        const batch = commentBatches[i];
-        const batchNumber = i + 1;
-        const startIndex = i * batchSize + 1;
-        const endIndex = Math.min((i + 1) * batchSize, topLevelComments.length);
-
-        const batchPromptFormatted = formatBatchPrompt(
-          systemPrompt,
-          batch,
-          title,
-          batchNumber,
-          commentBatches.length,
-          startIndex,
-          endIndex
-        );
-
-        const batchCompletion = await openai.chat.completions.create({
+      if (topLevelComments.length <= batchSize) {
+        // Single-pass processing for markdown
+        const completion = await openai.chat.completions.create({
           model: model,
           messages: [
             {
@@ -705,228 +677,377 @@ ${msg.message}
             },
             {
               role: "user",
-              content: batchPromptFormatted,
+              content: formattedComments,
             },
           ],
           temperature: 0.3,
           response_format: { type: "json_object" },
         });
 
-        const batchSummaryText = batchCompletion.choices[0]?.message?.content;
+        const markdownResponse = completion.choices[0]?.message?.content;
 
-        if (!batchSummaryText) {
-          throw new Error(
-            `OpenAI returned empty response for batch ${batchNumber}`
-          );
+        if (!markdownResponse) {
+          throw new Error("OpenAI returned empty response");
         }
 
-        console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
-        console.log("Raw batch response:", batchSummaryText);
+        console.log("=== SINGLE-PASS AI RESPONSE ===");
+        console.log("Raw AI response:", markdownResponse);
 
-        // Parse the batch response to get proper categorization
-        try {
-          const batchParsedResponse = JSON.parse(
-            batchSummaryText
-          ) as OpenAIJsonResponse;
+        // For single-pass, parse the AI response and extract any source categorization
+        summaryData = parseResponse(markdownResponse, {
+          P1: [],
+          P2: [],
+          P3: [],
+          P4: [],
+          Uncategorized: [],
+        });
 
-          // Helper function to extract summary text
-          const extractSummary = (data: unknown): string => {
-            if (typeof data === "string") return data;
-            if (data && typeof data === "object" && "summary" in data) {
-              const obj = data as { summary: unknown };
-              return typeof obj.summary === "string" ? obj.summary : "";
-            }
-            return "";
-          };
+        console.log("=== PARSED SINGLE-PASS SOURCES ===");
+        console.log("P1 sources:", summaryData.P1.sources);
+        console.log("P2 sources:", summaryData.P2.sources);
+        console.log("P3 sources:", summaryData.P3.sources);
+        console.log("P4 sources:", summaryData.P4.sources);
+        console.log(
+          "Uncategorized sources:",
+          summaryData.Uncategorized.sources
+        );
 
-          // Helper function to extract sources from nested structure
-          const extractBatchSources = (data: unknown): [string, number][] => {
-            if (data && typeof data === "object" && "sources" in data) {
-              const obj = data as { sources: unknown };
-              if (Array.isArray(obj.sources)) {
-                // Validate each source is a [string, number] tuple
-                return obj.sources.filter((source): source is [string, number] => 
-                  Array.isArray(source) && 
-                  source.length === 2 && 
-                  typeof source[0] === "string" && 
-                  typeof source[1] === "number"
-                );
-              }
-            }
-            return [];
-          };
+        // Deduplicate sources for single-pass processing too
+        summaryData = deduplicateAllSources(summaryData);
 
-          // Handle nested summary structure for condensation
-          const summaryData =
-            batchParsedResponse.summary || batchParsedResponse;
-
-          // Extract sources from each outcome in the nested structure
-          const extractedSources = {
-            P1: extractBatchSources(summaryData.P1),
-            P2: extractBatchSources(summaryData.P2),
-            P3: extractBatchSources(summaryData.P3),
-            P4: extractBatchSources(summaryData.P4),
-            Uncategorized: extractBatchSources(summaryData.Uncategorized),
-          };
-
-          console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
-          console.log("Extracted sources:", extractedSources);
-
-          batchResults.push({
-            batchNumber,
-            summary: {
-              P1: extractSummary(summaryData.P1),
-              P2: extractSummary(summaryData.P2),
-              P3: extractSummary(summaryData.P3),
-              P4: extractSummary(summaryData.P4),
-              Uncategorized: extractSummary(summaryData.Uncategorized),
-              sources: extractedSources,
-            },
-            commentCount: batch.length,
-            startIndex,
-            endIndex,
-          });
-        } catch (error) {
-          // If JSON parsing fails, fallback to putting everything in Uncategorized
-          batchResults.push({
-            batchNumber,
-            summary: {
-              P1: "",
-              P2: "",
-              P3: "",
-              P4: "",
-              Uncategorized: batchSummaryText,
-            },
-            commentCount: batch.length,
-            startIndex,
-            endIndex,
-          });
-        }
-      }
-
-      // Condense batch results
-      const condensationPromptFormatted = formatCondensationPrompt(
-        condensationPrompt,
-        batchResults,
-        title
-      );
-
-      const condensationCompletion = await openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: "user",
-            content: condensationPromptFormatted,
+        console.log("=== AFTER SINGLE-PASS DEDUPLICATION ===");
+        console.log("Summary data after deduplication:", {
+          P1: {
+            sources: summaryData.P1.sources,
+            summaryLength: summaryData.P1.summary.length,
           },
-        ],
-        temperature: 0.3,
-        response_format: { type: "json_object" },
-      });
+          P2: {
+            sources: summaryData.P2.sources,
+            summaryLength: summaryData.P2.summary.length,
+          },
+          P3: {
+            sources: summaryData.P3.sources,
+            summaryLength: summaryData.P3.summary.length,
+          },
+          P4: {
+            sources: summaryData.P4.sources,
+            summaryLength: summaryData.P4.summary.length,
+          },
+          Uncategorized: {
+            sources: summaryData.Uncategorized.sources,
+            summaryLength: summaryData.Uncategorized.summary.length,
+          },
+        });
+      } else {
+        // Batched processing for markdown
+        const commentBatches = splitIntoBatches(topLevelComments, batchSize);
+        const batchResults: BatchResult[] = [];
 
-      const condensedSummaryText =
-        condensationCompletion.choices[0]?.message?.content;
+        // Process each batch
+        for (let i = 0; i < commentBatches.length; i++) {
+          const batch = commentBatches[i];
+          const batchNumber = i + 1;
+          const startIndex = i * batchSize + 1;
+          const endIndex = Math.min(
+            (i + 1) * batchSize,
+            topLevelComments.length
+          );
 
-      if (!condensedSummaryText) {
-        throw new Error("OpenAI returned empty condensation response");
+          const batchPromptFormatted = formatBatchPrompt(
+            systemPrompt,
+            batch,
+            title,
+            batchNumber,
+            commentBatches.length,
+            startIndex,
+            endIndex
+          );
+
+          const batchCompletion = await openai.chat.completions.create({
+            model: model,
+            messages: [
+              {
+                role: "system",
+                content: systemPrompt,
+              },
+              {
+                role: "user",
+                content: batchPromptFormatted,
+              },
+            ],
+            temperature: 0.3,
+            response_format: { type: "json_object" },
+          });
+
+          const batchSummaryText = batchCompletion.choices[0]?.message?.content;
+
+          if (!batchSummaryText) {
+            throw new Error(
+              `OpenAI returned empty response for batch ${batchNumber}`
+            );
+          }
+
+          console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
+          console.log("Raw batch response:", batchSummaryText);
+
+          // Parse the batch response to get proper categorization
+          try {
+            const batchParsedResponse = JSON.parse(
+              batchSummaryText
+            ) as OpenAIJsonResponse;
+
+            // Helper function to extract summary text
+            const extractSummary = (data: unknown): string => {
+              if (typeof data === "string") return data;
+              if (data && typeof data === "object" && "summary" in data) {
+                const obj = data as { summary: unknown };
+                return typeof obj.summary === "string" ? obj.summary : "";
+              }
+              return "";
+            };
+
+            // Helper function to extract sources from nested structure
+            const extractBatchSources = (data: unknown): [string, number][] => {
+              if (data && typeof data === "object" && "sources" in data) {
+                const obj = data as { sources: unknown };
+                if (Array.isArray(obj.sources)) {
+                  // Validate each source is a [string, number] tuple
+                  return obj.sources.filter(
+                    (source): source is [string, number] =>
+                      Array.isArray(source) &&
+                      source.length === 2 &&
+                      typeof source[0] === "string" &&
+                      typeof source[1] === "number"
+                  );
+                }
+              }
+              return [];
+            };
+
+            // Handle nested summary structure for condensation
+            const summaryData =
+              batchParsedResponse.summary || batchParsedResponse;
+
+            // Extract sources from each outcome in the nested structure
+            const extractedSources = {
+              P1: extractBatchSources(summaryData.P1),
+              P2: extractBatchSources(summaryData.P2),
+              P3: extractBatchSources(summaryData.P3),
+              P4: extractBatchSources(summaryData.P4),
+              Uncategorized: extractBatchSources(summaryData.Uncategorized),
+            };
+
+            console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
+            console.log("Extracted sources:", extractedSources);
+
+            batchResults.push({
+              batchNumber,
+              summary: {
+                P1: extractSummary(summaryData.P1),
+                P2: extractSummary(summaryData.P2),
+                P3: extractSummary(summaryData.P3),
+                P4: extractSummary(summaryData.P4),
+                Uncategorized: extractSummary(summaryData.Uncategorized),
+                sources: extractedSources,
+              },
+              commentCount: batch.length,
+              startIndex,
+              endIndex,
+            });
+          } catch (error) {
+            // If JSON parsing fails, fallback to putting everything in Uncategorized
+            batchResults.push({
+              batchNumber,
+              summary: {
+                P1: "",
+                P2: "",
+                P3: "",
+                P4: "",
+                Uncategorized: batchSummaryText,
+              },
+              commentCount: batch.length,
+              startIndex,
+              endIndex,
+            });
+          }
+        }
+
+        // Condense batch results
+        const condensationPromptFormatted = formatCondensationPrompt(
+          condensationPrompt,
+          batchResults,
+          title
+        );
+
+        const condensationCompletion = await openai.chat.completions.create({
+          model: model,
+          messages: [
+            {
+              role: "user",
+              content: condensationPromptFormatted,
+            },
+          ],
+          temperature: 0.3,
+          response_format: { type: "json_object" },
+        });
+
+        const condensedSummaryText =
+          condensationCompletion.choices[0]?.message?.content;
+
+        if (!condensedSummaryText) {
+          throw new Error("OpenAI returned empty condensation response");
+        }
+
+        console.log("=== CONDENSATION AI RESPONSE ===");
+        console.log("Raw condensation response:", condensedSummaryText);
+
+        // Parse the condensed response first
+        summaryData = parseResponse(condensedSummaryText, {
+          P1: [],
+          P2: [],
+          P3: [],
+          P4: [],
+          Uncategorized: [],
+        });
+
+        console.log("=== BEFORE SOURCE AGGREGATION ===");
+        console.log("Summary data sources before aggregation:", {
+          P1: summaryData.P1.sources,
+          P2: summaryData.P2.sources,
+          P3: summaryData.P3.sources,
+          P4: summaryData.P4.sources,
+          Uncategorized: summaryData.Uncategorized.sources,
+        });
+
+        // Aggregate sources from all batch results
+        summaryData = aggregateSourcesFromBatches(summaryData, batchResults);
+
+        console.log("=== AFTER SOURCE AGGREGATION ===");
+        console.log("Summary data sources after aggregation:", {
+          P1: summaryData.P1.sources,
+          P2: summaryData.P2.sources,
+          P3: summaryData.P3.sources,
+          P4: summaryData.P4.sources,
+          Uncategorized: summaryData.Uncategorized.sources,
+        });
       }
 
-      console.log("=== CONDENSATION AI RESPONSE ===");
-      console.log("Raw condensation response:", condensedSummaryText);
+      // Deduplicate sources to ensure no commenter appears multiple times
+      summaryData = deduplicateAllSources(summaryData);
 
-      // Parse the condensed response first
-      summaryData = parseResponse(condensedSummaryText, {
-        P1: [],
-        P2: [],
-        P3: [],
-        P4: [],
-        Uncategorized: [],
+      console.log("=== AFTER DEDUPLICATION ===");
+      console.log("Summary data after deduplication:", {
+        P1: {
+          sources: summaryData.P1.sources,
+          summaryLength: summaryData.P1.summary.length,
+        },
+        P2: {
+          sources: summaryData.P2.sources,
+          summaryLength: summaryData.P2.summary.length,
+        },
+        P3: {
+          sources: summaryData.P3.sources,
+          summaryLength: summaryData.P3.summary.length,
+        },
+        P4: {
+          sources: summaryData.P4.sources,
+          summaryLength: summaryData.P4.summary.length,
+        },
+        Uncategorized: {
+          sources: summaryData.Uncategorized.sources,
+          summaryLength: summaryData.Uncategorized.summary.length,
+        },
       });
 
-      console.log("=== BEFORE SOURCE AGGREGATION ===");
-      console.log("Summary data sources before aggregation:", {
-        P1: summaryData.P1.sources,
-        P2: summaryData.P2.sources,
-        P3: summaryData.P3.sources,
-        P4: summaryData.P4.sources,
-        Uncategorized: summaryData.Uncategorized.sources
+      console.log("=== BEFORE CLEANING ===");
+      console.log("Summary data before cleaning:", {
+        P1: {
+          sources: summaryData.P1.sources,
+          summaryLength: summaryData.P1.summary.length,
+        },
+        P2: {
+          sources: summaryData.P2.sources,
+          summaryLength: summaryData.P2.summary.length,
+        },
+        P3: {
+          sources: summaryData.P3.sources,
+          summaryLength: summaryData.P3.summary.length,
+        },
+        P4: {
+          sources: summaryData.P4.sources,
+          summaryLength: summaryData.P4.summary.length,
+        },
+        Uncategorized: {
+          sources: summaryData.Uncategorized.sources,
+          summaryLength: summaryData.Uncategorized.summary.length,
+        },
       });
 
-      // Aggregate sources from all batch results
-      summaryData = aggregateSourcesFromBatches(summaryData, batchResults);
+      // Clean placeholder source links from the summary data
+      const cleanedSummaryData = cleanSummaryText(summaryData);
 
-      console.log("=== AFTER SOURCE AGGREGATION ===");
-      console.log("Summary data sources after aggregation:", {
-        P1: summaryData.P1.sources,
-        P2: summaryData.P2.sources,
-        P3: summaryData.P3.sources,
-        P4: summaryData.P4.sources,
-        Uncategorized: summaryData.Uncategorized.sources
+      console.log("=== AFTER CLEANING ===");
+      console.log("Summary data after cleaning:", {
+        P1: {
+          sources: cleanedSummaryData.P1.sources,
+          summaryLength: cleanedSummaryData.P1.summary.length,
+        },
+        P2: {
+          sources: cleanedSummaryData.P2.sources,
+          summaryLength: cleanedSummaryData.P2.summary.length,
+        },
+        P3: {
+          sources: cleanedSummaryData.P3.sources,
+          summaryLength: cleanedSummaryData.P3.summary.length,
+        },
+        P4: {
+          sources: cleanedSummaryData.P4.sources,
+          summaryLength: cleanedSummaryData.P4.summary.length,
+        },
+        Uncategorized: {
+          sources: cleanedSummaryData.Uncategorized.sources,
+          summaryLength: cleanedSummaryData.Uncategorized.summary.length,
+        },
       });
+
+      // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
+      const now = new Date().toISOString();
+      const cacheData: CacheData = {
+        P1: cleanedSummaryData.P1,
+        P2: cleanedSummaryData.P2,
+        P3: cleanedSummaryData.P3,
+        P4: cleanedSummaryData.P4,
+        Uncategorized: cleanedSummaryData.Uncategorized,
+        generatedAt: now,
+        commentsHash,
+        promptVersion: promptVersionForCache,
+        cachedAt: now,
+        summaryBatchSize: isBatched ? batchSize : 0,
+      };
+
+      // Store in Redis permanently
+      await redis.set(cacheKey, cacheData);
+
+      // Return update metadata
+      const processingTimeMs = Date.now() - startTime;
+      const response: UpdateResponse = {
+        updated: true,
+        cached: false,
+        generatedAt: now,
+        commentsHash,
+        promptVersion: promptVersionForCache,
+        processingTimeMs,
+      };
+
+      res.status(200).json(response);
+    } finally {
+      // Always clean up the processing lock
+      try {
+        await redis.del(lockKey);
+      } catch (cleanupError) {
+        console.error("Failed to clean up processing lock:", cleanupError);
+      }
     }
-
-    // Deduplicate sources to ensure no commenter appears multiple times
-    summaryData = deduplicateAllSources(summaryData);
-
-    console.log("=== AFTER DEDUPLICATION ===");
-    console.log("Summary data after deduplication:", {
-      P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
-      P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
-      P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
-      P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
-      Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
-    });
-
-    console.log("=== BEFORE CLEANING ===");
-    console.log("Summary data before cleaning:", {
-      P1: { sources: summaryData.P1.sources, summaryLength: summaryData.P1.summary.length },
-      P2: { sources: summaryData.P2.sources, summaryLength: summaryData.P2.summary.length },
-      P3: { sources: summaryData.P3.sources, summaryLength: summaryData.P3.summary.length },
-      P4: { sources: summaryData.P4.sources, summaryLength: summaryData.P4.summary.length },
-      Uncategorized: { sources: summaryData.Uncategorized.sources, summaryLength: summaryData.Uncategorized.summary.length }
-    });
-
-    // Clean placeholder source links from the summary data
-    const cleanedSummaryData = cleanSummaryText(summaryData);
-
-    console.log("=== AFTER CLEANING ===");
-    console.log("Summary data after cleaning:", {
-      P1: { sources: cleanedSummaryData.P1.sources, summaryLength: cleanedSummaryData.P1.summary.length },
-      P2: { sources: cleanedSummaryData.P2.sources, summaryLength: cleanedSummaryData.P2.summary.length },
-      P3: { sources: cleanedSummaryData.P3.sources, summaryLength: cleanedSummaryData.P3.summary.length },
-      P4: { sources: cleanedSummaryData.P4.sources, summaryLength: cleanedSummaryData.P4.summary.length },
-      Uncategorized: { sources: cleanedSummaryData.Uncategorized.sources, summaryLength: cleanedSummaryData.Uncategorized.summary.length }
-    });
-
-    // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
-    const now = new Date().toISOString();
-    const cacheData: CacheData = {
-      P1: cleanedSummaryData.P1,
-      P2: cleanedSummaryData.P2,
-      P3: cleanedSummaryData.P3,
-      P4: cleanedSummaryData.P4,
-      Uncategorized: cleanedSummaryData.Uncategorized,
-      generatedAt: now,
-      commentsHash,
-      promptVersion: promptVersionForCache,
-      cachedAt: now,
-      summaryBatchSize: isBatched ? batchSize : 0,
-    };
-
-    // Store in Redis permanently
-    await redis.set(cacheKey, cacheData);
-
-    // Return update metadata
-    const processingTimeMs = Date.now() - startTime;
-    const response: UpdateResponse = {
-      updated: true,
-      cached: false,
-      generatedAt: now,
-      commentsHash,
-      promptVersion: promptVersionForCache,
-      processingTimeMs,
-    };
-
-    res.status(200).json(response);
   } catch (error) {
     console.error("Error in update-summary API:", error);
 

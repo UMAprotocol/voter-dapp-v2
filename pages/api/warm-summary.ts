@@ -90,9 +90,15 @@ interface WarmSummaryResponse {
 
 const ORACLE_CHILD_TUNNEL_ADDRESS =
   "0xac60353a54873c446101216829a6A98cDbbC3f3D";
-const WARM_SUMMARY_CONCURRENCY_SIZE = parseInt(process.env.WARM_SUMMARY_CONCURRENCY_SIZE || "5", 10);
+const WARM_SUMMARY_CONCURRENCY_SIZE = parseInt(
+  process.env.WARM_SUMMARY_CONCURRENCY_SIZE || "5",
+  10
+);
 const MAX_EVENTS = 1000;
-const WARM_SUMMARY_MAX_AGE_DAYS = parseInt(process.env.WARM_SUMMARY_MAX_AGE_DAYS || "5", 10);
+const WARM_SUMMARY_MAX_AGE_DAYS = parseInt(
+  process.env.WARM_SUMMARY_MAX_AGE_DAYS || "5",
+  10
+);
 
 function decodeAncillaryData(ancillaryData: string): string {
   try {
@@ -153,6 +159,9 @@ function buildUpdateSummaryUrl(
   event: PriceRequestEvent,
   title: string
 ): string {
+  if (!process.env.NEXT_PUBLIC_SITE_URL) {
+    throw new Error("NEXT_PUBLIC_SITE_URL environment variable is not set");
+  }
   const baseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/update-summary`;
 
   // Build URL manually to control encoding format
@@ -259,7 +268,10 @@ export default async function handler(
     // Calculate block range (approximately 3 days worth of blocks)
     // Polygon averages ~2 second block time, so 3 days = ~129,600 blocks
     const blocksPerDay = 43200; // 24 * 60 * 60 / 2
-    const fromBlock = Math.max(0, currentBlock - blocksPerDay * WARM_SUMMARY_MAX_AGE_DAYS);
+    const fromBlock = Math.max(
+      0,
+      currentBlock - blocksPerDay * WARM_SUMMARY_MAX_AGE_DAYS
+    );
 
     console.log(
       `🔍 Querying events from block ${fromBlock} to ${currentBlock}...`
@@ -365,7 +377,9 @@ export default async function handler(
     for (let i = 0; i < updateUrls.length; i += WARM_SUMMARY_CONCURRENCY_SIZE) {
       const batch = updateUrls.slice(i, i + WARM_SUMMARY_CONCURRENCY_SIZE);
       const batchNumber = Math.floor(i / WARM_SUMMARY_CONCURRENCY_SIZE) + 1;
-      const totalBatches = Math.ceil(updateUrls.length / WARM_SUMMARY_CONCURRENCY_SIZE);
+      const totalBatches = Math.ceil(
+        updateUrls.length / WARM_SUMMARY_CONCURRENCY_SIZE
+      );
 
       console.log(
         `📦 Processing batch ${batchNumber}/${totalBatches} (${batch.length} URLs)...`
