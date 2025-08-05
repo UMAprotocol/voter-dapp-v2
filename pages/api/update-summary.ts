@@ -384,27 +384,11 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   const usernameSourcePattern =
     /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
 
-  // Test the pattern with some examples
-  console.log("=== REGEX TESTING ===");
-  const testCases = [
-    "[Source: aenews, 1753774056]",
-    "[Source: reaper732, 1753774930]",
-    "[Source: comment]",
-    "[Source: https://www.janes.com/osint-insights/defence-news/security/thailand-cambodia-border-skirmish-continues-into-second-day]",
-    "[Source: https://www.thaigov.go.th/news/contents/details/98884]",
-    "[Source: https://www.khmertimeskh.com/501724968/cambodian-defense-ministry-thai-f-16-fighter-jets-bomb-preah-vihear-temple-wat-keo-sikha-kiriswar-and-ta-krabey-temple-today/]",
-  ];
-  testCases.forEach((test) => {
-    const matches = test.match(usernameSourcePattern);
-    console.log(
-      `"${test}" -> matches: ${
-        matches ? "YES (will be removed)" : "NO (will be preserved)"
-      }`
-    );
-  });
-
   // Regex pattern to remove @https://vote.uma.xyz references
   const umaVotePattern = /\s*@https:\/\/vote\.uma\.xyz\s*/gi;
+
+  // Regex pattern to detect and replace inline URLs with markdown links
+  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
 
   const cleanedSummary = { ...summaryData };
 
@@ -414,7 +398,8 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       const originalSummary = cleanedSummary[outcome].summary;
       const cleanedSummaryText = originalSummary
         .replace(usernameSourcePattern, "")
-        .replace(umaVotePattern, "");
+        .replace(umaVotePattern, "")
+        .replace(urlPattern, "[source]($1)");
 
       console.log(`=== CLEANING ${outcome} ===`);
       console.log("Original:", originalSummary.substring(0, 200) + "...");
@@ -422,6 +407,14 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         "After username pattern:",
         originalSummary.replace(usernameSourcePattern, "").substring(0, 200) +
           "..."
+      );
+      console.log(
+        "After URL replacement:",
+        originalSummary
+          .replace(usernameSourcePattern, "")
+          .replace(umaVotePattern, "")
+          .replace(urlPattern, "[source]($1)")
+          .substring(0, 200) + "..."
       );
       console.log(
         "Final cleaned:",
@@ -441,7 +434,8 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       ...cleanedSummary.Uncategorized,
       summary: cleanedSummary.Uncategorized.summary
         .replace(usernameSourcePattern, "")
-        .replace(umaVotePattern, ""),
+        .replace(umaVotePattern, "")
+        .replace(urlPattern, "[source]($1)"),
     };
   }
 
@@ -519,8 +513,121 @@ export default async function handler(
 
     // Initialize Redis
     const redis = Redis.fromEnv();
+    // Call UMA API first to get comment count for cache key determination
+    const protocol = Array.isArray(req.headers["x-forwarded-proto"])
+      ? req.headers["x-forwarded-proto"][0]
+      : req.headers["x-forwarded-proto"] || "https";
+    const host = req.headers.host || "localhost";
+    const discordThreadBaseUrl = `${protocol}://${host}/api/discord-thread`;
 
-    // Create processing lock key to prevent concurrent processing
+    const umaUrl = new URL(discordThreadBaseUrl);
+    umaUrl.searchParams.set("time", time);
+    umaUrl.searchParams.set("identifier", identifier);
+    umaUrl.searchParams.set("title", title);
+
+    const umaResponse = await fetch(umaUrl.toString());
+
+    if (!umaResponse.ok) {
+      throw new Error(
+        `UMA API returned ${umaResponse.status}: ${umaResponse.statusText}`
+      );
+    }
+
+    const umaData = (await umaResponse.json()) as UMAApiResponse;
+
+    if (!umaData.thread || !Array.isArray(umaData.thread)) {
+      throw new Error(
+        "Invalid response from UMA API: missing or invalid thread data"
+      );
+    }
+
+    // Check if there are any comments to summarize
+    if (umaData.thread.length === 0) {
+      const processingTimeMs = Date.now() - startTime;
+      return res.status(200).json({
+        updated: false,
+        cached: false,
+        generatedAt: new Date().toISOString(),
+        commentsHash: "empty",
+        promptVersion,
+        processingTimeMs,
+      });
+    }
+
+    // Only use top-level comments for summary - ignore all replies
+    const topLevelComments = umaData.thread; // These are already top-level from the API
+
+    // Update cache key logic based on comment count
+    const isBatched = topLevelComments.length > batchSize;
+    const promptVersionForCache = isBatched
+      ? `${promptVersion}:${condensationPromptVersion}`
+      : promptVersion;
+
+    // Create unique cache key using all three parameters (simple format)
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+
+    // Format messages for OpenAI and compute hash (top-level comments only)
+    const formattedComments = topLevelComments
+      .map((msg) => {
+        return `<Comment>
+<Metadata>
+Author: ${msg.sender}
+Timestamp: ${msg.time}
+</Metadata>
+<Content>
+${msg.message}
+</Content>
+</Comment>`;
+      })
+      .join("\n\n");
+
+    const commentsHash = createHash("sha256")
+      .update(formattedComments)
+      .digest("hex");
+
+    // Check cache first to see if we need to respect the update interval
+    const cachedData = await redis.get<CacheData>(cacheKey);
+
+    if (cachedData) {
+      const timeSinceLastUpdate =
+        Date.now() - new Date(cachedData.generatedAt).getTime();
+
+      if (timeSinceLastUpdate < maxUpdateInterval) {
+        // Too soon to update, return existing data without fetching comments
+        const processingTimeMs = Date.now() - startTime;
+        const response: UpdateResponse = {
+          updated: false,
+          cached: true,
+          generatedAt: cachedData.generatedAt,
+          commentsHash: cachedData.commentsHash,
+          promptVersion: cachedData.promptVersion,
+          processingTimeMs,
+        };
+        return res.status(200).json(response);
+      }
+    }
+
+    // Check if content or prompt has changed (we already passed the time check)
+    if (
+      cachedData &&
+      cachedData.commentsHash === commentsHash &&
+      cachedData.promptVersion === promptVersionForCache
+    ) {
+      // Return metadata if hash and prompt version match (cached)
+      const processingTimeMs = Date.now() - startTime;
+      const response: UpdateResponse = {
+        updated: false,
+        cached: true,
+        generatedAt: cachedData.generatedAt,
+        commentsHash: cachedData.commentsHash,
+        promptVersion: cachedData.promptVersion,
+        processingTimeMs,
+      };
+      return res.status(200).json(response);
+    }
+
+    // Generate new summary if cache miss, hash mismatch, or prompt version changed
+    // Only acquire lock when we actually need to generate a new summary
     const lockKey = `processing:discord-summary:${time}:${identifier}:${title}`;
     const lockTTL = 15 * 60; // 15 minutes in seconds
 
@@ -544,127 +651,12 @@ export default async function handler(
       });
     }
 
-    // Wrap main processing in try/finally to ensure lock cleanup
-    // Only clean up the lock if we successfully acquired it
+    // Wrap generation processing in try/finally to ensure lock cleanup
+    let summaryData: SummaryData;
     try {
-      // Call UMA API first to get comment count for cache key determination
-      if (!process.env.NEXT_PUBLIC_SITE_URL) {
-        throw new Error("NEXT_PUBLIC_SITE_URL environment variable is not set");
-      }
-      const discordThreadBaseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/discord-thread`;
-
-      const umaUrl = new URL(discordThreadBaseUrl);
-      umaUrl.searchParams.set("time", time);
-      umaUrl.searchParams.set("identifier", identifier);
-      umaUrl.searchParams.set("title", title);
-
-      const umaResponse = await fetch(umaUrl.toString());
-
-      if (!umaResponse.ok) {
-        throw new Error(
-          `UMA API returned ${umaResponse.status}: ${umaResponse.statusText}`
-        );
-      }
-
-      const umaData = (await umaResponse.json()) as UMAApiResponse;
-
-      if (!umaData.thread || !Array.isArray(umaData.thread)) {
-        throw new Error(
-          "Invalid response from UMA API: missing or invalid thread data"
-        );
-      }
-
-      // Check if there are any comments to summarize
-      if (umaData.thread.length === 0) {
-        const processingTimeMs = Date.now() - startTime;
-        return res.status(200).json({
-          updated: false,
-          cached: false,
-          generatedAt: new Date().toISOString(),
-          commentsHash: "empty",
-          promptVersion,
-          processingTimeMs,
-        });
-      }
-
-      // Only use top-level comments for summary - ignore all replies
-      const topLevelComments = umaData.thread; // These are already top-level from the API
-
-      // Update cache key logic based on comment count
-      const isBatched = topLevelComments.length > batchSize;
-      const promptVersionForCache = isBatched
-        ? `${promptVersion}:${condensationPromptVersion}`
-        : promptVersion;
-
-      // Create unique cache key using all three parameters (simple format)
-      const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
-
-      // Format messages for OpenAI and compute hash (top-level comments only)
-      const formattedComments = topLevelComments
-        .map((msg) => {
-          return `<Comment>
-<Metadata>
-Author: ${msg.sender}
-Timestamp: ${msg.time}
-</Metadata>
-<Content>
-${msg.message}
-</Content>
-</Comment>`;
-        })
-        .join("\n\n");
-
-      const commentsHash = createHash("sha256")
-        .update(formattedComments)
-        .digest("hex");
-
-      // Check cache first to see if we need to respect the update interval
-      const cachedData = await redis.get<CacheData>(cacheKey);
-
-      if (cachedData) {
-        const timeSinceLastUpdate =
-          Date.now() - new Date(cachedData.generatedAt).getTime();
-
-        if (timeSinceLastUpdate < maxUpdateInterval) {
-          // Too soon to update, return existing data without fetching comments
-          const processingTimeMs = Date.now() - startTime;
-          const response: UpdateResponse = {
-            updated: false,
-            cached: true,
-            generatedAt: cachedData.generatedAt,
-            commentsHash: cachedData.commentsHash,
-            promptVersion: cachedData.promptVersion,
-            processingTimeMs,
-          };
-          return res.status(200).json(response);
-        }
-      }
-
-      // Check if content or prompt has changed (we already passed the time check)
-      if (
-        cachedData &&
-        cachedData.commentsHash === commentsHash &&
-        cachedData.promptVersion === promptVersionForCache
-      ) {
-        // Return metadata if hash and prompt version match (cached)
-        const processingTimeMs = Date.now() - startTime;
-        const response: UpdateResponse = {
-          updated: false,
-          cached: true,
-          generatedAt: cachedData.generatedAt,
-          commentsHash: cachedData.commentsHash,
-          promptVersion: cachedData.promptVersion,
-          processingTimeMs,
-        };
-        return res.status(200).json(response);
-      }
-
-      // Generate new summary if cache miss, hash mismatch, or prompt version changed
       const openai = new OpenAI({
         apiKey: openaiApiKey,
       });
-
-      let summaryData: SummaryData;
 
       if (topLevelComments.length <= batchSize) {
         // Single-pass processing for markdown

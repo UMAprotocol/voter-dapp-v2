@@ -157,12 +157,14 @@ function decodeAncillaryData(ancillaryData: string): string {
 
 function buildUpdateSummaryUrl(
   event: PriceRequestEvent,
-  title: string
+  title: string,
+  req: NextApiRequest
 ): string {
-  if (!process.env.NEXT_PUBLIC_SITE_URL) {
-    throw new Error("NEXT_PUBLIC_SITE_URL environment variable is not set");
-  }
-  const baseUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/update-summary`;
+  const protocol = Array.isArray(req.headers["x-forwarded-proto"])
+    ? req.headers["x-forwarded-proto"][0]
+    : req.headers["x-forwarded-proto"] || "https";
+  const host = req.headers.host || "localhost";
+  const baseUrl = `${protocol}://${host}/api/update-summary`;
 
   // Build URL manually to control encoding format
   // Replace spaces with + and encode special characters
@@ -355,7 +357,7 @@ export default async function handler(
     for (const event of parsedEvents) {
       try {
         const title = decodeAncillaryData(event.ancillaryData);
-        const url = buildUpdateSummaryUrl(event, title);
+        const url = buildUpdateSummaryUrl(event, title, req);
         updateUrls.push(url);
         console.log(
           `📝 Event ${event.childRequestId.slice(0, 10)}... -> "${title}"`
