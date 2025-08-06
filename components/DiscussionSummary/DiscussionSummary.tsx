@@ -42,38 +42,87 @@ function processSummaryText(text: string) {
     .filter((line) => line.length > 0);
 
   return lines.map((line, lineIndex) => {
-    // Find source patterns like [Source: URL] and convert to [source] format
+    // Handle both [Source: URL] and markdown [text](URL) patterns
     const sourcePattern = /\[Source:\s*(https?:\/\/[^\]]+)\]/g;
+    const markdownPattern = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+    
+    let processedLine = line;
     const parts = [];
     let lastIndex = 0;
-    let match;
+    let elementKey = 0;
 
+    // Create a combined pattern to find all link patterns
+    const allMatches = [];
+    
+    // Find all [Source: URL] patterns
+    let match;
     while ((match = sourcePattern.exec(line)) !== null) {
-      // Add text before the source
-      if (match.index > lastIndex) {
-        parts.push(line.slice(lastIndex, match.index));
+      allMatches.push({
+        index: match.index,
+        length: match[0].length,
+        url: match[1],
+        text: 'source',
+        type: 'source'
+      });
+    }
+    
+    // Reset regex and find all markdown [text](URL) patterns
+    markdownPattern.lastIndex = 0;
+    while ((match = markdownPattern.exec(line)) !== null) {
+      allMatches.push({
+        index: match.index,
+        length: match[0].length,
+        url: match[2],
+        text: match[1],
+        type: 'markdown'
+      });
+    }
+
+    // Sort matches by index to process them in order
+    allMatches.sort((a, b) => a.index - b.index);
+
+    // Process all matches
+    for (const linkMatch of allMatches) {
+      // Add text before the link
+      if (linkMatch.index > lastIndex) {
+        parts.push(line.slice(lastIndex, linkMatch.index));
       }
 
-      // Add [source] where "source" is clickable
-      parts.push(
-        <span key={`${lineIndex}-${match.index}`}>
-          [
+      // Add the clickable link
+      if (linkMatch.type === 'source') {
+        parts.push(
+          <span key={`${lineIndex}-${elementKey++}`}>
+            [
+            <a
+              href={linkMatch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#17b38c] underline hover:text-[#15a078]"
+            >
+              {linkMatch.text}
+            </a>
+            ]
+          </span>
+        );
+      } else {
+        // Markdown link
+        parts.push(
           <a
-            href={match[1]}
+            key={`${lineIndex}-${elementKey++}`}
+            href={linkMatch.url}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#17b38c] underline hover:text-[#15a078]"
           >
-            source
+            {linkMatch.text}
           </a>
-          ]
-        </span>
-      );
+        );
+      }
 
-      lastIndex = sourcePattern.lastIndex;
+      lastIndex = linkMatch.index + linkMatch.length;
     }
 
-    // Add remaining text after the last source
+    // Add remaining text after the last link
     if (lastIndex < line.length) {
       parts.push(line.slice(lastIndex));
     }
