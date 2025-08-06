@@ -317,7 +317,8 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
     /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
 
   // Regex pattern to convert URLs to markdown links for proper rendering
-  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
+  // Excludes trailing punctuation that's likely sentence punctuation rather than part of the URL
+  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|$))/gi;
 
   const cleanedSummary = { ...summaryData };
 
@@ -330,10 +331,13 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         usernameSourcePattern,
         ""
       );
-      const finalCleaned = afterUsernameClean.replace(
+      let finalCleaned = afterUsernameClean.replace(
         urlPattern,
         "[source]($1)"
       );
+      
+      // Add commas between consecutive source links for better readability
+      finalCleaned = finalCleaned.replace(/(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g, '$1, ');
 
       console.log(`=== CLEANING ${outcome} ===`);
       console.log("Original contains URLs:", originalSummary.includes("http"));
@@ -371,7 +375,10 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       usernameSourcePattern,
       ""
     );
-    const finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+    let finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+    
+    // Add commas between consecutive source links for better readability
+    finalCleaned = finalCleaned.replace(/(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g, '$1, ');
 
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
