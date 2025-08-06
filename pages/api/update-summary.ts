@@ -150,13 +150,23 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 `;
 
     console.log(`=== CONDENSATION BATCH ${index + 1} INPUT ===`);
-    
+
     // Extract only summary text for each outcome
     Object.entries(batchResult.summary).forEach(
-      ([outcome, data]: [string, any]) => {
-        if (outcome !== "sources" && data && typeof data === "string" && data.trim()) {
+      ([outcome, data]: [string, unknown]) => {
+        if (
+          outcome !== "sources" &&
+          data &&
+          typeof data === "string" &&
+          data.trim()
+        ) {
           console.log(`${outcome} summary length: ${data.length}`);
-          console.log(`${outcome} contains URLs: ${data.includes('http')}`);
+          console.log(
+            `${outcome} contains URLs: ${String(data.includes("http"))}`
+          );
+          console.log(
+            `${outcome} contains bullets: ${String(data.includes("•"))}`
+          );
           console.log(`${outcome} text preview: ${data.substring(0, 200)}...`);
           summariesText += `${outcome}: ${data}\n`;
         }
@@ -171,7 +181,10 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 
   console.log("=== FULL CONDENSATION PROMPT ===");
   console.log("Condensation prompt length:", summariesText.length);
-  console.log("Contains URLs in condensation input:", summariesText.includes('http'));
+  console.log(
+    "Contains URLs in condensation input:",
+    summariesText.includes("http")
+  );
 
   return `${condensationPrompt}
 
@@ -313,17 +326,34 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
     if (cleanedSummary[outcome] && cleanedSummary[outcome].summary) {
       const originalSummary = cleanedSummary[outcome].summary;
       // Remove username/timestamp references and convert URLs to markdown links
-      const afterUsernameClean = originalSummary.replace(usernameSourcePattern, "");
-      const finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+      const afterUsernameClean = originalSummary.replace(
+        usernameSourcePattern,
+        ""
+      );
+      const finalCleaned = afterUsernameClean.replace(
+        urlPattern,
+        "[source]($1)"
+      );
 
       console.log(`=== CLEANING ${outcome} ===`);
-      console.log("Original contains URLs:", originalSummary.includes('http'));
-      console.log("After username clean contains URLs:", afterUsernameClean.includes('http'));
-      console.log("Final contains [source]:", finalCleaned.includes('[source]'));
-      console.log("Final contains http:", finalCleaned.includes('http'));
-      
-      if (originalSummary.includes('http')) {
-        console.log("Original text:", originalSummary.substring(0, 400) + "...");
+      console.log("Original contains URLs:", originalSummary.includes("http"));
+      console.log("Original contains bullets:", originalSummary.includes("•"));
+      console.log(
+        "After username clean contains URLs:",
+        afterUsernameClean.includes("http")
+      );
+      console.log(
+        "Final contains [source]:",
+        finalCleaned.includes("[source]")
+      );
+      console.log("Final contains bullets:", finalCleaned.includes("•"));
+      console.log("Final contains http:", finalCleaned.includes("http"));
+
+      if (originalSummary.includes("http")) {
+        console.log(
+          "Original text:",
+          originalSummary.substring(0, 400) + "..."
+        );
         console.log("Final text:", finalCleaned.substring(0, 400) + "...");
       }
 
@@ -337,9 +367,12 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   // Clean Uncategorized outcome
   if (cleanedSummary.Uncategorized && cleanedSummary.Uncategorized.summary) {
     const originalSummary = cleanedSummary.Uncategorized.summary;
-    const afterUsernameClean = originalSummary.replace(usernameSourcePattern, "");
+    const afterUsernameClean = originalSummary.replace(
+      usernameSourcePattern,
+      ""
+    );
     const finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
-    
+
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
       summary: finalCleaned,
@@ -634,6 +667,10 @@ ${msg.message}
 
       console.log("=== SINGLE-PASS AI RESPONSE ===");
       console.log("Raw AI response:", markdownResponse);
+      console.log(
+        "Single-pass response contains bullets:",
+        markdownResponse.includes("•")
+      );
 
       // For single-pass, parse the AI response and extract any source categorization
       summaryData = parseResponse(markdownResponse, {
@@ -691,17 +728,24 @@ ${msg.message}
 
         console.log(`=== BATCH ${batchNumber} INPUT ANALYSIS ===`);
         console.log(`Batch size: ${batch.length} comments`);
-        
+
         // Check what URLs are in the original comments for this batch
         const urlsInBatch: string[] = [];
         batch.forEach((comment, idx) => {
-          const urls = comment.message.match(/(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi);
+          const urls = comment.message.match(
+            /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi
+          );
           if (urls) {
-            console.log(`Comment ${idx + 1} by ${comment.sender} contains URLs:`, urls);
+            console.log(
+              `Comment ${idx + 1} by ${comment.sender} contains URLs:`,
+              urls
+            );
             urlsInBatch.push(...urls);
           }
         });
-        console.log(`Total unique URLs in batch ${batchNumber}:`, [...new Set(urlsInBatch)]);
+        console.log(`Total unique URLs in batch ${batchNumber}:`, [
+          ...new Set(urlsInBatch),
+        ]);
 
         const batchPromptFormatted = formatBatchPrompt(
           systemPrompt,
@@ -714,9 +758,15 @@ ${msg.message}
         );
 
         console.log(`=== BATCH ${batchNumber} FULL PROMPT ===`);
-        console.log("Prompt contains URLs:", batchPromptFormatted.includes('http'));
-        if (batchPromptFormatted.includes('http')) {
-          console.log("First 1000 chars of prompt:", batchPromptFormatted.substring(0, 1000));
+        console.log(
+          "Prompt contains URLs:",
+          batchPromptFormatted.includes("http")
+        );
+        if (batchPromptFormatted.includes("http")) {
+          console.log(
+            "First 1000 chars of prompt:",
+            batchPromptFormatted.substring(0, 1000)
+          );
         }
 
         const batchCompletion = await openai.chat.completions.create({
@@ -798,15 +848,21 @@ ${msg.message}
 
           console.log(`=== BATCH ${batchNumber} EXTRACTED SUMMARIES ===`);
           const outcomes = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
-          outcomes.forEach(outcome => {
+          outcomes.forEach((outcome) => {
             const summary = extractSummary(summaryData[outcome]);
             const hasContent = summary.trim().length > 0;
-            const hasUrls = summary.includes('http');
-            console.log(`${outcome}: ${hasContent ? 'HAS CONTENT' : 'EMPTY'} (${summary.length} chars, URLs: ${hasUrls})`);
+            const hasUrls = summary.includes("http");
+            console.log(
+              `${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
+                summary.length
+              } chars, URLs: ${String(hasUrls)})`
+            );
             if (hasContent) {
               console.log(`  Content: ${summary.substring(0, 300)}...`);
               if (!hasUrls && urlsInBatch.length > 0) {
-                console.log(`  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`);
+                console.log(
+                  `  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`
+                );
               }
             }
           });
@@ -846,15 +902,19 @@ ${msg.message}
       // Condense batch results
       console.log("=== PRE-CONDENSATION ANALYSIS ===");
       console.log(`Total batches processed: ${batchResults.length}`);
-      
+
       // Check what content each batch actually has
       batchResults.forEach((batch, idx) => {
         console.log(`Batch ${idx + 1} summary content:`);
         Object.entries(batch.summary).forEach(([outcome, data]) => {
           if (outcome !== "sources" && typeof data === "string") {
             const hasContent = data.trim().length > 0;
-            const hasUrls = data.includes('http');
-            console.log(`  ${outcome}: ${hasContent ? 'HAS CONTENT' : 'EMPTY'} (${data.length} chars, URLs: ${hasUrls})`);
+            const hasUrls = data.includes("http");
+            console.log(
+              `  ${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
+                data.length
+              } chars, URLs: ${String(hasUrls)})`
+            );
             if (hasContent && hasUrls) {
               console.log(`    First 200 chars: ${data.substring(0, 200)}...`);
             }
@@ -889,31 +949,62 @@ ${msg.message}
 
       console.log("=== CONDENSATION AI RESPONSE ===");
       console.log("Raw condensation response:", condensedSummaryText);
-      console.log("Condensation response contains URLs:", condensedSummaryText.includes('http'));
-      
+      console.log(
+        "Condensation response contains URLs:",
+        condensedSummaryText.includes("http")
+      );
+      console.log(
+        "Condensation response contains bullets:",
+        condensedSummaryText.includes("•")
+      );
+
       // Parse condensation response to check for hallucination
       try {
-        const condensationCheck = JSON.parse(condensedSummaryText) as any;
+        const condensationCheck = JSON.parse(
+          condensedSummaryText
+        ) as OpenAIJsonResponse;
         const summaryCheck = condensationCheck.summary || condensationCheck;
         console.log("=== CONDENSATION HALLUCINATION CHECK ===");
         Object.entries(summaryCheck).forEach(([outcome, data]) => {
-          if (typeof data === "string" || (data && typeof data === "object" && "summary" in data)) {
-            const summaryText = typeof data === "string" ? data : (data as any).summary;
-            if (summaryText && summaryText.trim()) {
-              console.log(`CONDENSATION CREATED ${outcome} CONTENT: ${summaryText.substring(0, 200)}...`);
+          if (
+            typeof data === "string" ||
+            (data && typeof data === "object" && "summary" in data)
+          ) {
+            const summaryText =
+              typeof data === "string"
+                ? data
+                : (data as { summary?: string }).summary;
+            if (
+              summaryText &&
+              typeof summaryText === "string" &&
+              summaryText.trim()
+            ) {
+              console.log(
+                `CONDENSATION CREATED ${outcome} CONTENT: ${String(
+                  summaryText.substring(0, 200)
+                )}...`
+              );
               // Check if this outcome was empty in all batches
-              const hadContentInBatches = batchResults.some(batch => {
-                const batchOutcome = batch.summary[outcome as keyof typeof batch.summary];
-                return typeof batchOutcome === "string" && batchOutcome.trim().length > 0;
+              const hadContentInBatches = batchResults.some((batch) => {
+                const batchOutcome =
+                  batch.summary[outcome as keyof typeof batch.summary];
+                return (
+                  typeof batchOutcome === "string" &&
+                  batchOutcome.trim().length > 0
+                );
               });
               if (!hadContentInBatches) {
-                console.log(`🚨 HALLUCINATION DETECTED: ${outcome} was empty in all batches but condensation created content!`);
+                console.log(
+                  `🚨 HALLUCINATION DETECTED: ${outcome} was empty in all batches but condensation created content!`
+                );
               }
             }
           }
         });
       } catch (e) {
-        console.log("Could not parse condensation response for hallucination check");
+        console.log(
+          "Could not parse condensation response for hallucination check"
+        );
       }
 
       // Parse the condensed response first
@@ -1001,8 +1092,12 @@ ${msg.message}
     console.log("=== BEFORE CLEANING URLs ===");
     (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
       const summary = summaryData[outcome].summary;
-      console.log(`${outcome} contains URLs before cleaning: ${summary.includes('http')}`);
-      if (summary.includes('http')) {
+      console.log(
+        `${outcome} contains URLs before cleaning: ${String(
+          summary.includes("http")
+        )}`
+      );
+      if (summary.includes("http")) {
         console.log(`${outcome} URL preview: ${summary.substring(0, 300)}...`);
       }
     });
@@ -1013,10 +1108,20 @@ ${msg.message}
     console.log("=== AFTER CLEANING URLs ===");
     (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
       const summary = cleanedSummaryData[outcome].summary;
-      console.log(`${outcome} contains URLs after cleaning: ${summary.includes('http')}`);
-      console.log(`${outcome} contains [source] after cleaning: ${summary.includes('[source]')}`);
-      if (summary.includes('[source]') || summary.includes('http')) {
-        console.log(`${outcome} final preview: ${summary.substring(0, 300)}...`);
+      console.log(
+        `${outcome} contains URLs after cleaning: ${String(
+          summary.includes("http")
+        )}`
+      );
+      console.log(
+        `${outcome} contains [source] after cleaning: ${String(
+          summary.includes("[source]")
+        )}`
+      );
+      if (summary.includes("[source]") || summary.includes("http")) {
+        console.log(
+          `${outcome} final preview: ${summary.substring(0, 300)}...`
+        );
       }
     });
 
