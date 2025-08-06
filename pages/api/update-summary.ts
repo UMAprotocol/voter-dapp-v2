@@ -82,6 +82,7 @@ interface CacheData {
   promptVersion: string;
   cachedAt: string;
   summaryBatchSize: number;
+  model: string;
 }
 
 // Helper functions for batch processing
@@ -148,10 +149,25 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 <Summary>
 `;
 
+    console.log(`=== CONDENSATION BATCH ${index + 1} INPUT ===`);
+
     // Extract only summary text for each outcome
     Object.entries(batchResult.summary).forEach(
-      ([outcome, data]: [string, string]) => {
-        if (outcome !== "sources" && data && data.trim()) {
+      ([outcome, data]: [string, unknown]) => {
+        if (
+          outcome !== "sources" &&
+          data &&
+          typeof data === "string" &&
+          data.trim()
+        ) {
+          console.log(`${outcome} summary length: ${data.length}`);
+          console.log(
+            `${outcome} contains URLs: ${String(data.includes("http"))}`
+          );
+          console.log(
+            `${outcome} contains bullets: ${String(data.includes("•"))}`
+          );
+          console.log(`${outcome} text preview: ${data.substring(0, 200)}...`);
           summariesText += `${outcome}: ${data}\n`;
         }
       }
@@ -162,6 +178,13 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 
 `;
   });
+
+  console.log("=== FULL CONDENSATION PROMPT ===");
+  console.log("Condensation prompt length:", summariesText.length);
+  console.log(
+    "Contains URLs in condensation input:",
+    summariesText.includes("http")
+  );
 
   return `${condensationPrompt}
 
@@ -286,40 +309,145 @@ function parseResponse(
   }
 }
 
-// Helper function to clean placeholder source links from summary text
+// Helper function to clean username/timestamp source references from summary text
 function cleanSummaryText(summaryData: SummaryData): SummaryData {
-  // Regex pattern to match [Source: ...] patterns that don't contain valid URLs
-  // This will match [Source: anything] that doesn't contain http:// or https://
-  const invalidSourcePattern =
-    /\s*\[Source:[^\]]*(?<!https?:\/\/[^\]]*)\]\.?/gi;
+  // Pattern to match username/timestamp sources but preserve URL sources
+  // This matches [Source: word] or [Source: word, number] but NOT URLs
+  const usernameSourcePattern =
+    /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
+
+  // Regex pattern to convert URLs to markdown links for proper rendering
+  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
 
   const cleanedSummary = { ...summaryData };
 
   // Clean P1, P2, P3, P4 outcomes
   (["P1", "P2", "P3", "P4"] as const).forEach((outcome) => {
     if (cleanedSummary[outcome] && cleanedSummary[outcome].summary) {
+      const originalSummary = cleanedSummary[outcome].summary;
+      // Remove username/timestamp references and convert URLs to markdown links
+      const afterUsernameClean = originalSummary.replace(
+        usernameSourcePattern,
+        ""
+      );
+      const finalCleaned = afterUsernameClean.replace(
+        urlPattern,
+        "[source]($1)"
+      );
+
+      console.log(`=== CLEANING ${outcome} ===`);
+      console.log("Original contains URLs:", originalSummary.includes("http"));
+      console.log("Original contains bullets:", originalSummary.includes("•"));
+      console.log(
+        "After username clean contains URLs:",
+        afterUsernameClean.includes("http")
+      );
+      console.log(
+        "Final contains [source]:",
+        finalCleaned.includes("[source]")
+      );
+      console.log("Final contains bullets:", finalCleaned.includes("•"));
+      console.log("Final contains http:", finalCleaned.includes("http"));
+
+      if (originalSummary.includes("http")) {
+        console.log(
+          "Original text:",
+          originalSummary.substring(0, 400) + "..."
+        );
+        console.log("Final text:", finalCleaned.substring(0, 400) + "...");
+      }
+
       cleanedSummary[outcome] = {
         ...cleanedSummary[outcome],
-        summary: cleanedSummary[outcome].summary.replace(
-          invalidSourcePattern,
-          ""
-        ),
+        summary: finalCleaned,
       };
     }
   });
 
   // Clean Uncategorized outcome
   if (cleanedSummary.Uncategorized && cleanedSummary.Uncategorized.summary) {
+    const originalSummary = cleanedSummary.Uncategorized.summary;
+    const afterUsernameClean = originalSummary.replace(
+      usernameSourcePattern,
+      ""
+    );
+    const finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
-      summary: cleanedSummary.Uncategorized.summary.replace(
-        invalidSourcePattern,
-        ""
-      ),
+      summary: finalCleaned,
     };
   }
 
   return cleanedSummary;
+}
+
+// Helper function to aggregate sources from batch results
+function aggregateSourcesFromBatches(
+  summaryData: SummaryData,
+  batchResults: BatchResult[]
+): SummaryData {
+  const result = { ...summaryData };
+
+  // Initialize aggregated sources
+  const aggregatedSources: Record<string, [string, number][]> = {
+    P1: [],
+    P2: [],
+    P3: [],
+    P4: [],
+    Uncategorized: [],
+  };
+
+  // Aggregate sources from all batches
+  batchResults.forEach((batch) => {
+    if (batch.summary.sources) {
+      Object.entries(batch.summary.sources).forEach(([outcome, sources]) => {
+        if (aggregatedSources[outcome] && Array.isArray(sources)) {
+          aggregatedSources[outcome].push(...sources);
+        }
+      });
+    }
+  });
+
+  // Assign aggregated sources to final summary data
+  (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
+    result[outcome] = {
+      ...result[outcome],
+      sources: aggregatedSources[outcome] || [],
+    };
+  });
+
+  return result;
+}
+
+// Helper function to deduplicate sources within each category and across categories
+function deduplicateAllSources(summaryData: SummaryData): SummaryData {
+  const result = { ...summaryData };
+  const seenUsernames = new Set<string>();
+
+  // Process categories in priority order: P1, P2, P3, P4, Uncategorized
+  const categories = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
+
+  categories.forEach((category) => {
+    if (result[category] && result[category].sources) {
+      // Deduplicate within category and remove usernames already seen in other categories
+      const uniqueSources: [string, number][] = [];
+
+      result[category].sources.forEach(([username, timestamp]) => {
+        if (!seenUsernames.has(username)) {
+          uniqueSources.push([username, timestamp]);
+          seenUsernames.add(username);
+        }
+      });
+
+      result[category] = {
+        ...result[category],
+        sources: uniqueSources,
+      };
+    }
+  });
+
+  return result;
 }
 
 export default async function handler(
@@ -371,7 +499,7 @@ export default async function handler(
   const condensationPrompt = process.env.SUMMARY_CONDENSATION_PROMPT;
   const condensationPromptVersion =
     process.env.SUMMARY_CONDENSATION_PROMPT_VERSION;
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = process.env.OPENAI_MODEL || "gpt-4.1";
   const maxUpdateInterval = parseInt(
     process.env.MAX_UPDATE_INTERVAL || DEFAULT_MAX_UPDATE_INTERVAL.toString()
   );
@@ -393,15 +521,12 @@ export default async function handler(
 
     // Initialize Redis
     const redis = Redis.fromEnv();
-
     // Call UMA API first to get comment count for cache key determination
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    if (!siteUrl) {
-      return res
-        .status(500)
-        .json({ error: "NEXT_PUBLIC_SITE_URL not configured" });
-    }
-    const discordThreadBaseUrl = `${siteUrl}/api/discord-thread`;
+    const protocol = Array.isArray(req.headers["x-forwarded-proto"])
+      ? req.headers["x-forwarded-proto"][0]
+      : req.headers["x-forwarded-proto"] || "https";
+    const host = req.headers.host || "localhost";
+    const discordThreadBaseUrl = `${protocol}://${host}/api/discord-thread`;
 
     const umaUrl = new URL(discordThreadBaseUrl);
     umaUrl.searchParams.set("time", time);
@@ -540,6 +665,13 @@ ${msg.message}
         throw new Error("OpenAI returned empty response");
       }
 
+      console.log("=== SINGLE-PASS AI RESPONSE ===");
+      console.log("Raw AI response:", markdownResponse);
+      console.log(
+        "Single-pass response contains bullets:",
+        markdownResponse.includes("•")
+      );
+
       // For single-pass, parse the AI response and extract any source categorization
       summaryData = parseResponse(markdownResponse, {
         P1: [],
@@ -549,42 +681,39 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      // If AI didn't categorize sources properly, distribute users based on non-empty summaries
-      const totalUsers = topLevelComments.length;
-      if (totalUsers > 0) {
-        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
-          (outcome) => summaryData[outcome].summary.trim().length > 0
-        );
+      console.log("=== PARSED SINGLE-PASS SOURCES ===");
+      console.log("P1 sources:", summaryData.P1.sources);
+      console.log("P2 sources:", summaryData.P2.sources);
+      console.log("P3 sources:", summaryData.P3.sources);
+      console.log("P4 sources:", summaryData.P4.sources);
+      console.log("Uncategorized sources:", summaryData.Uncategorized.sources);
 
-        if (nonEmptyOutcomes.length > 0) {
-          // Distribute users across outcomes that have content
-          const usersPerOutcome = Math.floor(
-            totalUsers / nonEmptyOutcomes.length
-          );
-          let userIndex = 0;
+      // Deduplicate sources for single-pass processing too
+      summaryData = deduplicateAllSources(summaryData);
 
-          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
-            const endIndex =
-              outcomeIndex === nonEmptyOutcomes.length - 1
-                ? totalUsers // Last outcome gets any remaining users
-                : userIndex + usersPerOutcome;
-
-            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
-              const comment = topLevelComments[i];
-              summaryData[outcome].sources.push([comment.sender, comment.time]);
-            }
-            userIndex = endIndex;
-          });
-        } else {
-          // Fallback: put all users in Uncategorized if no outcomes have content
-          topLevelComments.forEach((comment) => {
-            summaryData.Uncategorized.sources.push([
-              comment.sender,
-              comment.time,
-            ]);
-          });
-        }
-      }
+      console.log("=== AFTER SINGLE-PASS DEDUPLICATION ===");
+      console.log("Summary data after deduplication:", {
+        P1: {
+          sources: summaryData.P1.sources,
+          summaryLength: summaryData.P1.summary.length,
+        },
+        P2: {
+          sources: summaryData.P2.sources,
+          summaryLength: summaryData.P2.summary.length,
+        },
+        P3: {
+          sources: summaryData.P3.sources,
+          summaryLength: summaryData.P3.summary.length,
+        },
+        P4: {
+          sources: summaryData.P4.sources,
+          summaryLength: summaryData.P4.summary.length,
+        },
+        Uncategorized: {
+          sources: summaryData.Uncategorized.sources,
+          summaryLength: summaryData.Uncategorized.summary.length,
+        },
+      });
     } else {
       // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
@@ -597,6 +726,27 @@ ${msg.message}
         const startIndex = i * batchSize + 1;
         const endIndex = Math.min((i + 1) * batchSize, topLevelComments.length);
 
+        console.log(`=== BATCH ${batchNumber} INPUT ANALYSIS ===`);
+        console.log(`Batch size: ${batch.length} comments`);
+
+        // Check what URLs are in the original comments for this batch
+        const urlsInBatch: string[] = [];
+        batch.forEach((comment, idx) => {
+          const urls = comment.message.match(
+            /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi
+          );
+          if (urls) {
+            console.log(
+              `Comment ${idx + 1} by ${comment.sender} contains URLs:`,
+              urls
+            );
+            urlsInBatch.push(...urls);
+          }
+        });
+        console.log(`Total unique URLs in batch ${batchNumber}:`, [
+          ...new Set(urlsInBatch),
+        ]);
+
         const batchPromptFormatted = formatBatchPrompt(
           systemPrompt,
           batch,
@@ -606,6 +756,18 @@ ${msg.message}
           startIndex,
           endIndex
         );
+
+        console.log(`=== BATCH ${batchNumber} FULL PROMPT ===`);
+        console.log(
+          "Prompt contains URLs:",
+          batchPromptFormatted.includes("http")
+        );
+        if (batchPromptFormatted.includes("http")) {
+          console.log(
+            "First 1000 chars of prompt:",
+            batchPromptFormatted.substring(0, 1000)
+          );
+        }
 
         const batchCompletion = await openai.chat.completions.create({
           model: model,
@@ -631,6 +793,9 @@ ${msg.message}
           );
         }
 
+        console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
+        console.log("Raw batch response:", batchSummaryText);
+
         // Parse the batch response to get proper categorization
         try {
           const batchParsedResponse = JSON.parse(
@@ -647,9 +812,60 @@ ${msg.message}
             return "";
           };
 
+          // Helper function to extract sources from nested structure
+          const extractBatchSources = (data: unknown): [string, number][] => {
+            if (data && typeof data === "object" && "sources" in data) {
+              const obj = data as { sources: unknown };
+              if (Array.isArray(obj.sources)) {
+                // Validate each source is a [string, number] tuple
+                return obj.sources.filter(
+                  (source): source is [string, number] =>
+                    Array.isArray(source) &&
+                    source.length === 2 &&
+                    typeof source[0] === "string" &&
+                    typeof source[1] === "number"
+                );
+              }
+            }
+            return [];
+          };
+
           // Handle nested summary structure for condensation
           const summaryData =
             batchParsedResponse.summary || batchParsedResponse;
+
+          // Extract sources from each outcome in the nested structure
+          const extractedSources = {
+            P1: extractBatchSources(summaryData.P1),
+            P2: extractBatchSources(summaryData.P2),
+            P3: extractBatchSources(summaryData.P3),
+            P4: extractBatchSources(summaryData.P4),
+            Uncategorized: extractBatchSources(summaryData.Uncategorized),
+          };
+
+          console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
+          console.log("Extracted sources:", extractedSources);
+
+          console.log(`=== BATCH ${batchNumber} EXTRACTED SUMMARIES ===`);
+          const outcomes = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
+          outcomes.forEach((outcome) => {
+            const summary = extractSummary(summaryData[outcome]);
+            const hasContent = summary.trim().length > 0;
+            const hasUrls = summary.includes("http");
+            console.log(
+              `${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
+                summary.length
+              } chars, URLs: ${String(hasUrls)})`
+            );
+            if (hasContent) {
+              console.log(`  Content: ${summary.substring(0, 300)}...`);
+              if (!hasUrls && urlsInBatch.length > 0) {
+                console.log(
+                  `  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`
+                );
+              }
+            }
+          });
 
           batchResults.push({
             batchNumber,
@@ -659,7 +875,7 @@ ${msg.message}
               P3: extractSummary(summaryData.P3),
               P4: extractSummary(summaryData.P4),
               Uncategorized: extractSummary(summaryData.Uncategorized),
-              sources: batchParsedResponse.sources || {},
+              sources: extractedSources,
             },
             commentCount: batch.length,
             startIndex,
@@ -684,6 +900,28 @@ ${msg.message}
       }
 
       // Condense batch results
+      console.log("=== PRE-CONDENSATION ANALYSIS ===");
+      console.log(`Total batches processed: ${batchResults.length}`);
+
+      // Check what content each batch actually has
+      batchResults.forEach((batch, idx) => {
+        console.log(`Batch ${idx + 1} summary content:`);
+        Object.entries(batch.summary).forEach(([outcome, data]) => {
+          if (outcome !== "sources" && typeof data === "string") {
+            const hasContent = data.trim().length > 0;
+            const hasUrls = data.includes("http");
+            console.log(
+              `  ${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
+                data.length
+              } chars, URLs: ${String(hasUrls)})`
+            );
+            if (hasContent && hasUrls) {
+              console.log(`    First 200 chars: ${data.substring(0, 200)}...`);
+            }
+          }
+        });
+      });
+
       const condensationPromptFormatted = formatCondensationPrompt(
         condensationPrompt,
         batchResults,
@@ -709,6 +947,66 @@ ${msg.message}
         throw new Error("OpenAI returned empty condensation response");
       }
 
+      console.log("=== CONDENSATION AI RESPONSE ===");
+      console.log("Raw condensation response:", condensedSummaryText);
+      console.log(
+        "Condensation response contains URLs:",
+        condensedSummaryText.includes("http")
+      );
+      console.log(
+        "Condensation response contains bullets:",
+        condensedSummaryText.includes("•")
+      );
+
+      // Parse condensation response to check for hallucination
+      try {
+        const condensationCheck = JSON.parse(
+          condensedSummaryText
+        ) as OpenAIJsonResponse;
+        const summaryCheck = condensationCheck.summary || condensationCheck;
+        console.log("=== CONDENSATION HALLUCINATION CHECK ===");
+        Object.entries(summaryCheck).forEach(([outcome, data]) => {
+          if (
+            typeof data === "string" ||
+            (data && typeof data === "object" && "summary" in data)
+          ) {
+            const summaryText =
+              typeof data === "string"
+                ? data
+                : (data as { summary?: string }).summary;
+            if (
+              summaryText &&
+              typeof summaryText === "string" &&
+              summaryText.trim()
+            ) {
+              console.log(
+                `CONDENSATION CREATED ${outcome} CONTENT: ${String(
+                  summaryText.substring(0, 200)
+                )}...`
+              );
+              // Check if this outcome was empty in all batches
+              const hadContentInBatches = batchResults.some((batch) => {
+                const batchOutcome =
+                  batch.summary[outcome as keyof typeof batch.summary];
+                return (
+                  typeof batchOutcome === "string" &&
+                  batchOutcome.trim().length > 0
+                );
+              });
+              if (!hadContentInBatches) {
+                console.log(
+                  `🚨 HALLUCINATION DETECTED: ${outcome} was empty in all batches but condensation created content!`
+                );
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.log(
+          "Could not parse condensation response for hallucination check"
+        );
+      }
+
       // Parse the condensed response first
       summaryData = parseResponse(condensedSummaryText, {
         P1: [],
@@ -718,46 +1016,114 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      // Distribute users across outcomes that have content
-      const totalUsers = topLevelComments.length;
-      if (totalUsers > 0) {
-        const nonEmptyOutcomes = (["P1", "P2", "P3", "P4"] as const).filter(
-          (outcome) => summaryData[outcome].summary.trim().length > 0
-        );
+      console.log("=== BEFORE SOURCE AGGREGATION ===");
+      console.log("Summary data sources before aggregation:", {
+        P1: summaryData.P1.sources,
+        P2: summaryData.P2.sources,
+        P3: summaryData.P3.sources,
+        P4: summaryData.P4.sources,
+        Uncategorized: summaryData.Uncategorized.sources,
+      });
 
-        if (nonEmptyOutcomes.length > 0) {
-          // Distribute users across outcomes that have content
-          const usersPerOutcome = Math.floor(
-            totalUsers / nonEmptyOutcomes.length
-          );
-          let userIndex = 0;
+      // Aggregate sources from all batch results
+      summaryData = aggregateSourcesFromBatches(summaryData, batchResults);
 
-          nonEmptyOutcomes.forEach((outcome, outcomeIndex) => {
-            const endIndex =
-              outcomeIndex === nonEmptyOutcomes.length - 1
-                ? totalUsers // Last outcome gets any remaining users
-                : userIndex + usersPerOutcome;
-
-            for (let i = userIndex; i < endIndex && i < totalUsers; i++) {
-              const comment = topLevelComments[i];
-              summaryData[outcome].sources.push([comment.sender, comment.time]);
-            }
-            userIndex = endIndex;
-          });
-        } else {
-          // Fallback: put all users in Uncategorized if no outcomes have content
-          topLevelComments.forEach((comment) => {
-            summaryData.Uncategorized.sources.push([
-              comment.sender,
-              comment.time,
-            ]);
-          });
-        }
-      }
+      console.log("=== AFTER SOURCE AGGREGATION ===");
+      console.log("Summary data sources after aggregation:", {
+        P1: summaryData.P1.sources,
+        P2: summaryData.P2.sources,
+        P3: summaryData.P3.sources,
+        P4: summaryData.P4.sources,
+        Uncategorized: summaryData.Uncategorized.sources,
+      });
     }
+
+    // Deduplicate sources to ensure no commenter appears multiple times
+    summaryData = deduplicateAllSources(summaryData);
+
+    console.log("=== AFTER DEDUPLICATION ===");
+    console.log("Summary data after deduplication:", {
+      P1: {
+        sources: summaryData.P1.sources,
+        summaryLength: summaryData.P1.summary.length,
+      },
+      P2: {
+        sources: summaryData.P2.sources,
+        summaryLength: summaryData.P2.summary.length,
+      },
+      P3: {
+        sources: summaryData.P3.sources,
+        summaryLength: summaryData.P3.summary.length,
+      },
+      P4: {
+        sources: summaryData.P4.sources,
+        summaryLength: summaryData.P4.summary.length,
+      },
+      Uncategorized: {
+        sources: summaryData.Uncategorized.sources,
+        summaryLength: summaryData.Uncategorized.summary.length,
+      },
+    });
+
+    console.log("=== BEFORE CLEANING ===");
+    console.log("Summary data before cleaning:", {
+      P1: {
+        sources: summaryData.P1.sources,
+        summaryLength: summaryData.P1.summary.length,
+      },
+      P2: {
+        sources: summaryData.P2.sources,
+        summaryLength: summaryData.P2.summary.length,
+      },
+      P3: {
+        sources: summaryData.P3.sources,
+        summaryLength: summaryData.P3.summary.length,
+      },
+      P4: {
+        sources: summaryData.P4.sources,
+        summaryLength: summaryData.P4.summary.length,
+      },
+      Uncategorized: {
+        sources: summaryData.Uncategorized.sources,
+        summaryLength: summaryData.Uncategorized.summary.length,
+      },
+    });
+
+    console.log("=== BEFORE CLEANING URLs ===");
+    (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
+      const summary = summaryData[outcome].summary;
+      console.log(
+        `${outcome} contains URLs before cleaning: ${String(
+          summary.includes("http")
+        )}`
+      );
+      if (summary.includes("http")) {
+        console.log(`${outcome} URL preview: ${summary.substring(0, 300)}...`);
+      }
+    });
 
     // Clean placeholder source links from the summary data
     const cleanedSummaryData = cleanSummaryText(summaryData);
+
+    console.log("=== AFTER CLEANING URLs ===");
+    (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
+      const summary = cleanedSummaryData[outcome].summary;
+      console.log(
+        `${outcome} contains URLs after cleaning: ${String(
+          summary.includes("http")
+        )}`
+      );
+      console.log(
+        `${outcome} contains [source] after cleaning: ${String(
+          summary.includes("[source]")
+        )}`
+      );
+      if (summary.includes("[source]") || summary.includes("http")) {
+        console.log(
+          `${outcome} final preview: ${summary.substring(0, 300)}...`
+        );
+      }
+    });
 
     // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
     const now = new Date().toISOString();
@@ -772,6 +1138,7 @@ ${msg.message}
       promptVersion: promptVersionForCache,
       cachedAt: now,
       summaryBatchSize: isBatched ? batchSize : 0,
+      model,
     };
 
     // Store in Redis permanently
