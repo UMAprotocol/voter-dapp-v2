@@ -384,10 +384,7 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   const usernameSourcePattern =
     /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
 
-  // Regex pattern to remove @https://vote.uma.xyz references
-  const umaVotePattern = /\s*@https:\/\/vote\.uma\.xyz\s*/gi;
-
-  // Regex pattern to detect and replace inline URLs with markdown links
+  // Regex pattern to convert URLs to markdown links for proper rendering
   const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
 
   const cleanedSummary = { ...summaryData };
@@ -396,9 +393,9 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   (["P1", "P2", "P3", "P4"] as const).forEach((outcome) => {
     if (cleanedSummary[outcome] && cleanedSummary[outcome].summary) {
       const originalSummary = cleanedSummary[outcome].summary;
+      // Remove username/timestamp references and convert URLs to markdown links
       const cleanedSummaryText = originalSummary
         .replace(usernameSourcePattern, "")
-        .replace(umaVotePattern, "")
         .replace(urlPattern, "[source]($1)");
 
       console.log(`=== CLEANING ${outcome} ===`);
@@ -409,15 +406,7 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
           "..."
       );
       console.log(
-        "After URL replacement:",
-        originalSummary
-          .replace(usernameSourcePattern, "")
-          .replace(umaVotePattern, "")
-          .replace(urlPattern, "[source]($1)")
-          .substring(0, 200) + "..."
-      );
-      console.log(
-        "Final cleaned:",
+        "After URL conversion:",
         cleanedSummaryText.substring(0, 200) + "..."
       );
 
@@ -434,7 +423,6 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       ...cleanedSummary.Uncategorized,
       summary: cleanedSummary.Uncategorized.summary
         .replace(usernameSourcePattern, "")
-        .replace(umaVotePattern, "")
         .replace(urlPattern, "[source]($1)"),
     };
   }

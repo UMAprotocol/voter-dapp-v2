@@ -40,7 +40,7 @@
   "crons": [
     {
       "path": "/api/warm-summary",
-      "schedule": "0 10 * * *"
+      "schedule": "*/10 * * * *"
     }
   ]
 }
