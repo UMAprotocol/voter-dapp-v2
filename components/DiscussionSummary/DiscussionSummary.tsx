@@ -45,15 +45,14 @@ function processSummaryText(text: string) {
     // Handle both [Source: URL] and markdown [text](URL) patterns
     const sourcePattern = /\[Source:\s*(https?:\/\/[^\]]+)\]/g;
     const markdownPattern = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
-    
-    let processedLine = line;
+
     const parts = [];
     let lastIndex = 0;
     let elementKey = 0;
 
     // Create a combined pattern to find all link patterns
     const allMatches = [];
-    
+
     // Find all [Source: URL] patterns
     let match;
     while ((match = sourcePattern.exec(line)) !== null) {
@@ -61,11 +60,11 @@ function processSummaryText(text: string) {
         index: match.index,
         length: match[0].length,
         url: match[1],
-        text: 'source',
-        type: 'source'
+        text: "source",
+        type: "source",
       });
     }
-    
+
     // Reset regex and find all markdown [text](URL) patterns
     markdownPattern.lastIndex = 0;
     while ((match = markdownPattern.exec(line)) !== null) {
@@ -74,7 +73,7 @@ function processSummaryText(text: string) {
         length: match[0].length,
         url: match[2],
         text: match[1],
-        type: 'markdown'
+        type: "markdown",
       });
     }
 
@@ -89,7 +88,7 @@ function processSummaryText(text: string) {
       }
 
       // Add the clickable link
-      if (linkMatch.type === 'source') {
+      if (linkMatch.type === "source") {
         parts.push(
           <span key={`${lineIndex}-${elementKey++}`}>
             [

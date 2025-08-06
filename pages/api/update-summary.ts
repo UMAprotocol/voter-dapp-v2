@@ -331,13 +331,13 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         usernameSourcePattern,
         ""
       );
-      let finalCleaned = afterUsernameClean.replace(
-        urlPattern,
-        "[source]($1)"
-      );
-      
+      let finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+
       // Add commas between consecutive source links for better readability
-      finalCleaned = finalCleaned.replace(/(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g, '$1, ');
+      finalCleaned = finalCleaned.replace(
+        /(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g,
+        "$1, "
+      );
 
       console.log(`=== CLEANING ${outcome} ===`);
       console.log("Original contains URLs:", originalSummary.includes("http"));
@@ -376,9 +376,12 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       ""
     );
     let finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
-    
+
     // Add commas between consecutive source links for better readability
-    finalCleaned = finalCleaned.replace(/(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g, '$1, ');
+    finalCleaned = finalCleaned.replace(
+      /(\[source\]\([^)]+\))(\s*)(?=\[source\]\([^)]+\))/g,
+      "$1, "
+    );
 
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
