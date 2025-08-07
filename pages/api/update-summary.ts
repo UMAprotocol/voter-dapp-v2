@@ -317,7 +317,8 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
     /\s*\[Source:\s*[a-zA-Z0-9._-]+(?:\s*,\s*\d+)?\s*\]\.?/gi;
 
   // Regex pattern to convert URLs to markdown links for proper rendering
-  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
+  // Excludes trailing punctuation that's likely sentence punctuation rather than part of the URL
+  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|$))/gi;
 
   // Pattern to remove empty parentheses
   const emptyParenthesesPattern = /\s*\(\s*\)\.?/gi;
