@@ -319,6 +319,12 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   // Regex pattern to convert URLs to markdown links for proper rendering
   const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi;
 
+  // Pattern to remove empty parentheses
+  const emptyParenthesesPattern = /\s*\(\s*\)\.?/gi;
+
+  // Pattern to fix malformed source references like (source.). to (source).
+  const malformedSourcePattern = /\(\s*source\s*\)\s*\./gi;
+
   const cleanedSummary = { ...summaryData };
 
   // Clean P1, P2, P3, P4 outcomes
@@ -330,14 +336,32 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         usernameSourcePattern,
         ""
       );
-      const finalCleaned = afterUsernameClean.replace(
+      const afterUrlConversion = afterUsernameClean.replace(
         urlPattern,
         "[source]($1)"
+      );
+      // Remove empty parentheses
+      const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
+        emptyParenthesesPattern,
+        ""
+      );
+      // Fix malformed source references
+      const finalCleaned = afterEmptyParenthesesRemoval.replace(
+        malformedSourcePattern,
+        "(source)."
       );
 
       console.log(`=== CLEANING ${outcome} ===`);
       console.log("Original contains URLs:", originalSummary.includes("http"));
       console.log("Original contains bullets:", originalSummary.includes("•"));
+      console.log(
+        "Original contains empty parentheses:",
+        originalSummary.includes("()")
+      );
+      console.log(
+        "Original contains malformed sources:",
+        /\(\s*source\s*\)\s*\./gi.test(originalSummary)
+      );
       console.log(
         "After username clean contains URLs:",
         afterUsernameClean.includes("http")
@@ -348,8 +372,16 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       );
       console.log("Final contains bullets:", finalCleaned.includes("•"));
       console.log("Final contains http:", finalCleaned.includes("http"));
+      console.log(
+        "Final contains empty parentheses:",
+        finalCleaned.includes("()")
+      );
 
-      if (originalSummary.includes("http")) {
+      if (
+        originalSummary.includes("http") ||
+        originalSummary.includes("()") ||
+        /\(\s*source\s*\)\s*\./gi.test(originalSummary)
+      ) {
         console.log(
           "Original text:",
           originalSummary.substring(0, 400) + "..."
@@ -371,7 +403,20 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       usernameSourcePattern,
       ""
     );
-    const finalCleaned = afterUsernameClean.replace(urlPattern, "[source]($1)");
+    const afterUrlConversion = afterUsernameClean.replace(
+      urlPattern,
+      "[source]($1)"
+    );
+    // Remove empty parentheses
+    const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
+      emptyParenthesesPattern,
+      ""
+    );
+    // Fix malformed source references
+    const finalCleaned = afterEmptyParenthesesRemoval.replace(
+      malformedSourcePattern,
+      "(source)."
+    );
 
     cleanedSummary.Uncategorized = {
       ...cleanedSummary.Uncategorized,
