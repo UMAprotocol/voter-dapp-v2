@@ -159,7 +159,12 @@ function processSummaryText(text: string) {
 }
 
 export function DiscussionSummary({ query }: Props) {
-  const { data: summaryData, isLoading, isError } = useDiscussionSummary(query);
+  const {
+    data: summaryData,
+    isLoading,
+    isError,
+    isGenerating,
+  } = useDiscussionSummary(query);
   const { options } = query;
 
   // Format the generated timestamp
@@ -175,7 +180,19 @@ export function DiscussionSummary({ query }: Props) {
     });
   };
 
-  if (!summaryData && isError) {
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <PanelContentWrapper>
+        <div className="flex items-start justify-start">
+          <p className="text-lg text-black/70">Loading discussion summary...</p>
+        </div>
+      </PanelContentWrapper>
+    );
+  }
+
+  // Handle actual errors (network issues, server errors, etc.)
+  if (isError) {
     return (
       <PanelContentWrapper>
         <div className="flex flex-col items-start justify-start">
@@ -187,11 +204,34 @@ export function DiscussionSummary({ query }: Props) {
     );
   }
 
-  if (!summaryData && isLoading) {
+  // Handle no summary available - check if we're generating one
+  if (!summaryData) {
+    if (isGenerating) {
+      return (
+        <PanelContentWrapper>
+          <div className="flex flex-col items-start justify-start">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#17b38c] border-t-transparent" />
+              <p className="text-lg font-medium text-black/70">
+                Generating AI summary...
+              </p>
+            </div>
+            <p className="text-base text-black/50">
+              This appears to be an older vote. We&apos;re generating a fresh
+              summary of the discussion for you. This typically takes 10-30
+              seconds but can take longer for complex votes with many comments.
+            </p>
+          </div>
+        </PanelContentWrapper>
+      );
+    }
+
     return (
       <PanelContentWrapper>
-        <div className="flex items-start justify-start">
-          <p className="text-lg text-black/70">Loading discussion summary...</p>
+        <div className="flex flex-col items-start justify-start">
+          <p className="text-lg text-black/70">
+            No discussion summary available yet.
+          </p>
         </div>
       </PanelContentWrapper>
     );

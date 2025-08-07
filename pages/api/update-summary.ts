@@ -38,17 +38,17 @@ interface SummaryData {
 // Interface for what OpenAI returns (JSON response)
 interface OpenAIJsonResponse {
   summary?: {
-    P1?: { summary?: string } | string;
-    P2?: { summary?: string } | string;
-    P3?: { summary?: string } | string;
-    P4?: { summary?: string } | string;
-    Uncategorized?: { summary?: string } | string;
+    P1?: { summary?: string; sources?: [string, number][] } | string;
+    P2?: { summary?: string; sources?: [string, number][] } | string;
+    P3?: { summary?: string; sources?: [string, number][] } | string;
+    P4?: { summary?: string; sources?: [string, number][] } | string;
+    Uncategorized?: { summary?: string; sources?: [string, number][] } | string;
   };
-  P1?: { summary?: string } | string;
-  P2?: { summary?: string } | string;
-  P3?: { summary?: string } | string;
-  P4?: { summary?: string } | string;
-  Uncategorized?: { summary?: string } | string;
+  P1?: { summary?: string; sources?: [string, number][] } | string;
+  P2?: { summary?: string; sources?: [string, number][] } | string;
+  P3?: { summary?: string; sources?: [string, number][] } | string;
+  P4?: { summary?: string; sources?: [string, number][] } | string;
+  Uncategorized?: { summary?: string; sources?: [string, number][] } | string;
   sources?: Record<string, [string, number][]>;
 }
 
@@ -236,26 +236,52 @@ function parseResponse(
         return "";
       };
 
+      // Helper function to extract sources
+      const extractSources = (data: unknown): [string, number][] => {
+        if (data && typeof data === "object" && "sources" in data) {
+          const obj = data as { sources: unknown };
+          if (Array.isArray(obj.sources)) {
+            return obj.sources as [string, number][];
+          }
+        }
+        return [];
+      };
+
       const outcomes: SummaryData = {
         P1: {
           summary: extractSummary(summaryData.P1),
-          sources: aggregatedSources.P1 || [],
+          sources:
+            extractSources(summaryData.P1).length > 0
+              ? extractSources(summaryData.P1)
+              : aggregatedSources.P1 || [],
         },
         P2: {
           summary: extractSummary(summaryData.P2),
-          sources: aggregatedSources.P2 || [],
+          sources:
+            extractSources(summaryData.P2).length > 0
+              ? extractSources(summaryData.P2)
+              : aggregatedSources.P2 || [],
         },
         P3: {
           summary: extractSummary(summaryData.P3),
-          sources: aggregatedSources.P3 || [],
+          sources:
+            extractSources(summaryData.P3).length > 0
+              ? extractSources(summaryData.P3)
+              : aggregatedSources.P3 || [],
         },
         P4: {
           summary: extractSummary(summaryData.P4),
-          sources: aggregatedSources.P4 || [],
+          sources:
+            extractSources(summaryData.P4).length > 0
+              ? extractSources(summaryData.P4)
+              : aggregatedSources.P4 || [],
         },
         Uncategorized: {
           summary: extractSummary(summaryData.Uncategorized),
-          sources: aggregatedSources.Uncategorized || [],
+          sources:
+            extractSources(summaryData.Uncategorized).length > 0
+              ? extractSources(summaryData.Uncategorized)
+              : aggregatedSources.Uncategorized || [],
         },
       };
 
@@ -318,7 +344,7 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
 
   // Regex pattern to convert URLs to markdown links for proper rendering
   // Excludes trailing punctuation that's likely sentence punctuation rather than part of the URL
-  const urlPattern = /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|$))/gi;
+  // Note: This pattern is now inlined where used to avoid unused variable linting issue
 
   // Pattern to remove empty parentheses
   const emptyParenthesesPattern = /\s*\(\s*\)\.?/gi;
@@ -337,10 +363,57 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         usernameSourcePattern,
         ""
       );
-      const afterUrlConversion = afterUsernameClean.replace(
-        urlPattern,
-        "[source]($1)"
+
+      // Handle URLs and source links within parentheses
+      let afterUrlConversion = afterUsernameClean;
+
+      // First, handle content within parentheses
+      afterUrlConversion = afterUrlConversion.replace(
+        /\(([^)]+)\)/g,
+        (match, content: string) => {
+          // Check if content already has [source](url) format
+          if (content.includes("[source](")) {
+            // Already has [source] wrappers, just add commas between them
+            // Replace spaces between consecutive [source] links with commas
+            const withCommas: string = content.replace(
+              /\)\s+\[source\]\(/g,
+              "), [source]("
+            );
+            return `(${withCommas})`;
+          } else if (content.includes("http")) {
+            // Has raw URLs, wrap them in [source]() and add commas
+            const urls: RegExpMatchArray | null = content.match(
+              /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|$))/gi
+            );
+            if (urls && urls.length > 0) {
+              const sourceLinks: string = urls
+                .map((url: string) => `[source](${url})`)
+                .join(", ");
+              return `(${sourceLinks})`;
+            }
+          }
+          return match;
+        }
       );
+
+      // Then handle any remaining bare URLs outside of parentheses
+      // Only convert URLs that aren't already wrapped in [source]()
+      afterUrlConversion = afterUrlConversion.replace(
+        /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|\)|$))/gi,
+        (match: string, url: string) => {
+          // Check if this URL is already wrapped
+          const position = afterUrlConversion.indexOf(match);
+          const before = afterUrlConversion.substring(
+            Math.max(0, position - 10),
+            position
+          );
+          if (before.includes("[source](")) {
+            return match; // Already wrapped, don't double-wrap
+          }
+          return `[source](${url})`;
+        }
+      );
+
       // Remove empty parentheses
       const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
         emptyParenthesesPattern,
@@ -404,10 +477,57 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       usernameSourcePattern,
       ""
     );
-    const afterUrlConversion = afterUsernameClean.replace(
-      urlPattern,
-      "[source]($1)"
+
+    // Handle URLs and source links within parentheses
+    let afterUrlConversion = afterUsernameClean;
+
+    // First, handle content within parentheses
+    afterUrlConversion = afterUrlConversion.replace(
+      /\(([^)]+)\)/g,
+      (match, content: string) => {
+        // Check if content already has [source](url) format
+        if (content.includes("[source](")) {
+          // Already has [source] wrappers, just add commas between them
+          // Replace spaces between consecutive [source] links with commas
+          const withCommas: string = content.replace(
+            /\)\s+\[source\]\(/g,
+            "), [source]("
+          );
+          return `(${withCommas})`;
+        } else if (content.includes("http")) {
+          // Has raw URLs, wrap them in [source]() and add commas
+          const urls: RegExpMatchArray | null = content.match(
+            /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|$))/gi
+          );
+          if (urls && urls.length > 0) {
+            const sourceLinks: string = urls
+              .map((url: string) => `[source](${url})`)
+              .join(", ");
+            return `(${sourceLinks})`;
+          }
+        }
+        return match;
+      }
     );
+
+    // Then handle any remaining bare URLs outside of parentheses
+    // Only convert URLs that aren't already wrapped in [source]()
+    afterUrlConversion = afterUrlConversion.replace(
+      /(https?:\/\/[^\s<>"{}|\\^`[\]]+?)(?=[.!?;,]*(?:\s|\)|$))/gi,
+      (match: string, url: string) => {
+        // Check if this URL is already wrapped
+        const position = afterUrlConversion.indexOf(match);
+        const before = afterUrlConversion.substring(
+          Math.max(0, position - 10),
+          position
+        );
+        if (before.includes("[source](")) {
+          return match; // Already wrapped, don't double-wrap
+        }
+        return `[source](${url})`;
+      }
+    );
+
     // Remove empty parentheses
     const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
       emptyParenthesesPattern,
@@ -763,11 +883,9 @@ ${msg.message}
     } else {
       // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
-      const batchResults: BatchResult[] = [];
 
-      // Process each batch
-      for (let i = 0; i < commentBatches.length; i++) {
-        const batch = commentBatches[i];
+      // Prepare all batch processing promises
+      const batchPromises = commentBatches.map(async (batch, i) => {
         const batchNumber = i + 1;
         const startIndex = i * batchSize + 1;
         const endIndex = Math.min((i + 1) * batchSize, topLevelComments.length);
@@ -815,135 +933,151 @@ ${msg.message}
           );
         }
 
-        const batchCompletion = await openai.chat.completions.create({
-          model: model,
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt,
-            },
-            {
-              role: "user",
-              content: batchPromptFormatted,
-            },
-          ],
-          temperature: 0.3,
-          response_format: { type: "json_object" },
-        });
+        try {
+          const batchCompletion = await openai.chat.completions.create({
+            model: model,
+            messages: [
+              {
+                role: "system",
+                content: systemPrompt,
+              },
+              {
+                role: "user",
+                content: batchPromptFormatted,
+              },
+            ],
+            temperature: 0.3,
+            response_format: { type: "json_object" },
+          });
 
-        const batchSummaryText = batchCompletion.choices[0]?.message?.content;
+          const batchSummaryText = batchCompletion.choices[0]?.message?.content;
 
-        if (!batchSummaryText) {
+          if (!batchSummaryText) {
+            throw new Error(
+              `OpenAI returned empty response for batch ${batchNumber}`
+            );
+          }
+
+          console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
+          console.log("Raw batch response:", batchSummaryText);
+
+          // Parse the batch response to get proper categorization
+          try {
+            const batchParsedResponse = JSON.parse(
+              batchSummaryText
+            ) as OpenAIJsonResponse;
+
+            // Helper function to extract summary text
+            const extractSummary = (data: unknown): string => {
+              if (typeof data === "string") return data;
+              if (data && typeof data === "object" && "summary" in data) {
+                const obj = data as { summary: unknown };
+                return typeof obj.summary === "string" ? obj.summary : "";
+              }
+              return "";
+            };
+
+            // Helper function to extract sources from nested structure
+            const extractBatchSources = (data: unknown): [string, number][] => {
+              if (data && typeof data === "object" && "sources" in data) {
+                const obj = data as { sources: unknown };
+                if (Array.isArray(obj.sources)) {
+                  // Validate each source is a [string, number] tuple
+                  return obj.sources.filter(
+                    (source): source is [string, number] =>
+                      Array.isArray(source) &&
+                      source.length === 2 &&
+                      typeof source[0] === "string" &&
+                      typeof source[1] === "number"
+                  );
+                }
+              }
+              return [];
+            };
+
+            // Handle nested summary structure for condensation
+            const summaryData =
+              batchParsedResponse.summary || batchParsedResponse;
+
+            // Extract sources from each outcome in the nested structure
+            const extractedSources = {
+              P1: extractBatchSources(summaryData.P1),
+              P2: extractBatchSources(summaryData.P2),
+              P3: extractBatchSources(summaryData.P3),
+              P4: extractBatchSources(summaryData.P4),
+              Uncategorized: extractBatchSources(summaryData.Uncategorized),
+            };
+
+            console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
+            console.log("Extracted sources:", extractedSources);
+
+            console.log(`=== BATCH ${batchNumber} EXTRACTED SUMMARIES ===`);
+            const outcomes = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
+            outcomes.forEach((outcome) => {
+              const summary = extractSummary(summaryData[outcome]);
+              const hasContent = summary.trim().length > 0;
+              const hasUrls = summary.includes("http");
+              console.log(
+                `${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
+                  summary.length
+                } chars, URLs: ${String(hasUrls)})`
+              );
+              if (hasContent) {
+                console.log(`  Content: ${summary.substring(0, 300)}...`);
+                if (!hasUrls && urlsInBatch.length > 0) {
+                  console.log(
+                    `  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`
+                  );
+                }
+              }
+            });
+
+            return {
+              batchNumber,
+              summary: {
+                P1: extractSummary(summaryData.P1),
+                P2: extractSummary(summaryData.P2),
+                P3: extractSummary(summaryData.P3),
+                P4: extractSummary(summaryData.P4),
+                Uncategorized: extractSummary(summaryData.Uncategorized),
+                sources: extractedSources,
+              },
+              commentCount: batch.length,
+              startIndex,
+              endIndex,
+            };
+          } catch (error) {
+            // If JSON parsing fails, fallback to putting everything in Uncategorized
+            return {
+              batchNumber,
+              summary: {
+                P1: "",
+                P2: "",
+                P3: "",
+                P4: "",
+                Uncategorized: batchSummaryText,
+              },
+              commentCount: batch.length,
+              startIndex,
+              endIndex,
+            };
+          }
+        } catch (error) {
+          console.error(`Error processing batch ${batchNumber}:`, error);
           throw new Error(
-            `OpenAI returned empty response for batch ${batchNumber}`
+            `Failed to process batch ${batchNumber}: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
           );
         }
+      });
 
-        console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
-        console.log("Raw batch response:", batchSummaryText);
-
-        // Parse the batch response to get proper categorization
-        try {
-          const batchParsedResponse = JSON.parse(
-            batchSummaryText
-          ) as OpenAIJsonResponse;
-
-          // Helper function to extract summary text
-          const extractSummary = (data: unknown): string => {
-            if (typeof data === "string") return data;
-            if (data && typeof data === "object" && "summary" in data) {
-              const obj = data as { summary: unknown };
-              return typeof obj.summary === "string" ? obj.summary : "";
-            }
-            return "";
-          };
-
-          // Helper function to extract sources from nested structure
-          const extractBatchSources = (data: unknown): [string, number][] => {
-            if (data && typeof data === "object" && "sources" in data) {
-              const obj = data as { sources: unknown };
-              if (Array.isArray(obj.sources)) {
-                // Validate each source is a [string, number] tuple
-                return obj.sources.filter(
-                  (source): source is [string, number] =>
-                    Array.isArray(source) &&
-                    source.length === 2 &&
-                    typeof source[0] === "string" &&
-                    typeof source[1] === "number"
-                );
-              }
-            }
-            return [];
-          };
-
-          // Handle nested summary structure for condensation
-          const summaryData =
-            batchParsedResponse.summary || batchParsedResponse;
-
-          // Extract sources from each outcome in the nested structure
-          const extractedSources = {
-            P1: extractBatchSources(summaryData.P1),
-            P2: extractBatchSources(summaryData.P2),
-            P3: extractBatchSources(summaryData.P3),
-            P4: extractBatchSources(summaryData.P4),
-            Uncategorized: extractBatchSources(summaryData.Uncategorized),
-          };
-
-          console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
-          console.log("Extracted sources:", extractedSources);
-
-          console.log(`=== BATCH ${batchNumber} EXTRACTED SUMMARIES ===`);
-          const outcomes = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
-          outcomes.forEach((outcome) => {
-            const summary = extractSummary(summaryData[outcome]);
-            const hasContent = summary.trim().length > 0;
-            const hasUrls = summary.includes("http");
-            console.log(
-              `${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
-                summary.length
-              } chars, URLs: ${String(hasUrls)})`
-            );
-            if (hasContent) {
-              console.log(`  Content: ${summary.substring(0, 300)}...`);
-              if (!hasUrls && urlsInBatch.length > 0) {
-                console.log(
-                  `  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`
-                );
-              }
-            }
-          });
-
-          batchResults.push({
-            batchNumber,
-            summary: {
-              P1: extractSummary(summaryData.P1),
-              P2: extractSummary(summaryData.P2),
-              P3: extractSummary(summaryData.P3),
-              P4: extractSummary(summaryData.P4),
-              Uncategorized: extractSummary(summaryData.Uncategorized),
-              sources: extractedSources,
-            },
-            commentCount: batch.length,
-            startIndex,
-            endIndex,
-          });
-        } catch (error) {
-          // If JSON parsing fails, fallback to putting everything in Uncategorized
-          batchResults.push({
-            batchNumber,
-            summary: {
-              P1: "",
-              P2: "",
-              P3: "",
-              P4: "",
-              Uncategorized: batchSummaryText,
-            },
-            commentCount: batch.length,
-            startIndex,
-            endIndex,
-          });
-        }
-      }
+      // Execute all batch processing in parallel
+      console.log(`Processing ${commentBatches.length} batches in parallel...`);
+      const batchResults = await Promise.all(batchPromises);
+      console.log(
+        `All ${commentBatches.length} batches processed successfully`
+      );
 
       // Condense batch results
       console.log("=== PRE-CONDENSATION ANALYSIS ===");
