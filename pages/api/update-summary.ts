@@ -894,16 +894,8 @@ export default async function handler(
       ? `${promptVersion}:${condensationPromptVersion}`
       : promptVersion;
 
-    // Create unique cache key using all three parameters (simple format)
-    // Include ignored usernames in cache key to invalidate when list changes
-    const ignoredUsernamesHash =
-      ignoredUsernames.length > 0
-        ? `:ignored-${createHash("sha256")
-            .update(ignoredUsernames.sort().join(","))
-            .digest("hex")
-            .substring(0, 8)}`
-        : "";
-    const cacheKey = `discord-summary:${time}:${identifier}:${title}${ignoredUsernamesHash}`;
+    // Create standard cache key using the primary parameters only (ignore ignored-user list)
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Format messages for OpenAI and compute hash (top-level comments only)
     const formattedComments = topLevelComments
