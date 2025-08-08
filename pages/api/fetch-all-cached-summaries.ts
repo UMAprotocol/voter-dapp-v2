@@ -142,7 +142,8 @@ export default async function handler(
         })
       );
 
-      batches.push(batchPromise);
+      // Normalize Promise<void[]> to Promise<void> for batching
+      batches.push(batchPromise.then(() => undefined));
     }
 
     // Wait for all batches to complete
