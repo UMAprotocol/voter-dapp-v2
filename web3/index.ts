@@ -41,3 +41,4 @@ export { getRevealedVotes } from "./queries/votes/getRevealedVotes";
 export { getUpcomingVotes } from "./queries/votes/getUpcomingVotes";
 export { getVoteDiscussion } from "./queries/votes/getVoteDiscussion";
 export { getPolymarketBulletins } from "./queries/getPolymarketBulletins";
+export * from "./queries/votes/getDiscussionSummary";
