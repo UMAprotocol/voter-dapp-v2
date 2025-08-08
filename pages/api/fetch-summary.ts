@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
+import { createHash } from "crypto";
 
 export interface OutcomeData {
   summary: string;
@@ -20,6 +21,10 @@ export interface SummaryResponse {
   commentsHash: string;
   promptVersion: string;
   summaryBatchSize: number;
+  totalComments?: number;
+  uniqueUsers?: number;
+  outputSources?: number;
+  droppedRepliesCount?: number;
 }
 
 // Use the same simplified cache structure as update-summary
@@ -34,6 +39,30 @@ interface CacheData {
   promptVersion: string;
   cachedAt: string;
   summaryBatchSize: number;
+  totalComments?: number;
+  uniqueUsers?: number;
+  outputSources?: number;
+  missingCommentDetails?: Array<{
+    sender: string;
+    time: number;
+    message: string;
+  }>; // Not returned to client
+  droppedRepliesCount?: number;
+}
+
+// Helper function to extract unique missing users from comment details
+function extractMissingUsers(
+  missingCommentDetails: Array<{
+    sender: string;
+    time: number;
+    message: string;
+  }>
+): string[] {
+  const uniqueUsers = new Set<string>();
+  missingCommentDetails.forEach((comment) => {
+    uniqueUsers.add(comment.sender);
+  });
+  return Array.from(uniqueUsers);
 }
 
 export default async function handler(
@@ -66,8 +95,26 @@ export default async function handler(
   try {
     // Initialize Redis
     const redis = Redis.fromEnv();
+
+    // Get ignored usernames to match cache key with update-summary
+    const ignoredUsernamesStr = process.env.SUMMARY_IGNORED_USERNAMES || "";
+    const ignoredUsernames = ignoredUsernamesStr
+      ? ignoredUsernamesStr
+          .split(",")
+          .map((username) => username.trim())
+          .filter(Boolean)
+      : [];
+
     // Create unique cache key using all three parameters (same format as update-summary)
-    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+    // Include ignored usernames in cache key to match update-summary
+    const ignoredUsernamesHash =
+      ignoredUsernames.length > 0
+        ? `:ignored-${createHash("sha256")
+            .update(ignoredUsernames.sort().join(","))
+            .digest("hex")
+            .substring(0, 8)}`
+        : "";
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}${ignoredUsernamesHash}`;
 
     // Get cached data
     const cachedData = await redis.get<CacheData>(cacheKey);
@@ -80,6 +127,12 @@ export default async function handler(
     }
 
     // Return cached data with correct structure
+    // Note: missingCommentDetails is intentionally excluded from the response to avoid bloating
+    // Extract missingUsers from missingCommentDetails if present
+    const missingUsers = cachedData.missingCommentDetails
+      ? extractMissingUsers(cachedData.missingCommentDetails)
+      : undefined;
+
     const response: SummaryResponse = {
       summary: {
         P1: cachedData.P1,
@@ -92,6 +145,19 @@ export default async function handler(
       commentsHash: cachedData.commentsHash,
       promptVersion: cachedData.promptVersion,
       summaryBatchSize: cachedData.summaryBatchSize,
+      ...(cachedData.totalComments !== undefined && {
+        totalComments: cachedData.totalComments,
+      }),
+      ...(cachedData.uniqueUsers !== undefined && {
+        uniqueUsers: cachedData.uniqueUsers,
+      }),
+      ...(cachedData.outputSources !== undefined && {
+        outputSources: cachedData.outputSources,
+      }),
+      ...(missingUsers && missingUsers.length > 0 && { missingUsers }),
+      ...(cachedData.droppedRepliesCount !== undefined && {
+        droppedRepliesCount: cachedData.droppedRepliesCount,
+      }),
     };
 
     res.status(200).json(response);

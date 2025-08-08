@@ -70,6 +70,13 @@ interface UpdateResponse {
   processingTimeMs: number;
 }
 
+// Interface for tracking missing comments
+interface MissingComment {
+  sender: string;
+  time: number;
+  message: string;
+}
+
 // Simplified cache data structure
 interface CacheData {
   P1: SummaryOutcomeData;
@@ -83,6 +90,11 @@ interface CacheData {
   cachedAt: string;
   summaryBatchSize: number;
   model: string;
+  totalComments?: number; // Total top-level comments processed
+  uniqueUsers?: number; // Number of unique users who commented
+  outputSources?: number; // Number of users included in summary sources
+  missingCommentDetails?: MissingComment[]; // Full details of comments from missing users (when TRACK_MISSING_SOURCES=true)
+  droppedRepliesCount?: number; // Number of reply messages that were ignored
 }
 
 // Helper functions for batch processing
@@ -149,8 +161,6 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 <Summary>
 `;
 
-    console.log(`=== CONDENSATION BATCH ${index + 1} INPUT ===`);
-
     // Extract only summary text for each outcome
     Object.entries(batchResult.summary).forEach(
       ([outcome, data]: [string, unknown]) => {
@@ -160,14 +170,6 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
           typeof data === "string" &&
           data.trim()
         ) {
-          console.log(`${outcome} summary length: ${data.length}`);
-          console.log(
-            `${outcome} contains URLs: ${String(data.includes("http"))}`
-          );
-          console.log(
-            `${outcome} contains bullets: ${String(data.includes("•"))}`
-          );
-          console.log(`${outcome} text preview: ${data.substring(0, 200)}...`);
           summariesText += `${outcome}: ${data}\n`;
         }
       }
@@ -178,13 +180,6 @@ Comments: ${batchResult.startIndex}-${batchResult.endIndex} (${
 
 `;
   });
-
-  console.log("=== FULL CONDENSATION PROMPT ===");
-  console.log("Condensation prompt length:", summariesText.length);
-  console.log(
-    "Contains URLs in condensation input:",
-    summariesText.includes("http")
-  );
 
   return `${condensationPrompt}
 
@@ -425,44 +420,6 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         "(source)."
       );
 
-      console.log(`=== CLEANING ${outcome} ===`);
-      console.log("Original contains URLs:", originalSummary.includes("http"));
-      console.log("Original contains bullets:", originalSummary.includes("•"));
-      console.log(
-        "Original contains empty parentheses:",
-        originalSummary.includes("()")
-      );
-      console.log(
-        "Original contains malformed sources:",
-        /\(\s*source\s*\)\s*\./gi.test(originalSummary)
-      );
-      console.log(
-        "After username clean contains URLs:",
-        afterUsernameClean.includes("http")
-      );
-      console.log(
-        "Final contains [source]:",
-        finalCleaned.includes("[source]")
-      );
-      console.log("Final contains bullets:", finalCleaned.includes("•"));
-      console.log("Final contains http:", finalCleaned.includes("http"));
-      console.log(
-        "Final contains empty parentheses:",
-        finalCleaned.includes("()")
-      );
-
-      if (
-        originalSummary.includes("http") ||
-        originalSummary.includes("()") ||
-        /\(\s*source\s*\)\s*\./gi.test(originalSummary)
-      ) {
-        console.log(
-          "Original text:",
-          originalSummary.substring(0, 400) + "..."
-        );
-        console.log("Final text:", finalCleaned.substring(0, 400) + "...");
-      }
-
       cleanedSummary[outcome] = {
         ...cleanedSummary[outcome],
         summary: finalCleaned,
@@ -616,6 +573,136 @@ function deduplicateAllSources(summaryData: SummaryData): SummaryData {
   return result;
 }
 
+// Helper function to count all replies recursively in a message thread
+function countRepliesRecursively(messages: DiscordMessage[]): number {
+  let count = 0;
+
+  messages.forEach((msg) => {
+    if (msg.replies && msg.replies.length > 0) {
+      count += msg.replies.length;
+      // Recursively count replies to replies
+      count += countRepliesRecursively(msg.replies);
+    }
+  });
+
+  return count;
+}
+
+// Helper function to extract unique missing users from comment details
+function extractMissingUsers(
+  missingCommentDetails: MissingComment[]
+): string[] {
+  const uniqueUsers = new Set<string>();
+  missingCommentDetails.forEach((comment) => {
+    uniqueUsers.add(comment.sender);
+  });
+  return Array.from(uniqueUsers);
+}
+
+// Helper function to extract unique commenters from original messages
+function extractOriginalCommenters(
+  messages: DiscordMessage[]
+): Map<string, DiscordMessage[]> {
+  const commenterMap = new Map<string, DiscordMessage[]>();
+
+  messages.forEach((msg) => {
+    const existingMessages = commenterMap.get(msg.sender);
+    if (existingMessages) {
+      existingMessages.push(msg);
+    } else {
+      commenterMap.set(msg.sender, [msg]);
+    }
+  });
+
+  return commenterMap;
+}
+
+// Helper function to get all sources from summary data
+function getAllSourcesFromSummary(summaryData: SummaryData): Set<string> {
+  const allSources = new Set<string>();
+
+  (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((category) => {
+    if (summaryData[category] && summaryData[category].sources) {
+      summaryData[category].sources.forEach(([username]) => {
+        allSources.add(username);
+      });
+    }
+  });
+
+  return allSources;
+}
+
+// Helper function to compare and log missing sources
+function trackMissingSourcesIfEnabled(
+  originalCommenters: Map<string, DiscordMessage[]>,
+  summaryData: SummaryData,
+  trackMissingSources: boolean,
+  ignoredUsernames: string[] = []
+): MissingComment[] | undefined {
+  if (!trackMissingSources) return undefined;
+
+  const summarySources = getAllSourcesFromSummary(summaryData);
+  const originalCount = originalCommenters.size;
+  const summaryCount = summarySources.size;
+
+  console.log(
+    `[Source Tracking] Original commenters: ${originalCount}, Summary sources: ${summaryCount}`
+  );
+  if (ignoredUsernames.length > 0) {
+    console.log(
+      `[Source Tracking] Ignored users: ${ignoredUsernames.join(", ")}`
+    );
+  }
+
+  if (originalCount > summaryCount) {
+    const missingSources: string[] = [];
+    const missingDetails: MissingComment[] = [];
+
+    originalCommenters.forEach((messages, sender) => {
+      if (!summarySources.has(sender)) {
+        missingSources.push(sender);
+        messages.forEach((msg) => {
+          missingDetails.push({
+            sender: msg.sender,
+            time: msg.time,
+            message: msg.message,
+          });
+        });
+      }
+    });
+
+    console.log(
+      `[Source Tracking] Missing ${missingSources.length} commenters from summary:`
+    );
+    console.log(
+      `[Source Tracking] Missing users: ${missingSources.join(", ")}`
+    );
+
+    if (missingDetails.length > 0) {
+      console.log(
+        `[Source Tracking] Total ${missingDetails.length} comments from missing users:`
+      );
+      missingDetails.forEach((detail) => {
+        console.log(
+          `  - ${detail.sender} @ ${new Date(detail.time).toISOString()}: "${
+            detail.message
+          }"`
+        );
+      });
+    }
+
+    return missingDetails;
+  } else if (summaryCount > originalCount) {
+    console.log(
+      `[Source Tracking] ⚠️ Summary has MORE sources than original (possible error)`
+    );
+  } else {
+    console.log(`[Source Tracking] ✓ All commenters represented in summary`);
+  }
+
+  return undefined;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UpdateResponse | { error: string }>
@@ -669,6 +756,14 @@ export default async function handler(
   const maxUpdateInterval = parseInt(
     process.env.MAX_UPDATE_INTERVAL || DEFAULT_MAX_UPDATE_INTERVAL.toString()
   );
+  const trackMissingSources = process.env.TRACK_MISSING_SOURCES === "true";
+  const ignoredUsernamesStr = process.env.SUMMARY_IGNORED_USERNAMES || "";
+  const ignoredUsernames = ignoredUsernamesStr
+    ? ignoredUsernamesStr
+        .split(",")
+        .map((username) => username.trim())
+        .filter(Boolean)
+    : [];
 
   if (!condensationPrompt) {
     return res
@@ -684,6 +779,11 @@ export default async function handler(
 
   try {
     const startTime = Date.now();
+
+    // Log request start
+    console.log(
+      `[Summary Update] Starting for ${identifier} at ${time} - "${title}"`
+    );
 
     // Initialize Redis
     const redis = Redis.fromEnv();
@@ -718,6 +818,9 @@ export default async function handler(
     // Check if there are any comments to summarize
     if (umaData.thread.length === 0) {
       const processingTimeMs = Date.now() - startTime;
+      console.log(
+        `[Summary Update] No comments to summarize - ${processingTimeMs}ms`
+      );
       return res.status(200).json({
         updated: false,
         cached: false,
@@ -729,7 +832,61 @@ export default async function handler(
     }
 
     // Only use top-level comments for summary - ignore all replies
-    const topLevelComments = umaData.thread; // These are already top-level from the API
+    let topLevelComments = umaData.thread; // These are already top-level from the API
+
+    // Count all replies that will be dropped
+    const droppedRepliesCount = countRepliesRecursively(topLevelComments);
+
+    if (droppedRepliesCount > 0) {
+      console.log(
+        `[Summary Update] Dropping ${droppedRepliesCount} reply messages (only processing top-level comments)`
+      );
+    }
+
+    // Filter out ignored usernames if configured
+    if (ignoredUsernames.length > 0) {
+      const beforeCount = topLevelComments.length;
+      topLevelComments = topLevelComments.filter(
+        (comment) => !ignoredUsernames.includes(comment.sender)
+      );
+      const afterCount = topLevelComments.length;
+
+      if (beforeCount > afterCount) {
+        console.log(
+          `[Summary Update] Filtered out ${
+            beforeCount - afterCount
+          } comments from ignored users: ${ignoredUsernames.join(", ")}`
+        );
+      }
+
+      // Check if all comments were filtered out
+      if (afterCount === 0 && beforeCount > 0) {
+        const processingTimeMs = Date.now() - startTime;
+        console.log(
+          `[Summary Update] All comments filtered (all from ignored users) - ${processingTimeMs}ms`
+        );
+        return res.status(200).json({
+          updated: false,
+          cached: false,
+          generatedAt: new Date().toISOString(),
+          commentsHash: "empty-filtered",
+          promptVersion,
+          processingTimeMs,
+        });
+      }
+    }
+
+    // Extract original commenters for tracking (after filtering)
+    const originalCommenters = extractOriginalCommenters(topLevelComments);
+
+    // Calculate how many comments are from users posting multiple times
+    const duplicateCommentsCount =
+      topLevelComments.length - originalCommenters.size;
+    if (duplicateCommentsCount > 0) {
+      console.log(
+        `[Summary Update] ${topLevelComments.length} total comments from ${originalCommenters.size} unique users (${duplicateCommentsCount} additional comments from users posting multiple times)`
+      );
+    }
 
     // Update cache key logic based on comment count
     const isBatched = topLevelComments.length > batchSize;
@@ -738,7 +895,15 @@ export default async function handler(
       : promptVersion;
 
     // Create unique cache key using all three parameters (simple format)
-    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+    // Include ignored usernames in cache key to invalidate when list changes
+    const ignoredUsernamesHash =
+      ignoredUsernames.length > 0
+        ? `:ignored-${createHash("sha256")
+            .update(ignoredUsernames.sort().join(","))
+            .digest("hex")
+            .substring(0, 8)}`
+        : "";
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}${ignoredUsernamesHash}`;
 
     // Format messages for OpenAI and compute hash (top-level comments only)
     const formattedComments = topLevelComments
@@ -769,6 +934,43 @@ ${msg.message}
       if (timeSinceLastUpdate < maxUpdateInterval) {
         // Too soon to update, return existing data without fetching comments
         const processingTimeMs = Date.now() - startTime;
+        console.log(
+          `[Summary Update] Cache hit (too recent) - ${processingTimeMs}ms`
+        );
+        // Log cached summary stats
+        if (
+          cachedData.totalComments !== undefined &&
+          cachedData.outputSources !== undefined
+        ) {
+          console.log(
+            `[Summary Update] Cached summary: ${
+              cachedData.totalComments
+            } comments, ${cachedData.uniqueUsers ?? "?"} unique users, ${
+              cachedData.outputSources
+            } sources`
+          );
+          if (
+            cachedData.missingCommentDetails &&
+            cachedData.missingCommentDetails.length > 0
+          ) {
+            const missingUsers = extractMissingUsers(
+              cachedData.missingCommentDetails
+            );
+            console.log(
+              `[Summary Update] Missing ${
+                missingUsers.length
+              } users: ${missingUsers.join(", ")}`
+            );
+            console.log(
+              `[Summary Update] Total ${cachedData.missingCommentDetails.length} comments from missing users`
+            );
+          }
+          if (cachedData.droppedRepliesCount !== undefined) {
+            console.log(
+              `[Summary Update] Dropped ${cachedData.droppedRepliesCount} replies`
+            );
+          }
+        }
         const response: UpdateResponse = {
           updated: false,
           cached: true,
@@ -789,6 +991,40 @@ ${msg.message}
     ) {
       // Return metadata if hash and prompt version match (cached)
       const processingTimeMs = Date.now() - startTime;
+      console.log(
+        `[Summary Update] Cache hit (unchanged) - ${processingTimeMs}ms`
+      );
+      // Log cached summary stats
+      if (
+        cachedData.totalComments !== undefined &&
+        cachedData.outputSources !== undefined
+      ) {
+        console.log(
+          `[Summary Update] Cached summary: ${
+            cachedData.totalComments
+          } comments, ${cachedData.uniqueUsers ?? "?"} unique users, ${
+            cachedData.outputSources
+          } sources`
+        );
+        if (
+          cachedData.missingCommentDetails &&
+          cachedData.missingCommentDetails.length > 0
+        ) {
+          const missingUsers = extractMissingUsers(
+            cachedData.missingCommentDetails
+          );
+          console.log(
+            `[Summary Update] Missing ${
+              missingUsers.length
+            } users: ${missingUsers.join(", ")}`
+          );
+        }
+        if (cachedData.droppedRepliesCount !== undefined) {
+          console.log(
+            `[Summary Update] Dropped ${cachedData.droppedRepliesCount} replies`
+          );
+        }
+      }
       const response: UpdateResponse = {
         updated: false,
         cached: true,
@@ -806,9 +1042,13 @@ ${msg.message}
     });
 
     let summaryData: SummaryData;
+    let missingDetails: MissingComment[] | undefined;
 
     if (topLevelComments.length <= batchSize) {
       // Single-pass processing for markdown
+      console.log(
+        `[Summary Update] Processing ${topLevelComments.length} comments in single pass`
+      );
       const completion = await openai.chat.completions.create({
         model: model,
         messages: [
@@ -831,13 +1071,6 @@ ${msg.message}
         throw new Error("OpenAI returned empty response");
       }
 
-      console.log("=== SINGLE-PASS AI RESPONSE ===");
-      console.log("Raw AI response:", markdownResponse);
-      console.log(
-        "Single-pass response contains bullets:",
-        markdownResponse.includes("•")
-      );
-
       // For single-pass, parse the AI response and extract any source categorization
       summaryData = parseResponse(markdownResponse, {
         P1: [],
@@ -847,69 +1080,28 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      console.log("=== PARSED SINGLE-PASS SOURCES ===");
-      console.log("P1 sources:", summaryData.P1.sources);
-      console.log("P2 sources:", summaryData.P2.sources);
-      console.log("P3 sources:", summaryData.P3.sources);
-      console.log("P4 sources:", summaryData.P4.sources);
-      console.log("Uncategorized sources:", summaryData.Uncategorized.sources);
-
       // Deduplicate sources for single-pass processing too
       summaryData = deduplicateAllSources(summaryData);
 
-      console.log("=== AFTER SINGLE-PASS DEDUPLICATION ===");
-      console.log("Summary data after deduplication:", {
-        P1: {
-          sources: summaryData.P1.sources,
-          summaryLength: summaryData.P1.summary.length,
-        },
-        P2: {
-          sources: summaryData.P2.sources,
-          summaryLength: summaryData.P2.summary.length,
-        },
-        P3: {
-          sources: summaryData.P3.sources,
-          summaryLength: summaryData.P3.summary.length,
-        },
-        P4: {
-          sources: summaryData.P4.sources,
-          summaryLength: summaryData.P4.summary.length,
-        },
-        Uncategorized: {
-          sources: summaryData.Uncategorized.sources,
-          summaryLength: summaryData.Uncategorized.summary.length,
-        },
-      });
+      // Track missing sources if enabled and collect missing comments
+      missingDetails = trackMissingSourcesIfEnabled(
+        originalCommenters,
+        summaryData,
+        trackMissingSources,
+        ignoredUsernames
+      );
     } else {
       // Batched processing for markdown
       const commentBatches = splitIntoBatches(topLevelComments, batchSize);
+      console.log(
+        `[Summary Update] Processing ${topLevelComments.length} comments in ${commentBatches.length} batches`
+      );
 
       // Prepare all batch processing promises
       const batchPromises = commentBatches.map(async (batch, i) => {
         const batchNumber = i + 1;
         const startIndex = i * batchSize + 1;
         const endIndex = Math.min((i + 1) * batchSize, topLevelComments.length);
-
-        console.log(`=== BATCH ${batchNumber} INPUT ANALYSIS ===`);
-        console.log(`Batch size: ${batch.length} comments`);
-
-        // Check what URLs are in the original comments for this batch
-        const urlsInBatch: string[] = [];
-        batch.forEach((comment, idx) => {
-          const urls = comment.message.match(
-            /(https?:\/\/[^\s<>"{}|\\^`[\]]+)/gi
-          );
-          if (urls) {
-            console.log(
-              `Comment ${idx + 1} by ${comment.sender} contains URLs:`,
-              urls
-            );
-            urlsInBatch.push(...urls);
-          }
-        });
-        console.log(`Total unique URLs in batch ${batchNumber}:`, [
-          ...new Set(urlsInBatch),
-        ]);
 
         const batchPromptFormatted = formatBatchPrompt(
           systemPrompt,
@@ -920,18 +1112,6 @@ ${msg.message}
           startIndex,
           endIndex
         );
-
-        console.log(`=== BATCH ${batchNumber} FULL PROMPT ===`);
-        console.log(
-          "Prompt contains URLs:",
-          batchPromptFormatted.includes("http")
-        );
-        if (batchPromptFormatted.includes("http")) {
-          console.log(
-            "First 1000 chars of prompt:",
-            batchPromptFormatted.substring(0, 1000)
-          );
-        }
 
         try {
           const batchCompletion = await openai.chat.completions.create({
@@ -957,9 +1137,6 @@ ${msg.message}
               `OpenAI returned empty response for batch ${batchNumber}`
             );
           }
-
-          console.log(`=== BATCH ${batchNumber} AI RESPONSE ===`);
-          console.log("Raw batch response:", batchSummaryText);
 
           // Parse the batch response to get proper categorization
           try {
@@ -1008,30 +1185,6 @@ ${msg.message}
               Uncategorized: extractBatchSources(summaryData.Uncategorized),
             };
 
-            console.log(`=== BATCH ${batchNumber} EXTRACTED SOURCES ===`);
-            console.log("Extracted sources:", extractedSources);
-
-            console.log(`=== BATCH ${batchNumber} EXTRACTED SUMMARIES ===`);
-            const outcomes = ["P1", "P2", "P3", "P4", "Uncategorized"] as const;
-            outcomes.forEach((outcome) => {
-              const summary = extractSummary(summaryData[outcome]);
-              const hasContent = summary.trim().length > 0;
-              const hasUrls = summary.includes("http");
-              console.log(
-                `${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
-                  summary.length
-                } chars, URLs: ${String(hasUrls)})`
-              );
-              if (hasContent) {
-                console.log(`  Content: ${summary.substring(0, 300)}...`);
-                if (!hasUrls && urlsInBatch.length > 0) {
-                  console.log(
-                    `  ⚠️  BATCH HAD ${urlsInBatch.length} URLs BUT AI IGNORED THEM FOR ${outcome}`
-                  );
-                }
-              }
-            });
-
             return {
               batchNumber,
               summary: {
@@ -1048,6 +1201,8 @@ ${msg.message}
             };
           } catch (error) {
             // If JSON parsing fails, fallback to putting everything in Uncategorized
+            // BUT preserve empty sources structure to avoid losing track of this batch
+
             return {
               batchNumber,
               summary: {
@@ -1056,6 +1211,14 @@ ${msg.message}
                 P3: "",
                 P4: "",
                 Uncategorized: batchSummaryText,
+                // Include empty sources to maintain structure consistency
+                sources: {
+                  P1: [],
+                  P2: [],
+                  P3: [],
+                  P4: [],
+                  Uncategorized: [],
+                },
               },
               commentCount: batch.length,
               startIndex,
@@ -1063,7 +1226,6 @@ ${msg.message}
             };
           }
         } catch (error) {
-          console.error(`Error processing batch ${batchNumber}:`, error);
           throw new Error(
             `Failed to process batch ${batchNumber}: ${
               error instanceof Error ? error.message : "Unknown error"
@@ -1073,34 +1235,23 @@ ${msg.message}
       });
 
       // Execute all batch processing in parallel
-      console.log(`Processing ${commentBatches.length} batches in parallel...`);
       const batchResults = await Promise.all(batchPromises);
-      console.log(
-        `All ${commentBatches.length} batches processed successfully`
-      );
+
+      // Validate that all batches have sources structure
+      batchResults.forEach((batch) => {
+        if (!batch.summary.sources) {
+          // Ensure sources structure exists even if empty
+          batch.summary.sources = {
+            P1: [],
+            P2: [],
+            P3: [],
+            P4: [],
+            Uncategorized: [],
+          };
+        }
+      });
 
       // Condense batch results
-      console.log("=== PRE-CONDENSATION ANALYSIS ===");
-      console.log(`Total batches processed: ${batchResults.length}`);
-
-      // Check what content each batch actually has
-      batchResults.forEach((batch, idx) => {
-        console.log(`Batch ${idx + 1} summary content:`);
-        Object.entries(batch.summary).forEach(([outcome, data]) => {
-          if (outcome !== "sources" && typeof data === "string") {
-            const hasContent = data.trim().length > 0;
-            const hasUrls = data.includes("http");
-            console.log(
-              `  ${outcome}: ${hasContent ? "HAS CONTENT" : "EMPTY"} (${
-                data.length
-              } chars, URLs: ${String(hasUrls)})`
-            );
-            if (hasContent && hasUrls) {
-              console.log(`    First 200 chars: ${data.substring(0, 200)}...`);
-            }
-          }
-        });
-      });
 
       const condensationPromptFormatted = formatCondensationPrompt(
         condensationPrompt,
@@ -1127,66 +1278,6 @@ ${msg.message}
         throw new Error("OpenAI returned empty condensation response");
       }
 
-      console.log("=== CONDENSATION AI RESPONSE ===");
-      console.log("Raw condensation response:", condensedSummaryText);
-      console.log(
-        "Condensation response contains URLs:",
-        condensedSummaryText.includes("http")
-      );
-      console.log(
-        "Condensation response contains bullets:",
-        condensedSummaryText.includes("•")
-      );
-
-      // Parse condensation response to check for hallucination
-      try {
-        const condensationCheck = JSON.parse(
-          condensedSummaryText
-        ) as OpenAIJsonResponse;
-        const summaryCheck = condensationCheck.summary || condensationCheck;
-        console.log("=== CONDENSATION HALLUCINATION CHECK ===");
-        Object.entries(summaryCheck).forEach(([outcome, data]) => {
-          if (
-            typeof data === "string" ||
-            (data && typeof data === "object" && "summary" in data)
-          ) {
-            const summaryText =
-              typeof data === "string"
-                ? data
-                : (data as { summary?: string }).summary;
-            if (
-              summaryText &&
-              typeof summaryText === "string" &&
-              summaryText.trim()
-            ) {
-              console.log(
-                `CONDENSATION CREATED ${outcome} CONTENT: ${String(
-                  summaryText.substring(0, 200)
-                )}...`
-              );
-              // Check if this outcome was empty in all batches
-              const hadContentInBatches = batchResults.some((batch) => {
-                const batchOutcome =
-                  batch.summary[outcome as keyof typeof batch.summary];
-                return (
-                  typeof batchOutcome === "string" &&
-                  batchOutcome.trim().length > 0
-                );
-              });
-              if (!hadContentInBatches) {
-                console.log(
-                  `🚨 HALLUCINATION DETECTED: ${outcome} was empty in all batches but condensation created content!`
-                );
-              }
-            }
-          }
-        });
-      } catch (e) {
-        console.log(
-          "Could not parse condensation response for hallucination check"
-        );
-      }
-
       // Parse the condensed response first
       summaryData = parseResponse(condensedSummaryText, {
         P1: [],
@@ -1196,114 +1287,31 @@ ${msg.message}
         Uncategorized: [],
       });
 
-      console.log("=== BEFORE SOURCE AGGREGATION ===");
-      console.log("Summary data sources before aggregation:", {
-        P1: summaryData.P1.sources,
-        P2: summaryData.P2.sources,
-        P3: summaryData.P3.sources,
-        P4: summaryData.P4.sources,
-        Uncategorized: summaryData.Uncategorized.sources,
-      });
-
       // Aggregate sources from all batch results
       summaryData = aggregateSourcesFromBatches(summaryData, batchResults);
-
-      console.log("=== AFTER SOURCE AGGREGATION ===");
-      console.log("Summary data sources after aggregation:", {
-        P1: summaryData.P1.sources,
-        P2: summaryData.P2.sources,
-        P3: summaryData.P3.sources,
-        P4: summaryData.P4.sources,
-        Uncategorized: summaryData.Uncategorized.sources,
-      });
     }
 
     // Deduplicate sources to ensure no commenter appears multiple times
     summaryData = deduplicateAllSources(summaryData);
 
-    console.log("=== AFTER DEDUPLICATION ===");
-    console.log("Summary data after deduplication:", {
-      P1: {
-        sources: summaryData.P1.sources,
-        summaryLength: summaryData.P1.summary.length,
-      },
-      P2: {
-        sources: summaryData.P2.sources,
-        summaryLength: summaryData.P2.summary.length,
-      },
-      P3: {
-        sources: summaryData.P3.sources,
-        summaryLength: summaryData.P3.summary.length,
-      },
-      P4: {
-        sources: summaryData.P4.sources,
-        summaryLength: summaryData.P4.summary.length,
-      },
-      Uncategorized: {
-        sources: summaryData.Uncategorized.sources,
-        summaryLength: summaryData.Uncategorized.summary.length,
-      },
-    });
-
-    console.log("=== BEFORE CLEANING ===");
-    console.log("Summary data before cleaning:", {
-      P1: {
-        sources: summaryData.P1.sources,
-        summaryLength: summaryData.P1.summary.length,
-      },
-      P2: {
-        sources: summaryData.P2.sources,
-        summaryLength: summaryData.P2.summary.length,
-      },
-      P3: {
-        sources: summaryData.P3.sources,
-        summaryLength: summaryData.P3.summary.length,
-      },
-      P4: {
-        sources: summaryData.P4.sources,
-        summaryLength: summaryData.P4.summary.length,
-      },
-      Uncategorized: {
-        sources: summaryData.Uncategorized.sources,
-        summaryLength: summaryData.Uncategorized.summary.length,
-      },
-    });
-
-    console.log("=== BEFORE CLEANING URLs ===");
-    (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
-      const summary = summaryData[outcome].summary;
-      console.log(
-        `${outcome} contains URLs before cleaning: ${String(
-          summary.includes("http")
-        )}`
-      );
-      if (summary.includes("http")) {
-        console.log(`${outcome} URL preview: ${summary.substring(0, 300)}...`);
-      }
-    });
+    // Track missing sources if enabled and collect missing comments
+    missingDetails = trackMissingSourcesIfEnabled(
+      originalCommenters,
+      summaryData,
+      trackMissingSources,
+      ignoredUsernames
+    );
 
     // Clean placeholder source links from the summary data
     const cleanedSummaryData = cleanSummaryText(summaryData);
 
-    console.log("=== AFTER CLEANING URLs ===");
-    (["P1", "P2", "P3", "P4", "Uncategorized"] as const).forEach((outcome) => {
-      const summary = cleanedSummaryData[outcome].summary;
-      console.log(
-        `${outcome} contains URLs after cleaning: ${String(
-          summary.includes("http")
-        )}`
-      );
-      console.log(
-        `${outcome} contains [source] after cleaning: ${String(
-          summary.includes("[source]")
-        )}`
-      );
-      if (summary.includes("[source]") || summary.includes("http")) {
-        console.log(
-          `${outcome} final preview: ${summary.substring(0, 300)}...`
-        );
-      }
-    });
+    // Calculate total sources for cache
+    const totalSourcesForCache =
+      cleanedSummaryData.P1.sources.length +
+      cleanedSummaryData.P2.sources.length +
+      cleanedSummaryData.P3.sources.length +
+      cleanedSummaryData.P4.sources.length +
+      cleanedSummaryData.Uncategorized.sources.length;
 
     // Create cache data (simplified structure with P1/P2/P3/P4 at top level)
     const now = new Date().toISOString();
@@ -1319,6 +1327,11 @@ ${msg.message}
       cachedAt: now,
       summaryBatchSize: isBatched ? batchSize : 0,
       model,
+      totalComments: topLevelComments.length,
+      uniqueUsers: originalCommenters.size,
+      outputSources: totalSourcesForCache,
+      ...(missingDetails && { missingCommentDetails: missingDetails }), // Include full comment details if tracking enabled
+      droppedRepliesCount,
     };
 
     // Store in Redis permanently
@@ -1326,6 +1339,31 @@ ${msg.message}
 
     // Return update metadata
     const processingTimeMs = Date.now() - startTime;
+
+    // Log summary statistics
+    console.log(`[Summary Update] Complete - Generated new summary:`);
+    console.log(`  • Total comments: ${cacheData.totalComments ?? "?"}`);
+    console.log(`  • Unique users: ${cacheData.uniqueUsers ?? "?"}`);
+    console.log(`  • Output sources: ${cacheData.outputSources ?? "?"}`);
+    if (missingDetails && missingDetails.length > 0) {
+      const missingUsers = extractMissingUsers(missingDetails);
+      console.log(
+        `  • Missing users: ${missingUsers.length} (${missingUsers.join(", ")})`
+      );
+      console.log(
+        `  • Total comments from missing users: ${missingDetails.length}`
+      );
+    }
+    const duplicateComments = topLevelComments.length - originalCommenters.size;
+    if (duplicateComments > 0) {
+      console.log(
+        `  • Duplicate comments: ${duplicateComments} (from users posting multiple times)`
+      );
+    }
+    console.log(`  • Dropped replies: ${droppedRepliesCount}`);
+    console.log(`  • Processing: ${processingTimeMs}ms`);
+    console.log(`  • Batched: ${String(isBatched)}`);
+
     const response: UpdateResponse = {
       updated: true,
       cached: false,
@@ -1337,10 +1375,9 @@ ${msg.message}
 
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error in update-summary API:", error);
-
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
+    console.error(`[Summary Update] Error: ${errorMessage}`);
     res
       .status(500)
       .json({ error: `Failed to update summary: ${errorMessage}` });

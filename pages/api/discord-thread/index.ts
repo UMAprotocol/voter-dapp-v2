@@ -152,15 +152,12 @@ async function fetchDiscordThread(
       // This is a reply - find the root parent message
       const rootParentId = findRootParentId(referencedMessageId);
 
-      if (
-        messageMap.has(rootParentId) &&
-        !messageMap.get(rootParentId)!.referencedMessageId
-      ) {
+      const rootParent = messageMap.get(rootParentId);
+      if (rootParent && !rootParent.referencedMessageId) {
         // Root parent exists and is a top-level message, add to replies map
-        if (!repliesMap.has(rootParentId)) {
-          repliesMap.set(rootParentId, []);
-        }
-        repliesMap.get(rootParentId)!.push(cleanMessage);
+        const existingReplies = repliesMap.get(rootParentId) || [];
+        existingReplies.push(cleanMessage);
+        repliesMap.set(rootParentId, existingReplies);
       } else {
         // Root parent doesn't exist in our current batch or isn't top-level - treat as orphaned reply
         console.warn(
