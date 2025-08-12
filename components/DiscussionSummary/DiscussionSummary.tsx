@@ -1,8 +1,15 @@
 import { useDiscussionSummary } from "hooks/queries/votes/useDiscussionSummary";
 import { VoteT } from "types";
-import Bot from "public/assets/icons/bot.svg";
+import Robot from "public/assets/icons/robot.svg";
 import { OutcomeData } from "pages/api/fetch-summary";
 import { PanelContentWrapper } from "components/Panel/VotePanel/VotePanel";
+import styled, { css } from "styled-components";
+import { addOpacityToHsl } from "helpers";
+import { red500 } from "constant";
+import {
+  PanelSectionTitle,
+  PanelSectionSubTitle,
+} from "components/Panel/styles";
 
 type Props = {
   query: VoteT;
@@ -92,29 +99,27 @@ function processSummaryText(text: string) {
         parts.push(
           <span key={`${lineIndex}-${elementKey++}`}>
             [
-            <a
+            <AStyled
               href={linkMatch.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#17b38c] underline hover:text-[#15a078]"
             >
               {linkMatch.text}
-            </a>
+            </AStyled>
             ]
           </span>
         );
       } else {
         // Markdown link
         parts.push(
-          <a
+          <AStyled
             key={`${lineIndex}-${elementKey++}`}
             href={linkMatch.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#17b38c] underline hover:text-[#15a078]"
           >
             {linkMatch.text}
-          </a>
+          </AStyled>
         );
       }
 
@@ -204,33 +209,26 @@ export function DiscussionSummary({ query }: Props) {
     );
   }
 
-  // Handle no summary available - check if we're generating one
-  if (!summaryData) {
-    if (isGenerating) {
-      return (
-        <PanelContentWrapper>
-          <div className="flex flex-col items-start justify-start">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#17b38c] border-t-transparent" />
-              <p className="text-lg font-medium text-black/70">
-                Generating AI summary...
-              </p>
-            </div>
-            <p className="text-base text-black/50">
-              This appears to be an older vote. We&apos;re generating a fresh
-              summary of the discussion for you. This typically takes 10-30
-              seconds but can take longer for complex votes with many comments.
-            </p>
-          </div>
-        </PanelContentWrapper>
-      );
-    }
-
+  // Handle no summary available - go directly to generating state on first null
+  // We show the generating state immediately when the cache returns null (404),
+  // even before the hook flips isGenerating to true, to avoid a flash of the
+  // "No discussion" message.
+  if (summaryData === null || isGenerating) {
     return (
       <PanelContentWrapper>
         <div className="flex flex-col items-start justify-start">
-          <p className="text-lg text-black/70">
-            No discussion summary available yet.
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#17b38c] border-t-transparent" />
+            <p className="text-lg font-medium text-black/70">
+              Generating AI summary...
+            </p>
+          </div>
+          <p className="text-base text-black/50">
+            This appears to be an older vote or one were there is not yet a
+            summary. We&apos;re generating a fresh summary of the discussion for
+            you. This typically takes 10-30 seconds but can take longer for
+            complex votes with many comments. It will automatically load here
+            when generated.
           </p>
         </div>
       </PanelContentWrapper>
@@ -239,28 +237,25 @@ export function DiscussionSummary({ query }: Props) {
 
   return (
     <PanelContentWrapper>
-      <div className="mb-5 flex flex-col gap-1 rounded-lg border border-[#17b38c80] bg-[#17b38c35] p-2">
-        <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#17b38c33]">
-            <Bot className="h-4 w-4 text-[#17b38c]" />
-          </span>
-
-          <span className="text-lg font-semibold text-[#17B38C]">
-            AI Summary
-          </span>
-        </div>
-        {summaryData?.generatedAt && (
-          <p className="mb-2 text-sm text-black/50">
-            Generated on {formatTimestamp(summaryData.generatedAt)}
-          </p>
-        )}
-        <p className="py-1 text-base text-black/70">
-          <span className="text-xl">⚠️</span> This is a convenience feature that
+      <Disclaimer>
+        <Text>
+          <Strong>Warning:</Strong> This is a convenience feature that
           summarizes Discord discussions using an LLM. This summary does not
-          represent the opinion of UMA. Always conduct your own research and due
-          diligence before voting.
-        </p>
-      </div>
+          represent the opinion of UMA. Always conduct your own research before
+          voting.
+        </Text>
+        {summaryData?.generatedAt && (
+          <TextMuted>
+            Generated on {formatTimestamp(summaryData.generatedAt)}
+          </TextMuted>
+        )}
+      </Disclaimer>
+      <PanelSectionTitle>
+        <IconWrapper>
+          <SummaryIcon />
+        </IconWrapper>
+        AI Summary
+      </PanelSectionTitle>
       <div className="flex flex-col">
         {Object.entries(summaryData.summary).map(
           (
@@ -272,10 +267,10 @@ export function DiscussionSummary({ query }: Props) {
             return (
               <div key={pValue}>
                 <div className="pb-5">
-                  <h3 className="mb-3 text-xl font-bold uppercase tracking-wider">
+                  <OutcomeTitle>
                     {pValue.toUpperCase()}
                     {decodedLabel ? ` (${decodedLabel})` : ""}
-                  </h3>
+                  </OutcomeTitle>
 
                   {outcomeData?.summary ? (
                     <div className="text-base leading-relaxed text-black">
@@ -285,32 +280,6 @@ export function DiscussionSummary({ query }: Props) {
                     <p className="text-base italic leading-relaxed text-gray-500">
                       No comments argued for this outcome
                     </p>
-                  )}
-
-                  {outcomeData?.sources && outcomeData.sources.length > 0 && (
-                    <div className="mt-3 flex flex-col gap-2">
-                      <span className="text-sm font-semibold uppercase tracking-wider ">
-                        Sources:
-                      </span>
-                      <div className="m-0 flex flex-wrap gap-2 p-0">
-                        {outcomeData.sources.map(
-                          (
-                            [source, timestamp]: [string, number],
-                            sourceIndex: number
-                          ) => (
-                            <div
-                              key={`${source}-${timestamp}-${sourceIndex}`}
-                              className="flex items-center justify-center gap-1 rounded-full border border-[#17b38c80] bg-[#17b38c33] px-2 py-[2px] text-sm text-black"
-                            >
-                              <span className="h-2 w-2 rounded-full bg-[#17b38c]" />
-                              <span className="text-center font-medium">
-                                {source}
-                              </span>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
                   )}
                 </div>
 
@@ -326,3 +295,60 @@ export function DiscussionSummary({ query }: Props) {
     </PanelContentWrapper>
   );
 }
+
+// Styled to match Discussion.tsx
+const Text = styled.p`
+  font: var(--text-md);
+  &:not(:last-child) {
+    margin-bottom: 15px;
+  }
+`;
+
+const Strong = styled.strong`
+  font-weight: 700;
+`;
+const handleWordBreak = css`
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+`;
+
+const AStyled = styled.a`
+  ${handleWordBreak}
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const Disclaimer = styled.div`
+  padding-block: 12px;
+  padding-inline: 20px;
+  background: ${addOpacityToHsl(red500, 0.15)};
+  border-radius: 5px;
+  margin-bottom: 25px;
+`;
+
+const TextMuted = styled(Text)`
+  color: rgba(0, 0, 0, 0.5);
+  margin-top: 4px;
+`;
+
+const SummaryIcon = styled(Robot)`
+  path {
+    fill: var(--red-500);
+  }
+`;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+`;
+
+const OutcomeTitle = styled(PanelSectionSubTitle)`
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+`;

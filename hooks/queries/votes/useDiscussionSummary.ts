@@ -18,11 +18,74 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
   const query = useQuery({
     queryKey: [discussionSummaryKey, identifier, time, title],
     queryFn: () => getDiscussionSummary({ identifier, time, title }),
+    onSuccess: (data) => {
+      // If we received valid data, stop generating/polling
+      if (data && data !== null) {
+        hasReceivedDataRef.current = true;
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+        setIsGenerating(false);
+        pollingStartTimeRef.current = null;
+        return;
+      }
+
+      // If there is no cached summary, trigger generation immediately and start polling
+      if (
+        data === null &&
+        !generationTriggeredRef.current &&
+        !hasReceivedDataRef.current
+      ) {
+        generationTriggeredRef.current = true;
+        setIsGenerating(true);
+        pollingStartTimeRef.current = Date.now();
+
+        triggerSummaryGeneration({ identifier, time, title })
+          .then(() => {
+            if (!hasReceivedDataRef.current) {
+              pollingIntervalRef.current = setInterval(() => {
+                if (
+                  hasReceivedDataRef.current ||
+                  (pollingStartTimeRef.current &&
+                    Date.now() - pollingStartTimeRef.current > MAX_POLLING_TIME)
+                ) {
+                  if (pollingIntervalRef.current) {
+                    clearInterval(pollingIntervalRef.current);
+                    pollingIntervalRef.current = null;
+                  }
+                  setIsGenerating(false);
+                  return;
+                }
+                void query.refetch();
+              }, 500);
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to trigger summary generation:", error);
+            setIsGenerating(false);
+          });
+      }
+    },
     onError: (err) => console.error(err),
     refetchOnWindowFocus: false,
     refetchInterval: false,
     retry: (failureCount) => failureCount < 3,
   });
+
+  // Reset state when the input key changes (new market)
+  useEffect(() => {
+    // Clear any existing polling
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    // Reset flags for new query key
+    generationTriggeredRef.current = false;
+    hasReceivedDataRef.current = false;
+    pollingStartTimeRef.current = null;
+    setIsGenerating(false);
+  }, [identifier, time, title]);
 
   useEffect(() => {
     // If we already have data, mark it and don't do anything else
@@ -38,11 +101,11 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
       return;
     }
 
-    // If we got null (no summary), haven't triggered generation yet, and haven't received data before
+    // If we don't have a summary (null) after the first fetch, trigger generation immediately
     if (
-      query.data === null &&
+      query.isFetched &&
+      (query.data === null || query.data === undefined) &&
       !generationTriggeredRef.current &&
-      !query.isLoading &&
       !hasReceivedDataRef.current
     ) {
       generationTriggeredRef.current = true;
@@ -87,7 +150,7 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [query.data, query.isLoading, identifier, time, title, query.refetch]);
+  }, [query.data, query.isFetched, identifier, time, title, query.refetch]);
 
   return {
     ...query,

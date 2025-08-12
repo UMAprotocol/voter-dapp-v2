@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
-import { createHash } from "crypto";
 
 export interface OutcomeData {
   summary: string;
@@ -96,25 +95,8 @@ export default async function handler(
     // Initialize Redis
     const redis = Redis.fromEnv();
 
-    // Get ignored usernames to match cache key with update-summary
-    const ignoredUsernamesStr = process.env.SUMMARY_IGNORED_USERNAMES || "";
-    const ignoredUsernames = ignoredUsernamesStr
-      ? ignoredUsernamesStr
-          .split(",")
-          .map((username) => username.trim())
-          .filter(Boolean)
-      : [];
-
-    // Create unique cache key using all three parameters (same format as update-summary)
-    // Include ignored usernames in cache key to match update-summary
-    const ignoredUsernamesHash =
-      ignoredUsernames.length > 0
-        ? `:ignored-${createHash("sha256")
-            .update(ignoredUsernames.sort().join(","))
-            .digest("hex")
-            .substring(0, 8)}`
-        : "";
-    const cacheKey = `discord-summary:${time}:${identifier}:${title}${ignoredUsernamesHash}`;
+    // Create cache key using the primary parameters only (must match update-summary)
+    const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
 
     // Get cached data
     const cachedData = await redis.get<CacheData>(cacheKey);

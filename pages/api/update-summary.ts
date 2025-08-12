@@ -347,6 +347,9 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
   // Pattern to fix malformed source references like (source.). to (source).
   const malformedSourcePattern = /\(\s*source\s*\)\s*\./gi;
 
+  // Pattern to remove trailing parentheticals like (no URLs) in any casing, with optional spaces and trailing period
+  const noUrlsEndBracketPattern = /\s*\(\s*no\s*urls\s*\)\.?/gi;
+
   const cleanedSummary = { ...summaryData };
 
   // Clean P1, P2, P3, P4 outcomes
@@ -409,8 +412,14 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
         }
       );
 
+      // Remove explicit (no URLs) markers
+      const afterNoUrlsRemoval = afterUrlConversion.replace(
+        noUrlsEndBracketPattern,
+        ""
+      );
+
       // Remove empty parentheses
-      const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
+      const afterEmptyParenthesesRemoval = afterNoUrlsRemoval.replace(
         emptyParenthesesPattern,
         ""
       );
@@ -485,8 +494,14 @@ function cleanSummaryText(summaryData: SummaryData): SummaryData {
       }
     );
 
+    // Remove explicit (no URLs) markers
+    const afterNoUrlsRemoval = afterUrlConversion.replace(
+      noUrlsEndBracketPattern,
+      ""
+    );
+
     // Remove empty parentheses
-    const afterEmptyParenthesesRemoval = afterUrlConversion.replace(
+    const afterEmptyParenthesesRemoval = afterNoUrlsRemoval.replace(
       emptyParenthesesPattern,
       ""
     );
