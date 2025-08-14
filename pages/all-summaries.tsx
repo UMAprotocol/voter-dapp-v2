@@ -3,6 +3,20 @@ import { AllSummariesResponse } from "./api/fetch-all-cached-summaries";
 
 type ErrorResponse = { error?: unknown };
 
+interface WarmSummaryResponse {
+  success: boolean;
+  processed: number;
+  skipped: number;
+  errors: number;
+  totalEvents: number;
+  processingTimeMs: number;
+  details: {
+    successfulUpdates: string[];
+    skippedUpdates: string[];
+    errorUpdates: { url: string; error: string }[];
+  };
+}
+
 function isAllSummariesResponse(value: unknown): value is AllSummariesResponse {
   if (typeof value !== "object" || value === null) return false;
   const obj = value as { summaries?: unknown; fetchedAt?: unknown };
@@ -24,6 +38,12 @@ interface SummaryRowProps {
 function formatTimestamp(unixTimestamp: string): string {
   const date = new Date(parseInt(unixTimestamp) * 1000);
   return date.toLocaleString();
+}
+
+function formatDuration(ms: number): string {
+  if (!ms || ms < 0) return "0.0s";
+  const seconds = (ms / 1000).toFixed(1);
+  return `${seconds}s`;
 }
 
 function formatSummaryBullets(text: string): string[] {
@@ -470,6 +490,11 @@ export default function AllSummaries() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<string>("");
+  const [warming, setWarming] = useState(false);
+  const [warmElapsedMs, setWarmElapsedMs] = useState(0);
+  const [warmSuccess, setWarmSuccess] = useState<boolean | null>(null);
+  const [warmResult, setWarmResult] = useState<WarmSummaryResponse | null>(null);
+  const [warmError, setWarmError] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchSummaries();
@@ -502,6 +527,41 @@ export default function AllSummaries() {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const warmSummaries = async () => {
+    if (warming) return;
+    setWarming(true);
+    setWarmElapsedMs(0);
+    setWarmSuccess(null);
+    setWarmResult(null);
+    setWarmError(null);
+
+    const start = Date.now();
+    const timer = setInterval(() => {
+      setWarmElapsedMs(Date.now() - start);
+    }, 100);
+
+    try {
+      const response = await fetch("/api/warm-summary", { method: "POST" });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Failed to warm summaries");
+      }
+      const data = (await response.json()) as WarmSummaryResponse | ErrorResponse;
+      if (isErrorResponse(data) && typeof data.error === "string") {
+        throw new Error(data.error);
+      }
+      setWarmResult(data as WarmSummaryResponse);
+      setWarmSuccess(true);
+    } catch (err) {
+      setWarmError(err instanceof Error ? err.message : "An error occurred");
+      setWarmSuccess(false);
+    } finally {
+      clearInterval(timer);
+      setWarmElapsedMs(Date.now() - start);
+      setWarming(false);
     }
   };
 
@@ -553,6 +613,27 @@ export default function AllSummaries() {
         }
 
         .refresh-btn:disabled {
+          background: #ccc;
+          cursor: not-allowed;
+        }
+
+        .warm-btn {
+          background: #dc3545;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          margin-top: 8px;
+          margin-left: 8px;
+        }
+
+        .warm-btn:hover {
+          background: #c82333;
+        }
+
+        .warm-btn:disabled {
           background: #ccc;
           cursor: not-allowed;
         }
@@ -842,6 +923,24 @@ export default function AllSummaries() {
           font-size: 20px;
           margin-bottom: 10px;
         }
+
+        .warm-status {
+          margin-top: 8px;
+          font-size: 13px;
+          color: #666;
+        }
+
+        .warm-status .success {
+          color: #28a745;
+          font-weight: 600;
+          margin-right: 6px;
+        }
+
+        .warm-status .error {
+          color: #dc3545;
+          font-weight: 600;
+          margin-right: 6px;
+        }
       `}</style>
 
       <div className="header">
@@ -852,13 +951,48 @@ export default function AllSummaries() {
           {lastFetched && (
             <div>Last fetched: {new Date(lastFetched).toLocaleString()}</div>
           )}
-          <button
-            className="refresh-btn"
-            onClick={() => void fetchSummaries()}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Refresh"}
-          </button>
+          <div>
+            <button
+              className="refresh-btn"
+              onClick={() => void fetchSummaries()}
+              disabled={loading || warming}
+            >
+              {loading ? "Loading..." : "Refresh"}
+            </button>
+            <button
+              className="warm-btn"
+              onClick={() => void warmSummaries()}
+              disabled={warming}
+              title="Scan recent on-chain requests and warm cached summaries"
+            >
+              {warming ? "Warming..." : "Warm Summaries"}
+            </button>
+          </div>
+          {(warming || warmSuccess !== null) && (
+            <div className="warm-status">
+              {warming && (
+                <span>
+                  ⏳ Warming... {formatDuration(warmElapsedMs)}
+                </span>
+              )}
+              {!warming && warmSuccess === true && (
+                <span>
+                  <span className="success">✔</span>
+                  Done in {formatDuration(warmElapsedMs)}
+                  {warmResult
+                    ? ` — processed ${warmResult.processed}, errors ${warmResult.errors}`
+                    : ""}
+                </span>
+              )}
+              {!warming && warmSuccess === false && (
+                <span>
+                  <span className="error">✖</span>
+                  Failed in {formatDuration(warmElapsedMs)}
+                  {warmError ? ` — ${warmError}` : ""}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
