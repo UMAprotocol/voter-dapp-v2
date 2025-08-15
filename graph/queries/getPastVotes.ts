@@ -4,13 +4,7 @@ import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
-import {
-  PastVotesQuery,
-  PriceRequestT,
-  RevealedVotesByAddress,
-  VoteParticipationT,
-  VoteResultsT,
-} from "types";
+import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
 const { chainId, graphEndpoint } = config;
 
@@ -261,7 +255,7 @@ export async function getPastVotesV2() {
 // Query for individual vote details
 export async function getPastVoteDetails(
   resolvedPriceRequestIndex: number
-): Promise<(PriceRequestT & VoteParticipationT & VoteResultsT) | null> {
+): Promise<any | null> {
   const endpoint = graphEndpoint;
   if (!endpoint) throw new Error("V2 subgraph is disabled");
 
@@ -348,12 +342,12 @@ export async function getPastVoteDetails(
     init
   );
 
-  const detailedVote: PriceRequestT & VoteParticipationT & VoteResultsT = {
+  const detailedVote = {
     identifier,
     time: Number(time),
     correctVote,
     ancillaryData,
-    resolvedPriceRequestIndex,
+    resolvedPriceRequestIndex: String(resolvedPriceRequestIndex),
     isV1: false,
     participation,
     results,
