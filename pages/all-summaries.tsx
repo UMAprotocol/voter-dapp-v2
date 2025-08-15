@@ -493,7 +493,9 @@ export default function AllSummaries() {
   const [warming, setWarming] = useState(false);
   const [warmElapsedMs, setWarmElapsedMs] = useState(0);
   const [warmSuccess, setWarmSuccess] = useState<boolean | null>(null);
-  const [warmResult, setWarmResult] = useState<WarmSummaryResponse | null>(null);
+  const [warmResult, setWarmResult] = useState<WarmSummaryResponse | null>(
+    null
+  );
   const [warmError, setWarmError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -549,7 +551,9 @@ export default function AllSummaries() {
         const text = await response.text();
         throw new Error(text || "Failed to warm summaries");
       }
-      const data = (await response.json()) as WarmSummaryResponse | ErrorResponse;
+      const data = (await response.json()) as
+        | WarmSummaryResponse
+        | ErrorResponse;
       if (isErrorResponse(data) && typeof data.error === "string") {
         throw new Error(data.error);
       }
@@ -971,9 +975,7 @@ export default function AllSummaries() {
           {(warming || warmSuccess !== null) && (
             <div className="warm-status">
               {warming && (
-                <span>
-                  ⏳ Warming... {formatDuration(warmElapsedMs)}
-                </span>
+                <span>⏳ Warming... {formatDuration(warmElapsedMs)}</span>
               )}
               {!warming && warmSuccess === true && (
                 <span>
