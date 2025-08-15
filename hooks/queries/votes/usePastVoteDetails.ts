@@ -4,14 +4,22 @@ import { getPastVoteDetails } from "graph";
 import { config } from "helpers/config";
 import { useHandleError } from "hooks";
 
+type VoteDetailsData = {
+  participation?: any;
+  results?: any;
+  revealedVoteByAddress?: any;
+} | null;
+
 export function usePastVoteDetails(resolvedPriceRequestIndex?: number) {
   const { onError } = useHandleError({ isDataFetching: true });
 
-  const queryResult = useQuery({
+  const queryResult = useQuery<VoteDetailsData>({
     queryKey: ["pastVoteDetails", resolvedPriceRequestIndex],
-    queryFn: async () => {
+    queryFn: async (): Promise<VoteDetailsData> => {
       if (resolvedPriceRequestIndex === undefined) return null;
-      return getPastVoteDetails(resolvedPriceRequestIndex);
+      return getPastVoteDetails(
+        resolvedPriceRequestIndex
+      ) as Promise<VoteDetailsData>;
     },
     enabled: config.graphV2Enabled && resolvedPriceRequestIndex !== undefined,
     refetchInterval: oneMinute,
