@@ -17,7 +17,7 @@ import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function UpcomingVotes() {
-  const { upcomingVoteList } = useVotesContext();
+  const { upcomingVoteList, upcomingVotesIsLoading } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
@@ -32,14 +32,17 @@ export function UpcomingVotes() {
     moreDetailsAction: () => openPanel("vote", vote),
   }));
 
+  const isLoading = upcomingVotesIsLoading || isUndefined(upcomingVoteList);
+
   return (
     <Layout title="UMA | Upcoming Votes">
       <Banner>Upcoming Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {isUndefined(upcomingVoteList) ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
+              <LoadingText>Loading upcoming votes...</LoadingText>
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -95,4 +98,11 @@ const NoVotesWrapper = styled.div`
 const NoVotesMessage = styled.h1`
   font: var(--header-lg);
   font-weight: 300;
+`;
+
+const LoadingText = styled.div`
+  margin-top: 20px;
+  font: var(--text-md);
+  color: var(--grey-800);
+  text-align: center;
 `;
