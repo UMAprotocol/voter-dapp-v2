@@ -1068,7 +1068,6 @@ ${msg.message}
             content: formattedComments,
           },
         ],
-        temperature: 0.3,
         response_format: { type: "json_object" },
       });
 
@@ -1133,7 +1132,6 @@ ${msg.message}
                 content: batchPromptFormatted,
               },
             ],
-            temperature: 0.3,
             response_format: { type: "json_object" },
           });
 
@@ -1274,7 +1272,6 @@ ${msg.message}
             content: condensationPromptFormatted,
           },
         ],
-        temperature: 0.3,
         response_format: { type: "json_object" },
       });
 
