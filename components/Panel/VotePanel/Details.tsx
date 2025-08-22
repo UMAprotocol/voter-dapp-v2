@@ -67,7 +67,7 @@ export function Details({
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
-  const { data: bulletins } = usePolymarketBulletins(ancillaryData);
+  const { data: bulletins } = usePolymarketBulletins(ancillaryDataL2);
 
   const claimDescription = claim
     ? getClaimDescription(decodeHexString(claim))
