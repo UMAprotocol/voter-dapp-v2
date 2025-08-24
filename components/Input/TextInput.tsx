@@ -14,6 +14,7 @@ interface Props {
   maxDecimals?: number;
   allowNegative?: boolean;
   id?: string;
+  styles?: React.CSSProperties;
 }
 export function TextInput({
   value,
@@ -25,6 +26,7 @@ export function TextInput({
   type = "text",
   maxDecimals = 18,
   allowNegative = true,
+  styles,
 }: Props) {
   const inputMode = type === "text" ? "text" : "decimal";
   // treat all as text inputs to avoid unwanted automatic number formatting
@@ -37,7 +39,7 @@ export function TextInput({
   );
 
   return (
-    <_Wrapper aria-disabled={disabled}>
+    <_Wrapper style={styles} aria-disabled={disabled}>
       <_Input
         value={value ?? undefined}
         onChange={onChange}

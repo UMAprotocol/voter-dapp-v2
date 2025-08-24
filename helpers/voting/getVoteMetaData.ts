@@ -242,25 +242,25 @@ export function makeMultipleValuesDropdownOptions(
     {
       label: "Unresolvable",
       value: maxInt256.toString(),
-      secondaryLabel: "Unresolvable",
+      secondaryLabel: "",
       action: undefined,
     },
     {
       label: "Early Request",
       value: minInt256.toString(),
-      secondaryLabel: "Early Request",
+      secondaryLabel: "",
       action: undefined,
     },
     {
       label: "Custom values",
       value: encodeMultipleQuery(options?.map(() => "0") ?? ["0"]),
-      secondaryLabel: "Custom values",
+      secondaryLabel: "",
       action: "OPEN_MULTIPLE_VALUES_MODAL",
     },
     {
       label: "Proposed values",
       value: proposedPrice ?? "0",
-      secondaryLabel: "Proposed values",
+      secondaryLabel: "",
       action: "SET_PROPOSED_PRICE",
     },
   ];

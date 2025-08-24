@@ -46,6 +46,9 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
                   onClear={() => props.onInputChange({ label, value: "" })}
                   maxDecimals={0}
                   type="number"
+                  styles={{
+                    minWidth: "unset",
+                  }}
                 />
               </label>
               {i === 0 && items?.length === 2 && (
