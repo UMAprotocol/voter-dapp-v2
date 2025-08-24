@@ -4,6 +4,7 @@ import { NodeUrls, SupportedChainIds } from "types";
 import { supportedChains } from "constant";
 import * as ss from "superstruct";
 import { getContractLocal, LocalContract } from "./_contracts";
+import { config } from "helpers";
 
 export const VoteSubgraphURL: string = ss.create(
   process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,
@@ -344,7 +345,7 @@ export function constructOoUiLink(
 ) {
   if (!txHash || !chainId || !oracleType) return;
   if (!isSupportedChainId(chainId)) return;
-  const subDomain = Number(chainId) === 5 ? "testnet." : "";
+  const subDomain = config.isTestnet ? "testnet." : "";
   return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
     oracleType
   )}&eventIndex=${eventIndex ?? ""}`;
