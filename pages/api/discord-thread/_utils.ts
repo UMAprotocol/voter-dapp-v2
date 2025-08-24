@@ -11,10 +11,16 @@ type ThreadCache = {
   latestThreadId: string | null;
 };
 
-const redis = Redis.fromEnv();
+// singleton
+let redis: Redis | undefined;
+export function getRedis(): Redis {
+  redis ??= Redis.fromEnv();
+  return redis;
+}
 
 // Cache functions for thread cache object
 export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
+  const redis = getRedis();
   return await redis.get<ThreadCache>(THREAD_CACHE_KEY);
 }
 
@@ -22,6 +28,7 @@ export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
   latestThreadId: string | null
 ) {
+  const redis = getRedis();
   const result = await redis.set(THREAD_CACHE_KEY, {
     threadIdMap,
     latestThreadId,
