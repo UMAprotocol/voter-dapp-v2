@@ -24,7 +24,7 @@ export function getOracleTypeDisplayName(oracleType: string | undefined) {
       return "Optimistic Oracle v2";
     case "SkinnyOptimisticOracle":
       return "Skinny Optimistic Oracle";
-    case "ManagedOracleV2":
+    case "ManagedOptimisticOracleV2":
       return "Managed Optimistic Oracle v2";
     default:
       return oracleType;
