@@ -21,7 +21,9 @@ export const polymarketRequesters = [
 const polymarketIdentifiers = ["YES_OR_NO_QUERY", "MULTIPLE_VALUES"];
 
 export function isPolymarketRequester(address: string): boolean {
-  return polymarketRequesters.includes(address.toLowerCase());
+  return polymarketRequesters
+    .map((a) => a.toLowerCase())
+    .includes(address.toLowerCase());
 }
 
 export function getRequester(decodedAncillaryData: string): string | undefined {
