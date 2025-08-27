@@ -1,5 +1,5 @@
 import type { DropdownItemT, VoteT } from "types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import {
   encodeMultipleQuery,
   isTooEarly as _isTooEarly,
@@ -19,6 +19,7 @@ type Props = {
 
 export function useMultipleValuesVote({ vote, selectVote }: Props) {
   const enabled = vote.decodedIdentifier === "MULTIPLE_VALUES";
+  const hasInitializedFromCommittedVote = useRef(false);
 
   const { data: augmentedData } = useAugmentedVoteData({
     time: vote.time,
@@ -69,6 +70,15 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
         options?.map((o) => [o.label, (o.value ?? "").toString()]) ?? []
       )
     );
+    hasInitializedFromCommittedVote.current = false;
+  }
+
+  function resetToCommittedVote() {
+    if (committedVote && options?.length) {
+      setValuesFromPrice(committedVote, options);
+      setFormattedValue(committedVote);
+      hasInitializedFromCommittedVote.current = true;
+    }
   }
 
   // get decrypted vote on load
@@ -77,7 +87,11 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
       return;
     }
     const existingVote = decryptedVote?.price;
-    if (existingVote && options?.length) {
+    if (
+      existingVote &&
+      options?.length &&
+      !hasInitializedFromCommittedVote.current
+    ) {
       try {
         // decode price, set input values
         setValuesFromPrice(existingVote, options);
@@ -85,6 +99,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
         // set actual formatted price
         setCommittedVote(existingVote);
         setFormattedValue(existingVote);
+        hasInitializedFromCommittedVote.current = true;
       } catch (e) {
         console.warn("Committed vote invalid. Vote: ", existingVote);
       }
@@ -262,5 +277,7 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
     items: options,
     onDropdownChange,
     canSubmitMultipleValues,
+    clearInputValues,
+    resetToCommittedVote,
   };
 }

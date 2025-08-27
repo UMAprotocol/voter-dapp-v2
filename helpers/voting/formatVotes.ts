@@ -115,6 +115,7 @@ export function parseVoteStringWithPrecision(
   vote: string,
   decodedIdentifier: string
 ) {
+  // do not format encoded strings with precision
   if (decodedIdentifier === "MULTIPLE_VALUES") {
     return vote;
   }
@@ -129,6 +130,10 @@ export function formatVoteStringWithPrecision(
   vote: BigNumberish,
   decodedIdentifier: string
 ) {
+  // do not format encoded strings with precision
+  if (decodedIdentifier === "MULTIPLE_VALUES") {
+    return vote.toString();
+  }
   // check the precision to use from our table of precisions
   const identifierPrecision = BigNumber.from(
     getPrecisionForIdentifier(decodedIdentifier)

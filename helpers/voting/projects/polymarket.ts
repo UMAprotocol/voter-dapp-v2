@@ -32,8 +32,14 @@ export function isPolymarketRequester(address: string): boolean {
 }
 
 export function getRequester(decodedAncillaryData: string): string | undefined {
-  const match = decodedAncillaryData.match(/ooRequester:(\w+)/) ?? [];
+  const match = decodedAncillaryData.match(/ooRequester:([^,]+)/) ?? [];
   return match[1] ? "0x" + match[1] : undefined;
+}
+export function getInitializer(
+  decodedAncillaryData: string
+): string | undefined {
+  const match = decodedAncillaryData.match(/initializer:([^,]+)/);
+  return match ? "0x" + match[1] : undefined;
 }
 export function getChildChainId(
   decodedAncillaryData: string
