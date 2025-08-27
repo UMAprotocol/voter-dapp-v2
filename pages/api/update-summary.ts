@@ -90,11 +90,11 @@ interface MissingComment {
 
 // Simplified cache data structure
 interface CacheData {
-  P1: SummaryOutcomeData;
-  P2: SummaryOutcomeData;
-  P3: SummaryOutcomeData;
-  P4: SummaryOutcomeData;
-  Uncategorized: SummaryOutcomeData;
+  P1: OutcomeData;
+  P2: OutcomeData;
+  P3: OutcomeData;
+  P4: OutcomeData;
+  Uncategorized: OutcomeData;
   generatedAt: string;
   commentsHash: string;
   promptVersion: string;
