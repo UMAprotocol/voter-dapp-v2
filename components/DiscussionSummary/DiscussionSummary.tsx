@@ -3,13 +3,14 @@ import { VoteT } from "types";
 import Robot from "public/assets/icons/robot.svg";
 import { OutcomeData } from "pages/api/fetch-summary";
 import { PanelContentWrapper } from "components/Panel/VotePanel/VotePanel";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { addOpacityToHsl } from "helpers";
 import { red500 } from "constant";
 import {
   PanelSectionTitle,
   PanelSectionSubTitle,
 } from "components/Panel/styles";
+import { Text, Strong, AStyled } from "components/Panel/shared-styles";
 
 type Props = {
   query: VoteT;
@@ -296,32 +297,7 @@ export function DiscussionSummary({ query }: Props) {
   );
 }
 
-// Styled to match Discussion.tsx
-const Text = styled.p`
-  font: var(--text-md);
-  &:not(:last-child) {
-    margin-bottom: 15px;
-  }
-`;
-
-const Strong = styled.strong`
-  font-weight: 700;
-`;
-const handleWordBreak = css`
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-const AStyled = styled.a`
-  ${handleWordBreak}
-  color: var(--red-500);
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+// Using shared styles from components/Panel/shared-styles.ts
 
 const Disclaimer = styled.div`
   padding-block: 12px;

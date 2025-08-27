@@ -7,6 +7,12 @@ import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
+import {
+  Text,
+  Strong,
+  AStyled,
+  handleWordBreak,
+} from "components/Panel/shared-styles";
 import { VoteDiscussionT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { Bulletin } from "web3/queries/getPolymarketBulletins";
@@ -226,19 +232,7 @@ const Image = styled(NextImage)`
 
 const SenderWrapper = styled.div``;
 
-const handleWordBreak = css`
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-const Text = styled.p`
-  font: var(--text-md);
-  &:not(:last-child) {
-    margin-bottom: 15px;
-  }
-`;
+// handleWordBreak and Text imported from shared-styles
 
 const MessageText = styled(Text)`
   word-wrap: break-word;
@@ -265,22 +259,13 @@ const Code = styled.code`
   ${codeStyle}
 `;
 
-const A = styled.a`
-  ${handleWordBreak}
-  color: var(--red-500);
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+const A = AStyled;
 
 const Sender = styled(Text)`
   display: inline;
 `;
 
-const Strong = styled.strong`
-  font-weight: 700;
-`;
+// Strong imported from shared-styles
 
 const Time = styled(Text)`
   display: inline;

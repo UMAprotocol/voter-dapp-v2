@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
 import OpenAI from "openai";
 import { createHash } from "crypto";
+import * as ss from "superstruct";
 
 // Default maximum interval between summary updates (5 minutes in milliseconds)
 const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -34,6 +35,33 @@ interface SummaryData {
   P4: SummaryOutcomeData;
   Uncategorized: SummaryOutcomeData;
 }
+
+// Superstruct schemas for JSON validation
+const SourceSchema = ss.tuple([ss.string(), ss.number()]);
+
+const OutcomeDataSchema = ss.union([
+  ss.string(),
+  ss.object({
+    summary: ss.optional(ss.string()),
+    sources: ss.optional(ss.array(SourceSchema)),
+  }),
+]);
+
+const SummaryDataSchema = ss.object({
+  P1: ss.optional(OutcomeDataSchema),
+  P2: ss.optional(OutcomeDataSchema),
+  P3: ss.optional(OutcomeDataSchema),
+  P4: ss.optional(OutcomeDataSchema),
+  Uncategorized: ss.optional(OutcomeDataSchema),
+});
+
+const OpenAIJsonResponseSchema = ss.union([
+  ss.object({
+    summary: ss.optional(SummaryDataSchema),
+    sources: ss.optional(ss.record(ss.string(), ss.array(SourceSchema))),
+  }),
+  SummaryDataSchema,
+]);
 
 // Interface for what OpenAI returns (JSON response)
 interface OpenAIJsonResponse {
@@ -216,7 +244,17 @@ function parseResponse(
 
     // Try to parse as JSON first
     try {
-      const jsonResponse = JSON.parse(cleanedResponse) as OpenAIJsonResponse;
+      const parsedJson = JSON.parse(cleanedResponse);
+
+      // Validate the parsed JSON with superstruct
+      let jsonResponse: OpenAIJsonResponse;
+      try {
+        jsonResponse = ss.create(parsedJson, OpenAIJsonResponseSchema);
+      } catch (validationError) {
+        console.error("JSON validation failed:", validationError);
+        // Fall back to original parsing for backward compatibility
+        jsonResponse = parsedJson as OpenAIJsonResponse;
+      }
 
       // Handle nested summary structure
       const summaryData = jsonResponse.summary || jsonResponse;
@@ -1145,9 +1183,20 @@ ${msg.message}
 
           // Parse the batch response to get proper categorization
           try {
-            const batchParsedResponse = JSON.parse(
-              batchSummaryText
-            ) as OpenAIJsonResponse;
+            const parsedBatchJson = JSON.parse(batchSummaryText);
+
+            // Validate the parsed JSON with superstruct
+            let batchParsedResponse: OpenAIJsonResponse;
+            try {
+              batchParsedResponse = ss.create(
+                parsedBatchJson,
+                OpenAIJsonResponseSchema
+              );
+            } catch (validationError) {
+              console.error("Batch JSON validation failed:", validationError);
+              // Fall back to original parsing for backward compatibility
+              batchParsedResponse = parsedBatchJson as OpenAIJsonResponse;
+            }
 
             // Helper function to extract summary text
             const extractSummary = (data: unknown): string => {

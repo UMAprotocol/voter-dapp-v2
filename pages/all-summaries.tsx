@@ -35,11 +35,6 @@ interface SummaryRowProps {
   summary: AllSummariesResponse["summaries"][0];
 }
 
-function formatTimestamp(unixTimestamp: string): string {
-  const date = new Date(parseInt(unixTimestamp) * 1000);
-  return date.toLocaleString();
-}
-
 function formatDuration(ms: number): string {
   if (!ms || ms < 0) return "0.0s";
   const seconds = (ms / 1000).toFixed(1);

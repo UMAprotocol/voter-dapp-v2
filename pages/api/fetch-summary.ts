@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
+import * as ss from "superstruct";
 
 export interface OutcomeData {
   summary: string;
@@ -67,29 +68,37 @@ function extractMissingUsers(
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<
-    SummaryResponse | { error: string } | { message: string }
+    SummaryResponse | { error: string; details?: string } | { message: string }
   >
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { time, identifier, title } = req.query;
+  // Define query parameter schema
+  const QueryParamsSchema = ss.object({
+    time: ss.string(),
+    identifier: ss.string(),
+    title: ss.string(),
+  });
 
-  // Validate required parameters
-  if (
-    !time ||
-    !identifier ||
-    !title ||
-    Array.isArray(time) ||
-    Array.isArray(identifier) ||
-    Array.isArray(title)
-  ) {
+  // Validate query parameters
+  try {
+    ss.assert(req.query, QueryParamsSchema);
+  } catch (error) {
     return res.status(400).json({
       error:
-        "Missing required parameters: time, identifier, and title are required",
+        "Invalid query parameters: time, identifier, and title are required and must be strings",
+      details:
+        error instanceof Error ? error.message : "Unknown validation error",
     });
   }
+
+  const { time, identifier, title } = req.query as {
+    time: string;
+    identifier: string;
+    title: string;
+  };
 
   try {
     // Initialize Redis
