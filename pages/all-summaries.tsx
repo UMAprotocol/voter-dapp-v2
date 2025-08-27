@@ -46,6 +46,26 @@ function formatDuration(ms: number): string {
   return `${seconds}s`;
 }
 
+function formatAsDMY(dateInput: string | number | Date): string {
+  let date: Date;
+  if (typeof dateInput === "string") {
+    if (/^\d+$/.test(dateInput)) {
+      date = new Date(parseInt(dateInput) * 1000);
+    } else {
+      date = new Date(dateInput);
+    }
+  } else if (typeof dateInput === "number") {
+    date = new Date(dateInput);
+  } else {
+    date = dateInput;
+  }
+
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = String(date.getFullYear());
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 function formatSummaryBullets(text: string): string[] {
   if (!text) return [];
 
@@ -175,7 +195,13 @@ function SummaryRow({ summary }: SummaryRowProps) {
             )}
           </h3>
           <div className="metadata">
-            <span className="time">{formatTimestamp(summary.time)}</span>
+            <span className="generated-time">
+              Generated: {formatAsDMY(summary.data.generatedAt)}
+            </span>
+            <span className="separator">•</span>
+            <span className="proposal-time">
+              Proposal: {formatAsDMY(summary.time)}
+            </span>
             <span className="separator">•</span>
             <span className={`comments ${hasMismatch ? "mismatch" : ""}`}>
               {commentCount} comments
@@ -523,7 +549,12 @@ export default function AllSummaries() {
       if (!isAllSummariesResponse(dataUnknown)) {
         throw new Error("Invalid response format from server");
       }
-      setSummaries(dataUnknown.summaries);
+      const sortedByGenerated = [...dataUnknown.summaries].sort((a, b) => {
+        const aTime = new Date(a.data.generatedAt).getTime();
+        const bTime = new Date(b.data.generatedAt).getTime();
+        return bTime - aTime; // Most recent first
+      });
+      setSummaries(sortedByGenerated);
       setLastFetched(dataUnknown.fetchedAt);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
