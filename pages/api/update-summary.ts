@@ -3,6 +3,11 @@ import { Redis } from "@upstash/redis";
 import OpenAI from "openai";
 import { createHash } from "crypto";
 import * as ss from "superstruct";
+import {
+  OutcomeData,
+  StructuredSummary,
+  OpenAIJsonResponse,
+} from "types/summary";
 
 // Default maximum interval between summary updates (5 minutes in milliseconds)
 const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -22,19 +27,11 @@ interface UMAApiResponse {
   thread: DiscordMessage[];
 }
 
-// Summary data structures
-interface SummaryOutcomeData {
-  summary: string;
-  sources: [string, number][];
-}
-
-interface SummaryData {
-  P1: SummaryOutcomeData;
-  P2: SummaryOutcomeData;
-  P3: SummaryOutcomeData;
-  P4: SummaryOutcomeData;
-  Uncategorized: SummaryOutcomeData;
-}
+// Summary data structures imported from types/summary.ts
+// Using OutcomeData and StructuredSummary from shared types
+type SummaryData = StructuredSummary & {
+  Uncategorized: OutcomeData; // Make Uncategorized required for internal processing
+};
 
 // Superstruct schemas for JSON validation
 const SourceSchema = ss.tuple([ss.string(), ss.number()]);
@@ -42,8 +39,8 @@ const SourceSchema = ss.tuple([ss.string(), ss.number()]);
 const OutcomeDataSchema = ss.union([
   ss.string(),
   ss.object({
-    summary: ss.optional(ss.string()),
-    sources: ss.optional(ss.array(SourceSchema)),
+    summary: ss.string(),
+    sources: ss.array(SourceSchema),
   }),
 ]);
 
@@ -64,21 +61,7 @@ const OpenAIJsonResponseSchema = ss.union([
 ]);
 
 // Interface for what OpenAI returns (JSON response)
-interface OpenAIJsonResponse {
-  summary?: {
-    P1?: { summary?: string; sources?: [string, number][] } | string;
-    P2?: { summary?: string; sources?: [string, number][] } | string;
-    P3?: { summary?: string; sources?: [string, number][] } | string;
-    P4?: { summary?: string; sources?: [string, number][] } | string;
-    Uncategorized?: { summary?: string; sources?: [string, number][] } | string;
-  };
-  P1?: { summary?: string; sources?: [string, number][] } | string;
-  P2?: { summary?: string; sources?: [string, number][] } | string;
-  P3?: { summary?: string; sources?: [string, number][] } | string;
-  P4?: { summary?: string; sources?: [string, number][] } | string;
-  Uncategorized?: { summary?: string; sources?: [string, number][] } | string;
-  sources?: Record<string, [string, number][]>;
-}
+// OpenAIJsonResponse imported from types/summary.ts
 
 // Interface for batch processing
 interface BatchResult {

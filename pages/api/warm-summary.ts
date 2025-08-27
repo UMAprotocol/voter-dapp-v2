@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ethers } from "ethers";
+import { UpdateSummaryResponse, WarmSummaryResponse } from "types/summary";
 
 // Event ABI for PriceRequestBridged
 const PRICE_REQUEST_BRIDGED_ABI = [
@@ -59,34 +60,14 @@ interface PriceRequestEvent {
   transactionHash: string;
 }
 
-// Interface for update-summary API response
-interface UpdateSummaryResponse {
-  updated: boolean;
-  cached: boolean;
-  generatedAt: string;
-  commentsHash: string;
-  promptVersion: string;
-  processingTimeMs: number;
-}
+// UpdateSummaryResponse imported from types/summary.ts
 
 // Interface for node URLs configuration
 interface NodeUrls {
   [chainId: string]: string;
 }
 
-interface WarmSummaryResponse {
-  success: boolean;
-  processed: number;
-  skipped: number;
-  errors: number;
-  totalEvents: number;
-  processingTimeMs: number;
-  details: {
-    successfulUpdates: string[];
-    skippedUpdates: string[];
-    errorUpdates: { url: string; error: string }[];
-  };
-}
+// WarmSummaryResponse imported from types/summary.ts
 
 const ORACLE_CHILD_TUNNEL_ADDRESS =
   "0xac60353a54873c446101216829a6A98cDbbC3f3D";

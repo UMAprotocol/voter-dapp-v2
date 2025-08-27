@@ -1,5 +1,5 @@
 import { buildSearchParams } from "helpers/util/buildSearchParams";
-import { SummaryResponse } from "pages/api/fetch-summary";
+import { SummaryResponse } from "types";
 import { L1Request } from "types";
 
 export async function getDiscussionSummary(

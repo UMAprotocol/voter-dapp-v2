@@ -1,7 +1,7 @@
 import { useDiscussionSummary } from "hooks/queries/votes/useDiscussionSummary";
 import { VoteT } from "types";
 import Robot from "public/assets/icons/robot.svg";
-import { OutcomeData } from "pages/api/fetch-summary";
+import { OutcomeData } from "types";
 import { PanelContentWrapper } from "components/Panel/VotePanel/VotePanel";
 import styled from "styled-components";
 import { addOpacityToHsl } from "helpers";

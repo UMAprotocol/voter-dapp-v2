@@ -1,31 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
 import * as ss from "superstruct";
+import { OutcomeData, SummaryResponse } from "types/summary";
 
-export interface OutcomeData {
-  summary: string;
-  sources: [string, number][];
-}
-
-export interface StructuredSummary {
-  P1: OutcomeData;
-  P2: OutcomeData;
-  P3: OutcomeData;
-  P4: OutcomeData;
-  Uncategorized?: OutcomeData;
-}
-
-export interface SummaryResponse {
-  summary: StructuredSummary;
-  generatedAt: string;
-  commentsHash: string;
-  promptVersion: string;
-  summaryBatchSize: number;
-  totalComments?: number;
-  uniqueUsers?: number;
-  outputSources?: number;
-  droppedRepliesCount?: number;
-}
+// Types imported from types/summary.ts
 
 // Use the same simplified cache structure as update-summary
 interface CacheData {
