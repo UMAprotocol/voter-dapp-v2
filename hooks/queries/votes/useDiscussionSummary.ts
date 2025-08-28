@@ -19,8 +19,20 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
     queryKey: [discussionSummaryKey, identifier, time, title],
     queryFn: () => getDiscussionSummary({ identifier, time, title }),
     onSuccess: (data) => {
-      // If we received valid data, stop generating/polling
-      if (data && data !== null) {
+      // If we received valid data or disabled state, stop generating/polling
+      if (data && data !== null && data !== "disabled") {
+        hasReceivedDataRef.current = true;
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+        setIsGenerating(false);
+        pollingStartTimeRef.current = null;
+        return;
+      }
+
+      // If summary is disabled, don't try to generate
+      if (data === "disabled") {
         hasReceivedDataRef.current = true;
         if (pollingIntervalRef.current) {
           clearInterval(pollingIntervalRef.current);
@@ -88,7 +100,7 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
   }, [identifier, time, title]);
 
   useEffect(() => {
-    // If we already have data, mark it and don't do anything else
+    // If we already have data or disabled state, mark it and don't do anything else
     if (query.data && query.data !== null) {
       hasReceivedDataRef.current = true;
       // Clean up any existing polling

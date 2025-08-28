@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Redis } from "@upstash/redis";
 import * as ss from "superstruct";
 import { OutcomeData, SummaryResponse } from "types/summary";
+import { isDiscordSummaryDisabled } from "helpers/disabledSummaries";
 
 // Types imported from types/summary.ts
 
@@ -84,6 +85,13 @@ export default async function handler(
 
     // Create cache key using the primary parameters only (must match update-summary)
     const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+
+    // Check if this summary is disabled
+    if (isDiscordSummaryDisabled(cacheKey)) {
+      return res.status(403).json({
+        message: "Discord summary is disabled for this market.",
+      });
+    }
 
     // Get cached data
     const cachedData = await redis.get<CacheData>(cacheKey);

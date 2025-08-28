@@ -8,6 +8,7 @@ import {
   StructuredSummary,
   OpenAIJsonResponse,
 } from "types/summary";
+import { isDiscordSummaryDisabled } from "helpers/disabledSummaries";
 
 // Default maximum interval between summary updates (5 minutes in milliseconds)
 const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -932,6 +933,13 @@ export default async function handler(
 
     // Create standard cache key using the primary parameters only (ignore ignored-user list)
     const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
+
+    // Check if this summary is disabled
+    if (isDiscordSummaryDisabled(cacheKey)) {
+      return res.status(403).json({
+        error: "Discord summary generation is disabled for this market.",
+      });
+    }
 
     // Format messages for OpenAI and compute hash (top-level comments only)
     const formattedComments = topLevelComments

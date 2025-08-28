@@ -210,6 +210,19 @@ export function DiscussionSummary({ query }: Props) {
     );
   }
 
+  // Handle disabled summary
+  if (summaryData === "disabled") {
+    return (
+      <PanelContentWrapper>
+        <div className="flex flex-col items-start justify-start">
+          <p className="text-lg text-black/70">
+            AI summary is disabled for this market.
+          </p>
+        </div>
+      </PanelContentWrapper>
+    );
+  }
+
   // Handle no summary available - go directly to generating state on first null
   // We show the generating state immediately when the cache returns null (404),
   // even before the hook flips isGenerating to true, to avoid a flash of the

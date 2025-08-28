@@ -4,7 +4,7 @@ import { L1Request } from "types";
 
 export async function getDiscussionSummary(
   l1Request: L1Request
-): Promise<SummaryResponse | null> {
+): Promise<SummaryResponse | null | "disabled"> {
   const params = buildSearchParams({
     time: l1Request.time,
     identifier: l1Request.identifier,
@@ -16,6 +16,11 @@ export async function getDiscussionSummary(
   // Handle 404 as a valid "no summary" state, not an error
   if (response.status === 404) {
     return null;
+  }
+
+  // Handle 403 as disabled summary
+  if (response.status === 403) {
+    return "disabled";
   }
 
   if (!response.ok) {
