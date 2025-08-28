@@ -9,7 +9,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { constructContract } from "./_common";
 
-async function warmAugmentedDataCache() {
+async function warmAugmentedDataCache(req: NextApiRequest) {
   const votingV1 = await constructContract(1, "Voting");
   // todo: add voting v2 when released.
   // const votingV2 = await constructContract(1, "VotingV2");
@@ -27,23 +27,22 @@ async function warmAugmentedDataCache() {
     };
   });
 
-  const rawResponse = await fetch(
-    `${process.env.DEPLOYMENT_URL}/api/augment-request`,
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ l1Requests: warmingPayload }),
-    }
-  );
+  const protocol = req.headers["x-forwarded-proto"] || "https";
+  const host = req.headers.host;
+  const rawResponse = await fetch(`${protocol}://${host}/api/augment-request`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ l1Requests: warmingPayload }),
+  });
 
   await rawResponse.json();
 }
 
-async function warmCache() {
-  await warmAugmentedDataCache();
+async function warmCache(req: NextApiRequest) {
+  await warmAugmentedDataCache(req);
 }
 
 export default async function handler(
@@ -53,7 +52,7 @@ export default async function handler(
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
-    await warmCache();
+    await warmCache(request);
 
     response.status(200).send("done");
   } catch (e) {
