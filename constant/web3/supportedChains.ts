@@ -7,6 +7,7 @@ export const supportedChains = {
   288: "Boba",
   416: "SX",
   1514: "Story",
+  80002: "Amoy",
   43114: "Avalanche",
   42161: "Arbitrum",
   11155111: "Sepolia",
@@ -23,6 +24,8 @@ export function getOracleTypeDisplayName(oracleType: string | undefined) {
       return "Optimistic Oracle v2";
     case "SkinnyOptimisticOracle":
       return "Skinny Optimistic Oracle";
+    case "ManagedOptimisticOracleV2":
+      return "Managed Optimistic Oracle v2";
     default:
       return oracleType;
   }

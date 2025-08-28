@@ -102,6 +102,8 @@ const AppConfig = ss.object({
   signingMessage: ss.string(),
   deployBlock: ss.number(),
   chainId: ss.number(),
+  isProduction: ss.boolean(),
+  isTestnet: ss.boolean(),
   walletConnectProjectId: ss.string(),
   gaTag: ss.string(),
   graphStudioApiKey: ss.string(),
@@ -147,6 +149,9 @@ export const appConfig = ss.create(
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
     deployBlock: Number(env.NEXT_PUBLIC_DEPLOY_BLOCK ?? "0"),
     chainId: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1"),
+    isProduction: Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1") === 1 ? true : false,
+    isTestnet:
+      Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1") === 11155111 ? true : false,
     walletConnectProjectId: env.NEXT_PUBLIC_WALLET_CONNECT,
     graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     contentfulEnabled:
@@ -292,6 +297,7 @@ export const chainConstantsList: ChainConstantsList = [
 export const chainConstants = chainConstantsList.find(
   ({ chainId }) => chainId === appConfig.chainId
 );
+
 if (chainConstants == undefined)
   throw new Error(
     `Unable to find chain constants for chain Id ${appConfig.chainId}`
