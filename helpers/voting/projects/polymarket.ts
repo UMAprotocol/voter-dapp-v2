@@ -8,24 +8,18 @@ const polymarketChainId = 137;
 
 // hard coded known poly addresses:
 // https://github.com/UMAprotocol/protocol/blob/master/packages/monitor-v2/src/monitor-polymarket/common.ts#L474
-const polymarketBinaryAdapterAddress =
-  "0xCB1822859cEF82Cd2Eb4E6276C7916e692995130";
-const polymarketCtfAdapterAddress =
-  "0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74";
-const polymarketCtfAdapterAddressV2 =
-  "0x2f5e3684cb1f318ec51b00edba38d79ac2c0aa9d";
-const polymarketCtfExchangeAddress =
-  "0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E";
-const polymarketCtfAdapterAddressV3 =
-  "0x157ce2d672854c848c9b79c49a8cc6cc89176a49";
 
 export const polymarketRequesters = [
-  polymarketBinaryAdapterAddress.toLowerCase(),
-  polymarketCtfAdapterAddress.toLowerCase(),
-  polymarketCtfAdapterAddressV2.toLowerCase(),
-  polymarketCtfExchangeAddress.toLowerCase(),
-  polymarketCtfAdapterAddressV3.toLowerCase(),
-];
+  "0xcb1822859cef82cd2eb4e6276c7916e692995130", // Polymarket Binary Adapter Address
+  "0x6a9d222616c90fca5754cd1333cfd9b7fb6a4f74", // Polymarket CTF Adapter Address
+  "0x2f5e3684cb1f318ec51b00edba38d79ac2c0aa9d", // Polymarket CTF Adapter Address V2
+  "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e", // Polymarket CTF Exchange Address
+  "0xb21182d0494521cf45dbbeebb5a3acaab6d22093", // Polymarket Sports Address
+  "0x157ce2d672854c848c9b79c49a8cc6cc89176a49", // Polymarket CTF Adapter Address V3
+  "0x65070be91477460d8a7aeeb94ef92fe056c2f2a7", // Polymarket UmaCtfAdapter for Managed OOv2
+].map((a) => a.toLowerCase());
+
+const polymarketIdentifiers = ["YES_OR_NO_QUERY", "MULTIPLE_VALUES"];
 
 export function isPolymarketRequester(address: string): boolean {
   return polymarketRequesters.includes(address.toLowerCase());
@@ -47,6 +41,7 @@ export function getChildChainId(
   const match = decodedAncillaryData.match(/childChainId:(\d+)/) ?? [];
   return match[1] ? Number(match[1]) : undefined;
 }
+
 export function checkIfIsPolymarket(
   decodedIdentifier: string,
   decodedAncillaryData: string
@@ -56,7 +51,7 @@ export function checkIfIsPolymarket(
   const requester = getRequester(decodedAncillaryData);
   const childChainId = getChildChainId(decodedAncillaryData);
   const isPolymarket =
-    decodedIdentifier === "YES_OR_NO_QUERY" &&
+    polymarketIdentifiers.includes(decodedIdentifier) &&
     decodedAncillaryData.includes(queryTitleToken) &&
     decodedAncillaryData.includes(resultDataToken) &&
     requester &&

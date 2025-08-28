@@ -1,7 +1,7 @@
 import removeMarkdown from "remove-markdown";
 
 import { Tabs } from "components";
-import { decodeHexString, getClaimTitle } from "helpers";
+import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
   useVoteDiscussion,
@@ -82,7 +82,7 @@ export function VotePanel({ content }: Props) {
   function makeTabs() {
     const hasResults = Boolean(results?.length);
 
-    const tabs = [
+    const tabsAllEnvironments = [
       {
         title: "Details",
         content: <Details {...content} />,
@@ -95,6 +95,9 @@ export function VotePanel({ content }: Props) {
             },
           ]
         : []),
+    ];
+
+    const productionTabs = [
       {
         title: "Discord Comments",
         content: (
@@ -107,6 +110,10 @@ export function VotePanel({ content }: Props) {
         ),
       },
     ];
+
+    const tabs = config.isProduction
+      ? tabsAllEnvironments.concat(productionTabs)
+      : tabsAllEnvironments;
 
     // add result tab if there are results
     // and make it the first tab

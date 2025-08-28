@@ -4,13 +4,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { makeUniqueKeyForVote, decodeHexString } from "helpers";
 import {
-  isSupportedChainId,
   getSubgraphConfig,
   VoteSubgraphURL,
+  constructOoUiLink,
 } from "./_common";
 import { encodeHexString } from "helpers/web3/decodeHexString";
 
-const debug = !!process.env.DEBUG;
+const debug = Boolean(process.env.DEBUG === "true");
 
 const RequestBody = ss.object({
   ancillaryData: ss.string(),
@@ -64,34 +64,6 @@ function extractOriginalAncillaryData(ancillaryData: string): string {
 function cleanSkinnyAncillary(ancillaryData: string): string {
   const [original] = ancillaryData.split("ooRequester");
   return original;
-}
-function constructOoUiLink(
-  txHash: string | undefined,
-  chainId: string | number | undefined,
-  oracleType: string | undefined,
-  eventIndex: string | undefined
-) {
-  if (!txHash || !chainId || !oracleType) return;
-  if (!isSupportedChainId(chainId)) return;
-  const subDomain = Number(chainId) === 5 ? "testnet." : "";
-  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
-    oracleType
-  )}&eventIndex=${eventIndex ?? ""}`;
-}
-
-function castOracleNameForOOUi(oracleType: string): string {
-  switch (oracleType) {
-    case "OptimisticOracle":
-      return "Optimistic";
-    case "OptimisticOracleV2":
-      return "OptimisticV2";
-    case "SkinnyOptimisticOracle":
-      return "Skinny";
-    case "OptimisticOracleV3":
-      return "OptimisticV3";
-    default:
-      throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
-  }
 }
 
 async function voteQuery({
@@ -174,7 +146,7 @@ async function ooSkinnyQuery({
       originatingOracleType: "SkinnyOptimisticOracle",
     };
   } catch (error) {
-    if (debug) console.error("oo skinny error:", error);
+    if (debug) console.warn("oo skinny error:", error);
     throw error;
   }
 }
@@ -262,7 +234,7 @@ async function oov3Query({
       },
     };
   } catch (error) {
-    if (debug) console.error("oov3 error:", error);
+    if (debug) console.warn("oov3 error:", error);
     throw error;
   }
 }
@@ -347,7 +319,95 @@ async function oov2Query({
       originatingOracleType: "OptimisticOracleV2",
     };
   } catch (error) {
-    if (debug) console.error("oov2 error:", error);
+    if (debug) console.warn("oov2 error:", error);
+    throw error;
+  }
+}
+async function ooManagedQuery({
+  time,
+  identifier,
+  chainId,
+  ancillaryData,
+}: OracleQueryParams): Promise<ResponseBody> {
+  const subgraph = getSubgraphConfig("Managed Optimistic Oracle V2", chainId);
+  const cleanAncillaryData = encodeHexString(
+    extractOriginalAncillaryData(decodeHexString(ancillaryData))
+  );
+  const query = gql`
+    query oov2Query($ancillaryData: String!, $identifier: String!) {
+      optimisticPriceRequests(
+        where: { ancillaryData: $ancillaryData, identifier: $identifier }
+      ) {
+        id
+        requestHash
+        requestLogIndex
+        eventBased
+        proposalExpirationTimestamp
+        customLiveness
+        time
+        proposalTimestamp
+        proposedPrice
+      }
+    }
+  `;
+  type GqlRequest = {
+    id: string;
+    requestHash: string;
+    requestLogIndex: string;
+    proposalExpirationTimestamp: number;
+    customLiveness: number;
+    time: number;
+    eventBased: boolean;
+    proposalTimestamp: number;
+    proposedPrice: string;
+  };
+  type GqlResponse = {
+    optimisticPriceRequests: GqlRequest[];
+  };
+
+  try {
+    const data: GqlResponse = await request(subgraph.url, query, {
+      ancillaryData: cleanAncillaryData,
+      identifier,
+    });
+    assert(
+      data.optimisticPriceRequests.length > 0,
+      "Managed oov2 request not found"
+    );
+    let optimisticPriceRequest: GqlRequest | undefined;
+    if (data.optimisticPriceRequests.length > 1) {
+      optimisticPriceRequest = data.optimisticPriceRequests.find((req) => {
+        if (req.eventBased) {
+          return Number(req.proposalTimestamp) === time;
+        } else {
+          return Number(req.time) === time;
+        }
+      });
+    } else {
+      optimisticPriceRequest = data.optimisticPriceRequests[0];
+    }
+    assert(optimisticPriceRequest, "Managed oov2 request not found");
+    const requestHash = optimisticPriceRequest.requestHash;
+    const requestLogIndex = optimisticPriceRequest.requestLogIndex;
+    const uniqueKey = optimisticPriceRequest.id;
+
+    return {
+      time,
+      uniqueKey,
+      identifier,
+      ooRequestUrl: constructOoUiLink(
+        requestHash,
+        chainId,
+        "ManagedOptimisticOracleV2",
+        requestLogIndex
+      ),
+      proposedPrice: optimisticPriceRequest.proposedPrice,
+      originatingChainTxHash: requestHash,
+      originatingChainId: chainId,
+      originatingOracleType: "ManagedOptimisticOracleV2",
+    };
+  } catch (error) {
+    if (debug) console.warn("oov2 error:", error);
     throw error;
   }
 }
@@ -408,7 +468,7 @@ async function oov1Query({
       originatingOracleType: "OptimisticOracle",
     };
   } catch (error) {
-    if (debug) console.error("oov1 error:", error);
+    if (debug) console.warn("oov1 error:", error);
     throw error;
   }
 }
@@ -419,6 +479,7 @@ async function tryAllTypes(request: RequestBody): Promise<ResponseBody> {
     oov1Query({ ...request, chainId }),
     oov2Query({ ...request, chainId }),
     oov3Query({ ...request, chainId }),
+    ooManagedQuery({ ...request, chainId }),
     ooSkinnyQuery({ ...request, chainId }),
   ]);
   const successResult: undefined | PromiseFulfilledResult<ResponseBody> =
@@ -428,7 +489,11 @@ async function tryAllTypes(request: RequestBody): Promise<ResponseBody> {
     );
 
   if (!successResult) {
-    throw new Error("All requests failed");
+    throw new Error("All requests failed", {
+      cause: {
+        request,
+      },
+    });
   }
 
   return successResult?.value;

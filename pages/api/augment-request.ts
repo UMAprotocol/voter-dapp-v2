@@ -7,6 +7,7 @@ import { SupportedChainIds } from "types";
 import {
   ContractName,
   constructContract,
+  constructOoUiLink,
   getFromBlock,
   getNodeUrls,
   isSupportedChainId,
@@ -14,19 +15,23 @@ import {
 
 const debug = !!process.env.DEBUG;
 
-type OracleType = Extract<
-  ContractName,
-  | "OptimisticOracle"
-  | "OptimisticOracleV2"
-  | "OptimisticOracleV3"
-  | "SkinnyOptimisticOracle"
->;
+type OracleType =
+  | Extract<
+      ContractName,
+      | "OptimisticOracle"
+      | "OptimisticOracleV2"
+      | "OptimisticOracleV3"
+      | "SkinnyOptimisticOracle"
+    >
+  | "ManagedOptimisticOracleV2";
+
 type VotingType = Extract<ContractName, "Voting" | "VotingV2">;
 
 const EnabledVoting: VotingType[] = ["Voting", "VotingV2"];
 const EnabledOracles: OracleType[] = [
   "OptimisticOracle",
   "OptimisticOracleV2",
+  "ManagedOptimisticOracleV2",
   "OptimisticOracleV3",
   "SkinnyOptimisticOracle",
 ];
@@ -67,34 +72,6 @@ type CommonEventData = ss.Infer<typeof CommonEventData>;
 
 function getOoChainIds() {
   return Object.keys(getNodeUrls()).map(Number) as SupportedChainIds[];
-}
-
-function constructOoUiLink(
-  txHash: string | undefined,
-  chainId: string | number | undefined,
-  oracleType: string | undefined
-) {
-  if (!txHash || !chainId || !oracleType) return;
-  if (!isSupportedChainId(chainId)) return;
-  const subDomain = Number(chainId) === 5 ? "testnet." : "";
-  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
-    oracleType
-  )}&eventIndex=`;
-}
-
-function castOracleNameForOOUi(oracleType: string): string {
-  switch (oracleType) {
-    case "OptimisticOracle":
-      return "Optimistic";
-    case "OptimisticOracleV2":
-      return "OptimisticV2";
-    case "SkinnyOptimisticOracle":
-      return "Skinny";
-    case "OptimisticOracleV3":
-      return "OptimisticV3";
-    default:
-      throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
-  }
 }
 
 type LookupTable<E> = Record<string, Record<number, E>>;
