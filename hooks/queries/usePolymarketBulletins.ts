@@ -5,7 +5,11 @@ export function usePolymarketBulletins(ancillaryData?: string) {
   try {
     return useQuery({
       queryKey: ["polymarketBulletins", ancillaryData],
-      queryFn: () => getPolymarketBulletins(ancillaryData!),
+      queryFn: () => {
+        if (ancillaryData) {
+          return getPolymarketBulletins(ancillaryData);
+        }
+      },
       enabled: !!ancillaryData,
       refetchInterval: 30_000,
     });

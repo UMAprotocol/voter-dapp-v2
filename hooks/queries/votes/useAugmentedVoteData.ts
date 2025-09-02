@@ -2,22 +2,23 @@ import assert from "assert";
 import { useQuery } from "@tanstack/react-query";
 import { augmentedVoteDataKey } from "constant";
 import { getAugmentedVoteData } from "web3";
-import { MakeQueryOptions } from "helpers";
+import { UseQueryOptions } from "@tanstack/react-query";
+import { AugmentedVoteDataResponseT } from "types";
 
 export function useAugmentedVoteData(
   params: Partial<{
     ancillaryData: string;
     time: number;
     identifier: string;
-    queryOptions?: MakeQueryOptions<typeof getAugmentedVoteData>;
+    queryOptions?: UseQueryOptions<AugmentedVoteDataResponseT, Error>;
   }>
 ) {
-  return useQuery({
+  return useQuery<AugmentedVoteDataResponseT, Error>({
     queryKey: [
       augmentedVoteDataKey,
-      params.identifier ?? "",
-      (params.time ?? 0).toString(),
-      params.ancillaryData ?? "",
+      params.identifier,
+      params.time,
+      params.ancillaryData,
     ],
     queryFn: () => {
       assert(params.identifier, "identifier missing");
@@ -29,7 +30,7 @@ export function useAugmentedVoteData(
         ancillaryData: params.ancillaryData,
       });
     },
-    enabled: !!params.identifier && !!params.time && !!params.identifier,
+    enabled: !!params.identifier && !!params.time && !!params.ancillaryData,
     ...params?.queryOptions,
   });
 }
