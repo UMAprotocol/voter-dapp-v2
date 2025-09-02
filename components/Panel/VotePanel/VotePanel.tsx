@@ -91,7 +91,9 @@ export function VotePanel({ content }: Props) {
         ? [
             {
               title: "Discussion Summary",
-              content: <DiscussionSummary query={content} />,
+              content: (
+                <DiscussionSummary query={content} bulletins={bulletins.data} />
+              ),
             },
           ]
         : []),

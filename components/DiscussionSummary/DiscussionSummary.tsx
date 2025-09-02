@@ -11,9 +11,12 @@ import {
   PanelSectionSubTitle,
 } from "components/Panel/styles";
 import { Text, Strong, AStyled } from "components/Panel/shared-styles";
+import { Bulletin } from "web3/queries/getPolymarketBulletins";
+import { BulletinList } from "components/PolymarketBulletin";
 
 type Props = {
   query: VoteT;
+  bulletins?: Bulletin[];
 };
 
 // Helper function to get decoded option label for a p-value
@@ -164,7 +167,7 @@ function processSummaryText(text: string) {
   });
 }
 
-export function DiscussionSummary({ query }: Props) {
+export function DiscussionSummary({ query, bulletins }: Props) {
   const {
     data: summaryData,
     isLoading,
@@ -253,10 +256,21 @@ export function DiscussionSummary({ query }: Props) {
     <PanelContentWrapper>
       <Disclaimer>
         <Text>
-          <Strong>Warning:</Strong> This is a convenience feature that
-          summarizes Discord discussions using an LLM. This summary does not
-          represent the opinion of UMA. Always conduct your own research before
-          voting.
+          <Strong>Warning:</Strong> This feature provides summaries of Discord
+          comments using an LLM, without fact-checking. The summary does not
+          necessarily represent the opinions of UMA voters, Risk Labs, or any
+          other entity. Be aware that some commenters may attempt to influence
+          vote outcomes for their own profit. Always verify any and all claims
+          before relying on them to inform your own votes. View our{" "}
+          <a
+            href="https://docs.uma.xyz/using-uma/voting-walkthrough/discord-summaries"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            docs
+          </a>{" "}
+          for more information.
         </Text>
         {summaryData?.generatedAt && (
           <TextMuted>
@@ -264,6 +278,9 @@ export function DiscussionSummary({ query }: Props) {
           </TextMuted>
         )}
       </Disclaimer>
+      {bulletins && bulletins.length > 0 && (
+        <BulletinList bulletins={bulletins} />
+      )}
       <PanelSectionTitle>
         <IconWrapper>
           <SummaryIcon />
