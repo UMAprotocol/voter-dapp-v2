@@ -1,5 +1,5 @@
 import { LoadingSpinner } from "components";
-import { usePastVoteDetails, useVotesContext } from "hooks";
+import { usePastVoteDetails } from "hooks";
 import { useMemo } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
@@ -10,9 +10,7 @@ interface Props {
 }
 
 export function VotePanelWithLazyLoad({ content }: Props) {
-  const { isPast } = useVotesContext();
-  const needsDetailedData =
-    isPast && content.participation?.totalTokensVotedWith === 0;
+  const needsDetailedData = content.participation?.totalTokensVotedWith === 0;
 
   const {
     data: detailedVote,
