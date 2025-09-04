@@ -124,8 +124,6 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
-  response.setHeader("Cache-Control", "max-age=0, s-maxage=180");
-
   try {
     // Validate required query parameters
     const time = Number(request.query.time);
@@ -163,7 +161,10 @@ export default async function handler(
     const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
       body.l1Request
     );
-    response.status(200).send(voteDiscussion);
+    response
+      .setHeader("Cache-Control", "max-age=0, s-maxage=180")
+      .status(200)
+      .send(voteDiscussion);
   } catch (e) {
     console.error(e);
     response.status(500).send({

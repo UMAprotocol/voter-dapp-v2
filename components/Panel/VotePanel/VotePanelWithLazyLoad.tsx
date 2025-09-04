@@ -20,18 +20,7 @@ export function VotePanelWithLazyLoad({ content }: Props) {
     needsDetailedData && content.resolvedPriceRequestIndex
       ? Number(content.resolvedPriceRequestIndex)
       : undefined
-  ) as {
-    data:
-      | {
-          participation?: typeof content.participation;
-          results?: typeof content.results;
-          revealedVoteByAddress?: typeof content.revealedVoteByAddress;
-        }
-      | null
-      | undefined;
-    isLoading: boolean;
-    isError: boolean;
-  };
+  );
 
   const voteToShow = useMemo(() => {
     if (needsDetailedData && detailedVote) {

@@ -253,9 +253,7 @@ export async function getPastVotesV2() {
 }
 
 // Query for individual vote details
-export async function getPastVoteDetails(
-  resolvedPriceRequestIndex: number
-): Promise<any | null> {
+export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   const endpoint = graphEndpoint;
   if (!endpoint) throw new Error("V2 subgraph is disabled");
 
