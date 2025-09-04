@@ -8,10 +8,18 @@ export function isDiscordSummaryDisabled(cacheKey: string): boolean {
   // Extract the key part after "discord-summary:"
   const keyPart = cacheKey.replace("discord-summary:", "");
 
-  // Split the disabled list by comma and check if the key is in the list
-  const disabledKeys = disabledList.split(",").map((key) => key.trim());
+  // Split the disabled list by semicolon and check if the key is in the list
+  const disabledKeys = disabledList.split(";").map((key) => key.trim().toLowerCase());
 
-  return disabledKeys.includes(keyPart);
+  // Debug logging
+  console.log("Checking if disabled:", {
+    cacheKey,
+    keyPart: keyPart.toLowerCase(),
+    disabledKeys,
+    isDisabled: disabledKeys.includes(keyPart.toLowerCase()),
+  });
+
+  return disabledKeys.includes(keyPart.toLowerCase());
 }
 
 export function formatDisabledSummaryKey(
