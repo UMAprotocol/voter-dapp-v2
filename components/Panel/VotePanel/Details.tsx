@@ -1,9 +1,5 @@
 import { Button, PanelErrorBanner, BulletinList } from "components";
-import {
-  getOracleTypeDisplayName,
-  mobileAndUnder,
-  supportedChains,
-} from "constant";
+import { getOracleTypeDisplayName, supportedChains } from "constant";
 import {
   checkIfIsPolymarket,
   decodeHexString,
@@ -41,23 +37,25 @@ import { PanelSectionSubTitle, PanelSectionTitle } from "../styles";
 import { ChainIcon } from "./ChainIcon";
 import { OoTypeIcon } from "./OoTypeIcon";
 import { usePolymarketLink } from "hooks/queries/votes";
+import { PanelContentWrapper } from "./VotePanel";
 
-export function Details({
-  decodedIdentifier,
-  description,
-  ancillaryData,
-  decodedAncillaryData,
-  options,
-  time,
-  timeAsDate,
-  discordLink,
-  decodedAdminTransactions,
-  umipOrUppLink,
-  assertionChildChainId,
-  assertionAsserter,
-  assertionId,
-  ancillaryDataL2,
-}: VoteT) {
+export function Details(query: VoteT) {
+  const {
+    decodedIdentifier,
+    description,
+    ancillaryData,
+    decodedAncillaryData,
+    options,
+    time,
+    timeAsDate,
+    discordLink,
+    decodedAdminTransactions,
+    umipOrUppLink,
+    assertionChildChainId,
+    assertionAsserter,
+    assertionId,
+    ancillaryDataL2,
+  } = query;
   const [showDecodedAdminTransactions, setShowDecodedAdminTransactions] =
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
@@ -157,7 +155,7 @@ export function Details({
     shouldFetch
   );
   return (
-    <Wrapper>
+    <PanelContentWrapper>
       <SectionWrapper>
         <RequestInfoIcons>
           <ChainIcon
@@ -389,7 +387,7 @@ export function Details({
         />
         <PanelErrorBanner errorOrigin="vote" />
       </DiscordLinkWrapper>
-    </Wrapper>
+    </PanelContentWrapper>
   );
 }
 
@@ -406,16 +404,6 @@ function DecodedTextAsMarkdown({ children }: { children: string }) {
     </Text>
   );
 }
-
-const Wrapper = styled.div`
-  margin-top: 20px;
-  padding-inline: 30px;
-  width: calc(var(--panel-width) - 15px);
-
-  @media ${mobileAndUnder} {
-    padding-inline: 10px;
-  }
-`;
 
 const SectionWrapper = styled.div`
   padding-bottom: 20px;

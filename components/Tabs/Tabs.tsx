@@ -10,12 +10,20 @@ type Tab = {
 export function Tabs({
   tabs,
   defaultValue,
+  value,
+  onValueChange,
 }: {
   tabs: Tab[];
   defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
 }) {
   return (
-    <TabsRoot defaultValue={defaultValue}>
+    <TabsRoot
+      defaultValue={defaultValue}
+      value={value}
+      onValueChange={onValueChange}
+    >
       <TabsList>
         {tabs.map(({ title }) => (
           <TabsTrigger key={title} value={title}>

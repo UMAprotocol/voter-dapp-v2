@@ -2,6 +2,12 @@
   "functions": {
     "pages/api/augment-request.ts": {
       "maxDuration": 300
+    },
+    "pages/api/warm-summary.ts": {
+      "maxDuration": 300
+    },
+    "pages/api/update-summary.ts": {
+      "maxDuration": 300
     }
   },
   "headers": [
@@ -29,6 +35,12 @@
           "value": "geolocation=(self), microphone=()"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/warm-summary",
+      "schedule": "*/10 * * * *"
     }
   ]
 }
