@@ -14,7 +14,7 @@ import styled from "styled-components";
 import { LoadingSpinnerWrapper } from "./styles";
 
 export function PastVotes() {
-  const { pastVoteList } = useVotesContext();
+  const { pastVoteList, pastVotesIsLoading } = useVotesContext();
   const { phase } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
@@ -28,14 +28,17 @@ export function PastVotes() {
     moreDetailsAction: () => openPanel("vote", vote),
   }));
 
+  const isLoading = pastVotesIsLoading || isUndefined(pastVoteList);
+
   return (
     <Layout title="UMA | Past Votes">
       <Banner>Past Votes</Banner>
       <PageOuterWrapper>
         <PageInnerWrapper>
-          {isUndefined(pastVoteList) ? (
+          {isLoading ? (
             <LoadingSpinnerWrapper>
               <LoadingSpinner size={40} variant="black" />
+              <LoadingText>Loading past votes...</LoadingText>
             </LoadingSpinnerWrapper>
           ) : (
             <>
@@ -61,4 +64,11 @@ const VotesTableWrapper = styled.div`
 
 const PaginationWrapper = styled.div`
   margin-block: 30px;
+`;
+
+const LoadingText = styled.div`
+  margin-top: 20px;
+  font: var(--text-md);
+  color: var(--grey-800);
+  text-align: center;
 `;

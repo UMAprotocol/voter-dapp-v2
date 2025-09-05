@@ -12,7 +12,7 @@ import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";
 import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
-import { VotePanel } from "./VotePanel";
+import { VotePanelWithLazyLoad } from "./VotePanel/VotePanelWithLazyLoad";
 
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
@@ -38,7 +38,9 @@ export function Panel() {
     const panelTypeToPanelComponent = {
       // vote panel is meaningless without vote as content
       // the component does not accept undefined content
-      vote: panelContent ? <VotePanel content={panelContent} /> : null,
+      vote: panelContent ? (
+        <VotePanelWithLazyLoad content={panelContent} />
+      ) : null,
       menu: <MenuPanel />,
       claim: <ClaimPanel />,
       claimV1: <ClaimV1Panel />,
