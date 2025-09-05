@@ -1,4 +1,5 @@
 import removeMarkdown from "remove-markdown";
+import { useState } from "react";
 
 import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
@@ -41,6 +42,8 @@ export function VotePanel({ content }: Props) {
     assertionChildChainId,
     ancillaryDataL2,
   } = content;
+
+  const [selectedTab, setSelectedTab] = useState<string | undefined>();
 
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
@@ -134,8 +137,21 @@ export function VotePanel({ content }: Props) {
       });
     }
 
+    // Check if selected tab exists in current tabs
+    const tabTitles = tabs.map((tab) => tab.title);
+    const defaultTab = hasResults ? "Result" : "Details";
+
+    // If selectedTab doesn't exist in current tabs, use default
+    const currentTab =
+      selectedTab && tabTitles.includes(selectedTab) ? selectedTab : defaultTab;
+
     return (
-      <Tabs tabs={tabs} defaultValue={hasResults ? "Result" : "Details"} />
+      <Tabs
+        tabs={tabs}
+        defaultValue={defaultTab}
+        value={currentTab}
+        onValueChange={setSelectedTab}
+      />
     );
   }
 
