@@ -9,7 +9,9 @@ export function isDiscordSummaryDisabled(cacheKey: string): boolean {
   const keyPart = cacheKey.replace("discord-summary:", "");
 
   // Split the disabled list by semicolon and check if the key is in the list
-  const disabledKeys = disabledList.split(";").map((key) => key.trim().toLowerCase());
+  const disabledKeys = disabledList
+    .split(";")
+    .map((key) => key.trim().toLowerCase());
 
   // Debug logging
   console.log("Checking if disabled:", {
