@@ -430,7 +430,6 @@ function DecodedTextAsMarkdown({ children }: { children: string }) {
           a: (props) => <A {...props} target="_blank" />,
           p: (props) => <p style={{ marginBottom: "1em" }}>{props.children}</p>,
         }}
-        breaks={true}
       >
         {processedText}
       </ReactMarkdown>
