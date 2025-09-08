@@ -418,9 +418,40 @@ function DecodedTextAsMarkdown({ children }: { children: string }) {
   const processedText = hasMarkdownLinks
     ? children
     : (() => {
-        // Convert plain text URLs to markdown links, but avoid URLs that are already in markdown
-        const urlRegex = /(?<!\()https?:\/\/[^\s\)]+(?!\))/g;
-        return children.replace(urlRegex, "[$&]($&)");
+        // Convert plain text URLs to markdown links
+        // Match URLs but handle punctuation at the end properly
+        const urlRegex = /https?:\/\/[^\s]+/g;
+        return children.replace(urlRegex, (fullMatch) => {
+          // Check if this URL is already part of a markdown link
+          const matchIndex = children.indexOf(fullMatch);
+          const beforeUrl = children.substring(0, matchIndex);
+          const afterUrl = children.substring(matchIndex + fullMatch.length);
+
+          // If URL is preceded by ]( and followed by ), it's already markdown
+          if (beforeUrl.endsWith("](") && afterUrl.startsWith(")")) {
+            return fullMatch; // Don't modify
+          }
+
+          // Remove trailing punctuation that's likely not part of the URL
+          let cleanUrl = fullMatch;
+          const trailingPunctuation = /[.,;:!?)\]]+$/;
+          const trailingMatch = cleanUrl.match(trailingPunctuation);
+
+          if (trailingMatch) {
+            // Special case: if URL ends with ) but doesn't have matching (, keep the )
+            const hasOpenParen = cleanUrl.includes("(");
+            if (trailingMatch[0] === ")" && hasOpenParen) {
+              // Keep the ) as it's part of the URL
+            } else {
+              // Remove trailing punctuation
+              cleanUrl = cleanUrl.replace(trailingPunctuation, "");
+            }
+          }
+
+          return `[${cleanUrl}](${cleanUrl})${fullMatch.substring(
+            cleanUrl.length
+          )}`;
+        });
       })();
 
   return (
