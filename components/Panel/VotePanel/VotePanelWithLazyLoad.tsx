@@ -10,7 +10,9 @@ interface Props {
 }
 
 export function VotePanelWithLazyLoad({ content }: Props) {
-  const needsDetailedData = content.participation?.totalTokensVotedWith === 0 && content.resolvedPriceRequestIndex !== undefined;
+  const needsDetailedData =
+    content.participation?.totalTokensVotedWith === 0 &&
+    content.resolvedPriceRequestIndex !== undefined;
 
   const {
     data: detailedVote,
