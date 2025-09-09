@@ -1,7 +1,8 @@
 import removeMarkdown from "remove-markdown";
+import { useState } from "react";
 
 import { Tabs } from "components";
-import { decodeHexString, getClaimTitle } from "helpers";
+import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
   useVoteDiscussion,
@@ -16,7 +17,10 @@ import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { DiscussionSummary } from "components";
 import { usePolymarketBulletins } from "hooks";
+import { mobileAndUnder } from "constant";
+import styled from "styled-components";
 
 interface Props {
   content: VoteT;
@@ -38,6 +42,8 @@ export function VotePanel({ content }: Props) {
     assertionChildChainId,
     ancillaryDataL2,
   } = content;
+
+  const [selectedTab, setSelectedTab] = useState<string | undefined>();
 
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
@@ -79,11 +85,24 @@ export function VotePanel({ content }: Props) {
   function makeTabs() {
     const hasResults = Boolean(results?.length);
 
-    const tabs = [
+    const tabsAllEnvironments = [
       {
         title: "Details",
         content: <Details {...content} />,
       },
+      ...(content.origin === "Polymarket"
+        ? [
+            {
+              title: "Discussion Summary",
+              content: (
+                <DiscussionSummary query={content} bulletins={bulletins.data} />
+              ),
+            },
+          ]
+        : []),
+    ];
+
+    const productionTabs = [
       {
         title: "Discord Comments",
         content: (
@@ -96,6 +115,10 @@ export function VotePanel({ content }: Props) {
         ),
       },
     ];
+
+    const tabs = config.isProduction
+      ? tabsAllEnvironments.concat(productionTabs)
+      : tabsAllEnvironments;
 
     // add result tab if there are results
     // and make it the first tab
@@ -114,10 +137,20 @@ export function VotePanel({ content }: Props) {
       });
     }
 
+    // Check if selected tab exists in current tabs
+    const tabTitles = tabs.map((tab) => tab.title);
+    const defaultTab = hasResults ? "Result" : "Details";
+
+    // If selectedTab doesn't exist in current tabs, use default
+    const currentTab =
+      selectedTab && tabTitles.includes(selectedTab) ? selectedTab : defaultTab;
+
     return (
       <Tabs
         tabs={tabs}
-        defaultValue={hasResults ? "Result" : "Discord Comments"}
+        defaultValue={defaultTab}
+        value={currentTab}
+        onValueChange={setSelectedTab}
       />
     );
   }
@@ -135,3 +168,13 @@ export function VotePanel({ content }: Props) {
     </PanelWrapper>
   );
 }
+
+export const PanelContentWrapper = styled.div`
+  margin-top: 20px;
+  padding-inline: 30px;
+  width: calc(var(--panel-width) - 15px);
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
+`;

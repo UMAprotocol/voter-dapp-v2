@@ -287,12 +287,20 @@ export type RawDiscordThreadT = RawDiscordMessageT[];
 
 export type ThreadIdMap = Record<string, string>;
 
-export const DiscordMessageT = ss.object({
+export const DiscordMessageT: ss.Describe<{
+  message: string;
+  sender: string;
+  senderPicture?: string;
+  time: number;
+  id: string;
+  replies?: DiscordMessageT[];
+}> = ss.object({
   message: ss.string(),
   sender: ss.string(),
   senderPicture: ss.optional(ss.string()),
   time: ss.number(),
   id: ss.string(),
+  replies: ss.optional(ss.array(ss.lazy(() => DiscordMessageT))),
 });
 export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 

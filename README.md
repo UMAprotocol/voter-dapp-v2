@@ -30,3 +30,14 @@ To generate the JSON file, run the following command in the root directory of th
 `yarn update-approved-identifiers`
 
 This will download the raw file of the approved identifiers from the UMA docs (on GitHub), and then re-generate a JSON file.
+
+## Disabling Discord Summaries
+To disable specific Discord summaries, set `DISABLED_DISCORD_SUMMARY` with semicolon-separated entries in the format `time:identifier:title`.
+
+**Important**: If titles contain dollar signs (`$`), escape them with backslashes or use single quotes to prevent shell variable expansion.
+
+Examples:
+```bash
+# Using escaped dollar signs (recommended)
+DISABLED_DISCORD_SUMMARY="1756831090:0x5945535F4F525F4E4F5F51554552590000000000000000000000000000000000:WLFI >\$35B market cap (FDV) one day after launch?;1756823752:0x5945535F4F525F4E4F5F51554552590000000000000000000000000000000000:MicroStrategy purchases >4000 BTC September 2-8?"
+```

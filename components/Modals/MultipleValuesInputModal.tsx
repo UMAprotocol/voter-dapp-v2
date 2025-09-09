@@ -10,11 +10,16 @@ import React from "react";
 export function MultipleValuesInputModal(props: MultipleInputProps) {
   const items = Object.entries(props?.inputValues);
 
+  function handleClose() {
+    props.resetToCommittedVote();
+    props.closeInputModal();
+  }
+
   return (
     <Modal
       className={cn(items?.length > 2 ? "max-w-[540px]" : "max-w-[560px]")}
       isOpen={props.inputModalOpen}
-      onDismiss={props.closeInputModal}
+      onDismiss={handleClose}
     >
       <div className="mb-4 flex items-center gap-2">
         <PencilIcon className="h-5 w-5" />
@@ -46,6 +51,9 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
                   onClear={() => props.onInputChange({ label, value: "" })}
                   maxDecimals={0}
                   type="number"
+                  styles={{
+                    minWidth: "unset",
+                  }}
                 />
               </label>
               {i === 0 && items?.length === 2 && (

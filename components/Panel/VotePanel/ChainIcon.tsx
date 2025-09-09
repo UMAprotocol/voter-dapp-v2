@@ -34,6 +34,7 @@ export function ChainIcon({
     11155111: EthereumIcon,
     8453: Base,
     81457: Blast,
+    80002: PolygonIcon,
   };
 
   const chainName = supportedChains[chainId];

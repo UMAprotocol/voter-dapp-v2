@@ -7,6 +7,12 @@ import NextImage from "next/image";
 import Discord from "public/assets/icons/discord.svg";
 import ReactMarkdown from "react-markdown";
 import styled, { css } from "styled-components";
+import {
+  Text,
+  Strong,
+  AStyled,
+  handleWordBreak,
+} from "components/Panel/shared-styles";
 import { VoteDiscussionT } from "types";
 import { PanelSectionTitle } from "../styles";
 import { Bulletin } from "web3/queries/getPolymarketBulletins";
@@ -16,6 +22,77 @@ interface Props {
   bulletins?: Bulletin[];
   loading: boolean;
   error?: boolean;
+}
+
+interface MessageItemProps {
+  message: string;
+  sender: string;
+  senderPicture?: string;
+  time: number;
+  id: string;
+  replies?: MessageItemProps[];
+  isReply?: boolean;
+}
+
+function MessageItem({
+  message,
+  sender,
+  senderPicture,
+  time,
+  id: _id,
+  replies,
+  isReply = false,
+}: MessageItemProps) {
+  const hasReplies = replies && replies.length > 0;
+
+  return (
+    <MessageItemWrapper isReply={isReply} hasReplies={hasReplies}>
+      {isReply && <ThreadLine />}
+      <MessageWrapper>
+        <ImageWrapper>
+          {senderPicture ? (
+            <Image
+              src={senderPicture}
+              alt="Discord user avatar"
+              width={20}
+              height={20}
+            />
+          ) : null}
+        </ImageWrapper>
+        <MessageContentWrapper>
+          <SenderWrapper>
+            <Sender>
+              <Strong>{sender}</Strong>
+            </Sender>{" "}
+            <Time>
+              {format(new Date(Number(time) * 1000), "Pp", {
+                locale: enCA,
+              })}
+            </Time>
+          </SenderWrapper>
+          <MessageTextWrapper>
+            <ReactMarkdown
+              components={{
+                a: (props) => <A {...props} target="_blank" />,
+                p: (props) => <MessageText {...props} />,
+                pre: (props) => <Pre {...props} />,
+                code: (props) => <Code {...props} />,
+              }}
+            >
+              {message}
+            </ReactMarkdown>
+          </MessageTextWrapper>
+        </MessageContentWrapper>
+      </MessageWrapper>
+      {hasReplies && (
+        <RepliesWrapper>
+          {replies.map((reply) => (
+            <MessageItem key={reply.id} {...reply} isReply={true} />
+          ))}
+        </RepliesWrapper>
+      )}
+    </MessageItemWrapper>
+  );
 }
 
 export function Discussion({ discussion, loading, error, bulletins }: Props) {
@@ -77,48 +154,15 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
           )}
           {hasThread ? (
             <>
-              {discussion?.thread.map(
-                ({ message, sender, senderPicture, time, id }) => (
-                  <SectionWrapper key={id}>
-                    <MessageWrapper>
-                      <ImageWrapper>
-                        {senderPicture ? (
-                          <Image
-                            src={senderPicture}
-                            alt="Discord user avatar"
-                            width={20}
-                            height={20}
-                          />
-                        ) : null}
-                      </ImageWrapper>
-                      <MessageContentWrapper>
-                        <SenderWrapper>
-                          <Sender>
-                            <Strong>{sender}</Strong>
-                          </Sender>{" "}
-                          <Time>
-                            {format(new Date(Number(time) * 1000), "Pp", {
-                              locale: enCA,
-                            })}
-                          </Time>
-                        </SenderWrapper>
-                        <MessageTextWrapper>
-                          <ReactMarkdown
-                            components={{
-                              a: (props) => <A {...props} target="_blank" />,
-                              p: (props) => <MessageText {...props} />,
-                              pre: (props) => <Pre {...props} />,
-                              code: (props) => <Code {...props} />,
-                            }}
-                          >
-                            {message}
-                          </ReactMarkdown>
-                        </MessageTextWrapper>
-                      </MessageContentWrapper>
-                    </MessageWrapper>
-                  </SectionWrapper>
-                )
-              )}
+              {discussion?.thread.map((messageData, index, array) => (
+                <SectionWrapper
+                  key={messageData.id}
+                  hasReplies={Boolean(messageData.replies?.length)}
+                  isLast={index === array.length - 1}
+                >
+                  <MessageItem {...messageData} />
+                </SectionWrapper>
+              ))}
             </>
           ) : (
             <Text>No discussion found for this vote.</Text>
@@ -147,10 +191,16 @@ const Wrapper = styled.div`
   }
 `;
 
-const SectionWrapper = styled.div`
+const SectionWrapper = styled.div<{ hasReplies?: boolean; isLast?: boolean }>`
   padding-bottom: 20px;
   margin-bottom: 20px;
-  border-bottom: 1px solid var(--black-opacity-25);
+  ${({ hasReplies, isLast }) => {
+    // Only add border if message has no replies AND it's not the last message
+    if (!hasReplies && !isLast) {
+      return `border-bottom: 1px solid var(--black-opacity-25);`;
+    }
+    return "";
+  }}
 `;
 
 const TitleSectionWrapper = styled(SectionWrapper)`
@@ -182,19 +232,7 @@ const Image = styled(NextImage)`
 
 const SenderWrapper = styled.div``;
 
-const handleWordBreak = css`
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-const Text = styled.p`
-  font: var(--text-md);
-  &:not(:last-child) {
-    margin-bottom: 15px;
-  }
-`;
+// handleWordBreak and Text imported from shared-styles
 
 const MessageText = styled(Text)`
   word-wrap: break-word;
@@ -221,22 +259,13 @@ const Code = styled.code`
   ${codeStyle}
 `;
 
-const A = styled.a`
-  ${handleWordBreak}
-  color: var(--red-500);
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+const A = AStyled;
 
 const Sender = styled(Text)`
   display: inline;
 `;
 
-const Strong = styled.strong`
-  font-weight: 700;
-`;
+// Strong imported from shared-styles
 
 const Time = styled(Text)`
   display: inline;
@@ -269,4 +298,43 @@ const LoadingSpinnerWrapper = styled.div`
   height: 100px;
   display: grid;
   place-items: center;
+`;
+
+const MessageItemWrapper = styled.div<{
+  isReply: boolean;
+  hasReplies?: boolean;
+}>`
+  position: relative;
+  ${({ isReply }) =>
+    isReply &&
+    `
+    margin-left: 30px;
+    padding-top: 10px;
+    padding-left: 15px;
+  `}
+`;
+
+const ThreadLine = styled.div`
+  position: absolute;
+  left: -15px;
+  top: -15px;
+  width: 2px;
+  height: calc(100% + 5px);
+  background: var(--black-opacity-25);
+  border-radius: 1px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 25px;
+    left: 0;
+    width: 12px;
+    height: 2px;
+    background: var(--black-opacity-25);
+    border-radius: 1px;
+  }
+`;
+
+const RepliesWrapper = styled.div`
+  margin-top: 10px;
 `;
