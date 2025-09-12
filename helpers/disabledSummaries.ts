@@ -13,7 +13,6 @@ export function isDiscordSummaryDisabled(cacheKey: string): boolean {
     .split(";")
     .map((key) => key.trim().toLowerCase());
 
-
   return disabledKeys.includes(keyPart.toLowerCase());
 }
 
