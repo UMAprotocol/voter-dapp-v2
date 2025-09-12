@@ -1,6 +1,7 @@
 import { Content, List, Root, Trigger } from "@radix-ui/react-tabs";
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { mobileAndUnder } from "constant";
 
 type Tab = {
   title: string;
@@ -49,6 +50,17 @@ const TabsList = styled(List)`
   gap: 50px;
   padding-left: 30px;
   background: var(--grey-50);
+  overflow-x: auto;
+
+  @media ${mobileAndUnder} {
+    gap: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 45px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 `;
 
 const TabsTrigger = styled(Trigger)`
@@ -56,9 +68,23 @@ const TabsTrigger = styled(Trigger)`
   padding-bottom: 3px;
   background: transparent;
   font: var(--text-md);
+  white-space: nowrap;
+  flex-shrink: 0;
+
   &[data-state="active"] {
     padding-bottom: 0;
     border-bottom: 3px solid var(--red-500);
+  }
+
+  @media ${mobileAndUnder} {
+    padding: 8px 4px;
+    padding-bottom: 3px;
+    height: 100%;
+
+    &[data-state="active"] {
+      padding-bottom: 0;
+      border-bottom: 3px solid var(--red-500);
+    }
   }
 `;
 

@@ -60,6 +60,8 @@ export function Details(query: VoteT) {
     useState(false);
   const [showRawAncillaryData, setShowRawAncillaryData] = useState(false);
   const [showRawClaimData, setShowRawClaimData] = useState(false);
+  const [showDecodedAncillaryData, setShowDecodedAncillaryData] =
+    useState(false);
   const { isOptimisticGovernorVote, explanationText, rules, ipfs } =
     useOptimisticGovernorData(decodedAncillaryData);
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
@@ -77,6 +79,11 @@ export function Details(query: VoteT) {
 
   function toggleShowRawAncillaryData() {
     setShowRawAncillaryData(!showRawAncillaryData);
+    setShowDecodedAncillaryData(false);
+  }
+  function toggleShowDecodedAncillaryData() {
+    setShowDecodedAncillaryData(!showDecodedAncillaryData);
+    setShowRawAncillaryData(false);
   }
   function toggleShowRawClaimData() {
     setShowRawClaimData(!showRawClaimData);
@@ -168,6 +175,9 @@ export function Details(query: VoteT) {
               augmentedData?.originatingOracleType as OracleTypeT | undefined
             }
           />
+          <IdentifierPill>
+            <span>{decodedIdentifier}</span>
+          </IdentifierPill>
         </RequestInfoIcons>
 
         <PanelSectionTitle>
@@ -188,10 +198,6 @@ export function Details(query: VoteT) {
             </a>
           )}
         </PanelSectionTitle>
-        <Text>
-          <Strong>Identifier: </Strong>
-          {decodedIdentifier}
-        </Text>
         <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
         {bulletins && bulletins.length > 0 && (
           <BulletinList bulletins={bulletins} />
@@ -219,22 +225,35 @@ export function Details(query: VoteT) {
             <IconWrapper>
               <AncillaryDataIcon />
             </IconWrapper>{" "}
-            Decoded ancillary data{" "}
-            <ToggleText onClick={toggleShowRawAncillaryData}>
-              (view {showRawAncillaryData ? "decoded" : "raw"})
-            </ToggleText>
+            Ancillary Data
           </PanelSectionTitle>
-          <Text>
-            {showRawAncillaryData ? (
-              <>{ancillaryData}</>
-            ) : (
-              <>
-                {decodedAncillaryData === ""
-                  ? "The ancillary data for this request is blank."
-                  : decodedAncillaryData}
-              </>
-            )}
-          </Text>
+          <div style={{ marginBottom: "10px" }}>
+            <ToggleText
+              onClick={toggleShowDecodedAncillaryData}
+              style={{
+                marginRight: "15px",
+                textDecoration: showDecodedAncillaryData ? "underline" : "none",
+              }}
+            >
+              View Decoded
+            </ToggleText>
+            <ToggleText
+              onClick={toggleShowRawAncillaryData}
+              style={{
+                textDecoration: showRawAncillaryData ? "underline" : "none",
+              }}
+            >
+              View Raw
+            </ToggleText>
+          </div>
+          {showDecodedAncillaryData && (
+            <Pre>
+              {decodedAncillaryData === ""
+                ? "The ancillary data for this request is blank."
+                : decodedAncillaryData}
+            </Pre>
+          )}
+          {showRawAncillaryData && <Pre>{ancillaryData}</Pre>}
         </SectionWrapper>
       )}
       {isOptimisticGovernorVote && ipfs && (
@@ -392,14 +411,58 @@ export function Details(query: VoteT) {
 }
 
 function DecodedTextAsMarkdown({ children }: { children: string }) {
+  // Check if text already contains markdown links
+  const hasMarkdownLinks = /\[([^\]]+)\]\(([^)]+)\)/.test(children);
+
+  // Only convert plain text URLs if no markdown links are present
+  const processedText = hasMarkdownLinks
+    ? children
+    : (() => {
+        // Convert plain text URLs to markdown links
+        // Match URLs but handle punctuation at the end properly
+        const urlRegex = /https?:\/\/[^\s]+/g;
+        return children.replace(urlRegex, (fullMatch) => {
+          // Check if this URL is already part of a markdown link
+          const matchIndex = children.indexOf(fullMatch);
+          const beforeUrl = children.substring(0, matchIndex);
+          const afterUrl = children.substring(matchIndex + fullMatch.length);
+
+          // If URL is preceded by ]( and followed by ), it's already markdown
+          if (beforeUrl.endsWith("](") && afterUrl.startsWith(")")) {
+            return fullMatch; // Don't modify
+          }
+
+          // Remove trailing punctuation that's likely not part of the URL
+          let cleanUrl = fullMatch;
+          const trailingPunctuation = /[.,;:!?)\]]+$/;
+          const trailingMatch = cleanUrl.match(trailingPunctuation);
+
+          if (trailingMatch) {
+            // Special case: if URL ends with ) but doesn't have matching (, keep the )
+            const hasOpenParen = cleanUrl.includes("(");
+            if (trailingMatch[0] === ")" && hasOpenParen) {
+              // Keep the ) as it's part of the URL
+            } else {
+              // Remove trailing punctuation
+              cleanUrl = cleanUrl.replace(trailingPunctuation, "");
+            }
+          }
+
+          return `[${cleanUrl}](${cleanUrl})${fullMatch.substring(
+            cleanUrl.length
+          )}`;
+        });
+      })();
+
   return (
     <Text as="div">
       <ReactMarkdown
         components={{
           a: (props) => <A {...props} target="_blank" />,
+          p: (props) => <p style={{ marginBottom: "1em" }}>{props.children}</p>,
         }}
       >
-        {children}
+        {processedText}
       </ReactMarkdown>
     </Text>
   );
@@ -471,7 +534,7 @@ const LinksList = styled.ul`
 const LinkItem = styled.li``;
 
 const DiscordLinkWrapper = styled.div`
-  margin-bottom: 60px;
+  margin-bottom: 20px;
 `;
 
 const IconWrapper = styled.div`
@@ -546,4 +609,18 @@ const RequestInfoIcons = styled.div`
   align-items: center;
   justify-content: start;
   margin-bottom: 15px;
+  flex-wrap: wrap;
+`;
+
+const IdentifierPill = styled.div`
+  height: 35px;
+  width: max-content;
+  display: flex;
+  align-items: center;
+  padding-inline: 10px;
+  padding-block: 8px;
+  border: 1px solid var(--grey-100);
+  border-radius: 5px;
+  font: var(--text-sm);
+  font-family: monospace;
 `;
