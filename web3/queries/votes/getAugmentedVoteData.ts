@@ -1,5 +1,8 @@
 import * as ss from "superstruct";
-import { AugmentedVoteDataResponseT } from "types";
+import {
+  AugmentedVoteDataResponseT,
+  AugmentedVoteDataResponseSchema,
+} from "types";
 
 const ErrorT = ss.object({
   message: ss.string(),
@@ -24,5 +27,5 @@ export async function getAugmentedVoteData(params: {
     throw new Error([message, error].join(": "));
   }
 
-  return ss.create(await response.json(), AugmentedVoteDataResponseT);
+  return ss.create(await response.json(), AugmentedVoteDataResponseSchema);
 }

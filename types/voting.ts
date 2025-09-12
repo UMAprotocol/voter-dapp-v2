@@ -243,7 +243,7 @@ export type OracleTypeT =
   | "OptimisticOracleV3"
   | "SkinnyOptimisticOracle";
 
-export const AugmentedVoteDataResponseT = ss.object({
+export const AugmentedVoteDataResponseSchema = ss.object({
   uniqueKey: ss.string(),
   time: ss.number(),
   identifier: ss.string(),
@@ -267,7 +267,7 @@ export const AugmentedVoteDataResponseT = ss.object({
   ),
 });
 export type AugmentedVoteDataResponseT = ss.Infer<
-  typeof AugmentedVoteDataResponseT
+  typeof AugmentedVoteDataResponseSchema
 >;
 
 export type VoteAugmentedDataT = {
