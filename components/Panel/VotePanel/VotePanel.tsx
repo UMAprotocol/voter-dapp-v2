@@ -93,7 +93,7 @@ export function VotePanel({ content }: Props) {
       ...(content.origin === "Polymarket"
         ? [
             {
-              title: "Discussion Summary",
+              title: "Discord Summary",
               content: (
                 <DiscussionSummary query={content} bulletins={bulletins.data} />
               ),
