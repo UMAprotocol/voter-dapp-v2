@@ -31,10 +31,29 @@ export function HistoryPanel() {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
+    voteHistoryByKey,
   } = votingAndStakingDetails ?? {};
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVotesV2List ?? []
   );
+
+  // Check if vote history data is actually loaded
+  // We need to ensure the user's voting data is loaded before showing the table
+  const isDataLoading =
+    isUndefined(votingAndStakingDetails) ||
+    isUndefined(pastVotesV2List) ||
+    // If we have votes but voteHistoryByKey is not populated yet
+    (pastVotesV2List.length > 0 &&
+      (!voteHistoryByKey || Object.keys(voteHistoryByKey).length === 0)) ||
+    // Check if any vote in entriesToShow is missing complete vote history data
+    entriesToShow.some((vote) => {
+      const hasCompleteHistory =
+        vote.voteHistory &&
+        vote.voteHistory.slashAmount !== undefined &&
+        vote.voteHistory.voted !== undefined &&
+        vote.voteHistory.correctness !== undefined;
+      return !hasCompleteHistory;
+    });
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black
@@ -104,13 +123,16 @@ export function HistoryPanel() {
         <SectionWrapper>
           <PanelSectionTitle>Voting history</PanelSectionTitle>
           <HistoryWrapper>
-            {isUndefined(pastVotesV2List) ? (
-              <LoadingSpinner size={40} />
+            {isDataLoading ? (
+              <LoadingWrapper>
+                <LoadingSpinner size={40} />
+                <LoadingText>Loading voting history...</LoadingText>
+              </LoadingWrapper>
             ) : (
               <VoteHistoryTable votes={entriesToShow} />
             )}
           </HistoryWrapper>
-          {showPagination && (
+          {showPagination && !isDataLoading && (
             <PaginationWrapper>
               <Pagination {...paginationProps} />
             </PaginationWrapper>
@@ -179,6 +201,20 @@ const HistoryWrapper = styled.div`
   display: grid;
   place-items: center;
 `;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+`;
+
+const LoadingText = styled.p`
+  font: var(--text-sm);
+  color: var(--grey-800);
+`;
+
 const Link = styled(NextLink)`
   color: var(--red-500);
   text-decoration: none;

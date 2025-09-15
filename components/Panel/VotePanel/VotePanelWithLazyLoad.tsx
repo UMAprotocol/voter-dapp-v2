@@ -1,5 +1,10 @@
 import { LoadingSpinner } from "components";
-import { usePastVoteDetails } from "hooks";
+import {
+  usePastVoteDetails,
+  useUserVotingAndStakingDetails,
+  useAccountDetails,
+  useDelegationContext,
+} from "hooks";
 import { useMemo } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
@@ -10,8 +15,24 @@ interface Props {
 }
 
 export function VotePanelWithLazyLoad({ content }: Props) {
+  const { address: userAddress } = useAccountDetails();
+  const { isDelegate, delegatorAddress } = useDelegationContext();
+  const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
+  const { data: votingAndStakingDetails } = useUserVotingAndStakingDetails(
+    userOrDelegatorAddress
+  );
+
+  // Check if this user has vote history for this specific vote
+  const userHasVoteHistory =
+    votingAndStakingDetails?.voteHistoryByKey?.[content.uniqueKey]?.voted;
+
+  // Check if revealedVoteByAddress is empty (which means we're using lightweight data)
+  const hasEmptyRevealedVotes =
+    Object.keys(content.revealedVoteByAddress || {}).length === 0;
+
   const needsDetailedData =
-    content.participation?.totalTokensVotedWith === 0 &&
+    (content.participation?.totalTokensVotedWith === 0 ||
+      (userHasVoteHistory && hasEmptyRevealedVotes)) &&
     content.resolvedPriceRequestIndex !== undefined;
 
   const {

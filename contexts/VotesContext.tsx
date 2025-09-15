@@ -196,13 +196,37 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         (userOrDelegatorAddress &&
           vote.revealedVoteByAddress[userOrDelegatorAddress]);
 
-      // This resolves the graph's limitation of not reflecting the voter's latest participation until they commit to
-      // the next vote.
-      if (voteHistoryByKey && voteHistoryByKey[uniqueKey] !== undefined) {
-        voteHistoryByKey[uniqueKey].correctness = vote.correctVote
-          ? pastVoteRevealed === vote.correctVote
-          : false;
-      }
+      // Get the vote history with updated correctness if we have the data
+      const voteHistoryForThisVote = voteHistoryByKey?.[uniqueKey]
+        ? {
+            ...voteHistoryByKey[uniqueKey],
+            // Only update correctness if we have both correctVote and pastVoteRevealed
+            // Otherwise, keep the correctness from the graph (which is based on slashAmount)
+            correctness:
+              vote.correctVote && pastVoteRevealed
+                ? pastVoteRevealed === vote.correctVote
+                : voteHistoryByKey[uniqueKey].correctness,
+            // Update voted status if we have a revealed vote
+            voted: voteHistoryByKey[uniqueKey].voted || !!pastVoteRevealed,
+          }
+        : pastVoteRevealed
+        ? {
+            uniqueKey,
+            voted: true,
+            correctness:
+              vote.correctVote && pastVoteRevealed
+                ? pastVoteRevealed === vote.correctVote
+                : false,
+            staking: false,
+            slashAmount: BigNumber.from(0),
+          }
+        : {
+            uniqueKey,
+            voted: false,
+            correctness: false,
+            staking: false,
+            slashAmount: BigNumber.from(0),
+          };
 
       return {
         ...vote,
@@ -225,13 +249,7 @@ export function VotesProvider({ children }: { children: ReactNode }) {
           ? { price: pastVoteRevealed, salt: "" }
           : decryptedVotes?.[uniqueKey],
         contentfulData: contentfulData?.[uniqueKey],
-        voteHistory: voteHistoryByKey?.[uniqueKey] ?? {
-          uniqueKey,
-          voted: false,
-          correctness: false,
-          staking: false,
-          slashAmount: BigNumber.from(0),
-        },
+        voteHistory: voteHistoryForThisVote,
         decodedAdminTransactions:
           decodedAdminTransactions?.[vote.decodedIdentifier],
         ...getVoteMetaData(
