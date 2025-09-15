@@ -339,7 +339,7 @@ const Wrapper = styled.div`
 const ResultsPerPageWrapper = styled.div`
   flex-shrink: 0;
   width: 110px;
-  
+
   /* Override the dropdown's min-width */
   button {
     min-width: unset !important;
