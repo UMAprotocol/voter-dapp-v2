@@ -326,6 +326,8 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  width: 100%;
 
   @media ${mobileAndUnder} {
     flex-direction: column;
@@ -335,12 +337,24 @@ const Wrapper = styled.div`
 `;
 
 const ResultsPerPageWrapper = styled.div`
-  min-width: 120px;
+  flex-shrink: 0;
+  width: 110px;
+  
+  /* Override the dropdown's min-width */
+  button {
+    min-width: unset !important;
+    width: 100% !important;
+    padding-inline: 10px !important;
+  }
 `;
 
 const ButtonsWrapper = styled.nav`
   display: flex;
-  gap: min(8px, 1vw);
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
 `;
 
 const BaseButton = styled.button`
