@@ -8,6 +8,9 @@
     },
     "pages/api/update-summary.ts": {
       "maxDuration": 300
+    },
+    "pages/api/discord-thread/index.ts": {
+      "maxDuration": 300
     }
   },
   "headers": [
