@@ -81,12 +81,14 @@ function concatenateAttachments(
 
 async function fetchDiscordThread(
   l1Request: L1Request
-): Promise<VoteDiscussionT> {
+): Promise<VoteDiscussionT & { isStaleData?: boolean }> {
   // Create the request key using the same logic as before
   const requestedId = makeKey(l1Request.title, l1Request.time);
 
   // Use the new cache-aware function to get thread messages
-  const { messages } = await getThreadMessagesForRequest(requestedId);
+  const { messages, isStaleData } = await getThreadMessagesForRequest(
+    requestedId
+  );
 
   // First, process all messages into a flat structure
   const allProcessedMessages: (DiscordMessageT & {
@@ -187,6 +189,7 @@ async function fetchDiscordThread(
     identifier: l1Request.identifier,
     time: l1Request.time,
     thread: finalMessages,
+    isStaleData,
   };
 }
 
@@ -232,7 +235,7 @@ export default async function handler(
       body.l1Request
     );
     response
-      .setHeader("Cache-Control", "max-age=0, s-maxage=180")
+      .setHeader("Cache-Control", "max-age=0, s-maxage=300")
       .status(200)
       .send(voteDiscussion);
   } catch (e) {
