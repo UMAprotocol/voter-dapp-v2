@@ -185,11 +185,16 @@ async function fetchDiscordThread(
     finalMessages.push({ ...orphanedReply, replies: [] });
   });
 
+  if (isStaleData) {
+    console.warn(`Returning stale data for request ${requestedId}`, {
+      at: "/api/discord-thread",
+    });
+  }
+
   return {
     identifier: l1Request.identifier,
     time: l1Request.time,
     thread: finalMessages,
-    isStaleData,
   };
 }
 
