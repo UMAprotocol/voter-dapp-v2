@@ -5,6 +5,7 @@ import { sleep, stripInvalidCharacters } from "lib/utils";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = "discord:thread_cache";
+export const THREAD_MESSAGES_CACHE_KEY = "discord:thread_messages";
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
@@ -35,6 +36,29 @@ export async function setCachedThreadIdMap(
   });
   if (!result) {
     throw new Error("Setting threadIdMap cache failed");
+  }
+  return result;
+}
+
+// Cache functions for thread messages
+export async function getCachedThreadMessages(
+  threadId: string
+): Promise<RawDiscordThreadT | null> {
+  const redis = getRedis();
+  const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
+  return await redis.get<RawDiscordThreadT>(cacheKey);
+}
+
+export async function setCachedThreadMessages(
+  threadId: string,
+  messages: RawDiscordThreadT
+) {
+  const redis = getRedis();
+  const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
+  // Cache for 1 hour (3600 seconds)
+  const result = await redis.setex(cacheKey, 3600, messages);
+  if (!result) {
+    throw new Error("Setting thread messages cache failed");
   }
   return result;
 }
@@ -140,6 +164,16 @@ export async function getDiscordMessagesPaginated(
     await sleep(50);
   } while (lastMessageId);
 
+  // Cache the messages for future stale data fallback
+  try {
+    await setCachedThreadMessages(channelOrThreadId, allMessages);
+  } catch (cacheError) {
+    console.warn(
+      `Failed to cache messages for thread ${channelOrThreadId}:`,
+      cacheError
+    );
+  }
+
   return {
     messages: allMessages,
     latestMessageId: allMessages.at(0)?.id,
@@ -228,6 +262,7 @@ export async function buildThreadIdMap(
 export async function getThreadMessagesForRequest(requestKey: string): Promise<{
   threadId: string | null;
   messages: RawDiscordThreadT;
+  isStaleData?: boolean;
 }> {
   // Try to get thread ID from cache first
   const threadId = await getThreadIdFromCache(requestKey);
@@ -235,8 +270,31 @@ export async function getThreadMessagesForRequest(requestKey: string): Promise<{
     return { threadId: null, messages: [] };
   }
 
-  const { messages } = await getDiscordMessagesPaginated(threadId);
-  return { threadId, messages };
+  try {
+    const { messages } = await getDiscordMessagesPaginated(threadId);
+    return { threadId, messages };
+  } catch (error) {
+    console.warn(
+      `Failed to fetch fresh Discord messages for thread ${threadId}, attempting to return stale data:`,
+      error
+    );
+
+    // Try to return stale data from cache if available
+    try {
+      const staleMessages = await getCachedThreadMessages(threadId);
+      if (staleMessages && staleMessages.length > 0) {
+        console.log(
+          `Returning ${staleMessages.length} stale messages for thread ${threadId}`
+        );
+        return { threadId, messages: staleMessages, isStaleData: true };
+      }
+    } catch (cacheError) {
+      console.warn(`Failed to retrieve stale data from cache:`, cacheError);
+    }
+
+    // If no stale data available, re-throw the original error
+    throw error;
+  }
 }
 
 async function getThreadIdFromCache(

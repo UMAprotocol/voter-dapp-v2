@@ -81,12 +81,14 @@ function concatenateAttachments(
 
 async function fetchDiscordThread(
   l1Request: L1Request
-): Promise<VoteDiscussionT> {
+): Promise<VoteDiscussionT & { isStaleData?: boolean }> {
   // Create the request key using the same logic as before
   const requestedId = makeKey(l1Request.title, l1Request.time);
 
   // Use the new cache-aware function to get thread messages
-  const { messages } = await getThreadMessagesForRequest(requestedId);
+  const { messages, isStaleData } = await getThreadMessagesForRequest(
+    requestedId
+  );
 
   // First, process all messages into a flat structure
   const allProcessedMessages: (DiscordMessageT & {
@@ -182,6 +184,12 @@ async function fetchDiscordThread(
   orphanedReplies.forEach((orphanedReply) => {
     finalMessages.push({ ...orphanedReply, replies: [] });
   });
+
+  if (isStaleData) {
+    console.warn(`Returning stale data for request ${requestedId}`, {
+      at: "/api/discord-thread",
+    });
+  }
 
   return {
     identifier: l1Request.identifier,

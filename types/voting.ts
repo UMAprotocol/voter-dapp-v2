@@ -304,7 +304,7 @@ export const DiscordMessageT: ss.Describe<{
 });
 export type DiscordMessageT = ss.Infer<typeof DiscordMessageT>;
 
-export const VoteDiscussionT = ss.object({
+export const VoteDiscussionT = ss.type({
   identifier: ss.string(),
   time: ss.number(),
   thread: ss.array(DiscordMessageT),
