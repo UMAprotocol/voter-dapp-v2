@@ -7,4 +7,5 @@ export { usePastVotes } from "./usePastVotes";
 export { useRevealedVotes } from "./useRevealedVotes";
 export { useUpcomingVotes } from "./useUpcomingVotes";
 export { useActiveVoteResults } from "./useActiveVoteResults";
+export { useUserPastVotes } from "./useUserPastVotes";
 export * from "./usePolymarketLink";

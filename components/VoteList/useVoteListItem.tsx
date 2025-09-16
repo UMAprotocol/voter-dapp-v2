@@ -44,6 +44,7 @@ export function useVoteListItem({
     selectVote,
   });
   const { address } = useAccountDetails();
+  const { delegatorAddress } = useDelegationContext();
   const { signingKeys } = useWalletContext();
   const hasSigningKey = !!address && !!signingKeys[address];
   const {
@@ -197,6 +198,15 @@ export function useVoteListItem({
     : getExistingOrSelectedVoteFromOptions();
 
   function getYourVote() {
+    // Check if wallet is connected
+    if (!address && !delegatorAddress) {
+      return "-";
+    }
+
+    // Check if we're loading user vote data
+    if ("isLoadingUserVote" in vote && vote.isLoadingUserVote) {
+      return undefined; // This will trigger the loading skeleton
+    }
     if (isMultipleValuesVote && multipleInputProps.committedVote) {
       return multipleInputProps.getVoteForDisplay();
     }
