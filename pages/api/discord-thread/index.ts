@@ -235,7 +235,7 @@ export default async function handler(
       body.l1Request
     );
     response
-      .setHeader("Cache-Control", "max-age=0, s-maxage=300")
+      .setHeader("Cache-Control", "max-age=0, s-maxage=180")
       .status(200)
       .send(voteDiscussion);
   } catch (e) {
