@@ -107,7 +107,7 @@ export async function getPastVotesV2Lightweight() {
         time: Number(time),
         correctVote: price,
         ancillaryData,
-        resolvedPriceRequestIndex,
+        resolvedPriceRequestIndex: String(resolvedPriceRequestIndex),
         isV1: false,
         // Placeholder data - will be fetched on demand
         participation: {
@@ -370,4 +370,62 @@ export async function getPastVotesAllVersions() {
   return makePriceRequestsByKey(
     (await Promise.all([getPastVotesV2Lightweight(), getPastVotesV1()])).flat()
   );
+}
+
+// Query to get user's votes for specific price requests
+export async function getUserVotesForRequests(
+  indices: number[],
+  voterAddress: string
+): Promise<Record<string, string>> {
+  const endpoint = graphEndpoint;
+  if (!endpoint) throw new Error("V2 subgraph is disabled");
+
+  const userVotesQuery = gql`
+    query getUserVotesForRequests($indices: [BigInt!]!, $voterAddress: Bytes!) {
+      priceRequests(where: { resolvedPriceRequestIndex_in: $indices }) {
+        resolvedPriceRequestIndex
+        latestRound {
+          revealedVotes(where: { voter_: { address: $voterAddress } }) {
+            price
+            voter {
+              address
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await request<{
+      priceRequests: Array<{
+        resolvedPriceRequestIndex: string;
+        latestRound: {
+          revealedVotes: Array<{
+            price: string;
+            voter: { address: string };
+          }>;
+        };
+      }>;
+    }>(endpoint, userVotesQuery, {
+      indices,
+      voterAddress: voterAddress.toLowerCase(), // Ensure lowercase
+    });
+
+    // Build a map of resolvedPriceRequestIndex -> price
+    const userVotes: Record<string, string> = {};
+
+    response?.priceRequests?.forEach((request) => {
+      if (request.latestRound?.revealedVotes?.length > 0) {
+        // User voted on this request
+        userVotes[request.resolvedPriceRequestIndex] =
+          request.latestRound.revealedVotes[0].price;
+      }
+    });
+
+    return userVotes;
+  } catch (error) {
+    console.error("Error fetching user votes:", error);
+    return {};
+  }
 }
