@@ -43,9 +43,9 @@ const testData = {
   },
   expected: {
     short: 'WillPowellsay"Unemployment"or"Employment"20+times?-1758134590',
-    long: 'WillPowellsay"Unemployment"or"Employment"20+timesduringSeptemberpress-1758134591',
+    long: 'WillPowellsay"Unemployment"or"Employment"20+timesduringSeptemberpressconf...-1758134591',
     noSpaces:
-      "ThisIsAVeryLongTitleWithNoSpacesThatShouldBeTruncatedAtExactly87CharactersAndThenSomeMo-1758134592",
+      "ThisIsAVeryLongTitleWithNoSpacesThatShouldBeTruncatedAtExactly87CharactersAndThenSom...-1758134592",
     empty: "-1758134593",
     exact: "A".repeat(87) + "-1758134594",
     special: "Test\"quotes\"and'apostrophes'and-dashes-1758134595",
@@ -86,20 +86,20 @@ describe("Discord Thread Utils", () => {
       expect(result).toBe(testData.expected.short);
     });
 
-    it("should truncate long titles at word boundaries", () => {
+    it("should truncate long titles at 84 characters with ellipsis", () => {
       const result = makeKey(testData.titles.long, testData.timestamps.long);
 
-      // Should truncate at word boundary (after "20+")
+      // Should truncate at 84 characters and add ellipsis
       expect(result).toBe(testData.expected.long);
     });
 
-    it("should handle titles with no spaces by hard truncation", () => {
+    it("should handle titles with no spaces by hard truncation at 84 chars with ellipsis", () => {
       const result = makeKey(
         testData.titles.noSpaces,
         testData.timestamps.noSpaces
       );
 
-      // Should hard truncate at 87 characters
+      // Should hard truncate at 84 characters and add ellipsis
       expect(result).toBe(testData.expected.noSpaces);
     });
 
@@ -122,6 +122,17 @@ describe("Discord Thread Utils", () => {
       );
 
       expect(result).toBe(testData.expected.special);
+    });
+
+    it("should truncate very long titles at exactly 84 characters with ellipsis", () => {
+      const veryLongTitle =
+        "This is some super really amazing wow great long long super super very very long title that should be trucated - 1234567890";
+      const result = makeKey(veryLongTitle, testData.timestamps.short);
+
+      // Should truncate at 84 characters and add ellipsis, then remove spaces
+      const expected =
+        "Thisissomesuperreallyamazingwowgreatlonglongsupersuperveryverylongtit...-1758134590";
+      expect(result).toBe(expected);
     });
   });
 

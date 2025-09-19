@@ -12,17 +12,7 @@ function truncateTitle(title: string) {
     return title;
   }
 
-  // Find the last complete word within the limit
-  const truncated = title.substring(0, titleMaxLength);
-  const lastSpaceIndex = truncated.lastIndexOf(" ");
-
-  // If we found a space, truncate at that word boundary
-  if (lastSpaceIndex > 0) {
-    return title.substring(0, lastSpaceIndex);
-  }
-
-  // If no space found, truncate at the max length
-  return truncated;
+  return `${title.substring(0, titleMaxLength - 3)}...`; // 3 char accounts for ellipsis
 }
 
 export function makeKey(title: string, timestamp: string | number): string {
