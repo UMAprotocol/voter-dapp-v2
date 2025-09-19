@@ -86,8 +86,6 @@ async function fetchDiscordThread(
   // Create the request key using the same logic as before
   const requestedId = makeKey(l1Request.title, l1Request.time);
 
-  console.log("requestId", requestedId);
-
   // Use the new cache-aware function to get thread messages
   const { messages, isStaleData } = await getThreadMessagesForRequest(
     requestedId

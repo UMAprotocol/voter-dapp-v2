@@ -253,8 +253,6 @@ export async function buildThreadIdMap(
     {} as ThreadIdMap
   );
 
-  console.debug("threadIdMap", threadIdMap);
-
   // Use the unified cache to store both thread mapping and latest thread ID atomically
   await setCachedThreadIdMap(
     threadIdMap,
