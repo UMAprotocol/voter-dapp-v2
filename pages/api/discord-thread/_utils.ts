@@ -3,10 +3,13 @@ import { RawDiscordThreadT, ThreadIdMap } from "types";
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep } from "lib/utils";
 import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
+import { createCacheKey } from "lib/cache-keys";
 
 // Cache configuration
-export const THREAD_CACHE_KEY = "discord:thread_cache";
-export const THREAD_MESSAGES_CACHE_KEY = "discord:thread_messages";
+export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
+export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
+  "discord:thread_messages"
+);
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
