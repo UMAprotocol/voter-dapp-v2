@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup.yaml
+      - uses: ./.github/actions/setup
       - name: Lint
         run: yarn lint
 
@@ -21,6 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup.yaml
+      - uses: ./.github/actions/setup
       - name: Unit tests
         run: yarn test
