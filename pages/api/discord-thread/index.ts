@@ -9,7 +9,8 @@ import {
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
 import { stripInvalidCharacters } from "lib/utils";
-import { getThreadMessagesForRequest, makeKey } from "./_utils";
+import { getThreadMessagesForRequest } from "./_utils";
+import { makeKey } from "lib/discord-utils";
 
 // converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
 export function stripMarkdownHeaders(message: string): string {
