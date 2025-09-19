@@ -9,7 +9,8 @@ import {
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
 import { stripInvalidCharacters } from "lib/utils";
-import { getThreadMessagesForRequest, makeKey } from "./_utils";
+import { getThreadMessagesForRequest } from "./_utils";
+import { makeKey } from "lib/discord-utils";
 
 // converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
 export function stripMarkdownHeaders(message: string): string {
@@ -84,6 +85,8 @@ async function fetchDiscordThread(
 ): Promise<VoteDiscussionT & { isStaleData?: boolean }> {
   // Create the request key using the same logic as before
   const requestedId = makeKey(l1Request.title, l1Request.time);
+
+  console.log("requestId", requestedId);
 
   // Use the new cache-aware function to get thread messages
   const { messages, isStaleData } = await getThreadMessagesForRequest(

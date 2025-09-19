@@ -1,7 +1,8 @@
 import { Redis } from "@upstash/redis";
 import { RawDiscordThreadT, ThreadIdMap } from "types";
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
-import { sleep, stripInvalidCharacters } from "lib/utils";
+import { sleep } from "lib/utils";
+import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = "discord:thread_cache";
@@ -249,6 +250,8 @@ export async function buildThreadIdMap(
     {} as ThreadIdMap
   );
 
+  console.debug("threadIdMap", threadIdMap);
+
   // Use the unified cache to store both thread mapping and latest thread ID atomically
   await setCachedThreadIdMap(
     threadIdMap,
@@ -309,29 +312,4 @@ async function getThreadIdFromCache(
     return updatedThreadMapping?.[requestKey] ?? null;
   }
   return threadId;
-}
-
-// discord truncates the title length after 72 characters
-function extractValidateTitleAndTimestamp(msg?: string) {
-  // All messages are structured with the unixtimestamp at the end, such as
-  // Across Dispute November 24th 2022 at 1669328675
-  if (!msg) return null;
-  const time = parseInt(msg.substring(msg.length - 10, msg.length));
-  const title = msg.slice(0, -13);
-
-  // All times must be newer than 2021-01-01 and older than the current time.
-  const isTimeValid =
-    new Date(time).getTime() > 1577858461 && time < Date.now();
-
-  // use "title-timstamp" to find thread
-  return isTimeValid ? makeKey(title, time) : null;
-}
-
-export function makeKey(title: string, timestamp: string | number) {
-  const cleanedTitle = stripInvalidCharacters(truncateTitle(title));
-  return `${cleanedTitle}-${String(timestamp)}`.replaceAll(" ", "");
-}
-
-function truncateTitle(title: string) {
-  return title.substring(0, 60);
 }
