@@ -32,6 +32,7 @@ interface MessageItemProps {
   id: string;
   replies?: MessageItemProps[];
   isReply?: boolean;
+  isLastReply?: boolean;
 }
 
 function MessageItem({
@@ -42,12 +43,14 @@ function MessageItem({
   id: _id,
   replies,
   isReply = false,
+  isLastReply = false,
 }: MessageItemProps) {
   const hasReplies = replies && replies.length > 0;
 
   return (
     <MessageItemWrapper isReply={isReply} hasReplies={hasReplies}>
-      {isReply && <ThreadLine />}
+      {hasReplies && <ThreadParentLine />}
+      {isReply && !isLastReply && <ThreadChildLine />}
       <MessageWrapper>
         <ImageWrapper>
           {senderPicture ? (
@@ -86,8 +89,13 @@ function MessageItem({
       </MessageWrapper>
       {hasReplies && (
         <RepliesWrapper>
-          {replies.map((reply) => (
-            <MessageItem key={reply.id} {...reply} isReply={true} />
+          {replies.map((reply, idx) => (
+            <MessageItem
+              key={reply.id}
+              {...reply}
+              isReply={true}
+              isLastReply={idx === replies.length - 1}
+            />
           ))}
         </RepliesWrapper>
       )}
@@ -314,25 +322,25 @@ const MessageItemWrapper = styled.div<{
   `}
 `;
 
-const ThreadLine = styled.div`
+const ThreadParentLine = styled.span`
   position: absolute;
-  left: -15px;
-  top: -15px;
+  left: 18px;
+  top: 34px;
   width: 2px;
-  height: calc(100% + 5px);
-  background: var(--black-opacity-25);
-  border-radius: 1px;
+  height: calc(100% - 20px - 36px - 8px);
+  border-bottom: 2px solid var(--black-opacity-25);
+  border-left: 2px solid var(--black-opacity-25);
+  border-radius: 0px 0px 0px 16px;
+  width: 24px;
+`;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 25px;
-    left: 0;
-    width: 12px;
-    height: 2px;
-    background: var(--black-opacity-25);
-    border-radius: 1px;
-  }
+const ThreadChildLine = styled.span`
+  position: absolute;
+  left: -10px;
+  top: 24px;
+  width: 24px;
+  height: 2px;
+  background: var(--black-opacity-25);
 `;
 
 const RepliesWrapper = styled.div`
