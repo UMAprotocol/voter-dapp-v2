@@ -28,6 +28,7 @@
     "@tanstack/react-query-devtools": "^4.29.6",
     "@uma/contracts-frontend": "^0.4.20",
     "@upstash/redis": "^1.35.1",
+    "@vercel/functions": "^3.1.0",
     "@web3-onboard/core": "^2.20.4",
     "@web3-onboard/gnosis": "^2.1.10",
     "@web3-onboard/injected-wallets": "^2.10.1",

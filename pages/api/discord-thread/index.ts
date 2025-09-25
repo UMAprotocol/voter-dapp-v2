@@ -9,8 +9,12 @@ import {
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
 import { stripInvalidCharacters } from "lib/utils";
-import { getThreadMessagesForRequest } from "./_utils";
+import {
+  getThreadMessagesForRequest,
+  refreshThreadMessagesForRequestKey,
+} from "./_utils";
 import { makeKey } from "lib/discord-utils";
+import { waitUntil } from "@vercel/functions";
 
 // converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
 export function stripMarkdownHeaders(message: string): string {
@@ -196,6 +200,7 @@ async function fetchDiscordThread(
     identifier: l1Request.identifier,
     time: l1Request.time,
     thread: finalMessages,
+    isStaleData,
   };
 }
 
@@ -237,13 +242,19 @@ export default async function handler(
       DiscordThreadRequestBody
     );
 
-    const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
-      body.l1Request
-    );
+    const voteDiscussion: VoteDiscussionT & { isStaleData?: boolean } =
+      await fetchDiscordThread(body.l1Request);
+    const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
-      .setHeader("Cache-Control", "max-age=0, s-maxage=180")
+      .setHeader(
+        "Cache-Control",
+        "public, max-age=0, s-maxage=300, stale-while-revalidate=300"
+      )
       .status(200)
       .send(voteDiscussion);
+    if (voteDiscussion.isStaleData) {
+      waitUntil(refreshThreadMessagesForRequestKey(requestKey));
+    }
   } catch (e) {
     console.error(e);
     response.status(500).send({

@@ -10,6 +10,11 @@ export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
   "discord:thread_messages"
 );
+// Simple lock to prevent thundering herd refresh
+const THREAD_REFRESH_LOCK_PREFIX = createCacheKey(
+  "discord:thread_refresh_lock"
+);
+const DEFAULT_LOCK_TTL_SECONDS = 180;
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
@@ -273,32 +278,14 @@ export async function getThreadMessagesForRequest(requestKey: string): Promise<{
   if (!threadId) {
     return { threadId: null, messages: [] };
   }
-
-  try {
-    const { messages } = await getDiscordMessagesPaginated(threadId);
-    return { threadId, messages };
-  } catch (error) {
-    console.warn(
-      `Failed to fetch fresh Discord messages for thread ${threadId}, attempting to return stale data:`,
-      error
-    );
-
-    // Try to return stale data from cache if available
-    try {
-      const staleMessages = await getCachedThreadMessages(threadId);
-      if (staleMessages && staleMessages.length > 0) {
-        console.log(
-          `Returning ${staleMessages.length} stale messages for thread ${threadId}`
-        );
-        return { threadId, messages: staleMessages, isStaleData: true };
-      }
-    } catch (cacheError) {
-      console.warn(`Failed to retrieve stale data from cache:`, cacheError);
-    }
-
-    // If no stale data available, re-throw the original error
-    throw error;
+  // Cache-first: if we already have messages cached, return them immediately.
+  const cachedMessages = await getCachedThreadMessages(threadId);
+  if (cachedMessages && cachedMessages.length > 0) {
+    return { threadId, messages: cachedMessages, isStaleData: true };
   }
+  // Cold cache: fetch now (this path is rare and acceptable to be blocking)
+  const { messages } = await getDiscordMessagesPaginated(threadId);
+  return { threadId, messages };
 }
 
 async function getThreadIdFromCache(
@@ -313,4 +300,54 @@ async function getThreadIdFromCache(
     return updatedThreadMapping?.[requestKey] ?? null;
   }
   return threadId;
+}
+
+function getThreadLockKeyForRequestKey(requestKey: string): string {
+  return `${THREAD_REFRESH_LOCK_PREFIX}:${requestKey}`;
+}
+
+type SetCommandOptions = Parameters<Redis["set"]>[2];
+
+async function acquireLock(
+  lockKey: string,
+  ttlSeconds = DEFAULT_LOCK_TTL_SECONDS
+): Promise<boolean> {
+  const redis = getRedis();
+  try {
+    // Use NX + EX to create a simple mutex
+    const options: SetCommandOptions = {
+      nx: true,
+      ex: ttlSeconds,
+    } as SetCommandOptions;
+    const result = await redis.set(lockKey, "1", options);
+    return Boolean(result);
+  } catch (e) {
+    console.warn(`Failed to acquire lock ${lockKey}:`, e);
+    return false;
+  }
+}
+
+async function releaseLock(lockKey: string) {
+  const redis = getRedis();
+  try {
+    await redis.del(lockKey);
+  } catch (e) {
+    console.warn(`Failed to release lock ${lockKey}:`, e);
+  }
+}
+
+// Trigger a refresh, but only if no other worker is already doing it
+export async function refreshThreadMessagesForRequestKey(requestKey: string) {
+  const lockKey = getThreadLockKeyForRequestKey(requestKey);
+  const locked = await acquireLock(lockKey);
+  if (!locked) return; // another worker is already refreshing
+  try {
+    const threadId = await getThreadIdFromCache(requestKey);
+    if (!threadId) return;
+    await getDiscordMessagesPaginated(threadId);
+  } catch (e) {
+    console.warn(`Background refresh failed for ${requestKey}:`, e);
+  } finally {
+    await releaseLock(lockKey);
+  }
 }
