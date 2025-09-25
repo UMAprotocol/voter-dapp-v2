@@ -253,7 +253,7 @@ export default async function handler(
         voteDiscussion.identifier
       }, time=${voteDiscussion.time}, messages=${
         voteDiscussion.thread.length
-      }, isStale=${Boolean(voteDiscussion.isStaleData)}`
+      }, isStale=${voteDiscussion.isStaleData ? "true" : "false"}`
     );
     const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
