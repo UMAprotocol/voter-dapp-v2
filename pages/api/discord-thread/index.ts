@@ -191,9 +191,13 @@ async function fetchDiscordThread(
   });
 
   if (isStaleData) {
-    console.warn(`Returning stale data for request ${requestedId}`, {
-      at: "/api/discord-thread",
-    });
+    console.warn(
+      `[discord-thread] Handler returning STALE data for requestKey=${requestedId}, threadMessages=${finalMessages.length}`
+    );
+  } else {
+    console.info(
+      `[discord-thread] Handler returning FRESH data for requestKey=${requestedId}, threadMessages=${finalMessages.length}`
+    );
   }
 
   return {
@@ -244,6 +248,13 @@ export default async function handler(
 
     const voteDiscussion: VoteDiscussionT & { isStaleData?: boolean } =
       await fetchDiscordThread(body.l1Request);
+    console.info(
+      `[discord-thread] Response prepared for identifier=${
+        voteDiscussion.identifier
+      }, time=${voteDiscussion.time}, messages=${
+        voteDiscussion.thread.length
+      }, isStale=${Boolean(voteDiscussion.isStaleData)}`
+    );
     const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
       .setHeader(
@@ -253,6 +264,9 @@ export default async function handler(
       .status(200)
       .send(voteDiscussion);
     if (voteDiscussion.isStaleData) {
+      console.info(
+        `[discord-thread] Scheduling background refresh via waitUntil for requestKey=${requestKey}`
+      );
       waitUntil(refreshThreadMessagesForRequestKey(requestKey));
     }
   } catch (e) {

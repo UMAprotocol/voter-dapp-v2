@@ -276,15 +276,30 @@ export async function getThreadMessagesForRequest(requestKey: string): Promise<{
   // Try to get thread ID from cache first
   const threadId = await getThreadIdFromCache(requestKey);
   if (!threadId) {
+    console.warn(
+      `[discord-thread] No threadId for requestKey=${requestKey}; returning empty`
+    );
     return { threadId: null, messages: [] };
   }
   // Cache-first: if we already have messages cached, return them immediately.
   const cachedMessages = await getCachedThreadMessages(threadId);
   if (cachedMessages && cachedMessages.length > 0) {
+    console.info(
+      `[discord-thread] Serving STALE cached data for requestKey=${requestKey}, threadId=${threadId}, messages=${cachedMessages.length}`
+    );
     return { threadId, messages: cachedMessages, isStaleData: true };
   }
   // Cold cache: fetch now (this path is rare and acceptable to be blocking)
+  console.info(
+    `[discord-thread] Cold cache MISS for requestKey=${requestKey}, threadId=${threadId}. Fetching fresh from Discord...`
+  );
+  const startedAt = Date.now();
   const { messages } = await getDiscordMessagesPaginated(threadId);
+  console.info(
+    `[discord-thread] Cold fetch COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
+      messages.length
+    }, durationMs=${Date.now() - startedAt}`
+  );
   return { threadId, messages };
 }
 
@@ -339,12 +354,34 @@ async function releaseLock(lockKey: string) {
 // Trigger a refresh, but only if no other worker is already doing it
 export async function refreshThreadMessagesForRequestKey(requestKey: string) {
   const lockKey = getThreadLockKeyForRequestKey(requestKey);
+  console.info(
+    `[discord-thread] Refresh attempt for requestKey=${requestKey}, lockKey=${lockKey}`
+  );
   const locked = await acquireLock(lockKey);
-  if (!locked) return; // another worker is already refreshing
+  if (!locked) {
+    console.info(
+      `[discord-thread] Refresh SKIPPED (lock held) for requestKey=${requestKey}, lockKey=${lockKey}`
+    );
+    return; // another worker is already refreshing
+  }
   try {
     const threadId = await getThreadIdFromCache(requestKey);
-    if (!threadId) return;
-    await getDiscordMessagesPaginated(threadId);
+    if (!threadId) {
+      console.warn(
+        `[discord-thread] Refresh ABORTED: no threadId for requestKey=${requestKey}`
+      );
+      return;
+    }
+    const startedAt = Date.now();
+    console.info(
+      `[discord-thread] Refresh START for requestKey=${requestKey}, threadId=${threadId}`
+    );
+    const { messages } = await getDiscordMessagesPaginated(threadId);
+    console.info(
+      `[discord-thread] Refresh COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
+        messages.length
+      }, durationMs=${Date.now() - startedAt}`
+    );
   } catch (e) {
     console.warn(`Background refresh failed for ${requestKey}:`, e);
   } finally {
