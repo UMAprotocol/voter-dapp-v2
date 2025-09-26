@@ -257,10 +257,7 @@ export default async function handler(
     );
     const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
-      .setHeader(
-        "Cache-Control",
-        "public, max-age=0, s-maxage=300, stale-while-revalidate=300"
-      )
+      .setHeader("Cache-Control", "public, max-age=0, s-maxage=300")
       .status(200)
       .send(voteDiscussion);
     if (voteDiscussion.isStaleData) {
