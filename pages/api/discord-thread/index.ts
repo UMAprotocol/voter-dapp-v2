@@ -9,8 +9,12 @@ import {
 import * as ss from "superstruct";
 import { APIEmbed } from "discord-api-types/v10";
 import { stripInvalidCharacters } from "lib/utils";
-import { getThreadMessagesForRequest } from "./_utils";
+import {
+  getThreadMessagesForRequest,
+  refreshThreadMessagesForRequestKey,
+} from "./_utils";
 import { makeKey } from "lib/discord-utils";
+import { waitUntil } from "@vercel/functions";
 
 // converts markdown headers #, ## and ### to bold instead so we dont render large text in discussion panel
 export function stripMarkdownHeaders(message: string): string {
@@ -187,15 +191,20 @@ async function fetchDiscordThread(
   });
 
   if (isStaleData) {
-    console.warn(`Returning stale data for request ${requestedId}`, {
-      at: "/api/discord-thread",
-    });
+    console.warn(
+      `[discord-thread] Handler returning STALE data for requestKey=${requestedId}, threadMessages=${finalMessages.length}`
+    );
+  } else {
+    console.info(
+      `[discord-thread] Handler returning FRESH data for requestKey=${requestedId}, threadMessages=${finalMessages.length}`
+    );
   }
 
   return {
     identifier: l1Request.identifier,
     time: l1Request.time,
     thread: finalMessages,
+    isStaleData,
   };
 }
 
@@ -237,13 +246,26 @@ export default async function handler(
       DiscordThreadRequestBody
     );
 
-    const voteDiscussion: VoteDiscussionT = await fetchDiscordThread(
-      body.l1Request
+    const voteDiscussion: VoteDiscussionT & { isStaleData?: boolean } =
+      await fetchDiscordThread(body.l1Request);
+    console.info(
+      `[discord-thread] Response prepared for identifier=${
+        voteDiscussion.identifier
+      }, time=${voteDiscussion.time}, messages=${
+        voteDiscussion.thread.length
+      }, isStale=${voteDiscussion.isStaleData ? "true" : "false"}`
     );
+    const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
-      .setHeader("Cache-Control", "max-age=0, s-maxage=180")
+      .setHeader("Cache-Control", "public, max-age=0, s-maxage=600") // 10 minutes
       .status(200)
       .send(voteDiscussion);
+    if (voteDiscussion.isStaleData) {
+      console.info(
+        `[discord-thread] Scheduling background refresh via waitUntil for requestKey=${requestKey}`
+      );
+      waitUntil(refreshThreadMessagesForRequestKey(requestKey));
+    }
   } catch (e) {
     console.error(e);
     response.status(500).send({

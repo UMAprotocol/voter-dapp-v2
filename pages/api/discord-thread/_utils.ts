@@ -10,6 +10,11 @@ export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
   "discord:thread_messages"
 );
+// Simple lock to prevent thundering herd refresh
+const THREAD_REFRESH_LOCK_PREFIX = createCacheKey(
+  "discord:thread_refresh_lock"
+);
+const DEFAULT_LOCK_TTL_SECONDS = 300; // 5 minutes
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
@@ -271,34 +276,31 @@ export async function getThreadMessagesForRequest(requestKey: string): Promise<{
   // Try to get thread ID from cache first
   const threadId = await getThreadIdFromCache(requestKey);
   if (!threadId) {
+    console.warn(
+      `[discord-thread] No threadId for requestKey=${requestKey}; returning empty`
+    );
     return { threadId: null, messages: [] };
   }
-
-  try {
-    const { messages } = await getDiscordMessagesPaginated(threadId);
-    return { threadId, messages };
-  } catch (error) {
-    console.warn(
-      `Failed to fetch fresh Discord messages for thread ${threadId}, attempting to return stale data:`,
-      error
+  // Cache-first: if we already have messages cached, return them immediately.
+  const cachedMessages = await getCachedThreadMessages(threadId);
+  if (cachedMessages && cachedMessages.length > 0) {
+    console.info(
+      `[discord-thread] Serving STALE cached data for requestKey=${requestKey}, threadId=${threadId}, messages=${cachedMessages.length}`
     );
-
-    // Try to return stale data from cache if available
-    try {
-      const staleMessages = await getCachedThreadMessages(threadId);
-      if (staleMessages && staleMessages.length > 0) {
-        console.log(
-          `Returning ${staleMessages.length} stale messages for thread ${threadId}`
-        );
-        return { threadId, messages: staleMessages, isStaleData: true };
-      }
-    } catch (cacheError) {
-      console.warn(`Failed to retrieve stale data from cache:`, cacheError);
-    }
-
-    // If no stale data available, re-throw the original error
-    throw error;
+    return { threadId, messages: cachedMessages, isStaleData: true };
   }
+  // Cold cache: fetch now (this path is rare and acceptable to be blocking)
+  console.info(
+    `[discord-thread] Cold cache MISS for requestKey=${requestKey}, threadId=${threadId}. Fetching fresh from Discord...`
+  );
+  const startedAt = Date.now();
+  const { messages } = await getDiscordMessagesPaginated(threadId);
+  console.info(
+    `[discord-thread] Cold fetch COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
+      messages.length
+    }, durationMs=${Date.now() - startedAt}`
+  );
+  return { threadId, messages };
 }
 
 async function getThreadIdFromCache(
@@ -313,4 +315,76 @@ async function getThreadIdFromCache(
     return updatedThreadMapping?.[requestKey] ?? null;
   }
   return threadId;
+}
+
+function getThreadLockKeyForRequestKey(requestKey: string): string {
+  return `${THREAD_REFRESH_LOCK_PREFIX}:${requestKey}`;
+}
+
+type SetCommandOptions = Parameters<Redis["set"]>[2];
+
+async function acquireLock(
+  lockKey: string,
+  ttlSeconds = DEFAULT_LOCK_TTL_SECONDS
+): Promise<boolean> {
+  const redis = getRedis();
+  try {
+    // Use NX + EX to create a simple mutex
+    const options: SetCommandOptions = {
+      nx: true,
+      ex: ttlSeconds,
+    } as SetCommandOptions;
+    const result = await redis.set(lockKey, "1", options);
+    return Boolean(result);
+  } catch (e) {
+    console.warn(`Failed to acquire lock ${lockKey}:`, e);
+    return false;
+  }
+}
+
+async function releaseLock(lockKey: string) {
+  const redis = getRedis();
+  try {
+    await redis.del(lockKey);
+  } catch (e) {
+    console.warn(`Failed to release lock ${lockKey}:`, e);
+  }
+}
+
+// Trigger a refresh, but only if no other worker is already doing it
+export async function refreshThreadMessagesForRequestKey(requestKey: string) {
+  const lockKey = getThreadLockKeyForRequestKey(requestKey);
+  console.info(
+    `[discord-thread] Refresh attempt for requestKey=${requestKey}, lockKey=${lockKey}`
+  );
+  const locked = await acquireLock(lockKey);
+  if (!locked) {
+    console.info(
+      `[discord-thread] Refresh SKIPPED (lock held) for requestKey=${requestKey}, lockKey=${lockKey}`
+    );
+    return; // another worker is already refreshing
+  }
+  try {
+    const threadId = await getThreadIdFromCache(requestKey);
+    if (!threadId) {
+      console.warn(
+        `[discord-thread] Refresh ABORTED: no threadId for requestKey=${requestKey}`
+      );
+      return;
+    }
+    const startedAt = Date.now();
+    console.info(
+      `[discord-thread] Refresh START for requestKey=${requestKey}, threadId=${threadId}`
+    );
+    const { messages } = await getDiscordMessagesPaginated(threadId);
+    console.info(
+      `[discord-thread] Refresh COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
+        messages.length
+      }, durationMs=${Date.now() - startedAt}`
+    );
+  } catch (e) {
+    console.warn(`Background refresh failed for ${requestKey}:`, e);
+  } finally {
+    await releaseLock(lockKey);
+  }
 }
