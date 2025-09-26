@@ -14,7 +14,7 @@ export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
 const THREAD_REFRESH_LOCK_PREFIX = createCacheKey(
   "discord:thread_refresh_lock"
 );
-const DEFAULT_LOCK_TTL_SECONDS = 180;
+const DEFAULT_LOCK_TTL_SECONDS = 300; // 5 minutes
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;

@@ -257,7 +257,7 @@ export default async function handler(
     );
     const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
     response
-      .setHeader("Cache-Control", "public, max-age=0, s-maxage=300")
+      .setHeader("Cache-Control", "public, max-age=0, s-maxage=600") // 10 minutes
       .status(200)
       .send(voteDiscussion);
     if (voteDiscussion.isStaleData) {
