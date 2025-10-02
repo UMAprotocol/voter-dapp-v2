@@ -32,7 +32,7 @@ interface MessageItemProps {
   id: string;
   replies?: MessageItemProps[];
   isReply?: boolean;
-  isLastReply?: boolean;
+  isFirstReply?: boolean;
 }
 
 function MessageItem({
@@ -43,7 +43,7 @@ function MessageItem({
   id: _id,
   replies,
   isReply = false,
-  isLastReply = false,
+  isFirstReply = false,
 }: MessageItemProps) {
   const hasReplies = replies && replies.length > 0;
 
@@ -51,7 +51,7 @@ function MessageItem({
     <MessageItemWrapper isReply={isReply} hasReplies={hasReplies}>
       <MessageWrapper>
         {hasReplies && <ThreadParentLine />}
-        {isReply && !isLastReply && <ThreadChildLine />}
+        {isReply && !isFirstReply && <ThreadChildLine />}
         <ImageWrapper>
           {senderPicture ? (
             <Image
@@ -94,7 +94,7 @@ function MessageItem({
               key={reply.id}
               {...reply}
               isReply={true}
-              isLastReply={idx === replies.length - 1}
+              isFirstReply={idx === 0}
             />
           ))}
         </RepliesWrapper>
@@ -336,11 +336,13 @@ const ThreadParentLine = styled.span`
 
 const ThreadChildLine = styled.span`
   position: absolute;
-  left: -10px;
-  top: 24px;
+  left: -26px;
+  top: -20px;
   width: 24px;
-  height: 2px;
-  background: var(--black-opacity-25);
+  height: 36px;
+  border-bottom: 2px solid var(--black-opacity-25);
+  border-left: 2px solid var(--black-opacity-25);
+  border-radius: 0px 0px 0px 16px;
 `;
 
 const RepliesWrapper = styled.div`
