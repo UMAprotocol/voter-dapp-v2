@@ -49,9 +49,9 @@ function MessageItem({
 
   return (
     <MessageItemWrapper isReply={isReply} hasReplies={hasReplies}>
-      {hasReplies && <ThreadParentLine />}
-      {isReply && !isLastReply && <ThreadChildLine />}
       <MessageWrapper>
+        {hasReplies && <ThreadParentLine />}
+        {isReply && !isLastReply && <ThreadChildLine />}
         <ImageWrapper>
           {senderPicture ? (
             <Image
@@ -220,6 +220,7 @@ const MessageWrapper = styled.div`
   grid-template-columns: 20px 1fr;
   gap: 10px;
   padding-left: 10px;
+  position: relative;
 `;
 
 const MessageContentWrapper = styled.div``;
@@ -312,7 +313,6 @@ const MessageItemWrapper = styled.div<{
   isReply: boolean;
   hasReplies?: boolean;
 }>`
-  position: relative;
   ${({ isReply }) =>
     isReply &&
     `
@@ -325,9 +325,9 @@ const MessageItemWrapper = styled.div<{
 const ThreadParentLine = styled.span`
   position: absolute;
   left: 18px;
-  top: 34px;
+  top: 36px;
   width: 2px;
-  height: calc(100% - 20px - 36px - 8px);
+  height: 100%;
   border-bottom: 2px solid var(--black-opacity-25);
   border-left: 2px solid var(--black-opacity-25);
   border-radius: 0px 0px 0px 16px;
