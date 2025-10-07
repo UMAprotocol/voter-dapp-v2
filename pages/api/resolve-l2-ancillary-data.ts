@@ -33,7 +33,7 @@ export default async function handler(
       req.query,
       ResolveAncillaryDataRequestSchema
     );
-
+    // will throw if not resolved
     const result = await resolveAncillaryData({
       identifier: requestBody.identifier,
       time: BigNumber.from(requestBody.time),

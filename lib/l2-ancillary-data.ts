@@ -156,49 +156,52 @@ export async function resolveAncillaryData(
   const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
     extractMaybeAncillaryDataFields(decodedAncillaryData);
 
-  if (ancillaryDataHash && childOracle && childChainId && childBlockNumber) {
-    try {
-      // if decoded ancillary data contains these fields, then we must extract from spoke
-      const _childOracle = `0x${childOracle}`;
-      const _childChainId = Number(childChainId);
-      const _childBlockNumber = Number(childBlockNumber);
-
-      const parentRequestId = keccak256(
-        defaultAbiCoder.encode(
-          ["bytes32", "uint256", "bytes"],
-          [args.identifier, args.time, args.ancillaryData]
-        )
-      );
-
-      const resolved = await fetchAncillaryDataFromSpoke({
-        parentRequestId,
-        childOracle: _childOracle,
-        childChainId: _childChainId,
-        childBlockNumber: _childBlockNumber,
-      });
-
-      const resolvedAncillaryData = mergeAncillaryData(
-        decodedAncillaryData,
-        decodeHexString(resolved)
-      );
-
-      return {
-        resolvedAncillaryData,
-      };
-    } catch (error) {
-      console.error("Unable to resolve original ancillary data", {
-        at: "resolveAncillaryData()",
-        data: args,
-        cause: error,
-      });
-
-      return {
-        resolvedAncillaryData: args.ancillaryData,
-      };
-    }
+  if (
+    !ancillaryDataHash ||
+    !childOracle ||
+    !childChainId ||
+    !childBlockNumber
+  ) {
+    throw new Error(
+      "Unable to resolve L2 Ancillary data. Unable to extract one of: ancillaryDataHash | childOracle | childChainId | childBlockNumber"
+    );
   }
 
-  return {
-    resolvedAncillaryData: args.ancillaryData,
-  };
+  try {
+    // if decoded ancillary data contains these fields, then we must extract from spoke
+    const _childOracle = `0x${childOracle}`;
+    const _childChainId = Number(childChainId);
+    const _childBlockNumber = Number(childBlockNumber);
+
+    const parentRequestId = keccak256(
+      defaultAbiCoder.encode(
+        ["bytes32", "uint256", "bytes"],
+        [args.identifier, args.time, args.ancillaryData]
+      )
+    );
+
+    const resolved = await fetchAncillaryDataFromSpoke({
+      parentRequestId,
+      childOracle: _childOracle,
+      childChainId: _childChainId,
+      childBlockNumber: _childBlockNumber,
+    });
+
+    const resolvedAncillaryData = mergeAncillaryData(
+      decodedAncillaryData,
+      decodeHexString(resolved)
+    );
+
+    return {
+      resolvedAncillaryData,
+    };
+  } catch (error) {
+    console.error("Unable to resolve original ancillary data", {
+      at: "resolveAncillaryData()",
+      data: args,
+      cause: error,
+    });
+
+    throw error;
+  }
 }
