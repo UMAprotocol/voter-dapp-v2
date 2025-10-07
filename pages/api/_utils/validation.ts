@@ -1,8 +1,9 @@
 import * as ss from "superstruct";
 import { HttpError } from "./errors";
+import { NextApiRequest } from "next";
 
-export function validateApiRequest<T>(
-  value: unknown,
+export function validateQueryParams<T>(
+  value: NextApiRequest["query"],
   schema: ss.Struct<T, unknown>
 ): T {
   try {

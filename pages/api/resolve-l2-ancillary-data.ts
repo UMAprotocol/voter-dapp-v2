@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { BigNumber } from "ethers";
 import { resolveAncillaryData } from "lib/l2-ancillary-data";
-import { validateApiRequest } from "./_utils/validation";
+import { validateQueryParams } from "./_utils/validation";
 import { handleApiError } from "./_utils/errors";
 import { hexString, positiveIntStr } from "helpers/validators";
 
@@ -29,7 +29,7 @@ export default async function handler(
 
   try {
     // Validate request query parameters
-    const requestBody = validateApiRequest(
+    const requestBody = validateQueryParams(
       req.query,
       ResolveAncillaryDataRequestSchema
     );

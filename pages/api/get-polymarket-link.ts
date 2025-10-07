@@ -1,9 +1,10 @@
 import { hexString } from "helpers/validators";
 import { NextApiRequest, NextApiResponse } from "next";
-import { type, create } from "superstruct";
+import { type } from "superstruct";
 import { HttpError } from "./_common";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
 import { handleApiError } from "./_utils/errors";
+import { validateQueryParams } from "./_utils/validation";
 
 const querySchema = type({
   questionId: hexString(),
@@ -15,7 +16,7 @@ export default async function handler(
   response: NextApiResponse
 ) {
   try {
-    const query = create(request.query, querySchema);
+    const query = validateQueryParams(request.query, querySchema);
     const questionId = query?.questionId;
 
     if (!questionId) {
