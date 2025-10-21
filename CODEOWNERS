@@ -2,7 +2,5 @@
 # This file defines who is responsible for reviewing changes to different parts of the codebase
 
 # Global owners - All changes
-* @mrice32 @james-a-morris @gsteenkamp89
 
 # CI & Automation
-/.github/ @mrice32 @james-a-morris @gsteenkamp89 @evaldofelipe
