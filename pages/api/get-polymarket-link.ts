@@ -1,10 +1,8 @@
 import { hexString } from "helpers/validators";
 import { NextApiRequest, NextApiResponse } from "next";
-import { type } from "superstruct";
+import { type, create } from "superstruct";
 import { HttpError } from "./_common";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
-import { handleApiError } from "./_utils/errors";
-import { validateQueryParams } from "./_utils/validation";
 
 const querySchema = type({
   questionId: hexString(),
@@ -16,7 +14,7 @@ export default async function handler(
   response: NextApiResponse
 ) {
   try {
-    const query = validateQueryParams(request.query, querySchema);
+    const query = create(request.query, querySchema);
     const questionId = query?.questionId;
 
     if (!questionId) {
@@ -40,6 +38,14 @@ export default async function handler(
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
   } catch (e) {
-    return handleApiError(e, response);
+    console.error("Error fetching Polymarket link", {
+      at: "api/get-polymarket-link",
+      cause: e,
+    });
+
+    response.status(e instanceof HttpError ? e.status : 500).send({
+      message: "Server error",
+      error: e instanceof Error ? e.message : e,
+    });
   }
 }
