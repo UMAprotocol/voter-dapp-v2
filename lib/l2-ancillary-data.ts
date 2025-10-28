@@ -156,15 +156,17 @@ export async function resolveAncillaryData(
   const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
     extractMaybeAncillaryDataFields(decodedAncillaryData);
 
+  // If not all L2 fields are present, this is not an L2 ancillary data
+  // Return the original ancillary data unchanged
   if (
     !ancillaryDataHash ||
     !childOracle ||
     !childChainId ||
     !childBlockNumber
   ) {
-    throw new Error(
-      "Unable to resolve L2 Ancillary data. Unable to extract one of: ancillaryDataHash | childOracle | childChainId | childBlockNumber"
-    );
+    return {
+      resolvedAncillaryData: args.ancillaryData,
+    };
   }
 
   try {
