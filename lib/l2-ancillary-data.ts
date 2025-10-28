@@ -204,6 +204,9 @@ export async function resolveAncillaryData(
       cause: error,
     });
 
-    throw error;
+    // If L2 resolution fails, return the original ancillary data as fallback
+    return {
+      resolvedAncillaryData: args.ancillaryData,
+    };
   }
 }
