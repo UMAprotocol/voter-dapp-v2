@@ -1,12 +1,13 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
 import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
+import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
 
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
 >(requests: T[]): Promise<(T & { ancillaryDataL2: string })[]> {
-  const resolvedAncillaryData = await Promise.all(
-    requests.map((request) => resolveAncillaryData(request))
+  const resolvedAncillaryData = await promiseAllWithConcurrency(
+    requests.map((request) => () => resolveAncillaryData(request))
   );
   return requests.map((request, i) => ({
     ...request,
