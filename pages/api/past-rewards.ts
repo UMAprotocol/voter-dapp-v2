@@ -1,8 +1,11 @@
 import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
 import { BigNumber, ethers } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
+import * as ss from "superstruct";
 import { MainnetOrL1Testnet } from "types";
 import { constructContract } from "./_common";
+import { handleApiError } from "./_utils/errors";
+import { validateBodyParams } from "./_utils/validation";
 
 type GroupedReveals = Record<
   string,
@@ -93,28 +96,23 @@ async function constructMulticall(
   }
 }
 
+// Request validation schema
+const RequestBodySchema = ss.object({
+  address: ss.string(),
+  chainId: ss.union([ss.literal(1), ss.literal(11155111)]), // MainnetOrL1Testnet
+});
+
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
   try {
-    const body = request.body as {
-      address: string;
-      chainId: MainnetOrL1Testnet;
-    };
-    ["address", "chainId"].forEach((requiredKey) => {
-      if (!Object.keys(body).includes(requiredKey))
-        throw `Missing key in req body! required: ${requiredKey}`;
-    });
+    const body = validateBodyParams(request.body, RequestBodySchema);
     const { address, chainId } = body;
     const multicallTx = await generatePastRewardTx(address, chainId);
     response.status(200).send(multicallTx);
-  } catch (e) {
-    console.error(e);
-    response.status(500).send({
-      message: "Error in generating multicall tx",
-      error: e instanceof Error ? e.message : e,
-    });
+  } catch (error) {
+    return handleApiError(error, response);
   }
 }

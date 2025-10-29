@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { create, object, string } from "superstruct";
+import * as ss from "superstruct";
+import { handleApiError } from "./_utils/errors";
+import { validateBodyParams } from "./_utils/validation";
 
 const designatedVotingOwners = [
   "0x718648C8c531F91b528A7757dD2bE813c3940608",
@@ -42,6 +44,11 @@ function accountHasDesignatedVoting(account: string) {
   };
 }
 
+// Request validation schema
+const RequestBodySchema = ss.object({
+  account: ss.string(),
+});
+
 // next.js requires async functions
 // eslint-disable-next-line @typescript-eslint/require-await
 export default async function handler(
@@ -49,20 +56,11 @@ export default async function handler(
   response: NextApiResponse
 ) {
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
-  const accountRequestBody = object({ account: string() });
   try {
-    const body = create(request.body, accountRequestBody);
-    ["account"].forEach((requiredKey) => {
-      if (!Object.keys(body).includes(requiredKey))
-        throw "Missing key in req body! required: account";
-    });
+    const body = validateBodyParams(request.body, RequestBodySchema);
     const readableTxData = accountHasDesignatedVoting(body.account);
     response.status(200).send(readableTxData);
-  } catch (e) {
-    console.error(e);
-    response.status(500).send({
-      message: "Error in decoding designated voting target address",
-      error: e instanceof Error ? e.message : e,
-    });
+  } catch (error) {
+    return handleApiError(error, response);
   }
 }

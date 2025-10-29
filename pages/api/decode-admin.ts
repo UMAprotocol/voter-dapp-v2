@@ -9,9 +9,12 @@ import { getAbi, getContractNames } from "@uma/contracts-node";
 import { NextApiRequest, NextApiResponse } from "next";
 // @ts-expect-error - no types for this module
 import abiDecoder from "abi-decoder";
+import * as ss from "superstruct";
 import { constructContract, getProviderByChainId } from "./_common";
 import { config } from "helpers/config";
 import { supportedChains } from "constant";
+import { handleApiError } from "./_utils/errors";
+import { validateBodyParams } from "./_utils/validation";
 
 type AbiDecoder = typeof abiDecoder;
 
@@ -209,6 +212,11 @@ async function generateReadableAdminTransactionData(identifiers: string[]) {
   });
 }
 
+// Request validation schema
+const RequestBodySchema = ss.object({
+  identifiers: ss.array(ss.string()),
+});
+
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
@@ -216,20 +224,12 @@ export default async function handler(
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
-    const body = request.body;
-    ["identifiers"].forEach((requiredKey) => {
-      if (!Object.keys(body).includes(requiredKey))
-        throw "Missing key in req body! required: identifiers";
-    });
+    const body = validateBodyParams(request.body, RequestBodySchema);
     const readableTxData = await generateReadableAdminTransactionData(
       body.identifiers
     );
     response.status(200).send(readableTxData);
-  } catch (e) {
-    console.error("Decode admin error", e);
-    response.status(500).send({
-      message: "Error in decoding admin call",
-      error: e instanceof Error ? e.message : e,
-    });
+  } catch (error) {
+    return handleApiError(error, response);
   }
 }

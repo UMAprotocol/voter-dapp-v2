@@ -1,9 +1,8 @@
 import { hexString } from "helpers/validators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { type } from "superstruct";
-import { HttpError } from "./_common";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
-import { handleApiError } from "./_utils/errors";
+import { handleApiError, HttpError } from "./_utils/errors";
 import { validateQueryParams } from "./_utils/validation";
 
 const querySchema = type({
@@ -21,8 +20,8 @@ export default async function handler(
 
     if (!questionId) {
       throw new HttpError({
-        status: 400,
-        message: "Invalid Param: questionId must be valid hex string",
+        statusCode: 400,
+        msg: "Invalid Param: questionId must be valid hex string",
       });
     }
 

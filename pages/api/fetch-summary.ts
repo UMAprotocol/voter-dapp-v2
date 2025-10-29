@@ -3,6 +3,8 @@ import { Redis } from "@upstash/redis";
 import * as ss from "superstruct";
 import { OutcomeData, SummaryResponse } from "types/summary";
 import { isDiscordSummaryDisabled } from "helpers/disabledSummaries";
+import { validateQueryParams } from "./_utils/validation";
+import { handleApiError, HttpError } from "./_utils/errors";
 
 // Types imported from types/summary.ts
 
@@ -44,6 +46,13 @@ function extractMissingUsers(
   return Array.from(uniqueUsers);
 }
 
+// Request validation schema
+const QueryParamsSchema = ss.object({
+  time: ss.string(),
+  identifier: ss.string(),
+  title: ss.string(),
+});
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<
@@ -54,32 +63,13 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Define query parameter schema
-  const QueryParamsSchema = ss.object({
-    time: ss.string(),
-    identifier: ss.string(),
-    title: ss.string(),
-  });
-
-  // Validate query parameters
   try {
-    ss.assert(req.query, QueryParamsSchema);
-  } catch (error) {
-    return res.status(400).json({
-      error:
-        "Invalid query parameters: time, identifier, and title are required and must be strings",
-      details:
-        error instanceof Error ? error.message : "Unknown validation error",
-    });
-  }
+    // Validate request query parameters
+    const { time, identifier, title } = validateQueryParams(
+      req.query,
+      QueryParamsSchema
+    );
 
-  const { time, identifier, title } = req.query as {
-    time: string;
-    identifier: string;
-    title: string;
-  };
-
-  try {
     // Initialize Redis
     const redis = Redis.fromEnv();
 
@@ -88,8 +78,9 @@ export default async function handler(
 
     // Check if this summary is disabled
     if (isDiscordSummaryDisabled(cacheKey)) {
-      return res.status(403).json({
-        message: "Discord summary is disabled for this market.",
+      throw new HttpError({
+        statusCode: 403,
+        msg: "Discord summary is disabled for this market.",
       });
     }
 
@@ -97,9 +88,9 @@ export default async function handler(
     const cachedData = await redis.get<CacheData>(cacheKey);
 
     if (!cachedData) {
-      return res.status(404).json({
-        message:
-          "No cached summary found for this identifier. Use /api/update-summary to generate one.",
+      throw new HttpError({
+        statusCode: 404,
+        msg: "No cached summary found for this identifier. Use /api/update-summary to generate one.",
       });
     }
 
@@ -139,10 +130,6 @@ export default async function handler(
 
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error in fetch-summary API:", error);
-
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error occurred";
-    res.status(500).json({ error: `Failed to fetch summary: ${errorMessage}` });
+    return handleApiError(error, res);
   }
 }
