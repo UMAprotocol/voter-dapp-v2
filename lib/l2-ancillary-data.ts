@@ -10,7 +10,7 @@ import { getProvider } from "helpers/config";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 
 // ABI for OracleSpoke contract events
-const abi = [
+export const PRICE_REQUEST_BRIDGED_ABI = [
   {
     anonymous: false,
     inputs: [
@@ -108,7 +108,7 @@ async function fetchAncillaryDataFromSpoke(args: {
   const provider = getProvider(args.childChainId);
   const OracleSpoke = new Contract(
     args.childOracle,
-    new Interface(abi),
+    new Interface(PRICE_REQUEST_BRIDGED_ABI),
     provider
   );
 

@@ -1,53 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ethers } from "ethers";
 import { UpdateSummaryResponse, WarmSummaryResponse } from "types/summary";
-
-// Event ABI for PriceRequestBridged
-const PRICE_REQUEST_BRIDGED_ABI = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "requester",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bytes32",
-        name: "identifier",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "time",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "bytes",
-        name: "ancillaryData",
-        type: "bytes",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "childRequestId",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "parentRequestId",
-        type: "bytes32",
-      },
-    ],
-    name: "PriceRequestBridged",
-    type: "event",
-  },
-];
+import { PRICE_REQUEST_BRIDGED_ABI } from "lib/l2-ancillary-data";
 
 interface PriceRequestEvent {
   requester: string;
