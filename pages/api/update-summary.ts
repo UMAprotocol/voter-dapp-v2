@@ -9,6 +9,8 @@ import {
   OpenAIJsonResponse,
 } from "types/summary";
 import { isDiscordSummaryDisabled } from "helpers/disabledSummaries";
+import { validateQueryParams } from "./_utils/validation";
+import { handleApiError, HttpError } from "./_utils/errors";
 
 // Default maximum interval between summary updates (5 minutes in milliseconds)
 const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -740,6 +742,13 @@ function trackMissingSourcesIfEnabled(
   return undefined;
 }
 
+// Request validation schema
+const QueryParamsSchema = ss.object({
+  time: ss.string(),
+  identifier: ss.string(),
+  title: ss.string(),
+});
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UpdateResponse | { error: string }>
@@ -748,73 +757,71 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { time, identifier, title } = req.query;
-
-  // Validate required parameters
-  if (
-    !time ||
-    !identifier ||
-    !title ||
-    Array.isArray(time) ||
-    Array.isArray(identifier) ||
-    Array.isArray(title)
-  ) {
-    return res.status(400).json({
-      error:
-        "Missing required parameters: time, identifier, and title are required",
-    });
-  }
-
-  // Validate environment variables
-  const openaiApiKey = process.env.OPENAI_API_KEY;
-  const systemPrompt = process.env.SUMMARY_PROMPT;
-  const promptVersion = process.env.SUMMARY_PROMPT_VERSION;
-
-  if (!openaiApiKey) {
-    return res.status(500).json({ error: "OpenAI API key not configured" });
-  }
-
-  if (!systemPrompt) {
-    return res.status(500).json({ error: "Summary prompt not configured" });
-  }
-
-  if (!promptVersion) {
-    return res
-      .status(500)
-      .json({ error: "Summary prompt version not configured" });
-  }
-
-  // Add batch processing environment variable validation
-  const batchSize = parseInt(process.env.SUMMARY_BATCH_SIZE || "25");
-  const condensationPrompt = process.env.SUMMARY_CONDENSATION_PROMPT;
-  const condensationPromptVersion =
-    process.env.SUMMARY_CONDENSATION_PROMPT_VERSION;
-  const model = process.env.OPENAI_MODEL || "gpt-4.1";
-  const maxUpdateInterval = parseInt(
-    process.env.MAX_UPDATE_INTERVAL || DEFAULT_MAX_UPDATE_INTERVAL.toString()
-  );
-  const trackMissingSources = process.env.TRACK_MISSING_SOURCES === "true";
-  const ignoredUsernamesStr = process.env.SUMMARY_IGNORED_USERNAMES || "";
-  const ignoredUsernames = ignoredUsernamesStr
-    ? ignoredUsernamesStr
-        .split(",")
-        .map((username) => username.trim())
-        .filter(Boolean)
-    : [];
-
-  if (!condensationPrompt) {
-    return res
-      .status(500)
-      .json({ error: "Summary condensation prompt not configured" });
-  }
-
-  if (!condensationPromptVersion) {
-    return res
-      .status(500)
-      .json({ error: "Summary condensation prompt version not configured" });
-  }
-
   try {
+    // Validate request query parameters
+    const { time, identifier, title } = validateQueryParams(
+      req.query,
+      QueryParamsSchema
+    );
+
+    // Validate environment variables
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    const systemPrompt = process.env.SUMMARY_PROMPT;
+    const promptVersion = process.env.SUMMARY_PROMPT_VERSION;
+
+    if (!openaiApiKey) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "OpenAI API key not configured",
+      });
+    }
+
+    if (!systemPrompt) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Summary prompt not configured",
+      });
+    }
+
+    if (!promptVersion) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Summary prompt version not configured",
+      });
+    }
+
+    // Add batch processing environment variable validation
+    const batchSize = parseInt(process.env.SUMMARY_BATCH_SIZE || "25");
+    const condensationPrompt = process.env.SUMMARY_CONDENSATION_PROMPT;
+    const condensationPromptVersion =
+      process.env.SUMMARY_CONDENSATION_PROMPT_VERSION;
+    const model = process.env.OPENAI_MODEL || "gpt-4.1";
+    const maxUpdateInterval = parseInt(
+      process.env.MAX_UPDATE_INTERVAL || DEFAULT_MAX_UPDATE_INTERVAL.toString()
+    );
+    const trackMissingSources = process.env.TRACK_MISSING_SOURCES === "true";
+    const ignoredUsernamesStr = process.env.SUMMARY_IGNORED_USERNAMES || "";
+    const ignoredUsernames = ignoredUsernamesStr
+      ? ignoredUsernamesStr
+          .split(",")
+          .map((username) => username.trim())
+          .filter(Boolean)
+      : [];
+
+    if (!condensationPrompt) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Summary condensation prompt not configured",
+      });
+    }
+
+    if (!condensationPromptVersion) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Summary condensation prompt version not configured",
+      });
+    }
+
     const startTime = Date.now();
 
     // Log request start
@@ -936,8 +943,9 @@ export default async function handler(
 
     // Check if this summary is disabled
     if (isDiscordSummaryDisabled(cacheKey)) {
-      return res.status(403).json({
-        error: "Discord summary generation is disabled for this market.",
+      throw new HttpError({
+        statusCode: 403,
+        msg: "Discord summary generation is disabled for this market.",
       });
     }
 
@@ -1419,11 +1427,6 @@ ${msg.message}
 
     res.status(200).json(response);
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error occurred";
-    console.error(`[Summary Update] Error: ${errorMessage}`);
-    res
-      .status(500)
-      .json({ error: `Failed to update summary: ${errorMessage}` });
+    return handleApiError(error, res);
   }
 }

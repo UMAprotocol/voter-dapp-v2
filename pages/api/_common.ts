@@ -328,15 +328,6 @@ export function getSubgraphConfig(
   );
 }
 
-export class HttpError extends Error {
-  status: number;
-
-  constructor(args: { status: number; message: string }) {
-    super(args.message);
-    this.status = args.status;
-  }
-}
-
 export function constructOoUiLink(
   txHash: string | undefined,
   chainId: string | number | undefined,

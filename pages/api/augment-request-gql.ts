@@ -9,6 +9,8 @@ import {
   constructOoUiLink,
 } from "./_common";
 import { encodeHexString } from "helpers/web3/decodeHexString";
+import { handleApiError } from "./_utils/errors";
+import { validateBodyParams } from "./_utils/validation";
 
 const debug = Boolean(process.env.DEBUG === "true");
 
@@ -516,16 +518,12 @@ export default async function handler(
   response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000"); // Cache for 30 days and re-build cache if re-deployed.
 
   try {
-    const body: RequestBody = ss.create(request.body, RequestBody);
+    const body = validateBodyParams(request.body, RequestBody);
     if (debug) console.log("query", body);
     const result = await augmentRequest(body);
     if (debug) console.log("result", result);
     response.status(200).send(result);
-  } catch (e) {
-    if (debug) console.error("augment-request-gql error:", e);
-    response.status(500).send({
-      message: "Error in fetching augmented information",
-      error: e instanceof Error ? e.message : e,
-    });
+  } catch (error) {
+    return handleApiError(error, response);
   }
 }
