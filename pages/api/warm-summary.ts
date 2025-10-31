@@ -1,53 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ethers } from "ethers";
 import { UpdateSummaryResponse, WarmSummaryResponse } from "types/summary";
-
-// Event ABI for PriceRequestBridged
-const PRICE_REQUEST_BRIDGED_ABI = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "requester",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bytes32",
-        name: "identifier",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "time",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "bytes",
-        name: "ancillaryData",
-        type: "bytes",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "childRequestId",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "parentRequestId",
-        type: "bytes32",
-      },
-    ],
-    name: "PriceRequestBridged",
-    type: "event",
-  },
-];
+import { PRICE_REQUEST_BRIDGED_ABI } from "lib/l2-ancillary-data";
+import { handleApiError, HttpError } from "./_utils/errors";
 
 interface PriceRequestEvent {
   requester: string;
@@ -206,35 +161,37 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const startTime = Date.now();
-  console.log("🔥 Starting warm-summary process...");
-
-  // Validate environment variables
-  if (!process.env.NODE_URLS) {
-    return res
-      .status(500)
-      .json({ error: "NODE_URLS environment variable not set" });
-  }
-
-  let nodeUrls: NodeUrls;
   try {
-    nodeUrls = JSON.parse(process.env.NODE_URLS) as NodeUrls;
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Invalid NODE_URLS format - must be valid JSON" });
-  }
+    const startTime = Date.now();
+    console.log("🔥 Starting warm-summary process...");
 
-  const polygonRpcUrl = nodeUrls["137"]; // Chain ID 137 is Polygon
+    // Validate environment variables
+    if (!process.env.NODE_URLS) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "NODE_URLS environment variable not set",
+      });
+    }
 
-  if (!polygonRpcUrl) {
-    return res.status(500).json({
-      error:
-        "Polygon RPC URL not configured in NODE_URLS (missing chain ID 137)",
-    });
-  }
+    let nodeUrls: NodeUrls;
+    try {
+      nodeUrls = JSON.parse(process.env.NODE_URLS) as NodeUrls;
+    } catch (error) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Invalid NODE_URLS format - must be valid JSON",
+      });
+    }
 
-  try {
+    const polygonRpcUrl = nodeUrls["137"]; // Chain ID 137 is Polygon
+
+    if (!polygonRpcUrl) {
+      throw new HttpError({
+        statusCode: 500,
+        msg: "Polygon RPC URL not configured in NODE_URLS (missing chain ID 137)",
+      });
+    }
+
     // Setup Polygon provider
     console.log("🌐 Connecting to Polygon...");
     const provider = new ethers.providers.JsonRpcProvider(polygonRpcUrl);
@@ -405,12 +362,6 @@ export default async function handler(
       },
     });
   } catch (error) {
-    console.error("💥 Error in warm-summary:", error);
-
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error occurred";
-    return res.status(500).json({
-      error: `Failed to warm summaries: ${errorMessage}`,
-    });
+    return handleApiError(error, res);
   }
 }

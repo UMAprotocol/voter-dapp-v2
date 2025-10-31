@@ -8,6 +8,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { constructContract } from "./_common";
+import { handleApiError } from "./_utils/errors";
 
 async function warmAugmentedDataCache(req: NextApiRequest) {
   const votingV1 = await constructContract(1, "Voting");
@@ -55,11 +56,7 @@ export default async function handler(
     await warmCache(request);
 
     response.status(200).send("done");
-  } catch (e) {
-    console.error(e);
-    response.status(500).send({
-      message: "Error in decoding admin call",
-      error: e instanceof Error ? e.message : e,
-    });
+  } catch (error) {
+    return handleApiError(error, response);
   }
 }
