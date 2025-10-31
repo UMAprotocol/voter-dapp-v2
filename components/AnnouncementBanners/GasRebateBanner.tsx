@@ -9,7 +9,7 @@ export function GasRebateBanner() {
     <AnnouncementBannerWrapper localStorageKey="show-gas-rebate-banner">
       <InfoIcon />
       <Text>
-        New voting gas rebate rules come into effect starting February 1st, see
+        New voting gas rebate rules come into effect starting November 1st, see
         details{" "}
         <Link
           href="https://docs.uma.xyz/using-uma/voting-gas-rebates"
