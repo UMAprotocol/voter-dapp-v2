@@ -1,5 +1,6 @@
 import {
   ErrorBanner,
+  GasRebateBanner,
   Header,
   OldDesignatedVotingAccountWarningBanner,
 } from "components";
@@ -20,6 +21,7 @@ export function Layout({ children, title }: Props) {
     <>
       <Meta title={title} />
       <Main>
+        <GasRebateBanner />
         <ErrorBanner />
         <OldDesignatedVotingAccountWarningBanner />
         <Header />
