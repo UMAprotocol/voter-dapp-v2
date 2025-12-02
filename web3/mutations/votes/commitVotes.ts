@@ -1,8 +1,11 @@
 import { handleNotifications } from "helpers";
+import { getVotingGasOverrides } from "helpers/gas";
 import { CommitVotes } from "types";
 
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;
+
+  const overrides = await getVotingGasOverrides(voting.provider);
 
   if (formattedVotes.length === 1) {
     const vote = formattedVotes[0];
@@ -16,7 +19,8 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
       time,
       ancillaryData,
       hash,
-      encryptedVote
+      encryptedVote,
+      overrides
     );
 
     return handleNotifications(tx, {
@@ -43,7 +47,7 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
     ]);
   });
 
-  const tx = await voting.functions.multicall(calldata);
+  const tx = await voting.functions.multicall(calldata, overrides);
 
   return handleNotifications(tx, {
     pending: `Committing ${formattedVotes.length} votes...`,

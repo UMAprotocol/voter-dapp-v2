@@ -1,4 +1,5 @@
 export * from "./config";
+export * from "./gas";
 export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./delegation/getIgnoredRequestToBeDelegateAddressesFromStorage";
 export { calculateOutstandingRewards } from "./rewards/calculateOutstandingRewards";
 export { getCanUnstakeTime } from "./staking/getCanUnstakeTime";
