@@ -1,4 +1,8 @@
-import { formatVotesToReveal, handleNotifications } from "helpers";
+import {
+  formatVotesToReveal,
+  handleNotifications,
+  MAX_PRIORITY_FEE_PER_GAS,
+} from "helpers";
 import { RevealVotes } from "types";
 
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
@@ -18,7 +22,8 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
       time,
       price,
       ancillaryData,
-      salt
+      salt,
+      { maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS }
     );
 
     return handleNotifications(tx, {

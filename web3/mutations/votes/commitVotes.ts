@@ -1,4 +1,4 @@
-import { handleNotifications } from "helpers";
+import { handleNotifications, MAX_PRIORITY_FEE_PER_GAS } from "helpers";
 import { CommitVotes } from "types";
 
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
@@ -16,7 +16,10 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
       time,
       ancillaryData,
       hash,
-      encryptedVote
+      encryptedVote,
+      {
+        maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+      }
     );
 
     return handleNotifications(tx, {
