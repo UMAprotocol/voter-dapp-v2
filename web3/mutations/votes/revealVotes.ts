@@ -1,7 +1,7 @@
 import {
   formatVotesToReveal,
+  getGasFeeOverrides,
   handleNotifications,
-  MAX_PRIORITY_FEE_PER_GAS,
 } from "helpers";
 import { RevealVotes } from "types";
 
@@ -9,6 +9,7 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
 
   if (!formattedVotes.length) return;
+  const gasOverrides = await getGasFeeOverrides(voting.provider);
 
   if (formattedVotes.length === 1) {
     const vote = formattedVotes[0];
@@ -23,7 +24,7 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
       price,
       ancillaryData,
       salt,
-      { maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS }
+      gasOverrides
     );
 
     return handleNotifications(tx, {
@@ -52,7 +53,7 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
     ]);
   });
 
-  const tx = await voting.functions.multicall(calldata);
+  const tx = await voting.functions.multicall(calldata, gasOverrides);
 
   return handleNotifications(tx, {
     pending: `Revealing ${formattedVotes.length} votes...`,
