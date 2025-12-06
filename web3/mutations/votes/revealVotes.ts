@@ -1,10 +1,15 @@
-import { formatVotesToReveal, handleNotifications } from "helpers";
+import {
+  formatVotesToReveal,
+  getGasFeeOverrides,
+  handleNotifications,
+} from "helpers";
 import { RevealVotes } from "types";
 
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
 
   if (!formattedVotes.length) return;
+  const gasOverrides = await getGasFeeOverrides(voting.provider);
 
   if (formattedVotes.length === 1) {
     const vote = formattedVotes[0];
@@ -18,7 +23,8 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
       time,
       price,
       ancillaryData,
-      salt
+      salt,
+      gasOverrides
     );
 
     return handleNotifications(tx, {
@@ -47,7 +53,7 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
     ]);
   });
 
-  const tx = await voting.functions.multicall(calldata);
+  const tx = await voting.functions.multicall(calldata, gasOverrides);
 
   return handleNotifications(tx, {
     pending: `Revealing ${formattedVotes.length} votes...`,

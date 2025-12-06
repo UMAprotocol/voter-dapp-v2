@@ -34,3 +34,4 @@ export * from "./web3/signing";
 export { truncateEthAddress } from "./web3/truncateEthAddress";
 export * from "./web3/wallet";
 export * from "./typeUtilities";
+export * from "./gas";
