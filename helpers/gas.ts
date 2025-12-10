@@ -13,7 +13,7 @@ export async function getGasFeeOverrides(provider: ethers.providers.Provider) {
   }
 
   const maxPriorityFeePerGas = ethers.utils.parseUnits("0.001", "gwei"); // low, non-zero tip
-  const maxFeePerGas = baseFee.mul(110).div(100).add(maxPriorityFeePerGas); // conservative 10% buffer on base fee
+  const maxFeePerGas = baseFee.mul(150).div(100).add(maxPriorityFeePerGas); // moderate 50% buffer on base fee
 
   const gasOverrides = {
     maxFeePerGas: maxFeePerGas?.toString(),
