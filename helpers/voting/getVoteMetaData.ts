@@ -160,8 +160,13 @@ export function getVoteMetaData(
   const identifierDetails = approvedIdentifiers[decodedIdentifier];
   const isApprovedIdentifier = Boolean(identifierDetails);
   if (isApprovedIdentifier) {
-    const title = stripInvalidCharacters(identifierDetails.identifier);
-    const description = identifierDetails.summary;
+    // Try to extract title/description from ancillary data first, fallback to identifier details
+    const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
+    const ancillaryDataDescription =
+      getDescriptionFromAncillaryData(decodedAncillaryData);
+
+    const title = ancillaryDataTitle ?? identifierDetails.identifier;
+    const description = ancillaryDataDescription ?? identifierDetails.summary;
     const umipOrUppUrl = identifierDetails.umipLink.url;
     const umipOrUppNumber = identifierDetails.umipLink.number;
 
@@ -184,9 +189,17 @@ export function getVoteMetaData(
   }
 
   // if all checks fail, return with generic values generated from the data we have
+  // Try to extract title/description from ancillary data first as a fallback
+  const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
+  const ancillaryDataDescription =
+    getDescriptionFromAncillaryData(decodedAncillaryData);
+
+  const title = ancillaryDataTitle ?? decodedIdentifier;
+
   return {
-    title: stripInvalidCharacters(decodedIdentifier),
-    description: "No description found for this request.",
+    title,
+    description:
+      ancillaryDataDescription ?? "No description found for this request.",
     umipOrUppLink: undefined,
     umipOrUppNumber: undefined,
     options: undefined,
