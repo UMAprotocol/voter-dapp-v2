@@ -36,18 +36,18 @@ export function getVoteMetaData(
   const isAssertion = ["assertionId:", "ooAsserter:"].every((lookup) =>
     decodedAncillaryData.includes(lookup)
   );
+
   if (isAssertion) {
     const assertionData = parseAssertionAncillaryData(decodedAncillaryData);
     const title = stripInvalidCharacters(decodedIdentifier);
     const description = makeAssertionDescription(assertionData);
+    const umipMetadata =
+      getUmipMetadata(decodedIdentifier) || getUmipMetadata("ASSERT_TRUTH");
+
     return {
       title,
       description,
-      umipOrUppLink: {
-        label: "UMIP-170",
-        href: "https://github.com/UMAprotocol/UMIPs/blob/7e4eadb309c8e38d540bdf6f39cee81a3e48d260/UMIPs/umip-170.md",
-      },
-      umipOrUppNumber: "umip-170",
+      ...umipMetadata,
       options: makeAssertionOptions(),
       origin: "UMA" as const,
       isGovernance: false,
@@ -85,16 +85,13 @@ export function getVoteMetaData(
   if (isAcross) {
     const title = "Across V2";
     const description = `Across is an optimistic insured bridge that relies on a decentralized group of relayers to fulfill user deposit requests from EVM to EVM networks. Relayer funds are insured by liquidity providers in a single pool on Ethereum and refunds are processed via the UMA Optimistic Oracle. [Learn more.](https://docs.across.to/)`;
-    const umipOrUppUrl =
-      "https://github.com/UMAprotocol/UMIPs/blob/448375e1b9d2bd24dfd0627805ef6a7c2d72f74f/UMIPs/umip-157.md";
-    const umipOrUppNumber = "umip-157";
+    const umipMetadata = getUmipMetadata(decodedIdentifier);
     const options = makeAcrossV2Options();
 
     return {
       title,
       description,
-      umipOrUppLink: maybeMakeUmipOrUppLink(umipOrUppNumber, umipOrUppUrl),
-      umipOrUppNumber,
+      ...umipMetadata,
       options,
       origin: "Across",
       isGovernance: false,
@@ -125,16 +122,14 @@ export function getVoteMetaData(
     const options = isYesNoQuery
       ? maybeMakePolymarketOptions(decodedAncillaryData)
       : undefined;
-    const umipOrUppNumber = isYesNoQuery ? "umip-107" : undefined;
-    const umipOrUppUrl = isYesNoQuery
-      ? "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-107.md"
-      : undefined;
+    const umipMetadata = isYesNoQuery
+      ? getUmipMetadata(decodedIdentifier)
+      : { umipOrUppLink: undefined, umipOrUppNumber: undefined };
     return {
       title,
       description,
       options,
-      umipOrUppLink: maybeMakeUmipOrUppLink(umipOrUppNumber, umipOrUppUrl),
-      umipOrUppNumber,
+      ...umipMetadata,
       origin: isPolymarket ? "Polymarket" : "Predict.Fun",
       isGovernance: false,
       discordLink,
@@ -209,6 +204,7 @@ export function getVoteMetaData(
     isAssertion: false,
   };
 }
+
 const MultipleValuesQuery = s.object({
   // The title of the request
   title: s.string(),
@@ -283,12 +279,9 @@ function tryParseMultipleValues(
   decodedQueryText: string,
   projectName: VoteOriginT
 ): VoteMetaDataT {
+  const umipMetadata = getUmipMetadata("MULTIPLE_VALUES");
   const common = {
-    umipOrUppLink: {
-      label: "Multiple Value - UMIP-183",
-      href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-183.md",
-    },
-    umipOrUppNumber: "UMIP-183",
+    ...umipMetadata,
     isGovernance: false,
     isAssertion: false,
     origin: projectName,
@@ -317,14 +310,11 @@ function tryParseMultipleChoiceQuery(
   decodedAncillaryData: string,
   projectName: VoteOriginT
 ): VoteMetaDataT {
+  const umipMetadata = getUmipMetadata("MULTIPLE_CHOICE_QUERY");
   try {
     return {
       ...decodeMultipleChoiceQuery(decodedAncillaryData),
-      umipOrUppLink: {
-        label: "Multiple Choice Query - UMIP-181",
-        href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
-      },
-      umipOrUppNumber: "UMIP-181",
+      ...umipMetadata,
       isGovernance: false,
       isAssertion: false,
       discordLink,
@@ -344,11 +334,7 @@ function tryParseMultipleChoiceQuery(
       title: "Multiple Choice query",
       description,
       options: makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions()),
-      umipOrUppLink: {
-        label: "Multiple Choice Query - UMIP-181",
-        href: "https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-181.md",
-      },
-      umipOrUppNumber: "UMIP-181",
+      ...umipMetadata,
       isGovernance: false,
       isAssertion: false,
       discordLink,
@@ -414,12 +400,13 @@ function makeAcrossV2Options() {
 
 function maybeMakeUmipOrUppLink(
   umipOrUppNumber?: string | undefined,
-  umipOrUppUrl?: string | undefined
+  umipOrUppUrl?: string | undefined,
+  customLabel?: string | undefined
 ) {
   if (!umipOrUppNumber || !umipOrUppUrl) return;
 
   return {
-    label: umipOrUppNumber.toUpperCase(),
+    label: customLabel || umipOrUppNumber.toUpperCase(),
     href: umipOrUppUrl,
   };
 }
@@ -439,6 +426,50 @@ function getUmipOrUppNumberFromUrl(url: string | undefined) {
     const uppNumber = url.split("upp-")[1].split(".")[0];
     return `upp-${uppNumber}`;
   }
+}
+
+const identifierToUmipNumber: Record<string, number> = {
+  ASSERT_TRUTH: 170,
+  ASSERT_TRUTH2: 191,
+  "ACROSS-V2": 157,
+  YES_OR_NO_QUERY: 107,
+  MULTIPLE_CHOICE_QUERY: 181,
+  MULTIPLE_VALUES: 183,
+};
+
+const identifierToCustomLabel: Record<string, string> = {
+  MULTIPLE_VALUES: "Multiple Value - UMIP-183",
+  MULTIPLE_CHOICE_QUERY: "Multiple Choice Query - UMIP-181",
+};
+
+function makeUmipUrl(umipNumber: number | string) {
+  return `https://github.com/UMAprotocol/UMIPs/blob/master/UMIPs/umip-${umipNumber}.md`;
+}
+
+function getUmipNumber(decodedIdentifier: string): number | undefined {
+  return identifierToUmipNumber[decodedIdentifier];
+}
+
+function getUmipMetadata(decodedIdentifier: string) {
+  const umipNumber = getUmipNumber(decodedIdentifier);
+  if (!umipNumber) {
+    return {
+      umipOrUppLink: undefined,
+      umipOrUppNumber: undefined,
+    };
+  }
+  const umipUrl = makeUmipUrl(umipNumber);
+  const umipNumberString = `umip-${umipNumber}`;
+  const customLabel = identifierToCustomLabel[decodedIdentifier];
+
+  return {
+    umipOrUppLink: maybeMakeUmipOrUppLink(
+      umipNumberString,
+      umipUrl,
+      customLabel
+    ),
+    umipOrUppNumber: umipNumberString,
+  };
 }
 
 function makeAssertionOptions() {
