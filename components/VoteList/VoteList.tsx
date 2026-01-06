@@ -1,6 +1,7 @@
 import { tabletMax } from "constant";
 import { useWindowSize } from "hooks";
 import { ActivityStatusT } from "types";
+import styled from "styled-components";
 import { VoteListItem } from "./VoteListItem";
 import { VoteTableHeadings } from "./VoteTableHeadings";
 import { VoteTableRow } from "./VoteTableRow";
@@ -9,21 +10,23 @@ import { VoteListItemProps } from "./shared.types";
 interface Props {
   activityStatus: ActivityStatusT;
   data: VoteListItemProps[];
+  variant?: "table" | "grid";
+  darkMode?: boolean;
 }
-export function VoteList({ data, activityStatus }: Props) {
+export function VoteList({ data, activityStatus, variant = "table", darkMode }: Props) {
   const { width } = useWindowSize();
 
   if (!width) return null;
 
   const isTabletAndUnder = width <= tabletMax;
 
-  if (isTabletAndUnder)
+  if (isTabletAndUnder || variant === "grid")
     return (
-      <div className="flex flex-col gap-1">
+      <MatrixGrid data-theme={darkMode ? "dark" : "light"}>
         {data.map((item) => (
-          <VoteListItem key={item.vote.uniqueKey} {...item} />
+          <VoteListItem key={item.vote.uniqueKey} {...item} darkMode={darkMode} />
         ))}
-      </div>
+      </MatrixGrid>
     );
 
   return (
@@ -39,3 +42,10 @@ export function VoteList({ data, activityStatus }: Props) {
     </table>
   );
 }
+
+const MatrixGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  width: 100%;
+`;

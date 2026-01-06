@@ -4,6 +4,7 @@ import {
   IconWrapper,
   Pagination,
   Tooltip,
+  Toggle,
   usePagination,
   VoteList,
   VoteTimeline,
@@ -22,14 +23,21 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SelectedVotesByKeyT, VoteT } from "types";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
   ButtonSpacer,
+  HelperText,
   Divider,
   InfoText,
+  TitleRow,
+  ToggleLabel,
+  StatusBanner,
+  StatusCard,
+  StatusGrid,
+  BannerStack,
   PaginationWrapper,
   RecommittingVotesMessage,
   Title,
@@ -63,6 +71,9 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const [darkMode, setDarkMode] = useState(false);
+  const [hasCommitted, setHasCommitted] = useState(false);
+  const [hasRevealed, setHasRevealed] = useState(false);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
   );
@@ -70,6 +81,23 @@ export function ActiveVotes() {
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
+
+  const selectedVotesCount = Object.values(selectedVotes).filter((x) => x).length;
+  const totalVotes = activeVoteList.length;
+  const committedCount = activeVoteList.filter((vote) => vote.isCommitted).length;
+  const revealedCount = activeVoteList.filter((vote) => vote.isRevealed).length;
+
+  useEffect(() => {
+    setHasCommitted(false);
+    setHasRevealed(false);
+  }, [phase, totalVotes]);
+
+  useEffect(() => {
+    const hasUnsavedChanges = dirtyInputs.some((x) => x);
+    if (hasUnsavedChanges) {
+      setHasCommitted(false);
+    }
+  }, [selectedVotesCount, dirtyInputs]);
 
   const actionStatus = calculateActionStatus();
   type ActionStatus = {
@@ -103,10 +131,6 @@ export function ActiveVotes() {
       !!activeVoteList &&
       activeVoteList.filter((vote) => vote.decryptedVote).length ===
         activeVoteList.length;
-    // counting how many votes we have edited with committable values ( non empty )
-    const selectedVotesCount = Object.values(selectedVotes).filter(
-      (x) => x
-    ).length;
     // check if we have votes to commit by seeing there are more than 1 and its dirty
     const hasVotesToCommit =
       selectedVotesCount > 0
@@ -309,6 +333,16 @@ export function ActiveVotes() {
     selectVote(undefined, vote);
   }
 
+  const commitCompleted =
+    hasCommitted || (phase === "commit" && totalVotes > 0 && committedCount === totalVotes);
+  const revealCompleted =
+    hasRevealed || (phase === "reveal" && totalVotes > 0 && revealedCount === totalVotes);
+  const needsCommitWarning =
+    phase === "commit" && totalVotes > 0 && committedCount < totalVotes && !commitCompleted;
+  const needsRevealWarning =
+    phase === "reveal" && totalVotes > 0 && revealedCount < totalVotes && !revealCompleted;
+  const preparedPercent = totalVotes > 0 ? Math.round((selectedVotesCount / totalVotes) * 100) : 0;
+
   const data = entriesToShow?.map((vote, index) => ({
     phase: phase,
     vote: vote,
@@ -327,11 +361,70 @@ export function ActiveVotes() {
   }));
 
   return (
-    <>
-      <Title> Active votes: </Title>
+    <PageSurface $darkMode={darkMode}>
+      <TitleRow>
+        <Title> Active votes </Title>
+        <ToggleLabel>
+          Dark mode
+          <Toggle clicked={darkMode} onClick={() => setDarkMode((prev) => !prev)} />
+        </ToggleLabel>
+      </TitleRow>
+      <StatusGrid>
+        <StatusCard $darkMode={darkMode}>
+          <h4>Active this cycle</h4>
+          <strong>{totalVotes}</strong>
+          <HelperText>All votes currently available to you.</HelperText>
+        </StatusCard>
+        <StatusCard $darkMode={darkMode}>
+          <h4>Prepared to commit</h4>
+          <strong>
+            {selectedVotesCount}/{totalVotes || 0}
+          </strong>
+          <HelperText>
+            {totalVotes > 0 ? `${preparedPercent}% of votes selected` : "No votes to commit yet."}
+          </HelperText>
+        </StatusCard>
+        <StatusCard $darkMode={darkMode}>
+          <h4>Committed</h4>
+          <strong>
+            {committedCount}/{totalVotes || 0}
+          </strong>
+          <HelperText>Votes locked in during this phase.</HelperText>
+        </StatusCard>
+        <StatusCard $darkMode={darkMode}>
+          <h4>Revealed</h4>
+          <strong>
+            {revealedCount}/{totalVotes || 0}
+          </strong>
+          <HelperText>Votes successfully revealed.</HelperText>
+        </StatusCard>
+      </StatusGrid>
+      <BannerStack>
+        {commitCompleted && (
+          <StatusBanner $type="success">You've committed your votes for this round.</StatusBanner>
+        )}
+        {revealCompleted && (
+          <StatusBanner $type="success">Great! Your reveals are confirmed for this cycle.</StatusBanner>
+        )}
+        {needsCommitWarning && (
+          <StatusBanner $type="danger">
+            You still need to commit {totalVotes - committedCount} of {totalVotes} votes.
+          </StatusBanner>
+        )}
+        {needsRevealWarning && (
+          <StatusBanner $type="danger">
+            You still need to reveal {totalVotes - revealedCount} of {totalVotes} votes.
+          </StatusBanner>
+        )}
+      </BannerStack>
       <VoteTimeline />
       <VotesTableWrapper>
-        <VoteList activityStatus="active" data={data} />
+        <VoteList
+          activityStatus="active"
+          data={data}
+          variant="grid"
+          darkMode={darkMode}
+        />
       </VotesTableWrapper>
       {showPagination && (
         <PaginationWrapper>
@@ -389,6 +482,6 @@ export function ActiveVotes() {
         </ButtonInnerWrapper>
       </ButtonOuterWrapper>
       <Divider />
-    </>
+    </PageSurface>
   );
 }

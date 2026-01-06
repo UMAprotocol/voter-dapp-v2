@@ -11,6 +11,7 @@ import { enCA } from "date-fns/locale";
 import NextLink from "next/link";
 import Dot from "public/assets/icons/dot.svg";
 import Rolled from "public/assets/icons/rolled.svg";
+import styled from "styled-components";
 import { VoteListItemProps } from "./shared.types";
 import { useVoteListItem } from "./useVoteListItem";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
@@ -59,50 +60,43 @@ export function VoteListItem(props: VoteListItemProps) {
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
 
   return (
-    <div
-      style={style}
-      className="flex h-auto w-full max-w-full flex-col items-start gap-[12px] rounded bg-white p-3"
-    >
-      <div className="w-full rounded-l">
-        <div className="align-center flex border-b-[--border-color] pb-1">
-          <div className="w-full">
-            <h3 className="mb-1 line-clamp-2 w-full break-words text-lg font-semibold">
-              {optimisticGovernorTitle || titleText}
-            </h3>
-            <div className="flex gap-2 align-baseline">
-              {isRolled && !isV1 ? (
-                <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
-                  <div className="flex gap-1 align-baseline">
-                    <div className="h-[7px] w-[7px]">
-                      <Rolled />
-                    </div>
-                    <NextLink
-                      className="text-sm text-red-500 underline"
-                      href="https://docs.umaproject.org/protocol-overview/dvm-2.0#rolled-votes"
-                      target="_blank"
-                    >
-                      Roll #{rollCount}
-                    </NextLink>
+    <VoteCard style={style} $darkMode={props.darkMode}>
+      <CardHeader>
+        <div className="w-full">
+          <h3 className="mb-1 line-clamp-2 w-full break-words text-lg font-semibold">
+            {optimisticGovernorTitle || titleText}
+          </h3>
+          <div className="flex flex-wrap items-center gap-2 align-baseline">
+            {isRolled && !isV1 ? (
+              <Tooltip label="This vote was included in the previous voting cycle, but did not get enough votes to resolve.">
+                <div className="flex gap-1 align-baseline">
+                  <div className="h-[7px] w-[7px]">
+                    <Rolled />
                   </div>
-                </Tooltip>
-              ) : null}
-              <h4 className="text-xs text-black-opacity-50">
-                {voteOrigin}{" "}
-                {!isV1 &&
-                  resolvedPriceRequestIndex &&
-                  `| Vote #${resolvedPriceRequestIndex}`}{" "}
-                |{" "}
-                {format(timeAsDate, "Pp", {
-                  // en-CA is the only locale that uses the correct
-                  // format for the date
-                  // yyyy-mm-dd
-                  locale: enCA,
-                })}
-              </h4>
-            </div>
+                  <NextLink
+                    className="text-sm text-red-500 underline"
+                    href="https://docs.umaproject.org/protocol-overview/dvm-2.0#rolled-votes"
+                    target="_blank"
+                  >
+                    Roll #{rollCount}
+                  </NextLink>
+                </div>
+              </Tooltip>
+            ) : null}
+            <MetaText $darkMode={props.darkMode}>
+              {voteOrigin}{" "}
+              {!isV1 && resolvedPriceRequestIndex && `| Vote #${resolvedPriceRequestIndex}`}{" "}
+              |{" "}
+              {format(timeAsDate, "Pp", {
+                // en-CA is the only locale that uses the correct
+                // format for the date
+                // yyyy-mm-dd
+                locale: enCA,
+              })}
+            </MetaText>
           </div>
         </div>
-      </div>
+      </CardHeader>
       {<MultipleValuesInputModal {...multipleInputProps} />}
       {showVoteInput() && selectVote ? (
         <div
@@ -155,7 +149,7 @@ export function VoteListItem(props: VoteListItemProps) {
           <Button label="More details" onClick={moreDetailsAction} />
         </div>
       </div>
-    </div>
+    </VoteCard>
   );
 }
 
@@ -175,3 +169,34 @@ function VoteText({ voteText }: { voteText: string | undefined }) {
 
   return <span>{voteText}</span>;
 }
+
+const VoteCard = styled.div<{ $darkMode?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: ${({ $darkMode }) => ($darkMode ? "#0f172a" : "var(--white)")};
+  color: ${({ $darkMode }) => ($darkMode ? "var(--white)" : "var(--black)")};
+  box-shadow: ${({ $darkMode }) =>
+    $darkMode ? "0px 16px 32px rgba(0, 0, 0, 0.35)" : "0px 12px 30px rgba(0, 0, 0, 0.06)"};
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+  h3 {
+    color: inherit;
+  }
+`;
+
+const CardHeader = styled.div`
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+`;
+
+const MetaText = styled.h4<{ $darkMode?: boolean }>`
+  font-size: 12px;
+  color: ${({ $darkMode }) => ($darkMode ? "hsla(0, 0%, 85%, 0.85)" : "var(--black-opacity-50)")};
+`;

@@ -10,4 +10,5 @@ export interface VoteListItemProps {
   moreDetailsAction: () => void;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
+  darkMode?: boolean;
 }
