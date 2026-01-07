@@ -22,7 +22,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SelectedVotesByKeyT, VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -36,6 +36,18 @@ import {
   VotesTableWrapper,
   WarningIcon,
 } from "./style";
+
+const SELECTED_VOTES_STORAGE_KEY = "uma-voter-selected-votes";
+
+function loadSelectedVotesFromStorage(): SelectedVotesByKeyT {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = localStorage.getItem(SELECTED_VOTES_STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as SelectedVotesByKeyT) : {};
+  } catch {
+    return {};
+  }
+}
 
 export function ActiveVotes() {
   const { activeVoteList } = useVotesContext();
@@ -61,8 +73,17 @@ export function ActiveVotes() {
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>(
+    loadSelectedVotesFromStorage
+  );
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      SELECTED_VOTES_STORAGE_KEY,
+      JSON.stringify(selectedVotes)
+    );
+  }, [selectedVotes]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
   );
