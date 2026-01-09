@@ -39,11 +39,21 @@ import {
 
 const SELECTED_VOTES_STORAGE_KEY = "uma-voter-selected-votes";
 
-function loadSelectedVotesFromStorage(): SelectedVotesByKeyT {
+type StoredVotesData = {
+  roundId: number;
+  votes: SelectedVotesByKeyT;
+};
+
+function loadSelectedVotesFromStorage(
+  currentRoundId: number
+): SelectedVotesByKeyT {
   if (typeof window === "undefined") return {};
   try {
     const stored = localStorage.getItem(SELECTED_VOTES_STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as SelectedVotesByKeyT) : {};
+    if (!stored) return {};
+    const data = JSON.parse(stored) as StoredVotesData;
+    if (data.roundId !== currentRoundId) return {};
+    return data.votes;
   } catch {
     return {};
   }
@@ -73,17 +83,23 @@ export function ActiveVotes() {
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>(
-    loadSelectedVotesFromStorage
-  );
+  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(
-      SELECTED_VOTES_STORAGE_KEY,
-      JSON.stringify(selectedVotes)
-    );
-  }, [selectedVotes]);
+    if (roundId && !hasLoadedFromStorage) {
+      setSelectedVotes(loadSelectedVotesFromStorage(roundId));
+      setHasLoadedFromStorage(true);
+    }
+  }, [roundId, hasLoadedFromStorage]);
+
+  useEffect(() => {
+    if (roundId && hasLoadedFromStorage) {
+      const data: StoredVotesData = { roundId, votes: selectedVotes };
+      localStorage.setItem(SELECTED_VOTES_STORAGE_KEY, JSON.stringify(data));
+    }
+  }, [selectedVotes, roundId, hasLoadedFromStorage]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
   );
@@ -288,17 +304,10 @@ export function ActiveVotes() {
       address: delegatorAddress ? delegatorAddress : address,
       signingKey,
     });
-    commitVotesMutation(
-      {
-        voting: votingWriter,
-        formattedVotes,
-      },
-      {
-        onSuccess: () => {
-          setSelectedVotes({});
-        },
-      }
-    );
+    commitVotesMutation({
+      voting: votingWriter,
+      formattedVotes,
+    });
   }
 
   function revealVotes() {
