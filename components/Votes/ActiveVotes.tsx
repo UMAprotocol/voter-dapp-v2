@@ -16,14 +16,15 @@ import {
   useContractsContext,
   useDelegationContext,
   usePanelContext,
+  usePersistedVotes,
   useRevealVotes,
   useStakedBalance,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState, useEffect } from "react";
-import { SelectedVotesByKeyT, VoteT } from "types";
+import { useState } from "react";
+import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
@@ -36,28 +37,6 @@ import {
   VotesTableWrapper,
   WarningIcon,
 } from "./style";
-
-const SELECTED_VOTES_STORAGE_KEY = "uma-voter-selected-votes";
-
-type StoredVotesData = {
-  roundId: number;
-  votes: SelectedVotesByKeyT;
-};
-
-function loadSelectedVotesFromStorage(
-  currentRoundId: number
-): SelectedVotesByKeyT {
-  if (typeof window === "undefined") return {};
-  try {
-    const stored = localStorage.getItem(SELECTED_VOTES_STORAGE_KEY);
-    if (!stored) return {};
-    const data = JSON.parse(stored) as StoredVotesData;
-    if (data.roundId !== currentRoundId) return {};
-    return data.votes;
-  } catch {
-    return {};
-  }
-}
 
 export function ActiveVotes() {
   const { activeVoteList } = useVotesContext();
@@ -83,23 +62,8 @@ export function ActiveVotes() {
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  const [hasLoadedFromStorage, setHasLoadedFromStorage] = useState(false);
-
-  useEffect(() => {
-    if (roundId && !hasLoadedFromStorage) {
-      setSelectedVotes(loadSelectedVotesFromStorage(roundId));
-      setHasLoadedFromStorage(true);
-    }
-  }, [roundId, hasLoadedFromStorage]);
-
-  useEffect(() => {
-    if (roundId && hasLoadedFromStorage) {
-      const data: StoredVotesData = { roundId, votes: selectedVotes };
-      localStorage.setItem(SELECTED_VOTES_STORAGE_KEY, JSON.stringify(data));
-    }
-  }, [selectedVotes, roundId, hasLoadedFromStorage]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
   );
