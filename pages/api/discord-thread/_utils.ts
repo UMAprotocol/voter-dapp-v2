@@ -112,6 +112,7 @@ function getRetryMilliseconds(response: Response, attempt: number): number {
   }
 
   const seconds = parseFloat(resetHeader);
+
   if (!isNaN(seconds) && seconds > 0) {
     return Math.ceil(seconds * 1000); // Convert to milliseconds
   }
@@ -133,8 +134,7 @@ export async function discordRequest(
         headers: {
           Authorization: `Bot ${discordToken}`,
           "Content-Type": "application/json; charset=UTF-8",
-          "User-Agent":
-            "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
+          "User-Agent": "DiscordBot (https://vote.uma.xyz, 1.0.0)",
         },
       });
 
@@ -155,7 +155,7 @@ export async function discordRequest(
         console.warn(
           `Discord API rate limited (429) at ${endpoint}${
             isGlobal ? " (GLOBAL)" : ""
-          }, retrying after ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`
+          }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`
         );
 
         await sleep(delay);
@@ -169,6 +169,10 @@ export async function discordRequest(
           `Discord API error ${res.status} at ${endpoint}: ${errorText}`
         );
       }
+
+      console.log(
+        `Discord API at ${endpoint} successful after ${attempt + 1} retries`
+      );
 
       return (await res.json()) as RawDiscordThreadT;
     } catch (error) {
