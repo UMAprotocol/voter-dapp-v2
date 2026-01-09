@@ -105,7 +105,10 @@ function calculateBackoffDelay(attempt: number): number {
   return Math.min(MAX_DELAY, exponentialDelay + jitter);
 }
 
-function getRetryMilliseconds(response: Response, attempt: number): number {
+export function getRetryMilliseconds(
+  response: Response,
+  attempt: number
+): number {
   const resetHeader = response.headers.get("X-RateLimit-Reset-After");
   if (!resetHeader) {
     return calculateBackoffDelay(attempt);
