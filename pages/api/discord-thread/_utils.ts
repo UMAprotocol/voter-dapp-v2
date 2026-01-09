@@ -21,16 +21,26 @@ type ThreadCache = {
   latestThreadId: string | null;
 };
 
+// Set to true to disable Redis caching (useful for local development)
+const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
+
 // singleton
 let redis: Redis | undefined;
-export function getRedis(): Redis {
+export function getRedis(): Redis | null {
+  if (DISABLE_REDIS) {
+    return null;
+  }
   redis ??= Redis.fromEnv();
   return redis;
 }
 
 // Cache functions for thread cache object
 export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
+  if (DISABLE_REDIS) {
+    return null;
+  }
   const redis = getRedis();
+  if (!redis) return null;
   return await redis.get<ThreadCache>(THREAD_CACHE_KEY);
 }
 
@@ -38,7 +48,11 @@ export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
   latestThreadId: string | null
 ) {
+  if (DISABLE_REDIS) {
+    return;
+  }
   const redis = getRedis();
+  if (!redis) return;
   const result = await redis.set(THREAD_CACHE_KEY, {
     threadIdMap,
     latestThreadId,
@@ -53,7 +67,11 @@ export async function setCachedThreadIdMap(
 export async function getCachedThreadMessages(
   threadId: string
 ): Promise<RawDiscordThreadT | null> {
+  if (DISABLE_REDIS) {
+    return null;
+  }
   const redis = getRedis();
+  if (!redis) return null;
   const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
   return await redis.get<RawDiscordThreadT>(cacheKey);
 }
@@ -62,7 +80,11 @@ export async function setCachedThreadMessages(
   threadId: string,
   messages: RawDiscordThreadT
 ) {
+  if (DISABLE_REDIS) {
+    return;
+  }
   const redis = getRedis();
+  if (!redis) return;
   const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
   // Cache for 1 hour (3600 seconds)
   const result = await redis.setex(cacheKey, 3600, messages);
@@ -83,6 +105,25 @@ function calculateBackoffDelay(attempt: number): number {
   return Math.min(MAX_DELAY, exponentialDelay + jitter);
 }
 
+export function getRetryMilliseconds(
+  response: Response,
+  attempt: number
+): number {
+  const resetHeader = response.headers.get("X-RateLimit-Reset-After");
+  if (!resetHeader) {
+    return calculateBackoffDelay(attempt);
+  }
+
+  const seconds = parseFloat(resetHeader);
+
+  if (!isNaN(seconds) && seconds > 0) {
+    return Math.ceil(seconds * 1000); // Convert to milliseconds
+  }
+
+  // fallback
+  return calculateBackoffDelay(attempt);
+}
+
 export async function discordRequest(
   endpoint: string
 ): Promise<RawDiscordThreadT> {
@@ -96,10 +137,34 @@ export async function discordRequest(
         headers: {
           Authorization: `Bot ${discordToken}`,
           "Content-Type": "application/json; charset=UTF-8",
-          "User-Agent":
-            "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
+          "User-Agent": "DiscordBot (https://vote.uma.xyz, 1.0.0)",
         },
       });
+
+      // Handle rate limits
+      if (res.status === 429) {
+        const delay = getRetryMilliseconds(res, attempt);
+
+        const isGlobal = res.headers.get("x-ratelimit-global") === "true";
+
+        if (attempt >= MAX_RETRIES) {
+          throw new Error(
+            `Discord API rate limited (429) at ${endpoint} after ${MAX_RETRIES} retries${
+              isGlobal ? " (GLOBAL)" : ""
+            }`
+          );
+        }
+
+        console.warn(
+          `Discord API rate limited (429) at ${endpoint}${
+            isGlobal ? " (GLOBAL)" : ""
+          }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`
+        );
+
+        await sleep(delay);
+        attempt += 1;
+        continue;
+      }
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -108,20 +173,20 @@ export async function discordRequest(
         );
       }
 
+      console.log(
+        `Discord API at ${endpoint} successful after ${attempt + 1} retries`
+      );
+
       return (await res.json()) as RawDiscordThreadT;
     } catch (error) {
       finalError = error;
+
       if (attempt >= MAX_RETRIES) {
         break;
       }
 
       const delay = calculateBackoffDelay(attempt);
-      console.warn(
-        `Discord API error at ${endpoint}, retrying in ${delay}ms (attempt ${
-          attempt + 1
-        }/${MAX_RETRIES}):`,
-        error
-      );
+      console.warn("Discord thread retrying for non-429 error", error);
       await sleep(delay);
       attempt += 1;
     }
@@ -327,7 +392,12 @@ async function acquireLock(
   lockKey: string,
   ttlSeconds = DEFAULT_LOCK_TTL_SECONDS
 ): Promise<boolean> {
+  if (DISABLE_REDIS) {
+    // When Redis is disabled, always allow refresh (no locking)
+    return true;
+  }
   const redis = getRedis();
+  if (!redis) return true;
   try {
     // Use NX + EX to create a simple mutex
     const options: SetCommandOptions = {
@@ -343,7 +413,11 @@ async function acquireLock(
 }
 
 async function releaseLock(lockKey: string) {
+  if (DISABLE_REDIS) {
+    return;
+  }
   const redis = getRedis();
+  if (!redis) return;
   try {
     await redis.del(lockKey);
   } catch (e) {
