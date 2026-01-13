@@ -19,6 +19,7 @@ interface PolymarketMarket {
 export type GetPolymarketOutcomesResponse = {
   outcomes: string[];
   question?: string;
+  groupItemTitle?: string;
   found: boolean;
 };
 
@@ -103,6 +104,7 @@ export default async function handler(
         return response.status(200).json({
           outcomes,
           question: market.question,
+          groupItemTitle: market.groupItemTitle,
           found: true,
         });
       }
@@ -130,6 +132,7 @@ export default async function handler(
     return response.status(200).json({
       outcomes,
       question: market.question,
+      groupItemTitle: market.groupItemTitle,
       found: true,
     });
   } catch (e) {

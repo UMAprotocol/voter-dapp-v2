@@ -5,12 +5,14 @@ import { string, type, create, array, boolean, optional } from "superstruct";
 const returnData = type({
   outcomes: array(string()),
   question: optional(string()),
+  groupItemTitle: optional(string()),
   found: boolean(),
 });
 
 export type PolymarketOutcomesData = {
   outcomes: string[];
   question?: string;
+  groupItemTitle?: string;
   found: boolean;
 };
 

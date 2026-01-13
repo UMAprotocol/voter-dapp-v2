@@ -4,6 +4,7 @@ import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
   getClaimTitle,
+  getQuestionId,
 } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -13,6 +14,7 @@ import {
   useVotesContext,
   useWalletContext,
 } from "hooks";
+import { usePolymarketOutcomes } from "hooks/queries/votes/usePolymarketOutcomes";
 import Link from "next/link";
 import Across from "public/assets/icons/across.svg";
 import OSnap from "public/assets/icons/osnap.svg";
@@ -67,6 +69,34 @@ export function useVoteListItem({
     assertionChildChainId,
     assertionId,
   } = vote;
+
+  // Fetch real title from Polymarket for votes with placeholder names
+  const isPolymarketVote = origin === "Polymarket";
+  const questionId = getQuestionId({
+    decodedAncillaryData: vote.decodedAncillaryData,
+  });
+  const { data: polymarketData } = usePolymarketOutcomes(
+    questionId,
+    isPolymarketVote
+  );
+
+  // Use real title from Polymarket if available, otherwise fall back to original
+  const enhancedTitle = (() => {
+    if (!isPolymarketVote || !polymarketData?.found) return title;
+    // If Polymarket has a real question, use it
+    if (polymarketData.question) {
+      return polymarketData.question;
+    }
+    // If we have groupItemTitle and the title has a single-letter placeholder, replace it
+    if (polymarketData.groupItemTitle && /\bWill [A-Z] /.test(title)) {
+      return title.replace(
+        /\bWill ([A-Z]) /,
+        `Will ${polymarketData.groupItemTitle} `
+      );
+    }
+    return title;
+  })();
+
   const isMultipleValuesVote = decodedIdentifier === "MULTIPLE_VALUES";
   const dropdownOptions = isMultipleValuesVote
     ? multipleInputProps.dropdownOptions
@@ -99,7 +129,7 @@ export function useVoteListItem({
   } as CSSProperties;
 
   const titleOrClaim = removeMarkdown(
-    claim ? getClaimTitle(decodeHexString(claim)) : title
+    claim ? getClaimTitle(decodeHexString(claim)) : enhancedTitle
   );
   const titleText =
     titleOrClaim.length > 100
