@@ -6,13 +6,13 @@ import { AnnouncementBannerWrapper } from "./AnnouncementBannerWrapper";
 
 export function GasRebateBanner() {
   return (
-    <AnnouncementBannerWrapper localStorageKey="show-gas-rebate-banner">
+    <AnnouncementBannerWrapper localStorageKey="show-gas-rebate-banner-jan-2026">
       <InfoIcon />
       <Text>
-        New voting gas rebate rules come into effect starting November 1st, see
-        details{" "}
+        Voter gas rebates for priority gas fees will be capped as of January 14.
+        See updated gas rebate details{" "}
         <Link
-          href="https://docs.uma.xyz/using-uma/voting-gas-rebates"
+          href="https://docs.uma.xyz/using-uma/voting-walkthrough/voting-gas-rebates"
           target="_blank"
         >
           here
