@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const VotesTableWrapper = styled.div`
   margin-top: var(--margin-top, 35px);
+  overflow-anchor: none;
 `;
 
 export const Title = styled.h1`
