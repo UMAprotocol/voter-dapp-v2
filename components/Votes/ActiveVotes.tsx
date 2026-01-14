@@ -16,6 +16,7 @@ import {
   useContractsContext,
   useDelegationContext,
   usePanelContext,
+  usePersistedVotes,
   useRevealVotes,
   useStakedBalance,
   useVotesContext,
@@ -23,7 +24,7 @@ import {
   useWalletContext,
 } from "hooks";
 import { useState } from "react";
-import { SelectedVotesByKeyT, VoteT } from "types";
+import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
   ButtonOuterWrapper,
@@ -61,7 +62,7 @@ export function ActiveVotes() {
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+  const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
@@ -267,17 +268,10 @@ export function ActiveVotes() {
       address: delegatorAddress ? delegatorAddress : address,
       signingKey,
     });
-    commitVotesMutation(
-      {
-        voting: votingWriter,
-        formattedVotes,
-      },
-      {
-        onSuccess: () => {
-          setSelectedVotes({});
-        },
-      }
-    );
+    commitVotesMutation({
+      voting: votingWriter,
+      formattedVotes,
+    });
   }
 
   function revealVotes() {

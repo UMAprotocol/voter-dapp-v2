@@ -13,6 +13,7 @@ export { useInterval } from "./helpers/useInterval";
 export { useIsomorphicLayoutEffect } from "./helpers/useIsomorphicLayoutEffect";
 export { useMounted } from "./helpers/useMounted";
 export { usePanelWidth } from "./helpers/usePanelWidth";
+export { usePersistedVotes } from "./helpers/usePersistedVotes";
 export { useSign } from "./helpers/useSign";
 export { useWindowSize } from "./helpers/useWindowSize";
 export { useAcceptReceivedRequestToBeDelegate } from "./mutations/delegation/useAcceptReceivedRequestToBeDelegate";
