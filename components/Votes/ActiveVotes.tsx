@@ -153,7 +153,9 @@ export function ActiveVotes() {
     }
 
     if (isCommit) {
-      actionConfig.label = "Commit";
+      actionConfig.label = `Commit ${selectedVotesCount}/${
+        activeVoteList?.length ?? 0
+      } votes`;
       actionConfig.hidden = false;
       if (isEditingUnknownVote && (isDelegate || isDelegator)) {
         const otherAccount = isDelegate ? "delegator" : "delegate";
@@ -215,7 +217,7 @@ export function ActiveVotes() {
     }
     if (isReveal) {
       actionConfig.hidden = false;
-      actionConfig.label = "Reveal";
+      actionConfig.label = "Reveal all votes";
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
