@@ -32,10 +32,9 @@ function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
 function formatPriceRequest(
   priceRequest: RawPriceRequestDataT
 ): PriceRequestT & VoteParticipationT & VoteResultsT {
-  const time =
-    priceRequest.time instanceof BigNumber
-      ? priceRequest.time.toNumber()
-      : priceRequest.time;
+  const time = BigNumber.isBigNumber(priceRequest.time)
+    ? priceRequest.time.toNumber()
+    : priceRequest.time;
   const timeMilliseconds = time * 1000;
   const timeAsDate = new Date(timeMilliseconds);
   const identifier = priceRequest.identifier;
