@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, utils } from "ethers";
 
 export function makeUniqueKeyForVote(
   decodedIdentifier: string,
@@ -8,5 +8,6 @@ export function makeUniqueKeyForVote(
   if (typeof time !== "number") {
     time = time.toNumber();
   }
-  return `${decodedIdentifier}-${time}-${ancillaryData}`;
+  const ancillaryDataHash = utils.keccak256(utils.toUtf8Bytes(ancillaryData));
+  return `${decodedIdentifier}-${time}-${ancillaryDataHash}`;
 }
