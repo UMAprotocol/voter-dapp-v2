@@ -1,9 +1,7 @@
 import { supportedChains } from "constant";
 import Arbitrum from "public/assets/icons/arbitrum.svg";
-import Avalanche from "public/assets/icons/avax.svg";
 import Boba from "public/assets/icons/boba.svg";
 import Ethereum from "public/assets/icons/ethereum.svg";
-import Gnosis from "public/assets/icons/gnosis.svg";
 import Optimism from "public/assets/icons/optimism.svg";
 import Polygon from "public/assets/icons/polygon.svg";
 import SX from "public/assets/icons/sx.svg";
@@ -24,12 +22,10 @@ export function ChainIcon({
     1: EthereumIcon,
     5: EthereumIcon,
     10: OptimismIcon,
-    100: GnosisIcon,
     137: PolygonIcon,
     288: BobaIcon,
     416: SXIcon,
     1514: Story,
-    43114: AvalancheIcon,
     42161: ArbitrumIcon,
     11155111: EthereumIcon,
     8453: Base,
@@ -80,10 +76,6 @@ const PolygonIcon = styled(Polygon)``;
 
 const ArbitrumIcon = styled(Arbitrum)``;
 
-const GnosisIcon = styled(Gnosis)``;
-
 const BobaIcon = styled(Boba)``;
 
 const SXIcon = styled(SX)``;
-
-const AvalancheIcon = styled(Avalanche)``;

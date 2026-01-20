@@ -108,8 +108,7 @@ export const fromBlocks: Record<string, Record<number | string, number>> = {
   },
 };
 export const ChainId = ss.enums([
-  1, 5, 10, 100, 137, 288, 416, 8453, 11155111, 1116, 42161, 43114, 80001,
-  80002, 81457,
+  1, 5, 10, 137, 288, 416, 8453, 11155111, 42161, 80001, 80002, 81457,
 ]);
 
 export function getFromBlock(
@@ -157,11 +156,6 @@ const Env = ss.object({
   SUBGRAPH_SKINNY_5: ss.optional(ss.string()),
   SUBGRAPH_V3_5: ss.optional(ss.string()),
   SUBGRAPH_V2_5: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_1116: ss.optional(ss.string()),
-  SUBGRAPH_V2_1116: ss.optional(ss.string()),
-  SUBGRAPH_V3_1116: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_1116: ss.optional(ss.string()),
 
   SUBGRAPH_V1_1514: ss.optional(ss.string()),
   SUBGRAPH_V2_1514: ss.optional(ss.string()),
@@ -213,7 +207,6 @@ const env = ss.create(
     SUBGRAPH_V1_10: process.env.SUBGRAPH_V1_10,
     SUBGRAPH_V1_137: process.env.SUBGRAPH_V1_137,
     SUBGRAPH_V1_288: process.env.SUBGRAPH_V1_288,
-    SUBGRAPH_V1_1116: process.env.SUBGRAPH_V1_1116,
     SUBGRAPH_V1_1514: process.env.SUBGRAPH_V1_1514,
     SUBGRAPH_V1_42161: process.env.SUBGRAPH_V1_42161,
     SUBGRAPH_V1_80001: process.env.SUBGRAPH_V1_80001,
@@ -226,7 +219,6 @@ const env = ss.create(
     SUBGRAPH_V2_10: process.env.SUBGRAPH_V2_10,
     SUBGRAPH_V2_137: process.env.SUBGRAPH_V2_137,
     SUBGRAPH_V2_288: process.env.SUBGRAPH_V2_288,
-    SUBGRAPH_V2_1116: process.env.SUBGRAPH_V2_1116,
     SUBGRAPH_V2_1514: process.env.SUBGRAPH_V2_1514,
     SUBGRAPH_V2_42161: process.env.SUBGRAPH_V2_42161,
     SUBGRAPH_V2_80001: process.env.SUBGRAPH_V2_80001,
@@ -239,7 +231,6 @@ const env = ss.create(
     SUBGRAPH_V3_10: process.env.SUBGRAPH_V3_10,
     SUBGRAPH_V3_137: process.env.SUBGRAPH_V3_137,
     SUBGRAPH_V3_288: process.env.SUBGRAPH_V3_288,
-    SUBGRAPH_V3_1116: process.env.SUBGRAPH_V3_1116,
     SUBGRAPH_V3_1514: process.env.SUBGRAPH_V3_1514,
     SUBGRAPH_V3_42161: process.env.SUBGRAPH_V3_42161,
     SUBGRAPH_V3_80001: process.env.SUBGRAPH_V3_80001,
@@ -251,7 +242,6 @@ const env = ss.create(
     SUBGRAPH_SKINNY_10: process.env.SUBGRAPH_SKINNY_10,
     SUBGRAPH_SKINNY_137: process.env.SUBGRAPH_SKINNY_137,
     SUBGRAPH_SKINNY_288: process.env.SUBGRAPH_SKINNY_288,
-    SUBGRAPH_SKINNY_1116: process.env.SUBGRAPH_SKINNY_1116,
     SUBGRAPH_SKINNY_42161: process.env.SUBGRAPH_SKINNY_42161,
     SUBGRAPH_SKINNY_5: process.env.SUBGRAPH_SKINNY_5,
     SUBGRAPH_SKINNY_80001: process.env.SUBGRAPH_SKINNY_80001,
