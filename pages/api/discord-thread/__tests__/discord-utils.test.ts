@@ -1,10 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 // Import the functions from the extracted utility module
-import {
-  makeKey,
-  extractValidateTitleAndTimestamp,
-} from "../lib/discord-utils";
+import { makeKey, extractValidateTitleAndTimestamp } from "lib/discord-utils";
 
 // Test data organized at the top scope
 const testData = {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getRetryMilliseconds } from "../pages/api/discord-thread/_utils";
+import { getRetryMilliseconds } from "../_utils";
 
 // Mock helpers/config to avoid resolving @uma/contracts-frontend dependency, which breaks in this environment
 vi.mock("helpers/config", () => ({

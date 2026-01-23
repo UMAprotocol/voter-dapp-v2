@@ -1,5 +1,5 @@
 import { Redis } from "@upstash/redis";
-import { RawDiscordThreadT, ThreadIdMap } from "types";
+import { RawDiscordThreadT, ThreadIdMap, VoteDiscussionT } from "types";
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep } from "lib/utils";
 import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
@@ -10,11 +10,9 @@ export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
   "discord:thread_messages"
 );
-// Simple lock to prevent thundering herd refresh
-const THREAD_REFRESH_LOCK_PREFIX = createCacheKey(
-  "discord:thread_refresh_lock"
+export const PROCESSED_THREAD_CACHE_KEY = createCacheKey(
+  "discord:processed_thread"
 );
-const DEFAULT_LOCK_TTL_SECONDS = 300; // 5 minutes
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
   threadIdMap: ThreadIdMap;
@@ -90,6 +88,37 @@ export async function setCachedThreadMessages(
   const result = await redis.setex(cacheKey, 3600, messages);
   if (!result) {
     throw new Error("Setting thread messages cache failed");
+  }
+  return result;
+}
+
+// Cache functions for processed thread data (used by cron job and endpoint)
+export async function getCachedProcessedThread(
+  requestKey: string
+): Promise<VoteDiscussionT | null> {
+  if (DISABLE_REDIS) {
+    return null;
+  }
+  const redis = getRedis();
+  if (!redis) return null;
+  const cacheKey = `${PROCESSED_THREAD_CACHE_KEY}:${requestKey}`;
+  return await redis.get<VoteDiscussionT>(cacheKey);
+}
+
+export async function setCachedProcessedThread(
+  requestKey: string,
+  data: VoteDiscussionT
+) {
+  if (DISABLE_REDIS) {
+    return;
+  }
+  const redis = getRedis();
+  if (!redis) return;
+  const cacheKey = `${PROCESSED_THREAD_CACHE_KEY}:${requestKey}`;
+  // Cache for 1 hour (3600 seconds) - will be refreshed by cron every 10 min
+  const result = await redis.setex(cacheKey, 3600, data);
+  if (!result) {
+    throw new Error("Setting processed thread cache failed");
   }
   return result;
 }
@@ -297,9 +326,16 @@ export async function getLatestDiscordMessagesPaginated(
   };
 }
 
-export async function buildThreadIdMap(
-  afterMessageId?: string
-): Promise<ThreadIdMap> {
+export async function buildThreadIdMap(afterMessageId?: string): Promise<{
+  threadIdMap: ThreadIdMap;
+  latestMessageId: string | undefined;
+}> {
+  console.log(
+    `[buildThreadIdMap] Starting build, afterMessageId=${
+      afterMessageId ?? "none"
+    }`
+  );
+
   const allThreadMessages = afterMessageId
     ? await getLatestDiscordMessagesPaginated(
         evidenceRationalDiscordChannelId,
@@ -307,14 +343,26 @@ export async function buildThreadIdMap(
       )
     : await getDiscordMessagesPaginated(evidenceRationalDiscordChannelId);
 
+  console.log(
+    `[buildThreadIdMap] Fetched ${allThreadMessages.messages.length} messages from Discord channel`
+  );
+
   const threadIdMap: ThreadIdMap = allThreadMessages.messages.reduce(
     (map, message) => {
       // if for some reason the thread was changed, it will only reflect in thread.name.
       // message.content only reflects the original message, not edits ( or edits by another admin)
       // so first check for message.thread.name and fallback to message.content
-      const titleAndTimestamp = extractValidateTitleAndTimestamp(
-        message?.thread?.name ?? message.content
-      );
+      const rawName = message?.thread?.name ?? message.content;
+      const titleAndTimestamp = extractValidateTitleAndTimestamp(rawName);
+
+      if (message.thread?.id) {
+        console.log(
+          `[buildThreadIdMap] Thread: "${rawName?.slice(0, 60)}..." -> key: "${
+            titleAndTimestamp ?? "invalid"
+          }" -> id: ${message.thread.id}`
+        );
+      }
+
       if (titleAndTimestamp && message.thread?.id) {
         map[titleAndTimestamp] = message.thread.id;
       }
@@ -323,142 +371,14 @@ export async function buildThreadIdMap(
     {} as ThreadIdMap
   );
 
-  // Use the unified cache to store both thread mapping and latest thread ID atomically
-  await setCachedThreadIdMap(
+  console.log(
+    `[buildThreadIdMap] Built map with ${
+      Object.keys(threadIdMap).length
+    } valid thread mappings`
+  );
+
+  return {
     threadIdMap,
-    allThreadMessages.latestMessageId || null
-  );
-
-  return threadIdMap;
-}
-
-// Main function to get thread messages with cache handling
-export async function getThreadMessagesForRequest(requestKey: string): Promise<{
-  threadId: string | null;
-  messages: RawDiscordThreadT;
-  isStaleData?: boolean;
-}> {
-  // Try to get thread ID from cache first
-  const threadId = await getThreadIdFromCache(requestKey);
-  if (!threadId) {
-    console.warn(
-      `[discord-thread] No threadId for requestKey=${requestKey}; returning empty`
-    );
-    return { threadId: null, messages: [] };
-  }
-  // Cache-first: if we already have messages cached, return them immediately.
-  const cachedMessages = await getCachedThreadMessages(threadId);
-  if (cachedMessages && cachedMessages.length > 0) {
-    console.info(
-      `[discord-thread] Serving STALE cached data for requestKey=${requestKey}, threadId=${threadId}, messages=${cachedMessages.length}`
-    );
-    return { threadId, messages: cachedMessages, isStaleData: true };
-  }
-  // Cold cache: fetch now (this path is rare and acceptable to be blocking)
-  console.info(
-    `[discord-thread] Cold cache MISS for requestKey=${requestKey}, threadId=${threadId}. Fetching fresh from Discord...`
-  );
-  const startedAt = Date.now();
-  const { messages } = await getDiscordMessagesPaginated(threadId);
-  console.info(
-    `[discord-thread] Cold fetch COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
-      messages.length
-    }, durationMs=${Date.now() - startedAt}`
-  );
-  return { threadId, messages };
-}
-
-async function getThreadIdFromCache(
-  requestKey: string
-): Promise<string | null> {
-  const cachedThreadMapping = await getCachedThreadIdMap();
-  const threadId = cachedThreadMapping?.threadIdMap[requestKey];
-  if (!threadId) {
-    const updatedThreadMapping = await buildThreadIdMap(
-      cachedThreadMapping?.latestThreadId ?? undefined
-    );
-    return updatedThreadMapping?.[requestKey] ?? null;
-  }
-  return threadId;
-}
-
-function getThreadLockKeyForRequestKey(requestKey: string): string {
-  return `${THREAD_REFRESH_LOCK_PREFIX}:${requestKey}`;
-}
-
-type SetCommandOptions = Parameters<Redis["set"]>[2];
-
-async function acquireLock(
-  lockKey: string,
-  ttlSeconds = DEFAULT_LOCK_TTL_SECONDS
-): Promise<boolean> {
-  if (DISABLE_REDIS) {
-    // When Redis is disabled, always allow refresh (no locking)
-    return true;
-  }
-  const redis = getRedis();
-  if (!redis) return true;
-  try {
-    // Use NX + EX to create a simple mutex
-    const options: SetCommandOptions = {
-      nx: true,
-      ex: ttlSeconds,
-    } as SetCommandOptions;
-    const result = await redis.set(lockKey, "1", options);
-    return Boolean(result);
-  } catch (e) {
-    console.warn(`Failed to acquire lock ${lockKey}:`, e);
-    return false;
-  }
-}
-
-async function releaseLock(lockKey: string) {
-  if (DISABLE_REDIS) {
-    return;
-  }
-  const redis = getRedis();
-  if (!redis) return;
-  try {
-    await redis.del(lockKey);
-  } catch (e) {
-    console.warn(`Failed to release lock ${lockKey}:`, e);
-  }
-}
-
-// Trigger a refresh, but only if no other worker is already doing it
-export async function refreshThreadMessagesForRequestKey(requestKey: string) {
-  const lockKey = getThreadLockKeyForRequestKey(requestKey);
-  console.info(
-    `[discord-thread] Refresh attempt for requestKey=${requestKey}, lockKey=${lockKey}`
-  );
-  const locked = await acquireLock(lockKey);
-  if (!locked) {
-    console.info(
-      `[discord-thread] Refresh SKIPPED (lock held) for requestKey=${requestKey}, lockKey=${lockKey}`
-    );
-    return; // another worker is already refreshing
-  }
-  try {
-    const threadId = await getThreadIdFromCache(requestKey);
-    if (!threadId) {
-      console.warn(
-        `[discord-thread] Refresh ABORTED: no threadId for requestKey=${requestKey}`
-      );
-      return;
-    }
-    const startedAt = Date.now();
-    console.info(
-      `[discord-thread] Refresh START for requestKey=${requestKey}, threadId=${threadId}`
-    );
-    const { messages } = await getDiscordMessagesPaginated(threadId);
-    console.info(
-      `[discord-thread] Refresh COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
-        messages.length
-      }, durationMs=${Date.now() - startedAt}`
-    );
-  } catch (e) {
-    console.warn(`Background refresh failed for ${requestKey}:`, e);
-  } finally {
-    await releaseLock(lockKey);
-  }
+    latestMessageId: allThreadMessages.latestMessageId,
+  };
 }
