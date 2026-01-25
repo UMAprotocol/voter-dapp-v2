@@ -8,8 +8,8 @@ export function makeUniqueKeyForVote(
   if (typeof time !== "number") {
     time = time.toNumber();
   }
-  const ancillaryDataHash = utils.keccak256(
-    utils.toUtf8Bytes(ancillaryData ?? "")
-  );
+  const dataToHash =
+    ancillaryData && ancillaryData !== "0x" ? ancillaryData : "0x";
+  const ancillaryDataHash = utils.keccak256(dataToHash);
   return `${decodedIdentifier}-${time}-${ancillaryDataHash}`;
 }
