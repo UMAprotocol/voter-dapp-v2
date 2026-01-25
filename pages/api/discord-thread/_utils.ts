@@ -13,10 +13,10 @@ import { createCacheKey } from "lib/cache-keys";
 // Cache configuration
 export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
-  "discord:thread_messages",
+  "discord:thread_messages"
 );
 export const PROCESSED_THREAD_CACHE_KEY = createCacheKey(
-  "discord:processed_thread",
+  "discord:processed_thread"
 );
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 type ThreadCache = {
@@ -49,7 +49,7 @@ export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
 
 export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
-  latestThreadId: string | null,
+  latestThreadId: string | null
 ) {
   if (DISABLE_REDIS) {
     return;
@@ -68,7 +68,7 @@ export async function setCachedThreadIdMap(
 
 // Cache functions for thread messages
 export async function getCachedThreadMessages(
-  threadId: string,
+  threadId: string
 ): Promise<RawDiscordThreadT | null> {
   if (DISABLE_REDIS) {
     return null;
@@ -81,7 +81,7 @@ export async function getCachedThreadMessages(
 
 export async function setCachedThreadMessages(
   threadId: string,
-  messages: RawDiscordThreadT,
+  messages: RawDiscordThreadT
 ) {
   if (DISABLE_REDIS) {
     return;
@@ -99,7 +99,7 @@ export async function setCachedThreadMessages(
 
 // Cache functions for processed thread data (used by cron job and endpoint)
 export async function getCachedProcessedThread(
-  requestKey: string,
+  requestKey: string
 ): Promise<VoteDiscussionT | null> {
   if (DISABLE_REDIS) {
     return null;
@@ -112,7 +112,7 @@ export async function getCachedProcessedThread(
 
 export async function setCachedProcessedThread(
   requestKey: string,
-  data: VoteDiscussionT,
+  data: VoteDiscussionT
 ) {
   if (DISABLE_REDIS) {
     return;
@@ -144,7 +144,7 @@ function calculateBackoffDelay(attempt: number): number {
 
 export function getRetryMilliseconds(
   response: Response,
-  attempt: number,
+  attempt: number
 ): number {
   const resetHeader = response.headers.get("X-RateLimit-Reset-After");
   if (!resetHeader) {
@@ -177,7 +177,7 @@ async function fetchDiscordEndpoint(endpoint: string): Promise<Response> {
 async function handleRateLimitedResponse(
   res: Response,
   endpoint: string,
-  attempt: number,
+  attempt: number
 ): Promise<void> {
   const delay = getRetryMilliseconds(res, attempt);
   const isGlobal = res.headers.get("x-ratelimit-global") === "true";
@@ -186,14 +186,14 @@ async function handleRateLimitedResponse(
     throw new Error(
       `Discord API rate limited (429) at ${endpoint} after ${MAX_RETRIES} retries${
         isGlobal ? " (GLOBAL)" : ""
-      }`,
+      }`
     );
   }
 
   console.warn(
     `Discord API rate limited (429) at ${endpoint}${
       isGlobal ? " (GLOBAL)" : ""
-    }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`,
+    }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`
   );
 
   await sleep(delay);
@@ -201,11 +201,11 @@ async function handleRateLimitedResponse(
 
 async function handleErrorResponse(
   res: Response,
-  endpoint: string,
+  endpoint: string
 ): Promise<never> {
   const errorText = await res.text();
   throw new Error(
-    `Discord API error ${res.status} at ${endpoint}: ${errorText}`,
+    `Discord API error ${res.status} at ${endpoint}: ${errorText}`
   );
 }
 
@@ -214,7 +214,7 @@ async function handleErrorResponse(
 // ============================================================================
 
 export async function discordRequest(
-  endpoint: string,
+  endpoint: string
 ): Promise<RawDiscordThreadT> {
   let attempt = 1;
   let finalError: unknown;
@@ -250,7 +250,7 @@ export async function discordRequest(
 
   console.error(
     `Failed to fetch from Discord API after ${MAX_RETRIES} retries at ${endpoint}:`,
-    finalError,
+    finalError
   );
   throw finalError;
 }
@@ -271,7 +271,7 @@ type MessageFetchResult = {
  * Used for initial full fetch of all historical messages.
  */
 async function fetchAllMessagesBackward(
-  channelOrThreadId: string,
+  channelOrThreadId: string
 ): Promise<RawDiscordThreadT> {
   let allMessages: RawDiscordThreadT = [];
   let beforeMessageId: string | undefined = undefined;
@@ -292,7 +292,7 @@ async function fetchAllMessagesBackward(
     const lastMessage = messages.at(-1);
     if (!lastMessage?.id) {
       console.warn(
-        `[fetchAllMessagesBackward] No message ID in batch for ${channelOrThreadId}, stopping`,
+        `[fetchAllMessagesBackward] No message ID in batch for ${channelOrThreadId}, stopping`
       );
       break;
     }
@@ -311,7 +311,7 @@ async function fetchAllMessagesBackward(
 async function fetchNewMessagesForward(
   channelOrThreadId: string,
   afterMessageId: string,
-  batchSize = MAX_DISCORD_MESSAGE,
+  batchSize = MAX_DISCORD_MESSAGE
 ): Promise<RawDiscordThreadT> {
   let allMessages: RawDiscordThreadT = [];
   let currentAfterId = afterMessageId;
@@ -328,7 +328,7 @@ async function fetchNewMessagesForward(
     const newestId = messages.at(0)?.id;
     if (!newestId) {
       console.warn(
-        `[fetchNewMessagesForward] No message ID in batch for ${channelOrThreadId}, stopping`,
+        `[fetchNewMessagesForward] No message ID in batch for ${channelOrThreadId}, stopping`
       );
       break;
     }
@@ -345,14 +345,14 @@ async function fetchNewMessagesForward(
  */
 async function cacheMessagesForFallback(
   channelOrThreadId: string,
-  messages: RawDiscordThreadT,
+  messages: RawDiscordThreadT
 ): Promise<void> {
   try {
     await setCachedThreadMessages(channelOrThreadId, messages);
   } catch (cacheError) {
     console.warn(
       `[cacheMessagesForFallback] Failed to cache for ${channelOrThreadId}:`,
-      cacheError,
+      cacheError
     );
   }
 }
@@ -362,18 +362,18 @@ async function cacheMessagesForFallback(
  */
 async function getStaleMessagesOrThrow(
   channelOrThreadId: string,
-  originalError: unknown,
+  originalError: unknown
 ): Promise<MessageFetchResult> {
   console.error(
     `[getStaleMessagesOrThrow] Discord API failed for ${channelOrThreadId}:`,
-    originalError instanceof Error ? originalError.message : originalError,
+    originalError instanceof Error ? originalError.message : originalError
   );
 
   const cachedMessages = await getCachedThreadMessages(channelOrThreadId);
 
   if (cachedMessages && cachedMessages.length > 0) {
     console.warn(
-      `[getStaleMessagesOrThrow] Returning stale data for ${channelOrThreadId} (${cachedMessages.length} messages)`,
+      `[getStaleMessagesOrThrow] Returning stale data for ${channelOrThreadId} (${cachedMessages.length} messages)`
     );
     return {
       messages: cachedMessages,
@@ -384,13 +384,13 @@ async function getStaleMessagesOrThrow(
   }
 
   console.error(
-    `[getStaleMessagesOrThrow] No cached fallback for ${channelOrThreadId}, throwing`,
+    `[getStaleMessagesOrThrow] No cached fallback for ${channelOrThreadId}, throwing`
   );
   throw originalError;
 }
 
 function buildMessageFetchResult(
-  messages: RawDiscordThreadT,
+  messages: RawDiscordThreadT
 ): MessageFetchResult {
   return {
     messages,
@@ -407,7 +407,7 @@ function buildMessageFetchResult(
  * Fetches all messages from a channel/thread with stale fallback on failure.
  */
 export async function getDiscordMessagesPaginated(
-  channelOrThreadId: string,
+  channelOrThreadId: string
 ): Promise<MessageFetchResult> {
   try {
     const messages = await fetchAllMessagesBackward(channelOrThreadId);
@@ -424,12 +424,12 @@ export async function getDiscordMessagesPaginated(
 export async function getLatestDiscordMessagesPaginated(
   channelOrThreadId: string,
   afterMessageId: string,
-  batchSize = MAX_DISCORD_MESSAGE,
+  batchSize = MAX_DISCORD_MESSAGE
 ): Promise<MessageFetchResult> {
   const messages = await fetchNewMessagesForward(
     channelOrThreadId,
     afterMessageId,
-    batchSize,
+    batchSize
   );
   return buildMessageFetchResult(messages);
 }
@@ -448,7 +448,7 @@ type ThreadKeyAndId = {
  * Thread name takes precedence over message content (handles edits by admins).
  */
 function extractThreadKeyFromMessage(
-  message: RawDiscordMessageT,
+  message: RawDiscordMessageT
 ): ThreadKeyAndId {
   if (!message.thread?.id) {
     return null;
@@ -486,13 +486,13 @@ export async function buildThreadIdMap(afterMessageId?: string): Promise<{
   latestMessageId: string | undefined;
 }> {
   console.log(
-    `[buildThreadIdMap] Starting, afterMessageId=${afterMessageId ?? "none"}`,
+    `[buildThreadIdMap] Starting, afterMessageId=${afterMessageId ?? "none"}`
   );
 
   const fetchResult = afterMessageId
     ? await getLatestDiscordMessagesPaginated(
         evidenceRationalDiscordChannelId,
-        afterMessageId,
+        afterMessageId
       )
     : await getDiscordMessagesPaginated(evidenceRationalDiscordChannelId);
 
@@ -501,7 +501,7 @@ export async function buildThreadIdMap(afterMessageId?: string): Promise<{
   console.log(
     `[buildThreadIdMap] Fetched ${
       fetchResult.messages.length
-    } messages, built ${Object.keys(threadIdMap).length} thread mappings`,
+    } messages, built ${Object.keys(threadIdMap).length} thread mappings`
   );
 
   return {
