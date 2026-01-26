@@ -6,6 +6,9 @@ import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
 import { getCachedProcessedThread } from "../discord-thread/_utils";
 import { getBaseUrl } from "helpers/util/http";
+import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
+
+const CONCURRENCY = 3;
 
 interface VoteInfo {
   requestKey: string;
@@ -91,14 +94,14 @@ export default async function handler(
 
     console.log(`[warm-summaries] Processing ${voteInfos.length} votes...`);
 
-    // 3. Process each vote - read from cache and call update-summary if data exists
-    let processed = 0;
-    let skipped = 0;
+    // 3. Process votes in parallel batches
     const errors: string[] = [];
-
     const baseUrl = getBaseUrl();
 
-    for (const voteInfo of voteInfos) {
+    // Process a single vote and return its result
+    const processVote = async (
+      voteInfo: VoteInfo
+    ): Promise<"processed" | "skipped" | "error"> => {
       try {
         // Read directly from the same cache that warm-discord-threads populates
         const cachedThread = await getCachedProcessedThread(
@@ -113,8 +116,7 @@ export default async function handler(
           console.log(
             `[warm-summaries] No cached thread data for requestKey=${voteInfo.requestKey}, skipping`
           );
-          skipped++;
-          continue;
+          return "skipped";
         }
 
         console.log(
@@ -140,15 +142,25 @@ export default async function handler(
             voteInfo.requestKey
           }, updated=${String(result.updated)}, cached=${String(result.cached)}`
         );
-        processed++;
+        return "processed";
       } catch (error) {
         const errorMsg = `Failed to process ${voteInfo.requestKey}: ${
           error instanceof Error ? error.message : String(error)
         }`;
         console.error(`[warm-summaries] ${errorMsg}`);
         errors.push(errorMsg);
+        return "error";
       }
-    }
+    };
+
+    // process in batches
+    const results = await promiseAllWithConcurrency(
+      voteInfos.map((voteInfo) => () => processVote(voteInfo)),
+      CONCURRENCY
+    );
+
+    const processed = results.filter((r) => r === "processed").length;
+    const skipped = results.filter((r) => r === "skipped").length;
 
     const duration = Date.now() - startTime;
     console.log(
