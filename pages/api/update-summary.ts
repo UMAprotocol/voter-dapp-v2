@@ -13,8 +13,8 @@ import { validateQueryParams } from "./_utils/validation";
 import { handleApiError, HttpError } from "./_utils/errors";
 import { getBaseUrl } from "helpers/util/http";
 
-// Default maximum interval between summary updates (5 minutes in milliseconds)
-const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
+// Default maximum interval between summary updates (10 minutes in milliseconds)
+const DEFAULT_MAX_UPDATE_INTERVAL = 10 * 60 * 1000;
 
 interface DiscordMessage {
   message: string;
