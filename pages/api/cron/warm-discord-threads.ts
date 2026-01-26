@@ -289,7 +289,6 @@ export default async function handler(
         // Process messages
         const processedMessages = processRawMessages(messages);
 
-        // Build the VoteDiscussionT object
         const voteDiscussion: VoteDiscussionT = {
           identifier: voteInfo.identifier,
           time: voteInfo.time,

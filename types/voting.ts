@@ -285,6 +285,19 @@ export type RawDiscordMessageT = APIMessage;
 
 export type RawDiscordThreadT = RawDiscordMessageT[];
 
+export const RawDiscordMessageSchema = ss.type({
+  id: ss.string(),
+  content: ss.string(),
+  thread: ss.optional(
+    ss.type({
+      id: ss.string(),
+      name: ss.optional(ss.string()),
+    })
+  ),
+});
+
+export const RawDiscordThreadSchema = ss.array(RawDiscordMessageSchema);
+
 export type ThreadIdMap = Record<string, string>;
 
 export const DiscordMessageT: ss.Describe<{

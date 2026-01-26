@@ -39,6 +39,16 @@ export class HttpError extends Error {
   }
 }
 
+export class RedisCacheValidationError extends Error {
+  public validationErrors: string[];
+
+  constructor(errors: string[]) {
+    super(`Redis cache validation failed : ${errors.join("; ")}`);
+    this.name = "RedisCacheValidationError";
+    this.validationErrors = errors;
+  }
+}
+
 export function handleApiError(
   error: unknown,
   response: NextApiResponse

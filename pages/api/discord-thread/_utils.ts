@@ -1,7 +1,9 @@
 import { Redis } from "@upstash/redis";
+import * as ss from "superstruct";
 import {
   RawDiscordMessageT,
   RawDiscordThreadT,
+  RawDiscordThreadSchema,
   ThreadIdMap,
   VoteDiscussionT,
 } from "types";
@@ -9,6 +11,7 @@ import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep } from "lib/utils";
 import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
 import { createCacheKey } from "lib/cache-keys";
+import { validateRedisData } from "../_utils/validation";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
@@ -19,10 +22,13 @@ export const PROCESSED_THREAD_CACHE_KEY = createCacheKey(
   "discord:processed_thread"
 );
 const MAX_DISCORD_MESSAGE = 100; // 0-100
-type ThreadCache = {
-  threadIdMap: ThreadIdMap;
-  latestThreadId: string | null;
-};
+
+const ThreadIdMapCacheSchema = ss.type({
+  threadIdMap: ss.record(ss.string(), ss.string()),
+  latestThreadId: ss.nullable(ss.string()),
+});
+
+type ThreadIdMapCache = ss.Infer<typeof ThreadIdMapCacheSchema>;
 
 // Set to true to disable Redis caching (useful for local development)
 const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
@@ -38,13 +44,16 @@ export function getRedis(): Redis | null {
 }
 
 // Cache functions for thread cache object
-export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
+export async function getCachedThreadIdMap(): Promise<ThreadIdMapCache | null> {
   if (DISABLE_REDIS) {
     return null;
   }
   const redis = getRedis();
   if (!redis) return null;
-  return await redis.get<ThreadCache>(THREAD_CACHE_KEY);
+  const rawData = await redis.get<unknown>(THREAD_CACHE_KEY);
+  if (rawData === null) return null;
+  validateRedisData(rawData, ThreadIdMapCacheSchema);
+  return rawData;
 }
 
 export async function setCachedThreadIdMap(
@@ -76,7 +85,11 @@ export async function getCachedThreadMessages(
   const redis = getRedis();
   if (!redis) return null;
   const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
-  return await redis.get<RawDiscordThreadT>(cacheKey);
+  const rawData = await redis.get<unknown>(cacheKey);
+  if (rawData === null) return null;
+  // Validates essential fields; returns as RawDiscordThreadT (full Discord API type)
+  validateRedisData(rawData, RawDiscordThreadSchema);
+  return rawData as RawDiscordThreadT;
 }
 
 export async function setCachedThreadMessages(
@@ -107,7 +120,10 @@ export async function getCachedProcessedThread(
   const redis = getRedis();
   if (!redis) return null;
   const cacheKey = `${PROCESSED_THREAD_CACHE_KEY}:${requestKey}`;
-  return await redis.get<VoteDiscussionT>(cacheKey);
+  const rawData = await redis.get<unknown>(cacheKey);
+  if (rawData === null) return null;
+  validateRedisData(rawData, VoteDiscussionT);
+  return rawData;
 }
 
 export async function setCachedProcessedThread(
