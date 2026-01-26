@@ -31,7 +31,42 @@ To generate the JSON file, run the following command in the root directory of th
 
 This will download the raw file of the approved identifiers from the UMA docs (on GitHub), and then re-generate a JSON file.
 
+## Cron Jobs & Discord Integration
+
+The app uses cron jobs (every 10 min) to pre-fetch Discord threads and generate AI summaries.
+
+### 1. Discord Thread Caching
+
+`/api/cron/warm-discord-threads` fetches and caches Discord discussions for active votes.
+
+```mermaid
+flowchart LR
+    Cron[warm-discord-threads] --> Chain[Voting Contract]
+    Chain -->|active votes| Cron
+    Cron --> Discord[Discord API]
+    Discord -->|thread messages| Cron
+    Cron -->|cache| Redis[(Redis)]
+    Redis --> API["/api/discord-thread"]
+    API --> FE[Frontend]
+```
+
+### 2. AI Summary Generation
+
+`/api/cron/warm-summaries` generates AI summaries from cached thread data (batches of 3).
+
+```mermaid
+flowchart LR
+    Cron[warm-summaries] --> Redis[(Redis)]
+    Redis -->|cached threads| Cron
+    Cron --> OpenAI[OpenAI API]
+    OpenAI -->|summary| Cron
+    Cron -->|cache| Redis
+    Redis --> API["/api/update-summary"]
+    API --> FE[Frontend]
+```
+
 ## Disabling Discord Summaries
+
 To disable specific Discord summaries, set `DISABLED_DISCORD_SUMMARY` with semicolon-separated entries in the format `time:identifier:title`.
 
 **Important**: If titles contain dollar signs (`$`), escape them with backslashes or use single quotes to prevent shell variable expansion.
