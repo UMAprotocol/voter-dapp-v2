@@ -325,7 +325,9 @@ export const VoteDiscussionT = ss.type({
 export type VoteDiscussionT = ss.Infer<typeof VoteDiscussionT>;
 
 export const L1Request = ss.object({
-  time: ss.number(),
+  time: ss.coerce(ss.number(), ss.union([ss.string(), ss.number()]), (value) =>
+    Number(value)
+  ),
   identifier: ss.string(),
   title: ss.string(),
 });

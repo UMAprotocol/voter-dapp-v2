@@ -4,8 +4,9 @@ import * as ss from "superstruct";
 import { stripInvalidCharacters } from "lib/utils";
 import { getCachedProcessedThread } from "./_utils";
 import { makeKey } from "lib/discord-utils";
+import { validateQueryParams } from "../_utils/validation";
 
-export const DiscordThreadRequestBody = ss.object({ l1Request: L1Request });
+export const DiscordThreadRequestBody = L1Request;
 export type DiscordThreadRequestBody = ss.Infer<
   typeof DiscordThreadRequestBody
 >;
@@ -15,59 +16,27 @@ export default async function handler(
   response: NextApiResponse
 ) {
   try {
-    // Validate required query parameters
-    const time = Number(request.query.time);
-    if (isNaN(time) || time <= 0) {
-      return response.status(400).send({
-        message: "Invalid time parameter - must be a positive number",
-      });
-    }
-
-    const identifier = request.query.identifier;
-    if (!identifier || typeof identifier !== "string") {
-      return response.status(400).send({
-        message: "Invalid identifier parameter - must be a string",
-      });
-    }
-
-    const title = request.query.title?.toString().trim() || "";
-    if (!title) {
-      return response.status(400).send({
-        message: "Invalid title parameter - cannot be empty",
-      });
-    }
-
-    const body = ss.create(
-      {
-        l1Request: {
-          time,
-          identifier,
-          title: stripInvalidCharacters(title),
-        },
-      },
+    const { time, title, identifier } = validateQueryParams(
+      request.query,
       DiscordThreadRequestBody
     );
 
+    const titleSanitized = stripInvalidCharacters(title);
+
     // Build the request key
-    const requestKey = makeKey(body.l1Request.title, body.l1Request.time);
+    const requestKey = makeKey(titleSanitized, time);
 
     // Fetch from Redis cache (populated by cron job)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const cachedData = await getCachedProcessedThread(requestKey);
 
-    if (
-      cachedData &&
-      typeof cachedData === "object" &&
-      "thread" in cachedData
-    ) {
-      const data = cachedData;
+    if (cachedData) {
       console.info(
-        `[discord-thread] Cache HIT for requestKey=${requestKey}, messages=${data.thread.length}`
+        `[discord-thread] Cache HIT for requestKey=${requestKey}, messages=${cachedData.thread.length}`
       );
       return response
         .setHeader("Cache-Control", "public, max-age=0, s-maxage=600")
         .status(200)
-        .send(data);
+        .send(cachedData);
     }
 
     // No cached data - return empty thread
@@ -76,8 +45,8 @@ export default async function handler(
     );
 
     const emptyResponse: VoteDiscussionT = {
-      identifier: body.l1Request.identifier,
-      time: body.l1Request.time,
+      identifier,
+      time,
       thread: [],
     };
 
