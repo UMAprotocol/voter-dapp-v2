@@ -11,6 +11,7 @@ import {
 import { isDiscordSummaryDisabled } from "helpers/disabledSummaries";
 import { validateQueryParams } from "./_utils/validation";
 import { handleApiError, HttpError } from "./_utils/errors";
+import { getBaseUrl } from "helpers/util/http";
 
 // Default maximum interval between summary updates (5 minutes in milliseconds)
 const DEFAULT_MAX_UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -831,14 +832,10 @@ export default async function handler(
 
     // Initialize Redis
     const redis = Redis.fromEnv();
-    // Call UMA API first to get comment count for cache key determination
-    const protocol = Array.isArray(req.headers["x-forwarded-proto"])
-      ? req.headers["x-forwarded-proto"][0]
-      : req.headers["x-forwarded-proto"] || "https";
-    const host = req.headers.host || "localhost";
-    const discordThreadBaseUrl = `${protocol}://${host}/api/discord-thread`;
-
-    const umaUrl = new URL(discordThreadBaseUrl);
+    // Call discord-thread API to get comment data
+    // Use getBaseUrl() for absolute URL (required for server-side fetch)
+    const baseUrl = getBaseUrl();
+    const umaUrl = new URL(`${baseUrl}/api/discord-thread`);
     umaUrl.searchParams.set("time", time);
     umaUrl.searchParams.set("identifier", identifier);
     umaUrl.searchParams.set("title", title);
