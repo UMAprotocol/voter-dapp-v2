@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -47,6 +48,10 @@ export function VoteListItem(props: VoteListItemProps) {
     isDirty,
     origin,
     moreDetailsAction,
+    phase,
+    isSelectedForReveal,
+    toggleRevealSelection,
+    canBeRevealed,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -57,6 +62,7 @@ export function VoteListItem(props: VoteListItemProps) {
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
+  const showRevealCheckbox = phase === "reveal" && canBeRevealed;
 
   return (
     <div
@@ -65,6 +71,19 @@ export function VoteListItem(props: VoteListItemProps) {
     >
       <div className="w-full rounded-l">
         <div className="align-center flex border-b-[--border-color] pb-1">
+          {showRevealCheckbox && (
+            <div
+              className="mr-3 flex items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Checkbox
+                label=""
+                checked={isSelectedForReveal ?? false}
+                onChange={() => toggleRevealSelection?.()}
+                gap={0}
+              />
+            </div>
+          )}
           <div className="w-full">
             <h3 className="mb-1 line-clamp-2 w-full break-words text-lg font-semibold">
               {optimisticGovernorTitle || titleText}

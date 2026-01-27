@@ -10,4 +10,8 @@ export interface VoteListItemProps {
   moreDetailsAction: () => void;
   setDirty?: (dirty: boolean) => void;
   isDirty?: boolean;
+  // Reveal phase selection props
+  isSelectedForReveal?: boolean;
+  toggleRevealSelection?: () => void;
+  canBeRevealed?: boolean;
 }
