@@ -1,25 +1,34 @@
 import { Redis } from "@upstash/redis";
-import { RawDiscordThreadT, ThreadIdMap } from "types";
+import * as ss from "superstruct";
+import {
+  RawDiscordMessageT,
+  RawDiscordThreadT,
+  RawDiscordThreadSchema,
+  ThreadIdMap,
+  VoteDiscussionT,
+} from "types";
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep } from "lib/utils";
 import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
 import { createCacheKey } from "lib/cache-keys";
+import { validateRedisData } from "../_utils/validation";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
   "discord:thread_messages"
 );
-// Simple lock to prevent thundering herd refresh
-const THREAD_REFRESH_LOCK_PREFIX = createCacheKey(
-  "discord:thread_refresh_lock"
+export const PROCESSED_THREAD_CACHE_KEY = createCacheKey(
+  "discord:processed_thread"
 );
-const DEFAULT_LOCK_TTL_SECONDS = 300; // 5 minutes
 const MAX_DISCORD_MESSAGE = 100; // 0-100
-type ThreadCache = {
-  threadIdMap: ThreadIdMap;
-  latestThreadId: string | null;
-};
+
+const ThreadIdMapCacheSchema = ss.type({
+  threadIdMap: ss.record(ss.string(), ss.string()),
+  latestThreadId: ss.nullable(ss.string()),
+});
+
+type ThreadIdMapCache = ss.Infer<typeof ThreadIdMapCacheSchema>;
 
 // Set to true to disable Redis caching (useful for local development)
 const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
@@ -35,13 +44,16 @@ export function getRedis(): Redis | null {
 }
 
 // Cache functions for thread cache object
-export async function getCachedThreadIdMap(): Promise<ThreadCache | null> {
+export async function getCachedThreadIdMap(): Promise<ThreadIdMapCache | null> {
   if (DISABLE_REDIS) {
     return null;
   }
   const redis = getRedis();
   if (!redis) return null;
-  return await redis.get<ThreadCache>(THREAD_CACHE_KEY);
+  const rawData = await redis.get<unknown>(THREAD_CACHE_KEY);
+  if (rawData === null) return null;
+  validateRedisData(rawData, ThreadIdMapCacheSchema);
+  return rawData;
 }
 
 export async function setCachedThreadIdMap(
@@ -73,7 +85,11 @@ export async function getCachedThreadMessages(
   const redis = getRedis();
   if (!redis) return null;
   const cacheKey = `${THREAD_MESSAGES_CACHE_KEY}:${threadId}`;
-  return await redis.get<RawDiscordThreadT>(cacheKey);
+  const rawData = await redis.get<unknown>(cacheKey);
+  if (rawData === null) return null;
+  // Validates essential fields; returns as RawDiscordThreadT (full Discord API type)
+  validateRedisData(rawData, RawDiscordThreadSchema);
+  return rawData as RawDiscordThreadT;
 }
 
 export async function setCachedThreadMessages(
@@ -94,11 +110,48 @@ export async function setCachedThreadMessages(
   return result;
 }
 
+// Cache functions for processed thread data (used by cron job and endpoint)
+export async function getCachedProcessedThread(
+  requestKey: string
+): Promise<VoteDiscussionT | null> {
+  if (DISABLE_REDIS) {
+    return null;
+  }
+  const redis = getRedis();
+  if (!redis) return null;
+  const cacheKey = `${PROCESSED_THREAD_CACHE_KEY}:${requestKey}`;
+  const rawData = await redis.get<unknown>(cacheKey);
+  if (rawData === null) return null;
+  validateRedisData(rawData, VoteDiscussionT);
+  return rawData;
+}
+
+export async function setCachedProcessedThread(
+  requestKey: string,
+  data: VoteDiscussionT
+) {
+  if (DISABLE_REDIS) {
+    return;
+  }
+  const redis = getRedis();
+  if (!redis) return;
+  const cacheKey = `${PROCESSED_THREAD_CACHE_KEY}:${requestKey}`;
+  // Cache for 1 hour (3600 seconds) - will be refreshed by cron every 10 min
+  const result = await redis.setex(cacheKey, 3600, data);
+  if (!result) {
+    throw new Error("Setting processed thread cache failed");
+  }
+  return result;
+}
+
+// ============================================================================
+// Discord API - Retry Configuration
+// ============================================================================
+
 const MAX_RETRIES = 5;
-const BASE_DELAY = 1_000; // 2 seconds
+const BASE_DELAY = 1_000; // 1 second
 const MAX_DELAY = 30_000; // 30 seconds
 
-// simple exponential backoff
 function calculateBackoffDelay(attempt: number): number {
   const exponentialDelay = BASE_DELAY * Math.pow(2, attempt);
   const jitter = Math.random() * 1000;
@@ -115,67 +168,86 @@ export function getRetryMilliseconds(
   }
 
   const seconds = parseFloat(resetHeader);
-
   if (!isNaN(seconds) && seconds > 0) {
-    return Math.ceil(seconds * 1000); // Convert to milliseconds
+    return Math.ceil(seconds * 1000);
   }
 
-  // fallback
   return calculateBackoffDelay(attempt);
 }
+
+// ============================================================================
+// Discord API - Low-level Fetch
+// ============================================================================
+
+async function fetchDiscordEndpoint(endpoint: string): Promise<Response> {
+  const url = "https://discord.com/api/v10/" + endpoint;
+  return fetch(url, {
+    headers: {
+      Authorization: `Bot ${discordToken}`,
+      "Content-Type": "application/json; charset=UTF-8",
+      "User-Agent": "DiscordBot (https://vote.uma.xyz, 1.0.0)",
+    },
+  });
+}
+
+async function handleRateLimitedResponse(
+  res: Response,
+  endpoint: string,
+  attempt: number
+): Promise<void> {
+  const delay = getRetryMilliseconds(res, attempt);
+  const isGlobal = res.headers.get("x-ratelimit-global") === "true";
+
+  if (attempt >= MAX_RETRIES) {
+    throw new Error(
+      `Discord API rate limited (429) at ${endpoint} after ${MAX_RETRIES} retries${
+        isGlobal ? " (GLOBAL)" : ""
+      }`
+    );
+  }
+
+  console.warn(
+    `Discord API rate limited (429) at ${endpoint}${
+      isGlobal ? " (GLOBAL)" : ""
+    }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`
+  );
+
+  await sleep(delay);
+}
+
+async function handleErrorResponse(
+  res: Response,
+  endpoint: string
+): Promise<never> {
+  const errorText = await res.text();
+  throw new Error(
+    `Discord API error ${res.status} at ${endpoint}: ${errorText}`
+  );
+}
+
+// ============================================================================
+// Discord API - Request with Retries
+// ============================================================================
 
 export async function discordRequest(
   endpoint: string
 ): Promise<RawDiscordThreadT> {
   let attempt = 1;
   let finalError: unknown;
-  const url = "https://discord.com/api/v10/" + endpoint;
 
   while (attempt <= MAX_RETRIES) {
     try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bot ${discordToken}`,
-          "Content-Type": "application/json; charset=UTF-8",
-          "User-Agent": "DiscordBot (https://vote.uma.xyz, 1.0.0)",
-        },
-      });
+      const res = await fetchDiscordEndpoint(endpoint);
 
-      // Handle rate limits
       if (res.status === 429) {
-        const delay = getRetryMilliseconds(res, attempt);
-
-        const isGlobal = res.headers.get("x-ratelimit-global") === "true";
-
-        if (attempt >= MAX_RETRIES) {
-          throw new Error(
-            `Discord API rate limited (429) at ${endpoint} after ${MAX_RETRIES} retries${
-              isGlobal ? " (GLOBAL)" : ""
-            }`
-          );
-        }
-
-        console.warn(
-          `Discord API rate limited (429) at ${endpoint}${
-            isGlobal ? " (GLOBAL)" : ""
-          }, retrying after ${delay}ms (attempt ${attempt}/${MAX_RETRIES + 1})`
-        );
-
-        await sleep(delay);
+        await handleRateLimitedResponse(res, endpoint, attempt);
         attempt += 1;
         continue;
       }
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(
-          `Discord API error ${res.status} at ${endpoint}: ${errorText}`
-        );
+        await handleErrorResponse(res, endpoint);
       }
-
-      console.log(
-        `Discord API at ${endpoint} successful after ${attempt + 1} retries`
-      );
 
       return (await res.json()) as RawDiscordThreadT;
     } catch (error) {
@@ -186,11 +258,12 @@ export async function discordRequest(
       }
 
       const delay = calculateBackoffDelay(attempt);
-      console.warn("Discord thread retrying for non-429 error", error);
+      console.warn("Discord API retrying for non-429 error", error);
       await sleep(delay);
       attempt += 1;
     }
   }
+
   console.error(
     `Failed to fetch from Discord API after ${MAX_RETRIES} retries at ${endpoint}:`,
     finalError
@@ -198,267 +271,257 @@ export async function discordRequest(
   throw finalError;
 }
 
-// fetches messages for thread (or channel) in batches
-// starts from latest
-export async function getDiscordMessagesPaginated(
-  channelOrThreadId: string
-): Promise<{
+// ============================================================================
+// Discord API - Message Fetching (Pagination Helpers)
+// ============================================================================
+
+type MessageFetchResult = {
   messages: RawDiscordThreadT;
   latestMessageId: string | undefined;
   lastMessageId: string | undefined;
-}> {
+  isStale?: boolean;
+};
+
+/**
+ * Fetches all messages from a channel/thread going backward (oldest first).
+ * Used for initial full fetch of all historical messages.
+ */
+async function fetchAllMessagesBackward(
+  channelOrThreadId: string
+): Promise<RawDiscordThreadT> {
   let allMessages: RawDiscordThreadT = [];
-  let lastMessageId: string | undefined = undefined;
+  let beforeMessageId: string | undefined = undefined;
 
   do {
     let url = `channels/${channelOrThreadId}/messages?limit=${MAX_DISCORD_MESSAGE}`;
-
-    if (lastMessageId) {
-      // For subsequent requests, use 'before' to get older messages
-      url += `&before=${lastMessageId}`;
+    if (beforeMessageId) {
+      url += `&before=${beforeMessageId}`;
     }
 
     const messages = await discordRequest(url);
-
     allMessages = allMessages.concat(messages);
 
     if (messages.length < MAX_DISCORD_MESSAGE) {
-      break; // No more messages to fetch
+      break;
     }
 
     const lastMessage = messages.at(-1);
     if (!lastMessage?.id) {
       console.warn(
-        `No message ID found in batch for ${channelOrThreadId}, stopping pagination`
+        `[fetchAllMessagesBackward] No message ID in batch for ${channelOrThreadId}, stopping`
       );
-      break; // Safety check to prevent infinite loop
+      break;
     }
 
-    lastMessageId = lastMessage.id;
+    beforeMessageId = lastMessage.id;
     await sleep(50);
-  } while (lastMessageId);
+  } while (beforeMessageId);
 
-  // Cache the messages for future stale data fallback
-  try {
-    await setCachedThreadMessages(channelOrThreadId, allMessages);
-  } catch (cacheError) {
-    console.warn(
-      `Failed to cache messages for thread ${channelOrThreadId}:`,
-      cacheError
-    );
-  }
-
-  return {
-    messages: allMessages,
-    latestMessageId: allMessages.at(0)?.id,
-    lastMessageId: allMessages.at(-1)?.id,
-  };
+  return allMessages;
 }
 
-export async function getLatestDiscordMessagesPaginated(
+/**
+ * Fetches new messages from a channel/thread going forward (newer than afterMessageId).
+ * Used for incremental updates to get only new messages since last fetch.
+ */
+async function fetchNewMessagesForward(
   channelOrThreadId: string,
-  latestMessageId: string,
-  batchSize = 100 // 0-100
-): Promise<{
-  messages: RawDiscordThreadT;
-  latestMessageId: string | undefined;
-  lastMessageId: string | undefined;
-}> {
+  afterMessageId: string,
+  batchSize = MAX_DISCORD_MESSAGE
+): Promise<RawDiscordThreadT> {
   let allMessages: RawDiscordThreadT = [];
-  let lastMessageId = latestMessageId;
+  let currentAfterId = afterMessageId;
 
   do {
-    const url = `channels/${channelOrThreadId}/messages?limit=${batchSize}&after=${lastMessageId}`;
-
+    const url = `channels/${channelOrThreadId}/messages?limit=${batchSize}&after=${currentAfterId}`;
     const messages = await discordRequest(url);
-
     allMessages = allMessages.concat(messages);
 
     if (messages.length < batchSize) {
-      break; // No more messages to fetch
+      break;
     }
 
-    const latestId = messages.at(0)?.id;
-    if (!latestId) {
+    const newestId = messages.at(0)?.id;
+    if (!newestId) {
       console.warn(
-        `No message ID found in batch for ${channelOrThreadId}, stopping pagination`
+        `[fetchNewMessagesForward] No message ID in batch for ${channelOrThreadId}, stopping`
       );
-      break; // Safety check to prevent infinite loop
+      break;
     }
 
-    lastMessageId = latestId;
+    currentAfterId = newestId;
     await sleep(50);
-  } while (lastMessageId);
+  } while (currentAfterId);
 
+  return allMessages;
+}
+
+/**
+ * Caches messages for future stale fallback. Logs warning on failure but doesn't throw.
+ */
+async function cacheMessagesForFallback(
+  channelOrThreadId: string,
+  messages: RawDiscordThreadT
+): Promise<void> {
+  try {
+    await setCachedThreadMessages(channelOrThreadId, messages);
+  } catch (cacheError) {
+    console.warn(
+      `[cacheMessagesForFallback] Failed to cache for ${channelOrThreadId}:`,
+      cacheError
+    );
+  }
+}
+
+/**
+ * Attempts to return stale cached messages. Throws original error if no cache available.
+ */
+async function getStaleMessagesOrThrow(
+  channelOrThreadId: string,
+  originalError: unknown
+): Promise<MessageFetchResult> {
+  console.error(
+    `[getStaleMessagesOrThrow] Discord API failed for ${channelOrThreadId}:`,
+    originalError instanceof Error ? originalError.message : originalError
+  );
+
+  const cachedMessages = await getCachedThreadMessages(channelOrThreadId);
+
+  if (cachedMessages && cachedMessages.length > 0) {
+    console.warn(
+      `[getStaleMessagesOrThrow] Returning stale data for ${channelOrThreadId} (${cachedMessages.length} messages)`
+    );
+    return {
+      messages: cachedMessages,
+      latestMessageId: cachedMessages.at(0)?.id,
+      lastMessageId: cachedMessages.at(-1)?.id,
+      isStale: true,
+    };
+  }
+
+  console.error(
+    `[getStaleMessagesOrThrow] No cached fallback for ${channelOrThreadId}, throwing`
+  );
+  throw originalError;
+}
+
+function buildMessageFetchResult(
+  messages: RawDiscordThreadT
+): MessageFetchResult {
   return {
-    messages: allMessages,
-    latestMessageId: allMessages.at(0)?.id,
-    lastMessageId: allMessages.at(-1)?.id,
+    messages,
+    latestMessageId: messages.at(0)?.id,
+    lastMessageId: messages.at(-1)?.id,
   };
 }
 
-export async function buildThreadIdMap(
-  afterMessageId?: string
-): Promise<ThreadIdMap> {
-  const allThreadMessages = afterMessageId
+// ============================================================================
+// Discord API - Public Message Fetching Functions
+// ============================================================================
+
+/**
+ * Fetches all messages from a channel/thread with stale fallback on failure.
+ */
+export async function getDiscordMessagesPaginated(
+  channelOrThreadId: string
+): Promise<MessageFetchResult> {
+  try {
+    const messages = await fetchAllMessagesBackward(channelOrThreadId);
+    await cacheMessagesForFallback(channelOrThreadId, messages);
+    return buildMessageFetchResult(messages);
+  } catch (error) {
+    return getStaleMessagesOrThrow(channelOrThreadId, error);
+  }
+}
+
+/**
+ * Fetches new messages since a given message ID (incremental update).
+ */
+export async function getLatestDiscordMessagesPaginated(
+  channelOrThreadId: string,
+  afterMessageId: string,
+  batchSize = MAX_DISCORD_MESSAGE
+): Promise<MessageFetchResult> {
+  const messages = await fetchNewMessagesForward(
+    channelOrThreadId,
+    afterMessageId,
+    batchSize
+  );
+  return buildMessageFetchResult(messages);
+}
+
+// ============================================================================
+// Thread ID Map Building
+// ============================================================================
+
+type ThreadKeyAndId = {
+  key: string;
+  threadId: string;
+} | null;
+
+/**
+ * Extracts the thread key and ID from a Discord message.
+ * Thread name takes precedence over message content (handles edits by admins).
+ */
+function extractThreadKeyFromMessage(
+  message: RawDiscordMessageT
+): ThreadKeyAndId {
+  if (!message.thread?.id) {
+    return null;
+  }
+
+  const rawName = message.thread.name ?? message.content;
+  const key = extractValidateTitleAndTimestamp(rawName);
+
+  if (!key) {
+    return null;
+  }
+
+  return { key, threadId: message.thread.id };
+}
+
+/**
+ * Converts an array of Discord messages into a threadIdMap.
+ */
+function messagesToThreadIdMap(messages: RawDiscordThreadT): ThreadIdMap {
+  return messages.reduce((map, message) => {
+    const extracted = extractThreadKeyFromMessage(message);
+    if (extracted) {
+      map[extracted.key] = extracted.threadId;
+    }
+    return map;
+  }, {} as ThreadIdMap);
+}
+
+/**
+ * Fetches messages from Discord channel and builds a map of thread keys to thread IDs.
+ * If afterMessageId is provided, only fetches new messages (incremental update).
+ */
+export async function buildThreadIdMap(afterMessageId?: string): Promise<{
+  threadIdMap: ThreadIdMap;
+  latestMessageId: string | undefined;
+}> {
+  console.log(
+    `[buildThreadIdMap] Starting, afterMessageId=${afterMessageId ?? "none"}`
+  );
+
+  const fetchResult = afterMessageId
     ? await getLatestDiscordMessagesPaginated(
         evidenceRationalDiscordChannelId,
         afterMessageId
       )
     : await getDiscordMessagesPaginated(evidenceRationalDiscordChannelId);
 
-  const threadIdMap: ThreadIdMap = allThreadMessages.messages.reduce(
-    (map, message) => {
-      // if for some reason the thread was changed, it will only reflect in thread.name.
-      // message.content only reflects the original message, not edits ( or edits by another admin)
-      // so first check for message.thread.name and fallback to message.content
-      const titleAndTimestamp = extractValidateTitleAndTimestamp(
-        message?.thread?.name ?? message.content
-      );
-      if (titleAndTimestamp && message.thread?.id) {
-        map[titleAndTimestamp] = message.thread.id;
-      }
-      return map;
-    },
-    {} as ThreadIdMap
+  const threadIdMap = messagesToThreadIdMap(fetchResult.messages);
+
+  console.log(
+    `[buildThreadIdMap] Fetched ${
+      fetchResult.messages.length
+    } messages, built ${Object.keys(threadIdMap).length} thread mappings`
   );
 
-  // Use the unified cache to store both thread mapping and latest thread ID atomically
-  await setCachedThreadIdMap(
+  return {
     threadIdMap,
-    allThreadMessages.latestMessageId || null
-  );
-
-  return threadIdMap;
-}
-
-// Main function to get thread messages with cache handling
-export async function getThreadMessagesForRequest(requestKey: string): Promise<{
-  threadId: string | null;
-  messages: RawDiscordThreadT;
-  isStaleData?: boolean;
-}> {
-  // Try to get thread ID from cache first
-  const threadId = await getThreadIdFromCache(requestKey);
-  if (!threadId) {
-    console.warn(
-      `[discord-thread] No threadId for requestKey=${requestKey}; returning empty`
-    );
-    return { threadId: null, messages: [] };
-  }
-  // Cache-first: if we already have messages cached, return them immediately.
-  const cachedMessages = await getCachedThreadMessages(threadId);
-  if (cachedMessages && cachedMessages.length > 0) {
-    console.info(
-      `[discord-thread] Serving STALE cached data for requestKey=${requestKey}, threadId=${threadId}, messages=${cachedMessages.length}`
-    );
-    return { threadId, messages: cachedMessages, isStaleData: true };
-  }
-  // Cold cache: fetch now (this path is rare and acceptable to be blocking)
-  console.info(
-    `[discord-thread] Cold cache MISS for requestKey=${requestKey}, threadId=${threadId}. Fetching fresh from Discord...`
-  );
-  const startedAt = Date.now();
-  const { messages } = await getDiscordMessagesPaginated(threadId);
-  console.info(
-    `[discord-thread] Cold fetch COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
-      messages.length
-    }, durationMs=${Date.now() - startedAt}`
-  );
-  return { threadId, messages };
-}
-
-async function getThreadIdFromCache(
-  requestKey: string
-): Promise<string | null> {
-  const cachedThreadMapping = await getCachedThreadIdMap();
-  const threadId = cachedThreadMapping?.threadIdMap[requestKey];
-  if (!threadId) {
-    const updatedThreadMapping = await buildThreadIdMap(
-      cachedThreadMapping?.latestThreadId ?? undefined
-    );
-    return updatedThreadMapping?.[requestKey] ?? null;
-  }
-  return threadId;
-}
-
-function getThreadLockKeyForRequestKey(requestKey: string): string {
-  return `${THREAD_REFRESH_LOCK_PREFIX}:${requestKey}`;
-}
-
-type SetCommandOptions = Parameters<Redis["set"]>[2];
-
-async function acquireLock(
-  lockKey: string,
-  ttlSeconds = DEFAULT_LOCK_TTL_SECONDS
-): Promise<boolean> {
-  if (DISABLE_REDIS) {
-    // When Redis is disabled, always allow refresh (no locking)
-    return true;
-  }
-  const redis = getRedis();
-  if (!redis) return true;
-  try {
-    // Use NX + EX to create a simple mutex
-    const options: SetCommandOptions = {
-      nx: true,
-      ex: ttlSeconds,
-    } as SetCommandOptions;
-    const result = await redis.set(lockKey, "1", options);
-    return Boolean(result);
-  } catch (e) {
-    console.warn(`Failed to acquire lock ${lockKey}:`, e);
-    return false;
-  }
-}
-
-async function releaseLock(lockKey: string) {
-  if (DISABLE_REDIS) {
-    return;
-  }
-  const redis = getRedis();
-  if (!redis) return;
-  try {
-    await redis.del(lockKey);
-  } catch (e) {
-    console.warn(`Failed to release lock ${lockKey}:`, e);
-  }
-}
-
-// Trigger a refresh, but only if no other worker is already doing it
-export async function refreshThreadMessagesForRequestKey(requestKey: string) {
-  const lockKey = getThreadLockKeyForRequestKey(requestKey);
-  console.info(
-    `[discord-thread] Refresh attempt for requestKey=${requestKey}, lockKey=${lockKey}`
-  );
-  const locked = await acquireLock(lockKey);
-  if (!locked) {
-    console.info(
-      `[discord-thread] Refresh SKIPPED (lock held) for requestKey=${requestKey}, lockKey=${lockKey}`
-    );
-    return; // another worker is already refreshing
-  }
-  try {
-    const threadId = await getThreadIdFromCache(requestKey);
-    if (!threadId) {
-      console.warn(
-        `[discord-thread] Refresh ABORTED: no threadId for requestKey=${requestKey}`
-      );
-      return;
-    }
-    const startedAt = Date.now();
-    console.info(
-      `[discord-thread] Refresh START for requestKey=${requestKey}, threadId=${threadId}`
-    );
-    const { messages } = await getDiscordMessagesPaginated(threadId);
-    console.info(
-      `[discord-thread] Refresh COMPLETE for requestKey=${requestKey}, threadId=${threadId}, messages=${
-        messages.length
-      }, durationMs=${Date.now() - startedAt}`
-    );
-  } catch (e) {
-    console.warn(`Background refresh failed for ${requestKey}:`, e);
-  } finally {
-    await releaseLock(lockKey);
-  }
+    latestMessageId: fetchResult.latestMessageId,
+  };
 }

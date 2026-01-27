@@ -1,5 +1,5 @@
 import * as ss from "superstruct";
-import { HttpError } from "./errors";
+import { HttpError, RedisCacheValidationError } from "./errors";
 import { NextApiRequest } from "next";
 
 export function validateQueryParams<T>(
@@ -48,5 +48,23 @@ function validateSchema<T>(
       statusCode: 400,
       msg: `${msg}. Unknown issue`,
     });
+  }
+}
+
+export function validateRedisData<T>(
+  value: unknown,
+  schema: ss.Struct<T, unknown>
+): asserts value is T {
+  try {
+    ss.assert(value, schema);
+  } catch (error) {
+    if (error instanceof ss.StructError) {
+      const issues = error.failures().map((f) => {
+        const path = f.path.length > 0 ? f.path.join(".") : "root";
+        return `${path}: ${f.message}`;
+      });
+      throw new RedisCacheValidationError(issues);
+    }
+    throw error;
   }
 }

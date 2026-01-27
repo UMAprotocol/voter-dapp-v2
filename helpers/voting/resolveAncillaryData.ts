@@ -2,6 +2,7 @@ import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/e
 import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
 import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
+import { getBaseUrl } from "helpers/util/http";
 
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
@@ -19,9 +20,9 @@ export async function resolveAncillaryData(
   args: Pick<RequestAddedEvent["args"], "ancillaryData" | "time" | "identifier">
 ): Promise<string> {
   try {
-    // Use the serverless API endpoint for L2 ancillary data resolution
+    const baseUrl = getBaseUrl();
     const response = await fetch(
-      `/api/resolve-l2-ancillary-data?${buildSearchParams({
+      `${baseUrl}/api/resolve-l2-ancillary-data?${buildSearchParams({
         identifier: args.identifier,
         time: args.time.toString(),
         ancillaryData: args.ancillaryData,

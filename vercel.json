@@ -3,13 +3,13 @@
     "pages/api/augment-request.ts": {
       "maxDuration": 300
     },
-    "pages/api/warm-summary.ts": {
-      "maxDuration": 300
-    },
     "pages/api/update-summary.ts": {
       "maxDuration": 300
     },
-    "pages/api/discord-thread/index.ts": {
+    "pages/api/cron/warm-discord-threads.ts": {
+      "maxDuration": 300
+    },
+    "pages/api/cron/warm-summaries.ts": {
       "maxDuration": 300
     }
   },
@@ -42,7 +42,11 @@
   ],
   "crons": [
     {
-      "path": "/api/warm-summary",
+      "path": "/api/cron/warm-summaries",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-discord-threads",
       "schedule": "*/10 * * * *"
     }
   ]
