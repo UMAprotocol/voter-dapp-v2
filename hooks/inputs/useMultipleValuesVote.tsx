@@ -5,10 +5,13 @@ import {
   isTooEarly as _isTooEarly,
   isUnresolvable as _isUnresolvable,
   decodeMultipleQuery,
+  getQuestionId,
+  checkIfIsPolymarket,
 } from "helpers";
 import { VoteListItemProps } from "components/VoteList/shared.types";
 import { makeMultipleValuesDropdownOptions } from "helpers/voting/getVoteMetaData";
 import { useAugmentedVoteData } from "hooks/queries/votes/useAugmentedVoteData";
+import { usePolymarketOutcomes } from "hooks/queries/votes/usePolymarketOutcomes";
 import { maxInt256 } from "constant/web3/numbers";
 
 export type MultipleInputProps = ReturnType<typeof useMultipleValuesVote>;
@@ -31,7 +34,41 @@ export function useMultipleValuesVote({ vote, selectVote }: Props) {
   });
   const proposedPrice = augmentedData?.proposedPrice;
 
-  const { options, decryptedVote, correctVote } = vote;
+  // Fetch Polymarket outcomes to get real candidate names
+  const isPolymarket = checkIfIsPolymarket(
+    vote.decodedIdentifier,
+    vote.decodedAncillaryData
+  );
+  const questionId = getQuestionId({
+    decodedAncillaryData: vote.decodedAncillaryData,
+  });
+  const { data: polymarketOutcomes } = usePolymarketOutcomes(
+    questionId,
+    enabled && isPolymarket
+  );
+
+  // Enhance options with real Polymarket candidate names if available
+  const { options: originalOptions, decryptedVote, correctVote } = vote;
+  const options = useMemo(() => {
+    if (!originalOptions) return originalOptions;
+    if (!polymarketOutcomes?.found || !polymarketOutcomes.outcomes?.length) {
+      return originalOptions;
+    }
+
+    // Map placeholder labels to real outcome names
+    // Polymarket outcomes array typically corresponds to the labels in order
+    return originalOptions.map((option, index) => {
+      const realLabel = polymarketOutcomes.outcomes[index];
+      if (realLabel && realLabel !== option.label) {
+        return {
+          ...option,
+          label: realLabel,
+          secondaryLabel: option.label, // Keep original as secondary for reference
+        };
+      }
+      return option;
+    });
+  }, [originalOptions, polymarketOutcomes]);
   const [inputModalOpen, setInputModalOpen] = useState(false);
   const [inputsDisabled, setInputsDisabled] = useState(false);
   const openInputModal = () => void setInputModalOpen(true);

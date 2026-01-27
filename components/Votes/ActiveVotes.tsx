@@ -322,47 +322,27 @@ export function ActiveVotes() {
       }),
   }));
 
+  const isRevealPhase = phase === "reveal";
+  const isCommitPhase = phase === "commit";
+
   return (
     <>
       <Title> Active votes: </Title>
       <VoteTimeline />
-      <VotesTableWrapper>
-        <VoteList activityStatus="active" data={data} />
-      </VotesTableWrapper>
-      {showPagination && (
-        <PaginationWrapper>
-          <Pagination {...paginationProps} />
-        </PaginationWrapper>
-      )}
-      {isDirty() ? (
-        <RecommittingVotesMessage>
-          * Changes to committed votes need to be re-committed
-        </RecommittingVotesMessage>
-      ) : null}
-      <ButtonOuterWrapper>
-        {actionStatus.infoText ? (
-          <Tooltip label={actionStatus.infoText.tooltip}>
-            <InfoText>
-              <IconWrapper width={20} height={20}>
-                <WarningIcon />
-              </IconWrapper>
-              {actionStatus.infoText.label}
-            </InfoText>
-          </Tooltip>
-        ) : null}
-        <ButtonInnerWrapper>
-          {isDirty() ? (
-            <>
-              <Button
-                variant="secondary"
-                label="Reset Changes"
-                onClick={() => setSelectedVotes({})}
-              />
-              <ButtonSpacer />
-            </>
-          ) : undefined}
-          {!actionStatus.hidden ? (
-            actionStatus.tooltip ? (
+      {isRevealPhase && !actionStatus.hidden && (
+        <ButtonOuterWrapper>
+          {actionStatus.infoText ? (
+            <Tooltip label={actionStatus.infoText.tooltip}>
+              <InfoText>
+                <IconWrapper width={20} height={20}>
+                  <WarningIcon />
+                </IconWrapper>
+                {actionStatus.infoText.label}
+              </InfoText>
+            </Tooltip>
+          ) : null}
+          <ButtonInnerWrapper>
+            {actionStatus.tooltip ? (
               <Tooltip label={actionStatus.tooltip}>
                 <div>
                   <Button
@@ -380,10 +360,71 @@ export function ActiveVotes() {
                 onClick={actionStatus.onClick}
                 disabled={actionStatus.disabled}
               />
-            )
+            )}
+          </ButtonInnerWrapper>
+        </ButtonOuterWrapper>
+      )}
+      <VotesTableWrapper>
+        <VoteList activityStatus="active" data={data} />
+      </VotesTableWrapper>
+      {showPagination && (
+        <PaginationWrapper>
+          <Pagination {...paginationProps} />
+        </PaginationWrapper>
+      )}
+      {isDirty() ? (
+        <RecommittingVotesMessage>
+          * Changes to committed votes need to be re-committed
+        </RecommittingVotesMessage>
+      ) : null}
+      {/* Commit button at bottom - only shown during commit phase */}
+      {isCommitPhase && (
+        <ButtonOuterWrapper>
+          {actionStatus.infoText ? (
+            <Tooltip label={actionStatus.infoText.tooltip}>
+              <InfoText>
+                <IconWrapper width={20} height={20}>
+                  <WarningIcon />
+                </IconWrapper>
+                {actionStatus.infoText.label}
+              </InfoText>
+            </Tooltip>
           ) : null}
-        </ButtonInnerWrapper>
-      </ButtonOuterWrapper>
+          <ButtonInnerWrapper>
+            {isDirty() ? (
+              <>
+                <Button
+                  variant="secondary"
+                  label="Reset Changes"
+                  onClick={() => setSelectedVotes({})}
+                />
+                <ButtonSpacer />
+              </>
+            ) : undefined}
+            {!actionStatus.hidden ? (
+              actionStatus.tooltip ? (
+                <Tooltip label={actionStatus.tooltip}>
+                  <div>
+                    <Button
+                      variant="primary"
+                      label={actionStatus.label}
+                      onClick={actionStatus.onClick}
+                      disabled={actionStatus.disabled}
+                    />
+                  </div>
+                </Tooltip>
+              ) : (
+                <Button
+                  variant="primary"
+                  label={actionStatus.label}
+                  onClick={actionStatus.onClick}
+                  disabled={actionStatus.disabled}
+                />
+              )
+            ) : null}
+          </ButtonInnerWrapper>
+        </ButtonOuterWrapper>
+      )}
       <Divider />
     </>
   );
