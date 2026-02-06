@@ -83,7 +83,7 @@ export function VoteTableRow(props: VoteListItemProps) {
       <td className="rounded-l p-[--cell-padding]">
         <div className="flex items-center gap-[--cell-padding]">
           <div className="min-w-[--title-icon-size]">
-            <div className="w-[--title-icon-size]">
+            <div className="w-[--title-icon-size] overflow-hidden rounded-full">
               {isOptimisticGovernorVote ? (
                 <TitleIconWrapper>
                   <OSnapIcon />
