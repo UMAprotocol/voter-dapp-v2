@@ -20,6 +20,7 @@ import Polymarket from "public/assets/icons/polymarket.svg";
 import UMAGovernance from "public/assets/icons/uma-governance.svg";
 import PredictFunIcon from "public/assets/icons/predict-fun.svg";
 import InfiniteGames from "public/assets/icons/infinite-games.svg";
+import Probable from "public/assets/icons/probable.svg";
 import UMA from "public/assets/icons/uma.svg";
 import { CSSProperties, useEffect, useState } from "react";
 import removeMarkdown from "remove-markdown";
@@ -291,6 +292,7 @@ export function useVoteListItem({
     if (origin === "OSnap") return OSnap;
     if (origin === "Polymarket") return Polymarket;
     if (origin === "Predict.Fun") return PredictFunIcon;
+    if (origin === "Probable") return Probable;
     if (origin === "UMA" && isGovernance) return UMAGovernance;
     return UMA;
   }

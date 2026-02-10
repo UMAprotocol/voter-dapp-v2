@@ -4,6 +4,7 @@ import { utils } from "ethers";
 import {
   checkIfIsPolymarket,
   checkIfIsPredictFun,
+  checkIfIsProbable,
   encodeMultipleQuery,
   makeBlockExplorerLink,
   maybeMakePolymarketOptions,
@@ -100,7 +101,7 @@ export function getVoteMetaData(
     };
   }
 
-  // Predict.Fun follows Polymarket's format
+  // Predict.Fun and Probable follow Polymarket's format
   const isPolymarket = checkIfIsPolymarket(
     decodedIdentifier,
     decodedAncillaryData
@@ -109,7 +110,8 @@ export function getVoteMetaData(
     decodedIdentifier,
     decodedAncillaryData
   );
-  if (isPolymarket || isPredictFun) {
+  const isProbable = checkIfIsProbable(decodedIdentifier, decodedAncillaryData);
+  if (isPolymarket || isPredictFun || isProbable) {
     const ancillaryDataTitle = getTitleFromAncillaryData(decodedAncillaryData);
     const ancillaryDataDescription =
       getDescriptionFromAncillaryData(decodedAncillaryData);
@@ -125,12 +127,19 @@ export function getVoteMetaData(
     const umipMetadata = isYesNoQuery
       ? getUmipMetadata(decodedIdentifier)
       : { umipOrUppLink: undefined, umipOrUppNumber: undefined };
+
+    const origin = isPolymarket
+      ? "Polymarket"
+      : isPredictFun
+      ? "Predict.Fun"
+      : "Probable";
+
     return {
       title,
       description,
       options,
       ...umipMetadata,
-      origin: isPolymarket ? "Polymarket" : "Predict.Fun",
+      origin,
       isGovernance: false,
       discordLink,
       isAssertion: false,
