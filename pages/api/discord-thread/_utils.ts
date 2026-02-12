@@ -9,7 +9,10 @@ import {
 } from "types";
 import { discordToken, evidenceRationalDiscordChannelId } from "constant";
 import { sleep } from "lib/utils";
-import { extractValidateTitleAndTimestamp } from "lib/discord-utils";
+import {
+  extractValidateTitleAndTimestamp,
+  getTimestampFromSnowflake,
+} from "lib/discord-utils";
 import { createCacheKey } from "lib/cache-keys";
 import { validateRedisData } from "../_utils/validation";
 
@@ -36,17 +39,6 @@ export const FULL_REBUILD_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 // How far back to look during a full rebuild (no need to fetch ancient history)
 export const FULL_REBUILD_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
-
-// Discord epoch (January 1, 2015) used for snowflake ID conversion
-const DISCORD_EPOCH = BigInt(1420070400000);
-
-/**
- * Extracts the timestamp from a Discord snowflake ID.
- * Snowflakes encode the creation timestamp in the high bits.
- */
-export function getTimestampFromSnowflake(snowflake: string): number {
-  return Number((BigInt(snowflake) >> BigInt(22)) + DISCORD_EPOCH);
-}
 
 export function shouldDoFullRebuild(
   cachedData: ThreadIdMapCache | null
