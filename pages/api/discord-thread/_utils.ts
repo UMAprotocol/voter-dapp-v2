@@ -26,9 +26,37 @@ const MAX_DISCORD_MESSAGE = 100; // 0-100
 const ThreadIdMapCacheSchema = ss.type({
   threadIdMap: ss.record(ss.string(), ss.string()),
   latestThreadId: ss.nullable(ss.string()),
+  lastFullRebuildAt: ss.optional(ss.number()),
 });
 
 type ThreadIdMapCache = ss.Infer<typeof ThreadIdMapCacheSchema>;
+
+// How often to do a full rebuild (catches threads missed due to race conditions)
+export const FULL_REBUILD_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+// How far back to look during a full rebuild (no need to fetch ancient history)
+export const FULL_REBUILD_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
+
+// Discord epoch (January 1, 2015) used for snowflake ID conversion
+const DISCORD_EPOCH = BigInt(1420070400000);
+
+/**
+ * Extracts the timestamp from a Discord snowflake ID.
+ * Snowflakes encode the creation timestamp in the high bits.
+ */
+export function getTimestampFromSnowflake(snowflake: string): number {
+  return Number((BigInt(snowflake) >> BigInt(22)) + DISCORD_EPOCH);
+}
+
+export function shouldDoFullRebuild(
+  cachedData: ThreadIdMapCache | null
+): boolean {
+  if (!cachedData) return true;
+  if (!cachedData.lastFullRebuildAt) return true;
+
+  const timeSinceLastRebuild = Date.now() - cachedData.lastFullRebuildAt;
+  return timeSinceLastRebuild >= FULL_REBUILD_INTERVAL_MS;
+}
 
 // Set to true to disable Redis caching (useful for local development)
 const DISABLE_REDIS = process.env.DISABLE_REDIS === "true";
@@ -58,7 +86,8 @@ export async function getCachedThreadIdMap(): Promise<ThreadIdMapCache | null> {
 
 export async function setCachedThreadIdMap(
   threadIdMap: ThreadIdMap,
-  latestThreadId: string | null
+  latestThreadId: string | null,
+  lastFullRebuildAt?: number
 ) {
   if (DISABLE_REDIS) {
     return;
@@ -68,6 +97,7 @@ export async function setCachedThreadIdMap(
   const result = await redis.set(THREAD_CACHE_KEY, {
     threadIdMap,
     latestThreadId,
+    lastFullRebuildAt,
   });
   if (!result) {
     throw new Error("Setting threadIdMap cache failed");
@@ -283,14 +313,16 @@ type MessageFetchResult = {
 };
 
 /**
- * Fetches all messages from a channel/thread going backward (oldest first).
- * Used for initial full fetch of all historical messages.
+ * Fetches messages from a channel/thread going backward in time.
+ * Stops when reaching messages older than the cutoff timestamp (if provided).
  */
 async function fetchAllMessagesBackward(
-  channelOrThreadId: string
+  channelOrThreadId: string,
+  oldestTimestamp?: number
 ): Promise<RawDiscordThreadT> {
   let allMessages: RawDiscordThreadT = [];
   let beforeMessageId: string | undefined = undefined;
+  let batchCount = 0;
 
   do {
     let url = `channels/${channelOrThreadId}/messages?limit=${MAX_DISCORD_MESSAGE}`;
@@ -299,7 +331,29 @@ async function fetchAllMessagesBackward(
     }
 
     const messages = await discordRequest(url);
-    allMessages = allMessages.concat(messages);
+    batchCount++;
+
+    // Filter out messages older than the cutoff and check if we should stop
+    let reachedCutoff = false;
+    const filteredMessages = oldestTimestamp
+      ? messages.filter((msg) => {
+          const msgTimestamp = getTimestampFromSnowflake(msg.id);
+          if (msgTimestamp < oldestTimestamp) {
+            reachedCutoff = true;
+            return false;
+          }
+          return true;
+        })
+      : messages;
+
+    allMessages = allMessages.concat(filteredMessages);
+
+    if (reachedCutoff) {
+      console.log(
+        `[discord] reached lookback cutoff after ${batchCount} batches, ${allMessages.length} messages`
+      );
+      break;
+    }
 
     if (messages.length < MAX_DISCORD_MESSAGE) {
       break;
@@ -307,9 +361,6 @@ async function fetchAllMessagesBackward(
 
     const lastMessage = messages.at(-1);
     if (!lastMessage?.id) {
-      console.warn(
-        `[fetchAllMessagesBackward] No message ID in batch for ${channelOrThreadId}, stopping`
-      );
       break;
     }
 
@@ -421,12 +472,17 @@ function buildMessageFetchResult(
 
 /**
  * Fetches all messages from a channel/thread with stale fallback on failure.
+ * @param oldestTimestamp - Optional cutoff; messages older than this are excluded
  */
 export async function getDiscordMessagesPaginated(
-  channelOrThreadId: string
+  channelOrThreadId: string,
+  oldestTimestamp?: number
 ): Promise<MessageFetchResult> {
   try {
-    const messages = await fetchAllMessagesBackward(channelOrThreadId);
+    const messages = await fetchAllMessagesBackward(
+      channelOrThreadId,
+      oldestTimestamp
+    );
     await cacheMessagesForFallback(channelOrThreadId, messages);
     return buildMessageFetchResult(messages);
   } catch (error) {
@@ -496,13 +552,21 @@ function messagesToThreadIdMap(messages: RawDiscordThreadT): ThreadIdMap {
 /**
  * Fetches messages from Discord channel and builds a map of thread keys to thread IDs.
  * If afterMessageId is provided, only fetches new messages (incremental update).
+ * Full rebuilds are limited to FULL_REBUILD_LOOKBACK_MS to avoid fetching ancient history.
  */
 export async function buildThreadIdMap(afterMessageId?: string): Promise<{
   threadIdMap: ThreadIdMap;
   latestMessageId: string | undefined;
 }> {
+  const isIncremental = !!afterMessageId;
+  const lookbackDays = Math.round(
+    FULL_REBUILD_LOOKBACK_MS / (24 * 60 * 60 * 1000)
+  );
+
   console.log(
-    `[buildThreadIdMap] Starting, afterMessageId=${afterMessageId ?? "none"}`
+    `[discord] fetching threads: ${
+      isIncremental ? "incremental" : `full (${lookbackDays}d lookback)`
+    }`
   );
 
   const fetchResult = afterMessageId
@@ -510,14 +574,17 @@ export async function buildThreadIdMap(afterMessageId?: string): Promise<{
         evidenceRationalDiscordChannelId,
         afterMessageId
       )
-    : await getDiscordMessagesPaginated(evidenceRationalDiscordChannelId);
+    : await getDiscordMessagesPaginated(
+        evidenceRationalDiscordChannelId,
+        Date.now() - FULL_REBUILD_LOOKBACK_MS
+      );
 
   const threadIdMap = messagesToThreadIdMap(fetchResult.messages);
 
   console.log(
-    `[buildThreadIdMap] Fetched ${
-      fetchResult.messages.length
-    } messages, built ${Object.keys(threadIdMap).length} thread mappings`
+    `[discord] found ${fetchResult.messages.length} messages, ${
+      Object.keys(threadIdMap).length
+    } threads`
   );
 
   return {
