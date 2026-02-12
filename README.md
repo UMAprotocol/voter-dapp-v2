@@ -50,6 +50,16 @@ flowchart LR
     API --> FE[Frontend]
 ```
 
+#### Thread ID Map
+
+To find Discord threads for votes, we maintain a **thread ID map** that maps vote request keys to Discord thread IDs. This map is cached in Redis and refreshed using two strategies:
+
+1. **Incremental updates**: On each cron run, we fetch only new messages (using Discord's `after` parameter) and merge them into the existing map. This is fast and avoids rate limits.
+
+2. **Full rebuilds**: Every **2 hours**, we do a full rebuild to catch any threads that may have been missed due to race conditions or API issues. Full rebuilds only look back **7 days** to avoid fetching ancient history.
+
+The request key format is `{title}-{timestamp}` with spaces removed, e.g., `U.S.strikeonSomaliabyFebruary7?-1770699603`. This key is generated both when looking up threads (from vote metadata) and when parsing Discord thread names.
+
 ### 2. AI Summary Generation
 
 `/api/cron/warm-summaries` generates AI summaries from cached thread data (batches of 3).
