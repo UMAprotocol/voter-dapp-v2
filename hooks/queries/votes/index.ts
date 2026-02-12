@@ -9,3 +9,4 @@ export { useUpcomingVotes } from "./useUpcomingVotes";
 export { useActiveVoteResults } from "./useActiveVoteResults";
 export { useUserPastVotes } from "./useUserPastVotes";
 export * from "./usePolymarketLink";
+export * from "./usePolymarketOutcomes";
