@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -63,6 +64,10 @@ export function VoteTableRow(props: VoteListItemProps) {
     multipleInputProps,
     dropdownOptions,
     selectedDropdownOption,
+    phase,
+    isSelectedForReveal,
+    toggleRevealSelection,
+    canBeRevealed,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -74,13 +79,34 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
 
+  const showRevealCheckbox = phase === "reveal" && canBeRevealed;
+
   return (
     <tr
       className="group min-h-[80px] cursor-pointer rounded bg-white"
       style={style}
       onClick={moreDetailsAction}
     >
-      <td className="rounded-l p-[--cell-padding]">
+      {showRevealCheckbox && (
+        <td
+          className="w-[50px] cursor-default rounded-l pl-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Checkbox
+            label=""
+            checked={isSelectedForReveal ?? false}
+            onChange={() => toggleRevealSelection?.()}
+            gap={0}
+          />
+        </td>
+      )}
+      <td
+        className={
+          showRevealCheckbox
+            ? "p-[--cell-padding]"
+            : "rounded-l p-[--cell-padding]"
+        }
+      >
         <div className="flex items-center gap-[--cell-padding]">
           <div className="min-w-[--title-icon-size]">
             <div className="w-[--title-icon-size] overflow-hidden rounded-full">

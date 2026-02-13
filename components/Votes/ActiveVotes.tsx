@@ -23,7 +23,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -64,6 +64,9 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const [selectedRevealVotes, setSelectedRevealVotes] = useState<
+    Record<string, boolean>
+  >({});
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
   );
@@ -71,6 +74,65 @@ export function ActiveVotes() {
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
   }
+
+  // Get all votes that are eligible for reveal
+  const revealableVotes = useMemo(() => {
+    return (
+      activeVoteList?.filter(
+        (vote) =>
+          vote.isCommitted &&
+          !!vote.decryptedVote &&
+          vote.isRevealed === false &&
+          vote.canReveal
+      ) ?? []
+    );
+  }, [activeVoteList]);
+
+  // Initialize selected reveal votes when entering reveal phase
+  useEffect(() => {
+    if (phase === "reveal" && revealableVotes.length > 0) {
+      setSelectedRevealVotes((prev) => {
+        const updated = { ...prev };
+        // Add any new revealable votes that aren't in the selection yet
+        revealableVotes.forEach((vote) => {
+          if (updated[vote.uniqueKey] === undefined) {
+            updated[vote.uniqueKey] = true; // Select all by default
+          }
+        });
+        // Remove votes that are no longer revealable
+        Object.keys(updated).forEach((key) => {
+          if (!revealableVotes.find((v) => v.uniqueKey === key)) {
+            delete updated[key];
+          }
+        });
+        return updated;
+      });
+    }
+  }, [phase, revealableVotes]);
+
+  function toggleRevealVoteSelection(uniqueKey: string) {
+    setSelectedRevealVotes((prev) => ({
+      ...prev,
+      [uniqueKey]: !(prev[uniqueKey] ?? true), // Toggle from default true
+    }));
+  }
+
+  function isVoteSelectedForReveal(uniqueKey: string): boolean {
+    return selectedRevealVotes[uniqueKey] ?? true; // Default to checked
+  }
+
+  function canVoteBeRevealed(vote: VoteT): boolean {
+    return (
+      vote.isCommitted === true &&
+      !!vote.decryptedVote &&
+      vote.isRevealed === false &&
+      vote.canReveal === true
+    );
+  }
+
+  const selectedRevealCount = revealableVotes.filter(
+    (vote) => selectedRevealVotes[vote.uniqueKey] ?? true
+  ).length;
 
   const actionStatus = calculateActionStatus();
   type ActionStatus = {
@@ -115,7 +177,7 @@ export function ActiveVotes() {
           ? isDirty()
           : true
         : false;
-    const hasVotesToReveal = getVotesToReveal().length > 0;
+    const hasVotesToReveal = selectedRevealCount > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
       activeVoteList?.filter((vote) => {
@@ -217,7 +279,7 @@ export function ActiveVotes() {
     }
     if (isReveal) {
       actionConfig.hidden = false;
-      actionConfig.label = "Reveal all votes";
+      actionConfig.label = `Reveal ${selectedRevealCount}/${revealableVotes.length} votes`;
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
@@ -286,14 +348,8 @@ export function ActiveVotes() {
   }
 
   function getVotesToReveal() {
-    return (
-      activeVoteList?.filter(
-        (vote) =>
-          vote.isCommitted &&
-          !!vote.decryptedVote &&
-          vote.isRevealed === false &&
-          vote.canReveal
-      ) ?? []
+    return revealableVotes.filter(
+      (vote) => selectedRevealVotes[vote.uniqueKey] ?? true
     );
   }
 
@@ -320,6 +376,10 @@ export function ActiveVotes() {
         inputs[index] = dirty;
         return [...inputs];
       }),
+    // Reveal phase selection props
+    isSelectedForReveal: isVoteSelectedForReveal(vote.uniqueKey),
+    toggleRevealSelection: () => toggleRevealVoteSelection(vote.uniqueKey),
+    canBeRevealed: canVoteBeRevealed(vote),
   }));
 
   return (

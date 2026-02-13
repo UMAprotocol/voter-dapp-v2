@@ -38,6 +38,9 @@ export function useVoteListItem({
   setDirty,
   moreDetailsAction,
   isDirty = false,
+  isSelectedForReveal,
+  toggleRevealSelection,
+  canBeRevealed,
 }: VoteListItemProps) {
   const [isCustomInput, setIsCustomInput] = useState(false);
   const multipleInputProps = useMultipleValuesVote({
@@ -370,5 +373,10 @@ export function useVoteListItem({
     moreDetailsAction,
     multipleInputProps,
     selectedDropdownOption,
+    // Reveal selection props
+    phase,
+    isSelectedForReveal,
+    toggleRevealSelection,
+    canBeRevealed,
   };
 }
