@@ -9,12 +9,15 @@
     "start": "next start",
     "lint": "next lint",
     "lint-fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "npx chromatic --project-token=9e9ed15fd825",
     "update-approved-identifiers": "ts-node ./scripts/approvedIdentifiersTableParser.ts",
-    "cypress:run": "cypress run e2e"
+    "cypress:run": "cypress run e2e",
+    "prepare": "husky"
   },
   "dependencies": {
     "@next/third-parties": "^14.2.5",
@@ -98,9 +101,10 @@
     "eslint": "8.23.1",
     "eslint-config-next": "13.0.2",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-storybook": "^0.6.11",
     "https-browserify": "^1.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
     "os-browserify": "^0.3.0",
     "postcss": "^8.4.24",
     "prettier": "^2.7.1",
@@ -117,6 +121,15 @@
     "typescript": "^5.5.3",
     "url": "^0.11.0",
     "webpack": "^5.74.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --max-warnings=0"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write"
+    ]
   },
   "readme": "ERROR: No README data found!",
   "_id": "uma-v2-dapp@0.1.0"

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { VoteDiscussionT } from "types";
+import { VoteDiscussionT, PriceRequestT } from "types";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
 import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
@@ -11,8 +11,13 @@ import {
   setCachedThreadIdMap,
   getDiscordMessagesPaginated,
   setCachedProcessedThread,
+  shouldDoFullRebuild,
 } from "../discord-thread/_utils";
 import { processRawMessages } from "../discord-thread/_message-processing";
+
+const log = (msg: string) => console.log(`[warm-discord-threads] ${msg}`);
+const logError = (msg: string, err?: unknown) =>
+  console.error(`[warm-discord-threads] ${msg}`, err ?? "");
 
 interface VoteInfo {
   requestKey: string;
@@ -21,36 +26,158 @@ interface VoteInfo {
   title: string;
 }
 
+interface ThreadMapRefreshResult {
+  threadIdMap: Record<string, string>;
+  isFullRebuild: boolean;
+  cachedThreadCount: number;
+  newThreadCount: number;
+}
+
+interface ProcessingResult {
+  processed: number;
+  skipped: number;
+  errors: string[];
+}
+
+async function fetchAllVotes(): Promise<PriceRequestT[]> {
+  const voting = createVotingContractInstance();
+  const roundId = computeRoundId();
+
+  const [activeVotesMap, upcomingVotesMap] = await Promise.all([
+    getActiveVotes(voting),
+    getUpcomingVotes(voting, roundId),
+  ]);
+
+  return [...Object.values(activeVotesMap), ...Object.values(upcomingVotesMap)];
+}
+
+function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
+  return votes.map((vote) => {
+    const metadata = getVoteMetaData(
+      vote.decodedIdentifier,
+      vote.decodedAncillaryData,
+      undefined
+    );
+    return {
+      requestKey: makeKey(metadata.title, vote.time),
+      identifier: vote.identifier,
+      time: vote.time,
+      title: metadata.title,
+    };
+  });
+}
+
+async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
+  const cached = await getCachedThreadIdMap();
+  const isFullRebuild = shouldDoFullRebuild(cached);
+  const cachedThreadCount = Object.keys(cached?.threadIdMap ?? {}).length;
+
+  // Log cache state
+  if (cached?.lastFullRebuildAt) {
+    const ageMinutes = Math.round(
+      (Date.now() - cached.lastFullRebuildAt) / 60000
+    );
+    log(
+      `cache: ${cachedThreadCount} threads, ${ageMinutes}m old` +
+        (isFullRebuild ? " (stale, rebuilding)" : "")
+    );
+  } else {
+    log("cache: empty, doing full rebuild");
+  }
+
+  const existingMap = isFullRebuild ? {} : cached?.threadIdMap ?? {};
+  const afterMessageId = isFullRebuild
+    ? undefined
+    : cached?.latestThreadId ?? undefined;
+
+  const { threadIdMap: newThreads, latestMessageId } = await buildThreadIdMap(
+    afterMessageId
+  );
+
+  const newThreadCount = Object.keys(newThreads).length;
+  const threadIdMap = { ...existingMap, ...newThreads };
+
+  await setCachedThreadIdMap(
+    threadIdMap,
+    latestMessageId ?? afterMessageId ?? null,
+    isFullRebuild ? Date.now() : cached?.lastFullRebuildAt
+  );
+
+  log(
+    `cache updated: ${newThreadCount} ${
+      isFullRebuild ? "total" : "new"
+    } threads fetched, ${Object.keys(threadIdMap).length} total cached`
+  );
+
+  return { threadIdMap, isFullRebuild, cachedThreadCount, newThreadCount };
+}
+
+async function processVoteThread(
+  voteInfo: VoteInfo,
+  threadId: string
+): Promise<number> {
+  const { messages } = await getDiscordMessagesPaginated(threadId);
+  const processedMessages = processRawMessages(messages);
+
+  const voteDiscussion: VoteDiscussionT = {
+    identifier: voteInfo.identifier,
+    time: voteInfo.time,
+    thread: processedMessages,
+  };
+
+  await setCachedProcessedThread(voteInfo.requestKey, voteDiscussion);
+  return processedMessages.length;
+}
+
+async function processAllVotes(
+  voteInfos: VoteInfo[],
+  threadIdMap: Record<string, string>
+): Promise<ProcessingResult> {
+  const result: ProcessingResult = { processed: 0, skipped: 0, errors: [] };
+  const skippedKeys: string[] = [];
+
+  for (const voteInfo of voteInfos) {
+    const threadId = threadIdMap[voteInfo.requestKey];
+
+    if (!threadId) {
+      result.skipped++;
+      skippedKeys.push(voteInfo.requestKey);
+      continue;
+    }
+
+    try {
+      await processVoteThread(voteInfo, threadId);
+      result.processed++;
+    } catch (error) {
+      result.errors.push(
+        `${voteInfo.requestKey}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
+
+  if (skippedKeys.length > 0) {
+    log(`no thread found for: ${skippedKeys.join(", ")}`);
+  }
+
+  return result;
+}
+
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse
 ) {
   const startTime = Date.now();
-  console.log("[warm-discord-threads] Starting cron job...");
+  log("starting");
 
   try {
-    // 1. Get voting contract and fetch votes
-    const voting = createVotingContractInstance();
-    const roundId = computeRoundId();
+    // Step 1: Fetch votes
+    const votesStart = Date.now();
+    const votes = await fetchAllVotes();
+    log(`fetched ${votes.length} votes (${Date.now() - votesStart}ms)`);
 
-    console.log(`[warm-discord-threads] Current roundId: ${roundId}`);
-
-    // Fetch active and upcoming votes in parallel
-    const [activeVotesMap, upcomingVotesMap] = await Promise.all([
-      getActiveVotes(voting),
-      getUpcomingVotes(voting, roundId),
-    ]);
-
-    const activeVotes = Object.values(activeVotesMap);
-    const upcomingVotes = Object.values(upcomingVotesMap);
-    const allVotes = [...activeVotes, ...upcomingVotes];
-
-    console.log(
-      `[warm-discord-threads] Found ${activeVotes.length} active votes, ${upcomingVotes.length} upcoming votes`
-    );
-
-    if (allVotes.length === 0) {
-      console.log("[warm-discord-threads] No votes to process");
+    if (votes.length === 0) {
       return response.status(200).json({
         success: true,
         message: "No votes to process",
@@ -59,110 +186,32 @@ export default async function handler(
       });
     }
 
-    // 2. Build vote info with titles
-    const voteInfos: VoteInfo[] = allVotes.map((vote) => {
-      const metadata = getVoteMetaData(
-        vote.decodedIdentifier,
-        vote.decodedAncillaryData,
-        undefined // contentful data not available in cron context
-      );
-      const requestKey = makeKey(metadata.title, vote.time);
-      return {
-        requestKey,
-        identifier: vote.identifier,
-        time: vote.time,
-        title: metadata.title,
-      };
-    });
+    // Step 2: Build vote infos
+    const voteInfos = buildVoteInfos(votes);
 
-    console.log(
-      `[warm-discord-threads] Processing ${voteInfos.length} votes...`
+    // Step 3: Refresh thread map
+    const refreshStart = Date.now();
+    const { threadIdMap, isFullRebuild } = await refreshThreadIdMap();
+    log(`thread map refreshed (${Date.now() - refreshStart}ms)`);
+
+    // Step 4: Process votes
+    const processStart = Date.now();
+    const { processed, skipped, errors } = await processAllVotes(
+      voteInfos,
+      threadIdMap
     );
+    log(`processed ${processed} threads (${Date.now() - processStart}ms)`);
 
-    // 3. Build/refresh thread ID map - always fetch latest threads
-    const cachedThreadMapping = await getCachedThreadIdMap();
-    const existingMap = cachedThreadMapping?.threadIdMap ?? {};
-    const afterMessageId = cachedThreadMapping?.latestThreadId ?? undefined;
-
-    console.log(
-      `[warm-discord-threads] Cached map has ${
-        Object.keys(existingMap).length
-      } threads, latestMessageId=${afterMessageId ?? "none"}`
-    );
-
-    // Fetch new threads (incremental if we have a latestMessageId, full rebuild otherwise)
-    const { threadIdMap: newThreads, latestMessageId } = await buildThreadIdMap(
-      afterMessageId
-    );
-
-    console.log(
-      `[warm-discord-threads] Fetched ${Object.keys(newThreads).length} ${
-        afterMessageId ? "new" : "total"
-      } threads from Discord`
-    );
-
-    // Merge: new threads override existing (in case of updates)
-    const threadIdMap = { ...existingMap, ...newThreads };
-
-    // Save the merged map to cache
-    const newLatestMessageId = latestMessageId ?? afterMessageId ?? null;
-    await setCachedThreadIdMap(threadIdMap, newLatestMessageId);
-
-    console.log(
-      `[warm-discord-threads] Saved merged map with ${
-        Object.keys(threadIdMap).length
-      } total threads, latestMessageId=${newLatestMessageId ?? "none"}`
-    );
-
-    // 4. Process each vote and store in Redis
-    let processed = 0;
-    let skipped = 0;
-    const errors: string[] = [];
-
-    for (const voteInfo of voteInfos) {
-      try {
-        const threadId = threadIdMap[voteInfo.requestKey];
-
-        if (!threadId) {
-          console.log(
-            `[warm-discord-threads] No thread found for requestKey=${voteInfo.requestKey}, skipping`
-          );
-          skipped++;
-          continue;
-        }
-
-        // Fetch messages from Discord
-        const { messages } = await getDiscordMessagesPaginated(threadId);
-
-        // Process messages
-        const processedMessages = processRawMessages(messages);
-
-        const voteDiscussion: VoteDiscussionT = {
-          identifier: voteInfo.identifier,
-          time: voteInfo.time,
-          thread: processedMessages,
-        };
-
-        // Store in Redis
-        await setCachedProcessedThread(voteInfo.requestKey, voteDiscussion);
-
-        console.log(
-          `[warm-discord-threads] Processed requestKey=${voteInfo.requestKey}, messages=${processedMessages.length}`
-        );
-        processed++;
-      } catch (error) {
-        const errorMsg = `Failed to process ${voteInfo.requestKey}: ${
-          error instanceof Error ? error.message : String(error)
-        }`;
-        console.error(`[warm-discord-threads] ${errorMsg}`);
-        errors.push(errorMsg);
-      }
-    }
-
+    // Summary
     const duration = Date.now() - startTime;
-    console.log(
-      `[warm-discord-threads] Completed: processed=${processed}, skipped=${skipped}, errors=${errors.length}, duration=${duration}ms`
+    log(
+      `done: ${isFullRebuild ? "full rebuild" : "incremental"}, ` +
+        `${processed} processed, ${skipped} skipped, ${errors.length} errors (${duration}ms total)`
     );
+
+    if (errors.length > 0) {
+      logError("errors:", errors);
+    }
 
     return response.status(200).json({
       success: true,
@@ -175,7 +224,7 @@ export default async function handler(
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error("[warm-discord-threads] Cron job failed:", error);
+    logError("failed:", error);
     return response.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

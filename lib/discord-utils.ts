@@ -1,5 +1,25 @@
 import { stripInvalidCharacters } from "./utils";
 
+// Discord epoch (January 1, 2015 00:00:00 UTC) used for snowflake ID conversion
+const DISCORD_EPOCH = BigInt(1420070400000);
+
+/**
+ * Extracts the timestamp (in ms) from a Discord snowflake ID.
+ * Snowflakes encode the creation timestamp in the high 42 bits.
+ */
+export function getTimestampFromSnowflake(snowflake: string): number {
+  return Number((BigInt(snowflake) >> BigInt(22)) + DISCORD_EPOCH);
+}
+
+/**
+ * Creates a Discord snowflake ID from a timestamp.
+ * Useful for testing and for creating "after" cursors.
+ */
+export function createSnowflakeFromTimestamp(timestampMs: number): string {
+  const snowflake = (BigInt(timestampMs) - DISCORD_EPOCH) << BigInt(22);
+  return snowflake.toString();
+}
+
 // Discord truncation utility functions
 // These are pure functions that don't depend on external services
 function truncateTitle(title: string) {
