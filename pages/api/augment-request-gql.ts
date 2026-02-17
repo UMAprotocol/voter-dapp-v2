@@ -15,12 +15,24 @@ import { validateBodyParams } from "./_utils/validation";
 const debug = Boolean(process.env.DEBUG === "true");
 const QUERY_TIMEOUT_MS = 10_000;
 
-function withTimeout<T>(promise: Promise<T>, ms: number = QUERY_TIMEOUT_MS): Promise<T> {
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number = QUERY_TIMEOUT_MS
+): Promise<T> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`Query timeout after ${ms}ms`)), ms);
+    const timer = setTimeout(
+      () => reject(new Error(`Query timeout after ${ms}ms`)),
+      ms
+    );
     promise.then(
-      (value) => { clearTimeout(timer); resolve(value); },
-      (error) => { clearTimeout(timer); reject(error); },
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
     );
   });
 }
@@ -100,7 +112,9 @@ async function voteQuery({
     priceRequest: GqlRequest | undefined | null;
   };
   try {
-    const data: GqlResponse = await withTimeout(request(VoteSubgraphURL, query, { id }));
+    const data: GqlResponse = await withTimeout(
+      request(VoteSubgraphURL, query, { id })
+    );
     assert(data.priceRequest, "vote query request not found");
     return data.priceRequest;
   } catch (error) {
@@ -138,9 +152,11 @@ async function ooSkinnyQuery({
   };
 
   try {
-    const data: GqlResponse = await withTimeout(request(subgraph.url, query, {
-      id,
-    }));
+    const data: GqlResponse = await withTimeout(
+      request(subgraph.url, query, {
+        id,
+      })
+    );
     const { optimisticPriceRequest } = data;
     assert(optimisticPriceRequest, "skinny request not found");
     const requestHash = optimisticPriceRequest?.requestHash;
@@ -208,9 +224,11 @@ async function oov3Query({
   };
 
   try {
-    const data: GqlResponse = await withTimeout(request(subgraph.url, query, {
-      id: assertionId,
-    }));
+    const data: GqlResponse = await withTimeout(
+      request(subgraph.url, query, {
+        id: assertionId,
+      })
+    );
     assert(data.assertion, "oov3 query request not found");
     const { assertion } = data;
     const assertionHash = assertion?.assertionHash;
@@ -295,10 +313,12 @@ async function oov2Query({
   };
 
   try {
-    const data: GqlResponse = await withTimeout(request(subgraph.url, query, {
-      ancillaryData: cleanAncillaryData,
-      identifier,
-    }));
+    const data: GqlResponse = await withTimeout(
+      request(subgraph.url, query, {
+        ancillaryData: cleanAncillaryData,
+        identifier,
+      })
+    );
     assert(data.optimisticPriceRequests.length > 0, "oov2 request not found");
     let optimisticPriceRequest: GqlRequest | undefined;
     if (data.optimisticPriceRequests.length > 1) {
@@ -380,10 +400,12 @@ async function ooManagedQuery({
   };
 
   try {
-    const data: GqlResponse = await withTimeout(request(subgraph.url, query, {
-      ancillaryData: cleanAncillaryData,
-      identifier,
-    }));
+    const data: GqlResponse = await withTimeout(
+      request(subgraph.url, query, {
+        ancillaryData: cleanAncillaryData,
+        identifier,
+      })
+    );
     assert(
       data.optimisticPriceRequests.length > 0,
       "Managed oov2 request not found"
@@ -459,9 +481,11 @@ async function oov1Query({
       optimisticPriceRequest: GqlRequest;
     };
 
-    const data: GqlResponse = await withTimeout(request(subgraph.url, query, {
-      id,
-    }));
+    const data: GqlResponse = await withTimeout(
+      request(subgraph.url, query, {
+        id,
+      })
+    );
     const { optimisticPriceRequest } = data;
     assert(optimisticPriceRequest, "oov1 request not found");
     const requestHash = optimisticPriceRequest?.requestHash;
