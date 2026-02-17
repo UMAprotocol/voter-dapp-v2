@@ -2,6 +2,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+TEST
+
 **Getting your environment variables**
 You can only do this if you have access to UMA's vercel projects.
 
