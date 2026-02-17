@@ -2,9 +2,7 @@ import { useConnectWallet } from "@web3-onboard/react";
 import {
   Button,
   IconWrapper,
-  Pagination,
   Tooltip,
-  usePagination,
   VoteList,
   VoteTimeline,
 } from "components";
@@ -31,7 +29,6 @@ import {
   ButtonSpacer,
   Divider,
   InfoText,
-  PaginationWrapper,
   RecommittingVotesMessage,
   Title,
   VotesTableWrapper,
@@ -64,9 +61,6 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    activeVoteList ?? []
-  );
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -305,7 +299,7 @@ export function ActiveVotes() {
     selectVote(undefined, vote);
   }
 
-  const data = entriesToShow?.map((vote, index) => ({
+  const data = activeVoteList?.map((vote, index) => ({
     phase: phase,
     vote: vote,
     selectedVote: selectedVotes[vote.uniqueKey],
@@ -329,11 +323,6 @@ export function ActiveVotes() {
       <VotesTableWrapper>
         <VoteList activityStatus="active" data={data} />
       </VotesTableWrapper>
-      {showPagination && (
-        <PaginationWrapper>
-          <Pagination {...paginationProps} />
-        </PaginationWrapper>
-      )}
       {isDirty() ? (
         <RecommittingVotesMessage>
           * Changes to committed votes need to be re-committed
