@@ -10,8 +10,7 @@ interface Props {
 }
 
 export function VoteButtonRow({ vote }: Props) {
-  const { selectVote, clearVote, selectedVote, phase, activityStatus } =
-    usePanelContext();
+  const { selectVote, selectedVote, phase, activityStatus } = usePanelContext();
 
   const [isCustomInput, setIsCustomInput] = useState(false);
   const [customValue, setCustomValue] = useState("");
@@ -28,9 +27,7 @@ export function VoteButtonRow({ vote }: Props) {
 
   // Only show for active commit-phase votes, not MULTIPLE_VALUES
   const shouldShow =
-    activityStatus === "active" &&
-    phase === "commit" &&
-    !isMultipleValuesVote;
+    activityStatus === "active" && phase === "commit" && !isMultipleValuesVote;
 
   if (!shouldShow) return null;
 
@@ -71,7 +68,10 @@ export function VoteButtonRow({ vote }: Props) {
             placeholder="Enter custom value"
             type="text"
           />
-          <ConfirmButton onClick={handleCustomConfirm} disabled={!customValue.trim()}>
+          <ConfirmButton
+            onClick={handleCustomConfirm}
+            disabled={!customValue.trim()}
+          >
             ✓
           </ConfirmButton>
         </CustomInputWrapper>
@@ -83,7 +83,10 @@ export function VoteButtonRow({ vote }: Props) {
   if (!options || options.length === 0) {
     return (
       <Wrapper>
-        <PencilButton onClick={handlePencilClick} aria-label="Enter custom value">
+        <PencilButton
+          onClick={handlePencilClick}
+          aria-label="Enter custom value"
+        >
           <PencilIcon />
         </PencilButton>
       </Wrapper>
@@ -140,7 +143,8 @@ const OptionButton = styled.button<{
     ${({ $isSelected }) => ($isSelected ? "var(--black)" : "var(--grey-300)")};
   background: ${({ $isSelected }) =>
     $isSelected ? "var(--black)" : "var(--white)"};
-  color: ${({ $isSelected }) => ($isSelected ? "var(--white)" : "var(--black)")};
+  color: ${({ $isSelected }) =>
+    $isSelected ? "var(--white)" : "var(--black)"};
   border-radius: 4px;
   font: var(--text-sm);
   cursor: pointer;

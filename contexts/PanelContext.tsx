@@ -225,10 +225,7 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     );
   }, [currentIndex, votes]);
 
-  function pushPanelDataOntoStack(
-    panelType: PanelTypeT,
-    panelContent?: VoteT
-  ) {
+  function pushPanelDataOntoStack(panelType: PanelTypeT, panelContent?: VoteT) {
     setPreviousPanelData((prev) => {
       return [...prev, { panelType, panelContent }];
     });

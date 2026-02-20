@@ -77,7 +77,9 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   return (
     <tr
-      className={`group min-h-[80px] cursor-pointer rounded bg-white${isActiveInPanel ? " ring-1 ring-black ring-inset" : ""}`}
+      className={`group min-h-[80px] cursor-pointer rounded bg-white${
+        isActiveInPanel ? " ring-1 ring-inset ring-black" : ""
+      }`}
       style={style}
       onClick={moreDetailsAction}
     >

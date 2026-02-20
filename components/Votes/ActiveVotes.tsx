@@ -323,8 +323,7 @@ export function ActiveVotes() {
           selectVote: (value: string | undefined) => selectVote(value, v),
           clearVote: () => clearSelectedVote(v),
         }),
-        getSelectedVote: (v: VoteT) =>
-          selectedVotesRef.current[v.uniqueKey],
+        getSelectedVote: (v: VoteT) => selectedVotesRef.current[v.uniqueKey],
         selectedVote: selectedVotes[vote.uniqueKey],
         phase,
         activityStatus: "active" as const,
