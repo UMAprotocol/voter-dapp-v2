@@ -143,8 +143,8 @@ const Content = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 12px;
+  right: 12px;
   background: transparent;
 `;
 

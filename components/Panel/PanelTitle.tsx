@@ -1,5 +1,6 @@
 import { mobileAndUnder } from "constant";
 import { usePanelContext } from "hooks";
+import LeftChevron from "public/assets/icons/left-chevron.svg";
 import styled from "styled-components";
 import { VoteOriginT } from "types";
 
@@ -24,7 +25,7 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
           disabled={isFirst}
           aria-label="Previous vote"
         >
-          ←
+          <ChevronIcon />
         </ArrowButton>
       )}
       <Header id="panel-title">
@@ -40,7 +41,7 @@ export function PanelTitle({ title, origin, voteNumber }: Props) {
           disabled={isLast}
           aria-label="Next vote"
         >
-          →
+          <ChevronIcon $flip />
         </ArrowButton>
       )}
     </Wrapper>
@@ -96,15 +97,22 @@ const SubTitle = styled.div`
 const ArrowButton = styled.button<{ $disabled: boolean }>`
   background: none;
   border: none;
-  color: var(--white);
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   opacity: ${({ $disabled }) => ($disabled ? 0.3 : 1)};
   padding: 8px;
-  font-size: 18px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
   transition: opacity 200ms;
+`;
+
+const ChevronIcon = styled(LeftChevron)<{ $flip?: boolean }>`
+  width: 10px;
+  height: 20px;
+  transform: ${({ $flip }) => ($flip ? "scaleX(-1)" : "none")};
+  path {
+    stroke: var(--white);
+  }
 `;
 
 const Strong = styled.strong`
