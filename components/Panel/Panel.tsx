@@ -31,6 +31,13 @@ export function Panel() {
     }
   }, [panelOpen]);
 
+  // Scroll to top when vote changes (arrow navigation or row click while panel stays open)
+  useEffect(() => {
+    if (panelOpen && panelContent) {
+      contentRef?.current?.scrollTo({ top: 0 });
+    }
+  }, [panelContent?.uniqueKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isMenu = panelType === "menu";
   const closeButtonColor = isMenu ? black : white;
 

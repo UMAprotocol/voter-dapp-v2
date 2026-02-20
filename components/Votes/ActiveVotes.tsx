@@ -23,7 +23,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -58,11 +58,14 @@ export function ActiveVotes() {
   const { data: stakedBalance } = useStakedBalance(
     isDelegate ? delegatorAddress : address
   );
-  const { openPanel } = usePanelContext();
+  const { openPanel, panelContent } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
+  // Keep a ref so arrow-navigation callbacks always read the latest staged values
+  const selectedVotesRef = useRef(selectedVotes);
+  selectedVotesRef.current = selectedVotes;
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     activeVoteList ?? []
@@ -312,7 +315,21 @@ export function ActiveVotes() {
     selectVote: (value: string | undefined) => selectVote(value, vote),
     clearVote: () => clearSelectedVote(vote),
     activityStatus: "active" as const,
-    moreDetailsAction: () => openPanel("vote", vote),
+    moreDetailsAction: () =>
+      openPanel("vote", vote, {
+        votes: entriesToShow ?? [],
+        currentIndex: index,
+        getCallbacks: (v: VoteT) => ({
+          selectVote: (value: string | undefined) => selectVote(value, v),
+          clearVote: () => clearSelectedVote(v),
+        }),
+        getSelectedVote: (v: VoteT) =>
+          selectedVotesRef.current[v.uniqueKey],
+        selectedVote: selectedVotes[vote.uniqueKey],
+        phase,
+        activityStatus: "active" as const,
+      }),
+    isActiveInPanel: panelContent?.uniqueKey === vote.uniqueKey,
     key: vote.uniqueKey,
     isDirty: dirtyInputs[index],
     setDirty: (dirty: boolean) =>

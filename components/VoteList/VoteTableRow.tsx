@@ -63,6 +63,7 @@ export function VoteTableRow(props: VoteListItemProps) {
     multipleInputProps,
     dropdownOptions,
     selectedDropdownOption,
+    isActiveInPanel,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -76,7 +77,7 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   return (
     <tr
-      className="group min-h-[80px] cursor-pointer rounded bg-white"
+      className={`group min-h-[80px] cursor-pointer rounded bg-white${isActiveInPanel ? " ring-1 ring-black ring-inset" : ""}`}
       style={style}
       onClick={moreDetailsAction}
     >

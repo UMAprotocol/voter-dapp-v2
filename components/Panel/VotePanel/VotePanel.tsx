@@ -1,5 +1,5 @@
 import removeMarkdown from "remove-markdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
@@ -17,6 +17,7 @@ import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { VoteButtonRow } from "./VoteButtonRow";
 import { DiscussionSummary } from "components";
 import { usePolymarketBulletins } from "hooks";
 import { mobileAndUnder } from "constant";
@@ -35,7 +36,6 @@ export function VotePanel({ content }: Props) {
     origin,
     participation,
     results,
-    isGovernance,
     options,
     decodedAncillaryData,
     assertionId,
@@ -44,6 +44,11 @@ export function VotePanel({ content }: Props) {
   } = content;
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
+
+  // Reset tab when vote changes (row click or arrow navigation)
+  useEffect(() => {
+    setSelectedTab(undefined);
+  }, [content.uniqueKey]);
 
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
@@ -160,9 +165,9 @@ export function VotePanel({ content }: Props) {
       <PanelTitle
         title={titleToShow}
         origin={voteOrigin}
-        isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />
+      <VoteButtonRow vote={content} />
       {makeTabs()}
       <PanelFooter />
     </PanelWrapper>
