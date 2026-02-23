@@ -17,6 +17,7 @@ export const polymarketRequesters = [
   "0xb21182d0494521cf45dbbeebb5a3acaab6d22093", // Polymarket Sports Address
   "0x157ce2d672854c848c9b79c49a8cc6cc89176a49", // Polymarket CTF Adapter Address V3
   "0x65070be91477460d8a7aeeb94ef92fe056c2f2a7", // Polymarket UmaCtfAdapter for Managed OOv2
+  "0x69c47de9d4d3dad79590d61b9e05918e03775f24", // Polymarket UmaCtfAdapter for Managed OOv2
 ].map((a) => a.toLowerCase());
 
 const polymarketIdentifiers = ["YES_OR_NO_QUERY", "MULTIPLE_VALUES"];
