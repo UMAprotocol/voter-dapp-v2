@@ -62,45 +62,61 @@ export function checkIfIsPolymarket(
   return Boolean(isPolymarket);
 }
 
-// this will only work when there are exactly 3 or more options, which should match most polymarket requests
-// it will only parse 3 options, omitting p4, which is assumed to be "too early".
+// Parses p-values (e.g. "p1: 0, p2: 1, p3: 0.5") from the res_data section.
+// Returns a map like { p1: "0", p2: "1", p3: "0.5" }. Only handles exactly 3 p-values (p4 is assumed to be "too early").
+function parseResData(
+  decodedAncillaryData: string
+): Record<string, string> | undefined {
+  const match = decodedAncillaryData.match(
+    /res_data: (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+)/
+  );
+  if (!match) return undefined;
+  // match captures: [full, p1Key, p1Val, p2Key, p2Val, p3Key, p3Val]
+  return Object.fromEntries(chunk(match.slice(1), 2)) as Record<string, string>;
+}
+
+// Parses human-readable labels from the "Where pN corresponds to X, pN to Y" section.
+// Returns a map like { p1: "Knicks", p2: "Cavs" }. Supports 2 or 3 correspondence pairs.
+// Uses ", " as a delimiter — commas not followed by a space (e.g. "$2,000") are kept as part of the label.
+function parseCorrespondenceLabels(
+  decodedAncillaryData: string
+): Record<string, string> | undefined {
+  // Try 3 pairs first, then 2
+  const match =
+    decodedAncillaryData.match(
+      /Where (p\d) corresponds to ((?:[^,]|,(?!\s))+), (p\d) to ((?:[^,]|,(?!\s))+), (p\d) to ([^.,]+)/
+    ) ??
+    decodedAncillaryData.match(
+      /Where (p\d) corresponds to ((?:[^,]|,(?!\s))+), (p\d) to ([^.,]+)/
+    );
+  if (!match) return undefined;
+  // match captures: [full, p1Key, p1Label, p2Key, p2Label, ...]
+  const pairs = chunk(match.slice(1), 2) as [string, string][];
+  return Object.fromEntries(
+    pairs.map(([key, label]) => {
+      // Normalize "a No" / "a no" → "No"
+      if (label.toLowerCase().includes("a no")) return [key, "No"];
+      return [key, label.trim()];
+    })
+  );
+}
+
+// Builds dropdown options by combining res_data values with correspondence labels.
+// Requires both to be parseable — if either fails, returns [] so the UI falls back to a raw text input.
+// For p-values that have a res_data entry but no correspondence label (e.g. p3: 0.5 with only 2 labels),
+// a fallback label is derived: 0.5 → "50/50", otherwise the raw value string.
 function dynamicPolymarketOptions(
   decodedAncillaryData: string
 ): DropdownItemT[] {
-  const resData = decodedAncillaryData.match(
-    /res_data: (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+), (p\d): (\d+\.\d+|\d+)/
-  );
-  // Match any character except commas that are followed by a space, we use ", " as a delimiter. This way we can allow a string like "$2,000" to be matched.
-  const correspondence = decodedAncillaryData.match(
-    /Where (p\d) corresponds to ((?:[^,]|,(?!\s))+), (p\d) to ((?:[^,]|,(?!\s))+), (p\d) to ([^.,]+)/
-  );
+  const resData = parseResData(decodedAncillaryData);
+  const labels = parseCorrespondenceLabels(decodedAncillaryData);
 
-  if (!resData || !correspondence) return [];
+  if (!resData || !labels) return [];
 
-  const cleanCorrespondence = correspondence.map((data) => {
-    if (data.toLowerCase().includes("a no")) {
-      return "No";
-    }
-    return data.trim();
+  return Object.entries(resData).map(([pKey, value]) => {
+    const label = labels[pKey] ?? (value === "0.5" ? "50/50" : value);
+    return { label, value, secondaryLabel: pKey };
   });
-
-  const correspondenceTable = Object.fromEntries(
-    chunk(cleanCorrespondence.slice(1), 2)
-  ) as Record<string, string>;
-  const resDataTable = Object.fromEntries(chunk(resData.slice(1), 2)) as Record<
-    string,
-    string
-  >;
-
-  return Object.keys(resDataTable)
-    .filter((pValue) => correspondenceTable[pValue] && resDataTable[pValue])
-    .map((pValue) => {
-      return {
-        label: correspondenceTable[pValue],
-        value: resDataTable[pValue],
-        secondaryLabel: pValue,
-      };
-    });
 }
 /** Polymarket yes or no queries follow a semi-predictable pattern.
  * If both the res data and the correspondence to the res data are present,
@@ -217,8 +233,8 @@ export function maybeMakePolymarketOptions(
     ];
   }
 
-  // this will only display if we have dynamically found 3 options, otherwise fallback to custom input
-  if (dynamicOptions.length >= 3) {
+  // this will only display if we have dynamically found 2+ options, otherwise fallback to custom input
+  if (dynamicOptions.length >= 2) {
     return [
       ...dynamicOptions,
       // we will always append early request and custom input
@@ -233,6 +249,11 @@ export function maybeMakePolymarketOptions(
       },
     ];
   }
+}
+
+export function getResDataValues(decodedAncillaryData: string): string[] {
+  const matches = decodedAncillaryData.matchAll(/p\d: (\d+\.?\d*)/g);
+  return [...matches].map((m) => m[1]);
 }
 
 // input user values as regular numbers
