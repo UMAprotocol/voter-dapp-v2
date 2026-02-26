@@ -103,8 +103,8 @@ function parseCorrespondenceLabels(
 
 // Builds dropdown options by combining res_data values with correspondence labels.
 // Requires both to be parseable — if either fails, returns [] so the UI falls back to a raw text input.
-// For p-values that have a res_data entry but no correspondence label (e.g. p3: 0.5 with only 2 labels),
-// a fallback label is derived: 0.5 → "50/50", otherwise the raw value string.
+// Only includes p-values that have an explicit correspondence label — unlabeled values
+// (e.g. p3: 0.5 when only p1 and p2 have labels) are omitted and can be entered via "Custom".
 function dynamicPolymarketOptions(
   decodedAncillaryData: string
 ): DropdownItemT[] {
@@ -113,10 +113,11 @@ function dynamicPolymarketOptions(
 
   if (!resData || !labels) return [];
 
-  return Object.entries(resData).map(([pKey, value]) => {
-    const label = labels[pKey] ?? (value === "0.5" ? "50/50" : value);
-    return { label, value, secondaryLabel: pKey };
-  });
+  return Object.entries(resData)
+    .filter(([pKey]) => labels[pKey])
+    .map(([pKey, value]) => {
+      return { label: labels[pKey], value, secondaryLabel: pKey };
+    });
 }
 /** Polymarket yes or no queries follow a semi-predictable pattern.
  * If both the res data and the correspondence to the res data are present,
