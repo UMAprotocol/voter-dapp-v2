@@ -272,7 +272,7 @@ a:not([class]) {
   }
 
   .vote-highlight {
-    animation: vote-highlight-pulse 1.5s ease-out;
+    animation: vote-highlight-pulse 0.7s ease-out;
     border-radius: 4px;
   }
 `;
