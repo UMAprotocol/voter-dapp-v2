@@ -5,9 +5,12 @@ import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
+  usePanelContext,
   useVoteDiscussion,
   useAssertionClaim,
   useAugmentedVoteData,
+  useVoteTimingContext,
+  useVotePanelKeyboard,
 } from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
@@ -17,10 +20,13 @@ import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { VotePanelVoteInput } from "./VotePanelVoteInput";
 import { DiscussionSummary } from "components";
 import { usePolymarketBulletins } from "hooks";
 import { mobileAndUnder } from "constant";
 import styled from "styled-components";
+import LeftChevron from "public/assets/icons/left-chevron.svg";
+import RightChevron from "public/assets/icons/right-chevron.svg";
 
 interface Props {
   content: VoteT;
@@ -42,6 +48,37 @@ export function VotePanel({ content }: Props) {
     assertionChildChainId,
     ancillaryDataL2,
   } = content;
+
+  const {
+    navigableVotes,
+    currentVoteIndex,
+    goToNextVote,
+    goToPrevVote,
+    selectVote,
+    selectedVotes,
+    panelOpen,
+    panelType,
+  } = usePanelContext();
+
+  const { phase } = useVoteTimingContext();
+  const isCommitPhase = phase === "commit";
+
+  const hasNavigation = navigableVotes.length > 1;
+  const canGoPrev = currentVoteIndex > 0;
+  const canGoNext = currentVoteIndex < navigableVotes.length - 1;
+
+  const showVoteInput = isCommitPhase && selectVote !== undefined;
+
+  useVotePanelKeyboard({
+    isActive: panelOpen && panelType === "vote",
+    goToPrevVote,
+    goToNextVote,
+    canGoPrev,
+    canGoNext,
+    options: showVoteInput ? content.options : undefined,
+    currentVote: content,
+    selectVote: showVoteInput ? selectVote : undefined,
+  });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
 
@@ -163,6 +200,26 @@ export function VotePanel({ content }: Props) {
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />
+      {hasNavigation && (
+        <NavigationBar>
+          <NavButton onClick={goToPrevVote} disabled={!canGoPrev}>
+            <LeftChevron />
+          </NavButton>
+          <NavCounter>
+            {currentVoteIndex + 1} of {navigableVotes.length}
+          </NavCounter>
+          <NavButton onClick={goToNextVote} disabled={!canGoNext}>
+            <RightChevron />
+          </NavButton>
+        </NavigationBar>
+      )}
+      {showVoteInput && (
+        <VotePanelVoteInput
+          vote={content}
+          selectedValue={selectedVotes[content.uniqueKey]}
+          onSelectVote={selectVote}
+        />
+      )}
       {makeTabs()}
       <PanelFooter />
     </PanelWrapper>
@@ -177,4 +234,45 @@ export const PanelContentWrapper = styled.div`
   @media ${mobileAndUnder} {
     padding-inline: 10px;
   }
+`;
+
+const NavigationBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding-block: 12px;
+  padding-inline: 30px;
+  border-bottom: 1px solid var(--grey-100);
+
+  @media ${mobileAndUnder} {
+    padding-inline: 10px;
+  }
+`;
+
+const NavButton = styled.button`
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms;
+
+  &:hover:not(:disabled) {
+    background: var(--grey-100);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+`;
+
+const NavCounter = styled.span`
+  font: var(--text-sm);
+  color: var(--grey-800);
+  min-width: 60px;
+  text-align: center;
 `;

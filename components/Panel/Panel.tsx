@@ -15,7 +15,8 @@ import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { VotePanelWithLazyLoad } from "./VotePanel/VotePanelWithLazyLoad";
 
 export function Panel() {
-  const { panelType, panelContent, panelOpen, closePanel } = usePanelContext();
+  const { panelType, panelContent, panelOpen, closePanel, currentVoteIndex } =
+    usePanelContext();
   const panelWidth = usePanelWidth();
   const contentRef = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +30,7 @@ export function Panel() {
     if (panelOpen) {
       contentRef?.current?.scrollTo({ top: 0 });
     }
-  }, [panelOpen]);
+  }, [panelOpen, currentVoteIndex]);
 
   const isMenu = panelType === "menu";
   const closeButtonColor = isMenu ? black : white;
