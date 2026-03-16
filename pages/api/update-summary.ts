@@ -831,14 +831,7 @@ export default async function handler(
     );
 
     // Initialize Redis
-    const redis = new Redis({
-      url:
-        process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL ?? "",
-      token:
-        process.env.KV_REST_API_TOKEN ??
-        process.env.UPSTASH_REDIS_REST_TOKEN ??
-        "",
-    });
+    const redis = Redis.fromEnv();
     // Call discord-thread API to get comment data
     // Use getBaseUrl() for absolute URL (required for server-side fetch)
     const baseUrl = getBaseUrl();

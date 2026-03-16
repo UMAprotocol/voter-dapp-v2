@@ -29,17 +29,17 @@ export function useVotePanelKeyboard({
       if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT")
         return;
 
-      if (e.key === "ArrowLeft") {
+      if (e.key === "ArrowLeft" && canGoPrev) {
         e.preventDefault();
         e.stopPropagation();
-        if (canGoPrev) goToPrevVote();
+        goToPrevVote();
         return;
       }
 
-      if (e.key === "ArrowRight") {
+      if (e.key === "ArrowRight" && canGoNext) {
         e.preventDefault();
         e.stopPropagation();
-        if (canGoNext) goToNextVote();
+        goToNextVote();
         return;
       }
 
