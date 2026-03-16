@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT, VoteT } from "types";
 import { TextInput } from "components/Input/TextInput";
@@ -16,6 +16,10 @@ export function VotePanelVoteInput({
   onSelectVote,
 }: Props) {
   const [customInput, setCustomInput] = useState("");
+
+  useEffect(() => {
+    setCustomInput("");
+  }, [vote.uniqueKey]);
 
   const options = vote.options;
   const hasOptions = options && options.length > 0;

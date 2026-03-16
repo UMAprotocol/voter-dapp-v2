@@ -74,9 +74,9 @@ export function VotePanel({ content }: Props) {
     goToNextVote,
     canGoPrev,
     canGoNext,
-    options: content.options,
+    options: showVoteInput ? content.options : undefined,
     currentVote: content,
-    selectVote,
+    selectVote: showVoteInput ? selectVote : undefined,
   });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();

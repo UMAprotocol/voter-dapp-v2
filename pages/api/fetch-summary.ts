@@ -71,7 +71,14 @@ export default async function handler(
     );
 
     // Initialize Redis
-    const redis = Redis.fromEnv();
+    const redis = new Redis({
+      url:
+        process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL ?? "",
+      token:
+        process.env.KV_REST_API_TOKEN ??
+        process.env.UPSTASH_REDIS_REST_TOKEN ??
+        "",
+    });
 
     // Create cache key using the primary parameters only (must match update-summary)
     const cacheKey = `discord-summary:${time}:${identifier}:${title}`;
