@@ -23,7 +23,6 @@ export function VotePanelVoteInput({
   if (hasOptions) {
     return (
       <Wrapper>
-        <Label>Your vote</Label>
         <OptionsGrid>
           {options.map((option: DropdownItemT, index: number) => (
             <OptionButton
@@ -38,8 +37,7 @@ export function VotePanelVoteInput({
                 )
               }
             >
-              <KeyHint>{index + 1}</KeyHint>
-              {option.label}
+              P{index + 1}
             </OptionButton>
           ))}
         </OptionsGrid>
@@ -49,7 +47,6 @@ export function VotePanelVoteInput({
 
   return (
     <Wrapper>
-      <Label>Your vote</Label>
       <TextInput
         value={customInput || selectedValue || ""}
         onInput={(value) => {
@@ -73,14 +70,9 @@ const Wrapper = styled.div`
   }
 `;
 
-const Label = styled.div`
-  font: var(--text-sm);
-  color: var(--grey-800);
-  margin-bottom: 8px;
-`;
-
 const OptionsGrid = styled.div`
   display: flex;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
 `;
@@ -104,17 +96,4 @@ const OptionButton = styled.button<{ $isSelected: boolean }>`
   &:hover {
     border-color: var(--red-500);
   }
-`;
-
-const KeyHint = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  font: var(--text-xs);
-  background: ${() => "hsla(0, 0%, 0%, 0.08)"};
-  color: inherit;
-  flex-shrink: 0;
 `;

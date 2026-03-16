@@ -31,12 +31,14 @@ export function useVotePanelKeyboard({
 
       if (e.key === "ArrowLeft" && canGoPrev) {
         e.preventDefault();
+        e.stopPropagation();
         goToPrevVote();
         return;
       }
 
       if (e.key === "ArrowRight" && canGoNext) {
         e.preventDefault();
+        e.stopPropagation();
         goToNextVote();
         return;
       }

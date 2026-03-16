@@ -7,6 +7,19 @@ import {
 } from "react";
 import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
 
+function scrollToVote(uniqueKey: string) {
+  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function highlightVote(uniqueKey: string) {
+  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
+  if (!el) return;
+  el.classList.add("vote-highlight");
+  setTimeout(() => el.classList.remove("vote-highlight"), 1500);
+}
+
 export type OpenPanelOptions = {
   navigableVotes?: VoteT[];
   selectedVotes?: SelectedVotesByKeyT;
@@ -100,6 +113,7 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     (value: string | undefined, vote: VoteT) => {
       selectVoteFn?.(value, vote);
       setSelectedVotes((prev) => ({ ...prev, [vote.uniqueKey]: value }));
+      highlightVote(vote.uniqueKey);
     },
     [selectVoteFn]
   );
@@ -109,6 +123,7 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       const nextIndex = currentVoteIndex + 1;
       setCurrentVoteIndex(nextIndex);
       setPanelContent(navigableVotes[nextIndex]);
+      scrollToVote(navigableVotes[nextIndex].uniqueKey);
     }
   }, [currentVoteIndex, navigableVotes]);
 
@@ -117,6 +132,7 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       const prevIndex = currentVoteIndex - 1;
       setCurrentVoteIndex(prevIndex);
       setPanelContent(navigableVotes[prevIndex]);
+      scrollToVote(navigableVotes[prevIndex].uniqueKey);
     }
   }, [currentVoteIndex, navigableVotes]);
 

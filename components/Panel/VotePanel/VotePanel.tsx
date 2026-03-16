@@ -16,7 +16,6 @@ import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGove
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
 import { PanelTitle } from "../PanelTitle";
-import { PanelWrapper } from "../styles";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
@@ -75,9 +74,9 @@ export function VotePanel({ content }: Props) {
     goToNextVote,
     canGoPrev,
     canGoNext,
-    options: showVoteInput ? content.options : undefined,
+    options: content.options,
     currentVote: content,
-    selectVote: showVoteInput ? selectVote : undefined,
+    selectVote,
   });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
@@ -193,7 +192,7 @@ export function VotePanel({ content }: Props) {
   }
 
   return (
-    <PanelWrapper>
+    <VotePanelWrapper>
       <PanelTitle
         title={titleToShow}
         origin={voteOrigin}
@@ -222,9 +221,19 @@ export function VotePanel({ content }: Props) {
       )}
       {makeTabs()}
       <PanelFooter />
-    </PanelWrapper>
+    </VotePanelWrapper>
   );
 }
+
+const VotePanelWrapper = styled.div`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  & > *:last-child {
+    margin-top: auto;
+  }
+`;
 
 export const PanelContentWrapper = styled.div`
   margin-top: 20px;
