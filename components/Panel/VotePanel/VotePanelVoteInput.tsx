@@ -1,7 +1,5 @@
-import { useState } from "react";
 import styled from "styled-components";
 import { DropdownItemT, VoteT } from "types";
-import { TextInput } from "components/Input/TextInput";
 import { mobileAndUnder } from "constant";
 
 interface Props {
@@ -15,47 +13,39 @@ export function VotePanelVoteInput({
   selectedValue,
   onSelectVote,
 }: Props) {
-  const [customInput, setCustomInput] = useState("");
-
   const options = vote.options;
-  const hasOptions = options && options.length > 0;
 
-  if (hasOptions) {
+  if (!options || options.length === 0) {
     return (
       <Wrapper>
-        <OptionsGrid>
-          {options.map((option: DropdownItemT, index: number) => (
-            <OptionButton
-              key={option.value.toString()}
-              $isSelected={selectedValue === option.value.toString()}
-              onClick={() =>
-                onSelectVote(
-                  selectedValue === option.value.toString()
-                    ? undefined
-                    : option.value.toString(),
-                  vote
-                )
-              }
-            >
-              P{index + 1}
-            </OptionButton>
-          ))}
-        </OptionsGrid>
+        <HintText>
+          This vote requires a custom value. Use the main vote list to enter
+          your vote.
+        </HintText>
       </Wrapper>
     );
   }
 
   return (
     <Wrapper>
-      <TextInput
-        value={customInput || selectedValue || ""}
-        onInput={(value) => {
-          setCustomInput(value);
-          onSelectVote(value || undefined, vote);
-        }}
-        placeholder="Enter value"
-        type="number"
-      />
+      <OptionsGrid>
+        {options.map((option: DropdownItemT, index: number) => (
+          <OptionButton
+            key={option.value.toString()}
+            $isSelected={selectedValue === option.value.toString()}
+            onClick={() =>
+              onSelectVote(
+                selectedValue === option.value.toString()
+                  ? undefined
+                  : option.value.toString(),
+                vote
+              )
+            }
+          >
+            P{index + 1}
+          </OptionButton>
+        ))}
+      </OptionsGrid>
     </Wrapper>
   );
 }
@@ -68,6 +58,11 @@ const Wrapper = styled.div`
   @media ${mobileAndUnder} {
     padding-inline: 10px;
   }
+`;
+
+const HintText = styled.p`
+  font: var(--text-sm);
+  color: var(--grey-800);
 `;
 
 const OptionsGrid = styled.div`
