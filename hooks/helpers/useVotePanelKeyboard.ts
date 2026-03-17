@@ -26,22 +26,23 @@ export function useVotePanelKeyboard({
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const tagName = target.tagName;
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (canGoPrev) goToPrevVote();
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (canGoNext) goToNextVote();
+        return;
+      }
+
       if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT")
         return;
-
-      if (e.key === "ArrowLeft" && canGoPrev) {
-        e.preventDefault();
-        e.stopPropagation();
-        goToPrevVote();
-        return;
-      }
-
-      if (e.key === "ArrowRight" && canGoNext) {
-        e.preventDefault();
-        e.stopPropagation();
-        goToNextVote();
-        return;
-      }
 
       if (selectVote && currentVote && options?.length) {
         const num = parseInt(e.key, 10);
@@ -52,8 +53,8 @@ export function useVotePanelKeyboard({
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
   }, [
     isActive,
     goToPrevVote,
