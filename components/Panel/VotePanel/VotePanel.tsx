@@ -234,7 +234,9 @@ export function VotePanel({ content }: Props) {
               <RightChevron />
             </NavButton>
           </NavButtonsWrapper>
-          <SubText>Use ⬅ ⮕ to navigate</SubText>
+          <SubText>
+            Use <Arrows>←→</Arrows> to navigate
+          </SubText>
         </NavigationBar>
       )}
       <PanelTitle
@@ -296,10 +298,14 @@ const NavButtonsWrapper = styled.div`
   justify-content: start;
 `;
 
-const SubText = styled.p`
+const SubText = styled.span`
   font: var(--text-sm);
   color: var(--grey-800);
   opacity: 0.8;
+`;
+
+const Arrows = styled.span`
+  font-family: monospace;
 `;
 
 const NavButton = styled.button`
