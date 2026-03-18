@@ -252,13 +252,15 @@ export async function getPastVotesV2() {
   );
 }
 
+const VOTE_DETAILS_LATEST_ROUND_LIMIT = 1000;
+
 // Query for individual vote details
 export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   const endpoint = graphEndpoint;
   if (!endpoint) throw new Error("V2 subgraph is disabled");
 
   const voteDetailsQuery = gql`
-    query getVoteDetails($index: Int!) {
+    query getVoteDetails($index: Int!, $latestRoundLimit: Int!) {
       priceRequests(where: { resolvedPriceRequestIndex: $index }) {
         identifier {
           id
@@ -274,14 +276,14 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
           totalTokensCommitted
           minAgreementRequirement
           minParticipationRequirement
-          groups(first: 100) {
+          groups(first: $latestRoundLimit) {
             price
             totalVoteAmount
           }
-          committedVotes(first: 100) {
+          committedVotes(first: $latestRoundLimit) {
             id
           }
-          revealedVotes(first: 100) {
+          revealedVotes(first: $latestRoundLimit) {
             id
             voter {
               address
@@ -295,6 +297,7 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
 
   const response = await request<PastVotesQuery>(endpoint, voteDetailsQuery, {
     index: resolvedPriceRequestIndex,
+    latestRoundLimit: VOTE_DETAILS_LATEST_ROUND_LIMIT,
   });
 
   if (!response?.priceRequests?.[0]) return null;
