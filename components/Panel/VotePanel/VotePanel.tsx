@@ -193,25 +193,28 @@ export function VotePanel({ content }: Props) {
 
   return (
     <VotePanelWrapper>
+      {hasNavigation && (
+        <NavigationBar>
+          <NavButtonsWrapper>
+            <NavButton onClick={goToPrevVote} disabled={!canGoPrev}>
+              <LeftChevron />
+            </NavButton>
+            <NavCounter>
+              {currentVoteIndex + 1} of {navigableVotes.length}
+            </NavCounter>
+            <NavButton onClick={goToNextVote} disabled={!canGoNext}>
+              <RightChevron />
+            </NavButton>
+          </NavButtonsWrapper>
+          <SubText>Use ⬅ ⮕ to navigate</SubText>
+        </NavigationBar>
+      )}
       <PanelTitle
         title={titleToShow}
         origin={voteOrigin}
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />
-      {hasNavigation && (
-        <NavigationBar>
-          <NavButton onClick={goToPrevVote} disabled={!canGoPrev}>
-            <LeftChevron />
-          </NavButton>
-          <NavCounter>
-            {currentVoteIndex + 1} of {navigableVotes.length}
-          </NavCounter>
-          <NavButton onClick={goToNextVote} disabled={!canGoNext}>
-            <RightChevron />
-          </NavButton>
-        </NavigationBar>
-      )}
       {showVoteInput && (
         <VotePanelVoteInput
           vote={content}
@@ -248,7 +251,7 @@ export const PanelContentWrapper = styled.div`
 const NavigationBar = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 16px;
   padding-block: 12px;
   padding-inline: 30px;
@@ -257,6 +260,18 @@ const NavigationBar = styled.div`
   @media ${mobileAndUnder} {
     padding-inline: 10px;
   }
+`;
+
+const NavButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+`;
+
+const SubText = styled.p`
+  font: var(--text-sm);
+  color: var(--grey-800);
+  opacity: 0.8;
 `;
 
 const NavButton = styled.button`
@@ -271,6 +286,10 @@ const NavButton = styled.button`
 
   &:hover:not(:disabled) {
     background: var(--grey-100);
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:disabled {

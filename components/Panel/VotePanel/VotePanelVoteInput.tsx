@@ -26,26 +26,40 @@ export function VotePanelVoteInput({
     );
   }
 
+  console.log(options);
+  const optionsWithoutCustom = options.filter(
+    (option) => option.value !== "custom"
+  );
   return (
     <Wrapper>
-      <OptionsGrid>
-        {options.map((option: DropdownItemT, index: number) => (
-          <OptionButton
-            key={option.value.toString()}
-            $isSelected={selectedValue === option.value.toString()}
-            onClick={() =>
-              onSelectVote(
-                selectedValue === option.value.toString()
-                  ? undefined
-                  : option.value.toString(),
-                vote
-              )
-            }
-          >
-            P{index + 1}
-          </OptionButton>
+      <VoteWrapper>
+        <b>Quick vote:</b>
+        <OptionsGrid>
+          {optionsWithoutCustom.map((option: DropdownItemT, index: number) => (
+            <OptionButton
+              key={option.value.toString()}
+              $isSelected={selectedValue === option.value.toString()}
+              onClick={() =>
+                onSelectVote(
+                  selectedValue === option.value.toString()
+                    ? undefined
+                    : option.value.toString(),
+                  vote
+                )
+              }
+            >
+              P{index + 1}
+            </OptionButton>
+          ))}
+        </OptionsGrid>
+      </VoteWrapper>
+      <div>
+        {optionsWithoutCustom.map((option: DropdownItemT, index: number) => (
+          <SmallText key={option.value}>
+            {index !== 0 && " · "}P{index + 1} = {option.label}
+          </SmallText>
         ))}
-      </OptionsGrid>
+      </div>
     </Wrapper>
   );
 }
@@ -54,10 +68,19 @@ const Wrapper = styled.div`
   padding-inline: 30px;
   padding-block: 16px;
   border-bottom: 1px solid var(--grey-100);
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
 
   @media ${mobileAndUnder} {
     padding-inline: 10px;
   }
+`;
+
+const VoteWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const HintText = styled.p`
@@ -65,9 +88,15 @@ const HintText = styled.p`
   color: var(--grey-800);
 `;
 
+const SmallText = styled.span`
+  font: var(--text-sm);
+  color: var(--grey-800);
+  opacity: 0.8;
+`;
+
 const OptionsGrid = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
   flex-wrap: wrap;
   gap: 8px;
 `;
