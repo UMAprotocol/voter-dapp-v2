@@ -1,5 +1,5 @@
 import removeMarkdown from "remove-markdown";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
@@ -68,10 +68,30 @@ export function VotePanel({ content }: Props) {
 
   const showVoteInput = isCommitPhase && selectVote !== undefined;
 
+  const prevButtonRef = useRef<HTMLButtonElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  function flashButton(el: HTMLButtonElement | null) {
+    if (!el) return;
+    el.classList.remove("nav-flash");
+    void el.offsetWidth;
+    el.classList.add("nav-flash");
+  }
+
+  const handlePrev = useCallback(() => {
+    goToPrevVote();
+    flashButton(prevButtonRef.current);
+  }, [goToPrevVote]);
+
+  const handleNext = useCallback(() => {
+    goToNextVote();
+    flashButton(nextButtonRef.current);
+  }, [goToNextVote]);
+
   useVotePanelKeyboard({
     isActive: panelOpen && panelType === "vote",
-    goToPrevVote,
-    goToNextVote,
+    goToPrevVote: handlePrev,
+    goToNextVote: handleNext,
     canGoPrev,
     canGoNext,
     options: content.options,
@@ -196,13 +216,21 @@ export function VotePanel({ content }: Props) {
       {hasNavigation && (
         <NavigationBar>
           <NavButtonsWrapper>
-            <NavButton onClick={goToPrevVote} disabled={!canGoPrev}>
+            <NavButton
+              ref={prevButtonRef}
+              onClick={handlePrev}
+              disabled={!canGoPrev}
+            >
               <LeftChevron />
             </NavButton>
             <NavCounter>
               {currentVoteIndex + 1} of {navigableVotes.length}
             </NavCounter>
-            <NavButton onClick={goToNextVote} disabled={!canGoNext}>
+            <NavButton
+              ref={nextButtonRef}
+              onClick={handleNext}
+              disabled={!canGoNext}
+            >
               <RightChevron />
             </NavButton>
           </NavButtonsWrapper>
@@ -295,6 +323,19 @@ const NavButton = styled.button`
   &:disabled {
     opacity: 0.3;
     cursor: default;
+  }
+
+  &.nav-flash {
+    animation: nav-button-flash 0.4s ease-out;
+  }
+
+  @keyframes nav-button-flash {
+    0% {
+      background: var(--red-500);
+    }
+    100% {
+      background: transparent;
+    }
   }
 `;
 

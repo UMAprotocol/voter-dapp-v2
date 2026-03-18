@@ -26,7 +26,6 @@ export function VotePanelVoteInput({
     );
   }
 
-  console.log(options);
   const optionsWithoutCustom = options.filter(
     (option) => option.value !== "custom"
   );
