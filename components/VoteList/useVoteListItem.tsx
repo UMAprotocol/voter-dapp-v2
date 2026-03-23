@@ -38,6 +38,7 @@ export function useVoteListItem({
   setDirty,
   moreDetailsAction,
   isDirty = false,
+  isActiveInPanel = false,
 }: VoteListItemProps) {
   const [isCustomInput, setIsCustomInput] = useState(false);
   const multipleInputProps = useMultipleValuesVote({
@@ -370,5 +371,6 @@ export function useVoteListItem({
     moreDetailsAction,
     multipleInputProps,
     selectedDropdownOption,
+    isActiveInPanel,
   };
 }

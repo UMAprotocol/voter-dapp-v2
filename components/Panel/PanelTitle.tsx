@@ -1,96 +1,51 @@
 import { mobileAndUnder } from "constant";
-import Across from "public/assets/icons/across.svg";
-import Polymarket from "public/assets/icons/polymarket.svg";
-import OSnap from "public/assets/icons/osnap.svg";
-import UMAGovernance from "public/assets/icons/uma-governance.svg";
-import PredictFun from "public/assets/icons/predict-fun.svg";
-import InfiniteGames from "public/assets/icons/infinite-games.svg";
-import Probable from "public/assets/icons/probable.svg";
-import UMA from "public/assets/icons/uma.svg";
+import { usePanelContext } from "hooks";
+import LeftChevron from "public/assets/icons/left-chevron.svg";
 import styled from "styled-components";
 import { VoteOriginT } from "types";
 
 interface Props {
   title: string;
   origin?: VoteOriginT;
-  isGovernance?: boolean;
   voteNumber?: string;
 }
-export function PanelTitle({ title, origin, isGovernance, voteNumber }: Props) {
+export function PanelTitle({ title, origin, voteNumber }: Props) {
+  const { votes, currentIndex, nextVote, prevVote } = usePanelContext();
+
+  const showArrows = votes.length > 0;
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex >= votes.length - 1;
+
   return (
     <Wrapper>
-      <TitleIcon origin={origin} isGovernance={isGovernance} />
+      {showArrows && (
+        <ArrowButton
+          $disabled={isFirst}
+          onClick={prevVote}
+          disabled={isFirst}
+          aria-label="Previous vote"
+        >
+          <ChevronIcon />
+        </ArrowButton>
+      )}
       <Header id="panel-title">
         {title}
         <SubTitle>
           <SubTitleText voteNumber={voteNumber} origin={origin} />
         </SubTitle>
       </Header>
+      {showArrows && (
+        <ArrowButton
+          $disabled={isLast}
+          onClick={nextVote}
+          disabled={isLast}
+          aria-label="Next vote"
+        >
+          <ChevronIcon $flip />
+        </ArrowButton>
+      )}
     </Wrapper>
   );
-}
-
-function TitleIcon({
-  origin,
-  isGovernance,
-}: {
-  origin?: VoteOriginT;
-  isGovernance?: boolean;
-}) {
-  switch (origin) {
-    case "UMA":
-      if (isGovernance) {
-        return (
-          <TitleIconWrapper>
-            <UMAGovernanceIcon />
-          </TitleIconWrapper>
-        );
-      } else {
-        return (
-          <TitleIconWrapper>
-            <UMAIcon />
-          </TitleIconWrapper>
-        );
-      }
-    case "Across":
-      return (
-        <TitleIconWrapper>
-          <AcrossIcon />
-        </TitleIconWrapper>
-      );
-    case "Polymarket":
-      return (
-        <TitleIconWrapper>
-          <PolymarketIcon />
-        </TitleIconWrapper>
-      );
-    case "OSnap":
-      return (
-        <TitleIconWrapper>
-          <OSnapIcon />
-        </TitleIconWrapper>
-      );
-    case "Predict.Fun":
-      return (
-        <TitleIconWrapper>
-          <PredictFunIcon />
-        </TitleIconWrapper>
-      );
-    case "Infinite Games":
-      return (
-        <TitleIconWrapper>
-          <InfiniteGamesIcon />
-        </TitleIconWrapper>
-      );
-    case "Probable":
-      return (
-        <TitleIconWrapper>
-          <ProbableIcon />
-        </TitleIconWrapper>
-      );
-    default:
-      return null;
-  }
 }
 
 function SubTitleText({
@@ -117,54 +72,46 @@ const Wrapper = styled.div`
   background: var(--black);
   color: var(--white);
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 8px;
   padding: 25px;
   overflow: hidden;
 
   @media ${mobileAndUnder} {
-    gap: max(20px, 5%);
+    gap: max(8px, 2%);
     padding-inline: 15px;
   }
 `;
 
 const Header = styled.h1`
   font: var(--header-md);
-  margin-right: 30px;
-  max-width: 80%;
+  flex: 1;
+  min-width: 0;
 `;
 
 const SubTitle = styled.div`
   font: var(--text-sm);
 `;
 
-const UMAIcon = styled(UMA)``;
+const ArrowButton = styled.button<{ $disabled: boolean }>`
+  background: none;
+  border: none;
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
+  opacity: ${({ $disabled }) => ($disabled ? 0.3 : 1)};
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: opacity 200ms;
+`;
 
-const UMAGovernanceIcon = styled(UMAGovernance)``;
-
-const AcrossIcon = styled(Across)``;
-
-const PolymarketIcon = styled(Polymarket)``;
-
-const PredictFunIcon = styled(PredictFun)``;
-
-const InfiniteGamesIcon = styled(InfiniteGames)``;
-
-const ProbableIcon = styled(Probable)``;
-
-const OSnapIcon = styled(OSnap)``;
-
-const TitleIconWrapper = styled.div`
-  width: 40px;
-  height: 40px;
-  position: relative;
-  border-radius: 50%;
-  overflow: hidden;
-
-  @media ${mobileAndUnder} {
-    width: max(40px, 5%);
-    height: max(40px, 5%);
+const ChevronIcon = styled(LeftChevron)<{ $flip?: boolean }>`
+  width: 10px;
+  height: 20px;
+  transform: ${({ $flip }) => ($flip ? "scaleX(-1)" : "none")};
+  path {
+    stroke: var(--white);
   }
 `;
 
