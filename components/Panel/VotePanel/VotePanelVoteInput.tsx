@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { DropdownItemT, VoteT } from "types";
 import { mobileAndUnder } from "constant";
+import { getSelectableQuickOptions } from "helpers/voting/getSelectableQuickOptions";
 
 interface Props {
   vote: VoteT;
@@ -26,9 +27,7 @@ export function VotePanelVoteInput({
     );
   }
 
-  const optionsWithoutCustom = options.filter(
-    (option) => option.value !== "custom"
-  );
+  const optionsWithoutCustom = getSelectableQuickOptions(options);
   return (
     <Wrapper>
       <VoteWrapper>

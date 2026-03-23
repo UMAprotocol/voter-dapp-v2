@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { DropdownItemT, VoteT } from "types";
+import { getSelectableQuickOptions } from "helpers/voting/getSelectableQuickOptions";
 
 export function useVotePanelKeyboard({
   isActive,
@@ -45,10 +46,11 @@ export function useVotePanelKeyboard({
         return;
 
       if (selectVote && currentVote && options?.length) {
+        const selectableOptions = getSelectableQuickOptions(options);
         const num = parseInt(e.key, 10);
-        if (num >= 1 && num <= options.length) {
+        if (num >= 1 && num <= selectableOptions.length) {
           e.preventDefault();
-          selectVote(options[num - 1].value.toString(), currentVote);
+          selectVote(selectableOptions[num - 1].value.toString(), currentVote);
         }
       }
     }
