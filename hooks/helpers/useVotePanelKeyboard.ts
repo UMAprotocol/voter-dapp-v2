@@ -28,17 +28,17 @@ export function useVotePanelKeyboard({
       const target = e.target as HTMLElement;
       const tagName = target.tagName;
 
-      if (e.key === "ArrowLeft") {
+      if (e.key === "ArrowLeft" && canGoPrev) {
         e.preventDefault();
         e.stopPropagation();
-        if (canGoPrev) goToPrevVote();
+        goToPrevVote();
         return;
       }
 
-      if (e.key === "ArrowRight") {
+      if (e.key === "ArrowRight" && canGoNext) {
         e.preventDefault();
         e.stopPropagation();
-        if (canGoNext) goToNextVote();
+        goToNextVote();
         return;
       }
 
