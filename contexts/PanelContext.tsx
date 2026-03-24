@@ -5,22 +5,54 @@ import {
   useMemo,
   useState,
 } from "react";
-import { PanelTypeT, VoteT } from "types";
+import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
+
+function scrollToAndHighlightVote(uniqueKey: string) {
+  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.remove("vote-highlight");
+  void (el as HTMLElement).offsetWidth;
+  el.classList.add("vote-highlight");
+  setTimeout(() => el.classList.remove("vote-highlight"), 1500);
+}
+
+export type OpenPanelOptions = {
+  navigableVotes?: VoteT[];
+  selectedVotes?: SelectedVotesByKeyT;
+  selectVote?: (value: string | undefined, vote: VoteT) => void;
+};
 
 export interface PanelContextState {
   panelType: PanelTypeT;
   panelContent: VoteT | undefined;
   panelOpen: boolean;
-  openPanel: (panelType: PanelTypeT, panelContent?: VoteT) => void;
+  openPanel: (
+    panelType: PanelTypeT,
+    panelContent?: VoteT,
+    options?: OpenPanelOptions
+  ) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
+  navigableVotes: VoteT[];
+  currentVoteIndex: number;
+  goToNextVote: () => void;
+  goToPrevVote: () => void;
+  selectVote: ((value: string | undefined, vote: VoteT) => void) | undefined;
+  selectedVotes: SelectedVotesByKeyT;
 }
 
-export const defaultPanelContextState = {
+export const defaultPanelContextState: PanelContextState = {
   panelType: "menu" as const,
   panelContent: undefined,
   panelOpen: false,
   openPanel: () => null,
   closePanel: () => null,
+  navigableVotes: [],
+  currentVoteIndex: -1,
+  goToNextVote: () => null,
+  goToPrevVote: () => null,
+  selectVote: undefined,
+  selectedVotes: {},
 };
 
 export const PanelContext = createContext<PanelContextState>(
@@ -34,16 +66,72 @@ export function PanelProvider({ children }: { children: ReactNode }) {
   const [previousPanelData, setPreviousPanelData] = useState<
     { panelType: PanelTypeT; panelContent: VoteT | undefined }[]
   >([]);
+  const [navigableVotes, setNavigableVotes] = useState<VoteT[]>([]);
+  const [currentVoteIndex, setCurrentVoteIndex] = useState(-1);
+  const [selectVoteFn, setSelectVoteFn] = useState<
+    ((value: string | undefined, vote: VoteT) => void) | undefined
+  >();
+  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
   const openPanel = useCallback(
-    (panelType: PanelTypeT, panelContent?: VoteT) => {
+    (
+      panelType: PanelTypeT,
+      panelContent?: VoteT,
+      options?: OpenPanelOptions
+    ) => {
       setPanelType(panelType);
       setPanelContent(panelContent);
       setPanelOpen(true);
       pushPanelDataOntoStack(panelType, panelContent);
+
+      if (options?.navigableVotes) {
+        setNavigableVotes(options.navigableVotes);
+        const index = options.navigableVotes.findIndex(
+          (v) => v.uniqueKey === panelContent?.uniqueKey
+        );
+        setCurrentVoteIndex(index >= 0 ? index : 0);
+      } else {
+        setNavigableVotes([]);
+        setCurrentVoteIndex(-1);
+      }
+
+      if (options?.selectVote) {
+        setSelectVoteFn(() => options.selectVote);
+      } else {
+        setSelectVoteFn(undefined);
+      }
+
+      setSelectedVotes(options?.selectedVotes ?? {});
     },
     []
   );
+
+  const wrappedSelectVote = useCallback(
+    (value: string | undefined, vote: VoteT) => {
+      selectVoteFn?.(value, vote);
+      setSelectedVotes((prev) => ({ ...prev, [vote.uniqueKey]: value }));
+      scrollToAndHighlightVote(vote.uniqueKey);
+    },
+    [selectVoteFn]
+  );
+
+  const goToNextVote = useCallback(() => {
+    if (currentVoteIndex < navigableVotes.length - 1) {
+      const nextIndex = currentVoteIndex + 1;
+      setCurrentVoteIndex(nextIndex);
+      setPanelContent(navigableVotes[nextIndex]);
+      scrollToAndHighlightVote(navigableVotes[nextIndex].uniqueKey);
+    }
+  }, [currentVoteIndex, navigableVotes]);
+
+  const goToPrevVote = useCallback(() => {
+    if (currentVoteIndex > 0) {
+      const prevIndex = currentVoteIndex - 1;
+      setCurrentVoteIndex(prevIndex);
+      setPanelContent(navigableVotes[prevIndex]);
+      scrollToAndHighlightVote(navigableVotes[prevIndex].uniqueKey);
+    }
+  }, [currentVoteIndex, navigableVotes]);
 
   const closePanel = useCallback(
     (clearPreviousPanelData = false) => {
@@ -84,8 +172,27 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       panelOpen,
       openPanel,
       closePanel,
+      navigableVotes,
+      currentVoteIndex,
+      goToNextVote,
+      goToPrevVote,
+      selectVote: selectVoteFn ? wrappedSelectVote : undefined,
+      selectedVotes,
     }),
-    [closePanel, openPanel, panelContent, panelOpen, panelType]
+    [
+      closePanel,
+      openPanel,
+      panelContent,
+      panelOpen,
+      panelType,
+      navigableVotes,
+      currentVoteIndex,
+      goToNextVote,
+      goToPrevVote,
+      selectVoteFn,
+      wrappedSelectVote,
+      selectedVotes,
+    ]
   );
 
   return (

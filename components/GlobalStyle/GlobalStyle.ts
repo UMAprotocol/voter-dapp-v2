@@ -264,4 +264,15 @@ a:not([class]) {
     --shadow-2: ${shadow2};
     --shadow-3: ${shadow3};
   }
+
+  @keyframes vote-highlight-pulse {
+    0% { box-shadow: 0 0 0 0 ${red500}; }
+    30% { box-shadow: 0 0 0 3px ${red500}; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  .vote-highlight {
+    animation: vote-highlight-pulse 0.7s ease-out;
+    border-radius: 4px;
+  }
 `;

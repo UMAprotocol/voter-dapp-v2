@@ -76,9 +76,10 @@ export function VoteTableRow(props: VoteListItemProps) {
 
   return (
     <tr
-      className="group min-h-[80px] cursor-pointer rounded bg-white"
+      className="group min-h-[80px] cursor-pointer rounded bg-white transition-shadow duration-300"
       style={style}
       onClick={moreDetailsAction}
+      data-vote-key={props.vote.uniqueKey}
     >
       <td className="rounded-l p-[--cell-padding]">
         <div className="flex items-center gap-[--cell-padding]">
