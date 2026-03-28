@@ -3,6 +3,14 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  resolve: {
+    alias: {
+      "@uma/contracts-frontend": new URL(
+        "tests/__mocks__/uma-contracts-frontend.ts",
+        import.meta.url
+      ).pathname,
+    },
+  },
   test: {
     environment: "node",
     globals: true,
