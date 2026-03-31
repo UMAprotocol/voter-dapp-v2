@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -52,6 +53,8 @@ export function VoteTableRow(props: VoteListItemProps) {
     maxDecimals,
     showYourVote,
     getYourVote,
+    showRevealAction,
+    canLeaveUnrevealed,
     showCorrectVote,
     getCorrectVote,
     showVoteStatus,
@@ -63,6 +66,8 @@ export function VoteTableRow(props: VoteListItemProps) {
     multipleInputProps,
     dropdownOptions,
     selectedDropdownOption,
+    leaveUnrevealedChecked,
+    onLeaveUnrevealedChange,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -159,6 +164,22 @@ export function VoteTableRow(props: VoteListItemProps) {
       {showYourVote() ? (
         <td className="min-w-[100px] whitespace-nowrap pr-[--cell-padding]">
           <VoteText voteText={getYourVote()} />
+        </td>
+      ) : null}
+      {showRevealAction() ? (
+        <td
+          className="cursor-default pr-[--cell-padding]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {canLeaveUnrevealed() ? (
+            <Checkbox
+              label="Leave unrevealed"
+              checked={leaveUnrevealedChecked}
+              onChange={onLeaveUnrevealedChange ?? (() => undefined)}
+            />
+          ) : (
+            <span className="text-black-opacity-50">-</span>
+          )}
         </td>
       ) : null}
       {showCorrectVote() ? (

@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { ActivityStatusT, VotePhaseT, VoteT } from "types";
 
 export interface VoteListItemProps {
@@ -6,6 +7,9 @@ export interface VoteListItemProps {
   selectedVote?: string | undefined;
   selectVote?: (value: string | undefined) => void;
   clearVote?: () => void;
+  showLeaveUnrevealedToggle?: boolean;
+  leaveUnrevealedChecked?: boolean;
+  onLeaveUnrevealedChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   activityStatus: ActivityStatusT | undefined;
   moreDetailsAction: () => void;
   setDirty?: (dirty: boolean) => void;
