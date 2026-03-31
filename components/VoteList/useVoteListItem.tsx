@@ -28,17 +28,18 @@ import { DropdownItemT } from "types";
 import { VoteListItemProps } from "./shared.types";
 import { useMultipleValuesVote } from "hooks/inputs/useMultipleValuesVote";
 
-export function useVoteListItem({
-  vote,
-  phase,
-  selectedVote,
-  selectVote,
-  clearVote,
-  activityStatus,
-  setDirty,
-  moreDetailsAction,
-  isDirty = false,
-}: VoteListItemProps) {
+export function useVoteListItem(props: VoteListItemProps) {
+  const {
+    vote,
+    phase,
+    selectedVote,
+    selectVote,
+    clearVote,
+    activityStatus,
+    setDirty,
+    moreDetailsAction,
+    isDirty = false,
+  } = props;
   const [isCustomInput, setIsCustomInput] = useState(false);
   const multipleInputProps = useMultipleValuesVote({
     vote,
@@ -162,6 +163,14 @@ export function useVoteListItem({
 
   function showVoteInput() {
     return activityStatus === "active" && phase === "commit";
+  }
+
+  function showRevealAction() {
+    return activityStatus === "active" && phase === "reveal";
+  }
+
+  function canLeaveUnrevealed() {
+    return Boolean(props.showLeaveUnrevealedToggle);
   }
 
   function showYourVote() {
@@ -360,6 +369,8 @@ export function useVoteListItem({
     maxDecimals,
     showYourVote,
     getYourVote,
+    showRevealAction,
+    canLeaveUnrevealed,
     showCorrectVote,
     getCorrectVote,
     showVoteStatus,
@@ -370,5 +381,7 @@ export function useVoteListItem({
     moreDetailsAction,
     multipleInputProps,
     selectedDropdownOption,
+    leaveUnrevealedChecked: props.leaveUnrevealedChecked ?? false,
+    onLeaveUnrevealedChange: props.onLeaveUnrevealedChange,
   };
 }

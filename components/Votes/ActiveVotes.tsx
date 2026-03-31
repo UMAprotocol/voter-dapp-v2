@@ -21,7 +21,7 @@ import {
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -61,6 +61,13 @@ export function ActiveVotes() {
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const [votesToLeaveUnrevealed, setVotesToLeaveUnrevealed] = useState<
+    Record<string, true>
+  >({});
+
+  useEffect(() => {
+    setVotesToLeaveUnrevealed({});
+  }, [phase, roundId]);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -109,6 +116,8 @@ export function ActiveVotes() {
           ? isDirty()
           : true
         : false;
+    const revealableVotesCount = getRevealableVotes().length;
+    const votesSelectedToRevealCount = getVotesToReveal().length;
     const hasVotesToReveal = getVotesToReveal().length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
@@ -211,7 +220,7 @@ export function ActiveVotes() {
     }
     if (isReveal) {
       actionConfig.hidden = false;
-      actionConfig.label = "Reveal all votes";
+      actionConfig.label = `Reveal ${votesSelectedToRevealCount}/${revealableVotesCount} votes`;
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
@@ -236,7 +245,10 @@ export function ActiveVotes() {
       }
       if (!hasVotesToReveal) {
         actionConfig.disabled = true;
-        actionConfig.tooltip = "You have no votes to reveal.";
+        actionConfig.tooltip =
+          revealableVotesCount > 0
+            ? "You have no votes selected to reveal."
+            : "You have no votes to reveal.";
         return actionConfig;
       }
       actionConfig.canReveal = true;
@@ -280,6 +292,12 @@ export function ActiveVotes() {
   }
 
   function getVotesToReveal() {
+    return getRevealableVotes().filter(
+      (vote) => !votesToLeaveUnrevealed[vote.uniqueKey]
+    );
+  }
+
+  function getRevealableVotes() {
     return (
       activeVoteList?.filter(
         (vote) =>
@@ -289,6 +307,16 @@ export function ActiveVotes() {
           vote.canReveal
       ) ?? []
     );
+  }
+
+  function toggleLeaveUnrevealed(vote: VoteT, checked: boolean) {
+    setVotesToLeaveUnrevealed((currentVotes) => {
+      if (!checked) {
+        const { [vote.uniqueKey]: _, ...rest } = currentVotes;
+        return rest;
+      }
+      return { ...currentVotes, [vote.uniqueKey]: true };
+    });
   }
 
   function selectVote(value: string | undefined, vote: VoteT) {
@@ -305,6 +333,15 @@ export function ActiveVotes() {
     selectedVote: selectedVotes[vote.uniqueKey],
     selectVote: (value: string | undefined) => selectVote(value, vote),
     clearVote: () => clearSelectedVote(vote),
+    showLeaveUnrevealedToggle:
+      phase === "reveal" &&
+      vote.isCommitted &&
+      !!vote.decryptedVote &&
+      vote.isRevealed === false &&
+      vote.canReveal,
+    leaveUnrevealedChecked: !!votesToLeaveUnrevealed[vote.uniqueKey],
+    onLeaveUnrevealedChange: (event: ChangeEvent<HTMLInputElement>) =>
+      toggleLeaveUnrevealed(vote, event.target.checked),
     activityStatus: "active" as const,
     moreDetailsAction: () =>
       openPanel("vote", vote, {
@@ -354,7 +391,18 @@ export function ActiveVotes() {
               />
               <ButtonSpacer />
             </>
-          ) : undefined}
+          ) : null}
+          {phase === "reveal" &&
+          Object.keys(votesToLeaveUnrevealed).length > 0 ? (
+            <>
+              <Button
+                variant="secondary"
+                label="Reveal All Eligible Votes"
+                onClick={() => setVotesToLeaveUnrevealed({})}
+              />
+              <ButtonSpacer />
+            </>
+          ) : null}
           {!actionStatus.hidden ? (
             actionStatus.tooltip ? (
               <Tooltip label={actionStatus.tooltip}>
