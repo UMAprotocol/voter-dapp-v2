@@ -1,15 +1,11 @@
 import styled from "styled-components";
-import { ActivityStatusT, VotePhaseT } from "types";
+import { ActivityStatusT } from "types";
 
 interface Props {
   activityStatus: ActivityStatusT;
-  phase?: VotePhaseT;
 }
-export function VoteTableHeadings({ activityStatus, phase }: Props) {
-  const activeHeadings =
-    phase === "reveal"
-      ? ["Vote", "Your vote", "Reveal action", "Vote status"]
-      : ["Vote", "Your vote", "Vote status"];
+export function VoteTableHeadings({ activityStatus }: Props) {
+  const activeHeadings = ["Vote", "Your vote", "Vote status"];
   const upcomingHeadings = ["Vote"];
   const pastHeadings = ["Vote", "Your vote", "Correct vote"];
   const headings =

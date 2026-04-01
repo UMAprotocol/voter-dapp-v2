@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Dropdown,
   Loader,
   LoadingSkeleton,
@@ -40,8 +39,6 @@ export function VoteListItem(props: VoteListItemProps) {
     maxDecimals,
     showYourVote,
     getYourVote,
-    showRevealAction,
-    canLeaveUnrevealed,
     showCorrectVote,
     getCorrectVote,
     showVoteStatus,
@@ -50,8 +47,6 @@ export function VoteListItem(props: VoteListItemProps) {
     isDirty,
     origin,
     moreDetailsAction,
-    leaveUnrevealedChecked,
-    onLeaveUnrevealedChange,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -137,24 +132,6 @@ export function VoteListItem(props: VoteListItemProps) {
       {showYourVote() ? (
         <div className="flex justify-between gap-2">
           <span>Your vote:</span> <VoteText voteText={getYourVote()} />
-        </div>
-      ) : null}
-      {showRevealAction() ? (
-        <div
-          className="flex justify-between gap-2"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <span>Reveal action:</span>
-          {canLeaveUnrevealed() ? (
-            <Checkbox
-              label="Leave unrevealed"
-              checked={leaveUnrevealedChecked}
-              onChange={onLeaveUnrevealedChange ?? (() => undefined)}
-              gap={8}
-            />
-          ) : (
-            <span>-</span>
-          )}
         </div>
       ) : null}
       {showCorrectVote() ? (
