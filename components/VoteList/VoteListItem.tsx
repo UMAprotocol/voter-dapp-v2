@@ -61,8 +61,7 @@ export function VoteListItem(props: VoteListItemProps) {
   return (
     <div
       style={style}
-      className="flex h-auto w-full max-w-full flex-col items-start gap-[12px] rounded bg-white p-3 transition-shadow duration-300"
-      data-vote-key={props.vote.uniqueKey}
+      className="flex h-auto w-full max-w-full flex-col items-start gap-[12px] rounded bg-white p-3"
     >
       <div className="w-full rounded-l">
         <div className="align-center flex border-b-[--border-color] pb-1">

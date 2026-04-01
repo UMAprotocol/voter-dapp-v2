@@ -306,12 +306,7 @@ export function ActiveVotes() {
     selectVote: (value: string | undefined) => selectVote(value, vote),
     clearVote: () => clearSelectedVote(vote),
     activityStatus: "active" as const,
-    moreDetailsAction: () =>
-      openPanel("vote", vote, {
-        navigableVotes: activeVoteList,
-        selectedVotes,
-        selectVote,
-      }),
+    moreDetailsAction: () => openPanel("vote", vote),
     key: vote.uniqueKey,
     isDirty: dirtyInputs[index],
     setDirty: (dirty: boolean) =>

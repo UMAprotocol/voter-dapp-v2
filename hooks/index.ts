@@ -15,7 +15,6 @@ export { useMounted } from "./helpers/useMounted";
 export { usePanelWidth } from "./helpers/usePanelWidth";
 export { usePersistedVotes } from "./helpers/usePersistedVotes";
 export { useSign } from "./helpers/useSign";
-export { useVotePanelKeyboard } from "./helpers/useVotePanelKeyboard";
 export { useWindowSize } from "./helpers/useWindowSize";
 export { useAcceptReceivedRequestToBeDelegate } from "./mutations/delegation/useAcceptReceivedRequestToBeDelegate";
 export { useCancelSentRequestToBeDelegate } from "./mutations/delegation/useCancelSentRequestToBeDelegate";
