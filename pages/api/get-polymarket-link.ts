@@ -25,18 +25,34 @@ export default async function handler(
       });
     }
 
-    const data = (await fetch(
-      `https://gamma-api.polymarket.com/markets?${buildSearchParams({
-        question_ids: questionId,
-      })}`
-    ).then((res) => res.json())) as Array<{
-      events: Array<{
-        slug: string;
-      }>;
-    }>;
+    type Market = { events: Array<{ slug: string }> };
+    const baseUrl = "https://gamma-api.polymarket.com/markets";
+    async function fetchMarkets(params: Record<string, string>) {
+      const res = await fetch(`${baseUrl}?${buildSearchParams(params)}`);
+      const payload: unknown = await res.json();
+      return Array.isArray(payload) ? (payload as Market[]) : [];
+    }
 
-    const slug = data?.[0]?.events?.[0]?.slug;
-    response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
+    const results = await Promise.allSettled([
+      fetchMarkets({ question_ids: questionId }),
+      fetchMarkets({ question_ids: questionId, closed: "true" }),
+    ]);
+    if (results.every((r) => r.status === "rejected")) {
+      throw new HttpError({
+        statusCode: 502,
+        msg: "Unable to reach Polymarket gamma API",
+      });
+    }
+
+    const markets = results.flatMap((r) =>
+      r.status === "fulfilled" ? r.value : []
+    );
+    const slug = markets[0]?.events?.[0]?.slug;
+
+    const allSucceeded = results.every((r) => r.status === "fulfilled");
+    if (slug || allSucceeded) {
+      response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
+    }
     response.status(200).send({ slug });
   } catch (e) {
     return handleApiError(e, response);
