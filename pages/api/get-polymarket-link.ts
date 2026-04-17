@@ -37,11 +37,22 @@ export default async function handler(
       fetchMarkets({ question_ids: questionId }),
       fetchMarkets({ question_ids: questionId, closed: "true" }),
     ]);
+    if (results.every((r) => r.status === "rejected")) {
+      throw new HttpError({
+        statusCode: 502,
+        msg: "Unable to reach Polymarket gamma API",
+      });
+    }
+
     const markets = results.flatMap((r) =>
       r.status === "fulfilled" ? r.value : []
     );
     const slug = markets[0]?.events?.[0]?.slug;
-    response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
+
+    const allSucceeded = results.every((r) => r.status === "fulfilled");
+    if (slug || allSucceeded) {
+      response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
+    }
     response.status(200).send({ slug });
   } catch (e) {
     return handleApiError(e, response);
