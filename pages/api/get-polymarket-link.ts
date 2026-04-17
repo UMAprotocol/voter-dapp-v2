@@ -27,19 +27,19 @@ export default async function handler(
 
     type Market = { events: Array<{ slug: string }> };
     const baseUrl = "https://gamma-api.polymarket.com/markets";
-    const [openMarkets, closedMarkets] = (await Promise.all([
-      fetch(
-        `${baseUrl}?${buildSearchParams({ question_ids: questionId })}`
-      ).then((res) => res.json()),
-      fetch(
-        `${baseUrl}?${buildSearchParams({
-          question_ids: questionId,
-          closed: "true",
-        })}`
-      ).then((res) => res.json()),
-    ])) as [Market[] | null, Market[] | null];
+    async function fetchMarkets(params: Record<string, string>) {
+      const res = await fetch(`${baseUrl}?${buildSearchParams(params)}`);
+      const payload: unknown = await res.json();
+      return Array.isArray(payload) ? (payload as Market[]) : [];
+    }
 
-    const markets = [...(openMarkets ?? []), ...(closedMarkets ?? [])];
+    const results = await Promise.allSettled([
+      fetchMarkets({ question_ids: questionId }),
+      fetchMarkets({ question_ids: questionId, closed: "true" }),
+    ]);
+    const markets = results.flatMap((r) =>
+      r.status === "fulfilled" ? r.value : []
+    );
     const slug = markets[0]?.events?.[0]?.slug;
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
