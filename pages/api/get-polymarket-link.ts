@@ -25,17 +25,22 @@ export default async function handler(
       });
     }
 
-    const data = (await fetch(
-      `https://gamma-api.polymarket.com/markets?${buildSearchParams({
-        question_ids: questionId,
-      })}`
-    ).then((res) => res.json())) as Array<{
-      events: Array<{
-        slug: string;
-      }>;
-    }>;
+    type Market = { events: Array<{ slug: string }> };
+    const baseUrl = "https://gamma-api.polymarket.com/markets";
+    const [openMarkets, closedMarkets] = (await Promise.all([
+      fetch(
+        `${baseUrl}?${buildSearchParams({ question_ids: questionId })}`
+      ).then((res) => res.json()),
+      fetch(
+        `${baseUrl}?${buildSearchParams({
+          question_ids: questionId,
+          closed: "true",
+        })}`
+      ).then((res) => res.json()),
+    ])) as [Market[] | null, Market[] | null];
 
-    const slug = data?.[0]?.events?.[0]?.slug;
+    const markets = [...(openMarkets ?? []), ...(closedMarkets ?? [])];
+    const slug = markets[0]?.events?.[0]?.slug;
     response.setHeader("Cache-Control", "max-age=0, s-maxage=2592000");
     response.status(200).send({ slug });
   } catch (e) {
