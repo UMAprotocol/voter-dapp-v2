@@ -20,6 +20,7 @@ export { makeUniqueKeyForVote } from "./voting/makeUniqueKeyForVote";
 export { onlyOneRequestPerAddress } from "./voting/onlyOneRequestPerAddress";
 export * from "./voting/optimisticGovernor";
 export * from "./voting/projects";
+export * from "./voting/validateCustomVoteInput";
 export * from "./voting/voteTiming";
 export * from "./web3/crypto";
 export {
