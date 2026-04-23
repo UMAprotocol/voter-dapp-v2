@@ -48,24 +48,27 @@ describe("validateCustomVoteInput", () => {
     });
   });
 
-  it("rejects out-of-range values entered without a decimal point and suggests the decimal", () => {
+  it("detects the pre-scaled p4 magic number and suggests the correct unscaled value", () => {
     const result = validateCustomVoteInput(OVERFLOW_NO_DECIMAL, NUMERIC_ID);
     expect(result.isValid).toBe(false);
     if (!result.isValid) {
-      expect(result.message).toMatch(/out of range/i);
-      expect(result.message).toMatch(/decimal point/i);
-      expect(result.message).toMatch(/18 decimals of precision/);
+      expect(result.suggestion).toBe(MIN_INT_256_DECIMAL);
+      expect(result.message).toMatch(/pre-scaled/i);
+      expect(result.message).toMatch(/UMIP-107/);
+      expect(result.message).toMatch(/10\^18/);
+      expect(result.message).toContain(MIN_INT_256_DECIMAL);
     }
   });
 
-  it("rejects out-of-range values that already include a decimal without the missing-decimal hint", () => {
+  it("rejects out-of-range values that cannot be reversed into an int256 without a suggestion", () => {
     const tooLargeWithDecimal =
       "99999999999999999999999999999999999999999999999999999999999.0";
     const result = validateCustomVoteInput(tooLargeWithDecimal, NUMERIC_ID);
     expect(result.isValid).toBe(false);
     if (!result.isValid) {
+      expect(result.suggestion).toBeUndefined();
       expect(result.message).toMatch(/out of range/i);
-      expect(result.message).not.toMatch(/decimal point/i);
+      expect(result.message).toMatch(/UMIP-107/);
     }
   });
 
