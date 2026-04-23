@@ -4,6 +4,7 @@ import {
   formatVoteStringWithPrecision,
   getPrecisionForIdentifier,
   getClaimTitle,
+  validateCustomVoteInput,
 } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -198,6 +199,15 @@ export function useVoteListItem({
     ? multipleInputProps.selectedDropdownOption
     : getExistingOrSelectedVoteFromOptions();
 
+  const showsCustomInput = isCustomInput || !dropdownOptions;
+  const customInputValidation =
+    showsCustomInput && !isMultipleValuesVote
+      ? validateCustomVoteInput(selectedVote, decodedIdentifier)
+      : { isValid: true as const };
+  const customInputError = customInputValidation.isValid
+    ? undefined
+    : customInputValidation.message;
+
   function getYourVote() {
     // Check if wallet is connected
     if (!address && !delegatorAddress) {
@@ -370,5 +380,6 @@ export function useVoteListItem({
     moreDetailsAction,
     multipleInputProps,
     selectedDropdownOption,
+    customInputError,
   };
 }

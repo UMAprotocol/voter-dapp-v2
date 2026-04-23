@@ -47,6 +47,7 @@ export function VoteListItem(props: VoteListItemProps) {
     isDirty,
     origin,
     moreDetailsAction,
+    customInputError,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -118,13 +119,20 @@ export function VoteListItem(props: VoteListItemProps) {
               onSelect={onSelectVote}
             />
           ) : (
-            <TextInput
-              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
-              onInput={selectVote}
-              onClear={() => exitCustomInput()}
-              maxDecimals={maxDecimals}
-              type="number"
-            />
+            <>
+              <TextInput
+                value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
+                onInput={selectVote}
+                onClear={() => exitCustomInput()}
+                maxDecimals={maxDecimals}
+                type="number"
+              />
+              {customInputError ? (
+                <span className="mt-1 block text-xs text-red-500">
+                  {customInputError}
+                </span>
+              ) : null}
+            </>
           )}
         </div>
       ) : null}

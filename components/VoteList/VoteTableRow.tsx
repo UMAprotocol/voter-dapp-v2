@@ -63,6 +63,7 @@ export function VoteTableRow(props: VoteListItemProps) {
     multipleInputProps,
     dropdownOptions,
     selectedDropdownOption,
+    customInputError,
   } = useVoteListItem(props);
 
   const { isOptimisticGovernorVote, explanationText } =
@@ -146,13 +147,20 @@ export function VoteTableRow(props: VoteListItemProps) {
               onSelect={onSelectVote}
             />
           ) : (
-            <TextInput
-              value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
-              onInput={selectVote}
-              onClear={() => exitCustomInput()}
-              maxDecimals={maxDecimals}
-              type="number"
-            />
+            <>
+              <TextInput
+                value={selectedVote ?? getDecryptedVoteAsString() ?? ""}
+                onInput={selectVote}
+                onClear={() => exitCustomInput()}
+                maxDecimals={maxDecimals}
+                type="number"
+              />
+              {customInputError ? (
+                <span className="mt-1 block text-xs text-red-500">
+                  {customInputError}
+                </span>
+              ) : null}
+            </>
           )}
         </td>
       ) : null}

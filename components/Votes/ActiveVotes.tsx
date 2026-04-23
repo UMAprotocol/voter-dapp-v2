@@ -6,7 +6,7 @@ import {
   VoteList,
   VoteTimeline,
 } from "components";
-import { formatVotesToCommit } from "helpers";
+import { formatVotesToCommit, validateCustomVoteInput } from "helpers";
 import { config } from "helpers/config";
 import {
   useAccountDetails,
@@ -110,6 +110,11 @@ export function ActiveVotes() {
           : true
         : false;
     const hasVotesToReveal = getVotesToReveal().length > 0;
+    const hasInvalidSelectedVote = !!activeVoteList?.some((vote) => {
+      const value = selectedVotes[vote.uniqueKey];
+      if (!value) return false;
+      return !validateCustomVoteInput(value, vote.decodedIdentifier).isValid;
+    });
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
       activeVoteList?.filter((vote) => {
@@ -200,6 +205,11 @@ export function ActiveVotes() {
         actionConfig.disabled = true;
         actionConfig.tooltip =
           "You must enter your votes before you can continue.";
+        return actionConfig;
+      }
+      if (hasInvalidSelectedVote) {
+        actionConfig.disabled = true;
+        actionConfig.tooltip = "Fix invalid custom votes before committing.";
         return actionConfig;
       }
       actionConfig.canCommit = true;
