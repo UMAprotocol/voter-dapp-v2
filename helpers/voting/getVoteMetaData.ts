@@ -122,8 +122,9 @@ export function getVoteMetaData(
       ancillaryDataDescription ?? "No description was found for this request.";
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
     const options = isYesNoQuery
-      ? maybeMakePolymarketOptions(decodedAncillaryData)
-      : undefined;
+      ? maybeMakePolymarketOptions(decodedAncillaryData) ??
+        getDefaultOptionsForIdentifier(decodedIdentifier)
+      : getDefaultOptionsForIdentifier(decodedIdentifier);
     const umipMetadata = isYesNoQuery
       ? getUmipMetadata(decodedIdentifier)
       : { umipOrUppLink: undefined, umipOrUppNumber: undefined };
@@ -176,8 +177,9 @@ export function getVoteMetaData(
 
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
     const options = isYesNoQuery
-      ? maybeMakePolymarketOptions(decodedAncillaryData)
-      : undefined;
+      ? maybeMakePolymarketOptions(decodedAncillaryData) ??
+        getDefaultOptionsForIdentifier(decodedIdentifier)
+      : getDefaultOptionsForIdentifier(decodedIdentifier);
 
     return {
       title,
@@ -206,7 +208,7 @@ export function getVoteMetaData(
       ancillaryDataDescription ?? "No description found for this request.",
     umipOrUppLink: undefined,
     umipOrUppNumber: undefined,
-    options: undefined,
+    options: getDefaultOptionsForIdentifier(decodedIdentifier),
     origin: "UMA",
     isGovernance: false,
     discordLink,
@@ -405,6 +407,59 @@ function makeAcrossV2Options() {
     { label: "Invalid", value: "0", secondaryLabel: "p1" },
     { label: "Valid", value: "1", secondaryLabel: "p2" },
   ];
+}
+
+/**
+ * Returns sensible default voting options based on the identifier type.
+ * Mirrors the oracle dapp's Identifier.makeDefaultProposeOptions() pattern:
+ * even when no project matches and no res_data is parseable from ancillary data,
+ * the voter should still see appropriate vote buttons instead of a raw text input.
+ */
+function getDefaultOptionsForIdentifier(
+  decodedIdentifier: string
+): DropdownItemT[] | undefined {
+  const earlyRequestOption = {
+    label: "Early request",
+    value: earlyRequestMagicNumber,
+    secondaryLabel: "p4",
+  };
+
+  switch (decodedIdentifier) {
+    case "YES_OR_NO_QUERY":
+      return [
+        { label: "Yes", value: "1", secondaryLabel: "1" },
+        { label: "No", value: "0", secondaryLabel: "0" },
+        { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+        earlyRequestOption,
+        { label: "Custom", value: "custom" },
+      ];
+    case "ACROSS-V2":
+      return [
+        { label: "Yes", value: "1", secondaryLabel: "1" },
+        { label: "No", value: "0", secondaryLabel: "0" },
+        earlyRequestOption,
+      ];
+    case "MULTIPLE_CHOICE_QUERY":
+      return makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions());
+    case "NUMERICAL":
+      return [
+        {
+          label: "Unresolvable",
+          value: "0.5",
+          secondaryLabel: "Unresolvable",
+        },
+        earlyRequestOption,
+        { label: "Custom", value: "custom" },
+      ];
+    default:
+      // Approved and unknown identifiers: default to Yes/No/Custom
+      return [
+        { label: "Yes", value: "1", secondaryLabel: "1" },
+        { label: "No", value: "0", secondaryLabel: "0" },
+        earlyRequestOption,
+        { label: "Custom", value: "custom" },
+      ];
+  }
 }
 
 function maybeMakeUmipOrUppLink(
