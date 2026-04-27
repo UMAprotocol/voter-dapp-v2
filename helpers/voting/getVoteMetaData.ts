@@ -121,10 +121,12 @@ export function getVoteMetaData(
     const description =
       ancillaryDataDescription ?? "No description was found for this request.";
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    // Only apply identifier defaults for YES_OR_NO_QUERY. Other identifiers
+    // like MULTIPLE_VALUES need undefined so the multi-value input UI renders.
     const options = isYesNoQuery
       ? maybeMakePolymarketOptions(decodedAncillaryData) ??
         getDefaultOptionsForIdentifier(decodedIdentifier)
-      : getDefaultOptionsForIdentifier(decodedIdentifier);
+      : undefined;
     const umipMetadata = isYesNoQuery
       ? getUmipMetadata(decodedIdentifier)
       : { umipOrUppLink: undefined, umipOrUppNumber: undefined };
