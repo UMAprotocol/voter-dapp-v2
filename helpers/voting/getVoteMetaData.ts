@@ -418,47 +418,16 @@ function makeAcrossV2Options() {
 function getDefaultOptionsForIdentifier(
   decodedIdentifier: string
 ): DropdownItemT[] | undefined {
-  const earlyRequestOption = {
-    label: "Early request",
-    value: earlyRequestMagicNumber,
-    secondaryLabel: "p4",
-  };
-
   switch (decodedIdentifier) {
     case "YES_OR_NO_QUERY":
-      return [
-        { label: "Yes", value: "1", secondaryLabel: "1" },
-        { label: "No", value: "0", secondaryLabel: "0" },
-        { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
-        earlyRequestOption,
-        { label: "Custom", value: "custom" },
-      ];
+      return yesOrNoOptions;
     case "ACROSS-V2":
-      return [
-        { label: "Yes", value: "1", secondaryLabel: "1" },
-        { label: "No", value: "0", secondaryLabel: "0" },
-        earlyRequestOption,
-      ];
+      return makeAcrossV2Options();
     case "MULTIPLE_CHOICE_QUERY":
       return makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions());
-    case "NUMERICAL":
-      return [
-        {
-          label: "Unresolvable",
-          value: "0.5",
-          secondaryLabel: "Unresolvable",
-        },
-        earlyRequestOption,
-        { label: "Custom", value: "custom" },
-      ];
     default:
       // Approved and unknown identifiers: default to Yes/No/Custom
-      return [
-        { label: "Yes", value: "1", secondaryLabel: "1" },
-        { label: "No", value: "0", secondaryLabel: "0" },
-        earlyRequestOption,
-        { label: "Custom", value: "custom" },
-      ];
+      return yesOrNoOptions;
   }
 }
 
@@ -681,3 +650,15 @@ function makeMultipleChoiceOptions(
     },
   ];
 }
+
+const yesOrNoOptions = [
+  { label: "Yes", value: "1", secondaryLabel: "1" },
+  { label: "No", value: "0", secondaryLabel: "0" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  {
+    label: "Early request",
+    value: earlyRequestMagicNumber,
+    secondaryLabel: "p4",
+  },
+  { label: "Custom", value: "custom" },
+];
