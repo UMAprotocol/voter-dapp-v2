@@ -178,10 +178,12 @@ export function getVoteMetaData(
     const umipOrUppNumber = identifierDetails.umipLink.number;
 
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    // Only apply identifier defaults for YES_OR_NO_QUERY. Scalar identifiers
+    // (e.g. ETH/BTC) must keep undefined so the numeric input renders correctly.
     const options = isYesNoQuery
       ? maybeMakePolymarketOptions(decodedAncillaryData) ??
         getDefaultOptionsForIdentifier(decodedIdentifier)
-      : getDefaultOptionsForIdentifier(decodedIdentifier);
+      : undefined;
 
     return {
       title,
@@ -428,8 +430,8 @@ function getDefaultOptionsForIdentifier(
     case "MULTIPLE_CHOICE_QUERY":
       return makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions());
     default:
-      // Approved and unknown identifiers: default to Yes/No/Custom
-      return yesOrNoOptions;
+      // Unknown or scalar identifiers: return undefined so numeric input renders
+      return undefined;
   }
 }
 

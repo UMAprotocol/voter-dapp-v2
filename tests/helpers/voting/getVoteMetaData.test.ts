@@ -104,15 +104,15 @@ describe("getVoteMetaData identifier fallback options", () => {
     });
   });
 
-  describe("completely unknown identifier", () => {
-    it("returns default Yes/No/Unknown/Early/Custom options", () => {
+  describe("unknown or scalar identifier", () => {
+    it("returns undefined options so numeric input renders", () => {
       const result = getVoteMetaData(
         "SOME_UNKNOWN_IDENTIFIER",
         "title: Unknown request, description: Something unknown.",
         undefined
       );
 
-      expect(result.options).toEqual(expectedYesOrNoOptions);
+      expect(result.options).toBeUndefined();
     });
 
     it("uses identifier name as title when no title: token in ancillary data", () => {
@@ -123,7 +123,7 @@ describe("getVoteMetaData identifier fallback options", () => {
       );
 
       expect(result.title).toBe("SOME_UNKNOWN_IDENTIFIER");
-      expect(result.options).toBeDefined();
+      expect(result.options).toBeUndefined();
     });
   });
 });
