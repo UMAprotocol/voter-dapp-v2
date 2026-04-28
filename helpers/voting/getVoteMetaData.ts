@@ -121,8 +121,11 @@ export function getVoteMetaData(
     const description =
       ancillaryDataDescription ?? "No description was found for this request.";
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    // Only apply identifier defaults for YES_OR_NO_QUERY. Other identifiers
+    // like MULTIPLE_VALUES need undefined so the multi-value input UI renders.
     const options = isYesNoQuery
-      ? maybeMakePolymarketOptions(decodedAncillaryData)
+      ? maybeMakePolymarketOptions(decodedAncillaryData) ??
+        getDefaultOptionsForIdentifier(decodedIdentifier)
       : undefined;
     const umipMetadata = isYesNoQuery
       ? getUmipMetadata(decodedIdentifier)
@@ -175,8 +178,11 @@ export function getVoteMetaData(
     const umipOrUppNumber = identifierDetails.umipLink.number;
 
     const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    // Only apply identifier defaults for YES_OR_NO_QUERY. Scalar identifiers
+    // (e.g. ETH/BTC) must keep undefined so the numeric input renders correctly.
     const options = isYesNoQuery
-      ? maybeMakePolymarketOptions(decodedAncillaryData)
+      ? maybeMakePolymarketOptions(decodedAncillaryData) ??
+        getDefaultOptionsForIdentifier(decodedIdentifier)
       : undefined;
 
     return {
@@ -206,7 +212,7 @@ export function getVoteMetaData(
       ancillaryDataDescription ?? "No description found for this request.",
     umipOrUppLink: undefined,
     umipOrUppNumber: undefined,
-    options: undefined,
+    options: getDefaultOptionsForIdentifier(decodedIdentifier),
     origin: "UMA",
     isGovernance: false,
     discordLink,
@@ -405,6 +411,28 @@ function makeAcrossV2Options() {
     { label: "Invalid", value: "0", secondaryLabel: "p1" },
     { label: "Valid", value: "1", secondaryLabel: "p2" },
   ];
+}
+
+/**
+ * Returns sensible default voting options based on the identifier type.
+ * Mirrors the oracle dapp's Identifier.makeDefaultProposeOptions() pattern:
+ * even when no project matches and no res_data is parseable from ancillary data,
+ * the voter should still see appropriate vote buttons instead of a raw text input.
+ */
+function getDefaultOptionsForIdentifier(
+  decodedIdentifier: string
+): DropdownItemT[] | undefined {
+  switch (decodedIdentifier) {
+    case "YES_OR_NO_QUERY":
+      return yesOrNoOptions;
+    case "ACROSS-V2":
+      return makeAcrossV2Options();
+    case "MULTIPLE_CHOICE_QUERY":
+      return makeMultipleChoiceOptions(makeMultipleChoiceYesOrNoOptions());
+    default:
+      // Unknown or scalar identifiers: return undefined so numeric input renders
+      return undefined;
+  }
 }
 
 function maybeMakeUmipOrUppLink(
@@ -626,3 +654,15 @@ function makeMultipleChoiceOptions(
     },
   ];
 }
+
+const yesOrNoOptions = [
+  { label: "Yes", value: "1", secondaryLabel: "1" },
+  { label: "No", value: "0", secondaryLabel: "0" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  {
+    label: "Early request",
+    value: earlyRequestMagicNumber,
+    secondaryLabel: "p4",
+  },
+  { label: "Custom", value: "custom" },
+];
