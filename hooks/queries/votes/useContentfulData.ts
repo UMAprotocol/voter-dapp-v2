@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey, oneMinute } from "constant";
-import * as contentful from "contentful";
-import { config } from "helpers/config";
 import {
   useActiveVotes,
   useHandleError,
@@ -10,44 +8,25 @@ import {
 } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";
 
-const { contentfulSpace, contentfulAccessToken } = config;
-
-const contentfulClient =
-  contentfulSpace && contentfulAccessToken
-    ? contentful.createClient({
-        space: contentfulSpace,
-        accessToken: contentfulAccessToken,
-      })
-    : undefined;
-
 async function getContentfulData(
   adminProposalNumbersByKey: Record<UniqueKeyT, number>
-) {
-  if (!contentfulClient) throw new Error("Contentful API not available");
+): Promise<ContentfulDataByKeyT> {
+  const numbers = Array.from(new Set(Object.values(adminProposalNumbersByKey)));
+  if (numbers.length === 0) return {};
 
-  const adminProposalNumbers = Object.values(adminProposalNumbersByKey);
-  if (adminProposalNumbers.length === 0) return {};
+  const url = `/api/umip-metadata?numbers=${numbers.join(",")}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`UMIP metadata request failed: ${response.status}`);
+  }
+  const byNumber = (await response.json()) as Record<string, ContentfulDataT>;
 
-  const numberFieldsString = adminProposalNumbers.join(",");
-
-  const entries = await contentfulClient.getEntries<ContentfulDataT>({
-    content_type: "umip",
-    "fields.number[in]": numberFieldsString,
-  });
-
-  const fields = entries.items.map(({ fields }) => fields);
-  const contentfulDataByKey: ContentfulDataByKeyT = {};
-
-  fields.forEach((field) => {
-    const voteKeyForNumber = Object.keys(adminProposalNumbersByKey).find(
-      (key) => adminProposalNumbersByKey[key] === field.number
-    );
-    if (voteKeyForNumber) {
-      contentfulDataByKey[voteKeyForNumber] = field;
-    }
-  });
-
-  return contentfulDataByKey;
+  const byKey: ContentfulDataByKeyT = {};
+  for (const [uniqueKey, number] of Object.entries(adminProposalNumbersByKey)) {
+    const entry = byNumber[number];
+    if (entry) byKey[uniqueKey] = entry;
+  }
+  return byKey;
 }
 
 export function useContentfulData() {
@@ -79,7 +58,6 @@ export function useContentfulData() {
     ],
     queryFn: () => getContentfulData(adminProposalNumbersByKey),
     refetchInterval: oneMinute,
-    enabled: !!contentfulClient,
     onError,
   });
 
