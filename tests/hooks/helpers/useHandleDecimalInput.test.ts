@@ -14,14 +14,28 @@ describe("normalizeDecimalInput", () => {
   // The reported paste bug: copy from another app often appends \n or a space.
   // Before the trim fix the strict ^…$ regex failed and the entire value was
   // silently dropped, so the user saw the decimal portion "stripped".
-  it("trims whitespace and newlines from a pasted magic number", () => {
+  it("strips trailing whitespace from a pasted magic number", () => {
     expect(
       normalizeDecimalInput(
-        `  ${earlyRequestMagicNumber}\n`,
+        `${earlyRequestMagicNumber}\n`,
         MAX_DECIMALS_18,
         true
       )
     ).toEqual({ kind: "accept", value: earlyRequestMagicNumber });
+  });
+
+  // Leading whitespace is deliberately NOT stripped: when combined with the
+  // input's maxLength the browser may have already truncated significant
+  // digits off the end of the paste, so silently accepting the leftover
+  // could submit a different vote than intended.
+  it("rejects leading whitespace rather than risking truncated significant digits", () => {
+    expect(
+      normalizeDecimalInput(
+        `  ${earlyRequestMagicNumber}`,
+        MAX_DECIMALS_18,
+        true
+      )
+    ).toEqual({ kind: "reject" });
   });
 
   it("rejects a negative value when allowNegative is false", () => {

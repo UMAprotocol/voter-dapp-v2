@@ -24,11 +24,20 @@ export function normalizeDecimalInput(
     value = value.replace(maximumApprovalAmountString, "");
   }
 
-  // Trim only leading/trailing whitespace so a paste with a trailing
-  // newline/space doesn't fail the regex below and silently drop the entire
-  // pasted value. Internal whitespace must still be rejected — e.g. "1 000"
-  // in an amount field should NOT be silently coerced to 1000.
-  value = value.trim();
+  // Strip trailing whitespace only. The reported paste bug is the OS/source
+  // app appending a newline or space at the end; leaving that in fails the
+  // strict regex and silently drops the entire value.
+  //
+  // We intentionally do NOT strip leading whitespace, because TextInput sets
+  // maxLength to exactly the length of values like earlyRequestMagicNumber.
+  // If leading whitespace pushes a max-length paste past that limit, the
+  // browser truncates significant digits off the END, and trimming the
+  // leading spaces afterward would yield a regex-valid but semantically
+  // wrong value (a different vote!). Rejecting is safer.
+  //
+  // Internal whitespace is also intentionally not stripped — "1 000" in an
+  // amount field must NOT be silently coerced to 1000.
+  value = value.replace(/\s+$/, "");
 
   // Replace commas with periods for decimal handling
   value = value.replace(/,/g, ".");
