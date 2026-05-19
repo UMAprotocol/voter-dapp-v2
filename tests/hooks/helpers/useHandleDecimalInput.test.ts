@@ -36,6 +36,14 @@ describe("normalizeDecimalInput", () => {
     });
   });
 
+  // Guards against trimming internal whitespace: "1 000" must NOT be silently
+  // accepted as 1000 in AmountInput (staking/unstaking) and similar fields.
+  it("rejects internal whitespace rather than coercing the value", () => {
+    expect(normalizeDecimalInput("1 000", MAX_DECIMALS_18, false)).toEqual({
+      kind: "reject",
+    });
+  });
+
   it("passes raw text through when type is not number", () => {
     expect(normalizeDecimalInput("0xabc ", 0, false, "text")).toEqual({
       kind: "accept",

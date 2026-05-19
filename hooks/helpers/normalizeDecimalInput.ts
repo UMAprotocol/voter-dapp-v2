@@ -24,9 +24,11 @@ export function normalizeDecimalInput(
     value = value.replace(maximumApprovalAmountString, "");
   }
 
-  // Strip whitespace (incl. newlines) so a paste with a trailing space/newline
-  // doesn't fail the regex below and silently drop the entire pasted value.
-  value = value.replace(/\s+/g, "");
+  // Trim only leading/trailing whitespace so a paste with a trailing
+  // newline/space doesn't fail the regex below and silently drop the entire
+  // pasted value. Internal whitespace must still be rejected — e.g. "1 000"
+  // in an amount field should NOT be silently coerced to 1000.
+  value = value.trim();
 
   // Replace commas with periods for decimal handling
   value = value.replace(/,/g, ".");
