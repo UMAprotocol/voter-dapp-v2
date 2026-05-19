@@ -28,7 +28,11 @@ export function TextInput({
   allowNegative = true,
   styles,
 }: Props) {
-  const inputMode = type === "text" ? "text" : "decimal";
+  // When negatives are allowed we deliberately fall back to inputMode="text".
+  // Mobile decimal/numeric keypads (notably iOS) omit the minus key, which
+  // makes magic values like earlyRequestMagicNumber impossible to type.
+  const inputMode =
+    type === "text" ? "text" : allowNegative ? "text" : "decimal";
   // treat all as text inputs to avoid unwanted automatic number formatting
   const _type = "text";
   const onChange = useHandleDecimalInput(
