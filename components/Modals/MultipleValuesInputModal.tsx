@@ -50,6 +50,7 @@ export function MultipleValuesInputModal(props: MultipleInputProps) {
                   }
                   onClear={() => props.onInputChange({ label, value: "" })}
                   maxDecimals={0}
+                  allowNegative={false}
                   type="number"
                   styles={{
                     minWidth: "unset",

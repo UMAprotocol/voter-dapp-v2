@@ -1,6 +1,6 @@
-import { maximumApprovalAmountString } from "constant/misc/maximumApprovalAmountString";
 import { useErrorContext } from "hooks";
 import { ChangeEvent } from "react";
+import { normalizeDecimalInput } from "./normalizeDecimalInput";
 
 export function useHandleDecimalInput(
   onInput: (value: string) => void,
@@ -11,42 +11,21 @@ export function useHandleDecimalInput(
   const { addErrorMessage, removeErrorMessage } = useErrorContext();
 
   return (event: ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value;
+    const result = normalizeDecimalInput(
+      event.target.value,
+      maxDecimals,
+      allowNegative,
+      type
+    );
+    const decimalsErrorMessage = `Cannot have more than ${maxDecimals} decimals.`;
 
-    if (type !== "number") {
-      onInput(value);
+    if (result.kind === "reject") return;
+    if (result.kind === "tooManyDecimals") {
+      addErrorMessage(decimalsErrorMessage);
       return;
     }
 
-    if (value.includes(maximumApprovalAmountString)) {
-      value = value.replace(maximumApprovalAmountString, "");
-    }
-
-    // Replace commas with periods for decimal handling
-    value = value.replace(/,/g, ".");
-
-    const decimalsErrorMessage = `Cannot have more than ${maxDecimals} decimals.`;
-    const negativeAllowedDecimalRegex = /^-?\d*\.?\d{0,}$/;
-    const onlyPositiveDecimalsRegex = /^\d*\.?\d{0,}$/;
-    const decimalsRegex = allowNegative
-      ? negativeAllowedDecimalRegex
-      : onlyPositiveDecimalsRegex;
-    const isValidDecimalNumber = decimalsRegex.test(value);
-
-    if (!isValidDecimalNumber) return;
-
-    const hasDecimals = value.includes(".");
-
-    if (hasDecimals) {
-      const decimals = value.split(".")[1];
-      const hasTooManyDecimals = decimals.length > maxDecimals;
-      if (hasTooManyDecimals) {
-        addErrorMessage(decimalsErrorMessage);
-        return;
-      }
-    }
-
     removeErrorMessage(decimalsErrorMessage);
-    onInput(value);
+    onInput(result.value);
   };
 }
