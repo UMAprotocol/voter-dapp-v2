@@ -116,6 +116,9 @@ export function VotePanel({ content }: Props) {
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
+  // The discord-lookup title (ancillary-data title or "N/A") is what threads
+  // and summaries are cached under — must match what the warm-* crons write.
+  const discordLookupTitle = getDiscordThreadTitle(decodedAncillaryData);
   const {
     data: discussion,
     isFetching: discussionLoading,
@@ -123,7 +126,7 @@ export function VotePanel({ content }: Props) {
   } = useVoteDiscussion({
     identifier,
     time,
-    title: getDiscordThreadTitle(decodedAncillaryData),
+    title: discordLookupTitle,
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const { data: augmentedVoteData } = useAugmentedVoteData({
@@ -156,7 +159,10 @@ export function VotePanel({ content }: Props) {
             {
               title: "Discord Summary",
               content: (
-                <DiscussionSummary query={content} bulletins={bulletins.data} />
+                <DiscussionSummary
+                  query={{ ...content, title: discordLookupTitle }}
+                  bulletins={bulletins.data}
+                />
               ),
             },
           ]
