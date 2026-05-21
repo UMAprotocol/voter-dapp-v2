@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { VoteDiscussionT, PriceRequestT } from "types";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
-import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
+import {
+  getDiscordThreadTitle,
+  getVoteMetaData,
+} from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
 import {
@@ -58,8 +61,9 @@ function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
       vote.decodedAncillaryData,
       undefined
     );
+    const discordTitle = getDiscordThreadTitle(vote.decodedAncillaryData);
     return {
-      requestKey: makeKey(metadata.title, vote.time),
+      requestKey: makeKey(discordTitle, vote.time),
       identifier: vote.identifier,
       time: vote.time,
       title: metadata.title,

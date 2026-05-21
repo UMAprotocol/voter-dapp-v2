@@ -23,7 +23,10 @@ vi.mock("helpers", async () => {
   };
 });
 
-import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
+import {
+  getDiscordThreadTitle,
+  getVoteMetaData,
+} from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
 
 // Real ancillary data from a MetaMarket request.
@@ -101,6 +104,21 @@ describe("getVoteMetaData identifier fallback options", () => {
 
       expect(result.options).toEqual(expectedYesOrNoOptions);
       expect(result.title).toBe("Will it rain tomorrow?");
+    });
+  });
+
+  describe("getDiscordThreadTitle", () => {
+    it("returns the ancillary-data title when present", () => {
+      expect(getDiscordThreadTitle(BARE_YES_OR_NO_ANCIL_DATA)).toBe(
+        "Will it rain tomorrow?"
+      );
+    });
+
+    it('returns "N/A" when no title: token is present', () => {
+      // Matches the dispute bot's thread naming for titleless requests.
+      const noTitle =
+        "q: Will the highest temperature in Wellington be 18°C or higher on May 19? description: ...";
+      expect(getDiscordThreadTitle(noTitle)).toBe("N/A");
     });
   });
 

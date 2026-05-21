@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
-import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
+import {
+  getDiscordThreadTitle,
+  getVoteMetaData,
+} from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
 import { getCachedProcessedThread } from "../discord-thread/_utils";
@@ -83,7 +86,8 @@ export default async function handler(
         vote.decodedAncillaryData,
         undefined // contentful data not available in cron context
       );
-      const requestKey = makeKey(metadata.title, vote.time);
+      const discordTitle = getDiscordThreadTitle(vote.decodedAncillaryData);
+      const requestKey = makeKey(discordTitle, vote.time);
       return {
         requestKey,
         identifier: vote.identifier,

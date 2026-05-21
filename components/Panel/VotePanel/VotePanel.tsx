@@ -2,7 +2,12 @@ import removeMarkdown from "remove-markdown";
 import { useCallback, useRef, useState } from "react";
 
 import { Tabs } from "components";
-import { config, decodeHexString, getClaimTitle } from "helpers";
+import {
+  config,
+  decodeHexString,
+  getClaimTitle,
+  getDiscordThreadTitle,
+} from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
   usePanelContext,
@@ -118,7 +123,7 @@ export function VotePanel({ content }: Props) {
   } = useVoteDiscussion({
     identifier,
     time,
-    title,
+    title: getDiscordThreadTitle(decodedAncillaryData),
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const { data: augmentedVoteData } = useAugmentedVoteData({
