@@ -665,10 +665,12 @@ function makeMultipleChoiceOptions(
   ];
 }
 
+// Order and secondaryLabels match the Polymarket convention: p1=No, p2=Yes,
+// p3=Unknown, p4=Early request.
 const yesOrNoOptions = [
-  { label: "Yes", value: "1", secondaryLabel: "1" },
-  { label: "No", value: "0", secondaryLabel: "0" },
-  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  { label: "No", value: "0", secondaryLabel: "p1" },
+  { label: "Yes", value: "1", secondaryLabel: "p2" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
   {
     label: "Early request",
     value: earlyRequestMagicNumber,

@@ -39,9 +39,9 @@ const BARE_YES_OR_NO_ANCIL_DATA =
   "title: Will it rain tomorrow?, description: Resolves Yes if it rains.";
 
 const expectedYesOrNoOptions = [
-  { label: "Yes", value: "1", secondaryLabel: "1" },
-  { label: "No", value: "0", secondaryLabel: "0" },
-  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  { label: "No", value: "0", secondaryLabel: "p1" },
+  { label: "Yes", value: "1", secondaryLabel: "p2" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
   {
     label: "Early request",
     value: earlyRequestMagicNumber,
@@ -67,8 +67,8 @@ describe("getVoteMetaData identifier fallback options", () => {
 
       expect(result.options).toBeDefined();
       expect(optionLabels(result.options)).toEqual([
-        "Yes",
         "No",
+        "Yes",
         "Unknown",
         "Early request",
         "Custom",
