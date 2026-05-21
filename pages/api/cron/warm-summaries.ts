@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
-import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
+import { getDiscordThreadTitle } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
 import { getCachedProcessedThread } from "../discord-thread/_utils";
@@ -76,19 +76,18 @@ export default async function handler(
       });
     }
 
-    // 2. Build vote info with titles
+    // 2. Build vote info. `title` is forwarded to /api/update-summary, which
+    // forwards it again to /api/discord-thread and uses it as part of the
+    // summary cache key — so it must be the discord-lookup title (with "N/A"
+    // fallback), not the display title.
     const voteInfos: VoteInfo[] = allVotes.map((vote) => {
-      const metadata = getVoteMetaData(
-        vote.decodedIdentifier,
-        vote.decodedAncillaryData,
-        undefined // contentful data not available in cron context
-      );
-      const requestKey = makeKey(metadata.title, vote.time);
+      const discordTitle = getDiscordThreadTitle(vote.decodedAncillaryData);
+      const requestKey = makeKey(discordTitle, vote.time);
       return {
         requestKey,
         identifier: vote.identifier,
         time: vote.time,
-        title: metadata.title,
+        title: discordTitle,
       };
     });
 

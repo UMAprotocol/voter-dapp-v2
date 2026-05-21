@@ -379,6 +379,16 @@ export function getTitleFromAncillaryData(
   return title.endsWith(",") ? title.slice(0, -1) : title;
 }
 
+// The dispute bot names Discord threads "<title> - <timestamp>" using the
+// ancillary-data title, or "N/A" when no title is present. We replicate that
+// here so thread lookup works for titleless requests.
+export const MISSING_DISCORD_TITLE_FALLBACK = "N/A";
+
+export function getDiscordThreadTitle(decodedAncillaryData: string): string {
+  const title = getTitleFromAncillaryData(decodedAncillaryData);
+  return title && title.trim() !== "" ? title : MISSING_DISCORD_TITLE_FALLBACK;
+}
+
 export function getDescriptionFromAncillaryData(
   decodedAncillaryData: string,
   descriptionIdentifier = "description:"
@@ -655,10 +665,12 @@ function makeMultipleChoiceOptions(
   ];
 }
 
+// Order and secondaryLabels match the Polymarket convention: p1=No, p2=Yes,
+// p3=Unknown, p4=Early request.
 const yesOrNoOptions = [
-  { label: "Yes", value: "1", secondaryLabel: "1" },
-  { label: "No", value: "0", secondaryLabel: "0" },
-  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  { label: "No", value: "0", secondaryLabel: "p1" },
+  { label: "Yes", value: "1", secondaryLabel: "p2" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
   {
     label: "Early request",
     value: earlyRequestMagicNumber,

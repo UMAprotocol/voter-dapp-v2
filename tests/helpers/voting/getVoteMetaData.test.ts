@@ -23,7 +23,10 @@ vi.mock("helpers", async () => {
   };
 });
 
-import { getVoteMetaData } from "helpers/voting/getVoteMetaData";
+import {
+  getDiscordThreadTitle,
+  getVoteMetaData,
+} from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
 
 // Real ancillary data from a MetaMarket request.
@@ -36,9 +39,9 @@ const BARE_YES_OR_NO_ANCIL_DATA =
   "title: Will it rain tomorrow?, description: Resolves Yes if it rains.";
 
 const expectedYesOrNoOptions = [
-  { label: "Yes", value: "1", secondaryLabel: "1" },
-  { label: "No", value: "0", secondaryLabel: "0" },
-  { label: "Unknown", value: "0.5", secondaryLabel: "0.5" },
+  { label: "No", value: "0", secondaryLabel: "p1" },
+  { label: "Yes", value: "1", secondaryLabel: "p2" },
+  { label: "Unknown", value: "0.5", secondaryLabel: "p3" },
   {
     label: "Early request",
     value: earlyRequestMagicNumber,
@@ -64,8 +67,8 @@ describe("getVoteMetaData identifier fallback options", () => {
 
       expect(result.options).toBeDefined();
       expect(optionLabels(result.options)).toEqual([
-        "Yes",
         "No",
+        "Yes",
         "Unknown",
         "Early request",
         "Custom",
@@ -101,6 +104,21 @@ describe("getVoteMetaData identifier fallback options", () => {
 
       expect(result.options).toEqual(expectedYesOrNoOptions);
       expect(result.title).toBe("Will it rain tomorrow?");
+    });
+  });
+
+  describe("getDiscordThreadTitle", () => {
+    it("returns the ancillary-data title when present", () => {
+      expect(getDiscordThreadTitle(BARE_YES_OR_NO_ANCIL_DATA)).toBe(
+        "Will it rain tomorrow?"
+      );
+    });
+
+    it('returns "N/A" when no title: token is present', () => {
+      // Matches the dispute bot's thread naming for titleless requests.
+      const noTitle =
+        "q: Will the highest temperature in Wellington be 18°C or higher on May 19? description: ...";
+      expect(getDiscordThreadTitle(noTitle)).toBe("N/A");
     });
   });
 
