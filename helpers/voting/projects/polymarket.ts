@@ -37,17 +37,20 @@ export function getInitializer(
   return match ? "0x" + match[1] : undefined;
 }
 
-// Remap deprecated initializer EOAs to the current bulletin-board owner that
-// posts clarifications on their behalf. questionId is hashed from sanitized
-// ancillary data (which omits `initializer:`), so it is stable across the swap
-// — only the `owner` argument to BulletinBoard.getUpdates needs rewriting.
-const bulletinOwnerRemaps: Record<string, string> = {
-  "0x91430cad2d3975766499717fa0d66a78d814e5c5":
+// Additional bulletin-board owners to query alongside a request's initializer.
+// When an initializer EOA is deprecated, clarifications continue to be posted
+// under a replacement EOA against the same questionId (the keccak256 hash
+// omits `initializer:`). The replaced owner is kept in the query list so
+// clarifications posted before the swap remain visible.
+const bulletinOwnerRemaps: Record<string, string[]> = {
+  "0x91430cad2d3975766499717fa0d66a78d814e5c5": [
     "0xf43d55f3a8b7484ed4b6931f93cb6f9ef5dd369d",
+  ],
 };
 
-export function resolveBulletinOwner(initializer: string): string {
-  return bulletinOwnerRemaps[initializer.toLowerCase()] ?? initializer;
+export function getBulletinOwners(initializer: string): string[] {
+  const extras = bulletinOwnerRemaps[initializer.toLowerCase()] ?? [];
+  return [initializer, ...extras];
 }
 export function getChildChainId(
   decodedAncillaryData: string

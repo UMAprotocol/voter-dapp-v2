@@ -3,10 +3,10 @@ import { ethers, utils } from "ethers";
 import assert from "assert";
 import {
   decodeHexString,
+  getBulletinOwners,
   getDescriptionFromAncillaryData,
   getInitializer,
   getRequester,
-  resolveBulletinOwner,
   sanitizeAncillaryData,
 } from "helpers";
 
@@ -52,13 +52,18 @@ export async function getPolymarketBulletins(
   const initializer = getInitializer(ancillaryData);
 
   assert(initializer, "Bulletin owner address not found.");
-  const ownerAddress = resolveBulletinOwner(initializer);
+  const owners = getBulletinOwners(initializer);
   // ancillary data has stuff appended to it, which needs to be removed before calculating question id.
   const cleanHex = cleanAncillaryData(ancillaryHex);
   const questionId = utils.keccak256(cleanHex);
-  const updates = await contract.getUpdates(questionId, ownerAddress);
-  return updates.map((update) => ({
-    timestamp: update.timestamp.toNumber(),
-    update: utils.toUtf8String(update.update),
-  }));
+  const updatesByOwner = await Promise.all(
+    owners.map((owner) => contract.getUpdates(questionId, owner))
+  );
+  return updatesByOwner
+    .flat()
+    .map((update) => ({
+      timestamp: update.timestamp.toNumber(),
+      update: utils.toUtf8String(update.update),
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp);
 }

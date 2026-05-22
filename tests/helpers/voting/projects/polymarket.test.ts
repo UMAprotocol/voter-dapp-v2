@@ -8,7 +8,7 @@ vi.mock("helpers/config", () => ({
 
 import {
   checkIfIsPolymarket,
-  resolveBulletinOwner,
+  getBulletinOwners,
 } from "helpers/voting/projects/polymarket";
 import { POLYMARKET_ANCIL_DATA } from "./constants";
 
@@ -55,20 +55,21 @@ describe("checkIfIsPolymarket", () => {
   });
 });
 
-describe("resolveBulletinOwner", () => {
+describe("getBulletinOwners", () => {
   const deprecated = "0x91430cad2d3975766499717fa0d66a78d814e5c5";
   const replacement = "0xf43d55f3a8b7484ed4b6931f93cb6f9ef5dd369d";
 
-  it("remaps the deprecated initializer to the new owner", () => {
-    expect(resolveBulletinOwner(deprecated)).toBe(replacement);
+  it("returns the deprecated initializer alongside the replacement owner", () => {
+    expect(getBulletinOwners(deprecated)).toEqual([deprecated, replacement]);
   });
 
-  it("remaps regardless of address casing", () => {
-    expect(resolveBulletinOwner(deprecated.toUpperCase())).toBe(replacement);
+  it("looks up remaps case-insensitively while preserving input casing", () => {
+    const upper = deprecated.toUpperCase();
+    expect(getBulletinOwners(upper)).toEqual([upper, replacement]);
   });
 
-  it("returns the input unchanged when no remap is configured", () => {
+  it("returns just the input when no remap is configured", () => {
     const other = "0x1111111111111111111111111111111111111111";
-    expect(resolveBulletinOwner(other)).toBe(other);
+    expect(getBulletinOwners(other)).toEqual([other]);
   });
 });
