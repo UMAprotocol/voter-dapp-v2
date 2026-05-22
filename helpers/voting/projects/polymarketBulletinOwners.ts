@@ -1,6 +1,6 @@
 // Maps deprecated initializer EOAs to the current bulletin-board owner that
 // posts clarifications on their behalf. The questionId remains unchanged.
-// May 20, 2026 at 1:00 PM PT.
+// May 22, 2026 at 1:00 AM PT.
 export const deprecatedPolymarketBulletinOwnerCutoffTimestamp = 1779436800;
 
 type BulletinOwnerRemap = {
