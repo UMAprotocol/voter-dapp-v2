@@ -6,6 +6,7 @@ import {
   getDescriptionFromAncillaryData,
   getInitializer,
   getRequester,
+  resolveBulletinOwner,
   sanitizeAncillaryData,
 } from "helpers";
 
@@ -48,9 +49,10 @@ export async function getPolymarketBulletins(
   assert(bulletinAddress, "Bulletin address not found in ancillary data.");
 
   const contract = createPolymarketBulletinContract(bulletinAddress);
-  const ownerAddress = getInitializer(ancillaryData);
+  const initializer = getInitializer(ancillaryData);
 
-  assert(ownerAddress, "Bulletin owner address not found.");
+  assert(initializer, "Bulletin owner address not found.");
+  const ownerAddress = resolveBulletinOwner(initializer);
   // ancillary data has stuff appended to it, which needs to be removed before calculating question id.
   const cleanHex = cleanAncillaryData(ancillaryHex);
   const questionId = utils.keccak256(cleanHex);
