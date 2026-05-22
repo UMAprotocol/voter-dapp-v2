@@ -1,4 +1,7 @@
-import { createPolymarketBulletinContract } from "../contracts/createPolymarketBulletin";
+import {
+  createPolymarketBulletinContract,
+  type RawBulletin,
+} from "../contracts/createPolymarketBulletin";
 import { ethers, utils } from "ethers";
 import assert from "assert";
 import {
@@ -8,6 +11,10 @@ import {
   getRequester,
   sanitizeAncillaryData,
 } from "helpers";
+import {
+  type BulletinOwnerQuery,
+  getBulletinOwnerQueries,
+} from "helpers/voting/projects/polymarketBulletinOwners";
 
 export function getPolymarketBulletinContractFromAncillaryData(
   queryText: string
@@ -34,6 +41,22 @@ export type Bulletin = {
   update: string;
 };
 
+function formatBulletinUpdates(
+  updates: RawBulletin[],
+  ownerQuery: BulletinOwnerQuery
+): Bulletin[] {
+  return updates
+    .map((update) => ({
+      timestamp: update.timestamp.toNumber(),
+      update: utils.toUtf8String(update.update),
+    }))
+    .filter(
+      (bulletin) =>
+        ownerQuery.maxTimestamp === undefined ||
+        bulletin.timestamp <= ownerQuery.maxTimestamp
+    );
+}
+
 export async function getPolymarketBulletins(
   ancillaryHex: string
 ): Promise<Bulletin[]> {
@@ -51,12 +74,17 @@ export async function getPolymarketBulletins(
   const ownerAddress = getInitializer(ancillaryData);
 
   assert(ownerAddress, "Bulletin owner address not found.");
+  const ownerQueries = getBulletinOwnerQueries(ownerAddress);
   // ancillary data has stuff appended to it, which needs to be removed before calculating question id.
   const cleanHex = cleanAncillaryData(ancillaryHex);
   const questionId = utils.keccak256(cleanHex);
-  const updates = await contract.getUpdates(questionId, ownerAddress);
-  return updates.map((update) => ({
-    timestamp: update.timestamp.toNumber(),
-    update: utils.toUtf8String(update.update),
-  }));
+  const updates = await Promise.all(
+    ownerQueries.map(async (ownerQuery) =>
+      formatBulletinUpdates(
+        await contract.getUpdates(questionId, ownerQuery.owner),
+        ownerQuery
+      )
+    )
+  );
+  return updates.flat().sort((a, b) => a.timestamp - b.timestamp);
 }
