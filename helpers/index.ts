@@ -14,7 +14,7 @@ export {
   getVoteMetaData,
   getDescriptionFromAncillaryData,
   getTitleFromAncillaryData,
-  getDiscordThreadTitle,
+  resolveDiscordThreadTitle,
   MISSING_DISCORD_TITLE_FALLBACK,
 } from "./voting/getVoteMetaData";
 export { makePriceRequestsByKey } from "./voting/makePriceRequestsByKey";

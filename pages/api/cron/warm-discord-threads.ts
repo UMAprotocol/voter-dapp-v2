@@ -3,8 +3,8 @@ import { VoteDiscussionT, PriceRequestT } from "types";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
 import {
-  getDiscordThreadTitle,
   getVoteMetaData,
+  resolveDiscordThreadTitle,
 } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
@@ -26,7 +26,6 @@ interface VoteInfo {
   requestKey: string;
   identifier: string;
   time: number;
-  title: string;
 }
 
 interface ThreadMapRefreshResult {
@@ -56,17 +55,19 @@ async function fetchAllVotes(): Promise<PriceRequestT[]> {
 
 function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
   return votes.map((vote) => {
-    const metadata = getVoteMetaData(
+    const { title } = getVoteMetaData(
       vote.decodedIdentifier,
       vote.decodedAncillaryData,
       undefined
     );
-    const discordTitle = getDiscordThreadTitle(vote.decodedAncillaryData);
+    const discordTitle = resolveDiscordThreadTitle(
+      title,
+      vote.decodedIdentifier
+    );
     return {
       requestKey: makeKey(discordTitle, vote.time),
       identifier: vote.identifier,
       time: vote.time,
-      title: metadata.title,
     };
   });
 }

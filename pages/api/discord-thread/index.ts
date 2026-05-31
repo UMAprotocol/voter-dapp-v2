@@ -1,11 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { VoteDiscussionT, L1Request } from "types";
 import * as ss from "superstruct";
-import { stripInvalidCharacters } from "lib/utils";
 import { getCachedProcessedThread } from "./_utils";
 import { makeKey } from "lib/discord-utils";
 import { validateQueryParams } from "../_utils/validation";
-import { MISSING_DISCORD_TITLE_FALLBACK } from "helpers/voting/getVoteMetaData";
+import { resolveDiscordThreadTitle } from "helpers/voting/getVoteMetaData";
 
 export const DiscordThreadRequestBody = L1Request;
 export type DiscordThreadRequestBody = ss.Infer<
@@ -22,15 +21,7 @@ export default async function handler(
       DiscordThreadRequestBody
     );
 
-    const titleSanitized = stripInvalidCharacters(title);
-
-    // Mirrors the dispute bot's thread naming: titleless requests live under "N/A".
-    const effectiveTitle =
-      titleSanitized.trim() === ""
-        ? MISSING_DISCORD_TITLE_FALLBACK
-        : titleSanitized;
-
-    // Build the request key
+    const effectiveTitle = resolveDiscordThreadTitle(title, identifier);
     const requestKey = makeKey(effectiveTitle, time);
 
     // Fetch from Redis cache (populated by cron job)

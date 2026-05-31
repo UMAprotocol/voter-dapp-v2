@@ -24,7 +24,7 @@ vi.mock("helpers", async () => {
 });
 
 import {
-  getDiscordThreadTitle,
+  resolveDiscordThreadTitle,
   getVoteMetaData,
 } from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
@@ -107,18 +107,25 @@ describe("getVoteMetaData identifier fallback options", () => {
     });
   });
 
-  describe("getDiscordThreadTitle", () => {
-    it("returns the ancillary-data title when present", () => {
-      expect(getDiscordThreadTitle(BARE_YES_OR_NO_ANCIL_DATA)).toBe(
-        "Will it rain tomorrow?"
-      );
+  describe("resolveDiscordThreadTitle", () => {
+    it("returns the display title when it is a real title", () => {
+      expect(
+        resolveDiscordThreadTitle("Will it rain tomorrow?", "YES_OR_NO_QUERY")
+      ).toBe("Will it rain tomorrow?");
     });
 
-    it('returns "N/A" when no title: token is present', () => {
-      // Matches the dispute bot's thread naming for titleless requests.
-      const noTitle =
-        "q: Will the highest temperature in Wellington be 18°C or higher on May 19? description: ...";
-      expect(getDiscordThreadTitle(noTitle)).toBe("N/A");
+    it('returns "N/A" when the title is just the identifier (titleless)', () => {
+      expect(
+        resolveDiscordThreadTitle("YES_OR_NO_QUERY", "YES_OR_NO_QUERY")
+      ).toBe("N/A");
+    });
+
+    it("keeps the identifier-derived display title for ACROSS-V2", () => {
+      // getVoteMetaData maps ACROSS-V2 -> "Across V2", which differs from the
+      // identifier, so the bot names the thread "Across V2" rather than "N/A".
+      expect(resolveDiscordThreadTitle("Across V2", "ACROSS-V2")).toBe(
+        "Across V2"
+      );
     });
   });
 
