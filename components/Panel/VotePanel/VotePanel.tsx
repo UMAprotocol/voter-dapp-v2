@@ -2,12 +2,7 @@ import removeMarkdown from "remove-markdown";
 import { useCallback, useRef, useState } from "react";
 
 import { Tabs } from "components";
-import {
-  config,
-  decodeHexString,
-  getClaimTitle,
-  getDiscordThreadTitle,
-} from "helpers";
+import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
   usePanelContext,
@@ -37,7 +32,6 @@ interface Props {
 }
 export function VotePanel({ content }: Props) {
   const {
-    identifier,
     time,
     title,
     decodedIdentifier,
@@ -116,17 +110,14 @@ export function VotePanel({ content }: Props) {
     : "";
 
   const voteOrigin = isOptimisticGovernorVote ? "OSnap" : origin;
-  // The discord-lookup title (ancillary-data title or "N/A") is what threads
-  // and summaries are cached under — must match what the warm-* crons write.
-  const discordLookupTitle = getDiscordThreadTitle(decodedAncillaryData);
   const {
     data: discussion,
     isFetching: discussionLoading,
     isError: discussionError,
   } = useVoteDiscussion({
-    identifier,
+    identifier: decodedIdentifier,
     time,
-    title: discordLookupTitle,
+    title,
   });
   const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const { data: augmentedVoteData } = useAugmentedVoteData({
@@ -159,10 +150,7 @@ export function VotePanel({ content }: Props) {
             {
               title: "Discord Summary",
               content: (
-                <DiscussionSummary
-                  query={{ ...content, title: discordLookupTitle }}
-                  bulletins={bulletins.data}
-                />
+                <DiscussionSummary query={content} bulletins={bulletins.data} />
               ),
             },
           ]
