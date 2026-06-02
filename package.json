@@ -61,7 +61,7 @@
     "use-mailchimp-form": "^3.1.0",
     "usehooks-ts": "^2.9.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
