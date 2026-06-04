@@ -6,16 +6,16 @@ import { AnnouncementBannerWrapper } from "./AnnouncementBannerWrapper";
 
 export function GasRebateBanner() {
   return (
-    <AnnouncementBannerWrapper localStorageKey="show-gas-rebate-banner-jan-2026">
+    <AnnouncementBannerWrapper localStorageKey="show-gas-rebate-banner-june-2026">
       <InfoIcon />
       <Text>
-        Voter gas rebates for priority gas fees will be capped as of January 14.
-        See updated gas rebate details{" "}
+        Starting June 15th, delegates that are part of a voting pool (UMA.rocks
+        or others) will no longer be eligible for monthly voting gas rebates.{" "}
         <Link
           href="https://docs.uma.xyz/using-uma/voting-walkthrough/voting-gas-rebates"
           target="_blank"
         >
-          here
+          Learn more
         </Link>
         .
       </Text>
