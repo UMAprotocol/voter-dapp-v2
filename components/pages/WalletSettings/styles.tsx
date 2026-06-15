@@ -72,6 +72,10 @@ export const Text = styled.p`
   max-width: 737px;
 `;
 
+export const Warning = styled.span`
+  color: var(--red-500);
+`;
+
 export const BarText = styled.p`
   font: var(--text-md);
 `;

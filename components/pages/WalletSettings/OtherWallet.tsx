@@ -10,6 +10,7 @@ import {
   Header,
   Text,
   TruncatedAddress,
+  Warning,
 } from "./styles";
 
 export function OtherWallet({
@@ -24,14 +25,21 @@ export function OtherWallet({
   if (!address) return null;
   const isDelegate = status === "delegate";
 
-  const text = isDelegate
-    ? "A delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, as well as claim and stake reward tokens. A delegate cannot unstake tokens for a delegator. A delegate can only be a delegate for a single delegator."
-    : "A delegator is a wallet that has chosen to delegate its voting power to another party. Delegators can only delegate to one address at a time.";
-
   return (
     <>
       <Header>Other wallet ({status})</Header>
-      <Text>{text}</Text>
+      <Text>
+        {isDelegate
+          ? "A delegate is a wallet that has been chosen to vote on behalf of another party. If acting as a delegate, a delegate can no longer vote for themselves. Delegates can commit & reveal votes on behalf of a delegator, as well as claim and stake reward tokens. A delegate cannot unstake tokens for a delegator. A delegate can only be a delegate for a single delegator."
+          : "A delegator is a wallet that has chosen to delegate its voting power to another party. Delegators can only delegate to one address at a time."}
+        <br />
+        <br />
+        <Warning>
+          Warning: committed votes can only be revealed by the same wallet that
+          committed them. Delegators can not reveal votes committed by their
+          delegate.
+        </Warning>
+      </Text>
       <BarWrapper>
         <AddressWrapper>
           {" "}

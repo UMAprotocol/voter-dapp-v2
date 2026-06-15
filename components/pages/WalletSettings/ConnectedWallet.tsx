@@ -8,6 +8,7 @@ import {
   Text,
   TruncatedAddress,
   WalletWrapper,
+  Warning,
 } from "./styles";
 import { useAccountDetails } from "hooks";
 
@@ -28,6 +29,13 @@ export function ConnectedWallet({ status }: Props) {
           A delegator is a wallet that has chosen to delegate its voting power
           to another party. Delegators can only delegate to one address at a
           time.
+          <br />
+          <br />
+          <Warning>
+            Warning: committed votes can only be revealed by the same wallet
+            that committed them. Delegators can not reveal votes committed by
+            their delegate.
+          </Warning>
         </Text>
       )}
       {status === "delegate" && (
@@ -38,6 +46,13 @@ export function ConnectedWallet({ status }: Props) {
           delegator, as well as claim and stake reward tokens. A delegate cannot
           unstake tokens for a delegator. A delegate can only be a delegate for
           a single delegator.
+          <br />
+          <br />
+          <Warning>
+            Warning: committed votes can only be revealed by the same wallet
+            that committed them. Delegators can not reveal votes committed by
+            their delegate.
+          </Warning>
         </Text>
       )}
       <BarWrapper>
