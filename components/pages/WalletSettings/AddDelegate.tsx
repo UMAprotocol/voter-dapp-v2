@@ -15,6 +15,11 @@ export function AddDelegate() {
         delegator as well as claim and stake reward tokens. A delegate cannot
         however unstake tokens for a delegator. A delegate can only be a
         delegate for a single delegator.
+        <br />
+        <br />
+        Warning: committed votes can only be revealed by the same wallet that
+        committed them. Delegators can not reveal votes committed by their
+        delegate.
       </Text>
       <BarWrapper>
         <BarText>No delegate wallet selected</BarText>
