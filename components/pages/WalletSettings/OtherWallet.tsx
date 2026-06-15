@@ -10,6 +10,7 @@ import {
   Header,
   Text,
   TruncatedAddress,
+  Warning,
 } from "./styles";
 
 export function OtherWallet({
@@ -33,9 +34,11 @@ export function OtherWallet({
           : "A delegator is a wallet that has chosen to delegate its voting power to another party. Delegators can only delegate to one address at a time."}
         <br />
         <br />
-        Warning: committed votes can only be revealed by the same wallet that
-        committed them. Delegators can not reveal votes committed by their
-        delegate.
+        <Warning>
+          Warning: committed votes can only be revealed by the same wallet that
+          committed them. Delegators can not reveal votes committed by their
+          delegate.
+        </Warning>
       </Text>
       <BarWrapper>
         <AddressWrapper>

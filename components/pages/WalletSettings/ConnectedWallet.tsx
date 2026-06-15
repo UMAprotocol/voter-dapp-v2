@@ -8,6 +8,7 @@ import {
   Text,
   TruncatedAddress,
   WalletWrapper,
+  Warning,
 } from "./styles";
 import { useAccountDetails } from "hooks";
 
@@ -30,9 +31,11 @@ export function ConnectedWallet({ status }: Props) {
           time.
           <br />
           <br />
-          Warning: committed votes can only be revealed by the same wallet that
-          committed them. Delegators can not reveal votes committed by their
-          delegate.
+          <Warning>
+            Warning: committed votes can only be revealed by the same wallet
+            that committed them. Delegators can not reveal votes committed by
+            their delegate.
+          </Warning>
         </Text>
       )}
       {status === "delegate" && (
@@ -45,9 +48,11 @@ export function ConnectedWallet({ status }: Props) {
           a single delegator.
           <br />
           <br />
-          Warning: committed votes can only be revealed by the same wallet that
-          committed them. Delegators can not reveal votes committed by their
-          delegate.
+          <Warning>
+            Warning: committed votes can only be revealed by the same wallet
+            that committed them. Delegators can not reveal votes committed by
+            their delegate.
+          </Warning>
         </Text>
       )}
       <BarWrapper>

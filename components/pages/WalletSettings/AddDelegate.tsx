@@ -1,6 +1,6 @@
 import { Button } from "components";
 import { usePanelContext } from "hooks";
-import { BarText, BarWrapper, Header, Text } from "./styles";
+import { BarText, BarWrapper, Header, Text, Warning } from "./styles";
 
 export function AddDelegate() {
   const { openPanel } = usePanelContext();
@@ -17,9 +17,11 @@ export function AddDelegate() {
         delegate for a single delegator.
         <br />
         <br />
-        Warning: committed votes can only be revealed by the same wallet that
-        committed them. Delegators can not reveal votes committed by their
-        delegate.
+        <Warning>
+          Warning: committed votes can only be revealed by the same wallet that
+          committed them. Delegators can not reveal votes committed by their
+          delegate.
+        </Warning>
       </Text>
       <BarWrapper>
         <BarText>No delegate wallet selected</BarText>
