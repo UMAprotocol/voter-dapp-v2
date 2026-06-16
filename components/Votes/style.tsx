@@ -23,7 +23,7 @@ export const ButtonOuterWrapper = styled.div<{ $stickyOnMobile?: boolean }>`
         ? `
     position: sticky;
     bottom: 0;
-    z-index: 5;
+    z-index: 1;
     margin-top: 20px;
     padding: 12px var(--page-padding) calc(12px + env(safe-area-inset-bottom));
     background: var(--white);
