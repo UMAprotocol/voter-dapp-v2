@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import styled from "styled-components";
 import { DropdownItemT, VoteT } from "types";
 import { mobileAndUnder } from "constant";
@@ -9,12 +10,24 @@ interface Props {
   onSelectVote: (value: string | undefined, vote: VoteT) => void;
 }
 
+// Suppresses the synthesized `click` that some mobile browsers fire alongside
+// the real tap, which previously toggled the selection right back off.
+const DOUBLE_FIRE_WINDOW_MS = 300;
+
 export function VotePanelVoteInput({
   vote,
   selectedValue,
   onSelectVote,
 }: Props) {
   const options = vote.options;
+  const lastTapAtRef = useRef(0);
+
+  function handleSelect(value: string) {
+    const now = Date.now();
+    if (now - lastTapAtRef.current < DOUBLE_FIRE_WINDOW_MS) return;
+    lastTapAtRef.current = now;
+    onSelectVote(value, vote);
+  }
 
   if (!options || options.length === 0) {
     return (
@@ -37,14 +50,7 @@ export function VotePanelVoteInput({
             <OptionButton
               key={option.value.toString()}
               $isSelected={selectedValue === option.value.toString()}
-              onClick={() =>
-                onSelectVote(
-                  selectedValue === option.value.toString()
-                    ? undefined
-                    : option.value.toString(),
-                  vote
-                )
-              }
+              onClick={() => handleSelect(option.value.toString())}
             >
               P{index + 1}
             </OptionButton>
@@ -115,7 +121,13 @@ const OptionButton = styled.button<{ $isSelected: boolean }>`
   cursor: pointer;
   transition: all 150ms;
 
-  &:hover {
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--red-500);
+    }
+  }
+
+  &:active {
     border-color: var(--red-500);
   }
 `;
