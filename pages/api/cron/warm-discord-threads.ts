@@ -125,12 +125,22 @@ async function processVoteThread(
   voteInfo: VoteInfo,
   threadId: string
 ): Promise<number> {
-  const voteDiscussion = await fetchAndCacheProcessedThread(
-    threadId,
-    voteInfo.identifier,
-    voteInfo.time,
-    voteInfo.requestKey
-  );
+  const { voteDiscussion, cacheWriteError } =
+    await fetchAndCacheProcessedThread(
+      threadId,
+      voteInfo.identifier,
+      voteInfo.time,
+      voteInfo.requestKey
+    );
+  // The helper swallows cache write failures so the discord-thread endpoint can
+  // still serve fresh data on a Redis blip. In the cron, an unwritten cache
+  // means warm-summaries won't see this vote, so surface it as a per-vote
+  // error to keep monitoring honest.
+  if (cacheWriteError) {
+    throw cacheWriteError instanceof Error
+      ? cacheWriteError
+      : new Error(String(cacheWriteError));
+  }
   return voteDiscussion.thread.length;
 }
 
@@ -182,22 +192,25 @@ export default async function handler(
     const votes = await fetchAllVotes();
     log(`fetched ${votes.length} votes (${Date.now() - votesStart}ms)`);
 
+    // Step 2: Refresh thread map — done unconditionally so the discord-thread
+    // endpoint's past-vote fallback can resolve threads even during quiet
+    // periods with zero active/upcoming votes, including after a Redis reset.
+    const refreshStart = Date.now();
+    const { threadIdMap, isFullRebuild } = await refreshThreadIdMap();
+    log(`thread map refreshed (${Date.now() - refreshStart}ms)`);
+
     if (votes.length === 0) {
       return response.status(200).json({
         success: true,
         message: "No votes to process",
         processed: 0,
+        isFullRebuild,
         duration: Date.now() - startTime,
       });
     }
 
-    // Step 2: Build vote infos
+    // Step 3: Build vote infos
     const voteInfos = buildVoteInfos(votes);
-
-    // Step 3: Refresh thread map
-    const refreshStart = Date.now();
-    const { threadIdMap, isFullRebuild } = await refreshThreadIdMap();
-    log(`thread map refreshed (${Date.now() - refreshStart}ms)`);
 
     // Step 4: Process votes
     const processStart = Date.now();

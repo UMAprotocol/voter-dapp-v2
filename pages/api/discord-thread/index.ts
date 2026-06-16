@@ -50,12 +50,15 @@ export default async function handler(
     // The threadIdMap read is an optimization for finding a live-fetch target,
     // so a Redis read or validation failure is treated as a soft miss (empty
     // thread) rather than letting it 500 the whole request — that would block
-    // uncached past-vote views entirely on transient Redis issues.
+    // uncached past-vote views entirely on transient Redis issues. We still
+    // mark it as a transient failure so the empty response isn't CDN-cached.
     let threadIdMapCache: Awaited<ReturnType<typeof getCachedThreadIdMap>> =
       null;
+    let transientFailure = false;
     try {
       threadIdMapCache = await getCachedThreadIdMap();
     } catch (mapReadError) {
+      transientFailure = true;
       console.error(
         `[discord-thread] threadIdMap read failed for requestKey=${requestKey}, treating as cache miss`,
         mapReadError
@@ -63,13 +66,12 @@ export default async function handler(
     }
     const threadId = threadIdMapCache?.threadIdMap?.[requestKey];
 
-    let fetchFailed = false;
     if (threadId) {
       try {
         console.info(
           `[discord-thread] Cache MISS for requestKey=${requestKey}, live-fetching threadId=${threadId}`
         );
-        const voteDiscussion = await fetchAndCacheProcessedThread(
+        const { voteDiscussion } = await fetchAndCacheProcessedThread(
           threadId,
           identifier,
           time,
@@ -82,7 +84,7 @@ export default async function handler(
       } catch (fetchError) {
         // Fall through to empty response so the UI can still render, but mark
         // the failure so we don't let the CDN cache the empty result.
-        fetchFailed = true;
+        transientFailure = true;
         console.error(
           `[discord-thread] Live fetch failed for requestKey=${requestKey}`,
           fetchError
@@ -100,11 +102,12 @@ export default async function handler(
       thread: [],
     };
 
-    // On transient fetch failure, don't let the CDN cache the empty response —
-    // the next request should get a fresh attempt instead of being served stale
-    // empty for 10 minutes. When there's genuinely no threadId in the map
-    // (vote predates lookback or has no discussion), caching empty is fine.
-    const emptyCacheControl = fetchFailed
+    // On transient failure (Redis read error or Discord fetch error), don't let
+    // the CDN cache the empty response — the next request should get a fresh
+    // attempt instead of being served stale empty for 10 minutes. When there's
+    // genuinely no threadId in the map (vote predates lookback or has no
+    // discussion), caching empty is fine.
+    const emptyCacheControl = transientFailure
       ? "no-store"
       : "public, max-age=0, s-maxage=600";
 

@@ -170,20 +170,28 @@ export async function setCachedProcessedThread(
   return result;
 }
 
-// Fetch a thread from Discord, process its messages, and write the result to the
-// processed-thread cache. Shared by the warm-discord-threads cron (which warms
-// active+upcoming votes ahead of time) and the discord-thread endpoint's
+export interface FetchAndCacheResult {
+  voteDiscussion: VoteDiscussionT;
+  // Non-null when the Redis write failed. The endpoint ignores this so users
+  // still see fresh data; the cron surfaces it as a per-vote error so warm-
+  // summaries doesn't silently skip uncached votes and monitoring can react.
+  cacheWriteError: unknown;
+}
+
+// Fetch a thread from Discord, process its messages, and write the result to
+// the processed-thread cache. Shared by the warm-discord-threads cron (which
+// warms active+upcoming votes ahead of time) and the discord-thread endpoint's
 // on-demand fallback (which fills cache misses for past votes).
 //
-// The cache write is best-effort: if Redis is degraded we still return the
-// processed thread so the endpoint can serve it to the user. The next request
-// will retry the write.
+// The cache write is best-effort here — a failure is reported via
+// `cacheWriteError` instead of throwing — so the endpoint can still serve the
+// freshly fetched discussion when Redis is degraded.
 export async function fetchAndCacheProcessedThread(
   threadId: string,
   identifier: string,
   time: number,
   requestKey: string
-): Promise<VoteDiscussionT> {
+): Promise<FetchAndCacheResult> {
   const { messages } = await getDiscordMessagesPaginated(threadId);
   const processedMessages = processRawMessages(messages);
 
@@ -193,16 +201,18 @@ export async function fetchAndCacheProcessedThread(
     thread: processedMessages,
   };
 
+  let cacheWriteError: unknown = null;
   try {
     await setCachedProcessedThread(requestKey, voteDiscussion);
-  } catch (cacheError) {
+  } catch (error) {
+    cacheWriteError = error;
     console.warn(
-      `[fetchAndCacheProcessedThread] cache write failed for ${requestKey}, returning data without cache:`,
-      cacheError
+      `[fetchAndCacheProcessedThread] cache write failed for ${requestKey}:`,
+      error
     );
   }
 
-  return voteDiscussion;
+  return { voteDiscussion, cacheWriteError };
 }
 
 // ============================================================================
