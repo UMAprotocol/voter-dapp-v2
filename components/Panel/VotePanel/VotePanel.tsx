@@ -200,57 +200,63 @@ export function VotePanel({ content }: Props) {
     const currentTab =
       selectedTab && tabTitles.includes(selectedTab) ? selectedTab : defaultTab;
 
+    const stickyHeader = (
+      <>
+        {hasNavigation && (
+          <NavigationBar>
+            <NavButtonsWrapper>
+              <NavButton
+                ref={prevButtonRef}
+                onClick={handlePrev}
+                disabled={!canGoPrev}
+              >
+                <LeftChevron />
+              </NavButton>
+              <NavCounter>
+                {currentVoteIndex + 1} of {navigableVotes.length}
+              </NavCounter>
+              <NavButton
+                ref={nextButtonRef}
+                onClick={handleNext}
+                disabled={!canGoNext}
+              >
+                <RightChevron />
+              </NavButton>
+            </NavButtonsWrapper>
+            <SubText>
+              Use <Arrows>←→</Arrows> to navigate
+            </SubText>
+          </NavigationBar>
+        )}
+        <PanelTitle
+          title={titleToShow}
+          origin={voteOrigin}
+          isGovernance={isGovernance}
+          voteNumber={resolvedPriceRequestIndex}
+        />
+        {showVoteInput && (
+          <VotePanelVoteInput
+            vote={content}
+            selectedValue={selectedVotes[content.uniqueKey]}
+            onSelectVote={selectVote}
+          />
+        )}
+      </>
+    );
+
     return (
       <Tabs
         tabs={tabs}
         defaultValue={defaultTab}
         value={currentTab}
         onValueChange={setSelectedTab}
+        stickyHeader={stickyHeader}
       />
     );
   }
 
   return (
     <VotePanelWrapper>
-      {hasNavigation && (
-        <NavigationBar>
-          <NavButtonsWrapper>
-            <NavButton
-              ref={prevButtonRef}
-              onClick={handlePrev}
-              disabled={!canGoPrev}
-            >
-              <LeftChevron />
-            </NavButton>
-            <NavCounter>
-              {currentVoteIndex + 1} of {navigableVotes.length}
-            </NavCounter>
-            <NavButton
-              ref={nextButtonRef}
-              onClick={handleNext}
-              disabled={!canGoNext}
-            >
-              <RightChevron />
-            </NavButton>
-          </NavButtonsWrapper>
-          <SubText>
-            Use <Arrows>←→</Arrows> to navigate
-          </SubText>
-        </NavigationBar>
-      )}
-      <PanelTitle
-        title={titleToShow}
-        origin={voteOrigin}
-        isGovernance={isGovernance}
-        voteNumber={resolvedPriceRequestIndex}
-      />
-      {showVoteInput && (
-        <VotePanelVoteInput
-          vote={content}
-          selectedValue={selectedVotes[content.uniqueKey]}
-          onSelectVote={selectVote}
-        />
-      )}
       {makeTabs()}
       <PanelFooter />
     </VotePanelWrapper>

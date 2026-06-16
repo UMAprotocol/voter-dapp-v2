@@ -13,25 +13,38 @@ export function Tabs({
   defaultValue,
   value,
   onValueChange,
+  stickyHeader,
 }: {
   tabs: Tab[];
   defaultValue?: string;
   value?: string;
   onValueChange?: (value: string) => void;
+  stickyHeader?: ReactNode;
 }) {
+  const tabsList = (
+    <TabsList>
+      {tabs.map(({ title }) => (
+        <TabsTrigger key={title} value={title}>
+          {title}
+        </TabsTrigger>
+      ))}
+    </TabsList>
+  );
+
   return (
     <TabsRoot
       defaultValue={defaultValue}
       value={value}
       onValueChange={onValueChange}
     >
-      <TabsList>
-        {tabs.map(({ title }) => (
-          <TabsTrigger key={title} value={title}>
-            {title}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+      {stickyHeader ? (
+        <StickyHeader>
+          {stickyHeader}
+          {tabsList}
+        </StickyHeader>
+      ) : (
+        tabsList
+      )}
       {tabs.map(({ content, title }) => (
         <TabsContent value={title} key={title}>
           {content}
@@ -42,6 +55,12 @@ export function Tabs({
 }
 
 const TabsRoot = styled(Root)``;
+
+const StickyHeader = styled.div`
+  position: sticky;
+  top: 0;
+  background: var(--white);
+`;
 
 const TabsList = styled(List)`
   height: 45px;
