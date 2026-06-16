@@ -11,7 +11,8 @@ interface Props {
 }
 
 // Suppresses the synthesized `click` that some mobile browsers fire alongside
-// the real tap, which previously toggled the selection right back off.
+// the real tap on the same element. Scoped per-value so rapid switching
+// between options (e.g. P1 → P2) is not dropped.
 const DOUBLE_FIRE_WINDOW_MS = 300;
 
 export function VotePanelVoteInput({
@@ -20,12 +21,15 @@ export function VotePanelVoteInput({
   onSelectVote,
 }: Props) {
   const options = vote.options;
-  const lastTapAtRef = useRef(0);
+  const lastTapRef = useRef<{ value: string; at: number } | null>(null);
 
   function handleSelect(value: string) {
     const now = Date.now();
-    if (now - lastTapAtRef.current < DOUBLE_FIRE_WINDOW_MS) return;
-    lastTapAtRef.current = now;
+    const last = lastTapRef.current;
+    if (last && last.value === value && now - last.at < DOUBLE_FIRE_WINDOW_MS) {
+      return;
+    }
+    lastTapRef.current = { value, at: now };
     onSelectVote(value, vote);
   }
 
