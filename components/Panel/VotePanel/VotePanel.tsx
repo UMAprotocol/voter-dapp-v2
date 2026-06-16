@@ -1,7 +1,7 @@
 import removeMarkdown from "remove-markdown";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
-import { Tabs } from "components";
+import { Tabs, Toggle } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
@@ -11,7 +11,9 @@ import {
   useAugmentedVoteData,
   useVoteTimingContext,
   useVotePanelKeyboard,
+  useAutoAdvance,
 } from "hooks";
+import { shouldAutoAdvance } from "hooks/helpers/shouldAutoAdvance";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
@@ -65,7 +67,7 @@ export function VotePanel({ content }: Props) {
   const canGoPrev = currentVoteIndex > 0;
   const canGoNext = currentVoteIndex < navigableVotes.length - 1;
 
-  const showVoteInput = isCommitPhase && selectVote !== undefined;
+  const [autoAdvance, toggleAutoAdvance] = useAutoAdvance();
 
   const prevButtonRef = useRef<HTMLButtonElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
@@ -87,6 +89,29 @@ export function VotePanel({ content }: Props) {
     flashButton(nextButtonRef.current);
   }, [goToNextVote]);
 
+  // Wrap the context's selectVote so that, when auto-advance is on, choosing an
+  // option also rolls forward to the next vote. Built once and shared between
+  // the click path (VotePanelVoteInput) and the keyboard path
+  // (useVotePanelKeyboard), so both stay in sync. We call goToNextVote directly
+  // rather than handleNext, deliberately skipping the chevron's red flash so it
+  // stays a manual-tap affordance.
+  const handleSelectVote = useMemo(() => {
+    if (!selectVote) return undefined;
+    return (value: string | undefined, vote: VoteT) => {
+      const willAutoAdvance = shouldAutoAdvance({
+        enabled: autoAdvance,
+        value,
+        canGoNext,
+      });
+      selectVote(value, vote, { skipHighlight: willAutoAdvance });
+      if (willAutoAdvance) {
+        goToNextVote();
+      }
+    };
+  }, [selectVote, autoAdvance, canGoNext, goToNextVote]);
+
+  const canSelectVote = isCommitPhase && handleSelectVote !== undefined;
+
   useVotePanelKeyboard({
     isActive: panelOpen && panelType === "vote",
     goToPrevVote: handlePrev,
@@ -95,7 +120,7 @@ export function VotePanel({ content }: Props) {
     canGoNext,
     options: content.options,
     currentVote: content,
-    selectVote,
+    selectVote: handleSelectVote,
   });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
@@ -233,9 +258,17 @@ export function VotePanel({ content }: Props) {
               <RightChevron />
             </NavButton>
           </NavButtonsWrapper>
-          <SubText>
-            Use <Arrows>←→</Arrows> to navigate
-          </SubText>
+          <NavigationBarEnd>
+            {canSelectVote && (
+              <AutoAdvanceControl>
+                <AutoAdvanceLabel>Auto-next</AutoAdvanceLabel>
+                <Toggle clicked={autoAdvance} onClick={toggleAutoAdvance} />
+              </AutoAdvanceControl>
+            )}
+            <SubText>
+              Use <Arrows>←→</Arrows> to navigate
+            </SubText>
+          </NavigationBarEnd>
         </NavigationBar>
       )}
       <PanelTitle
@@ -244,11 +277,11 @@ export function VotePanel({ content }: Props) {
         isGovernance={isGovernance}
         voteNumber={resolvedPriceRequestIndex}
       />
-      {showVoteInput && (
+      {isCommitPhase && handleSelectVote && (
         <VotePanelVoteInput
           vote={content}
           selectedValue={selectedVotes[content.uniqueKey]}
-          onSelectVote={selectVote}
+          onSelectVote={handleSelectVote}
         />
       )}
       {makeTabs()}
@@ -295,6 +328,25 @@ const NavButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
+`;
+
+const NavigationBarEnd = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+`;
+
+const AutoAdvanceControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const AutoAdvanceLabel = styled.span`
+  font: var(--text-sm);
+  color: var(--grey-800);
+  white-space: nowrap;
 `;
 
 const SubText = styled.span`

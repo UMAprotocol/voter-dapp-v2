@@ -37,7 +37,13 @@ export interface PanelContextState {
   currentVoteIndex: number;
   goToNextVote: () => void;
   goToPrevVote: () => void;
-  selectVote: ((value: string | undefined, vote: VoteT) => void) | undefined;
+  selectVote:
+    | ((
+        value: string | undefined,
+        vote: VoteT,
+        options?: { skipHighlight?: boolean }
+      ) => void)
+    | undefined;
   selectedVotes: SelectedVotesByKeyT;
 }
 
@@ -107,10 +113,19 @@ export function PanelProvider({ children }: { children: ReactNode }) {
   );
 
   const wrappedSelectVote = useCallback(
-    (value: string | undefined, vote: VoteT) => {
+    (
+      value: string | undefined,
+      vote: VoteT,
+      options?: { skipHighlight?: boolean }
+    ) => {
       selectVoteFn?.(value, vote);
       setSelectedVotes((prev) => ({ ...prev, [vote.uniqueKey]: value }));
-      scrollToAndHighlightVote(vote.uniqueKey);
+      // Auto-advance suppresses this highlight: goToNextVote scrolls to the
+      // next vote in the same tick, so highlighting the just-selected one too
+      // would fire two smooth scrolls back-to-back and jitter.
+      if (!options?.skipHighlight) {
+        scrollToAndHighlightVote(vote.uniqueKey);
+      }
     },
     [selectVoteFn]
   );
