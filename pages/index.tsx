@@ -19,11 +19,13 @@ const VotePage: NextPage = () => {
   const { annualPercentageReturn } = globals || {};
   const { stakingAprMax, votingAprMax } = config;
 
-  const stakingAprMaxNumber = Number(stakingAprMax);
-  const votingAprMaxNumber = Number(votingAprMax);
+  const stakingAprMaxTrimmed = stakingAprMax?.trim();
+  const votingAprMaxTrimmed = votingAprMax?.trim();
+  const stakingAprMaxNumber = Number(stakingAprMaxTrimmed);
+  const votingAprMaxNumber = Number(votingAprMaxTrimmed);
   const hasAprBreakdown =
-    stakingAprMax !== undefined &&
-    votingAprMax !== undefined &&
+    !!stakingAprMaxTrimmed &&
+    !!votingAprMaxTrimmed &&
     Number.isFinite(stakingAprMaxNumber) &&
     Number.isFinite(votingAprMaxNumber);
   const totalAprMax = hasAprBreakdown
