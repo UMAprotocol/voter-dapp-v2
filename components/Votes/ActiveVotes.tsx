@@ -24,6 +24,7 @@ import {
 import { useState } from "react";
 import { VoteT } from "types";
 import {
+  ActiveVotesWrapper,
   ButtonInnerWrapper,
   ButtonOuterWrapper,
   ButtonSpacer,
@@ -322,7 +323,7 @@ export function ActiveVotes() {
   }));
 
   return (
-    <>
+    <ActiveVotesWrapper>
       <Title> Active votes: </Title>
       <VoteTimeline />
       <VotesTableWrapper>
@@ -379,6 +380,6 @@ export function ActiveVotes() {
         </ButtonInnerWrapper>
       </ButtonOuterWrapper>
       <Divider />
-    </>
+    </ActiveVotesWrapper>
   );
 }

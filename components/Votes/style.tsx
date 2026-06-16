@@ -1,5 +1,8 @@
+import { mobileAndUnder } from "constant";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
+
+export const ActiveVotesWrapper = styled.div``;
 
 export const VotesTableWrapper = styled.div`
   margin-top: var(--margin-top, 35px);
@@ -13,6 +16,17 @@ export const Title = styled.h1`
 
 export const ButtonOuterWrapper = styled.div`
   margin-top: 30px;
+
+  @media ${mobileAndUnder} {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin-top: 20px;
+    padding: 12px var(--page-padding) calc(12px + env(safe-area-inset-bottom));
+    background: var(--white);
+    border-top: 1px solid var(--black-opacity-25);
+    box-shadow: var(--shadow-2);
+  }
 `;
 
 export const ButtonInnerWrapper = styled.div`
@@ -22,6 +36,26 @@ export const ButtonInnerWrapper = styled.div`
 
   button {
     text-transform: capitalize;
+  }
+
+  @media ${mobileAndUnder} {
+    gap: 12px;
+
+    > * {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+`;
+
+export const ButtonSpacer = styled.div`
+  width: 10px;
+
+  @media ${mobileAndUnder} {
+    display: none;
   }
 `;
 
@@ -43,10 +77,6 @@ export const WarningIcon = styled(Warning)`
 
 export const PaginationWrapper = styled.div`
   margin-block: 30px;
-`;
-
-export const ButtonSpacer = styled.div`
-  width: 10px;
 `;
 
 export const Divider = styled.div`
