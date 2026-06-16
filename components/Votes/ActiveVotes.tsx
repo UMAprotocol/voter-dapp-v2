@@ -345,7 +345,7 @@ export function ActiveVotes() {
             </InfoText>
           </Tooltip>
         ) : null}
-        <ButtonInnerWrapper>
+        <ButtonInnerWrapper $stickyOnMobile>
           {isDirty() ? (
             <>
               <Button

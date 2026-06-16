@@ -34,7 +34,7 @@ export const ButtonOuterWrapper = styled.div<{ $stickyOnMobile?: boolean }>`
   }
 `;
 
-export const ButtonInnerWrapper = styled.div`
+export const ButtonInnerWrapper = styled.div<{ $stickyOnMobile?: boolean }>`
   display: flex;
   justify-content: end;
   gap: 15px;
@@ -44,6 +44,9 @@ export const ButtonInnerWrapper = styled.div`
   }
 
   @media ${mobileAndUnder} {
+    ${({ $stickyOnMobile }) =>
+      $stickyOnMobile
+        ? `
     gap: 12px;
 
     > * {
@@ -53,6 +56,8 @@ export const ButtonInnerWrapper = styled.div`
     button {
       width: 100%;
     }
+        `
+        : ""}
   }
 `;
 
