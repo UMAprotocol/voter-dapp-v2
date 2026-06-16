@@ -16,8 +16,11 @@ export function useHandleError(options?: Options) {
     isDataFetching = false,
     customErrorMessage,
   } = options || {};
+  const effectiveOrigin: ErrorOriginT | undefined = isDataFetching
+    ? "pageLoad"
+    : errorOrigin;
   const { addErrorMessage, clearErrorMessages, errorMessages } =
-    useErrorContext(errorOrigin);
+    useErrorContext(effectiveOrigin);
 
   function onError(error: unknown) {
     if (errorMessages.includes(wrongChainMessage)) return;

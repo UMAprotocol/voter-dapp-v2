@@ -22,9 +22,10 @@ export function Layout({ children, title }: Props) {
       <Meta title={title} />
       <Main>
         <GasRebateBanner />
-        <ErrorBanner />
+        <ErrorBanner errorOrigin="pageLoad" />
         <OldDesignatedVotingAccountWarningBanner />
         <Header />
+        <ErrorBanner isSticky />
         {children}
         <Footer />
       </Main>

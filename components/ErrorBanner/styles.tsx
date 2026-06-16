@@ -3,7 +3,7 @@ import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ $isSticky?: boolean }>`
   background: var(--red-500);
   min-height: 60px;
   max-width: 100vw;
@@ -13,6 +13,14 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding-block: 15px;
+  ${({ $isSticky }) =>
+    $isSticky
+      ? `
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  `
+      : ""}
 `;
 
 export const ErrorMessageWrapper = styled.div`

@@ -39,6 +39,7 @@ export type PageStatesT = Record<PaginateForT, PageStateT>;
 
 export type ErrorOriginT =
   | "default"
+  | "pageLoad"
   | "vote"
   | "stake"
   | "unstake"
