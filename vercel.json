@@ -3,6 +3,9 @@
     "pages/api/augment-request.ts": {
       "maxDuration": 300
     },
+    "pages/api/discord-thread/index.ts": {
+      "maxDuration": 60
+    },
     "pages/api/update-summary.ts": {
       "maxDuration": 300
     },

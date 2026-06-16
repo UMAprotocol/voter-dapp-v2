@@ -38,8 +38,11 @@ type ThreadIdMapCache = ss.Infer<typeof ThreadIdMapCacheSchema>;
 // How often to do a full rebuild (catches threads missed due to race conditions)
 export const FULL_REBUILD_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
-// How far back to look during a full rebuild (no need to fetch ancient history)
-export const FULL_REBUILD_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
+// How far back to look during a full rebuild. The threadIdMap is preserved
+// across rebuilds, so this primarily affects how much history we capture on a
+// cold cache (Redis reset, new env) — past votes whose threads predate this
+// window won't be resolvable by the discord-thread cache-miss fallback.
+export const FULL_REBUILD_LOOKBACK_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export function shouldDoFullRebuild(
   cachedData: ThreadIdMapCache | null
@@ -171,6 +174,10 @@ export async function setCachedProcessedThread(
 // processed-thread cache. Shared by the warm-discord-threads cron (which warms
 // active+upcoming votes ahead of time) and the discord-thread endpoint's
 // on-demand fallback (which fills cache misses for past votes).
+//
+// The cache write is best-effort: if Redis is degraded we still return the
+// processed thread so the endpoint can serve it to the user. The next request
+// will retry the write.
 export async function fetchAndCacheProcessedThread(
   threadId: string,
   identifier: string,
@@ -186,7 +193,15 @@ export async function fetchAndCacheProcessedThread(
     thread: processedMessages,
   };
 
-  await setCachedProcessedThread(requestKey, voteDiscussion);
+  try {
+    await setCachedProcessedThread(requestKey, voteDiscussion);
+  } catch (cacheError) {
+    console.warn(
+      `[fetchAndCacheProcessedThread] cache write failed for ${requestKey}, returning data without cache:`,
+      cacheError
+    );
+  }
+
   return voteDiscussion;
 }
 
