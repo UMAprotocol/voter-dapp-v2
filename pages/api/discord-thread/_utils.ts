@@ -15,6 +15,7 @@ import {
 } from "lib/discord-utils";
 import { createCacheKey } from "lib/cache-keys";
 import { validateRedisData } from "../_utils/validation";
+import { processRawMessages } from "./_message-processing";
 
 // Cache configuration
 export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
@@ -164,6 +165,29 @@ export async function setCachedProcessedThread(
     throw new Error("Setting processed thread cache failed");
   }
   return result;
+}
+
+// Fetch a thread from Discord, process its messages, and write the result to the
+// processed-thread cache. Shared by the warm-discord-threads cron (which warms
+// active+upcoming votes ahead of time) and the discord-thread endpoint's
+// on-demand fallback (which fills cache misses for past votes).
+export async function fetchAndCacheProcessedThread(
+  threadId: string,
+  identifier: string,
+  time: number,
+  requestKey: string
+): Promise<VoteDiscussionT> {
+  const { messages } = await getDiscordMessagesPaginated(threadId);
+  const processedMessages = processRawMessages(messages);
+
+  const voteDiscussion: VoteDiscussionT = {
+    identifier,
+    time,
+    thread: processedMessages,
+  };
+
+  await setCachedProcessedThread(requestKey, voteDiscussion);
+  return voteDiscussion;
 }
 
 // ============================================================================

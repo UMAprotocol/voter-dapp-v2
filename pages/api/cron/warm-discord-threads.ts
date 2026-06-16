@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { VoteDiscussionT, PriceRequestT } from "types";
+import { PriceRequestT } from "types";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
 import {
@@ -12,11 +12,9 @@ import {
   buildThreadIdMap,
   getCachedThreadIdMap,
   setCachedThreadIdMap,
-  getDiscordMessagesPaginated,
-  setCachedProcessedThread,
+  fetchAndCacheProcessedThread,
   shouldDoFullRebuild,
 } from "../discord-thread/_utils";
-import { processRawMessages } from "../discord-thread/_message-processing";
 
 const log = (msg: string) => console.log(`[warm-discord-threads] ${msg}`);
 const logError = (msg: string, err?: unknown) =>
@@ -90,7 +88,13 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
     log("cache: empty, doing full rebuild");
   }
 
-  const existingMap = isFullRebuild ? {} : cached?.threadIdMap ?? {};
+  // Preserve previously cached entries across full rebuilds so that past votes
+  // whose threads are older than the rebuild lookback window remain resolvable
+  // by the discord-thread endpoint's cache-miss fallback. The full rebuild still
+  // refetches the lookback window from scratch to catch threads missed by
+  // incremental updates; we just merge those into the existing map instead of
+  // replacing it.
+  const existingMap = cached?.threadIdMap ?? {};
   const afterMessageId = isFullRebuild
     ? undefined
     : cached?.latestThreadId ?? undefined;
@@ -109,9 +113,9 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
   );
 
   log(
-    `cache updated: ${newThreadCount} ${
-      isFullRebuild ? "total" : "new"
-    } threads fetched, ${Object.keys(threadIdMap).length} total cached`
+    `cache updated: ${newThreadCount} threads fetched (${
+      isFullRebuild ? "lookback rebuild" : "incremental"
+    }), ${Object.keys(threadIdMap).length} total cached`
   );
 
   return { threadIdMap, isFullRebuild, cachedThreadCount, newThreadCount };
@@ -121,17 +125,13 @@ async function processVoteThread(
   voteInfo: VoteInfo,
   threadId: string
 ): Promise<number> {
-  const { messages } = await getDiscordMessagesPaginated(threadId);
-  const processedMessages = processRawMessages(messages);
-
-  const voteDiscussion: VoteDiscussionT = {
-    identifier: voteInfo.identifier,
-    time: voteInfo.time,
-    thread: processedMessages,
-  };
-
-  await setCachedProcessedThread(voteInfo.requestKey, voteDiscussion);
-  return processedMessages.length;
+  const voteDiscussion = await fetchAndCacheProcessedThread(
+    threadId,
+    voteInfo.identifier,
+    voteInfo.time,
+    voteInfo.requestKey
+  );
+  return voteDiscussion.thread.length;
 }
 
 async function processAllVotes(

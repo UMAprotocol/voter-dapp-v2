@@ -1,7 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { VoteDiscussionT, L1Request } from "types";
 import * as ss from "superstruct";
-import { getCachedProcessedThread } from "./_utils";
+import {
+  fetchAndCacheProcessedThread,
+  getCachedProcessedThread,
+  getCachedThreadIdMap,
+} from "./_utils";
 import { makeKey } from "lib/discord-utils";
 import { validateQueryParams } from "../_utils/validation";
 import { resolveDiscordThreadTitle } from "helpers/voting/getVoteMetaData";
@@ -37,10 +41,41 @@ export default async function handler(
         .send(cachedData);
     }
 
-    // No cached data - return empty thread
-    console.info(
-      `[discord-thread] Cache MISS for requestKey=${requestKey}, returning empty thread`
-    );
+    // Cache MISS. The warm-discord-threads cron only processes active and
+    // upcoming votes, so past votes never have entries pre-warmed. Fall back to
+    // looking up the threadId from the cached threadIdMap and fetching from
+    // Discord on demand. The fetched data is written back to the cache so
+    // subsequent reads are fast.
+    const threadIdMapCache = await getCachedThreadIdMap();
+    const threadId = threadIdMapCache?.threadIdMap?.[requestKey];
+
+    if (threadId) {
+      try {
+        console.info(
+          `[discord-thread] Cache MISS for requestKey=${requestKey}, live-fetching threadId=${threadId}`
+        );
+        const voteDiscussion = await fetchAndCacheProcessedThread(
+          threadId,
+          identifier,
+          time,
+          requestKey
+        );
+        return response
+          .setHeader("Cache-Control", "public, max-age=0, s-maxage=600")
+          .status(200)
+          .send(voteDiscussion);
+      } catch (fetchError) {
+        // Fall through to empty response so the UI can still render.
+        console.error(
+          `[discord-thread] Live fetch failed for requestKey=${requestKey}`,
+          fetchError
+        );
+      }
+    } else {
+      console.info(
+        `[discord-thread] Cache MISS for requestKey=${requestKey}, no threadId in map, returning empty thread`
+      );
+    }
 
     const emptyResponse: VoteDiscussionT = {
       identifier,
