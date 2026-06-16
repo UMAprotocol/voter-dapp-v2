@@ -24,6 +24,8 @@ const Env = ss.object({
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
   NEXT_PUBLIC_CHAIN_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_OVERRIDE_APR: ss.optional(ss.string()),
+  NEXT_PUBLIC_STAKING_APR_MAX: ss.optional(ss.string()),
+  NEXT_PUBLIC_VOTING_APR_MAX: ss.optional(ss.string()),
   NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS: ss.optional(ss.string()),
   NEXT_PUBLIC_PHASE_LENGTH: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
@@ -68,6 +70,8 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
     NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
+    NEXT_PUBLIC_STAKING_APR_MAX: process.env.NEXT_PUBLIC_STAKING_APR_MAX,
+    NEXT_PUBLIC_VOTING_APR_MAX: process.env.NEXT_PUBLIC_VOTING_APR_MAX,
     NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
       process.env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS,
     NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
@@ -114,6 +118,8 @@ const AppConfig = ss.object({
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
   contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
+  stakingAprMax: ss.optional(ss.string()),
+  votingAprMax: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
   mailchimpUrl: ss.optional(ss.string()),
@@ -158,6 +164,8 @@ export const appConfig = ss.create(
       !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
       !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     overrideApr: env.NEXT_PUBLIC_OVERRIDE_APR,
+    stakingAprMax: env.NEXT_PUBLIC_STAKING_APR_MAX,
+    votingAprMax: env.NEXT_PUBLIC_VOTING_APR_MAX,
     designatedVotingFactoryV1Address:
       env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS ??
       getDesignatedVotingFactoryAddress(

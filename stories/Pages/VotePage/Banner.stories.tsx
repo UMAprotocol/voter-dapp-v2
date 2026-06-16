@@ -12,3 +12,10 @@ export const Default = Template.bind({});
 Default.args = {
   children: "Stake, vote & earn up to 30% APY",
 };
+
+export const WithSubtitle = Template.bind({});
+WithSubtitle.args = {
+  children: "Stake, vote & earn up to 20% APR",
+  subtitle:
+    "Up to 10% from staking your UMA & up to 10% from voting correctly.",
+};

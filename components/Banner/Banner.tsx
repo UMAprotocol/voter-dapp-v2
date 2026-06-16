@@ -4,12 +4,14 @@ import styled from "styled-components";
 
 interface Props {
   children: ReactNode;
+  subtitle?: ReactNode;
 }
-export function Banner({ children }: Props) {
+export function Banner({ children, subtitle }: Props) {
   return (
     <OuterWrapper>
       <InnerWrapper>
         <Text>{children}</Text>
+        {subtitle && <Subtitle>{subtitle}</Subtitle>}
       </InnerWrapper>
     </OuterWrapper>
   );
@@ -21,12 +23,14 @@ const OuterWrapper = styled.div`
 
 const InnerWrapper = styled.div`
   max-width: var(--page-width);
-  height: var(--banner-height);
+  min-height: var(--banner-height);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 12px;
   padding-left: var(--page-padding);
   @media ${tabletAndUnder} {
-    padding: 0;
+    padding-inline: 0;
   }
   margin-inline: auto;
 `;
@@ -34,4 +38,11 @@ const InnerWrapper = styled.div`
 const Text = styled.h1`
   color: var(--white);
   font: var(--header-lg);
+`;
+
+const Subtitle = styled.p`
+  color: var(--white);
+  font: var(--text-md);
+  margin-top: 6px;
+  opacity: 0.85;
 `;
