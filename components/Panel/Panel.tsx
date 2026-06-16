@@ -88,21 +88,22 @@ export function Panel() {
           }
         >
           {getPanelComponent()}
+          {!isVote && (
+            <CloseButton
+              onClick={() => closePanel()}
+              style={
+                {
+                  "--fill": closeButtonColor,
+                  top: "30px",
+                } as CSSProperties
+              }
+            >
+              <IconWrapper>
+                <CloseIcon />
+              </IconWrapper>
+            </CloseButton>
+          )}
         </Content>
-        <CloseButton
-          onClick={() => closePanel()}
-          style={
-            {
-              "--fill": closeButtonColor,
-              "--right": `${panelOpen ? 0 : panelWidth}px`,
-              top: `${isVote ? "75px" : "30px"}`,
-            } as CSSProperties
-          }
-        >
-          <IconWrapper>
-            <CloseIcon />
-          </IconWrapper>
-        </CloseButton>
       </FocusOn>
     </>
   );
@@ -139,12 +140,9 @@ const Content = styled.div`
 `;
 
 const CloseButton = styled.button`
-  position: fixed;
+  position: absolute;
   right: 30px;
   background: transparent;
-  transform: translateX(var(--right));
-  transition: transform 400ms;
-  z-index: 2;
 `;
 
 const CloseIcon = styled(Close)`
