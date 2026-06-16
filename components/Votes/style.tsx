@@ -14,10 +14,13 @@ export const Title = styled.h1`
   margin-bottom: 20px;
 `;
 
-export const ButtonOuterWrapper = styled.div`
+export const ButtonOuterWrapper = styled.div<{ $stickyOnMobile?: boolean }>`
   margin-top: 30px;
 
   @media ${mobileAndUnder} {
+    ${({ $stickyOnMobile }) =>
+      $stickyOnMobile
+        ? `
     position: sticky;
     bottom: 0;
     z-index: 5;
@@ -26,6 +29,8 @@ export const ButtonOuterWrapper = styled.div`
     background: var(--white);
     border-top: 1px solid var(--black-opacity-25);
     box-shadow: var(--shadow-2);
+        `
+        : ""}
   }
 `;
 

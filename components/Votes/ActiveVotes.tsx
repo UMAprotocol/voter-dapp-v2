@@ -334,7 +334,7 @@ export function ActiveVotes() {
           * Changes to committed votes need to be re-committed
         </RecommittingVotesMessage>
       ) : null}
-      <ButtonOuterWrapper>
+      <ButtonOuterWrapper $stickyOnMobile>
         {actionStatus.infoText ? (
           <Tooltip label={actionStatus.infoText.tooltip}>
             <InfoText>
