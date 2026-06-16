@@ -1,4 +1,4 @@
-import { Button, VoteList } from "components";
+import { Pagination, usePagination, VoteList } from "components";
 import {
   usePanelContext,
   useVoteTimingContext,
@@ -8,12 +8,7 @@ import {
 } from "hooks";
 import { useUserPastVotes } from "hooks/queries/votes/useUserPastVotes";
 import { CSSProperties, useMemo } from "react";
-import {
-  ButtonInnerWrapper,
-  ButtonOuterWrapper,
-  Title,
-  VotesTableWrapper,
-} from "./style";
+import { PaginationWrapper, Title, VotesTableWrapper } from "./style";
 import { VoteT } from "types";
 
 export function PastVotes() {
@@ -22,19 +17,18 @@ export function PastVotes() {
   const { phase } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { delegatorAddress } = useDelegationContext();
+  const { showPagination, entriesToShow, ...paginationProps } =
+    usePagination(pastVoteList);
 
   // Check if wallet is connected
   const isWalletConnected = !!(address || delegatorAddress);
 
-  // Get the first 5 votes
-  const recentVotes = pastVoteList.slice(0, 5);
-
-  // Fetch user vote details for these votes
+  // Fetch user vote details for the current page
   const { data: userVoteDetails, isLoading: userVotesLoading } =
-    useUserPastVotes(recentVotes);
+    useUserPastVotes(entriesToShow);
 
   const data = useMemo(() => {
-    return recentVotes.map((vote) => {
+    return entriesToShow.map((vote) => {
       // Merge the revealed vote data if available
       const revealedVoteByAddress =
         userVoteDetails?.[vote.uniqueKey] || vote.revealedVoteByAddress || {};
@@ -77,7 +71,7 @@ export function PastVotes() {
       };
     });
   }, [
-    recentVotes,
+    entriesToShow,
     userVoteDetails,
     phase,
     openPanel,
@@ -97,11 +91,11 @@ export function PastVotes() {
       >
         <VoteList activityStatus="past" data={data} />
       </VotesTableWrapper>
-      <ButtonOuterWrapper>
-        <ButtonInnerWrapper>
-          <Button label="See all" href="/past-votes" variant="primary" />
-        </ButtonInnerWrapper>
-      </ButtonOuterWrapper>
+      {showPagination && (
+        <PaginationWrapper>
+          <Pagination {...paginationProps} />
+        </PaginationWrapper>
+      )}
     </>
   );
 }
