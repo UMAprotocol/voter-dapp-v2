@@ -64,6 +64,14 @@ export default async function handler(
         mapReadError
       );
     }
+
+    // An absent map cache (cold Redis before the cron's first rebuild) is also
+    // transient: a permanent CDN cache of empty would mask the thread once the
+    // cron repopulates moments later.
+    if (!threadIdMapCache) {
+      transientFailure = true;
+    }
+
     const threadId = threadIdMapCache?.threadIdMap?.[requestKey];
 
     if (threadId) {
