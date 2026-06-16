@@ -35,4 +35,5 @@ export function Layout({ children, title }: Props) {
 
 const Main = styled.main`
   height: 100%;
+  isolation: isolate;
 `;
