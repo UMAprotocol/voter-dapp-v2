@@ -42,6 +42,12 @@ export function useVotePanelKeyboard({
         return;
       }
 
+      // Ignore auto-repeat for selection: with auto-advance on, a held number
+      // key would otherwise cascade select -> advance -> select across votes
+      // the user never read. Arrow navigation above intentionally still
+      // repeats (it only moves, it doesn't record a vote).
+      if (e.repeat) return;
+
       if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT")
         return;
 

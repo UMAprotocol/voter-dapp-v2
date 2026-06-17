@@ -4,13 +4,18 @@ import styled, { CSSProperties } from "styled-components";
 interface Props {
   clicked: boolean;
   onClick: () => void;
+  ariaLabel?: string;
 }
-export function Toggle({ clicked, onClick }: Props) {
+export function Toggle({ clicked, onClick, ariaLabel }: Props) {
   const background = clicked ? red500 : blackOpacity25;
   const translateX = clicked ? "calc(100% - 5px)" : "2px";
 
   return (
     <Wrapper
+      type="button"
+      role="switch"
+      aria-checked={clicked}
+      aria-label={ariaLabel}
       onClick={onClick}
       style={
         {

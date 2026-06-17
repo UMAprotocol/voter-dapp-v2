@@ -13,7 +13,7 @@ import {
   useVotePanelKeyboard,
   useAutoAdvance,
 } from "hooks";
-import { shouldAutoAdvance } from "hooks/helpers/shouldAutoAdvance";
+import { makeAutoAdvanceSelectVote } from "hooks/helpers/makeAutoAdvanceSelectVote";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
 import { PanelFooter } from "../PanelFooter";
@@ -89,26 +89,19 @@ export function VotePanel({ content }: Props) {
     flashButton(nextButtonRef.current);
   }, [goToNextVote]);
 
-  // Wrap the context's selectVote so that, when auto-advance is on, choosing an
-  // option also rolls forward to the next vote. Built once and shared between
-  // the click path (VotePanelVoteInput) and the keyboard path
-  // (useVotePanelKeyboard), so both stay in sync. We call goToNextVote directly
-  // rather than handleNext, deliberately skipping the chevron's red flash so it
-  // stays a manual-tap affordance.
-  const handleSelectVote = useMemo(() => {
-    if (!selectVote) return undefined;
-    return (value: string | undefined, vote: VoteT) => {
-      const willAutoAdvance = shouldAutoAdvance({
+  // Shared between the click path (VotePanelVoteInput) and the keyboard path
+  // (useVotePanelKeyboard) so both advance consistently. See the factory for
+  // the auto-advance rules and why the highlight is suppressed.
+  const handleSelectVote = useMemo(
+    () =>
+      makeAutoAdvanceSelectVote({
+        selectVote,
         enabled: autoAdvance,
-        value,
         canGoNext,
-      });
-      selectVote(value, vote, { skipHighlight: willAutoAdvance });
-      if (willAutoAdvance) {
-        goToNextVote();
-      }
-    };
-  }, [selectVote, autoAdvance, canGoNext, goToNextVote]);
+        goToNextVote,
+      }),
+    [selectVote, autoAdvance, canGoNext, goToNextVote]
+  );
 
   const canSelectVote = isCommitPhase && handleSelectVote !== undefined;
 
@@ -262,7 +255,11 @@ export function VotePanel({ content }: Props) {
             {canSelectVote && (
               <AutoAdvanceControl>
                 <AutoAdvanceLabel>Auto-next</AutoAdvanceLabel>
-                <Toggle clicked={autoAdvance} onClick={toggleAutoAdvance} />
+                <Toggle
+                  clicked={autoAdvance}
+                  onClick={toggleAutoAdvance}
+                  ariaLabel="Auto-advance to the next vote after selecting an option"
+                />
               </AutoAdvanceControl>
             )}
             <SubText>
