@@ -14,25 +14,25 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
     resolvedPriceRequestIndex,
     voteHistory: { voted, correctness, staking, slashAmount },
   } = vote;
+  // slashAmount is exactly zero until the voter's slashing trackers are updated
+  // on-chain; a nonzero amount that merely truncates to zero at display
+  // precision has already been applied and must not be shown as pending
+  const isBelowDisplayPrecision =
+    !slashAmount.isZero() &&
+    ["0", "-0"].includes(formatNumberForDisplay(slashAmount));
   const formattedSlashAmount = makeFormattedSlashAmount();
   const scoreColor = getScoreColor();
 
   function makeFormattedSlashAmount() {
-    const formattedSlashAmount = formatNumberForDisplay(slashAmount);
-    if (
-      staking &&
-      (formattedSlashAmount === "0" || formattedSlashAmount === "-0")
-    )
-      return "pending";
-    if (formattedSlashAmount === "-0") return "0";
-    return formattedSlashAmount;
+    if (staking && slashAmount.isZero()) return "pending";
+    if (isBelowDisplayPrecision) return slashAmount.gt(0) ? "<0.01" : ">-0.01";
+    return formatNumberForDisplay(slashAmount);
   }
 
   function getScoreColor() {
     if (formattedSlashAmount === "pending") return black;
-    if (formattedSlashAmount === "0") return black;
-    if (formattedSlashAmount.startsWith("-")) return red500;
-    return green;
+    if (slashAmount.isZero()) return black;
+    return slashAmount.lt(0) ? red500 : green;
   }
 
   const pendingEarningsTooltip =
@@ -70,6 +70,10 @@ export function VoteHistoryTableRow({ vote, onVoteClicked }: Props) {
         {formattedSlashAmount === "pending" ? (
           <Tooltip label={pendingEarningsTooltip}>
             <PendingChip>Pending</PendingChip>
+          </Tooltip>
+        ) : isBelowDisplayPrecision ? (
+          <Tooltip label={formatNumberForDisplay(slashAmount, { decimals: 6 })}>
+            <span>{formattedSlashAmount}</span>
           </Tooltip>
         ) : (
           formattedSlashAmount
