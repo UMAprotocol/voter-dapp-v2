@@ -1,3 +1,24 @@
+export type PriceRequestRoundQuery = {
+  totalVotesRevealed: string;
+  minAgreementRequirement: string;
+  minParticipationRequirement: string;
+  totalTokensCommitted?: string;
+  groups: {
+    price: string;
+    totalVoteAmount: string;
+  }[];
+  committedVotes: {
+    id: string;
+  }[];
+  revealedVotes: {
+    id: string;
+    voter: {
+      address: string;
+    };
+    price: string;
+  }[];
+};
+
 export type PastVotesQuery = {
   priceRequests: {
     identifier: {
@@ -7,26 +28,8 @@ export type PastVotesQuery = {
     price: string;
     ancillaryData: string;
     resolvedPriceRequestIndex: string;
-    latestRound: {
-      totalVotesRevealed: string;
-      minAgreementRequirement: string;
-      minParticipationRequirement: string;
-      totalTokensCommitted?: string;
-      groups: {
-        price: string;
-        totalVoteAmount: string;
-      }[];
-      committedVotes: {
-        id: string;
-      }[];
-      revealedVotes: {
-        id: string;
-        voter: {
-          address: string;
-        };
-        price: string;
-      }[];
-    };
+    latestRound: PriceRequestRoundQuery;
+    rounds?: (PriceRequestRoundQuery & { roundId: string })[];
     committedVotes: {
       id: string;
     }[];

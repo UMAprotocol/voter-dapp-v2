@@ -3,6 +3,7 @@ import request, { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import {
   PastVotesQuery,
+  PriceRequestRoundQuery,
   RevealedVotesByAddress,
   VoteParticipationT,
   PriceRequestT,
@@ -13,6 +14,31 @@ import { utils, BigNumber } from "ethers";
 import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 
 const { graphEndpoint } = config;
+
+function makeRoundResults(round: PriceRequestRoundQuery) {
+  const totalTokensVotedWith = Number(round.totalVotesRevealed);
+
+  // for v1 this data is missing so we need to dynamically check this
+  const totalTokensCommitted = round.totalTokensCommitted
+    ? Number(round.totalTokensCommitted)
+    : undefined;
+
+  const participation = {
+    uniqueCommitAddresses: round.committedVotes.length,
+    uniqueRevealAddresses: round.revealedVotes.length,
+    totalTokensVotedWith,
+    totalTokensCommitted,
+    minAgreementRequirement: Number(round.minAgreementRequirement),
+    minParticipationRequirement: Number(round.minParticipationRequirement),
+  };
+
+  const results = round.groups.map(({ price, totalVoteAmount }) => ({
+    vote: price,
+    tokensVotedWith: Number(totalVoteAmount),
+  }));
+
+  return { participation, results };
+}
 
 export async function getActiveVoteResults(): Promise<
   Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
@@ -55,6 +81,27 @@ export async function getActiveVoteResults(): Promise<
             price
           }
         }
+        rounds(orderBy: roundId, orderDirection: asc, first: 100) {
+          roundId
+          totalVotesRevealed
+          minAgreementRequirement
+          minParticipationRequirement
+          totalTokensCommitted
+          groups {
+            price
+            totalVoteAmount
+          }
+          committedVotes(first: 1000) {
+            id
+          }
+          revealedVotes(first: 1000) {
+            id
+            voter {
+              address
+            }
+            price
+          }
+        }
       }
     }
   `;
@@ -68,31 +115,17 @@ export async function getActiveVoteResults(): Promise<
       ancillaryData,
       resolvedPriceRequestIndex,
       latestRound,
+      rounds,
     }) => {
       const identifier = formatBytes32String(id);
       const correctVote = price;
-      const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+      const { participation, results } = makeRoundResults(latestRound);
 
-      // for v1 this data is missing so we need to dynamically check this
-      const totalTokensCommitted = latestRound.totalTokensCommitted
-        ? Number(latestRound.totalTokensCommitted)
-        : undefined;
-
-      const participation = {
-        uniqueCommitAddresses: latestRound.committedVotes.length,
-        uniqueRevealAddresses: latestRound.revealedVotes.length,
-        totalTokensVotedWith,
-        totalTokensCommitted,
-        minAgreementRequirement: Number(latestRound.minAgreementRequirement),
-        minParticipationRequirement: Number(
-          latestRound.minParticipationRequirement
-        ),
-      };
-
-      const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
-        vote: price,
-        tokensVotedWith: Number(totalVoteAmount),
+      const resultsPerRoll = rounds?.map((round) => ({
+        roundId: Number(round.roundId),
+        ...makeRoundResults(round),
       }));
+
       const init: RevealedVotesByAddress = {};
       const revealedVoteByAddress = latestRound.revealedVotes.reduce(
         (result, vote) => {
@@ -110,6 +143,7 @@ export async function getActiveVoteResults(): Promise<
         isV1: false,
         participation,
         results,
+        resultsPerRoll,
         revealedVoteByAddress,
       };
     }

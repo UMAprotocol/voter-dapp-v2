@@ -19,6 +19,7 @@ import { PanelTitle } from "../PanelTitle";
 import { Details } from "./Details";
 import { Discussion } from "./Discussion";
 import { Result } from "./Result";
+import { getPastRolls, RollResults } from "./RollResults";
 import { VotePanelVoteInput } from "./VotePanelVoteInput";
 import { DiscussionSummary } from "components";
 import { usePolymarketBulletins } from "hooks";
@@ -39,6 +40,7 @@ export function VotePanel({ content }: Props) {
     origin,
     participation,
     results,
+    resultsPerRoll,
     isGovernance,
     options,
     decodedAncillaryData,
@@ -58,7 +60,7 @@ export function VotePanel({ content }: Props) {
     panelType,
   } = usePanelContext();
 
-  const { phase } = useVoteTimingContext();
+  const { phase, roundId } = useVoteTimingContext();
   const isCommitPhase = phase === "commit";
 
   const hasNavigation = navigableVotes.length > 1;
@@ -139,6 +141,10 @@ export function VotePanel({ content }: Props) {
 
   function makeTabs() {
     const hasResults = Boolean(results?.length);
+    // votes that have rolled show results for every roll in a dedicated
+    // "Results" tab during both commit and reveal phases. votes on their
+    // first roll (roll #0) keep the regular single-round "Result" tab.
+    const hasRolledResults = getPastRolls(resultsPerRoll, roundId).length > 0;
 
     const tabsAllEnvironments = [
       {
@@ -177,7 +183,17 @@ export function VotePanel({ content }: Props) {
 
     // add result tab if there are results
     // and make it the first tab
-    if (hasResults) {
+    if (hasRolledResults) {
+      tabs.unshift({
+        title: "Results",
+        content: (
+          <RollResults
+            content={content}
+            proposedPrice={augmentedVoteData?.proposedPrice}
+          />
+        ),
+      });
+    } else if (hasResults) {
       tabs.unshift({
         title: "Result",
         content: (
@@ -194,7 +210,11 @@ export function VotePanel({ content }: Props) {
 
     // Check if selected tab exists in current tabs
     const tabTitles = tabs.map((tab) => tab.title);
-    const defaultTab = hasResults ? "Result" : "Details";
+    const defaultTab = hasRolledResults
+      ? "Results"
+      : hasResults
+      ? "Result"
+      : "Details";
 
     // If selectedTab doesn't exist in current tabs, use default
     const currentTab =

@@ -54,8 +54,17 @@ export type ResultsT = {
   tokensVotedWith: number;
 }[];
 
+export type RollResultT = {
+  roundId: number;
+  results: ResultsT;
+  participation: ParticipationT;
+};
+
 export type VoteResultsT = {
   results?: ResultsT;
+  // per-round results for requests that have rolled, ordered by round id
+  // ascending; index 0 is the first round the request was voted on (roll #0)
+  resultsPerRoll?: RollResultT[];
 };
 
 export type RevealedVotesByAddress = Record<string, string>;
@@ -69,6 +78,7 @@ export type RawPriceRequestDataT = {
   correctVote?: string;
   participation?: ParticipationT;
   results?: ResultsT;
+  resultsPerRoll?: RollResultT[];
   isV1?: boolean;
   rollCount?: number;
   isGovernance?: boolean;
