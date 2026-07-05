@@ -26,6 +26,7 @@ import { mobileAndUnder } from "constant";
 import styled from "styled-components";
 import LeftChevron from "public/assets/icons/left-chevron.svg";
 import RightChevron from "public/assets/icons/right-chevron.svg";
+import Close from "public/assets/icons/close.svg";
 
 interface Props {
   content: VoteT;
@@ -56,6 +57,7 @@ export function VotePanel({ content }: Props) {
     selectedVotes,
     panelOpen,
     panelType,
+    closePanel,
   } = usePanelContext();
 
   const { phase } = useVoteTimingContext();
@@ -212,45 +214,56 @@ export function VotePanel({ content }: Props) {
 
   return (
     <VotePanelWrapper>
-      {hasNavigation && (
-        <NavigationBar>
-          <NavButtonsWrapper>
-            <NavButton
-              ref={prevButtonRef}
-              onClick={handlePrev}
-              disabled={!canGoPrev}
-            >
-              <LeftChevron />
-            </NavButton>
-            <NavCounter>
-              {currentVoteIndex + 1} of {navigableVotes.length}
-            </NavCounter>
-            <NavButton
-              ref={nextButtonRef}
-              onClick={handleNext}
-              disabled={!canGoNext}
-            >
-              <RightChevron />
-            </NavButton>
-          </NavButtonsWrapper>
-          <SubText>
-            Use <Arrows>←→</Arrows> to navigate
-          </SubText>
-        </NavigationBar>
+      {(hasNavigation || showVoteInput) && (
+        <StickyTopBar>
+          {hasNavigation && (
+            <NavigationBar>
+              <NavButtonsWrapper>
+                <NavButton
+                  ref={prevButtonRef}
+                  onClick={handlePrev}
+                  disabled={!canGoPrev}
+                >
+                  <LeftChevron />
+                </NavButton>
+                <NavCounter>
+                  {currentVoteIndex + 1} of {navigableVotes.length}
+                </NavCounter>
+                <NavButton
+                  ref={nextButtonRef}
+                  onClick={handleNext}
+                  disabled={!canGoNext}
+                >
+                  <RightChevron />
+                </NavButton>
+              </NavButtonsWrapper>
+              <SubText>
+                Use <Arrows>←→</Arrows> to navigate
+              </SubText>
+            </NavigationBar>
+          )}
+          {showVoteInput && (
+            <VotePanelVoteInput
+              vote={content}
+              selectedValue={selectedVotes[content.uniqueKey]}
+              onSelectVote={selectVote}
+            />
+          )}
+        </StickyTopBar>
       )}
-      <PanelTitle
-        title={titleToShow}
-        origin={voteOrigin}
-        isGovernance={isGovernance}
-        voteNumber={resolvedPriceRequestIndex}
-      />
-      {showVoteInput && (
-        <VotePanelVoteInput
-          vote={content}
-          selectedValue={selectedVotes[content.uniqueKey]}
-          onSelectVote={selectVote}
+      <TitleRow>
+        <PanelTitle
+          title={titleToShow}
+          origin={voteOrigin}
+          isGovernance={isGovernance}
+          voteNumber={resolvedPriceRequestIndex}
         />
-      )}
+        <CloseButton onClick={() => closePanel()} aria-label="Close panel">
+          <CloseIconWrapper>
+            <CloseIcon />
+          </CloseIconWrapper>
+        </CloseButton>
+      </TitleRow>
       {makeTabs()}
       <PanelFooter />
     </VotePanelWrapper>
@@ -275,6 +288,35 @@ export const PanelContentWrapper = styled.div`
   @media ${mobileAndUnder} {
     padding-inline: 10px;
   }
+`;
+
+const StickyTopBar = styled.div`
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 2;
+`;
+
+const TitleRow = styled.div`
+  position: relative;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: transparent;
+`;
+
+const CloseIcon = styled(Close)`
+  path {
+    fill: var(--white);
+  }
+`;
+
+const CloseIconWrapper = styled.div`
+  width: 15px;
+  height: 15px;
 `;
 
 const NavigationBar = styled.div`

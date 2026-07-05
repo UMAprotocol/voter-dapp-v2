@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "components";
 import {
+  usePanelContext,
   usePastVoteDetails,
   useUserVotingAndStakingDetails,
   useAccountDetails,
@@ -9,12 +10,14 @@ import { useMemo } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { VotePanel } from "./VotePanel";
+import Close from "public/assets/icons/close.svg";
 
 interface Props {
   content: VoteT;
 }
 
 export function VotePanelWithLazyLoad({ content }: Props) {
+  const { closePanel } = usePanelContext();
   const { address: userAddress } = useAccountDetails();
   const { isDelegate, delegatorAddress } = useDelegationContext();
   const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
@@ -59,22 +62,39 @@ export function VotePanelWithLazyLoad({ content }: Props) {
     return content;
   }, [content, detailedVote, needsDetailedData]);
 
+  const fallbackCloseButton = (
+    <FallbackCloseButton
+      onClick={() => closePanel()}
+      aria-label="Close panel"
+    >
+      <FallbackCloseIconWrapper>
+        <FallbackCloseIcon />
+      </FallbackCloseIconWrapper>
+    </FallbackCloseButton>
+  );
+
   if (needsDetailedData && isLoading) {
     return (
-      <LoadingWrapper>
-        <LoadingSpinner size={40} variant="black" />
-        <LoadingText>Loading vote details...</LoadingText>
-      </LoadingWrapper>
+      <>
+        {fallbackCloseButton}
+        <LoadingWrapper>
+          <LoadingSpinner size={40} variant="black" />
+          <LoadingText>Loading vote details...</LoadingText>
+        </LoadingWrapper>
+      </>
     );
   }
 
   if (needsDetailedData && isError) {
     return (
-      <ErrorWrapper>
-        <ErrorText>
-          Failed to load vote details. Please try again later.
-        </ErrorText>
-      </ErrorWrapper>
+      <>
+        {fallbackCloseButton}
+        <ErrorWrapper>
+          <ErrorText>
+            Failed to load vote details. Please try again later.
+          </ErrorText>
+        </ErrorWrapper>
+      </>
     );
   }
 
@@ -105,4 +125,22 @@ const ErrorWrapper = styled.div`
 const ErrorText = styled.div`
   font: var(--text-md);
   color: var(--red-600);
+`;
+
+const FallbackCloseButton = styled.button`
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: transparent;
+`;
+
+const FallbackCloseIcon = styled(Close)`
+  path {
+    fill: var(--black);
+  }
+`;
+
+const FallbackCloseIconWrapper = styled.div`
+  width: 15px;
+  height: 15px;
 `;
