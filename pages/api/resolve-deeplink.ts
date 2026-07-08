@@ -24,7 +24,10 @@ const RequestParams = ss.union([
   ss.object({
     identifier: ss.string(),
     time: ss.coerce(ss.integer(), ss.string(), (value) => Number(value)),
-    ancillaryData: ss.optional(ss.pattern(ss.string(), /^0x[0-9a-fA-F]*$/)),
+    ancillaryData: ss.optional(
+      // even-length so keccak256 cannot throw on odd-length hex
+      ss.pattern(ss.string(), /^0x([0-9a-fA-F]{2})*$/)
+    ),
     ancillaryDataHash: ss.optional(Bytes32Hash),
   }),
 ]);
@@ -248,17 +251,25 @@ async function resolveEntity(
   }
 
   const candidates = await findCandidatesByDetails(decodedIdentifier, time);
-  if (ancillaryDataHash) {
-    const byHash = await pickByAncillaryDataHash(
-      candidates,
-      decodedIdentifier,
-      ancillaryDataHash
-    );
-    if (byHash) return byHash;
-  }
   if (ancillaryData && ancillaryData !== "0x") {
     const byData = pickByFullAncillaryData(candidates, ancillaryData);
     if (byData) return byData;
+  }
+  // full ancillary data degrades to its hash so both forms resolve the same
+  // requests — the hash matcher covers bridged variants that need the child
+  // chain's event data
+  const hash =
+    ancillaryDataHash ??
+    (ancillaryData && ancillaryData !== "0x"
+      ? keccak256(ancillaryData.toLowerCase())
+      : undefined);
+  if (hash) {
+    const byHash = await pickByAncillaryDataHash(
+      candidates,
+      decodedIdentifier,
+      hash
+    );
+    if (byHash) return byHash;
   }
   return candidates.length === 1 ? candidates[0] : undefined;
 }
