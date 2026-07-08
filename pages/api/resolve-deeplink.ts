@@ -163,8 +163,11 @@ function stripOoRequesterStamp(dataHex: string) {
 function hashesOfHex(dataHex: string | undefined) {
   if (!dataHex || dataHex === "0x") return [];
   const hashes = [keccak256(dataHex)];
+  // a stripped value of "0x" is still meaningful: an OO request with blank
+  // caller ancillary data is stamped to just `,ooRequester:<addr>`, and links
+  // built from the raw request bytes hash the empty data
   const stripped = stripOoRequesterStamp(dataHex);
-  if (stripped && stripped !== "0x") hashes.push(keccak256(stripped));
+  if (stripped) hashes.push(keccak256(stripped));
   return hashes;
 }
 
@@ -287,12 +290,10 @@ async function resolveEntity(
   }
   // full ancillary data degrades to its hash so both forms resolve the same
   // requests — the hash matcher covers bridged variants that need the child
-  // chain's event data
+  // chain's event data, and blank data ("0x") matches stamped-blank requests
   const hash =
     ancillaryDataHash ??
-    (ancillaryData && ancillaryData !== "0x"
-      ? keccak256(ancillaryData.toLowerCase())
-      : undefined);
+    (ancillaryData ? keccak256(ancillaryData.toLowerCase()) : undefined);
   if (hash) {
     const byHash = await pickByAncillaryDataHash(
       candidates,
