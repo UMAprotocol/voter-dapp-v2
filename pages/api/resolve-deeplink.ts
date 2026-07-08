@@ -71,22 +71,46 @@ async function findByUniqueKey(uniqueKey: string) {
   return result.priceRequest;
 }
 
+// paginated like fetchAllDocuments so large same-timestamp batches cannot
+// truncate the candidate set before matching
 async function findCandidatesByDetails(
   decodedIdentifier: string,
   time: number
 ) {
   const query = gql`
     ${priceRequestFields}
-    query resolveDeeplinkSearch($identifier: String!, $time: BigInt!) {
-      priceRequests(where: { identifier: $identifier, time: $time }) {
+    query resolveDeeplinkSearch(
+      $identifier: String!
+      $time: BigInt!
+      $skip: Int!
+      $limit: Int!
+    ) {
+      priceRequests(
+        where: { identifier: $identifier, time: $time }
+        first: $limit
+        skip: $skip
+      ) {
         ...DeeplinkFields
       }
     }
   `;
-  const { priceRequests } = await gqlRequest<{
-    priceRequests: PriceRequestEntity[];
-  }>(VoteSubgraphURL, query, { identifier: decodedIdentifier, time });
-  return priceRequests;
+  const pageSize = 1000;
+  let allCandidates: PriceRequestEntity[] = [];
+  let page: PriceRequestEntity[];
+  let skip = 0;
+  do {
+    ({ priceRequests: page } = await gqlRequest<{
+      priceRequests: PriceRequestEntity[];
+    }>(VoteSubgraphURL, query, {
+      identifier: decodedIdentifier,
+      time,
+      skip,
+      limit: pageSize,
+    }));
+    allCandidates = allCandidates.concat(page);
+    skip += pageSize;
+  } while (page.length === pageSize);
+  return allCandidates;
 }
 
 function pickByFullAncillaryData(
