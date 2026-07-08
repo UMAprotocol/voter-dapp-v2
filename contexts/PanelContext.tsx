@@ -7,7 +7,7 @@ import {
 } from "react";
 import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
 
-function scrollToAndHighlightVote(uniqueKey: string) {
+export function scrollToAndHighlightVote(uniqueKey: string) {
   const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "center" });

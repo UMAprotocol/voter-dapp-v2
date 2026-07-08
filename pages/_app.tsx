@@ -1,6 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle, Notifications, Panel } from "components";
+import {
+  GlobalStyle,
+  Notifications,
+  Panel,
+  VoteDeeplinkHandler,
+} from "components";
 import {
   ContractsProvider,
   DelegationProvider,
@@ -33,6 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       <GlobalStyle />
                       <Component {...pageProps} />
                       <Panel />
+                      <VoteDeeplinkHandler />
                       <Notifications />
                       {config.gaTag && <GoogleAnalytics gaId={config.gaTag} />}
                     </PanelProvider>
