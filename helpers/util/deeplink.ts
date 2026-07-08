@@ -97,7 +97,9 @@ export function makeVoterDappDeeplink({
   const params = new URLSearchParams({ identifier, time: String(time) });
   if (ancillaryDataHash) {
     params.set("ancillaryDataHash", ancillaryDataHash);
-  } else if (ancillaryData && ancillaryData !== "0x") {
+  } else if (ancillaryData) {
+    // keep "0x" — blank ancillary data still narrows resolution to a direct
+    // uniqueKey lookup when several requests share identifier and time
     params.set("ancillaryData", ancillaryData);
   }
   return `${baseUrl}/?${params.toString()}`;

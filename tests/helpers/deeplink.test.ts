@@ -66,7 +66,9 @@ describe("makeVoterDappDeeplink", () => {
     );
   });
 
-  it("omits empty ancillary data and respects baseUrl", () => {
+  // blank ancillary data ("0x") must survive: it enables a direct uniqueKey
+  // lookup when several requests share identifier and time
+  it("keeps blank ancillary data and respects baseUrl", () => {
     expect(
       makeVoterDappDeeplink({
         identifier:
@@ -76,7 +78,7 @@ describe("makeVoterDappDeeplink", () => {
         baseUrl: "https://testnet.vote.uma.xyz",
       })
     ).toBe(
-      "https://testnet.vote.uma.xyz/?identifier=0x5945535f4f525f4e4f5f51554552590000000000000000000000000000000000&time=1751900000"
+      "https://testnet.vote.uma.xyz/?identifier=0x5945535f4f525f4e4f5f51554552590000000000000000000000000000000000&time=1751900000&ancillaryData=0x"
     );
   });
 });
