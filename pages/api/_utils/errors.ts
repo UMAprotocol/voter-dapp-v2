@@ -59,6 +59,7 @@ export function handleApiError(
       statusText: error.statusText,
     });
     response.status(error.statusCode).json(error.toJSON());
+    return;
   }
 
   console.error("Unexpected API error:", {
