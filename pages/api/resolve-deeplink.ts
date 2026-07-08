@@ -124,11 +124,17 @@ function pickByFullAncillaryData(
   if (exact) return exact;
 
   // Requests reaching the DVM from an oracle contract have the original
-  // ancillary data "stamped" (suffixed with ooRequester/childChainId), so the
-  // requesting side's data is a byte-prefix of what the DVM stores.
-  const stamped = candidates.filter((candidate) =>
-    candidate.ancillaryData?.toLowerCase().startsWith(normalized)
-  );
+  // ancillary data "stamped", so the requesting side's data is a byte-prefix
+  // of what the DVM stores. Requiring the remainder to be the stamp prevents
+  // an unrelated same-batch request that merely begins with the same bytes
+  // from stealing the match.
+  const stamped = candidates.filter((candidate) => {
+    const data = candidate.ancillaryData?.toLowerCase();
+    return (
+      data?.startsWith(normalized) &&
+      data.slice(normalized.length).startsWith(OO_REQUESTER_STAMP)
+    );
+  });
   if (stamped.length === 1) return stamped[0];
 
   // Requests bridged via AncillaryDataCompression replace the data with
