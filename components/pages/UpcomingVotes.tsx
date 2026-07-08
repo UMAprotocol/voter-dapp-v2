@@ -9,7 +9,12 @@ import {
   VoteList,
   usePagination,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import {
+  useDeeplinkedVoteIndex,
+  usePanelContext,
+  useVoteTimingContext,
+  useVotesContext,
+} from "hooks";
 import { isUndefined } from "lodash";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
@@ -20,8 +25,10 @@ export function UpcomingVotes() {
   const { upcomingVoteList, upcomingVotesIsLoading } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
   const { openPanel } = usePanelContext();
+  const deeplinkedVoteIndex = useDeeplinkedVoteIndex(upcomingVoteList);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
+    upcomingVoteList ?? [],
+    deeplinkedVoteIndex
   );
   const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
 
