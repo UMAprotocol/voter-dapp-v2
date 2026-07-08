@@ -3,6 +3,7 @@ import {
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
@@ -23,6 +24,8 @@ export type OpenPanelOptions = {
   selectVote?: (value: string | undefined, vote: VoteT) => void;
 };
 
+export type VoteOpener = (vote: VoteT, navigableVotes: VoteT[]) => void;
+
 export interface PanelContextState {
   panelType: PanelTypeT;
   panelContent: VoteT | undefined;
@@ -33,6 +36,8 @@ export interface PanelContextState {
     options?: OpenPanelOptions
   ) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
+  openVote: VoteOpener;
+  registerVoteOpener: (opener: VoteOpener) => () => void;
   navigableVotes: VoteT[];
   currentVoteIndex: number;
   goToNextVote: () => void;
@@ -47,6 +52,8 @@ export const defaultPanelContextState: PanelContextState = {
   panelOpen: false,
   openPanel: () => null,
   closePanel: () => null,
+  openVote: () => null,
+  registerVoteOpener: () => () => null,
   navigableVotes: [],
   currentVoteIndex: -1,
   goToNextVote: () => null,
@@ -104,6 +111,29 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       setSelectedVotes(options?.selectedVotes ?? {});
     },
     []
+  );
+
+  // pages with richer panel options (ActiveVotes passes selectedVotes and
+  // selectVote so the panel's quick-vote controls work) register an opener;
+  // deeplinks use it so a shared link opens the same panel a row click would
+  const voteOpenerRef = useRef<VoteOpener | null>(null);
+
+  const registerVoteOpener = useCallback((opener: VoteOpener) => {
+    voteOpenerRef.current = opener;
+    return () => {
+      if (voteOpenerRef.current === opener) voteOpenerRef.current = null;
+    };
+  }, []);
+
+  const openVote = useCallback<VoteOpener>(
+    (vote, navigableVotes) => {
+      if (voteOpenerRef.current) {
+        voteOpenerRef.current(vote, navigableVotes);
+      } else {
+        openPanel("vote", vote, { navigableVotes });
+      }
+    },
+    [openPanel]
   );
 
   const wrappedSelectVote = useCallback(
@@ -172,6 +202,8 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       panelOpen,
       openPanel,
       closePanel,
+      openVote,
+      registerVoteOpener,
       navigableVotes,
       currentVoteIndex,
       goToNextVote,
@@ -182,6 +214,8 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     [
       closePanel,
       openPanel,
+      openVote,
+      registerVoteOpener,
       panelContent,
       panelOpen,
       panelType,

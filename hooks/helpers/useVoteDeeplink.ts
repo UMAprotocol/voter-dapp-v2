@@ -43,7 +43,7 @@ function notifyVoteNotFound() {
  */
 export function useVoteDeeplink() {
   const router = useRouter();
-  const { panelType, panelContent, panelOpen, openPanel, closePanel } =
+  const { panelType, panelContent, panelOpen, openVote, closePanel } =
     usePanelContext();
   const {
     voteListsByActivityStatus,
@@ -143,7 +143,8 @@ export function useVoteDeeplink() {
 
     for (const status of activityStatuses) {
       const votes = voteListsByActivityStatus[status];
-      const vote = votes?.find(({ uniqueKey }) => uniqueKey === targetKey);
+      if (!votes) continue;
+      const vote = votes.find(({ uniqueKey }) => uniqueKey === targetKey);
       if (!vote) continue;
 
       const pathname = pathForActivityStatus[status];
@@ -154,7 +155,7 @@ export function useVoteDeeplink() {
         return;
       }
       handledKeyRef.current = targetKey;
-      openPanel("vote", vote, { navigableVotes: votes });
+      openVote(vote, votes);
       scrollToAndHighlightVote(targetKey);
       return;
     }
