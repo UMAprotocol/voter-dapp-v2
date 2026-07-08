@@ -9,6 +9,7 @@ import {
   usePagination,
 } from "components";
 import {
+  useDeeplinkedVoteIndex,
   usePanelContext,
   useVoteTimingContext,
   useVotesContext,
@@ -28,8 +29,10 @@ export function PastVotes() {
   const { openPanel } = usePanelContext();
   const { address } = useAccountDetails();
   const { delegatorAddress } = useDelegationContext();
+  const deeplinkedVoteIndex = useDeeplinkedVoteIndex(pastVoteList);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    pastVoteList ?? []
+    pastVoteList ?? [],
+    deeplinkedVoteIndex
   );
 
   // Check if wallet is connected

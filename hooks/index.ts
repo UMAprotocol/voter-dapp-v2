@@ -6,6 +6,7 @@ export { usePanelContext } from "./contexts/usePanelContext";
 export { useVoteTimingContext } from "./contexts/useVoteTimingContext";
 export { useVotesContext } from "./contexts/useVotesContext";
 export { useWalletContext } from "./contexts/useWalletContext";
+export { useDeeplinkedVoteIndex } from "./helpers/useDeeplinkedVoteIndex";
 export { useHandleDecimalInput } from "./helpers/useHandleDecimalInput";
 export { useHandleError } from "./helpers/useHandleError";
 export { useInitializeVoteTiming } from "./helpers/useInitializeVoteTiming";

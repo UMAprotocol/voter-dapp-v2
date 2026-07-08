@@ -8,9 +8,15 @@ import {
 } from "react";
 import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
 
-export function scrollToAndHighlightVote(uniqueKey: string) {
+export function scrollToAndHighlightVote(uniqueKey: string, attempt = 0) {
   const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
-  if (!el) return;
+  if (!el) {
+    // deeplinked rows may still be mounting (list render, pagination jump)
+    if (attempt < 10) {
+      setTimeout(() => scrollToAndHighlightVote(uniqueKey, attempt + 1), 200);
+    }
+    return;
+  }
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.classList.remove("vote-highlight");
   void (el as HTMLElement).offsetWidth;
