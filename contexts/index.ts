@@ -25,6 +25,7 @@ export {
   defaultPanelContextState,
   PanelContext,
   PanelProvider,
+  scrollToAndHighlightVote,
 } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export {

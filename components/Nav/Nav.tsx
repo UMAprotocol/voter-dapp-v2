@@ -19,10 +19,18 @@ export function Nav({ links }: Props) {
   const isActive = (href: string) => router.pathname === href;
 
   useEffect(() => {
-    router.events.on("routeChangeStart", closePanel);
+    // shallow changes are query-param-only updates (vote deeplinks) and must
+    // not close the panel they describe
+    function closePanelOnNavigation(
+      _url: string,
+      { shallow }: { shallow: boolean }
+    ) {
+      if (!shallow) closePanel();
+    }
+    router.events.on("routeChangeStart", closePanelOnNavigation);
 
     return () => {
-      router.events.off("routeChangeStart", closePanel);
+      router.events.off("routeChangeStart", closePanelOnNavigation);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
