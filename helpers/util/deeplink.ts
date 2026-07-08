@@ -4,22 +4,26 @@ import { ActivityStatusT } from "types";
 // The voter dapp supports two deeplink forms, both as query params on any page:
 // 1. `?vote=<uniqueKey>` — canonical form, written to the URL bar whenever a
 //    vote panel is open, so copying the address bar shares the open vote.
-// 2. `?identifier=<string|bytes32Hex>&time=<unixSeconds>&ancillaryData=<0xHex>` —
+// 2. `?identifier=<string|bytes32Hex>&time=<unixSeconds>&ancillaryDataHash=<0xHash>` —
 //    external form for other dapps (oracle dapp, explorer) that know the price
-//    request's on-chain fields but not our uniqueKey format. These are resolved
-//    to a uniqueKey via /api/resolve-deeplink, which also tolerates being given
-//    the L2-side ancillary data of a bridged request.
+//    request's on-chain fields but not our uniqueKey format. The hash is
+//    keccak256 of whichever ancillary data version the caller holds (raw
+//    request data, stamped, or DVM-side); /api/resolve-deeplink matches it
+//    against every variant it can reconstruct. Full `ancillaryData` is also
+//    accepted, but ancillary data is often far too long for a URL.
 export const voteDeeplinkQueryParam = "vote";
 export const externalDeeplinkQueryParams = [
   "identifier",
   "time",
   "ancillaryData",
+  "ancillaryDataHash",
 ] as const;
 
 export type ExternalVoteDeeplink = {
   identifier: string;
   time: number;
   ancillaryData?: string;
+  ancillaryDataHash?: string;
 };
 
 export type ParsedVoteDeeplink =
@@ -46,6 +50,7 @@ export function parseVoteDeeplink(
     identifier,
     time,
     ancillaryData: getSingleParam(query, "ancillaryData"),
+    ancillaryDataHash: getSingleParam(query, "ancillaryDataHash"),
   };
 }
 
@@ -67,23 +72,32 @@ export const pathForActivityStatus: Record<ActivityStatusT, string> = {
  *
  * @param identifier decoded identifier ("YES_OR_NO_QUERY") or bytes32 hex
  * @param time request timestamp in unix seconds
- * @param ancillaryData 0x-prefixed hex; the DVM (mainnet) ancillary data if you
- *   have it, but the L2/oracle-side data of a bridged request also resolves
+ * @param ancillaryDataHash keccak256 of the request's ancillary data, e.g.
+ *   `ethers.utils.keccak256(request.ancillaryData)`. Hash whichever version
+ *   you have — the raw request data, the oracle-stamped data, or the DVM-side
+ *   data all resolve. Strongly recommended: identifier+time alone is
+ *   ambiguous when several requests share a timestamp.
+ * @param ancillaryData full 0x-hex ancillary data; only use when it is short,
+ *   URLs have length limits
  * @param baseUrl defaults to production; pass e.g. "https://testnet.vote.uma.xyz"
  */
 export function makeVoterDappDeeplink({
   identifier,
   time,
+  ancillaryDataHash,
   ancillaryData,
   baseUrl = "https://vote.uma.xyz",
 }: {
   identifier: string;
   time: number | string;
+  ancillaryDataHash?: string;
   ancillaryData?: string;
   baseUrl?: string;
 }): string {
   const params = new URLSearchParams({ identifier, time: String(time) });
-  if (ancillaryData && ancillaryData !== "0x") {
+  if (ancillaryDataHash) {
+    params.set("ancillaryDataHash", ancillaryDataHash);
+  } else if (ancillaryData && ancillaryData !== "0x") {
     params.set("ancillaryData", ancillaryData);
   }
   return `${baseUrl}/?${params.toString()}`;
