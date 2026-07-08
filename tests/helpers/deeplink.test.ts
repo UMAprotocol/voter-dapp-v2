@@ -19,13 +19,16 @@ describe("parseVoteDeeplink", () => {
       parseVoteDeeplink({
         identifier: "YES_OR_NO_QUERY",
         time: "1751900000",
-        ancillaryData: "0xabcd",
+        ancillaryDataHash:
+          "0x40e832d2323085fa42bd2f76a41ef993ffdbe4f6a06e938ce1a9a2a2c45ae7fa",
       })
     ).toEqual({
       form: "external",
       identifier: "YES_OR_NO_QUERY",
       time: 1751900000,
-      ancillaryData: "0xabcd",
+      ancillaryData: undefined,
+      ancillaryDataHash:
+        "0x40e832d2323085fa42bd2f76a41ef993ffdbe4f6a06e938ce1a9a2a2c45ae7fa",
     });
   });
 
@@ -49,15 +52,17 @@ describe("parseVoteDeeplink", () => {
 });
 
 describe("makeVoterDappDeeplink", () => {
-  it("builds a production link with encoded params", () => {
+  it("builds a production link, preferring the hash over full data", () => {
     expect(
       makeVoterDappDeeplink({
         identifier: "YES_OR_NO_QUERY",
         time: 1751900000,
+        ancillaryDataHash:
+          "0x40e832d2323085fa42bd2f76a41ef993ffdbe4f6a06e938ce1a9a2a2c45ae7fa",
         ancillaryData: "0xabcd",
       })
     ).toBe(
-      "https://vote.uma.xyz/?identifier=YES_OR_NO_QUERY&time=1751900000&ancillaryData=0xabcd"
+      "https://vote.uma.xyz/?identifier=YES_OR_NO_QUERY&time=1751900000&ancillaryDataHash=0x40e832d2323085fa42bd2f76a41ef993ffdbe4f6a06e938ce1a9a2a2c45ae7fa"
     );
   });
 

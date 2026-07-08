@@ -92,7 +92,9 @@ export function useVoteDeeplink() {
         identifier: external.identifier,
         time: String(external.time),
       });
-      if (external.ancillaryData) {
+      if (external.ancillaryDataHash) {
+        params.set("ancillaryDataHash", external.ancillaryDataHash);
+      } else if (external.ancillaryData) {
         params.set("ancillaryData", external.ancillaryData);
       }
       const response = await fetch(

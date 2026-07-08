@@ -66,7 +66,7 @@ export interface ResolveAncillaryDataResult {
   resolvedAncillaryData: string;
 }
 
-function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
+export function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
   const pattern = new RegExp(
     "^" +
       "ancillaryDataHash:(\\w+),\\s*" +
@@ -99,7 +99,7 @@ function mergeAncillaryData(
   return encodeHexString(merged);
 }
 
-async function fetchAncillaryDataFromSpoke(args: {
+export async function fetchAncillaryDataFromSpoke(args: {
   parentRequestId: BytesLike;
   childOracle: string;
   childChainId: number;
