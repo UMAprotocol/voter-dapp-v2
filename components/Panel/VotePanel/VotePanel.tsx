@@ -2,6 +2,7 @@ import removeMarkdown from "remove-markdown";
 import { useCallback, useRef, useState } from "react";
 
 import { Tabs } from "components";
+import { scrollToAndHighlightVote } from "contexts";
 import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
@@ -9,6 +10,8 @@ import {
   useVoteDiscussion,
   useAssertionClaim,
   useAugmentedVoteData,
+  useVoteSelectionContext,
+  useVotesContext,
   useVoteTimingContext,
   useVotePanelKeyboard,
 } from "hooks";
@@ -52,11 +55,11 @@ export function VotePanel({ content }: Props) {
     currentVoteIndex,
     goToNextVote,
     goToPrevVote,
-    selectVote,
-    selectedVotes,
     panelOpen,
     panelType,
   } = usePanelContext();
+  const { selectedVotes, selectVote } = useVoteSelectionContext();
+  const { activeVoteList } = useVotesContext();
 
   const { phase } = useVoteTimingContext();
   const isCommitPhase = phase === "commit";
@@ -65,7 +68,20 @@ export function VotePanel({ content }: Props) {
   const canGoPrev = currentVoteIndex > 0;
   const canGoNext = currentVoteIndex < navigableVotes.length - 1;
 
-  const showVoteInput = isCommitPhase && selectVote !== undefined;
+  // quick-vote controls only make sense for votes that are actually
+  // committable right now, i.e. in the current round's active list
+  const isActiveVote = activeVoteList?.some(
+    (vote) => vote.uniqueKey === content.uniqueKey
+  );
+  const showVoteInput = isCommitPhase && isActiveVote;
+
+  const handleSelectVote = useCallback(
+    (value: string | undefined, vote: VoteT) => {
+      selectVote(value, vote);
+      scrollToAndHighlightVote(vote.uniqueKey);
+    },
+    [selectVote]
+  );
 
   const prevButtonRef = useRef<HTMLButtonElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
@@ -95,7 +111,7 @@ export function VotePanel({ content }: Props) {
     canGoNext,
     options: content.options,
     currentVote: content,
-    selectVote,
+    selectVote: showVoteInput ? handleSelectVote : undefined,
   });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
@@ -248,7 +264,7 @@ export function VotePanel({ content }: Props) {
         <VotePanelVoteInput
           vote={content}
           selectedValue={selectedVotes[content.uniqueKey]}
-          onSelectVote={selectVote}
+          onSelectVote={handleSelectVote}
         />
       )}
       {makeTabs()}

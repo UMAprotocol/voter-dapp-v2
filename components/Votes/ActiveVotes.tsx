@@ -14,14 +14,14 @@ import {
   useContractsContext,
   useDelegationContext,
   usePanelContext,
-  usePersistedVotes,
   useRevealVotes,
   useStakedBalance,
+  useVoteSelectionContext,
   useVotesContext,
   useVoteTimingContext,
   useWalletContext,
 } from "hooks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { VoteT } from "types";
 import {
   ButtonInnerWrapper,
@@ -55,11 +55,12 @@ export function ActiveVotes() {
   const { data: stakedBalance } = useStakedBalance(
     isDelegate ? delegatorAddress : address
   );
-  const { openPanel, registerVoteOpener } = usePanelContext();
+  const { openPanel } = usePanelContext();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
-  const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
+  const { selectedVotes, selectVote, setSelectedVotes } =
+    useVoteSelectionContext();
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
 
   function isDirty(): boolean {
@@ -291,19 +292,6 @@ export function ActiveVotes() {
     );
   }
 
-  function selectVote(value: string | undefined, vote: VoteT) {
-    setSelectedVotes((selected) => ({ ...selected, [vote.uniqueKey]: value }));
-  }
-
-  // deeplinks open votes through this so the panel gets the same quick-vote
-  // wiring as the row's own more-details action
-  useEffect(() => {
-    return registerVoteOpener((vote, navigableVotes) =>
-      openPanel("vote", vote, { navigableVotes, selectedVotes, selectVote })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVotes, openPanel, registerVoteOpener]);
-
   function clearSelectedVote(vote: VoteT) {
     selectVote(undefined, vote);
   }
@@ -316,11 +304,7 @@ export function ActiveVotes() {
     clearVote: () => clearSelectedVote(vote),
     activityStatus: "active" as const,
     moreDetailsAction: () =>
-      openPanel("vote", vote, {
-        navigableVotes: activeVoteList,
-        selectedVotes,
-        selectVote,
-      }),
+      openPanel("vote", vote, { navigableVotes: activeVoteList }),
     key: vote.uniqueKey,
     isDirty: dirtyInputs[index],
     setDirty: (dirty: boolean) =>

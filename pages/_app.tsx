@@ -12,6 +12,7 @@ import {
   ErrorProvider,
   NotificationsProvider,
   PanelProvider,
+  VoteSelectionProvider,
   VoteTimingProvider,
   VotesProvider,
   WalletProvider,
@@ -34,14 +35,18 @@ function MyApp({ Component, pageProps }: AppProps) {
               <ContractsProvider>
                 <DelegationProvider>
                   <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                      <Panel />
-                      <VoteDeeplinkHandler />
-                      <Notifications />
-                      {config.gaTag && <GoogleAnalytics gaId={config.gaTag} />}
-                    </PanelProvider>
+                    <VoteSelectionProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                        <Panel />
+                        <VoteDeeplinkHandler />
+                        <Notifications />
+                        {config.gaTag && (
+                          <GoogleAnalytics gaId={config.gaTag} />
+                        )}
+                      </PanelProvider>
+                    </VoteSelectionProvider>
                   </VotesProvider>
                 </DelegationProvider>
               </ContractsProvider>

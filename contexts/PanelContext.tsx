@@ -3,10 +3,9 @@ import {
   ReactNode,
   useCallback,
   useMemo,
-  useRef,
   useState,
 } from "react";
-import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
+import { PanelTypeT, VoteT } from "types";
 
 export function scrollToAndHighlightVote(uniqueKey: string, attempt = 0) {
   const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
@@ -26,8 +25,6 @@ export function scrollToAndHighlightVote(uniqueKey: string, attempt = 0) {
 
 export type OpenPanelOptions = {
   navigableVotes?: VoteT[];
-  selectedVotes?: SelectedVotesByKeyT;
-  selectVote?: (value: string | undefined, vote: VoteT) => void;
 };
 
 export type VoteOpener = (vote: VoteT, navigableVotes: VoteT[]) => void;
@@ -43,13 +40,10 @@ export interface PanelContextState {
   ) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
   openVote: VoteOpener;
-  registerVoteOpener: (opener: VoteOpener) => () => void;
   navigableVotes: VoteT[];
   currentVoteIndex: number;
   goToNextVote: () => void;
   goToPrevVote: () => void;
-  selectVote: ((value: string | undefined, vote: VoteT) => void) | undefined;
-  selectedVotes: SelectedVotesByKeyT;
 }
 
 export const defaultPanelContextState: PanelContextState = {
@@ -59,13 +53,10 @@ export const defaultPanelContextState: PanelContextState = {
   openPanel: () => null,
   closePanel: () => null,
   openVote: () => null,
-  registerVoteOpener: () => () => null,
   navigableVotes: [],
   currentVoteIndex: -1,
   goToNextVote: () => null,
   goToPrevVote: () => null,
-  selectVote: undefined,
-  selectedVotes: {},
 };
 
 export const PanelContext = createContext<PanelContextState>(
@@ -81,10 +72,6 @@ export function PanelProvider({ children }: { children: ReactNode }) {
   >([]);
   const [navigableVotes, setNavigableVotes] = useState<VoteT[]>([]);
   const [currentVoteIndex, setCurrentVoteIndex] = useState(-1);
-  const [selectVoteFn, setSelectVoteFn] = useState<
-    ((value: string | undefined, vote: VoteT) => void) | undefined
-  >();
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
 
   const openPanel = useCallback(
     (
@@ -107,48 +94,15 @@ export function PanelProvider({ children }: { children: ReactNode }) {
         setNavigableVotes([]);
         setCurrentVoteIndex(-1);
       }
-
-      if (options?.selectVote) {
-        setSelectVoteFn(() => options.selectVote);
-      } else {
-        setSelectVoteFn(undefined);
-      }
-
-      setSelectedVotes(options?.selectedVotes ?? {});
     },
     []
   );
 
-  // pages with richer panel options (ActiveVotes passes selectedVotes and
-  // selectVote so the panel's quick-vote controls work) register an opener;
-  // deeplinks use it so a shared link opens the same panel a row click would
-  const voteOpenerRef = useRef<VoteOpener | null>(null);
-
-  const registerVoteOpener = useCallback((opener: VoteOpener) => {
-    voteOpenerRef.current = opener;
-    return () => {
-      if (voteOpenerRef.current === opener) voteOpenerRef.current = null;
-    };
-  }, []);
-
   const openVote = useCallback<VoteOpener>(
     (vote, navigableVotes) => {
-      if (voteOpenerRef.current) {
-        voteOpenerRef.current(vote, navigableVotes);
-      } else {
-        openPanel("vote", vote, { navigableVotes });
-      }
+      openPanel("vote", vote, { navigableVotes });
     },
     [openPanel]
-  );
-
-  const wrappedSelectVote = useCallback(
-    (value: string | undefined, vote: VoteT) => {
-      selectVoteFn?.(value, vote);
-      setSelectedVotes((prev) => ({ ...prev, [vote.uniqueKey]: value }));
-      scrollToAndHighlightVote(vote.uniqueKey);
-    },
-    [selectVoteFn]
   );
 
   const goToNextVote = useCallback(() => {
@@ -209,19 +163,15 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       openPanel,
       closePanel,
       openVote,
-      registerVoteOpener,
       navigableVotes,
       currentVoteIndex,
       goToNextVote,
       goToPrevVote,
-      selectVote: selectVoteFn ? wrappedSelectVote : undefined,
-      selectedVotes,
     }),
     [
       closePanel,
       openPanel,
       openVote,
-      registerVoteOpener,
       panelContent,
       panelOpen,
       panelType,
@@ -229,9 +179,6 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       currentVoteIndex,
       goToNextVote,
       goToPrevVote,
-      selectVoteFn,
-      wrappedSelectVote,
-      selectedVotes,
     ]
   );
 

@@ -29,6 +29,12 @@ export {
 } from "./PanelContext";
 export type { PanelContextState } from "./PanelContext";
 export {
+  defaultVoteSelectionContextState,
+  VoteSelectionContext,
+  VoteSelectionProvider,
+} from "./VoteSelectionContext";
+export type { VoteSelectionContextState } from "./VoteSelectionContext";
+export {
   defaultVotesContextState,
   VotesContext,
   VotesProvider,

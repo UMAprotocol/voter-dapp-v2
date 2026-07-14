@@ -3,6 +3,7 @@ export { useDelegationContext } from "./contexts/useDelegationContext";
 export { useErrorContext } from "./contexts/useErrorContext";
 export { useNotificationsContext } from "./contexts/useNotificationsContext";
 export { usePanelContext } from "./contexts/usePanelContext";
+export { useVoteSelectionContext } from "./contexts/useVoteSelectionContext";
 export { useVoteTimingContext } from "./contexts/useVoteTimingContext";
 export { useVotesContext } from "./contexts/useVotesContext";
 export { useWalletContext } from "./contexts/useWalletContext";
