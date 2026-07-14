@@ -20,12 +20,14 @@ export function Nav({ links }: Props) {
 
   useEffect(() => {
     // shallow changes are query-param-only updates (vote deeplinks) and must
-    // not close the panel they describe
+    // not close the panel they describe. Real navigations clear the whole
+    // panel stack (closePanel(true)) — popping just the top entry would leave
+    // stacked panels (e.g. history under a vote) to resurface on the next page
     function closePanelOnNavigation(
       _url: string,
       { shallow }: { shallow: boolean }
     ) {
-      if (!shallow) closePanel();
+      if (!shallow) closePanel(true);
     }
     router.events.on("routeChangeStart", closePanelOnNavigation);
 

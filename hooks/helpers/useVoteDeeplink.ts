@@ -52,9 +52,9 @@ export function useVoteDeeplink() {
   } = usePanelContext();
   const {
     voteListsByActivityStatus,
-    activeVotesIsLoading,
-    upcomingVotesIsLoading,
-    pastVotesIsLoading,
+    activeVotesIsInitialLoading,
+    upcomingVotesIsInitialLoading,
+    pastVotesIsInitialLoading,
   } = useVotesContext();
 
   const parsed = router.isReady ? parseVoteDeeplink(router.query) : undefined;
@@ -141,12 +141,14 @@ export function useVoteDeeplink() {
     const expected = expectedVoteRef.current;
 
     if (!targetKey) {
-      // param gone (back button, close, page navigation): close a showing
-      // vote panel — a plain closePanel pops back to whatever panel the
-      // vote was stacked on (e.g. the history panel)
+      // param gone (back button, close, page navigation): a pending scroll
+      // for a vote whose param is gone must never fire — clear it even when
+      // something else (e.g. Nav on navigation) already closed the panel
+      clearVoteScroll();
+      // close a showing vote panel — a plain closePanel pops back to
+      // whatever panel the vote was stacked on (e.g. the history panel)
       if (voteShowing) {
         expectedVoteRef.current = undefined;
-        clearVoteScroll();
         closePanel();
       }
       return;
@@ -173,8 +175,13 @@ export function useVoteDeeplink() {
     }
 
     if (!vote || !status) {
+      // isInitialLoading, not isLoading: a disabled list query (wrong chain,
+      // graph off) reports isLoading forever, which would leave the deeplink
+      // silently unresolved instead of surfacing the not-found notification
       const stillLoading =
-        activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
+        activeVotesIsInitialLoading ||
+        upcomingVotesIsInitialLoading ||
+        pastVotesIsInitialLoading;
       if (stillLoading) return; // effect re-runs when the lists arrive
       expectedVoteRef.current = undefined;
       notifyVoteNotFound();
@@ -216,8 +223,8 @@ export function useVoteDeeplink() {
     panelType,
     panelContent,
     voteListsByActivityStatus,
-    activeVotesIsLoading,
-    upcomingVotesIsLoading,
-    pastVotesIsLoading,
+    activeVotesIsInitialLoading,
+    upcomingVotesIsInitialLoading,
+    pastVotesIsInitialLoading,
   ]);
 }

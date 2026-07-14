@@ -4,7 +4,11 @@
 // it has actually rendered (it may still be mounting during a page redirect
 // or pagination jump).
 export function scrollToAndHighlightVote(uniqueKey: string) {
-  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
+  // uniqueKey embeds the decoded identifier — arbitrary on-chain bytes, so
+  // escape it or a quote/backslash in it makes querySelector throw
+  const el = document.querySelector(
+    `[data-vote-key="${CSS.escape(uniqueKey)}"]`
+  );
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.classList.remove("vote-highlight");
