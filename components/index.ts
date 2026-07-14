@@ -56,6 +56,7 @@ export { PanelErrorBanner } from "./PanelErrorBanner/PanelErrorBanner";
 export { Tabs } from "./Tabs/Tabs";
 export { Toggle } from "./Toggle/Toggle";
 export { Tooltip } from "./Tooltip/Tooltip";
+export { VoteDeeplinkHandler } from "./VoteDeeplinkHandler/VoteDeeplinkHandler";
 export { VoteHistoryTable } from "./VoteHistoryTable/VoteHistoryTable";
 export { VoteList } from "./VoteList/VoteList";
 export { VoteTableHeadings } from "./VoteList/VoteTableHeadings";

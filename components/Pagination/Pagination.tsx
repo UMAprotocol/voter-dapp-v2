@@ -50,7 +50,7 @@ export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
 
   const getPageNumberOfItem = useCallback(
     function (itemIndex: number | undefined) {
-      if (!itemIndex) return;
+      if (itemIndex === undefined || itemIndex < 0) return;
       const pageNumber = Math.ceil((itemIndex + 1) / resultsPerPage);
 
       return pageNumber;
@@ -88,7 +88,7 @@ export function usePagination<Entry>(entries: Entry[], findIndex?: number) {
   }, [entries, updateEntries]);
 
   useEffect(() => {
-    if (!findIndex || findIndex === -1) return;
+    if (findIndex === undefined || findIndex === -1) return;
 
     const newPageNumber = getPageNumberOfItem(findIndex);
 

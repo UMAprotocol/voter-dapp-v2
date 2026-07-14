@@ -3,6 +3,7 @@ export { getIgnoredRequestToBeDelegateAddressesFromStorage } from "./delegation/
 export { calculateOutstandingRewards } from "./rewards/calculateOutstandingRewards";
 export { getCanUnstakeTime } from "./staking/getCanUnstakeTime";
 export { addOpacityToHsl } from "./util/addOpacityToHsl";
+export * from "./util/deeplink";
 export * from "./util/formatNumber";
 export { getEntriesForPage } from "./util/getEntriesForPage";
 export { handleNotifications } from "./util/handleNotifications";

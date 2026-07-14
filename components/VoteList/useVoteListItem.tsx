@@ -6,10 +6,12 @@ import {
   getClaimTitle,
 } from "helpers";
 import { config } from "helpers/config";
+import { scrollToAndHighlightVote } from "helpers/util/scrollToVote";
 import {
   useAccountDetails,
   useAssertionClaim,
   useDelegationContext,
+  usePanelContext,
   useVotesContext,
   useWalletContext,
 } from "hooks";
@@ -39,6 +41,17 @@ export function useVoteListItem({
   moreDetailsAction,
   isDirty = false,
 }: VoteListItemProps) {
+  const { voteScrollTarget, clearVoteScroll } = usePanelContext();
+
+  // consume a pending scroll-and-highlight request once this row is actually
+  // mounted — it may render a beat after the request (page redirect,
+  // pagination jump), which is why the requester doesn't touch the DOM itself
+  useEffect(() => {
+    if (voteScrollTarget !== vote.uniqueKey) return;
+    scrollToAndHighlightVote(vote.uniqueKey);
+    clearVoteScroll();
+  }, [voteScrollTarget, vote.uniqueKey, clearVoteScroll]);
+
   const [isCustomInput, setIsCustomInput] = useState(false);
   const multipleInputProps = useMultipleValuesVote({
     vote,

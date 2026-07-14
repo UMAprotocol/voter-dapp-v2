@@ -29,7 +29,7 @@ function formatPriceRequests(priceRequests: RawPriceRequestDataT[]) {
     .filter((priceRequest): priceRequest is PriceRequestT => !!priceRequest);
 }
 
-function formatPriceRequest(
+export function formatPriceRequest(
   priceRequest: RawPriceRequestDataT
 ): PriceRequestT & VoteParticipationT & VoteResultsT {
   const time = BigNumber.isBigNumber(priceRequest.time)

@@ -19,10 +19,20 @@ export function Nav({ links }: Props) {
   const isActive = (href: string) => router.pathname === href;
 
   useEffect(() => {
-    router.events.on("routeChangeStart", closePanel);
+    // shallow changes are query-param-only updates (vote deeplinks) and must
+    // not close the panel they describe. Real navigations clear the whole
+    // panel stack (closePanel(true)) — popping just the top entry would leave
+    // stacked panels (e.g. history under a vote) to resurface on the next page
+    function closePanelOnNavigation(
+      _url: string,
+      { shallow }: { shallow: boolean }
+    ) {
+      if (!shallow) closePanel(true);
+    }
+    router.events.on("routeChangeStart", closePanelOnNavigation);
 
     return () => {
-      router.events.off("routeChangeStart", closePanel);
+      router.events.off("routeChangeStart", closePanelOnNavigation);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

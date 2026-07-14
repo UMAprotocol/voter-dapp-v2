@@ -1,8 +1,8 @@
 import { Button, VoteList } from "components";
 import {
-  usePanelContext,
   useVoteTimingContext,
   useVotesContext,
+  useVoteUrl,
   useAccountDetails,
   useDelegationContext,
 } from "hooks";
@@ -18,7 +18,7 @@ import { VoteT } from "types";
 
 export function PastVotes() {
   const { pastVoteList = [] } = useVotesContext();
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const { phase } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const { delegatorAddress } = useDelegationContext();
@@ -73,14 +73,14 @@ export function PastVotes() {
         vote: updatedVote,
         phase: phase,
         activityStatus: "past" as const,
-        moreDetailsAction: () => openPanel("vote", vote),
+        moreDetailsAction: () => openVote(vote.uniqueKey),
       };
     });
   }, [
     recentVotes,
     userVoteDetails,
     phase,
-    openPanel,
+    openVote,
     isWalletConnected,
     userVotesLoading,
   ]);

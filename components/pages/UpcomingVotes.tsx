@@ -9,7 +9,12 @@ import {
   VoteList,
   usePagination,
 } from "components";
-import { usePanelContext, useVoteTimingContext, useVotesContext } from "hooks";
+import {
+  useDeeplinkedVoteIndex,
+  useVoteTimingContext,
+  useVotesContext,
+  useVoteUrl,
+} from "hooks";
 import { isUndefined } from "lodash";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
@@ -19,9 +24,11 @@ import { LoadingSpinnerWrapper } from "./styles";
 export function UpcomingVotes() {
   const { upcomingVoteList, upcomingVotesIsLoading } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
+  const deeplinkedVoteIndex = useDeeplinkedVoteIndex(upcomingVoteList);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
+    upcomingVoteList ?? [],
+    deeplinkedVoteIndex
   );
   const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
 
@@ -29,7 +36,7 @@ export function UpcomingVotes() {
     activityStatus: "upcoming" as const,
     vote,
     phase,
-    moreDetailsAction: () => openPanel("vote", vote),
+    moreDetailsAction: () => openVote(vote.uniqueKey),
   }));
 
   const isLoading = upcomingVotesIsLoading || isUndefined(upcomingVoteList);

@@ -1,4 +1,4 @@
-import { usePanelContext } from "hooks";
+import { useVoteUrl } from "hooks";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { VoteHistoryTableRow } from "./VoteHistoryTableRow";
@@ -7,7 +7,7 @@ interface Props {
   votes: VoteT[];
 }
 export function VoteHistoryTable({ votes }: Props) {
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const headings = ["Vote", "Staking", "Voted", "Correctness", "Earnings"];
 
   return (
@@ -27,7 +27,7 @@ export function VoteHistoryTable({ votes }: Props) {
             vote={vote}
             key={vote.uniqueKey}
             onVoteClicked={() => {
-              openPanel("vote", vote);
+              openVote(vote.uniqueKey);
             }}
           />
         ))}

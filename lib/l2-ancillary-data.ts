@@ -3,11 +3,16 @@ import { Contract } from "ethers";
 import {
   BytesLike,
   defaultAbiCoder,
+  hexlify,
   Interface,
   keccak256,
 } from "ethers/lib/utils";
 import { getProvider } from "helpers/config";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
+// moved to lib/deeplink-matching so pure consumers can import it without the
+// provider config this module needs; re-exported for existing callers
+import { extractMaybeAncillaryDataFields } from "lib/deeplink-matching";
+export { extractMaybeAncillaryDataFields };
 
 // ABI for OracleSpoke contract events
 export const PRICE_REQUEST_BRIDGED_ABI = [
@@ -66,29 +71,6 @@ export interface ResolveAncillaryDataResult {
   resolvedAncillaryData: string;
 }
 
-function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
-  const pattern = new RegExp(
-    "^" +
-      "ancillaryDataHash:(\\w+),\\s*" +
-      "childBlockNumber:(\\d+),\\s*" +
-      "childOracle:(\\w+),\\s*" +
-      "childRequester:(\\w+),\\s*" +
-      "childChainId:(\\d+)" +
-      "$"
-  );
-
-  const match = decodedAncillaryData.match(pattern);
-  if (!match) return {};
-
-  return {
-    ancillaryDataHash: match[1],
-    childBlockNumber: match[2],
-    childOracle: match[3],
-    childRequester: match[4],
-    childChainId: match[5],
-  };
-}
-
 function mergeAncillaryData(
   decodedL1Data: string,
   decodedL2Data: string
@@ -99,12 +81,15 @@ function mergeAncillaryData(
   return encodeHexString(merged);
 }
 
-async function fetchAncillaryDataFromSpoke(args: {
-  parentRequestId: BytesLike;
+// All PriceRequestBridged events an oracle spoke emitted at a given block.
+// Unfiltered on purpose: requests bridged in the same batch share (chain,
+// oracle, block), so one fetch serves every one of them — callers matching
+// several candidates memoize on exactly these arguments.
+export async function fetchBridgedEventsAt(args: {
   childOracle: string;
   childChainId: number;
   childBlockNumber: number;
-}): Promise<string> {
+}) {
   const provider = getProvider(args.childChainId);
   const OracleSpoke = new Contract(
     args.childOracle,
@@ -112,30 +97,34 @@ async function fetchAncillaryDataFromSpoke(args: {
     provider
   );
 
-  const filter = OracleSpoke.filters.PriceRequestBridged(
-    null,
-    null,
-    null,
-    null,
-    null,
-    args.parentRequestId
-  );
-
-  const events = await OracleSpoke.queryFilter(
-    filter,
+  return OracleSpoke.queryFilter(
+    OracleSpoke.filters.PriceRequestBridged(),
     args.childBlockNumber - 1,
     args.childBlockNumber
   );
+}
 
-  if (!events.length) {
+export async function fetchAncillaryDataFromSpoke(args: {
+  parentRequestId: BytesLike;
+  childOracle: string;
+  childChainId: number;
+  childBlockNumber: number;
+}): Promise<string> {
+  const parentRequestId = hexlify(args.parentRequestId).toLowerCase();
+  const events = await fetchBridgedEventsAt(args);
+  const event = events.find(
+    (e) =>
+      (e.args?.parentRequestId as string | undefined)?.toLowerCase() ===
+      parentRequestId
+  );
+
+  if (!event) {
     throw new Error(
-      `Unable to find event with request Id: ${String(
-        args.parentRequestId
-      )} on chain ${args.childChainId}`
+      `Unable to find event with request Id: ${parentRequestId} on chain ${args.childChainId}`
     );
   }
 
-  return events[0]?.args?.ancillaryData as string;
+  return event.args?.ancillaryData as string;
 }
 
 export function createRequestHash(

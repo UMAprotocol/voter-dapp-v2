@@ -1,26 +1,24 @@
 import {
   createContext,
+  MutableRefObject,
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from "react";
-import { PanelTypeT, SelectedVotesByKeyT, VoteT } from "types";
-
-function scrollToAndHighlightVote(uniqueKey: string) {
-  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
-  if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "center" });
-  el.classList.remove("vote-highlight");
-  void (el as HTMLElement).offsetWidth;
-  el.classList.add("vote-highlight");
-  setTimeout(() => el.classList.remove("vote-highlight"), 1500);
-}
+import { PanelTypeT, VoteT } from "types";
 
 export type OpenPanelOptions = {
   navigableVotes?: VoteT[];
-  selectedVotes?: SelectedVotesByKeyT;
-  selectVote?: (value: string | undefined, vote: VoteT) => void;
+};
+
+// A URL write our own UI initiated (row click, panel arrows). The deeplink
+// handler uses it to tell in-app opens apart from inbound navigations —
+// inbound ones land on the vote's page and highlight its row.
+export type ExpectedVoteOpen = {
+  key: string;
+  scroll: boolean;
 };
 
 export interface PanelContextState {
@@ -33,12 +31,13 @@ export interface PanelContextState {
     options?: OpenPanelOptions
   ) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
+  showVote: (vote: VoteT, navigableVotes: VoteT[]) => void;
   navigableVotes: VoteT[];
   currentVoteIndex: number;
-  goToNextVote: () => void;
-  goToPrevVote: () => void;
-  selectVote: ((value: string | undefined, vote: VoteT) => void) | undefined;
-  selectedVotes: SelectedVotesByKeyT;
+  expectedVoteRef: MutableRefObject<ExpectedVoteOpen | undefined>;
+  voteScrollTarget: string | undefined;
+  requestVoteScroll: (uniqueKey: string) => void;
+  clearVoteScroll: () => void;
 }
 
 export const defaultPanelContextState: PanelContextState = {
@@ -47,12 +46,13 @@ export const defaultPanelContextState: PanelContextState = {
   panelOpen: false,
   openPanel: () => null,
   closePanel: () => null,
+  showVote: () => null,
   navigableVotes: [],
   currentVoteIndex: -1,
-  goToNextVote: () => null,
-  goToPrevVote: () => null,
-  selectVote: undefined,
-  selectedVotes: {},
+  expectedVoteRef: { current: undefined },
+  voteScrollTarget: undefined,
+  requestVoteScroll: () => null,
+  clearVoteScroll: () => null,
 };
 
 export const PanelContext = createContext<PanelContextState>(
@@ -68,10 +68,20 @@ export function PanelProvider({ children }: { children: ReactNode }) {
   >([]);
   const [navigableVotes, setNavigableVotes] = useState<VoteT[]>([]);
   const [currentVoteIndex, setCurrentVoteIndex] = useState(-1);
-  const [selectVoteFn, setSelectVoteFn] = useState<
-    ((value: string | undefined, vote: VoteT) => void) | undefined
-  >();
-  const [selectedVotes, setSelectedVotes] = useState<SelectedVotesByKeyT>({});
+
+  const expectedVoteRef = useRef<ExpectedVoteOpen | undefined>();
+
+  // Which row should scroll into view and flash. State (not a direct DOM
+  // call) so the row itself consumes it in an effect once it is actually
+  // mounted — the row may still be rendering when the request is made
+  // (page redirect, pagination jump).
+  const [voteScrollTarget, setVoteScrollTarget] = useState<string>();
+  const requestVoteScroll = useCallback((uniqueKey: string) => {
+    setVoteScrollTarget(uniqueKey);
+  }, []);
+  const clearVoteScroll = useCallback(() => {
+    setVoteScrollTarget(undefined);
+  }, []);
 
   const openPanel = useCallback(
     (
@@ -94,44 +104,27 @@ export function PanelProvider({ children }: { children: ReactNode }) {
         setNavigableVotes([]);
         setCurrentVoteIndex(-1);
       }
-
-      if (options?.selectVote) {
-        setSelectVoteFn(() => options.selectVote);
-      } else {
-        setSelectVoteFn(undefined);
-      }
-
-      setSelectedVotes(options?.selectedVotes ?? {});
     },
     []
   );
 
-  const wrappedSelectVote = useCallback(
-    (value: string | undefined, vote: VoteT) => {
-      selectVoteFn?.(value, vote);
-      setSelectedVotes((prev) => ({ ...prev, [vote.uniqueKey]: value }));
-      scrollToAndHighlightVote(vote.uniqueKey);
-    },
-    [selectVoteFn]
-  );
-
-  const goToNextVote = useCallback(() => {
-    if (currentVoteIndex < navigableVotes.length - 1) {
-      const nextIndex = currentVoteIndex + 1;
-      setCurrentVoteIndex(nextIndex);
-      setPanelContent(navigableVotes[nextIndex]);
-      scrollToAndHighlightVote(navigableVotes[nextIndex].uniqueKey);
-    }
-  }, [currentVoteIndex, navigableVotes]);
-
-  const goToPrevVote = useCallback(() => {
-    if (currentVoteIndex > 0) {
-      const prevIndex = currentVoteIndex - 1;
-      setCurrentVoteIndex(prevIndex);
-      setPanelContent(navigableVotes[prevIndex]);
-      scrollToAndHighlightVote(navigableVotes[prevIndex].uniqueKey);
-    }
-  }, [currentVoteIndex, navigableVotes]);
+  // Vote-to-vote transitions (panel arrows, another row clicked, back and
+  // forward between votes) replace the stack top instead of pushing, so
+  // closing the panel doesn't walk back through every vote viewed.
+  const showVote = useCallback((vote: VoteT, votes: VoteT[]) => {
+    setPanelType("vote");
+    setPanelContent(vote);
+    setPanelOpen(true);
+    setNavigableVotes(votes);
+    const index = votes.findIndex((v) => v.uniqueKey === vote.uniqueKey);
+    setCurrentVoteIndex(index >= 0 ? index : 0);
+    setPreviousPanelData((prev) => {
+      const top = prev[prev.length - 1];
+      const entry = { panelType: "vote" as const, panelContent: vote };
+      if (top?.panelType === "vote") return [...prev.slice(0, -1), entry];
+      return [...prev, entry];
+    });
+  }, []);
 
   const closePanel = useCallback(
     (clearPreviousPanelData = false) => {
@@ -172,26 +165,26 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       panelOpen,
       openPanel,
       closePanel,
+      showVote,
       navigableVotes,
       currentVoteIndex,
-      goToNextVote,
-      goToPrevVote,
-      selectVote: selectVoteFn ? wrappedSelectVote : undefined,
-      selectedVotes,
+      expectedVoteRef,
+      voteScrollTarget,
+      requestVoteScroll,
+      clearVoteScroll,
     }),
     [
       closePanel,
       openPanel,
+      showVote,
       panelContent,
       panelOpen,
       panelType,
       navigableVotes,
       currentVoteIndex,
-      goToNextVote,
-      goToPrevVote,
-      selectVoteFn,
-      wrappedSelectVote,
-      selectedVotes,
+      voteScrollTarget,
+      requestVoteScroll,
+      clearVoteScroll,
     ]
   );
 

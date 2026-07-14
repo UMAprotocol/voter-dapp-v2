@@ -1,5 +1,5 @@
 import removeMarkdown from "remove-markdown";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
@@ -9,8 +9,11 @@ import {
   useVoteDiscussion,
   useAssertionClaim,
   useAugmentedVoteData,
+  useVoteSelectionContext,
+  useVotesContext,
   useVoteTimingContext,
   useVotePanelKeyboard,
+  useVoteUrl,
 } from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
@@ -50,13 +53,13 @@ export function VotePanel({ content }: Props) {
   const {
     navigableVotes,
     currentVoteIndex,
-    goToNextVote,
-    goToPrevVote,
-    selectVote,
-    selectedVotes,
     panelOpen,
     panelType,
+    requestVoteScroll,
   } = usePanelContext();
+  const { selectedVotes, selectVote } = useVoteSelectionContext();
+  const { activeVoteList } = useVotesContext();
+  const { switchVote } = useVoteUrl();
 
   const { phase } = useVoteTimingContext();
   const isCommitPhase = phase === "commit";
@@ -65,7 +68,20 @@ export function VotePanel({ content }: Props) {
   const canGoPrev = currentVoteIndex > 0;
   const canGoNext = currentVoteIndex < navigableVotes.length - 1;
 
-  const showVoteInput = isCommitPhase && selectVote !== undefined;
+  // quick-vote controls only make sense for votes that are actually
+  // committable right now, i.e. in the current round's active list
+  const isActiveVote = activeVoteList?.some(
+    (vote) => vote.uniqueKey === content.uniqueKey
+  );
+  const showVoteInput = isCommitPhase && isActiveVote;
+
+  const handleSelectVote = useCallback(
+    (value: string | undefined, vote: VoteT) => {
+      selectVote(value, vote);
+      requestVoteScroll(vote.uniqueKey);
+    },
+    [selectVote, requestVoteScroll]
+  );
 
   const prevButtonRef = useRef<HTMLButtonElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
@@ -77,15 +93,42 @@ export function VotePanel({ content }: Props) {
     el.classList.add("nav-flash");
   }
 
+  // the arrows navigate by rewriting `?vote=`; the deeplink handler swaps
+  // the panel content in response. That round-trip means currentVoteIndex
+  // lags behind rapid presses (key repeat, double click), so track the
+  // in-flight target and advance from it — otherwise consecutive presses
+  // recompute the same target and collapse into a single step
+  const pendingNavKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (pendingNavKeyRef.current === content.uniqueKey) {
+      pendingNavKeyRef.current = null;
+    }
+  }, [content.uniqueKey]);
+
+  const navigateBy = useCallback(
+    (offset: number) => {
+      const pendingIndex = pendingNavKeyRef.current
+        ? navigableVotes.findIndex(
+            (vote) => vote.uniqueKey === pendingNavKeyRef.current
+          )
+        : -1;
+      const baseIndex = pendingIndex >= 0 ? pendingIndex : currentVoteIndex;
+      const target = navigableVotes[baseIndex + offset];
+      if (!target) return false;
+      pendingNavKeyRef.current = target.uniqueKey;
+      switchVote(target.uniqueKey);
+      return true;
+    },
+    [navigableVotes, currentVoteIndex, switchVote]
+  );
+
   const handlePrev = useCallback(() => {
-    goToPrevVote();
-    flashButton(prevButtonRef.current);
-  }, [goToPrevVote]);
+    if (navigateBy(-1)) flashButton(prevButtonRef.current);
+  }, [navigateBy]);
 
   const handleNext = useCallback(() => {
-    goToNextVote();
-    flashButton(nextButtonRef.current);
-  }, [goToNextVote]);
+    if (navigateBy(1)) flashButton(nextButtonRef.current);
+  }, [navigateBy]);
 
   useVotePanelKeyboard({
     isActive: panelOpen && panelType === "vote",
@@ -95,7 +138,7 @@ export function VotePanel({ content }: Props) {
     canGoNext,
     options: content.options,
     currentVote: content,
-    selectVote,
+    selectVote: showVoteInput ? handleSelectVote : undefined,
   });
 
   const [selectedTab, setSelectedTab] = useState<string | undefined>();
@@ -248,7 +291,7 @@ export function VotePanel({ content }: Props) {
         <VotePanelVoteInput
           vote={content}
           selectedValue={selectedVotes[content.uniqueKey]}
-          onSelectVote={selectVote}
+          onSelectVote={handleSelectVote}
         />
       )}
       {makeTabs()}

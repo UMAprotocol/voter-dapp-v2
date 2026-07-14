@@ -57,6 +57,12 @@ export interface VotesContextState {
   activeVotesIsLoading: boolean;
   upcomingVotesIsLoading: boolean;
   pastVotesIsLoading: boolean;
+  // false when a list query is disabled (wrong chain, graph off) — unlike
+  // isLoading, which react-query v4 reports as true forever for a disabled
+  // query with no data. Consumers waiting for lists to settle must use these.
+  activeVotesIsInitialLoading: boolean;
+  upcomingVotesIsInitialLoading: boolean;
+  pastVotesIsInitialLoading: boolean;
   contentfulDataIsLoading: boolean;
   committedVotesIsLoading: boolean;
   committedVotesByCallerIsLoading: boolean;
@@ -93,6 +99,9 @@ export const defaultVotesContextState: VotesContextState = {
   activeVotesIsLoading: false,
   upcomingVotesIsLoading: false,
   pastVotesIsLoading: false,
+  activeVotesIsInitialLoading: false,
+  upcomingVotesIsInitialLoading: false,
+  pastVotesIsInitialLoading: false,
   contentfulDataIsLoading: false,
   committedVotesIsLoading: false,
   committedVotesByCallerIsLoading: false,
@@ -113,12 +122,21 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
   const { data: designatedVotingV1Address } =
     useDesignatedVotingV1Address(userAddress);
-  const { data: activeVotesByKey, isLoading: activeVotesIsLoading } =
-    useActiveVotes();
-  const { data: upcomingVotesByKey, isLoading: upcomingVotesIsLoading } =
-    useUpcomingVotes();
-  const { data: pastVotesByKey, isLoading: pastVotesIsLoading } =
-    usePastVotes();
+  const {
+    data: activeVotesByKey,
+    isLoading: activeVotesIsLoading,
+    isInitialLoading: activeVotesIsInitialLoading,
+  } = useActiveVotes();
+  const {
+    data: upcomingVotesByKey,
+    isLoading: upcomingVotesIsLoading,
+    isInitialLoading: upcomingVotesIsInitialLoading,
+  } = useUpcomingVotes();
+  const {
+    data: pastVotesByKey,
+    isLoading: pastVotesIsLoading,
+    isInitialLoading: pastVotesIsInitialLoading,
+  } = usePastVotes();
   const { data: contentfulData, isLoading: contentfulDataIsLoading } =
     useContentfulData();
   const { data: committedVotes, isLoading: committedVotesIsLoading } =
@@ -318,6 +336,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       activeVotesIsLoading,
       upcomingVotesIsLoading,
       pastVotesIsLoading,
+      activeVotesIsInitialLoading,
+      upcomingVotesIsInitialLoading,
+      pastVotesIsInitialLoading,
       contentfulDataIsLoading,
       committedVotesIsLoading,
       committedVotesByCallerIsLoading,
@@ -330,6 +351,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       activeVoteList,
       activeVotesByKey,
       activeVotesIsLoading,
+      activeVotesIsInitialLoading,
+      upcomingVotesIsInitialLoading,
+      pastVotesIsInitialLoading,
       activityStatus,
       committedVotes,
       committedVotesByCallerIsLoading,

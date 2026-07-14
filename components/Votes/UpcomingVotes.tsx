@@ -1,20 +1,27 @@
 import { Pagination, usePagination, VoteList, VoteTimeline } from "components";
-import { usePanelContext, useVotesContext, useVoteTimingContext } from "hooks";
+import {
+  useDeeplinkedVoteIndex,
+  useVotesContext,
+  useVoteTimingContext,
+  useVoteUrl,
+} from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
 export function UpcomingVotes() {
   const { upcomingVoteList, activityStatus } = useVotesContext();
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const { phase } = useVoteTimingContext();
+  const deeplinkedVoteIndex = useDeeplinkedVoteIndex(upcomingVoteList);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
-    upcomingVoteList ?? []
+    upcomingVoteList ?? [],
+    deeplinkedVoteIndex
   );
 
   const data = entriesToShow.map((vote) => ({
     activityStatus: "upcoming" as const,
     vote,
     phase,
-    moreDetailsAction: () => openPanel("vote", vote),
+    moreDetailsAction: () => openVote(vote.uniqueKey),
   }));
 
   return (

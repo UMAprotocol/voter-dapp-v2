@@ -32,6 +32,7 @@ import {
   createContext,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { DelegationEventT, DelegationStatusT } from "types";
@@ -171,7 +172,13 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const { data: stakerDetails } = useStakerDetails(address);
   const { delegate } = stakerDetails ?? {};
   const { votingWriter } = useContractsContext();
-  const { closePanel } = usePanelContext();
+  const { closePanel, panelOpen, panelType } = usePanelContext();
+  // sendRequestToBeDelegate's success handler fires when the tx mines,
+  // possibly minutes after the click — consult the panel state at THAT
+  // moment (latest-value ref), not the state captured with the callback, so
+  // it never closes a panel (e.g. a vote panel) the user has since opened
+  const delegationPanelShowingRef = useRef(false);
+  delegationPanelShowingRef.current = panelOpen && panelType === "delegation";
   const pendingReceivedRequestsToBeDelegate =
     getPendingReceivedRequestsToBeDelegate();
   const hasPendingReceivedRequestsToBeDelegate =
@@ -331,7 +338,7 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
         },
         {
           onSuccess: () => {
-            closePanel();
+            if (delegationPanelShowingRef.current) closePanel();
           },
         }
       );

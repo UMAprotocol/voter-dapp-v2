@@ -1,12 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GlobalStyle, Notifications, Panel } from "components";
+import {
+  GlobalStyle,
+  Notifications,
+  Panel,
+  VoteDeeplinkHandler,
+} from "components";
 import {
   ContractsProvider,
   DelegationProvider,
   ErrorProvider,
   NotificationsProvider,
   PanelProvider,
+  VoteSelectionProvider,
   VoteTimingProvider,
   VotesProvider,
   WalletProvider,
@@ -29,13 +35,18 @@ function MyApp({ Component, pageProps }: AppProps) {
               <ContractsProvider>
                 <DelegationProvider>
                   <VotesProvider>
-                    <PanelProvider>
-                      <GlobalStyle />
-                      <Component {...pageProps} />
-                      <Panel />
-                      <Notifications />
-                      {config.gaTag && <GoogleAnalytics gaId={config.gaTag} />}
-                    </PanelProvider>
+                    <VoteSelectionProvider>
+                      <PanelProvider>
+                        <GlobalStyle />
+                        <Component {...pageProps} />
+                        <Panel />
+                        <VoteDeeplinkHandler />
+                        <Notifications />
+                        {config.gaTag && (
+                          <GoogleAnalytics gaId={config.gaTag} />
+                        )}
+                      </PanelProvider>
+                    </VoteSelectionProvider>
                   </VotesProvider>
                 </DelegationProvider>
               </ContractsProvider>
