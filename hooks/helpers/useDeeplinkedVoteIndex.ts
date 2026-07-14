@@ -1,36 +1,25 @@
-import { getVoteDeeplinkParam } from "helpers/util/deeplink";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef } from "react";
+import { usePanelContext } from "hooks/contexts/usePanelContext";
+import { useMemo } from "react";
 import { VoteT } from "types";
 
 /**
- * Index of the vote `?vote=` points to within the given list, for driving
- * `usePagination(votes, findIndex)` to the vote's page. Reported once per
- * key — afterwards it returns undefined so the user can page freely while
- * the panel (and its URL param) stays open.
+ * Index of the vote a pending scroll-and-highlight request points to within
+ * the given list, for driving `usePagination(votes, findIndex)` to the
+ * vote's page so the row can mount and consume the request. Keyed on
+ * PanelContext's voteScrollTarget — set for inbound deeplinks and panel-arrow
+ * navigation but not for plain row clicks, so in-app opens (e.g. from the
+ * history panel) never yank the user's pagination. The target is cleared
+ * when the row consumes it, after which this returns undefined and the user
+ * can page freely while the panel (and its URL param) stays open.
  */
 export function useDeeplinkedVoteIndex(votes: VoteT[] | undefined) {
-  const router = useRouter();
-  const appliedKeyRef = useRef<string>();
-  const targetKey = router.isReady
-    ? getVoteDeeplinkParam(router.query)
-    : undefined;
+  const { voteScrollTarget } = usePanelContext();
 
-  const index = useMemo(() => {
-    if (!targetKey || appliedKeyRef.current === targetKey || !votes?.length) {
-      return undefined;
-    }
-    const found = votes.findIndex(({ uniqueKey }) => uniqueKey === targetKey);
+  return useMemo(() => {
+    if (!voteScrollTarget || !votes?.length) return undefined;
+    const found = votes.findIndex(
+      ({ uniqueKey }) => uniqueKey === voteScrollTarget
+    );
     return found === -1 ? undefined : found;
-  }, [targetKey, votes]);
-
-  useEffect(() => {
-    if (!targetKey) {
-      appliedKeyRef.current = undefined;
-    } else if (index !== undefined) {
-      appliedKeyRef.current = targetKey;
-    }
-  }, [index, targetKey]);
-
-  return index;
+  }, [voteScrollTarget, votes]);
 }

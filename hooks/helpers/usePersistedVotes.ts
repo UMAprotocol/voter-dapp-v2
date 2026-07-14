@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { SelectedVotesByKeyT } from "types";
 
 const STORAGE_KEY = "uma-voter-selected-votes";
@@ -25,21 +25,25 @@ export function usePersistedVotes(
   roundId: number
 ): [SelectedVotesByKeyT, Dispatch<SetStateAction<SelectedVotesByKeyT>>] {
   const [votes, setVotes] = useState<SelectedVotesByKeyT>({});
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const loadedRoundRef = useRef<number>();
 
+  // (Re)load whenever the round changes, not just on mount: the hook lives in
+  // an app-lifetime provider, so a round can roll over while it is mounted.
+  // Reloading drops the previous round's selections (via the roundId check in
+  // loadFromStorage) instead of carrying them into — and persisting them
+  // under — the new round, where a rolled vote shares its uniqueKey. One
+  // effect, so a round change can never persist state belonging to the
+  // previous round before the reload lands.
   useEffect(() => {
-    if (roundId && !hasLoaded) {
+    if (!roundId) return;
+    if (loadedRoundRef.current !== roundId) {
+      loadedRoundRef.current = roundId;
       setVotes(loadFromStorage(roundId));
-      setHasLoaded(true);
+      return;
     }
-  }, [roundId, hasLoaded]);
-
-  useEffect(() => {
-    if (roundId && hasLoaded) {
-      const data: StoredVotesData = { roundId, votes };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-  }, [votes, roundId, hasLoaded]);
+    const data: StoredVotesData = { roundId, votes };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [votes, roundId]);
 
   return [votes, setVotes];
 }

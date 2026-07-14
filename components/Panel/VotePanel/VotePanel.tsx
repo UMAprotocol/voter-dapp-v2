@@ -1,5 +1,5 @@
 import removeMarkdown from "remove-markdown";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Tabs } from "components";
 import { config, decodeHexString, getClaimTitle } from "helpers";
@@ -50,8 +50,13 @@ export function VotePanel({ content }: Props) {
     ancillaryDataL2,
   } = content;
 
-  const { navigableVotes, currentVoteIndex, panelOpen, panelType, requestVoteScroll } =
-    usePanelContext();
+  const {
+    navigableVotes,
+    currentVoteIndex,
+    panelOpen,
+    panelType,
+    requestVoteScroll,
+  } = usePanelContext();
   const { selectedVotes, selectVote } = useVoteSelectionContext();
   const { activeVoteList } = useVotesContext();
   const { switchVote } = useVoteUrl();
@@ -89,18 +94,41 @@ export function VotePanel({ content }: Props) {
   }
 
   // the arrows navigate by rewriting `?vote=`; the deeplink handler swaps
-  // the panel content in response
+  // the panel content in response. That round-trip means currentVoteIndex
+  // lags behind rapid presses (key repeat, double click), so track the
+  // in-flight target and advance from it — otherwise consecutive presses
+  // recompute the same target and collapse into a single step
+  const pendingNavKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (pendingNavKeyRef.current === content.uniqueKey) {
+      pendingNavKeyRef.current = null;
+    }
+  }, [content.uniqueKey]);
+
+  const navigateBy = useCallback(
+    (offset: number) => {
+      const pendingIndex = pendingNavKeyRef.current
+        ? navigableVotes.findIndex(
+            (vote) => vote.uniqueKey === pendingNavKeyRef.current
+          )
+        : -1;
+      const baseIndex = pendingIndex >= 0 ? pendingIndex : currentVoteIndex;
+      const target = navigableVotes[baseIndex + offset];
+      if (!target) return false;
+      pendingNavKeyRef.current = target.uniqueKey;
+      switchVote(target.uniqueKey);
+      return true;
+    },
+    [navigableVotes, currentVoteIndex, switchVote]
+  );
+
   const handlePrev = useCallback(() => {
-    const target = navigableVotes[currentVoteIndex - 1];
-    if (target) switchVote(target.uniqueKey);
-    flashButton(prevButtonRef.current);
-  }, [navigableVotes, currentVoteIndex, switchVote]);
+    if (navigateBy(-1)) flashButton(prevButtonRef.current);
+  }, [navigateBy]);
 
   const handleNext = useCallback(() => {
-    const target = navigableVotes[currentVoteIndex + 1];
-    if (target) switchVote(target.uniqueKey);
-    flashButton(nextButtonRef.current);
-  }, [navigableVotes, currentVoteIndex, switchVote]);
+    if (navigateBy(1)) flashButton(nextButtonRef.current);
+  }, [navigateBy]);
 
   useVotePanelKeyboard({
     isActive: panelOpen && panelType === "vote",
