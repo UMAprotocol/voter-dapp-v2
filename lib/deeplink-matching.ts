@@ -1,4 +1,8 @@
-import { keccak256 } from "ethers/lib/utils";
+import {
+  formatBytes32String,
+  getAddress,
+  keccak256,
+} from "ethers/lib/utils";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 
 // Pure matching logic behind /api/resolve-deeplink: given a set of subgraph
@@ -179,4 +183,81 @@ export function normalizeIdentifier(identifier: string) {
     return decodeHexString(identifier);
   }
   return identifier;
+}
+
+// The subgraph PriceRequest shape /api/resolve-deeplink fetches: the fields
+// the matchers need plus everything required to hand the client a renderable
+// raw price request (mirrors what getPastVotesV2 pulls).
+export type DeeplinkPriceRequestEntity = {
+  id: string;
+  isResolved: boolean;
+  isDeleted: boolean;
+  time: string;
+  ancillaryData: string | null;
+  identifier: { id: string };
+  price: string | null;
+  resolvedPriceRequestIndex: string | null;
+  isGovernance: boolean | null;
+  rollCount: number | null;
+  latestRound: {
+    roundId: string;
+    totalVotesRevealed: string | null;
+    totalTokensCommitted: string | null;
+    minAgreementRequirement: string | null;
+    minParticipationRequirement: string | null;
+    groups: { price: string; totalVoteAmount: string }[];
+    committedVotes: { id: string }[];
+    revealedVotes: { voter: { address: string }; price: string }[];
+  } | null;
+};
+
+// Maps a resolved entity to the JSON-safe raw price request the client's
+// existing pipeline helpers (formatPriceRequest, getVoteMetaData) can turn
+// into a renderable vote — same math as getPastVotesV2's transform, so the
+// provisional panel shows what the lists will. ancillaryDataL2 is appended
+// by the route after L2 resolution.
+export function makeRawRequestFromEntity(entity: DeeplinkPriceRequestEntity) {
+  const round = entity.latestRound;
+  const participation = {
+    uniqueCommitAddresses: round?.committedVotes.length ?? 0,
+    uniqueRevealAddresses: round?.revealedVotes.length ?? 0,
+    totalTokensVotedWith: Number(round?.totalVotesRevealed ?? 0),
+    totalTokensCommitted: round?.totalTokensCommitted
+      ? Number(round.totalTokensCommitted)
+      : undefined,
+    minAgreementRequirement: Number(round?.minAgreementRequirement ?? 0),
+    minParticipationRequirement: Number(
+      round?.minParticipationRequirement ?? 0
+    ),
+  };
+  const results = (round?.groups ?? []).map(({ price, totalVoteAmount }) => ({
+    vote: price,
+    tokensVotedWith: Number(totalVoteAmount),
+  }));
+  const revealedVoteByAddress: Record<string, string> = {};
+  (round?.revealedVotes ?? []).forEach((vote) => {
+    revealedVoteByAddress[getAddress(vote.voter.address)] = vote.price;
+  });
+  // formatBytes32String (the lists' encoding) throws for identifiers of 32
+  // bytes; plain utf8 encoding round-trips those — decodeHexString strips the
+  // bytes32 padding either way
+  let identifier: string;
+  try {
+    identifier = formatBytes32String(entity.identifier.id);
+  } catch {
+    identifier = encodeHexString(entity.identifier.id);
+  }
+  return {
+    identifier,
+    time: Number(entity.time),
+    ancillaryData: entity.ancillaryData ?? "0x",
+    correctVote: entity.price ?? undefined,
+    resolvedPriceRequestIndex: entity.resolvedPriceRequestIndex ?? undefined,
+    isGovernance: entity.isGovernance ?? undefined,
+    rollCount: entity.rollCount ?? 0,
+    isV1: false,
+    participation,
+    results,
+    revealedVoteByAddress,
+  };
 }

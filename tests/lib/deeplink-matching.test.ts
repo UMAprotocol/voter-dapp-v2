@@ -1,8 +1,10 @@
-import { keccak256 } from "ethers/lib/utils";
+import { formatBytes32String, getAddress, keccak256 } from "ethers/lib/utils";
 import { encodeHexString } from "helpers/web3/decodeHexString";
 import {
+  DeeplinkPriceRequestEntity,
   getBridgedFields,
   hashesOfHex,
+  makeRawRequestFromEntity,
   matchesCheapHashVariants,
   matchesHexHashVariants,
   normalizeIdentifier,
@@ -218,6 +220,92 @@ describe("matchesCheapHashVariants", () => {
     expect(matchesCheapHashVariants(callerData, keccak256(childData))).toBe(
       false
     );
+  });
+});
+
+describe("makeRawRequestFromEntity", () => {
+  const voterA = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8";
+  const entity: DeeplinkPriceRequestEntity = {
+    id: "YES_OR_NO_QUERY-1751900000-0xabc",
+    isResolved: true,
+    isDeleted: false,
+    time: "1751900000",
+    ancillaryData: callerData,
+    identifier: { id: "YES_OR_NO_QUERY" },
+    price: "1000000000000000000",
+    resolvedPriceRequestIndex: "123",
+    isGovernance: false,
+    rollCount: 1,
+    latestRound: {
+      roundId: "10000",
+      totalVotesRevealed: "5000000",
+      totalTokensCommitted: "6000000",
+      minAgreementRequirement: "1000000",
+      minParticipationRequirement: "2000000",
+      groups: [
+        { price: "1000000000000000000", totalVoteAmount: "4000000" },
+        { price: "0", totalVoteAmount: "1000000" },
+      ],
+      committedVotes: [{ id: "a" }, { id: "b" }, { id: "c" }],
+      revealedVotes: [{ voter: { address: voterA }, price: "0" }],
+    },
+  };
+
+  it("mirrors the getPastVotesV2 transform", () => {
+    expect(makeRawRequestFromEntity(entity)).toEqual({
+      identifier: formatBytes32String("YES_OR_NO_QUERY"),
+      time: 1751900000,
+      ancillaryData: callerData,
+      correctVote: "1000000000000000000",
+      resolvedPriceRequestIndex: "123",
+      isGovernance: false,
+      rollCount: 1,
+      isV1: false,
+      participation: {
+        uniqueCommitAddresses: 3,
+        uniqueRevealAddresses: 1,
+        totalTokensVotedWith: 5000000,
+        totalTokensCommitted: 6000000,
+        minAgreementRequirement: 1000000,
+        minParticipationRequirement: 2000000,
+      },
+      results: [
+        { vote: "1000000000000000000", tokensVotedWith: 4000000 },
+        { vote: "0", tokensVotedWith: 1000000 },
+      ],
+      revealedVoteByAddress: { [getAddress(voterA)]: "0" },
+    });
+  });
+
+  // formatBytes32String rejects identifiers of exactly 32 bytes; plain utf8
+  // encoding round-trips them and decodeHexString strips padding either way
+  it("encodes a 32-byte identifier without throwing", () => {
+    const longId = "A".repeat(32);
+    const raw = makeRawRequestFromEntity({
+      ...entity,
+      identifier: { id: longId },
+    });
+    expect(raw.identifier).toBe(encodeHexString(longId));
+  });
+
+  it("handles an unresolved request with sparse round data", () => {
+    const unresolved = makeRawRequestFromEntity({
+      ...entity,
+      isResolved: false,
+      price: null,
+      resolvedPriceRequestIndex: null,
+      rollCount: null,
+      ancillaryData: null,
+      latestRound: null,
+    });
+    expect(unresolved.correctVote).toBeUndefined();
+    expect(unresolved.resolvedPriceRequestIndex).toBeUndefined();
+    expect(unresolved.rollCount).toBe(0);
+    expect(unresolved.ancillaryData).toBe("0x");
+    expect(unresolved.results).toEqual([]);
+    expect(unresolved.revealedVoteByAddress).toEqual({});
+    expect(unresolved.participation.totalTokensCommitted).toBeUndefined();
+    expect(unresolved.participation.uniqueCommitAddresses).toBe(0);
   });
 });
 

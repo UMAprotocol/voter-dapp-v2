@@ -1,5 +1,5 @@
 import { ParsedUrlQuery } from "querystring";
-import { ActivityStatusT } from "types";
+import { ActivityStatusT, RawPriceRequestDataT } from "types";
 
 // The voter dapp supports two deeplink forms, both as query params on any page:
 // 1. `?vote=<uniqueKey>` — canonical form, written to the URL bar whenever a
@@ -59,9 +59,18 @@ export function parseVoteDeeplink(
   };
 }
 
+// the raw price request as the resolver serializes it (JSON-safe time,
+// ancillaryDataL2 already resolved server-side)
+export type ResolvedVoteRequestT = Omit<RawPriceRequestDataT, "time"> & {
+  time: number;
+};
+
 export type ResolvedVoteDeeplink = {
   uniqueKey: string;
   activityStatus: ActivityStatusT;
+  // present so the panel can render the vote before the app's vote lists
+  // finish loading; older cached responses may lack it
+  request?: ResolvedVoteRequestT;
 };
 
 export const pathForActivityStatus: Record<ActivityStatusT, string> = {

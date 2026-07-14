@@ -1,12 +1,18 @@
+import { BigNumber } from "ethers";
 import { gql, request as gqlRequest } from "graphql-request";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import {
   makeUniqueKeyForVote,
   makeUniqueKeyFromAncillaryHash,
 } from "helpers/voting/makeUniqueKeyForVote";
-import { fetchBridgedEventsAt } from "lib/l2-ancillary-data";
 import {
+  fetchBridgedEventsAt,
+  resolveAncillaryData,
+} from "lib/l2-ancillary-data";
+import {
+  DeeplinkPriceRequestEntity,
   getBridgedFields,
+  makeRawRequestFromEntity,
   matchesCheapHashVariants,
   matchesHexHashVariants,
   normalizeIdentifier,
@@ -21,11 +27,13 @@ import { VoteSubgraphURL } from "./_common";
 import { handleApiError, HttpError } from "./_utils/errors";
 import { validateQueryParams } from "./_utils/validation";
 
-// Resolves a deeplink to `{ uniqueKey, activityStatus }`. Two forms:
-// - `?vote=<uniqueKey>`: a direct id lookup. The dapp itself never calls this
-//   form (it searches its already-loaded lists); it exists for external
-//   consumers (explorer, oracle dapp) that hold a uniqueKey and want to know
-//   whether/where the vote exists before linking to it.
+// Resolves a deeplink to `{ uniqueKey, activityStatus, request }`, where
+// `request` is the price request itself in the app's raw shape (with the
+// child-chain ancillary data already resolved) so the panel can render the
+// vote before the app's own vote lists finish loading. Two forms:
+// - `?vote=<uniqueKey>`: a direct id lookup — used by the dapp for canonical
+//   links while its lists load, and by external consumers (explorer, oracle
+//   dapp) that hold a uniqueKey.
 // - `?identifier=&time=&ancillaryDataHash=` (or full `ancillaryData`): the
 //   external form built by makeVoterDappDeeplink; see lib/deeplink-matching
 //   for the matching semantics.
@@ -47,15 +55,10 @@ const RequestParams = ss.union([
   }),
 ]);
 
-type PriceRequestEntity = {
-  id: string;
-  isResolved: boolean;
-  isDeleted: boolean;
-  time: string;
-  ancillaryData: string | null;
-  latestRound: { roundId: string } | null;
-};
+type PriceRequestEntity = DeeplinkPriceRequestEntity;
 
+// the latestRound sub-selections mirror getPastVotesV2's query so the
+// provisional panel shows the same participation/results the lists will
 const priceRequestFields = gql`
   fragment DeeplinkFields on PriceRequest {
     id
@@ -63,8 +66,33 @@ const priceRequestFields = gql`
     isDeleted
     time
     ancillaryData
+    identifier {
+      id
+    }
+    price
+    resolvedPriceRequestIndex
+    isGovernance
+    rollCount
     latestRound {
       roundId
+      totalVotesRevealed
+      totalTokensCommitted
+      minAgreementRequirement
+      minParticipationRequirement
+      groups(first: 100) {
+        price
+        totalVoteAmount
+      }
+      committedVotes(first: 100) {
+        id
+      }
+      revealedVotes(first: 100) {
+        id
+        voter {
+          address
+        }
+        price
+      }
     }
   }
 `;
@@ -323,13 +351,26 @@ export default async function handler(
     }
 
     const activityStatus = getActivityStatus(entity);
+    const raw = makeRawRequestFromEntity(entity);
+    // resolve the child-chain data server-side so the client renders the
+    // provisional vote without an extra round trip; falls back to the
+    // original data internally if the child fetch fails
+    const { resolvedAncillaryData } = await resolveAncillaryData({
+      identifier: raw.identifier,
+      time: BigNumber.from(raw.time),
+      ancillaryData: raw.ancillaryData,
+    });
     response.setHeader(
       "Cache-Control",
       activityStatus === "past"
         ? "public, s-maxage=31536000, stale-while-revalidate=86400"
         : "public, s-maxage=60, stale-while-revalidate=300"
     );
-    response.status(200).json({ uniqueKey: entity.id, activityStatus });
+    response.status(200).json({
+      uniqueKey: entity.id,
+      activityStatus,
+      request: { ...raw, ancillaryDataL2: resolvedAncillaryData },
+    });
   } catch (error) {
     if (error instanceof HttpError && error.statusCode === 404) {
       // cache misses briefly too — a repeatedly shared dead link shouldn't

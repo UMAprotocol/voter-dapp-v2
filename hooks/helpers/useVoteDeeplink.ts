@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { emitErrorEvent } from "helpers";
 import {
   externalDeeplinkQueryParams,
@@ -7,10 +7,11 @@ import {
   ResolvedVoteDeeplink,
   voteDeeplinkQueryParam,
 } from "helpers/util/deeplink";
+import { makeProvisionalVote } from "helpers/voting/makeProvisionalVote";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ActivityStatusT, VoteT } from "types";
 
 const activityStatuses: ActivityStatusT[] = ["active", "upcoming", "past"];
@@ -36,6 +37,12 @@ function notifyVoteNotFound() {
  * the vote's own page and scroll-highlight its row; in-app opens act in
  * place, so e.g. the history panel's rows open votes on whatever page the
  * user is on.
+ *
+ * The resolver returns the price request itself, so while the app's vote
+ * lists are still loading the panel opens with a PROVISIONAL vote built from
+ * that entity (the logged-out view, no prev/next). Once the lists arrive the
+ * canonical vote is swapped in through the same showVote path that handles
+ * every other vote-to-vote transition.
  */
 export function useVoteDeeplink() {
   const router = useRouter();
@@ -57,9 +64,46 @@ export function useVoteDeeplink() {
     pastVotesIsInitialLoading,
   } = useVotesContext();
 
+  const queryClient = useQueryClient();
+
   const parsed = router.isReady ? parseVoteDeeplink(router.query) : undefined;
   const external = parsed?.form === "external" ? parsed : undefined;
   const targetKey = parsed?.form === "uniqueKey" ? parsed.uniqueKey : undefined;
+
+  // isInitialLoading, not isLoading: a disabled list query (wrong chain,
+  // graph off) reports isLoading forever, which would leave the deeplink
+  // stuck waiting instead of surfacing the not-found notification
+  const votesStillLoading =
+    activeVotesIsInitialLoading ||
+    upcomingVotesIsInitialLoading ||
+    pastVotesIsInitialLoading;
+  const targetInLists = useMemo(
+    () =>
+      !!targetKey &&
+      activityStatuses.some((status) =>
+        voteListsByActivityStatus[status]?.some(
+          (vote) => vote.uniqueKey === targetKey
+        )
+      ),
+    [targetKey, voteListsByActivityStatus]
+  );
+
+  // canonical links: fetch the entity so the panel can render before the
+  // lists load; external links seed this cache from their own resolution
+  const { data: targetEntity } = useQuery({
+    queryKey: ["voteDeeplinkEntity", targetKey],
+    queryFn: async (): Promise<ResolvedVoteDeeplink> => {
+      const params = new URLSearchParams({ vote: targetKey ?? "" });
+      const response = await fetch(
+        `/api/resolve-deeplink?${params.toString()}`
+      );
+      if (!response.ok) throw new Error("Deeplink entity fetch failed");
+      return (await response.json()) as ResolvedVoteDeeplink;
+    },
+    enabled: !!targetKey && !targetInLists && votesStillLoading,
+    staleTime: Infinity,
+    retry: 1,
+  });
 
   // While a real page navigation is in flight the router still reports the
   // OLD query, but Nav has already closed the panel — acting on that stale
@@ -123,6 +167,12 @@ export function useVoteDeeplink() {
       return;
     }
     if (!resolved) return;
+    // the external resolution already carries the entity — seed the canonical
+    // key's cache so the provisional panel opens without a second fetch
+    queryClient.setQueryData(
+      ["voteDeeplinkEntity", resolved.uniqueKey],
+      resolved
+    );
     const pathname = pathForActivityStatus[resolved.activityStatus];
     const query = { ...router.query };
     externalDeeplinkQueryParams.forEach((param) => delete query[param]);
@@ -133,6 +183,10 @@ export function useVoteDeeplink() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [external?.identifier, external?.time, resolved, resolveFailed]);
+
+  // the vote panel is showing a provisional build of this key, awaiting the
+  // canonical vote from the lists
+  const provisionalKeyRef = useRef<string>();
 
   // the deriver: make the panel state match `?vote=`
   useEffect(() => {
@@ -145,6 +199,7 @@ export function useVoteDeeplink() {
       // for a vote whose param is gone must never fire — clear it even when
       // something else (e.g. Nav on navigation) already closed the panel
       clearVoteScroll();
+      provisionalKeyRef.current = undefined;
       // close a showing vote panel — a plain closePanel pops back to
       // whatever panel the vote was stacked on (e.g. the history panel)
       if (voteShowing) {
@@ -154,7 +209,16 @@ export function useVoteDeeplink() {
       return;
     }
 
-    if (voteShowing && panelContent?.uniqueKey === targetKey) return;
+    // a provisional panel with the right key still needs its canonical
+    // upgrade, so it does not count as "in sync"
+    const upgradingProvisional = provisionalKeyRef.current === targetKey;
+    if (
+      voteShowing &&
+      panelContent?.uniqueKey === targetKey &&
+      !upgradingProvisional
+    ) {
+      return;
+    }
 
     const selfInitiated = expected?.key === targetKey;
 
@@ -175,14 +239,35 @@ export function useVoteDeeplink() {
     }
 
     if (!vote || !status) {
-      // isInitialLoading, not isLoading: a disabled list query (wrong chain,
-      // graph off) reports isLoading forever, which would leave the deeplink
-      // silently unresolved instead of surfacing the not-found notification
-      const stillLoading =
-        activeVotesIsInitialLoading ||
-        upcomingVotesIsInitialLoading ||
-        pastVotesIsInitialLoading;
-      if (stillLoading) return; // effect re-runs when the lists arrive
+      const entity =
+        targetEntity?.uniqueKey === targetKey ? targetEntity : undefined;
+      if (votesStillLoading) {
+        // show what the resolver already knows instead of waiting for the
+        // full vote lists; entity errors just fall back to the waiting path
+        if (!entity?.request) return;
+        const pathname = pathForActivityStatus[entity.activityStatus];
+        if (!selfInitiated && !panelOpen && router.pathname !== pathname) {
+          void router.replace({ pathname, query: router.query }, undefined, {
+            scroll: false,
+          });
+          return;
+        }
+        if (voteShowing && panelContent?.uniqueKey === targetKey) return;
+        const provisional = makeProvisionalVote(entity.request, entity.uniqueKey);
+        if (voteShowing) {
+          showVote(provisional, []);
+        } else {
+          openPanel("vote", provisional, { navigableVotes: [] });
+        }
+        provisionalKeyRef.current = targetKey;
+        // consumed once the lists render the row
+        if (!selfInitiated || expected?.scroll) requestVoteScroll(targetKey);
+        expectedVoteRef.current = undefined;
+        return;
+      }
+      // the lists are loaded and lack the vote, but a provisional panel is
+      // showing it: the resolver's entity is authoritative, lists can lag
+      if (upgradingProvisional && voteShowing) return;
       expectedVoteRef.current = undefined;
       notifyVoteNotFound();
       const query = { ...router.query };
@@ -212,19 +297,22 @@ export function useVoteDeeplink() {
       // there on close
       openPanel("vote", vote, { navigableVotes: votes });
     }
-    if (!selfInitiated || expected?.scroll) requestVoteScroll(targetKey);
+    // a provisional upgrade already requested its scroll when it opened
+    if ((!selfInitiated || expected?.scroll) && !upgradingProvisional) {
+      requestVoteScroll(targetKey);
+    }
+    provisionalKeyRef.current = undefined;
     expectedVoteRef.current = undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     targetKey,
+    targetEntity,
     router.isReady,
     router.pathname,
     panelOpen,
     panelType,
     panelContent,
     voteListsByActivityStatus,
-    activeVotesIsInitialLoading,
-    upcomingVotesIsInitialLoading,
-    pastVotesIsInitialLoading,
+    votesStillLoading,
   ]);
 }
