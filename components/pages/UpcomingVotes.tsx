@@ -11,9 +11,9 @@ import {
 } from "components";
 import {
   useDeeplinkedVoteIndex,
-  usePanelContext,
   useVoteTimingContext,
   useVotesContext,
+  useVoteUrl,
 } from "hooks";
 import { isUndefined } from "lodash";
 import Image from "next/image";
@@ -24,7 +24,7 @@ import { LoadingSpinnerWrapper } from "./styles";
 export function UpcomingVotes() {
   const { upcomingVoteList, upcomingVotesIsLoading } = useVotesContext();
   const { phase, millisecondsUntilPhaseEnds } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const deeplinkedVoteIndex = useDeeplinkedVoteIndex(upcomingVoteList);
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     upcomingVoteList ?? [],
@@ -36,7 +36,7 @@ export function UpcomingVotes() {
     activityStatus: "upcoming" as const,
     vote,
     phase,
-    moreDetailsAction: () => openPanel("vote", vote),
+    moreDetailsAction: () => openVote(vote.uniqueKey),
   }));
 
   const isLoading = upcomingVotesIsLoading || isUndefined(upcomingVoteList);

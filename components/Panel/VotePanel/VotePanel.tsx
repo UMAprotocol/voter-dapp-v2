@@ -2,7 +2,6 @@ import removeMarkdown from "remove-markdown";
 import { useCallback, useRef, useState } from "react";
 
 import { Tabs } from "components";
-import { scrollToAndHighlightVote } from "contexts";
 import { config, decodeHexString, getClaimTitle } from "helpers";
 import { getOptimisticGovernorTitle } from "helpers/voting/optimisticGovernor";
 import {
@@ -14,6 +13,7 @@ import {
   useVotesContext,
   useVoteTimingContext,
   useVotePanelKeyboard,
+  useVoteUrl,
 } from "hooks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import { VoteT } from "types";
@@ -50,16 +50,11 @@ export function VotePanel({ content }: Props) {
     ancillaryDataL2,
   } = content;
 
-  const {
-    navigableVotes,
-    currentVoteIndex,
-    goToNextVote,
-    goToPrevVote,
-    panelOpen,
-    panelType,
-  } = usePanelContext();
+  const { navigableVotes, currentVoteIndex, panelOpen, panelType, requestVoteScroll } =
+    usePanelContext();
   const { selectedVotes, selectVote } = useVoteSelectionContext();
   const { activeVoteList } = useVotesContext();
+  const { switchVote } = useVoteUrl();
 
   const { phase } = useVoteTimingContext();
   const isCommitPhase = phase === "commit";
@@ -78,9 +73,9 @@ export function VotePanel({ content }: Props) {
   const handleSelectVote = useCallback(
     (value: string | undefined, vote: VoteT) => {
       selectVote(value, vote);
-      scrollToAndHighlightVote(vote.uniqueKey);
+      requestVoteScroll(vote.uniqueKey);
     },
-    [selectVote]
+    [selectVote, requestVoteScroll]
   );
 
   const prevButtonRef = useRef<HTMLButtonElement>(null);
@@ -93,15 +88,19 @@ export function VotePanel({ content }: Props) {
     el.classList.add("nav-flash");
   }
 
+  // the arrows navigate by rewriting `?vote=`; the deeplink handler swaps
+  // the panel content in response
   const handlePrev = useCallback(() => {
-    goToPrevVote();
+    const target = navigableVotes[currentVoteIndex - 1];
+    if (target) switchVote(target.uniqueKey);
     flashButton(prevButtonRef.current);
-  }, [goToPrevVote]);
+  }, [navigableVotes, currentVoteIndex, switchVote]);
 
   const handleNext = useCallback(() => {
-    goToNextVote();
+    const target = navigableVotes[currentVoteIndex + 1];
+    if (target) switchVote(target.uniqueKey);
     flashButton(nextButtonRef.current);
-  }, [goToNextVote]);
+  }, [navigableVotes, currentVoteIndex, switchVote]);
 
   useVotePanelKeyboard({
     isActive: panelOpen && panelType === "vote",

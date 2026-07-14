@@ -13,12 +13,12 @@ import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
-  usePanelContext,
   useRevealVotes,
   useStakedBalance,
   useVoteSelectionContext,
   useVotesContext,
   useVoteTimingContext,
+  useVoteUrl,
   useWalletContext,
 } from "hooks";
 import { useState } from "react";
@@ -55,7 +55,7 @@ export function ActiveVotes() {
   const { data: stakedBalance } = useStakedBalance(
     isDelegate ? delegatorAddress : address
   );
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
@@ -303,8 +303,7 @@ export function ActiveVotes() {
     selectVote: (value: string | undefined) => selectVote(value, vote),
     clearVote: () => clearSelectedVote(vote),
     activityStatus: "active" as const,
-    moreDetailsAction: () =>
-      openPanel("vote", vote, { navigableVotes: activeVoteList }),
+    moreDetailsAction: () => openVote(vote.uniqueKey),
     key: vote.uniqueKey,
     isDirty: dirtyInputs[index],
     setDirty: (dirty: boolean) =>

@@ -1,33 +1,25 @@
 import {
   createContext,
+  MutableRefObject,
   ReactNode,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { PanelTypeT, VoteT } from "types";
-
-export function scrollToAndHighlightVote(uniqueKey: string, attempt = 0) {
-  const el = document.querySelector(`[data-vote-key="${uniqueKey}"]`);
-  if (!el) {
-    // deeplinked rows may still be mounting (list render, pagination jump)
-    if (attempt < 10) {
-      setTimeout(() => scrollToAndHighlightVote(uniqueKey, attempt + 1), 200);
-    }
-    return;
-  }
-  el.scrollIntoView({ behavior: "smooth", block: "center" });
-  el.classList.remove("vote-highlight");
-  void (el as HTMLElement).offsetWidth;
-  el.classList.add("vote-highlight");
-  setTimeout(() => el.classList.remove("vote-highlight"), 1500);
-}
 
 export type OpenPanelOptions = {
   navigableVotes?: VoteT[];
 };
 
-export type VoteOpener = (vote: VoteT, navigableVotes: VoteT[]) => void;
+// A URL write our own UI initiated (row click, panel arrows). The deeplink
+// handler uses it to tell in-app opens apart from inbound navigations —
+// inbound ones land on the vote's page and highlight its row.
+export type ExpectedVoteOpen = {
+  key: string;
+  scroll: boolean;
+};
 
 export interface PanelContextState {
   panelType: PanelTypeT;
@@ -39,11 +31,13 @@ export interface PanelContextState {
     options?: OpenPanelOptions
   ) => void;
   closePanel: (clearPreviousPanelData?: boolean) => void;
-  openVote: VoteOpener;
+  showVote: (vote: VoteT, navigableVotes: VoteT[]) => void;
   navigableVotes: VoteT[];
   currentVoteIndex: number;
-  goToNextVote: () => void;
-  goToPrevVote: () => void;
+  expectedVoteRef: MutableRefObject<ExpectedVoteOpen | undefined>;
+  voteScrollTarget: string | undefined;
+  requestVoteScroll: (uniqueKey: string) => void;
+  clearVoteScroll: () => void;
 }
 
 export const defaultPanelContextState: PanelContextState = {
@@ -52,11 +46,13 @@ export const defaultPanelContextState: PanelContextState = {
   panelOpen: false,
   openPanel: () => null,
   closePanel: () => null,
-  openVote: () => null,
+  showVote: () => null,
   navigableVotes: [],
   currentVoteIndex: -1,
-  goToNextVote: () => null,
-  goToPrevVote: () => null,
+  expectedVoteRef: { current: undefined },
+  voteScrollTarget: undefined,
+  requestVoteScroll: () => null,
+  clearVoteScroll: () => null,
 };
 
 export const PanelContext = createContext<PanelContextState>(
@@ -72,6 +68,20 @@ export function PanelProvider({ children }: { children: ReactNode }) {
   >([]);
   const [navigableVotes, setNavigableVotes] = useState<VoteT[]>([]);
   const [currentVoteIndex, setCurrentVoteIndex] = useState(-1);
+
+  const expectedVoteRef = useRef<ExpectedVoteOpen | undefined>();
+
+  // Which row should scroll into view and flash. State (not a direct DOM
+  // call) so the row itself consumes it in an effect once it is actually
+  // mounted — the row may still be rendering when the request is made
+  // (page redirect, pagination jump).
+  const [voteScrollTarget, setVoteScrollTarget] = useState<string>();
+  const requestVoteScroll = useCallback((uniqueKey: string) => {
+    setVoteScrollTarget(uniqueKey);
+  }, []);
+  const clearVoteScroll = useCallback(() => {
+    setVoteScrollTarget(undefined);
+  }, []);
 
   const openPanel = useCallback(
     (
@@ -98,30 +108,23 @@ export function PanelProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const openVote = useCallback<VoteOpener>(
-    (vote, navigableVotes) => {
-      openPanel("vote", vote, { navigableVotes });
-    },
-    [openPanel]
-  );
-
-  const goToNextVote = useCallback(() => {
-    if (currentVoteIndex < navigableVotes.length - 1) {
-      const nextIndex = currentVoteIndex + 1;
-      setCurrentVoteIndex(nextIndex);
-      setPanelContent(navigableVotes[nextIndex]);
-      scrollToAndHighlightVote(navigableVotes[nextIndex].uniqueKey);
-    }
-  }, [currentVoteIndex, navigableVotes]);
-
-  const goToPrevVote = useCallback(() => {
-    if (currentVoteIndex > 0) {
-      const prevIndex = currentVoteIndex - 1;
-      setCurrentVoteIndex(prevIndex);
-      setPanelContent(navigableVotes[prevIndex]);
-      scrollToAndHighlightVote(navigableVotes[prevIndex].uniqueKey);
-    }
-  }, [currentVoteIndex, navigableVotes]);
+  // Vote-to-vote transitions (panel arrows, another row clicked, back and
+  // forward between votes) replace the stack top instead of pushing, so
+  // closing the panel doesn't walk back through every vote viewed.
+  const showVote = useCallback((vote: VoteT, votes: VoteT[]) => {
+    setPanelType("vote");
+    setPanelContent(vote);
+    setPanelOpen(true);
+    setNavigableVotes(votes);
+    const index = votes.findIndex((v) => v.uniqueKey === vote.uniqueKey);
+    setCurrentVoteIndex(index >= 0 ? index : 0);
+    setPreviousPanelData((prev) => {
+      const top = prev[prev.length - 1];
+      const entry = { panelType: "vote" as const, panelContent: vote };
+      if (top?.panelType === "vote") return [...prev.slice(0, -1), entry];
+      return [...prev, entry];
+    });
+  }, []);
 
   const closePanel = useCallback(
     (clearPreviousPanelData = false) => {
@@ -162,23 +165,26 @@ export function PanelProvider({ children }: { children: ReactNode }) {
       panelOpen,
       openPanel,
       closePanel,
-      openVote,
+      showVote,
       navigableVotes,
       currentVoteIndex,
-      goToNextVote,
-      goToPrevVote,
+      expectedVoteRef,
+      voteScrollTarget,
+      requestVoteScroll,
+      clearVoteScroll,
     }),
     [
       closePanel,
       openPanel,
-      openVote,
+      showVote,
       panelContent,
       panelOpen,
       panelType,
       navigableVotes,
       currentVoteIndex,
-      goToNextVote,
-      goToPrevVote,
+      voteScrollTarget,
+      requestVoteScroll,
+      clearVoteScroll,
     ]
   );
 

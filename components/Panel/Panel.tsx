@@ -1,5 +1,5 @@
 import { black, white } from "constant";
-import { usePanelContext, usePanelWidth } from "hooks";
+import { usePanelContext, usePanelWidth, useVoteUrl } from "hooks";
 import Close from "public/assets/icons/close.svg";
 import { CSSProperties, useEffect, useRef } from "react";
 import { FocusOn } from "react-focus-on";
@@ -17,8 +17,19 @@ import { VotePanelWithLazyLoad } from "./VotePanel/VotePanelWithLazyLoad";
 export function Panel() {
   const { panelType, panelContent, panelOpen, closePanel, currentVoteIndex } =
     usePanelContext();
+  const { closeVote } = useVoteUrl();
   const panelWidth = usePanelWidth();
   const contentRef = useRef<HTMLDivElement | null>(null);
+
+  // vote panels are driven by the URL: dismissing one removes its `?vote=`
+  // param and the deeplink handler closes the panel in response
+  function dismissPanel() {
+    if (panelType === "vote") {
+      closeVote();
+    } else {
+      closePanel();
+    }
+  }
 
   const transitions = useTransition(panelOpen, {
     from: { opacity: 0 },
@@ -61,7 +72,7 @@ export function Panel() {
         ({ opacity }, isOpen) =>
           isOpen && (
             <Overlay
-              onClick={() => closePanel()}
+              onClick={() => dismissPanel()}
               style={{
                 backgroundColor: opacity.to(
                   (value) => `hsla(280, 4%, 15%, ${value})`
@@ -72,8 +83,8 @@ export function Panel() {
       )}
       <FocusOn
         enabled={panelOpen}
-        onClickOutside={() => closePanel()}
-        onEscapeKey={() => closePanel()}
+        onClickOutside={() => dismissPanel()}
+        onEscapeKey={() => dismissPanel()}
         preventScrollOnFocus={true}
       >
         <Content
@@ -89,7 +100,7 @@ export function Panel() {
         >
           {getPanelComponent()}
           <CloseButton
-            onClick={() => closePanel()}
+            onClick={() => dismissPanel()}
             style={
               {
                 "--fill": closeButtonColor,

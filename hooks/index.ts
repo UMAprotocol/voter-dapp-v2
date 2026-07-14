@@ -19,6 +19,7 @@ export { usePersistedVotes } from "./helpers/usePersistedVotes";
 export { useSign } from "./helpers/useSign";
 export { useVoteDeeplink } from "./helpers/useVoteDeeplink";
 export { useVotePanelKeyboard } from "./helpers/useVotePanelKeyboard";
+export { useVoteUrl } from "./helpers/useVoteUrl";
 export { useWindowSize } from "./helpers/useWindowSize";
 export { useAcceptReceivedRequestToBeDelegate } from "./mutations/delegation/useAcceptReceivedRequestToBeDelegate";
 export { useCancelSentRequestToBeDelegate } from "./mutations/delegation/useCancelSentRequestToBeDelegate";

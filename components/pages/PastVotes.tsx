@@ -10,9 +10,9 @@ import {
 } from "components";
 import {
   useDeeplinkedVoteIndex,
-  usePanelContext,
   useVoteTimingContext,
   useVotesContext,
+  useVoteUrl,
   useAccountDetails,
   useDelegationContext,
 } from "hooks";
@@ -26,7 +26,7 @@ import { VoteT } from "types";
 export function PastVotes() {
   const { pastVoteList, pastVotesIsLoading } = useVotesContext();
   const { phase } = useVoteTimingContext();
-  const { openPanel } = usePanelContext();
+  const { openVote } = useVoteUrl();
   const { address } = useAccountDetails();
   const { delegatorAddress } = useDelegationContext();
   const deeplinkedVoteIndex = useDeeplinkedVoteIndex(pastVoteList);
@@ -82,14 +82,14 @@ export function PastVotes() {
         activityStatus: "past" as const,
         vote: updatedVote,
         phase,
-        moreDetailsAction: () => openPanel("vote", vote),
+        moreDetailsAction: () => openVote(vote.uniqueKey),
       };
     });
   }, [
     entriesToShow,
     userVoteDetails,
     phase,
-    openPanel,
+    openVote,
     isWalletConnected,
     userVotesLoading,
   ]);

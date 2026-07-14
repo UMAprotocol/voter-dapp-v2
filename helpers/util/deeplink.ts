@@ -35,6 +35,11 @@ function getSingleParam(query: ParsedUrlQuery, key: string) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+// next/router repeats a param as an array when it appears twice
+export function getVoteDeeplinkParam(query: ParsedUrlQuery) {
+  return getSingleParam(query, voteDeeplinkQueryParam);
+}
+
 export function parseVoteDeeplink(
   query: ParsedUrlQuery
 ): ParsedVoteDeeplink | undefined {

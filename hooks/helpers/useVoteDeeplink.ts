@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { scrollToAndHighlightVote } from "contexts";
 import { emitErrorEvent } from "helpers";
 import {
   externalDeeplinkQueryParams,
@@ -11,16 +10,10 @@ import {
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
 import { useEffect, useRef } from "react";
-import { ActivityStatusT } from "types";
+import { ActivityStatusT, VoteT } from "types";
 
 const activityStatuses: ActivityStatusT[] = ["active", "upcoming", "past"];
-
-function getVoteParam(query: ParsedUrlQuery) {
-  const value = query[voteDeeplinkQueryParam];
-  return Array.isArray(value) ? value[0] : value;
-}
 
 function notifyVoteNotFound() {
   emitErrorEvent({
@@ -30,21 +23,33 @@ function notifyVoteNotFound() {
 }
 
 /**
- * Two-way sync between the URL and the vote details panel:
- * - inbound `?vote=` / `?identifier=&time=&ancillaryData=` params open the
- *   panel on the correct page once vote data is available
- * - an open vote panel writes `?vote=<uniqueKey>` to the address bar (shallow,
- *   so the panel survives), making the URL itself the shareable deeplink
+ * Derives the vote panel from the URL. The `?vote=` param is the single
+ * source of truth: useVoteUrl writes it (row clicks, panel arrows, panel
+ * close) and this hook is the only place that opens or closes the vote panel
+ * in response — the same path handles inbound links, back/forward, and
+ * in-app actions, so panel and URL cannot disagree.
  *
- * The URL-sync effect acts on TRANSITIONS (panel just opened/closed, param
- * just disappeared), never on plain state. Effects in one commit see sibling
- * state updates and router changes with a delay, so state-based conditions
- * here misfire and fight each other (open panel <-> strip param loops).
+ * External-form links (`?identifier=&time=&ancillaryDataHash=`) are resolved
+ * server-side first and rewritten to the canonical `?vote=` form.
+ *
+ * Inbound navigations (nothing initiated in-app via expectedVoteRef) land on
+ * the vote's own page and scroll-highlight its row; in-app opens act in
+ * place, so e.g. the history panel's rows open votes on whatever page the
+ * user is on.
  */
 export function useVoteDeeplink() {
   const router = useRouter();
-  const { panelType, panelContent, panelOpen, openVote, closePanel } =
-    usePanelContext();
+  const {
+    panelType,
+    panelContent,
+    panelOpen,
+    openPanel,
+    closePanel,
+    showVote,
+    expectedVoteRef,
+    requestVoteScroll,
+    clearVoteScroll,
+  } = usePanelContext();
   const {
     voteListsByActivityStatus,
     activeVotesIsLoading,
@@ -56,16 +61,11 @@ export function useVoteDeeplink() {
   const external = parsed?.form === "external" ? parsed : undefined;
   const targetKey = parsed?.form === "uniqueKey" ? parsed.uniqueKey : undefined;
 
-  // the key we already acted on, so the open-effect runs once per inbound link
-  const handledKeyRef = useRef<string>();
-  // previous values, so the URL-sync effect can detect transitions
-  const prevOpenKeyRef = useRef<string>();
-  const prevParamRef = useRef<string>();
-  // during a real page navigation we must not fire shallow replaces to clean
-  // up params — they would abort the navigation, and the destination route
-  // doesn't carry the param anyway
+  // While a real page navigation is in flight the router still reports the
+  // OLD query, but Nav has already closed the panel — acting on that stale
+  // combination would reopen the panel mid-navigation. Wait it out; the
+  // deriver re-runs when the route settles (query/pathname change).
   const navigatingRef = useRef(false);
-
   useEffect(() => {
     function handleStart(_url: string, { shallow }: { shallow: boolean }) {
       if (!shallow) navigatingRef.current = true;
@@ -113,6 +113,13 @@ export function useVoteDeeplink() {
     if (!external) return;
     if (resolveFailed) {
       notifyVoteNotFound();
+      // drop the params so the URL doesn't keep pointing at nothing
+      const query = { ...router.query };
+      externalDeeplinkQueryParams.forEach((param) => delete query[param]);
+      void router.replace({ pathname: router.pathname, query }, undefined, {
+        shallow: true,
+        scroll: false,
+      });
       return;
     }
     if (!resolved) return;
@@ -127,48 +134,83 @@ export function useVoteDeeplink() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [external?.identifier, external?.time, resolved, resolveFailed]);
 
-  // inbound `?vote=<uniqueKey>`: find the vote, switch pages if needed, open
+  // the deriver: make the panel state match `?vote=`
   useEffect(() => {
-    if (!targetKey || handledKeyRef.current === targetKey) return;
+    if (!router.isReady || navigatingRef.current) return;
+    const voteShowing = panelOpen && panelType === "vote";
+    const expected = expectedVoteRef.current;
 
-    if (
-      panelOpen &&
-      panelType === "vote" &&
-      panelContent?.uniqueKey === targetKey
-    ) {
-      // the panel wrote this param itself, nothing to do
-      handledKeyRef.current = targetKey;
-      return;
-    }
-
-    for (const status of activityStatuses) {
-      const votes = voteListsByActivityStatus[status];
-      if (!votes) continue;
-      const vote = votes.find(({ uniqueKey }) => uniqueKey === targetKey);
-      if (!vote) continue;
-
-      const pathname = pathForActivityStatus[status];
-      if (router.pathname !== pathname) {
-        void router.replace({ pathname, query: router.query }, undefined, {
-          scroll: false,
-        });
-        return;
+    if (!targetKey) {
+      // param gone (back button, close, page navigation): close a showing
+      // vote panel — a plain closePanel pops back to whatever panel the
+      // vote was stacked on (e.g. the history panel)
+      if (voteShowing) {
+        expectedVoteRef.current = undefined;
+        clearVoteScroll();
+        closePanel();
       }
-      handledKeyRef.current = targetKey;
-      openVote(vote, votes);
-      scrollToAndHighlightVote(targetKey);
       return;
     }
 
-    const stillLoading =
-      activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
-    if (!stillLoading) {
-      handledKeyRef.current = targetKey;
-      notifyVoteNotFound();
+    if (voteShowing && panelContent?.uniqueKey === targetKey) return;
+
+    const selfInitiated = expected?.key === targetKey;
+
+    // a non-vote panel is on top and didn't ask for this vote (e.g. a menu
+    // covering the vote the param still describes) — leave both alone
+    if (panelOpen && panelType !== "vote" && !selfInitiated) return;
+
+    let vote: VoteT | undefined;
+    let status: ActivityStatusT | undefined;
+    for (const s of activityStatuses) {
+      vote = voteListsByActivityStatus[s]?.find(
+        (v) => v.uniqueKey === targetKey
+      );
+      if (vote) {
+        status = s;
+        break;
+      }
     }
+
+    if (!vote || !status) {
+      const stillLoading =
+        activeVotesIsLoading || upcomingVotesIsLoading || pastVotesIsLoading;
+      if (stillLoading) return; // effect re-runs when the lists arrive
+      expectedVoteRef.current = undefined;
+      notifyVoteNotFound();
+      const query = { ...router.query };
+      delete query[voteDeeplinkQueryParam];
+      void router.replace({ pathname: router.pathname, query }, undefined, {
+        shallow: true,
+        scroll: false,
+      });
+      return;
+    }
+
+    // an inbound link with nothing open lands on the vote's own page so the
+    // highlighted row is visible behind the panel; in-app opens stay put
+    const pathname = pathForActivityStatus[status];
+    if (!selfInitiated && !panelOpen && router.pathname !== pathname) {
+      void router.replace({ pathname, query: router.query }, undefined, {
+        scroll: false,
+      });
+      return; // effect re-runs once the navigation lands
+    }
+
+    const votes = voteListsByActivityStatus[status] ?? [];
+    if (voteShowing) {
+      showVote(vote, votes);
+    } else {
+      // openPanel stacks, so a vote opened from the history panel returns
+      // there on close
+      openPanel("vote", vote, { navigableVotes: votes });
+    }
+    if (!selfInitiated || expected?.scroll) requestVoteScroll(targetKey);
+    expectedVoteRef.current = undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     targetKey,
+    router.isReady,
     router.pathname,
     panelOpen,
     panelType,
@@ -178,54 +220,4 @@ export function useVoteDeeplink() {
     upcomingVotesIsLoading,
     pastVotesIsLoading,
   ]);
-
-  // keep the URL in sync with the panel, reacting only to transitions
-  useEffect(() => {
-    if (!router.isReady) return;
-    const param = getVoteParam(router.query);
-    const openKey =
-      panelOpen && panelType === "vote" ? panelContent?.uniqueKey : undefined;
-    const prevOpenKey = prevOpenKeyRef.current;
-    const prevParam = prevParamRef.current;
-    prevOpenKeyRef.current = openKey;
-    prevParamRef.current = param;
-
-    // panel just opened or switched to another vote -> write the param;
-    // push (not replace) so the browser back button closes the panel
-    if (openKey && openKey !== prevOpenKey) {
-      handledKeyRef.current = openKey;
-      if (param !== openKey) {
-        const query = { ...router.query };
-        externalDeeplinkQueryParams.forEach((key) => delete query[key]);
-        query[voteDeeplinkQueryParam] = openKey;
-        void router.push({ pathname: router.pathname, query }, undefined, {
-          shallow: true,
-          scroll: false,
-        });
-      }
-      return;
-    }
-
-    // panel just closed -> remove the param
-    if (!openKey && prevOpenKey) {
-      handledKeyRef.current = undefined;
-      if (param && !navigatingRef.current) {
-        const query = { ...router.query };
-        delete query[voteDeeplinkQueryParam];
-        void router.replace({ pathname: router.pathname, query }, undefined, {
-          shallow: true,
-          scroll: false,
-        });
-      }
-      return;
-    }
-
-    // param just disappeared while the panel is open (back button) -> close
-    if (openKey && !param && prevParam) {
-      handledKeyRef.current = undefined;
-      prevOpenKeyRef.current = undefined;
-      closePanel(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [panelOpen, panelType, panelContent, router.isReady, router.query]);
 }
