@@ -3,6 +3,7 @@ import { Contract } from "ethers";
 import {
   BytesLike,
   defaultAbiCoder,
+  hexlify,
   Interface,
   keccak256,
 } from "ethers/lib/utils";
@@ -80,12 +81,15 @@ function mergeAncillaryData(
   return encodeHexString(merged);
 }
 
-export async function fetchAncillaryDataFromSpoke(args: {
-  parentRequestId: BytesLike;
+// All PriceRequestBridged events an oracle spoke emitted at a given block.
+// Unfiltered on purpose: requests bridged in the same batch share (chain,
+// oracle, block), so one fetch serves every one of them — callers matching
+// several candidates memoize on exactly these arguments.
+export async function fetchBridgedEventsAt(args: {
   childOracle: string;
   childChainId: number;
   childBlockNumber: number;
-}): Promise<string> {
+}) {
   const provider = getProvider(args.childChainId);
   const OracleSpoke = new Contract(
     args.childOracle,
@@ -93,30 +97,34 @@ export async function fetchAncillaryDataFromSpoke(args: {
     provider
   );
 
-  const filter = OracleSpoke.filters.PriceRequestBridged(
-    null,
-    null,
-    null,
-    null,
-    null,
-    args.parentRequestId
-  );
-
-  const events = await OracleSpoke.queryFilter(
-    filter,
+  return OracleSpoke.queryFilter(
+    OracleSpoke.filters.PriceRequestBridged(),
     args.childBlockNumber - 1,
     args.childBlockNumber
   );
+}
 
-  if (!events.length) {
+export async function fetchAncillaryDataFromSpoke(args: {
+  parentRequestId: BytesLike;
+  childOracle: string;
+  childChainId: number;
+  childBlockNumber: number;
+}): Promise<string> {
+  const parentRequestId = hexlify(args.parentRequestId).toLowerCase();
+  const events = await fetchBridgedEventsAt(args);
+  const event = events.find(
+    (e) =>
+      (e.args?.parentRequestId as string | undefined)?.toLowerCase() ===
+      parentRequestId
+  );
+
+  if (!event) {
     throw new Error(
-      `Unable to find event with request Id: ${String(
-        args.parentRequestId
-      )} on chain ${args.childChainId}`
+      `Unable to find event with request Id: ${parentRequestId} on chain ${args.childChainId}`
     );
   }
 
-  return events[0]?.args?.ancillaryData as string;
+  return event.args?.ancillaryData as string;
 }
 
 export function createRequestHash(

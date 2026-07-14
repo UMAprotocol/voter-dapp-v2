@@ -1,6 +1,7 @@
 import { gql, request as gqlRequest } from "graphql-request";
+import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeUniqueKeyForVote } from "helpers/voting/makeUniqueKeyForVote";
-import { fetchAncillaryDataFromSpoke } from "lib/l2-ancillary-data";
+import { fetchBridgedEventsAt } from "lib/l2-ancillary-data";
 import {
   getBridgedFields,
   matchesCheapHashVariants,
@@ -17,14 +18,22 @@ import { VoteSubgraphURL } from "./_common";
 import { handleApiError, HttpError } from "./_utils/errors";
 import { validateQueryParams } from "./_utils/validation";
 
-const phaseLength = Number(process.env.NEXT_PUBLIC_PHASE_LENGTH || 86400);
-const roundLength = phaseLength * 2;
+// Resolves a deeplink to `{ uniqueKey, activityStatus }`. Two forms:
+// - `?vote=<uniqueKey>`: a direct id lookup. The dapp itself never calls this
+//   form (it searches its already-loaded lists); it exists for external
+//   consumers (explorer, oracle dapp) that hold a uniqueKey and want to know
+//   whether/where the vote exists before linking to it.
+// - `?identifier=&time=&ancillaryDataHash=` (or full `ancillaryData`): the
+//   external form built by makeVoterDappDeeplink; see lib/deeplink-matching
+//   for the matching semantics.
+// Unknown query params are ignored (ss.type), so shared links that pick up
+// trackers (utm_*) still resolve.
 
 const Bytes32Hash = ss.pattern(ss.string(), /^0x[0-9a-fA-F]{64}$/);
 
 const RequestParams = ss.union([
-  ss.object({ vote: ss.string() }),
-  ss.object({
+  ss.type({ vote: ss.string() }),
+  ss.type({
     identifier: ss.string(),
     time: ss.coerce(ss.integer(), ss.string(), (value) => Number(value)),
     ancillaryData: ss.optional(
@@ -75,7 +84,10 @@ async function findByUniqueKey(uniqueKey: string) {
 }
 
 // paginated like fetchAllDocuments so large same-timestamp batches cannot
-// truncate the candidate set before matching
+// truncate the candidate set before matching; capped because the endpoint is
+// unauthenticated and this loop is its most expensive amplification path
+const maxCandidatePages = 5;
+
 async function findCandidatesByDetails(
   decodedIdentifier: string,
   time: number
@@ -100,52 +112,78 @@ async function findCandidatesByDetails(
   const pageSize = 1000;
   let allCandidates: PriceRequestEntity[] = [];
   let page: PriceRequestEntity[];
-  let skip = 0;
+  let pages = 0;
   do {
     ({ priceRequests: page } = await gqlRequest<{
       priceRequests: PriceRequestEntity[];
     }>(VoteSubgraphURL, query, {
       identifier: decodedIdentifier,
       time,
-      skip,
+      skip: pages * pageSize,
       limit: pageSize,
     }));
     allCandidates = allCandidates.concat(page);
-    skip += pageSize;
-  } while (page.length === pageSize);
+    pages += 1;
+  } while (page.length === pageSize && pages < maxCandidatePages);
+  if (page.length === pageSize) {
+    console.warn("Deeplink candidate set truncated", {
+      identifier: decodedIdentifier,
+      time,
+      fetched: allCandidates.length,
+    });
+  }
   return allCandidates;
 }
 
-// Callers hash whichever ancillary data version they hold, so compare against
-// every variant reconstructable for this candidate: the DVM-side data, the
-// pre-stamp form of it, the compressed hash reference, and (via the bridge
-// event) the child-side data and its pre-stamp form.
-async function candidateMatchesHash(
+// Requests bridged in the same batch share (chain, oracle, block), so cache
+// the event fetch on exactly that key: matching N same-batch candidates costs
+// one RPC call, not N.
+function makeMemoizedBridgedEvents() {
+  const cache = new Map<string, ReturnType<typeof fetchBridgedEventsAt>>();
+  return (args: Parameters<typeof fetchBridgedEventsAt>[0]) => {
+    const key = `${args.childChainId}:${args.childOracle.toLowerCase()}:${
+      args.childBlockNumber
+    }`;
+    const cached = cache.get(key);
+    if (cached) return cached;
+    const pending = fetchBridgedEventsAt(args);
+    cache.set(key, pending);
+    return pending;
+  };
+}
+
+// The expensive variant: fetch the candidate's child-chain data via the
+// bridge event and compare the caller's hash against it and its pre-stamp
+// form. The cheap variants must have been ruled out first.
+async function candidateMatchesChildHash(
   candidate: PriceRequestEntity,
   decodedIdentifier: string,
-  hash: string
+  hash: string,
+  fetchEvents: ReturnType<typeof makeMemoizedBridgedEvents>
 ): Promise<boolean> {
-  if (matchesCheapHashVariants(candidate.ancillaryData, hash)) return true;
-
   const bridged = getBridgedFields(candidate.ancillaryData);
   if (!bridged) return false;
 
+  const parentRequestId = keccak256(
+    defaultAbiCoder.encode(
+      ["bytes32", "uint256", "bytes"],
+      [
+        formatBytes32String(decodedIdentifier),
+        candidate.time,
+        candidate.ancillaryData ?? "0x",
+      ]
+    )
+  ).toLowerCase();
+
   try {
-    const childData = await fetchAncillaryDataFromSpoke({
-      parentRequestId: keccak256(
-        defaultAbiCoder.encode(
-          ["bytes32", "uint256", "bytes"],
-          [
-            formatBytes32String(decodedIdentifier),
-            candidate.time,
-            candidate.ancillaryData ?? "0x",
-          ]
-        )
-      ),
-      childOracle: bridged.childOracle,
-      childChainId: bridged.childChainId,
-      childBlockNumber: bridged.childBlockNumber,
-    });
+    const events = await fetchEvents(bridged);
+    const event = events.find(
+      (e) =>
+        (e.args?.parentRequestId as string | undefined)?.toLowerCase() ===
+        parentRequestId
+    );
+    if (!event) return false;
+    const childData = event.args?.ancillaryData as string;
     return matchesHexHashVariants(childData, hash);
   } catch (error) {
     console.warn("Unable to fetch child ancillary data for hash match", {
@@ -156,27 +194,49 @@ async function candidateMatchesHash(
   }
 }
 
+// Callers hash whichever ancillary data version they hold, so compare against
+// every variant reconstructable per candidate: the DVM-side data, the
+// pre-stamp form of it, the compressed hash reference, and (via the bridge
+// event) the child-side data and its pre-stamp form. Exactly one candidate
+// must match.
 async function pickByAncillaryDataHash(
   candidates: PriceRequestEntity[],
   decodedIdentifier: string,
   hash: string
 ) {
-  const matches = (
-    await Promise.all(
-      candidates.map(async (candidate) => ({
-        candidate,
-        matched: await candidateMatchesHash(candidate, decodedIdentifier, hash),
-      }))
-    )
-  ).filter(({ matched }) => matched);
-  return matches.length === 1 ? matches[0].candidate : undefined;
+  // IO-free variants first. A single cheap match is decisive without checking
+  // the others' child data: another candidate could only share the hash by
+  // holding byte-identical data, which requestId uniqueness precludes for the
+  // same identifier and time.
+  const cheap = candidates.filter((candidate) =>
+    matchesCheapHashVariants(candidate.ancillaryData, hash)
+  );
+  if (cheap.length === 1) return cheap[0];
+  if (cheap.length > 1) return undefined;
+
+  // Sequential on purpose: bounded RPC concurrency for this unauthenticated
+  // endpoint, and ambiguity aborts before burning further calls. Same-batch
+  // candidates still cost one RPC total via the memoized event fetch.
+  const fetchEvents = makeMemoizedBridgedEvents();
+  const matches: PriceRequestEntity[] = [];
+  for (const candidate of candidates) {
+    const matched = await candidateMatchesChildHash(
+      candidate,
+      decodedIdentifier,
+      hash,
+      fetchEvents
+    );
+    if (!matched) continue;
+    matches.push(candidate);
+    if (matches.length > 1) return undefined;
+  }
+  return matches.length === 1 ? matches[0] : undefined;
 }
 
 function getActivityStatus(entity: PriceRequestEntity): ActivityStatusT {
   if (entity.isResolved) return "past";
-  const currentRoundId = Math.floor(Date.now() / 1000 / roundLength);
   const latestRoundId = Number(entity.latestRound?.roundId ?? 0);
-  return latestRoundId > currentRoundId ? "upcoming" : "active";
+  return latestRoundId > computeRoundId() ? "upcoming" : "active";
 }
 
 async function resolveEntity(
@@ -244,6 +304,14 @@ export default async function handler(
     );
     response.status(200).json({ uniqueKey: entity.id, activityStatus });
   } catch (error) {
+    if (error instanceof HttpError && error.statusCode === 404) {
+      // cache misses briefly too — a repeatedly shared dead link shouldn't
+      // re-run the whole resolution against the subgraph on every hit
+      response.setHeader(
+        "Cache-Control",
+        "public, s-maxage=60, stale-while-revalidate=300"
+      );
+    }
     handleApiError(error, response);
   }
 }
