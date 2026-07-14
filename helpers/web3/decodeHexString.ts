@@ -1,5 +1,6 @@
+// deliberately avoids the "helpers" barrel so pure consumers (lib matching
+// code, unit tests) don't drag in the env-validated config module
 import { ethers } from "ethers";
-import { toUtf8String } from "helpers";
 import { object, string, optional } from "superstruct";
 
 export function encodeHexString(str: string): string {
@@ -8,7 +9,7 @@ export function encodeHexString(str: string): string {
 
 export function decodeHexString(hexString: string) {
   try {
-    const utf8String = toUtf8String(hexString);
+    const utf8String = ethers.utils.toUtf8String(hexString);
     // eslint-disable-next-line no-control-regex
     const paddingRemoved = utf8String.replace(/\u0000/g, "");
     return paddingRemoved;

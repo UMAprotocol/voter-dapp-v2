@@ -8,6 +8,10 @@ import {
 } from "ethers/lib/utils";
 import { getProvider } from "helpers/config";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
+// moved to lib/deeplink-matching so pure consumers can import it without the
+// provider config this module needs; re-exported for existing callers
+import { extractMaybeAncillaryDataFields } from "lib/deeplink-matching";
+export { extractMaybeAncillaryDataFields };
 
 // ABI for OracleSpoke contract events
 export const PRICE_REQUEST_BRIDGED_ABI = [
@@ -64,29 +68,6 @@ export interface ResolveAncillaryDataRequest {
 
 export interface ResolveAncillaryDataResult {
   resolvedAncillaryData: string;
-}
-
-export function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
-  const pattern = new RegExp(
-    "^" +
-      "ancillaryDataHash:(\\w+),\\s*" +
-      "childBlockNumber:(\\d+),\\s*" +
-      "childOracle:(\\w+),\\s*" +
-      "childRequester:(\\w+),\\s*" +
-      "childChainId:(\\d+)" +
-      "$"
-  );
-
-  const match = decodedAncillaryData.match(pattern);
-  if (!match) return {};
-
-  return {
-    ancillaryDataHash: match[1],
-    childBlockNumber: match[2],
-    childOracle: match[3],
-    childRequester: match[4],
-    childChainId: match[5],
-  };
 }
 
 function mergeAncillaryData(

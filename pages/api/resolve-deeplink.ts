@@ -1,10 +1,13 @@
 import { gql, request as gqlRequest } from "graphql-request";
-import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 import { makeUniqueKeyForVote } from "helpers/voting/makeUniqueKeyForVote";
+import { fetchAncillaryDataFromSpoke } from "lib/l2-ancillary-data";
 import {
-  extractMaybeAncillaryDataFields,
-  fetchAncillaryDataFromSpoke,
-} from "lib/l2-ancillary-data";
+  getBridgedFields,
+  matchesCheapHashVariants,
+  matchesHexHashVariants,
+  normalizeIdentifier,
+  pickByFullAncillaryData,
+} from "lib/deeplink-matching";
 import { defaultAbiCoder, keccak256 } from "ethers/lib/utils";
 import { formatBytes32String } from "helpers/web3/ethers";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -113,73 +116,6 @@ async function findCandidatesByDetails(
   return allCandidates;
 }
 
-function pickByFullAncillaryData(
-  candidates: PriceRequestEntity[],
-  ancillaryData: string
-) {
-  const normalized = ancillaryData.toLowerCase();
-  const exact = candidates.find(
-    (candidate) => candidate.ancillaryData?.toLowerCase() === normalized
-  );
-  if (exact) return exact;
-
-  // Requests reaching the DVM from an oracle contract have the original
-  // ancillary data "stamped", so the requesting side's data is a byte-prefix
-  // of what the DVM stores. Requiring the remainder to be the stamp prevents
-  // an unrelated same-batch request that merely begins with the same bytes
-  // from stealing the match.
-  const stamped = candidates.filter((candidate) => {
-    const data = candidate.ancillaryData?.toLowerCase();
-    return (
-      data?.startsWith(normalized) &&
-      data.slice(normalized.length).startsWith(OO_REQUESTER_STAMP)
-    );
-  });
-  if (stamped.length === 1) return stamped[0];
-
-  // Requests bridged via AncillaryDataCompression replace the data with
-  // `ancillaryDataHash:<keccak256(childData)>,childBlockNumber:...`, so match
-  // the hash of the provided data against the compressed form.
-  const providedDataHash = keccak256(normalized).slice(2);
-  const compressed = candidates.filter((candidate) =>
-    decodeAncillaryDataSafe(candidate.ancillaryData)?.startsWith(
-      `ancillaryDataHash:${providedDataHash},`
-    )
-  );
-  if (compressed.length === 1) return compressed[0];
-
-  return undefined;
-}
-
-const OO_REQUESTER_STAMP = encodeHexString(",ooRequester:").slice(2);
-
-// The stamp is appended as the final key-value pair, so stripping from its
-// last occurrence recovers the pre-stamp bytes.
-function stripOoRequesterStamp(dataHex: string) {
-  const index = dataHex.toLowerCase().lastIndexOf(OO_REQUESTER_STAMP);
-  return index === -1 ? undefined : dataHex.slice(0, index);
-}
-
-function hashesOfHex(dataHex: string | undefined) {
-  if (!dataHex || dataHex === "0x") return [];
-  const hashes = [keccak256(dataHex)];
-  // a stripped value of "0x" is still meaningful: an OO request with blank
-  // caller ancillary data is stamped to just `,ooRequester:<addr>`, and links
-  // built from the raw request bytes hash the empty data
-  const stripped = stripOoRequesterStamp(dataHex);
-  if (stripped) hashes.push(keccak256(stripped));
-  return hashes;
-}
-
-function decodeAncillaryDataSafe(ancillaryData: string | null) {
-  if (!ancillaryData) return undefined;
-  try {
-    return decodeHexString(ancillaryData);
-  } catch {
-    return undefined;
-  }
-}
-
 // Callers hash whichever ancillary data version they hold, so compare against
 // every variant reconstructable for this candidate: the DVM-side data, the
 // pre-stamp form of it, the compressed hash reference, and (via the bridge
@@ -189,40 +125,28 @@ async function candidateMatchesHash(
   decodedIdentifier: string,
   hash: string
 ): Promise<boolean> {
-  const mainnetData = candidate.ancillaryData ?? "0x";
-  const normalizedHash = hash.toLowerCase();
+  if (matchesCheapHashVariants(candidate.ancillaryData, hash)) return true;
 
-  if (
-    hashesOfHex(mainnetData).some((h) => h.toLowerCase() === normalizedHash)
-  ) {
-    return true;
-  }
-
-  const decoded = decodeAncillaryDataSafe(mainnetData);
-  if (!decoded) return false;
-  const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
-    extractMaybeAncillaryDataFields(decoded);
-  if (!ancillaryDataHash || !childOracle || !childChainId || !childBlockNumber)
-    return false;
-
-  // hash of the stamped child data is embedded in the compressed form
-  if (`0x${ancillaryDataHash.toLowerCase()}` === normalizedHash) return true;
+  const bridged = getBridgedFields(candidate.ancillaryData);
+  if (!bridged) return false;
 
   try {
     const childData = await fetchAncillaryDataFromSpoke({
       parentRequestId: keccak256(
         defaultAbiCoder.encode(
           ["bytes32", "uint256", "bytes"],
-          [formatBytes32String(decodedIdentifier), candidate.time, mainnetData]
+          [
+            formatBytes32String(decodedIdentifier),
+            candidate.time,
+            candidate.ancillaryData ?? "0x",
+          ]
         )
       ),
-      childOracle: `0x${childOracle}`,
-      childChainId: Number(childChainId),
-      childBlockNumber: Number(childBlockNumber),
+      childOracle: bridged.childOracle,
+      childChainId: bridged.childChainId,
+      childBlockNumber: bridged.childBlockNumber,
     });
-    return hashesOfHex(childData).some(
-      (h) => h.toLowerCase() === normalizedHash
-    );
+    return matchesHexHashVariants(childData, hash);
   } catch (error) {
     console.warn("Unable to fetch child ancillary data for hash match", {
       candidate: candidate.id,
@@ -246,15 +170,6 @@ async function pickByAncillaryDataHash(
     )
   ).filter(({ matched }) => matched);
   return matches.length === 1 ? matches[0].candidate : undefined;
-}
-
-// The subgraph identifier id is the decoded string ("YES_OR_NO_QUERY"), but
-// callers may pass the on-chain bytes32 form instead.
-function normalizeIdentifier(identifier: string) {
-  if (/^0x[0-9a-fA-F]{64}$/.test(identifier)) {
-    return decodeHexString(identifier);
-  }
-  return identifier;
 }
 
 function getActivityStatus(entity: PriceRequestEntity): ActivityStatusT {
