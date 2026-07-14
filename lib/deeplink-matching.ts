@@ -21,9 +21,16 @@ export type DeeplinkCandidate = {
 export const OO_REQUESTER_STAMP = encodeHexString(",ooRequester:").slice(2);
 
 // The stamp is appended as the final key-value pair, so stripping from its
-// last occurrence recovers the pre-stamp bytes.
+// last occurrence recovers the pre-stamp bytes. Hex-string offsets are
+// nibbles: an odd offset is not a byte boundary, so a match there is a
+// coincidental nibble alignment inside binary data, not the stamp — and
+// slicing at it would produce odd-length hex that keccak256 rejects.
 export function stripOoRequesterStamp(dataHex: string) {
-  const index = dataHex.toLowerCase().lastIndexOf(OO_REQUESTER_STAMP);
+  const lower = dataHex.toLowerCase();
+  let index = lower.lastIndexOf(OO_REQUESTER_STAMP);
+  while (index > 0 && index % 2 !== 0) {
+    index = lower.lastIndexOf(OO_REQUESTER_STAMP, index - 1);
+  }
   return index === -1 ? undefined : dataHex.slice(0, index);
 }
 

@@ -6,6 +6,7 @@ import {
   matchesCheapHashVariants,
   matchesHexHashVariants,
   normalizeIdentifier,
+  OO_REQUESTER_STAMP,
   pickByFullAncillaryData,
   stripOoRequesterStamp,
 } from "lib/deeplink-matching";
@@ -55,6 +56,21 @@ describe("stripOoRequesterStamp", () => {
 
   it("strips a blank-data stamp to empty bytes", () => {
     expect(stripOoRequesterStamp(blankStampedData)).toBe("0x");
+  });
+
+  // binary ancillary data can contain the stamp's nibble sequence shifted off
+  // a byte boundary; slicing there would produce odd-length hex and make
+  // keccak256 throw (a 500 for every deeplink sharing that identifier+time)
+  it("ignores a nibble-shifted stamp coincidence in binary data", () => {
+    const unaligned = `0xa${OO_REQUESTER_STAMP}b`;
+    expect(stripOoRequesterStamp(unaligned)).toBeUndefined();
+    expect(() => hashesOfHex(unaligned)).not.toThrow();
+  });
+
+  it("walks back to a byte-aligned stamp past a later unaligned coincidence", () => {
+    const tricky = `0x${OO_REQUESTER_STAMP}00a${OO_REQUESTER_STAMP}b`;
+    expect(stripOoRequesterStamp(tricky)).toBe("0x");
+    expect(() => hashesOfHex(tricky)).not.toThrow();
   });
 });
 
@@ -122,15 +138,19 @@ describe("pickByFullAncillaryData", () => {
 
   it("matches a compressed request by the embedded child-data hash", () => {
     expect(
-      pickByFullAncillaryData([candidate("compressed", compressedData)], childData)
-        ?.id
+      pickByFullAncillaryData(
+        [candidate("compressed", compressedData)],
+        childData
+      )?.id
     ).toBe("compressed");
   });
 
   it("is case-insensitive on the provided data", () => {
     expect(
-      pickByFullAncillaryData(candidates, callerData.toUpperCase().replace("0X", "0x"))
-        ?.id
+      pickByFullAncillaryData(
+        candidates,
+        callerData.toUpperCase().replace("0X", "0x")
+      )?.id
     ).toBe("exact");
   });
 });

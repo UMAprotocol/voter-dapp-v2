@@ -1,6 +1,9 @@
 import { gql, request as gqlRequest } from "graphql-request";
 import { computeRoundId } from "helpers/voting/voteTiming";
-import { makeUniqueKeyForVote } from "helpers/voting/makeUniqueKeyForVote";
+import {
+  makeUniqueKeyForVote,
+  makeUniqueKeyFromAncillaryHash,
+} from "helpers/voting/makeUniqueKeyForVote";
 import { fetchBridgedEventsAt } from "lib/l2-ancillary-data";
 import {
   getBridgedFields,
@@ -164,18 +167,20 @@ async function candidateMatchesChildHash(
   const bridged = getBridgedFields(candidate.ancillaryData);
   if (!bridged) return false;
 
-  const parentRequestId = keccak256(
-    defaultAbiCoder.encode(
-      ["bytes32", "uint256", "bytes"],
-      [
-        formatBytes32String(decodedIdentifier),
-        candidate.time,
-        candidate.ancillaryData ?? "0x",
-      ]
-    )
-  ).toLowerCase();
-
   try {
+    // inside the try: formatBytes32String throws for identifiers of 32+
+    // bytes, which cannot be re-encoded and so cannot match a bridged parent
+    const parentRequestId = keccak256(
+      defaultAbiCoder.encode(
+        ["bytes32", "uint256", "bytes"],
+        [
+          formatBytes32String(decodedIdentifier),
+          candidate.time,
+          candidate.ancillaryData ?? "0x",
+        ]
+      )
+    ).toLowerCase();
+
     const events = await fetchEvents(bridged);
     const event = events.find(
       (e) =>
@@ -235,8 +240,12 @@ async function pickByAncillaryDataHash(
 
 function getActivityStatus(entity: PriceRequestEntity): ActivityStatusT {
   if (entity.isResolved) return "past";
-  const latestRoundId = Number(entity.latestRound?.roundId ?? 0);
-  return latestRoundId > computeRoundId() ? "upcoming" : "active";
+  // not tied to a round on the subgraph yet — a brand-new request cannot be
+  // in the current (active) round
+  if (!entity.latestRound) return "upcoming";
+  return Number(entity.latestRound.roundId) > computeRoundId()
+    ? "upcoming"
+    : "active";
 }
 
 async function resolveEntity(
@@ -244,17 +253,29 @@ async function resolveEntity(
 ): Promise<PriceRequestEntity | null | undefined> {
   if ("vote" in params) return findByUniqueKey(params.vote);
 
-  const decodedIdentifier = normalizeIdentifier(params.identifier);
+  let decodedIdentifier: string;
+  try {
+    decodedIdentifier = normalizeIdentifier(params.identifier);
+  } catch {
+    // a bytes32 identifier whose bytes aren't valid UTF-8 can never equal the
+    // subgraph's decoded identifier strings — caller input, not a server error
+    throw new HttpError({
+      statusCode: 400,
+      msg: "identifier is not decodable as UTF-8",
+    });
+  }
   const { time, ancillaryData, ancillaryDataHash } = params;
 
   // when the caller's data or hash corresponds to the DVM-side data, the
   // uniqueKey is directly constructible — single cheap lookup
   const directHash = ancillaryDataHash ?? undefined;
-  if (ancillaryData || directHash) {
-    const uniqueKey = ancillaryData
-      ? makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
-      : `${decodedIdentifier}-${time}-${directHash?.toLowerCase() ?? ""}`;
-    const direct = await findByUniqueKey(uniqueKey);
+  const directKey = ancillaryData
+    ? makeUniqueKeyForVote(decodedIdentifier, time, ancillaryData)
+    : directHash
+    ? makeUniqueKeyFromAncillaryHash(decodedIdentifier, time, directHash)
+    : undefined;
+  if (directKey) {
+    const direct = await findByUniqueKey(directKey);
     if (direct) return direct;
   }
 
@@ -275,8 +296,14 @@ async function resolveEntity(
       decodedIdentifier,
       hash
     );
-    if (byHash) return byHash;
+    // The caller said exactly which data they mean and it matched nothing —
+    // possibly a request the subgraph hasn't indexed yet. A lone candidate
+    // sharing identifier+time is NOT safely "the one": resolving it would
+    // return (and CDN-cache) the wrong vote. 404s are cached briefly, so a
+    // not-yet-indexed request heals on retry.
+    return byHash;
   }
+  // identifier+time alone: a single candidate is unambiguous
   return candidates.length === 1 ? candidates[0] : undefined;
 }
 
