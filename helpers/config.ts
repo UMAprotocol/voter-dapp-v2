@@ -13,8 +13,6 @@ const Env = ss.object({
   NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
   NEXT_PUBLIC_GRAPH_STUDIO_API_KEY: ss.string(),
   // optional envs
-  NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
-  NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
   NEXT_PUBLIC_GRAPH_ENDPOINT: ss.optional(ss.string()),
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
@@ -53,10 +51,6 @@ export const env = ss.create(
     NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID:
       process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
     NEXT_PUBLIC_WALLET_CONNECT: process.env.NEXT_PUBLIC_WALLET_CONNECT,
-    NEXT_PUBLIC_CONTENTFUL_SPACE_ID:
-      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-    NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN:
-      process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
     NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
     NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
@@ -97,10 +91,7 @@ const AppConfig = ss.object({
   gaTag: ss.string(),
   graphStudioApiKey: ss.string(),
   graphEndpoint: ss.optional(ss.string()),
-  contentfulSpace: ss.optional(ss.string()),
-  contentfulAccessToken: ss.optional(ss.string()),
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
-  contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
@@ -128,8 +119,6 @@ export const appConfig = ss.create(
     votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     votingTokenContractAddress: env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
     votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
-    contentfulSpace: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-    contentfulAccessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
@@ -140,9 +129,6 @@ export const appConfig = ss.create(
       Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1") === 11155111 ? true : false,
     walletConnectProjectId: env.NEXT_PUBLIC_WALLET_CONNECT,
     graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
-    contentfulEnabled:
-      !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
-      !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     overrideApr: env.NEXT_PUBLIC_OVERRIDE_APR,
     designatedVotingFactoryV1Address:
       env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS ??
