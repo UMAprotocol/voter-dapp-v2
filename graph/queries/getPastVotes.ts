@@ -4,7 +4,7 @@ import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { warnOnce } from "helpers/util/log";
-import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
+import { resolveAncillaryData } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
 const { chainId, graphEndpoint } = config;
@@ -233,14 +233,17 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
     revealedVoteByAddress,
   };
 
-  const [resolved] = await resolveAncillaryDataForRequests([
-    {
-      ...detailedVote,
-      time: BigNumber.from(detailedVote.time),
-    },
-  ]);
+  // this result is cached permanently (usePastVoteDetails), so resolution
+  // must throw on failure — the tolerant batch helper would freeze a
+  // still-stamped fallback into the cache
+  const timeAsBigNumber = BigNumber.from(detailedVote.time);
+  const ancillaryDataL2 = await resolveAncillaryData({
+    identifier,
+    time: timeAsBigNumber,
+    ancillaryData,
+  });
 
-  return resolved;
+  return { ...detailedVote, time: timeAsBigNumber, ancillaryDataL2 };
 }
 
 export async function getPastVotesAllVersions() {

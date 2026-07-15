@@ -7,11 +7,20 @@ import { getBaseUrl } from "helpers/util/http";
 import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
 import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
 
+// One unresolvable vote must not fail a whole list fetch, so this falls back
+// to the original (still-stamped) ancillary data per request — rendered votes
+// are healed by useVotesWithResolvedAncillaryData, which retries any vote
+// whose data still carries the stamp. Callers that cache a single vote's
+// resolution permanently should call resolveAncillaryData directly, which
+// throws instead of falling back.
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
 >(requests: T[]): Promise<(T & { ancillaryDataL2: string })[]> {
   const resolvedAncillaryData = await promiseAllWithConcurrency(
-    requests.map((request) => () => resolveAncillaryData(request))
+    requests.map(
+      (request) => () =>
+        resolveAncillaryData(request).catch(() => request.ancillaryData)
+    )
   );
   return requests.map((request, i) => ({
     ...request,
@@ -90,6 +99,14 @@ export async function resolveAncillaryData(
     // Fallback to local
     try {
       const result = await resolveAncillaryDataShared(args);
+      // the shared resolver falls back to the original (still-stamped) value
+      // when the child-chain lookup fails — same rule as the API result:
+      // that is a failure, not a resolution
+      if (
+        hasL2AncillaryDataStamp(decodeHexString(result.resolvedAncillaryData))
+      ) {
+        throw new Error("Local resolution returned unresolved ancillary data");
+      }
       return result.resolvedAncillaryData;
     } catch (fallbackError) {
       errorOnce(
