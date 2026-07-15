@@ -1,5 +1,7 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
 import { onlyOneRequestPerAddress, zeroAddress } from "helpers";
+import { config } from "helpers/config";
+import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
 import { getStakerDetails } from "../staking/getStakerDetails";
 
 export async function getDelegateSetEvents(
@@ -10,7 +12,8 @@ export async function getDelegateSetEvents(
   if (!address) return [];
   const args = queryFor === "delegate" ? [null, address] : [address, null];
   const filter = voting.filters.DelegateSet(...args);
-  const events = await voting.queryFilter(filter);
+  // events can't precede the contract, so don't ask the RPC to scan from genesis
+  const events = await voting.queryFilter(filter, config.deployBlock);
   const parsedEvents = events
     .map((event) => ({
       delegate: event.args.delegate,
@@ -34,15 +37,11 @@ async function removeDanglingDelegateEvents(
     transactionHash: string;
   }[]
 ) {
-  const result = [];
-  for (const event of events) {
-    const stillWantToBeDelegator = await detectDanglingDelegate(
-      voting,
-      event.delegator
-    );
-    if (stillWantToBeDelegator) result.push(event);
-  }
-  return result;
+  // one voterStakes read per event — run them concurrently instead of serially
+  const stillWanted = await promiseAllWithConcurrency(
+    events.map((event) => () => detectDanglingDelegate(voting, event.delegator))
+  );
+  return events.filter((_, i) => stillWanted[i]);
 }
 
 async function detectDanglingDelegate(

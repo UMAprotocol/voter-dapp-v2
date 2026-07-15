@@ -16,6 +16,9 @@ export function useAssertionClaim(
     },
     enabled: !!assertionId,
     onError,
+    // an assertion's claim is immutable, and finding it costs a large event
+    // scan — never refetch once we have it
+    staleTime: Infinity,
   });
 
   return queryResult;
