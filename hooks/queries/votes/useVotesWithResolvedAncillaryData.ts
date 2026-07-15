@@ -17,7 +17,10 @@ import { VoteT } from "types";
  */
 export function useVotesWithResolvedAncillaryData(votes: VoteT[]): VoteT[] {
   const votesNeedingResolution = useMemo(
-    () => votes.filter((vote) => hasL2AncillaryDataStamp(vote.decodedAncillaryData)),
+    () =>
+      votes.filter((vote) =>
+        hasL2AncillaryDataStamp(vote.decodedAncillaryData)
+      ),
     [votes]
   );
 

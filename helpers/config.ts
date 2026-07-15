@@ -293,10 +293,7 @@ export const config: AppConfig & ChainConstants = {
 // get provider for other chains; reuse one provider per chain so callers
 // share its connection state instead of instantiating a new one per call
 // (declared before primaryProvider, whose initializer calls getProvider)
-const providersByChainId = new Map<
-  number,
-  ethers.providers.JsonRpcProvider
->();
+const providersByChainId = new Map<number, ethers.providers.JsonRpcProvider>();
 export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
   const existing = providersByChainId.get(chainId);
   if (existing) return existing;

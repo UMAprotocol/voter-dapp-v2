@@ -1,8 +1,4 @@
-import {
-  formatBytes32String,
-  getAddress,
-  keccak256,
-} from "ethers/lib/utils";
+import { formatBytes32String, getAddress, keccak256 } from "ethers/lib/utils";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 
 // Pure matching logic behind /api/resolve-deeplink: given a set of subgraph

@@ -10,6 +10,7 @@ import {
 import { makeProvisionalVote } from "helpers/voting/makeProvisionalVote";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
+import { useVotesWithResolvedAncillaryData } from "hooks/queries/votes/useVotesWithResolvedAncillaryData";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 import { ActivityStatusT, VoteT } from "types";
@@ -77,16 +78,27 @@ export function useVoteDeeplink() {
     activeVotesIsInitialLoading ||
     upcomingVotesIsInitialLoading ||
     pastVotesIsInitialLoading;
-  const targetInLists = useMemo(
-    () =>
-      !!targetKey &&
-      activityStatuses.some((status) =>
-        voteListsByActivityStatus[status]?.some(
-          (vote) => vote.uniqueKey === targetKey
-        )
-      ),
-    [targetKey, voteListsByActivityStatus]
+  const targetFromLists = useMemo(() => {
+    if (!targetKey) return undefined;
+    for (const status of activityStatuses) {
+      const vote = voteListsByActivityStatus[status]?.find(
+        (vote) => vote.uniqueKey === targetKey
+      );
+      if (vote) return { vote, status };
+    }
+    return undefined;
+  }, [targetKey, voteListsByActivityStatus]);
+  const targetInLists = !!targetFromLists;
+
+  // past votes come out of the lists with unresolved L2 ancillary data (it is
+  // resolved lazily for on-screen rows), but the panel derives its title and
+  // description from it — resolve the deeplinked vote before showing it
+  const targetVotesToResolve = useMemo(
+    () => (targetFromLists ? [targetFromLists.vote] : []),
+    [targetFromLists]
   );
+  const [resolvedTargetVote] =
+    useVotesWithResolvedAncillaryData(targetVotesToResolve);
 
   // canonical links: fetch the entity so the panel can render before the
   // lists load; external links seed this cache from their own resolution
@@ -210,12 +222,18 @@ export function useVoteDeeplink() {
     }
 
     // a provisional panel with the right key still needs its canonical
-    // upgrade, so it does not count as "in sync"
+    // upgrade, so it does not count as "in sync"; nor does a panel showing
+    // the vote with ancillary data whose lazy resolution has since landed
     const upgradingProvisional = provisionalKeyRef.current === targetKey;
+    const panelHasStaleAncillaryData =
+      panelContent?.uniqueKey === targetKey &&
+      !!resolvedTargetVote &&
+      panelContent.ancillaryDataL2 !== resolvedTargetVote.ancillaryDataL2;
     if (
       voteShowing &&
       panelContent?.uniqueKey === targetKey &&
-      !upgradingProvisional
+      !upgradingProvisional &&
+      !panelHasStaleAncillaryData
     ) {
       return;
     }
@@ -226,17 +244,8 @@ export function useVoteDeeplink() {
     // covering the vote the param still describes) — leave both alone
     if (panelOpen && panelType !== "vote" && !selfInitiated) return;
 
-    let vote: VoteT | undefined;
-    let status: ActivityStatusT | undefined;
-    for (const s of activityStatuses) {
-      vote = voteListsByActivityStatus[s]?.find(
-        (v) => v.uniqueKey === targetKey
-      );
-      if (vote) {
-        status = s;
-        break;
-      }
-    }
+    const vote: VoteT | undefined = resolvedTargetVote ?? targetFromLists?.vote;
+    const status: ActivityStatusT | undefined = targetFromLists?.status;
 
     if (!vote || !status) {
       const entity =
@@ -253,7 +262,10 @@ export function useVoteDeeplink() {
           return;
         }
         if (voteShowing && panelContent?.uniqueKey === targetKey) return;
-        const provisional = makeProvisionalVote(entity.request, entity.uniqueKey);
+        const provisional = makeProvisionalVote(
+          entity.request,
+          entity.uniqueKey
+        );
         if (voteShowing) {
           showVote(provisional, []);
         } else {
@@ -297,8 +309,13 @@ export function useVoteDeeplink() {
       // there on close
       openPanel("vote", vote, { navigableVotes: votes });
     }
-    // a provisional upgrade already requested its scroll when it opened
-    if ((!selfInitiated || expected?.scroll) && !upgradingProvisional) {
+    // a provisional upgrade already requested its scroll when it opened; an
+    // ancillary-data upgrade swaps content in place and must not re-scroll
+    if (
+      (!selfInitiated || expected?.scroll) &&
+      !upgradingProvisional &&
+      !panelHasStaleAncillaryData
+    ) {
       requestVoteScroll(targetKey);
     }
     provisionalKeyRef.current = undefined;
@@ -307,6 +324,8 @@ export function useVoteDeeplink() {
   }, [
     targetKey,
     targetEntity,
+    targetFromLists,
+    resolvedTargetVote,
     router.isReady,
     router.pathname,
     panelOpen,
