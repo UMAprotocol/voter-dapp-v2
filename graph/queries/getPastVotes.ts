@@ -303,6 +303,8 @@ export async function getUserVotesForRequests(
     return userVotes;
   } catch (error) {
     warnOnce("user-votes-for-requests", "Error fetching user votes:", error);
-    return {};
+    // rethrow so callers cache this as an error to retry, not as an
+    // authoritative "did not vote on anything"
+    throw error;
   }
 }

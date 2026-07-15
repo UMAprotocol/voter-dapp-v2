@@ -1,7 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { BigNumber } from "ethers";
-import { resolveAncillaryData } from "lib/l2-ancillary-data";
+import {
+  hasL2AncillaryDataStamp,
+  resolveAncillaryData,
+} from "lib/l2-ancillary-data";
+import { decodeHexString } from "helpers/web3/decodeHexString";
 import { validateQueryParams } from "./_utils/validation";
 import { handleApiError } from "./_utils/errors";
 import { hexString, positiveIntStr } from "helpers/validators";
@@ -33,12 +37,21 @@ export default async function handler(
       req.query,
       ResolveAncillaryDataRequestSchema
     );
-    // will throw if not resolved
     const result = await resolveAncillaryData({
       identifier: requestBody.identifier,
       time: BigNumber.from(requestBody.time),
       ancillaryData: requestBody.ancillaryData,
     });
+
+    // the resolver falls back to the original (still-stamped) value when the
+    // child-chain lookup fails — that must be an uncached error, or the CDN
+    // pins the failure for a year and clients can never resolve this request
+    if (hasL2AncillaryDataStamp(decodeHexString(result.resolvedAncillaryData))) {
+      res.setHeader("Cache-Control", "no-store");
+      return res
+        .status(502)
+        .json({ error: "Unable to resolve L2 ancillary data" });
+    }
 
     res.setHeader("Cache-Control", `public, max-age=${TTL}, s-maxage=${TTL}`);
     return res.status(200).json({

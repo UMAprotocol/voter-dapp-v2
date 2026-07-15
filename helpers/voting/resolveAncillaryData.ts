@@ -71,6 +71,13 @@ export async function resolveAncillaryData(
       throw new Error("No resolved ancillary data returned from API");
     }
 
+    // a still-stamped 200 is a resolution failure the CDN may have cached
+    // (pre-existing entries carry a year-long TTL) — fall back to resolving
+    // locally rather than accepting it
+    if (hasL2AncillaryDataStamp(decodeHexString(result.resolvedAncillaryData))) {
+      throw new Error("API returned unresolved ancillary data");
+    }
+
     return result.resolvedAncillaryData;
   } catch (error) {
     // endpoint-level problem, not per-request — log it once, not per vote
