@@ -227,17 +227,20 @@ export function useVoteDeeplink() {
 
     // a provisional panel with the right key still needs its canonical
     // upgrade, so it does not count as "in sync"; nor does a panel showing
-    // the vote with ancillary data whose lazy resolution has since landed
+    // the vote whose lazily-loaded content (L2 ancillary data, UMIP metadata
+    // for governance votes) has since landed. contentfulData is compared by
+    // reference: both sides come from the same react-query cache entry
     const upgradingProvisional = provisionalKeyRef.current === targetKey;
-    const panelHasStaleAncillaryData =
+    const panelHasStaleContent =
       panelContent?.uniqueKey === targetKey &&
       !!resolvedTargetVote &&
-      panelContent.ancillaryDataL2 !== resolvedTargetVote.ancillaryDataL2;
+      (panelContent.ancillaryDataL2 !== resolvedTargetVote.ancillaryDataL2 ||
+        panelContent.contentfulData !== resolvedTargetVote.contentfulData);
     if (
       voteShowing &&
       panelContent?.uniqueKey === targetKey &&
       !upgradingProvisional &&
-      !panelHasStaleAncillaryData
+      !panelHasStaleContent
     ) {
       return;
     }
@@ -319,12 +322,12 @@ export function useVoteDeeplink() {
       // there on close
       openPanel("vote", vote, { navigableVotes: votes });
     }
-    // a provisional upgrade already requested its scroll when it opened; an
-    // ancillary-data upgrade swaps content in place and must not re-scroll
+    // a provisional upgrade already requested its scroll when it opened; a
+    // stale-content upgrade swaps content in place and must not re-scroll
     if (
       (!selfInitiated || expected?.scroll) &&
       !upgradingProvisional &&
-      !panelHasStaleAncillaryData
+      !panelHasStaleContent
     ) {
       requestVoteScroll(targetKey);
     }
