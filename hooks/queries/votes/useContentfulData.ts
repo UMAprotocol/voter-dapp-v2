@@ -2,12 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey, oneMinute } from "constant";
 import * as contentful from "contentful";
 import { config } from "helpers/config";
-import {
-  useActiveVotes,
-  useHandleError,
-  usePastVotes,
-  useUpcomingVotes,
-} from "hooks";
+import { warnOnce } from "helpers/util/log";
+import { useActiveVotes, usePastVotes, useUpcomingVotes } from "hooks";
 import { ContentfulDataByKeyT, ContentfulDataT, UniqueKeyT } from "types";
 
 const { contentfulSpace, contentfulAccessToken } = config;
@@ -54,7 +50,6 @@ export function useContentfulData() {
   const { data: activeVotes } = useActiveVotes();
   const { data: upcomingVotes } = useUpcomingVotes();
   const { data: pastVotes } = usePastVotes();
-  const { onError } = useHandleError({ isDataFetching: true });
 
   const adminProposalNumbersByKey: Record<UniqueKeyT, number> = {};
 
@@ -78,7 +73,11 @@ export function useContentfulData() {
     refetchInterval: oneMinute,
     enabled:
       !!contentfulClient && Object.keys(adminProposalNumbersByKey).length > 0,
-    onError,
+    // contentful only enriches admin votes with CMS descriptions — a failure
+    // (e.g. a stale access token) must not raise the app-wide "error fetching
+    // vote data" banner, especially since this query polls every minute
+    onError: (error) =>
+      warnOnce("contentful", "Error fetching UMIP data from contentful:", error),
   });
 
   return queryResult;
