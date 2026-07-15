@@ -10,7 +10,6 @@ const Env = ss.object({
   NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID: ss.string(),
-  NEXT_PUBLIC_INFURA_ID: ss.string(),
   NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
   NEXT_PUBLIC_CURRENT_ENV: ss.string(),
   NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
@@ -58,7 +57,6 @@ export const env = ss.create(
     NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID:
       process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
     NEXT_PUBLIC_THE_GRAPH_API_KEY: process.env.NEXT_PUBLIC_THE_GRAPH_API_KEY,
-    NEXT_PUBLIC_INFURA_ID: process.env.NEXT_PUBLIC_INFURA_ID,
     NEXT_PUBLIC_ONBOARD_API_KEY: process.env.NEXT_PUBLIC_ONBOARD_API_KEY,
     NEXT_PUBLIC_CURRENT_ENV: process.env.NEXT_PUBLIC_CURRENT_ENV,
     NEXT_PUBLIC_WALLET_CONNECT: process.env.NEXT_PUBLIC_WALLET_CONNECT,
@@ -94,7 +92,6 @@ export const env = ss.create(
 // we want to create a configuration type which the app can references to easily get constants and other data.
 // This is the object the rest of the app should be referencing, not pulling raw environment vars through the app.
 const AppConfig = ss.object({
-  infuraId: ss.string(),
   votingContractAddress: ss.string(),
   votingTokenContractAddress: ss.string(),
   votingV1ContractAddress: ss.string(),
@@ -138,7 +135,6 @@ export type AppConfig = ss.Infer<typeof AppConfig>;
 export const appConfig = ss.create(
   {
     blocknativeDappId: env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
-    infuraId: env.NEXT_PUBLIC_INFURA_ID,
     votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     votingTokenContractAddress: env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
     votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
@@ -184,7 +180,6 @@ export const appConfig = ss.create(
 
 export type ChainConstants = {
   chainId: SupportedChainIds;
-  infuraName: string;
   properName: string;
   makeTransactionHashLink: (transactionHash: string) => string;
   makeAddressLink: (address: string) => string;
@@ -203,7 +198,6 @@ export type ChainConstantsList = ChainConstants[];
 export const chainConstantsList: ChainConstantsList = [
   {
     chainId: 1,
-    infuraName: "homestead",
     properName: "Ethereum",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://etherscan.io/tx/${transactionHash}`,
@@ -218,7 +212,6 @@ export const chainConstantsList: ChainConstantsList = [
   },
   {
     chainId: 137,
-    infuraName: "Polygon",
     properName: "Polygon",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://polygonscan.com/tx/${transactionHash}`,
@@ -229,12 +222,11 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x137",
       token: "MATIC",
       label: "Polygon",
-      rpcUrl: `https://polygon.infura.io/v3/${appConfig.infuraId}`,
+      rpcUrl: appConfig.oov3ProviderUrl137 as string,
     },
   },
   {
     chainId: 11155111,
-    infuraName: "sepolia",
     properName: "Sepolia",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://sepolia.etherscan.io/tx/${transactionHash}`,
@@ -244,12 +236,11 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0xaa36a7",
       token: "ETH",
       label: "SepoliaETH",
-      rpcUrl: `https://sepolia.infura.io/v3/${appConfig.infuraId}`,
+      rpcUrl: appConfig.oov3ProviderUrl11155111 as string,
     },
   },
   {
     chainId: 8453,
-    infuraName: "base",
     properName: "Base",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://basescan.org/tx/${transactionHash}`,
@@ -259,12 +250,11 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x2105",
       token: "ETH",
       label: "BaseETH",
-      rpcUrl: "https://mainnet.base.org", // infura not supporting base yet
+      rpcUrl: "https://mainnet.base.org",
     },
   },
   {
     chainId: 81457,
-    infuraName: "blast",
     properName: "Blast",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://blastscan.io/tx/${transactionHash}`,
@@ -274,12 +264,11 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x13e31",
       token: "ETH",
       label: "BlastETH",
-      rpcUrl: "https://rpc.blast.io", // infura not supporting blast yet
+      rpcUrl: "https://rpc.blast.io",
     },
   },
   {
     chainId: 1514,
-    infuraName: "story",
     properName: "Story",
     makeTransactionHashLink: (transactionHash: string) =>
       `https://storyscan.xyz/tx/${transactionHash}`,
