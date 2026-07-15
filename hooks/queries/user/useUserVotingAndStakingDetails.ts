@@ -11,7 +11,10 @@ export function useUserVotingAndStakingDetails(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [userDataKey, address],
     queryFn: () => getUserData(address),
-    enabled: !!address && !isWrongChain && config.graphV2Enabled,
+    // no address is NOT a reason to disable: getUserData(undefined) returns
+    // zeroed stats without a network call, and the logged-out history panel
+    // renders its empty state from that instead of spinning forever
+    enabled: !isWrongChain && config.graphV2Enabled,
     refetchInterval: oneMinute,
     onError,
   });
