@@ -8,6 +8,7 @@ import {
   voteDeeplinkQueryParam,
 } from "helpers/util/deeplink";
 import { makeProvisionalVote } from "helpers/voting/makeProvisionalVote";
+import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
 import { useVotesWithResolvedAncillaryData } from "hooks/queries/votes/useVotesWithResolvedAncillaryData";
@@ -99,6 +100,10 @@ export function useVoteDeeplink() {
   );
   const [resolvedTargetVote] =
     useVotesWithResolvedAncillaryData(targetVotesToResolve);
+  // still carrying the stamp = resolution in flight (or failed)
+  const targetResolutionPending =
+    !!resolvedTargetVote &&
+    hasL2AncillaryDataStamp(resolvedTargetVote.decodedAncillaryData);
 
   // canonical links: fetch the entity so the panel can render before the
   // lists load; external links seed this cache from their own resolution
@@ -243,6 +248,12 @@ export function useVoteDeeplink() {
     // a non-vote panel is on top and didn't ask for this vote (e.g. a menu
     // covering the vote the param still describes) — leave both alone
     if (panelOpen && panelType !== "vote" && !selfInitiated) return;
+
+    // the provisional vote carries server-resolved ancillary data — swapping
+    // it for a canonical vote whose lazy resolution hasn't landed yet would
+    // briefly downgrade the panel; wait for the resolved version (the effect
+    // re-runs when it arrives)
+    if (upgradingProvisional && voteShowing && targetResolutionPending) return;
 
     const vote: VoteT | undefined = resolvedTargetVote ?? targetFromLists?.vote;
     const status: ActivityStatusT | undefined = targetFromLists?.status;

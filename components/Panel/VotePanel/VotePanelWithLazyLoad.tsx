@@ -5,7 +5,7 @@ import {
   useAccountDetails,
   useDelegationContext,
 } from "hooks";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import styled from "styled-components";
 import { VoteT } from "types";
 import { VotePanel } from "./VotePanel";
@@ -59,7 +59,16 @@ export function VotePanelWithLazyLoad({ content }: Props) {
     return content;
   }, [content, detailedVote, needsDetailedData]);
 
+  // the vote most recently rendered by this panel — when the panel's content
+  // is swapped for the same vote (e.g. a deeplink's provisional vote being
+  // upgraded to the canonical list vote), keep showing it while the new
+  // content's details load instead of flashing a spinner over a full panel
+  const lastShownRef = useRef<VoteT>();
+
   if (needsDetailedData && isLoading) {
+    if (lastShownRef.current?.uniqueKey === content.uniqueKey) {
+      return <VotePanel content={lastShownRef.current} />;
+    }
     return (
       <LoadingWrapper>
         <LoadingSpinner size={40} variant="black" />
@@ -78,6 +87,7 @@ export function VotePanelWithLazyLoad({ content }: Props) {
     );
   }
 
+  lastShownRef.current = voteToShow;
   return <VotePanel content={voteToShow} />;
 }
 
