@@ -18,6 +18,9 @@ export function useCommittedVotesByCaller(address: string | undefined) {
     queryKey: [committedVotesKeyByCaller, address, roundId],
     queryFn: () => getCommittedVotesByCaller(voting, address, roundId),
     enabled: !!address && !isWrongChain,
+    // commits can happen in another tab or device mid-round; refetching on
+    // focus is the only path that picks them up (the app default is false)
+    refetchOnWindowFocus: true,
     onError,
   });
 
