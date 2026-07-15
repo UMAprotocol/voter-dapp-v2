@@ -70,16 +70,14 @@ export function useContentfulData() {
   }
 
   const queryResult = useQuery({
-    queryKey: [
-      contentfulDataKey,
-      activeVotes,
-      upcomingVotes,
-      pastVotes,
-      adminProposalNumbersByKey,
-    ],
+    // key only on the derived proposal numbers — keying on the full vote maps
+    // serializes the entire vote history on every render just to compare keys
+    // (react-query hashes object keys deterministically)
+    queryKey: [contentfulDataKey, adminProposalNumbersByKey],
     queryFn: () => getContentfulData(adminProposalNumbersByKey),
     refetchInterval: oneMinute,
-    enabled: !!contentfulClient,
+    enabled:
+      !!contentfulClient && Object.keys(adminProposalNumbersByKey).length > 0,
     onError,
   });
 
