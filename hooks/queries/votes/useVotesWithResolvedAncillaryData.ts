@@ -27,14 +27,22 @@ export function useVotesWithResolvedAncillaryData(votes: VoteT[]): VoteT[] {
   const queryResults = useQueries({
     queries: votesNeedingResolution.map((vote) => ({
       queryKey: [resolvedAncillaryDataKey, vote.uniqueKey],
-      queryFn: async () => ({
-        uniqueKey: vote.uniqueKey,
-        ancillaryDataL2: await resolveAncillaryData({
+      queryFn: async () => {
+        const ancillaryDataL2 = await resolveAncillaryData({
           identifier: vote.identifier,
           time: BigNumber.from(vote.time),
           ancillaryData: vote.ancillaryData,
-        }),
-      }),
+        });
+        // the resolver falls back to the original (still-stamped) value when
+        // it cannot reach the child chain — cache that as an error so the
+        // query retries, not as a fresh-forever success
+        if (hasL2AncillaryDataStamp(decodeHexString(ancillaryDataL2))) {
+          throw new Error(
+            `L2 ancillary data still unresolved for ${vote.uniqueKey}`
+          );
+        }
+        return { uniqueKey: vote.uniqueKey, ancillaryDataL2 };
+      },
       staleTime: Infinity,
     })),
   });
