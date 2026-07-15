@@ -1,9 +1,11 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
-import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
+import { decodeHexString } from "helpers/web3/decodeHexString";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
 import { errorOnce, warnOnce } from "helpers/util/log";
 import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
 import { getBaseUrl } from "helpers/util/http";
+import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
+import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
 
 export async function resolveAncillaryDataForRequests<
   T extends Parameters<typeof resolveAncillaryData>[0]
@@ -20,6 +22,17 @@ export async function resolveAncillaryDataForRequests<
 export async function resolveAncillaryData(
   args: Pick<RequestAddedEvent["args"], "ancillaryData" | "time" | "identifier">
 ): Promise<string> {
+  // only requests bridged from an L2 spoke carry the stamp and need
+  // resolution — everything else resolves to itself with no round-trip
+  try {
+    if (!hasL2AncillaryDataStamp(decodeHexString(args.ancillaryData))) {
+      return args.ancillaryData;
+    }
+  } catch {
+    // undecodable hex can't carry a stamp either
+    return args.ancillaryData;
+  }
+
   try {
     const baseUrl = getBaseUrl();
     const response = await fetch(
