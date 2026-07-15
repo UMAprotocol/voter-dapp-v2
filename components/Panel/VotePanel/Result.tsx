@@ -257,7 +257,9 @@ function QuorumProgress({ quorumData }: QuorumData) {
   )} tokens must vote in favor of one option for a dispute to be finalized. This ensures that the required majority is achieved.`;
 
   return (
-    <ParticipationItem>
+    // as="div": this item nests block elements (tooltips, progress bars),
+    // which are invalid inside the <p> ParticipationItem normally renders
+    <ParticipationItem as="div">
       <div className="mt-2 flex w-full flex-col gap-2">
         <Tooltip label={quorumTooltip}>
           <QuorumItem>
