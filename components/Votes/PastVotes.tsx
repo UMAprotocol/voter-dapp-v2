@@ -5,7 +5,7 @@ import {
   useVoteUrl,
   useAccountDetails,
   useDelegationContext,
-  useVotesWithResolvedAncillaryData,
+  useVotesWithOnScreenData,
 } from "hooks";
 import { useUserPastVotes } from "hooks/queries/votes/useUserPastVotes";
 import { CSSProperties, useMemo } from "react";
@@ -30,8 +30,8 @@ export function PastVotes() {
   // Get the first 5 votes
   const recentVotes = useMemo(() => pastVoteList.slice(0, 5), [pastVoteList]);
 
-  // Resolve L2 ancillary data (titles/descriptions) for just these votes
-  const resolvedVotes = useVotesWithResolvedAncillaryData(recentVotes);
+  // Resolve L2 ancillary data and UMIP metadata for the votes on screen
+  const resolvedVotes = useVotesWithOnScreenData(recentVotes);
 
   // Fetch user vote details for these votes
   const { data: userVoteDetails, isLoading: userVotesLoading } =

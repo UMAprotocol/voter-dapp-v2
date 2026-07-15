@@ -4,6 +4,7 @@ import {
   useVotesContext,
   useVoteTimingContext,
   useVoteUrl,
+  useVotesWithOnScreenData,
 } from "hooks";
 import { Divider, PaginationWrapper, Title, VotesTableWrapper } from "./style";
 
@@ -17,7 +18,10 @@ export function UpcomingVotes() {
     deeplinkedVoteIndex
   );
 
-  const data = entriesToShow.map((vote) => ({
+  // UMIP metadata for governance votes is fetched only for on-screen rows
+  const enrichedVotes = useVotesWithOnScreenData(entriesToShow);
+
+  const data = enrichedVotes.map((vote) => ({
     activityStatus: "upcoming" as const,
     vote,
     phase,

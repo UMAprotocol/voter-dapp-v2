@@ -15,7 +15,7 @@ import {
   useVoteUrl,
   useAccountDetails,
   useDelegationContext,
-  useVotesWithResolvedAncillaryData,
+  useVotesWithOnScreenData,
 } from "hooks";
 import { useUserPastVotes } from "hooks/queries/votes/useUserPastVotes";
 import { isUndefined } from "lodash";
@@ -39,8 +39,8 @@ export function PastVotes() {
   // Check if wallet is connected
   const isWalletConnected = !!(address || delegatorAddress);
 
-  // Resolve L2 ancillary data (titles/descriptions) for the current page only
-  const resolvedVotes = useVotesWithResolvedAncillaryData(entriesToShow);
+  // Resolve L2 ancillary data and UMIP metadata for the votes on screen
+  const resolvedVotes = useVotesWithOnScreenData(entriesToShow);
 
   // Fetch user vote details for the current page
   const { data: userVoteDetails, isLoading: userVotesLoading } =

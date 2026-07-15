@@ -7,7 +7,6 @@ import {
   useCommittedVotes,
   useCommittedVotesByCaller,
   useCommittedVotesForDelegator,
-  useContentfulData,
   useDecodedAdminTransactions,
   useDecryptedVotes,
   useDelegationContext,
@@ -22,7 +21,6 @@ import {
 import { ReactNode, createContext, useMemo } from "react";
 import {
   ActivityStatusT,
-  ContentfulDataByKeyT,
   DecodedAdminTransactionsByIdentifierT,
   DecryptedVotesByKeyT,
   EncryptedVotesByKeyT,
@@ -55,7 +53,6 @@ export interface VotesContextState {
   revealedVotes: VoteExistsByKeyT | undefined;
   encryptedVotes: EncryptedVotesByKeyT | undefined;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
-  contentfulData: ContentfulDataByKeyT | undefined;
   activeVotesIsLoading: boolean;
   upcomingVotesIsLoading: boolean;
   pastVotesIsLoading: boolean;
@@ -65,7 +62,6 @@ export interface VotesContextState {
   activeVotesIsInitialLoading: boolean;
   upcomingVotesIsInitialLoading: boolean;
   pastVotesIsInitialLoading: boolean;
-  contentfulDataIsLoading: boolean;
   committedVotesIsLoading: boolean;
   committedVotesByCallerIsLoading: boolean;
   committedVotesForDelegatorIsLoading: boolean;
@@ -97,14 +93,12 @@ export const defaultVotesContextState: VotesContextState = {
   revealedVotes: undefined,
   encryptedVotes: undefined,
   decryptedVotes: undefined,
-  contentfulData: undefined,
   activeVotesIsLoading: false,
   upcomingVotesIsLoading: false,
   pastVotesIsLoading: false,
   activeVotesIsInitialLoading: false,
   upcomingVotesIsInitialLoading: false,
   pastVotesIsInitialLoading: false,
-  contentfulDataIsLoading: false,
   committedVotesIsLoading: false,
   committedVotesByCallerIsLoading: false,
   committedVotesForDelegatorIsLoading: false,
@@ -127,7 +121,6 @@ type VoteLookupsT = {
   revealedVotes: VoteExistsByKeyT | undefined;
   encryptedVotes: EncryptedVotesByKeyT | undefined;
   decryptedVotes: DecryptedVotesByKeyT | undefined;
-  contentfulData: ContentfulDataByKeyT | undefined;
   voteHistoryByKey: VoteHistoryByKeyT | undefined;
   activeVoteResultsByKey:
     | Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
@@ -185,7 +178,6 @@ function getVotesWithData(
     revealedVotes,
     encryptedVotes,
     decryptedVotes,
-    contentfulData,
     voteHistoryByKey,
     activeVoteResultsByKey,
     decodedAdminTransactions,
@@ -252,14 +244,15 @@ function getVotesWithData(
       decryptedVote: pastVoteRevealed
         ? { price: pastVoteRevealed, salt: "" }
         : decryptedVotes?.[uniqueKey],
-      contentfulData: contentfulData?.[uniqueKey],
+      // attached lazily by useVotesWithUmipData for on-screen votes
+      contentfulData: undefined,
       voteHistory: voteHistoryForThisVote,
       decodedAdminTransactions:
         decodedAdminTransactions?.[vote.decodedIdentifier],
       ...getVoteMetaData(
         vote.decodedIdentifier,
         vote.decodedAncillaryData,
-        contentfulData?.[uniqueKey]
+        undefined
       ),
     };
   });
@@ -287,8 +280,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: pastVotesIsLoading,
     isInitialLoading: pastVotesIsInitialLoading,
   } = usePastVotes();
-  const { data: contentfulData, isLoading: contentfulDataIsLoading } =
-    useContentfulData();
   const { data: committedVotes, isLoading: committedVotesIsLoading } =
     useCommittedVotes(userAddress);
   const {
@@ -336,7 +327,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       revealedVotes,
       encryptedVotes,
       decryptedVotes,
-      contentfulData,
       voteHistoryByKey,
       activeVoteResultsByKey,
       decodedAdminTransactions,
@@ -372,7 +362,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     revealedVotes,
     encryptedVotes,
     decryptedVotes,
-    contentfulData,
     voteHistoryByKey,
     activeVoteResultsByKey,
     decodedAdminTransactions,
@@ -414,14 +403,12 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       revealedVotes,
       encryptedVotes,
       decryptedVotes,
-      contentfulData,
       activeVotesIsLoading,
       upcomingVotesIsLoading,
       pastVotesIsLoading,
       activeVotesIsInitialLoading,
       upcomingVotesIsInitialLoading,
       pastVotesIsInitialLoading,
-      contentfulDataIsLoading,
       committedVotesIsLoading,
       committedVotesByCallerIsLoading,
       committedVotesForDelegatorIsLoading,
@@ -441,8 +428,6 @@ export function VotesProvider({ children }: { children: ReactNode }) {
       committedVotesByCallerIsLoading,
       committedVotesForDelegatorIsLoading,
       committedVotesIsLoading,
-      contentfulData,
-      contentfulDataIsLoading,
       decryptedVotes,
       decryptedVotesIsLoading,
       encryptedVotes,

@@ -11,7 +11,7 @@ import { makeProvisionalVote } from "helpers/voting/makeProvisionalVote";
 import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
-import { useVotesWithResolvedAncillaryData } from "hooks/queries/votes/useVotesWithResolvedAncillaryData";
+import { useVotesWithOnScreenData } from "hooks/queries/votes/useVotesWithOnScreenData";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 import { ActivityStatusT, VoteT } from "types";
@@ -98,8 +98,7 @@ export function useVoteDeeplink() {
     () => (targetFromLists ? [targetFromLists.vote] : []),
     [targetFromLists]
   );
-  const [resolvedTargetVote] =
-    useVotesWithResolvedAncillaryData(targetVotesToResolve);
+  const [resolvedTargetVote] = useVotesWithOnScreenData(targetVotesToResolve);
   // still carrying the stamp = resolution in flight (or failed)
   const targetResolutionPending =
     !!resolvedTargetVote &&
