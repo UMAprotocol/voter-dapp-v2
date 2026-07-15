@@ -15,14 +15,6 @@ export const contractDetails = [
     ),
   },
   {
-    // goerli
-    chainId: 5,
-    providerUrl: config.oov3ProviderUrl5,
-    address: ethers.utils.getAddress(
-      "0x9923D42eF695B5dd9911D05Ac944d4cAca3c4EAB"
-    ),
-  },
-  {
     // optimism
     chainId: 10,
     providerUrl: config.oov3ProviderUrl10,

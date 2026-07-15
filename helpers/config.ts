@@ -10,14 +10,12 @@ const Env = ss.object({
   NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID: ss.string(),
-  NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
   NEXT_PUBLIC_CURRENT_ENV: ss.string(),
   NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
   NEXT_PUBLIC_GRAPH_STUDIO_API_KEY: ss.string(),
   // optional envs
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
   NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
-  NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.optional(ss.string()),
   NEXT_PUBLIC_GRAPH_ENDPOINT: ss.optional(ss.string()),
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
@@ -28,7 +26,6 @@ const Env = ss.object({
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_1: ss.optional(ss.string()),
-  NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_288: ss.optional(ss.string()),
@@ -56,8 +53,6 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID:
       process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
-    NEXT_PUBLIC_THE_GRAPH_API_KEY: process.env.NEXT_PUBLIC_THE_GRAPH_API_KEY,
-    NEXT_PUBLIC_ONBOARD_API_KEY: process.env.NEXT_PUBLIC_ONBOARD_API_KEY,
     NEXT_PUBLIC_CURRENT_ENV: process.env.NEXT_PUBLIC_CURRENT_ENV,
     NEXT_PUBLIC_WALLET_CONNECT: process.env.NEXT_PUBLIC_WALLET_CONNECT,
     NEXT_PUBLIC_CONTENTFUL_SPACE_ID:
@@ -77,7 +72,6 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
     NEXT_PUBLIC_PROVIDER_V3_288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
     NEXT_PUBLIC_PROVIDER_V3_42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
-    NEXT_PUBLIC_PROVIDER_V3_5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     NEXT_PUBLIC_PROVIDER_V3_10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     NEXT_PUBLIC_PROVIDER_V3_11155111:
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
@@ -104,7 +98,6 @@ const AppConfig = ss.object({
   walletConnectProjectId: ss.string(),
   gaTag: ss.string(),
   graphStudioApiKey: ss.string(),
-  graphEndpointV1: ss.optional(ss.string()),
   graphEndpoint: ss.optional(ss.string()),
   contentfulSpace: ss.optional(ss.string()),
   contentfulAccessToken: ss.optional(ss.string()),
@@ -120,7 +113,6 @@ const AppConfig = ss.object({
   oov3ProviderUrl288: ss.optional(ss.string()),
   oov3ProviderUrl1514: ss.optional(ss.string()),
   oov3ProviderUrl42161: ss.optional(ss.string()),
-  oov3ProviderUrl5: ss.optional(ss.string()),
   oov3ProviderUrl10: ss.optional(ss.string()),
   oov3ProviderUrl11155111: ss.optional(ss.string()),
   oov3ProviderUrl8453: ss.optional(ss.string()),
@@ -168,7 +160,6 @@ export const appConfig = ss.create(
     oov3ProviderUrl288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
     oov3ProviderUrl1514: process.env.NEXT_PUBLIC_PROVIDER_V3_1514,
     oov3ProviderUrl42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
-    oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
@@ -222,7 +213,7 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x137",
       token: "MATIC",
       label: "Polygon",
-      rpcUrl: appConfig.oov3ProviderUrl137 as string,
+      rpcUrl: appConfig.oov3ProviderUrl137 ?? "https://polygon-rpc.com",
     },
   },
   {
@@ -236,7 +227,9 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0xaa36a7",
       token: "ETH",
       label: "SepoliaETH",
-      rpcUrl: appConfig.oov3ProviderUrl11155111 as string,
+      rpcUrl:
+        appConfig.oov3ProviderUrl11155111 ??
+        "https://ethereum-sepolia-rpc.publicnode.com",
     },
   },
   {
