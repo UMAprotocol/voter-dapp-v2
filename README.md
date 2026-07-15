@@ -19,6 +19,31 @@ npm run dev
 yarn dev
 ```
 
+## How the app fetches data
+
+All client-side fetching goes through react-query. Global defaults ([pages/\_app.tsx](pages/_app.tsx)): data is considered fresh for 30 seconds, queries do not refetch on window focus, and failed requests retry once. Individual hooks override these where the data demands it.
+
+### Sources
+
+**Mainnet voting contract (RPC via ethers)** — the source of truth for the current round: active and upcoming votes are contract calls keyed by `roundId`, and per-user commit/reveal/encrypted-vote state comes from event scans bounded to roughly two rounds of blocks (`voteEventsBlockLookback`). Delegation state is also scanned from events, anchored at the contract's deploy block. These stay on RPC because the voting-v2 subgraph has no delegation handlers and drops the caller from commit/reveal events.
+
+**The voting-v2 subgraph (The Graph)** — queried directly from the client (`NEXT_PUBLIC_GRAPH_ENDPOINT`) for anything historical or aggregate: the full past-vote list (fetched *without* resolving L2 ancillary data), per-user voting/staking details and vote history, and active vote results.
+
+**L2 oracle spokes (RPC, server-side)** — requests bridged from an L2 carry a stamp in their ancillary data instead of the real payload. `/api/resolve-l2-ancillary-data` reads the original request from the child chain's OracleSpoke. The client only resolves votes that are actually rendered (see below).
+
+**Next API routes** — `/api/contentful-umips` proxies Contentful server-side for UMIP titles/descriptions on governance ("Admin N") votes (the access token is server-only; responses are CDN-cached for 10 minutes). `/api/resolve-deeplink` turns a `?vote=` link into a renderable entity before the vote lists load. Discord threads and AI summaries are served from Redis, warmed by the cron jobs described below.
+
+### On-screen enrichment
+
+Vote lists come out of the subgraph cheap and incomplete on purpose. Every rendered slice of votes is wrapped in `useVotesWithOnScreenData`, which lazily attaches the two expensive pieces — resolved L2 ancillary data and UMIP metadata — only for the votes actually on screen, then recomputes titles/descriptions. Both are immutable once fetched, so they cache forever (`staleTime: Infinity`). New UI that renders votes should use the same wrapper.
+
+### Refetch cadence
+
+- **Once per round**: active votes, upcoming votes, and past votes are keyed by `roundId`, so a round rolling naturally refetches them. Past votes additionally poll once a minute for the first 15 minutes after a roll to absorb subgraph indexing lag, and active votes poll every second for the first 30 seconds of the commit phase to pick up just-activated requests.
+- **Every minute**: active vote results, user voting/staking details, rewards inputs, and (for delegates) the delegator's commit lookups.
+- **On window focus**: the user's round-scoped commit/reveal/encrypted-vote state, so a commit made in another tab or device is picked up on return. Commit and reveal mutations also write their results straight into the query cache, so same-tab state is correct without a refetch.
+- **Never** (cache forever): anything immutable — resolved ancillary data, past vote details and participation, decoded admin transactions, IPFS content, UMIP metadata.
+
 ## Generating the Approved Identifiers Table
 
 We use a JSON file to look up titles, descriptions and URLs for approved price identifiers for display in the UI. The list of approved identifiers can be found [in our docs](https://docs.uma.xyz/resources/approved-price-identifiers).
