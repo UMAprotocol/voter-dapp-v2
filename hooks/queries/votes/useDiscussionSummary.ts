@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { discussionSummaryKey } from "constant";
+import { warnOnce } from "helpers/util/log";
 import { L1Request } from "types";
 import {
   getDiscussionSummary,
@@ -74,12 +75,17 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
             }
           })
           .catch((error) => {
-            console.error("Failed to trigger summary generation:", error);
+            warnOnce(`trigger-summary:${identifier}:${time}`, "Failed to trigger summary generation:", error);
             setIsGenerating(false);
           });
       }
     },
-    onError: (err) => console.error(err),
+    onError: (err) =>
+      warnOnce(
+        `discussion-summary:${identifier}:${time}`,
+        "Failed to fetch discussion summary",
+        err
+      ),
     refetchOnWindowFocus: false,
     refetchInterval: false,
     retry: (failureCount) => failureCount < 3,
@@ -151,7 +157,7 @@ export function useDiscussionSummary({ identifier, time, title }: L1Request) {
           }
         })
         .catch((error) => {
-          console.error("Failed to trigger summary generation:", error);
+          warnOnce(`trigger-summary:${identifier}:${time}`, "Failed to trigger summary generation:", error);
           setIsGenerating(false);
         });
     }

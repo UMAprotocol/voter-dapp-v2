@@ -1,6 +1,7 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
 import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
+import { errorOnce, warnOnce } from "helpers/util/log";
 import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
 import { getBaseUrl } from "helpers/util/http";
 
@@ -59,22 +60,23 @@ export async function resolveAncillaryData(
 
     return result.resolvedAncillaryData;
   } catch (error) {
-    console.warn("Unable to resolve original ancillary data via API", {
-      at: "resolveAncillaryData()",
-      data: args,
-      cause: error,
-    });
+    // endpoint-level problem, not per-request — log it once, not per vote
+    warnOnce(
+      "resolve-ancillary-api",
+      "Unable to resolve ancillary data via API, falling back to local resolution",
+      { at: "resolveAncillaryData()", cause: error }
+    );
 
     // Fallback to local
     try {
       const result = await resolveAncillaryDataShared(args);
       return result.resolvedAncillaryData;
     } catch (fallbackError) {
-      console.error("Fallback resolution also failed", {
-        at: "resolveAncillaryData()",
-        data: args,
-        cause: fallbackError,
-      });
+      errorOnce(
+        `resolve-ancillary-failed:${args.identifier}:${args.time.toString()}`,
+        "Ancillary data resolution failed (API and local fallback)",
+        { at: "resolveAncillaryData()", data: args, cause: fallbackError }
+      );
 
       throw fallbackError;
     }

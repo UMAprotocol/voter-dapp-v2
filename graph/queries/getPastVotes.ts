@@ -3,6 +3,7 @@ import { gql, request } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
+import { warnOnce } from "helpers/util/log";
 import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
@@ -301,7 +302,7 @@ export async function getUserVotesForRequests(
 
     return userVotes;
   } catch (error) {
-    console.error("Error fetching user votes:", error);
+    warnOnce("user-votes-for-requests", "Error fetching user votes:", error);
     return {};
   }
 }
