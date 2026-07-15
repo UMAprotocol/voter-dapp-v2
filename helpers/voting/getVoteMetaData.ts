@@ -17,6 +17,7 @@ import {
   VoteOriginT,
 } from "types";
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
+import { extractMaybeAncillaryDataFields } from "lib/deeplink-matching";
 import * as s from "superstruct";
 import { maxInt256, minInt256 } from "constant/web3/numbers";
 import { stripInvalidCharacters } from "lib/utils";
@@ -34,6 +35,29 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
+  // Bridged (L2) requests carry only a reference to their ancillary data
+  // until resolved (see useResolvedVoteList) — nothing in the reference is
+  // parseable, so return identifier-derived metadata instead.
+  const bridgedFields = extractMaybeAncillaryDataFields(decodedAncillaryData);
+  if (
+    bridgedFields.ancillaryDataHash &&
+    bridgedFields.childOracle &&
+    bridgedFields.childChainId &&
+    bridgedFields.childBlockNumber
+  ) {
+    return {
+      title: stripInvalidCharacters(decodedIdentifier),
+      description: "No description found for this request.",
+      umipOrUppLink: undefined,
+      umipOrUppNumber: undefined,
+      options: getDefaultOptionsForIdentifier(decodedIdentifier),
+      origin: "UMA",
+      isGovernance: false,
+      discordLink,
+      isAssertion: false,
+    };
+  }
+
   const isAssertion = ["assertionId:", "ooAsserter:"].every((lookup) =>
     decodedAncillaryData.includes(lookup)
   );

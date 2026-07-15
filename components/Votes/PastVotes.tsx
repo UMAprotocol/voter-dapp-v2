@@ -1,5 +1,6 @@
 import { Button, VoteList } from "components";
 import {
+  useResolvedVoteList,
   useVoteTimingContext,
   useVotesContext,
   useVoteUrl,
@@ -28,13 +29,14 @@ export function PastVotes() {
 
   // Get the first 5 votes
   const recentVotes = pastVoteList.slice(0, 5);
+  const { resolvedVotes } = useResolvedVoteList(recentVotes);
 
   // Fetch user vote details for these votes
   const { data: userVoteDetails, isLoading: userVotesLoading } =
     useUserPastVotes(recentVotes);
 
   const data = useMemo(() => {
-    return recentVotes.map((vote) => {
+    return resolvedVotes.map((vote) => {
       // Merge the revealed vote data if available
       const revealedVoteByAddress =
         userVoteDetails?.[vote.uniqueKey] || vote.revealedVoteByAddress || {};
@@ -77,7 +79,7 @@ export function PastVotes() {
       };
     });
   }, [
-    recentVotes,
+    resolvedVotes,
     userVoteDetails,
     phase,
     openVote,

@@ -1,5 +1,6 @@
 import { RequestAddedEvent } from "@uma/contracts-frontend/dist/typechain/core/ethers/VotingV2";
 import { resolveAncillaryData as resolveAncillaryDataShared } from "lib/l2-ancillary-data";
+import { getBridgedFields } from "lib/deeplink-matching";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
 import { promiseAllWithConcurrency } from "helpers/util/promiseConcurrency";
 import { getBaseUrl } from "helpers/util/http";
@@ -16,7 +17,34 @@ export async function resolveAncillaryDataForRequests<
   }));
 }
 
-export async function resolveAncillaryData(
+// Resolution is immutable (the bridged event never changes), so each unique
+// request resolves at most once per session no matter how many queries ask.
+const resolutionCache = new Map<string, Promise<string>>();
+
+export function resolveAncillaryData(
+  args: Pick<RequestAddedEvent["args"], "ancillaryData" | "time" | "identifier">
+): Promise<string> {
+  // Only bridged (compressed) requests need resolution; everything else
+  // already carries its full ancillary data.
+  if (!getBridgedFields(args.ancillaryData)) {
+    return Promise.resolve(args.ancillaryData);
+  }
+
+  const cacheKey = `${args.identifier}-${args.time.toString()}-${
+    args.ancillaryData
+  }`;
+  const cached = resolutionCache.get(cacheKey);
+  if (cached) return cached;
+
+  const pending = resolveAncillaryDataUncached(args).catch((error) => {
+    resolutionCache.delete(cacheKey);
+    throw error;
+  });
+  resolutionCache.set(cacheKey, pending);
+  return pending;
+}
+
+async function resolveAncillaryDataUncached(
   args: Pick<RequestAddedEvent["args"], "ancillaryData" | "time" | "identifier">
 ): Promise<string> {
   try {

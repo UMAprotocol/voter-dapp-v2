@@ -93,7 +93,7 @@ export async function getPastVotesV2Lightweight() {
     200 // Larger page size since query is lighter
   );
 
-  const results = result?.map(
+  return result?.map(
     ({
       identifier: { id },
       time,
@@ -107,6 +107,10 @@ export async function getPastVotesV2Lightweight() {
         time: Number(time),
         correctVote: price,
         ancillaryData,
+        // Resolving bridged (L2) ancillary data costs one API call per vote,
+        // far too many for the full history. Lists render from the raw data;
+        // useResolvedVoteList resolves the votes actually on screen.
+        ancillaryDataL2: ancillaryData,
         resolvedPriceRequestIndex: String(resolvedPriceRequestIndex),
         isV1: false,
         // Placeholder data - will be fetched on demand
@@ -122,15 +126,6 @@ export async function getPastVotesV2Lightweight() {
         revealedVoteByAddress: {},
       };
     }
-  );
-
-  return resolveAncillaryDataForRequests(
-    results.map((request) => {
-      return {
-        ...request,
-        time: BigNumber.from(request.time),
-      };
-    })
   );
 }
 

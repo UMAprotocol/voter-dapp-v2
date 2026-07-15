@@ -10,6 +10,7 @@ import {
 } from "components";
 import {
   useDeeplinkedVoteIndex,
+  useResolvedVoteList,
   useVoteTimingContext,
   useVotesContext,
   useVoteUrl,
@@ -34,6 +35,7 @@ export function PastVotes() {
     pastVoteList ?? [],
     deeplinkedVoteIndex
   );
+  const { resolvedVotes } = useResolvedVoteList(entriesToShow);
 
   // Check if wallet is connected
   const isWalletConnected = !!(address || delegatorAddress);
@@ -43,7 +45,7 @@ export function PastVotes() {
     useUserPastVotes(entriesToShow);
 
   const data = useMemo(() => {
-    return entriesToShow.map((vote) => {
+    return resolvedVotes.map((vote) => {
       // Merge the revealed vote data if available
       const revealedVoteByAddress =
         userVoteDetails?.[vote.uniqueKey] || vote.revealedVoteByAddress || {};
@@ -86,7 +88,7 @@ export function PastVotes() {
       };
     });
   }, [
-    entriesToShow,
+    resolvedVotes,
     userVoteDetails,
     phase,
     openVote,

@@ -7,6 +7,7 @@ export const augmentedVoteDataKey = "augmentedVoteDataKey";
 export const voteDiscussionKey = "voteDiscussionKey";
 export const assertionClaimsKey = "assertionClaimsKey";
 export const discussionSummaryKey = "discussionSummary";
+export const resolvedAncillaryDataKey = "resolvedAncillaryDataKey";
 // voting - user dependent
 export const encryptedVotesKey = "encryptedVotesKey";
 export const decryptedVotesKey = "decryptedVotesKey";

@@ -1,6 +1,7 @@
 import { LoadingSpinner } from "components";
 import {
   usePastVoteDetails,
+  useResolvedVoteList,
   useUserVotingAndStakingDetails,
   useAccountDetails,
   useDelegationContext,
@@ -14,7 +15,12 @@ interface Props {
   content: VoteT;
 }
 
-export function VotePanelWithLazyLoad({ content }: Props) {
+export function VotePanelWithLazyLoad({ content: rawContent }: Props) {
+  // votes from the past votes list carry unresolved (bridged) ancillary data
+  const {
+    resolvedVotes: [content],
+    isResolving,
+  } = useResolvedVoteList(useMemo(() => [rawContent], [rawContent]));
   const { address: userAddress } = useAccountDetails();
   const { isDelegate, delegatorAddress } = useDelegationContext();
   const userOrDelegatorAddress = isDelegate ? delegatorAddress : userAddress;
@@ -59,7 +65,7 @@ export function VotePanelWithLazyLoad({ content }: Props) {
     return content;
   }, [content, detailedVote, needsDetailedData]);
 
-  if (needsDetailedData && isLoading) {
+  if ((needsDetailedData && isLoading) || isResolving) {
     return (
       <LoadingWrapper>
         <LoadingSpinner size={40} variant="black" />
