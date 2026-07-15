@@ -15,6 +15,7 @@ export { useInterval } from "./helpers/useInterval";
 export { useIsomorphicLayoutEffect } from "./helpers/useIsomorphicLayoutEffect";
 export { useMounted } from "./helpers/useMounted";
 export { usePanelWidth } from "./helpers/usePanelWidth";
+export { useRoundJustRolled } from "./helpers/useRoundJustRolled";
 export { usePersistedVotes } from "./helpers/usePersistedVotes";
 export { useSign } from "./helpers/useSign";
 export { useVoteDeeplink } from "./helpers/useVoteDeeplink";
