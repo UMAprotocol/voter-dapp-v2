@@ -14,9 +14,11 @@ export function useEncryptedVotes(
   const queryResult = useQuery({
     queryKey: [encryptedVotesKey, address, roundId],
     queryFn: () => getEncryptedVotes(voting, votingV1, address, roundId),
-    enabled: !isWrongChain,
+    enabled: !!address && !isWrongChain,
     onError,
   });
 
-  return queryResult;
+  // disabled queries (e.g. before the wallet connects) report isLoading=true
+  // forever in react-query v4; isInitialLoading is only true while actually fetching
+  return { ...queryResult, isLoading: queryResult.isInitialLoading };
 }

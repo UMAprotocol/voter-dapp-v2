@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { oneMinute } from "constant";
 import { getUserVotesForRequests } from "graph";
 import { config } from "helpers/config";
 import { useAccountDetails, useDelegationContext } from "hooks";
@@ -71,8 +70,8 @@ export function useUserPastVotes(currentPageVotes: VoteT[] | undefined) {
       currentPageVotes.length > 0 &&
       !!voterAddress &&
       v2VoteIndices.length > 0,
-    refetchInterval: oneMinute,
-    staleTime: 5 * oneMinute,
+    // resolved past votes are immutable — no need to poll
+    staleTime: Infinity,
   });
 
   return queryResult;

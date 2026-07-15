@@ -11,9 +11,11 @@ export function useDelegatorSetEventsForDelegate(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [delegatorSetEventForDelegateKey, address],
     queryFn: () => getDelegatorSetEvents(voting, address, "delegate"),
-    enabled: !isWrongChain,
+    enabled: !!address && !isWrongChain,
     onError,
   });
 
-  return queryResult;
+  // disabled queries (e.g. before the wallet connects) report isLoading=true
+  // forever in react-query v4; isInitialLoading is only true while actually fetching
+  return { ...queryResult, isLoading: queryResult.isInitialLoading };
 }

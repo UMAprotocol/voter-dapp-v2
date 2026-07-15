@@ -49,7 +49,6 @@ export { useGlobals } from "./queries/rewards/useGlobals";
 export { useIsOldDesignatedVotingAccount } from "./queries/rewards/useIsOldDesignatedVotingAccount";
 export { useRewardsCalculationInputs } from "./queries/rewards/useRewardsCalculationInputs";
 export { useV1Rewards } from "./queries/rewards/useV1Rewards";
-export { useDelegatorStakedBalance } from "./queries/staking/useDelegatorStakedBalance";
 export { useStakedBalance } from "./queries/staking/useStakedBalance";
 export { useStakerDetails } from "./queries/staking/useStakerDetails";
 export { useTokenAllowance } from "./queries/staking/useTokenAllowance";

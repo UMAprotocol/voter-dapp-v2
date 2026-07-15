@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { oneMinute } from "constant";
 import { getPastVoteDetails } from "graph";
 import { config } from "helpers/config";
 import { useHandleError } from "hooks";
@@ -14,9 +13,9 @@ export function usePastVoteDetails(resolvedPriceRequestIndex?: number) {
       return getPastVoteDetails(resolvedPriceRequestIndex);
     },
     enabled: config.graphV2Enabled && resolvedPriceRequestIndex !== undefined,
-    refetchInterval: oneMinute,
     onError,
-    staleTime: 5 * oneMinute, // Cache for 5 minutes since past votes don't change
+    // resolved past votes are immutable — no need to poll or refetch
+    staleTime: Infinity,
   });
 
   return queryResult;

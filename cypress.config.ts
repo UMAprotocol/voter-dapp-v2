@@ -7,7 +7,7 @@ export default defineConfig({
     // Allow more time for a timeout to avoid using cy.wait();
     defaultCommandTimeout: 30000,
     setupNodeEvents(on, config) {
-      console.log(on,config)
+      console.log(on, config);
       // implement node event listeners here
     },
   },

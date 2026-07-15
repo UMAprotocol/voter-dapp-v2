@@ -19,9 +19,12 @@ export function useDelegateToStaker(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [delegateToStakerKey, address],
     queryFn: () => getDelegateToStaker(voting, delegate ?? zeroAddress),
-    enabled: !isWrongChain,
+    // delegate comes from useStakerDetails — don't fire until it resolves
+    enabled: !!delegate && !isWrongChain,
     onError,
   });
 
-  return queryResult;
+  // disabled queries (e.g. before the wallet connects) report isLoading=true
+  // forever in react-query v4; isInitialLoading is only true while actually fetching
+  return { ...queryResult, isLoading: queryResult.isInitialLoading };
 }

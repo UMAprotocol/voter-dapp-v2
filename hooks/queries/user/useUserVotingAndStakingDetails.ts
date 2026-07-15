@@ -11,10 +11,12 @@ export function useUserVotingAndStakingDetails(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [userDataKey, address],
     queryFn: () => getUserData(address),
-    enabled: !isWrongChain && config.graphV2Enabled,
+    enabled: !!address && !isWrongChain && config.graphV2Enabled,
     refetchInterval: oneMinute,
     onError,
   });
 
-  return queryResult;
+  // disabled queries (e.g. before the wallet connects) report isLoading=true
+  // forever in react-query v4; isInitialLoading is only true while actually fetching
+  return { ...queryResult, isLoading: queryResult.isInitialLoading };
 }
