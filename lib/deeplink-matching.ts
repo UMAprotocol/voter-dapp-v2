@@ -123,6 +123,17 @@ export function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
   };
 }
 
+// Only requests bridged from an L2 spoke carry the stamp and need network
+// resolution; everything else resolves to itself. Checking this synchronously
+// lets callers skip the round-trip entirely.
+export function hasL2AncillaryDataStamp(decodedAncillaryData: string): boolean {
+  const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
+    extractMaybeAncillaryDataFields(decodedAncillaryData);
+  return Boolean(
+    ancillaryDataHash && childOracle && childChainId && childBlockNumber
+  );
+}
+
 export type BridgedAncillaryDataFields = {
   ancillaryDataHash: string;
   childOracle: string;

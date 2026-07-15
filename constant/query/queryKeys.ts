@@ -14,6 +14,7 @@ export const committedVotesKey = "committedVotesKey";
 export const committedVotesKeyByCaller = "committedVotesKeyByCaller";
 export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
+export const resolvedAncillaryDataKey = "resolvedAncillaryDataKey";
 // staking
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const stakedBalanceKey = "stakedBalanceKey";

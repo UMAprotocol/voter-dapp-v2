@@ -69,6 +69,7 @@ export { useEncryptedVotes } from "./queries/votes/useEncryptedVotes";
 export { useNewVotesAdded } from "./queries/votes/useNewVotesAdded";
 export { usePastVotes } from "./queries/votes/usePastVotes";
 export { usePastVoteDetails } from "./queries/votes/usePastVoteDetails";
+export { useVotesWithResolvedAncillaryData } from "./queries/votes/useVotesWithResolvedAncillaryData";
 export { useRevealedVotes } from "./queries/votes/useRevealedVotes";
 export { useUpcomingVotes } from "./queries/votes/useUpcomingVotes";
 export { useVoteDiscussion } from "./queries/votes/useVoteDiscussion";

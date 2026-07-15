@@ -12,7 +12,10 @@ export function usePastVotes() {
     queryKey: [pastVotesKey, roundId],
     queryFn: () => getPastVotesAllVersions(),
     enabled: config.graphV2Enabled,
-    refetchInterval: oneMinute,
+    // the list only gains entries when a round resolves; roundId in the query
+    // key already forces a fresh fetch each round, so don't poll the full
+    // history in between
+    staleTime: 10 * oneMinute,
     onError,
   });
 

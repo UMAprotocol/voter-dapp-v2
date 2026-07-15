@@ -15,6 +15,7 @@ import {
   useVoteUrl,
   useAccountDetails,
   useDelegationContext,
+  useVotesWithResolvedAncillaryData,
 } from "hooks";
 import { useUserPastVotes } from "hooks/queries/votes/useUserPastVotes";
 import { isUndefined } from "lodash";
@@ -38,12 +39,15 @@ export function PastVotes() {
   // Check if wallet is connected
   const isWalletConnected = !!(address || delegatorAddress);
 
+  // Resolve L2 ancillary data (titles/descriptions) for the current page only
+  const resolvedVotes = useVotesWithResolvedAncillaryData(entriesToShow);
+
   // Fetch user vote details for the current page
   const { data: userVoteDetails, isLoading: userVotesLoading } =
     useUserPastVotes(entriesToShow);
 
   const data = useMemo(() => {
-    return entriesToShow.map((vote) => {
+    return resolvedVotes.map((vote) => {
       // Merge the revealed vote data if available
       const revealedVoteByAddress =
         userVoteDetails?.[vote.uniqueKey] || vote.revealedVoteByAddress || {};
@@ -86,7 +90,7 @@ export function PastVotes() {
       };
     });
   }, [
-    entriesToShow,
+    resolvedVotes,
     userVoteDetails,
     phase,
     openVote,
