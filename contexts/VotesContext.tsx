@@ -250,6 +250,9 @@ export function VotesProvider({ children }: { children: ReactNode }) {
         ...vote,
         // prefer active vote results first, this will either exist or not, if not we can just fall back to the default vote results
         results: activeVoteResultsByKey?.[uniqueKey]?.results ?? vote?.results,
+        resultsPerRoll:
+          activeVoteResultsByKey?.[uniqueKey]?.resultsPerRoll ??
+          vote?.resultsPerRoll,
         participation:
           activeVoteResultsByKey?.[uniqueKey]?.participation ??
           vote?.participation,

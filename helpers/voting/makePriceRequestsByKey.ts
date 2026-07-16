@@ -69,6 +69,7 @@ export function formatPriceRequest(
       priceRequest?.participation?.minParticipationRequirement || 0,
   };
   const results = priceRequest.results;
+  const resultsPerRoll = priceRequest.resultsPerRoll;
   const uniqueKey = makeUniqueKeyForVote(
     decodedIdentifier,
     time,
@@ -93,6 +94,7 @@ export function formatPriceRequest(
     correctVote,
     participation,
     results,
+    resultsPerRoll,
     uniqueKey,
     isV1,
     isGovernance,
