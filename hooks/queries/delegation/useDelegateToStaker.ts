@@ -17,7 +17,9 @@ export function useDelegateToStaker(address: string | undefined) {
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
-    queryKey: [delegateToStakerKey, address],
+    // the delegate is an input to the lookup, so it belongs in the key —
+    // switching delegates must not serve the old delegate's cached answer
+    queryKey: [delegateToStakerKey, address, delegate],
     queryFn: () => getDelegateToStaker(voting, delegate ?? zeroAddress),
     // delegate comes from useStakerDetails — don't fire until it resolves
     enabled: !!delegate && !isWrongChain,

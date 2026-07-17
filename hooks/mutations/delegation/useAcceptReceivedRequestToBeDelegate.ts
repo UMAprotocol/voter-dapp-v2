@@ -20,10 +20,9 @@ export function useAcceptReceivedRequestToBeDelegate(
         () => delegatorAddress
       );
 
-      queryClient.setQueryData<string>(
-        [delegateToStakerKey, address],
-        () => address
-      );
+      // the delegateToStaker cache is keyed by (address, delegate) — refetch
+      // whatever entries exist rather than guessing the key
+      void queryClient.invalidateQueries([delegateToStakerKey]);
     },
   });
 
