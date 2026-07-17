@@ -46,7 +46,6 @@ export function VotePanel({ content }: Props) {
     options,
     decodedAncillaryData,
     assertionId,
-    assertionChildChainId,
     ancillaryDataL2,
   } = content;
 
@@ -162,7 +161,12 @@ export function VotePanel({ content }: Props) {
     time,
     title,
   });
-  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
+  const { data: claim } = useAssertionClaim({
+    time,
+    decodedIdentifier,
+    ancillaryDataL2,
+    assertionId,
+  });
   const { data: augmentedVoteData } = useAugmentedVoteData({
     time,
     identifier: decodedIdentifier,
