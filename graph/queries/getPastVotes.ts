@@ -138,7 +138,7 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   if (!endpoint) throw new Error("V2 subgraph is disabled");
 
   const voteDetailsQuery = gql`
-    query getVoteDetails($index: Int!, $latestRoundLimit: Int!) {
+    query getVoteDetails($index: BigInt!, $latestRoundLimit: Int!) {
       priceRequests(where: { resolvedPriceRequestIndex: $index }) {
         identifier {
           id
@@ -174,7 +174,8 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   `;
 
   const response = await request<PastVotesQuery>(endpoint, voteDetailsQuery, {
-    index: resolvedPriceRequestIndex,
+    // BigInt is serialized as a string
+    index: String(resolvedPriceRequestIndex),
     latestRoundLimit: VOTE_DETAILS_LATEST_ROUND_LIMIT,
   });
 
