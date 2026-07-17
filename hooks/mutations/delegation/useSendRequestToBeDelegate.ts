@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { sentRequestsToBeDelegateKey, stakerDetailsKey } from "constant";
+import { delegationRequestsKey, stakerDetailsKey } from "constant";
 import { useHandleError } from "hooks";
-import { DelegationEventT, ErrorOriginT, StakerDetailsT } from "types";
+import { DelegationRequestsResponse } from "pages/api/delegation-requests";
+import { ErrorOriginT, StakerDetailsT } from "types";
 import { setDelegate } from "web3";
 
 export function useSendRequestToBeDelegate({
@@ -32,18 +33,21 @@ export function useSendRequestToBeDelegate({
         }
       );
 
-      queryClient.setQueryData<DelegationEventT[]>(
-        [sentRequestsToBeDelegateKey, address],
-        () => {
+      queryClient.setQueryData<DelegationRequestsResponse>(
+        [delegationRequestsKey, address],
+        (old) => {
           if (!address) return;
 
-          return [
-            {
-              delegate: delegateAddress,
-              delegator: address,
-              transactionHash,
-            },
-          ];
+          return {
+            received: old?.received ?? [],
+            sent: [
+              {
+                delegate: delegateAddress,
+                delegator: address,
+                transactionHash,
+              },
+            ],
+          };
         }
       );
     },

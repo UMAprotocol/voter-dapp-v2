@@ -29,13 +29,7 @@ export const isOldDesignatedVotingAccountKey =
 // user
 export const userDataKey = "userDataKey";
 // delegation
-export const delegatorSetEventForDelegateKey =
-  "delegatorSetEventForDelegateKey";
-export const delegatorSetEventsForDelegatorKey =
-  "delegatorSetEventsForDelegatorKey";
-export const receivedRequestsToBeDelegateKey =
-  "receivedRequestsToBeDelegateKey";
-export const sentRequestsToBeDelegateKey = "sentRequestsToBeDelegateKey";
+export const delegationRequestsKey = "delegationRequestsKey";
 export const voterFromDelegateKey = "voterFromDelegateKey";
 export const delegateToStakerKey = "delegateToStakerKey";
 export const ignoredRequestToBeDelegateAddressesKey =

@@ -39,8 +39,6 @@ export { useCommitVotes } from "./mutations/votes/useCommitVotes";
 export { useRevealVotes } from "./mutations/votes/useRevealVotes";
 export { useCommittedVotesForDelegator } from "./queries/delegation/useCommittedVotesForDelegator";
 export { useDelegateToStaker } from "./queries/delegation/useDelegateToStaker";
-export { useDelegatorSetEventsForDelegate } from "./queries/delegation/useDelegatorSetEventsForDelegate";
-export { useDelegatorSetEventsForDelegator } from "./queries/delegation/useDelegatorSetEventsForDelegator";
 export { useIgnoredRequestToBeDelegateAddresses } from "./queries/delegation/useIgnoredRequestToBeDelegateAddresses";
 export { useNewReceivedRequestsToBeDelegate } from "./queries/delegation/useNewReceivedRequestsToBeDelegate";
 export { useReceivedRequestsToBeDelegate } from "./queries/delegation/useReceivedRequestsToBeDelegate";
