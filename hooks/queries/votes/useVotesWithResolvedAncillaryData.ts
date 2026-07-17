@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { resolvedAncillaryDataKey } from "constant";
 import { BigNumber } from "ethers";
 import { decodeHexString, getVoteMetaData } from "helpers";
@@ -15,6 +15,22 @@ import { VoteT } from "types";
  *
  * Resolution is immutable, so each vote is cached forever once resolved.
  */
+/**
+ * Whether the resolution query for this vote has failed outright (retries
+ * exhausted). Observes the cache entry useVotesWithResolvedAncillaryData
+ * populates; disabled so it never fetches on its own.
+ */
+export function useAncillaryDataResolutionErrored(
+  uniqueKey: string | undefined
+): boolean {
+  const { isError } = useQuery({
+    queryKey: [resolvedAncillaryDataKey, uniqueKey],
+    queryFn: () => Promise.reject(new Error("observer only, never fetches")),
+    enabled: false,
+  });
+  return isError;
+}
+
 export function useVotesWithResolvedAncillaryData(votes: VoteT[]): VoteT[] {
   const votesNeedingResolution = useMemo(
     () =>

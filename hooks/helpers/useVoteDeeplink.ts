@@ -12,6 +12,7 @@ import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
 import { useVotesWithOnScreenData } from "hooks/queries/votes/useVotesWithOnScreenData";
+import { useAncillaryDataResolutionErrored } from "hooks/queries/votes/useVotesWithResolvedAncillaryData";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 import { ActivityStatusT, VoteT } from "types";
@@ -99,10 +100,17 @@ export function useVoteDeeplink() {
     [targetFromLists]
   );
   const [resolvedTargetVote] = useVotesWithOnScreenData(targetVotesToResolve);
-  // still carrying the stamp = resolution in flight (or failed)
+  const targetResolutionErrored = useAncillaryDataResolutionErrored(
+    resolvedTargetVote?.uniqueKey
+  );
+  // still carrying the stamp = resolution in flight — but only while the
+  // resolution query hasn't failed outright; treating a failed resolution as
+  // pending would hold a provisional panel forever and block the canonical
+  // upgrade (navigation arrows, list row) on data that may never come
   const targetResolutionPending =
     !!resolvedTargetVote &&
-    hasL2AncillaryDataStamp(resolvedTargetVote.decodedAncillaryData);
+    hasL2AncillaryDataStamp(resolvedTargetVote.decodedAncillaryData) &&
+    !targetResolutionErrored;
 
   // canonical links: fetch the entity so the panel can render before the
   // lists load; external links seed this cache from their own resolution
@@ -339,6 +347,7 @@ export function useVoteDeeplink() {
     targetEntity,
     targetFromLists,
     resolvedTargetVote,
+    targetResolutionPending,
     router.isReady,
     router.pathname,
     panelOpen,
