@@ -40,7 +40,7 @@ export async function getActiveVoteResults(): Promise<
           minAgreementRequirement
           minParticipationRequirement
           totalTokensCommitted
-          groups {
+          groups(first: 1000) {
             price
             totalVoteAmount
           }

@@ -1,4 +1,5 @@
 import { buildSearchParams } from "helpers/util/buildSearchParams";
+import { warnOnce } from "helpers/util/log";
 import { SummaryResponse } from "types";
 import { L1Request } from "types";
 
@@ -24,8 +25,9 @@ export async function getDiscussionSummary(
   }
 
   if (!response.ok) {
-    console.error(response);
-    throw new Error("Getting thread summary failed with unknown error");
+    throw new Error(
+      `Getting thread summary failed with status ${response.status}`
+    );
   }
   return (await response.json()) as SummaryResponse;
 }
@@ -45,9 +47,16 @@ export async function triggerSummaryGeneration(
     });
 
     if (!response.ok) {
-      console.error("Failed to trigger summary generation:", response);
+      warnOnce(
+        `update-summary:${l1Request.identifier}:${l1Request.time}`,
+        `Failed to trigger summary generation (status ${response.status})`
+      );
     }
   } catch (error) {
-    console.error("Error triggering summary generation:", error);
+    warnOnce(
+      `update-summary:${l1Request.identifier}:${l1Request.time}`,
+      "Error triggering summary generation:",
+      error
+    );
   }
 }

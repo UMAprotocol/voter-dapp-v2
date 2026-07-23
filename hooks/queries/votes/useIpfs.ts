@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { warnOnce } from "helpers/util/log";
 
 async function getIpfs<T>(hash?: string) {
   if (!hash) return undefined;
@@ -9,9 +10,12 @@ async function getIpfs<T>(hash?: string) {
 
 export function useIpfs<T>(ipfsHash?: string) {
   return useQuery({
-    queryKey: [ipfsHash],
+    queryKey: ["ipfs", ipfsHash],
     queryFn: () => getIpfs<T>(ipfsHash),
-    onError: (err) => console.error(err),
+    onError: (err) =>
+      warnOnce(`ipfs:${ipfsHash ?? ""}`, "Failed to fetch from IPFS", err),
     enabled: !!ipfsHash,
+    // content is addressed by hash, so it can never change
+    staleTime: Infinity,
   });
 }

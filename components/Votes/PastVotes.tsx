@@ -5,6 +5,7 @@ import {
   useVoteUrl,
   useAccountDetails,
   useDelegationContext,
+  useVotesWithOnScreenData,
 } from "hooks";
 import { useUserPastVotes } from "hooks/queries/votes/useUserPastVotes";
 import { CSSProperties, useMemo } from "react";
@@ -27,14 +28,17 @@ export function PastVotes() {
   const isWalletConnected = !!(address || delegatorAddress);
 
   // Get the first 5 votes
-  const recentVotes = pastVoteList.slice(0, 5);
+  const recentVotes = useMemo(() => pastVoteList.slice(0, 5), [pastVoteList]);
+
+  // Resolve L2 ancillary data and UMIP metadata for the votes on screen
+  const resolvedVotes = useVotesWithOnScreenData(recentVotes);
 
   // Fetch user vote details for these votes
   const { data: userVoteDetails, isLoading: userVotesLoading } =
     useUserPastVotes(recentVotes);
 
   const data = useMemo(() => {
-    return recentVotes.map((vote) => {
+    return resolvedVotes.map((vote) => {
       // Merge the revealed vote data if available
       const revealedVoteByAddress =
         userVoteDetails?.[vote.uniqueKey] || vote.revealedVoteByAddress || {};
@@ -77,7 +81,7 @@ export function PastVotes() {
       };
     });
   }, [
-    recentVotes,
+    resolvedVotes,
     userVoteDetails,
     phase,
     openVote,

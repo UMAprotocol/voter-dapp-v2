@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { sentRequestsToBeDelegateKey } from "constant";
+import { delegationRequestsKey, stakerDetailsKey } from "constant";
+import { zeroAddress } from "helpers";
 import { useHandleError } from "hooks";
-import { DelegationEventT } from "types";
+import { DelegationRequestsResponse } from "pages/api/delegation-requests";
+import { StakerDetailsT } from "types";
 import { removeDelegate } from "web3";
 
 export function useCancelSentRequestToBeDelegate(address: string | undefined) {
@@ -14,11 +16,17 @@ export function useCancelSentRequestToBeDelegate(address: string | undefined) {
     onSuccess: () => {
       clearErrors();
 
-      queryClient.setQueryData<DelegationEventT[]>(
-        [sentRequestsToBeDelegateKey, address],
-        () => {
-          return [];
+      // removeDelegate clears voterStakes(address).delegate on chain
+      queryClient.setQueryData<StakerDetailsT>(
+        [stakerDetailsKey, address],
+        (oldStakerDetails) => {
+          if (!oldStakerDetails) return;
+          return { ...oldStakerDetails, delegate: zeroAddress };
         }
+      );
+      queryClient.setQueryData<DelegationRequestsResponse>(
+        [delegationRequestsKey, address],
+        (old) => ({ received: old?.received ?? [], sent: [] })
       );
     },
   });

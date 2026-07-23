@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { oneMinute } from "constant";
 import { getUserVotesForRequests } from "graph";
 import { config } from "helpers/config";
-import { useAccountDetails, useDelegationContext } from "hooks";
+import {
+  useAccountDetails,
+  useDelegationContext,
+  useRoundJustRolled,
+} from "hooks";
 import { useMemo } from "react";
 import { VoteT } from "types";
 
@@ -13,6 +17,8 @@ export function useUserPastVotes(currentPageVotes: VoteT[] | undefined) {
 
   // Use delegator address if delegating, otherwise user address
   const voterAddress = delegatorAddress || userAddress;
+
+  const roundJustRolled = useRoundJustRolled();
 
   // Get V2 vote indices for the current page
   const v2VoteIndices = useMemo(() => {
@@ -71,8 +77,13 @@ export function useUserPastVotes(currentPageVotes: VoteT[] | undefined) {
       currentPageVotes.length > 0 &&
       !!voterAddress &&
       v2VoteIndices.length > 0,
-    refetchInterval: oneMinute,
-    staleTime: 5 * oneMinute,
+    // resolved past votes are immutable — but right after a round rolls the
+    // reveal lookup can be served by an indexer that lags the one that served
+    // the vote list, returning an empty result. Poll through that window
+    // (refetchInterval fires regardless of staleTime) so "did not vote"
+    // doesn't stick for votes the user revealed.
+    staleTime: Infinity,
+    refetchInterval: roundJustRolled ? oneMinute : false,
   });
 
   return queryResult;

@@ -1,5 +1,7 @@
 import { VotingEthers, VotingV2Ethers } from "@uma/contracts-frontend";
+import { voteEventsBlockLookback } from "constant";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
+import { queryFilterInChunks } from "helpers/web3/queryFilterInChunks";
 import { EncryptedVotesByKeyT } from "types";
 
 export async function getEncryptedVotes(
@@ -12,9 +14,11 @@ export async function getEncryptedVotes(
 
   const currentBlock = await votingContract.provider.getBlockNumber();
   const v2Filter = votingContract.filters.EncryptedVote(address, findRoundId);
-  const v2Result = await votingContract.queryFilter(
+  const v2Result = await queryFilterInChunks(
+    votingContract,
     v2Filter,
-    currentBlock - 100000
+    currentBlock - voteEventsBlockLookback,
+    currentBlock
   );
 
   const v2EventData = v2Result

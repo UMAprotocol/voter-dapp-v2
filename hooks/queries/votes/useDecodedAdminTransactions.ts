@@ -17,14 +17,13 @@ export function useDecodedAdminTransactions() {
   });
 
   const queryResult = useQuery({
-    queryKey: [
-      decodedAdminTransactionsKey,
-      activeVotes,
-      upcomingVotes,
-      pastVotes,
-      governanceVoteIdentifiers,
-    ],
+    // key only on the derived identifiers — keying on the full vote maps
+    // serializes the entire vote history on every render just to compare keys
+    queryKey: [decodedAdminTransactionsKey, governanceVoteIdentifiers],
     queryFn: () => getDecodedAdminTransactions(governanceVoteIdentifiers),
+    enabled: governanceVoteIdentifiers.length > 0,
+    // decoded admin transactions are immutable once proposed
+    staleTime: Infinity,
   });
 
   return queryResult;

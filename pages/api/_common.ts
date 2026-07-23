@@ -135,175 +135,39 @@ const SubgraphConfig = ss.object({
 export type SubgraphConfig = ss.Infer<typeof SubgraphConfig>;
 const SubgraphConfigs = ss.array(SubgraphConfig);
 export type SubgraphConfigs = ss.Infer<typeof SubgraphConfigs>;
-const Env = ss.object({
-  SUBGRAPH_V1_1: ss.optional(ss.string()),
-  SUBGRAPH_V2_1: ss.optional(ss.string()),
-  SUBGRAPH_V3_1: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_1: ss.optional(ss.string()),
+// SUBGRAPH_* vars are only read server-side, so unlike NEXT_PUBLIC_* vars they
+// don't need to be enumerated for build-time inlining — scan process.env for
+// keys matching the pattern instead. Adding a chain is env-only, no code change.
+const SUBGRAPH_KEY_PATTERN = /^SUBGRAPH_(V1|V2|V3|SKINNY|MANAGED)_\d+$/;
 
-  SUBGRAPH_V1_10: ss.optional(ss.string()),
-  SUBGRAPH_V2_10: ss.optional(ss.string()),
-  SUBGRAPH_V3_10: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_10: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_137: ss.optional(ss.string()),
-  SUBGRAPH_V2_137: ss.optional(ss.string()),
-  SUBGRAPH_V3_137: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_137: ss.optional(ss.string()),
-  SUBGRAPH_MANAGED_137: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_5: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_5: ss.optional(ss.string()),
-  SUBGRAPH_V3_5: ss.optional(ss.string()),
-  SUBGRAPH_V2_5: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_1514: ss.optional(ss.string()),
-  SUBGRAPH_V2_1514: ss.optional(ss.string()),
-  SUBGRAPH_V3_1514: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_80002: ss.optional(ss.string()),
-  SUBGRAPH_V2_80002: ss.optional(ss.string()),
-  SUBGRAPH_V3_80002: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_80002: ss.optional(ss.string()),
-  SUBGRAPH_MANAGED_80002: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_81457: ss.optional(ss.string()),
-  SUBGRAPH_V2_81457: ss.optional(ss.string()),
-  SUBGRAPH_V3_81457: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_81457: ss.optional(ss.string()),
-
-  SUBGRAPH_V2_11155111: ss.optional(ss.string()),
-  SUBGRAPH_V3_11155111: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_11155111: ss.optional(ss.string()),
-  SUBGRAPH_V1_11155111: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_288: ss.optional(ss.string()),
-  SUBGRAPH_V2_288: ss.optional(ss.string()),
-  SUBGRAPH_V3_288: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_288: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_42161: ss.optional(ss.string()),
-  SUBGRAPH_V2_42161: ss.optional(ss.string()),
-  SUBGRAPH_V3_42161: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_42161: ss.optional(ss.string()),
-
-  SUBGRAPH_V2_80001: ss.optional(ss.string()),
-  SUBGRAPH_V1_80001: ss.optional(ss.string()),
-  SUBGRAPH_V3_80001: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_80001: ss.optional(ss.string()),
-
-  SUBGRAPH_V1_8453: ss.optional(ss.string()),
-  SUBGRAPH_V2_8453: ss.optional(ss.string()),
-  SUBGRAPH_V3_8453: ss.optional(ss.string()),
-  SUBGRAPH_SKINNY_8453: ss.optional(ss.string()),
-});
-export type Env = ss.Infer<typeof Env>;
-
-// every prop of next envs needs to be explicitly pulled in
-const env = ss.create(
-  {
-    SUBGRAPH_V1_1: process.env.SUBGRAPH_V1_1,
-    SUBGRAPH_V1_5: process.env.SUBGRAPH_V1_5,
-    SUBGRAPH_V1_10: process.env.SUBGRAPH_V1_10,
-    SUBGRAPH_V1_137: process.env.SUBGRAPH_V1_137,
-    SUBGRAPH_V1_288: process.env.SUBGRAPH_V1_288,
-    SUBGRAPH_V1_1514: process.env.SUBGRAPH_V1_1514,
-    SUBGRAPH_V1_42161: process.env.SUBGRAPH_V1_42161,
-    SUBGRAPH_V1_80001: process.env.SUBGRAPH_V1_80001,
-    SUBGRAPH_V1_80002: process.env.SUBGRAPH_V1_80002,
-    SUBGRAPH_V1_81457: process.env.SUBGRAPH_V1_81457,
-    SUBGRAPH_V1_11155111: process.env.SUBGRAPH_V1_11155111,
-
-    SUBGRAPH_V2_1: process.env.SUBGRAPH_V2_1,
-    SUBGRAPH_V2_5: process.env.SUBGRAPH_V2_5,
-    SUBGRAPH_V2_10: process.env.SUBGRAPH_V2_10,
-    SUBGRAPH_V2_137: process.env.SUBGRAPH_V2_137,
-    SUBGRAPH_V2_288: process.env.SUBGRAPH_V2_288,
-    SUBGRAPH_V2_1514: process.env.SUBGRAPH_V2_1514,
-    SUBGRAPH_V2_42161: process.env.SUBGRAPH_V2_42161,
-    SUBGRAPH_V2_80001: process.env.SUBGRAPH_V2_80001,
-    SUBGRAPH_V2_80002: process.env.SUBGRAPH_V2_80002,
-    SUBGRAPH_V2_81457: process.env.SUBGRAPH_V2_81457,
-    SUBGRAPH_V2_11155111: process.env.SUBGRAPH_V2_11155111,
-
-    SUBGRAPH_V3_1: process.env.SUBGRAPH_V3_1,
-    SUBGRAPH_V3_5: process.env.SUBGRAPH_V3_5,
-    SUBGRAPH_V3_10: process.env.SUBGRAPH_V3_10,
-    SUBGRAPH_V3_137: process.env.SUBGRAPH_V3_137,
-    SUBGRAPH_V3_288: process.env.SUBGRAPH_V3_288,
-    SUBGRAPH_V3_1514: process.env.SUBGRAPH_V3_1514,
-    SUBGRAPH_V3_42161: process.env.SUBGRAPH_V3_42161,
-    SUBGRAPH_V3_80001: process.env.SUBGRAPH_V3_80001,
-    SUBGRAPH_V3_80002: process.env.SUBGRAPH_V3_80002,
-    SUBGRAPH_V3_81457: process.env.SUBGRAPH_V3_81457,
-    SUBGRAPH_V3_11155111: process.env.SUBGRAPH_V3_11155111,
-
-    SUBGRAPH_SKINNY_1: process.env.SUBGRAPH_SKINNY_1,
-    SUBGRAPH_SKINNY_10: process.env.SUBGRAPH_SKINNY_10,
-    SUBGRAPH_SKINNY_137: process.env.SUBGRAPH_SKINNY_137,
-    SUBGRAPH_SKINNY_288: process.env.SUBGRAPH_SKINNY_288,
-    SUBGRAPH_SKINNY_42161: process.env.SUBGRAPH_SKINNY_42161,
-    SUBGRAPH_SKINNY_5: process.env.SUBGRAPH_SKINNY_5,
-    SUBGRAPH_SKINNY_80001: process.env.SUBGRAPH_SKINNY_80001,
-    SUBGRAPH_SKINNY_80002: process.env.SUBGRAPH_SKINNY_80002,
-    SUBGRAPH_SKINNY_81457: process.env.SUBGRAPH_SKINNY_81457,
-    SUBGRAPH_SKINNY_11155111: process.env.SUBGRAPH_SKINNY_11155111,
-
-    SUBGRAPH_MANAGED_137: process.env.SUBGRAPH_MANAGED_137,
-    SUBGRAPH_MANAGED_80002: process.env.SUBGRAPH_MANAGED_80002,
-
-    SUBGRAPH_V1_8453: process.env.SUBGRAPH_V1_8453,
-    SUBGRAPH_V2_8453: process.env.SUBGRAPH_V2_8453,
-    SUBGRAPH_V3_8453: process.env.SUBGRAPH_V3_8453,
-    SUBGRAPH_SKINNY_8453: process.env.SUBGRAPH_SKINNY_8453,
-  },
-  Env
-);
-
-export function parseSubgraphEnv(env: Env): SubgraphConfigs {
+export function parseSubgraphEnv(
+  env: Record<string, string | undefined>
+): SubgraphConfigs {
   const subgraphs: SubgraphConfigs = [];
 
   for (const [key, value] of Object.entries(env)) {
-    if (!value) continue;
-    const [type, version, chainId] = key.split("_");
-    if (type === "SUBGRAPH") {
-      if (version === "SKINNY") {
-        const subgraph = {
-          source: "gql",
-          url: value,
-          type: "Skinny Optimistic Oracle",
-          chainId: parseInt(chainId),
-        };
-        if (ss.is(subgraph, SubgraphConfig)) {
-          subgraphs.push(subgraph);
-        }
-      } else if (version === "MANAGED") {
-        const subgraph = {
-          source: "gql",
-          url: value,
-          type: "Managed Optimistic Oracle V2",
-          chainId: parseInt(chainId),
-        };
-        if (ss.is(subgraph, SubgraphConfig)) {
-          subgraphs.push(subgraph);
-        }
-      } else {
-        const subgraph = {
-          source: "gql",
-          url: value,
-          type: `Optimistic Oracle ${version}`,
-          chainId: parseInt(chainId),
-        };
-        if (ss.is(subgraph, SubgraphConfig)) {
-          subgraphs.push(subgraph);
-        }
-      }
+    if (!value || !SUBGRAPH_KEY_PATTERN.test(key)) continue;
+    const [, version, chainId] = key.split("_");
+    const type =
+      version === "SKINNY"
+        ? "Skinny Optimistic Oracle"
+        : version === "MANAGED"
+        ? "Managed Optimistic Oracle V2"
+        : `Optimistic Oracle ${version}`;
+    const subgraph = {
+      source: "gql",
+      url: value,
+      type,
+      chainId: parseInt(chainId),
+    };
+    if (ss.is(subgraph, SubgraphConfig)) {
+      subgraphs.push(subgraph);
     }
   }
   return subgraphs;
 }
 
-export const subgraphConfigs = parseSubgraphEnv(env);
+export const subgraphConfigs = parseSubgraphEnv(process.env);
 
 export function getSubgraphConfig(
   type: string,

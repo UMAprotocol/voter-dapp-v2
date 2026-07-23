@@ -1,8 +1,4 @@
-import {
-  formatBytes32String,
-  getAddress,
-  keccak256,
-} from "ethers/lib/utils";
+import { formatBytes32String, getAddress, keccak256 } from "ethers/lib/utils";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 
 // Pure matching logic behind /api/resolve-deeplink: given a set of subgraph
@@ -121,6 +117,17 @@ export function extractMaybeAncillaryDataFields(decodedAncillaryData: string) {
     childRequester: match[4],
     childChainId: match[5],
   };
+}
+
+// Only requests bridged from an L2 spoke carry the stamp and need network
+// resolution; everything else resolves to itself. Checking this synchronously
+// lets callers skip the round-trip entirely.
+export function hasL2AncillaryDataStamp(decodedAncillaryData: string): boolean {
+  const { ancillaryDataHash, childOracle, childChainId, childBlockNumber } =
+    extractMaybeAncillaryDataFields(decodedAncillaryData);
+  return Boolean(
+    ancillaryDataHash && childOracle && childChainId && childBlockNumber
+  );
 }
 
 export type BridgedAncillaryDataFields = {

@@ -14,5 +14,7 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
+    // don't pick up compiled copies of tests from the next build output
+    exclude: ["**/node_modules/**", "**/.next/**", "**/cypress/**"],
   },
 });
