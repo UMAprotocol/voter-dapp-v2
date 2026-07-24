@@ -19,18 +19,12 @@ function poll() {
 
   console.log(`Polling at ${now}`, { commitPhaseEnd, revealPhaseEnd });
 
-  if (
-    commitPhaseEnd < now &&
-    !sentCommitPhaseNotifications.includes(commitPhaseEnd.getTime())
-  ) {
+  if (commitPhaseEnd < now && !sentCommitPhaseNotifications.includes(commitPhaseEnd.getTime())) {
     showNotificationForPhase("Commit");
     sentCommitPhaseNotifications.push(commitPhaseEnd.getTime());
   }
 
-  if (
-    revealPhaseEnd < now &&
-    !sentRevealPhaseNotifications.includes(revealPhaseEnd.getTime())
-  ) {
+  if (revealPhaseEnd < now && !sentRevealPhaseNotifications.includes(revealPhaseEnd.getTime())) {
     showNotificationForPhase("Reveal");
     sentRevealPhaseNotifications.push(revealPhaseEnd.getTime());
   }

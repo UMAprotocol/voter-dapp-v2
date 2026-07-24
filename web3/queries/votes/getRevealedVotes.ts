@@ -1,7 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { voteEventsBlockLookback } from "constant";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
-import { queryFilterInChunks } from "helpers/web3/queryFilterInChunks";
 import { VoteExistsByKeyT } from "types";
 
 export async function getRevealedVotes(
@@ -21,11 +19,9 @@ export async function getRevealedVotes(
     null
   );
   const currentBlock = await votingContract.provider.getBlockNumber();
-  const result = await queryFilterInChunks(
-    votingContract,
+  const result = await votingContract.queryFilter(
     filter,
-    currentBlock - voteEventsBlockLookback,
-    currentBlock
+    currentBlock - 100000
   );
   const eventData = result.filter(({ args }) => args.roundId === roundId);
   const revealedVotes: VoteExistsByKeyT = {};

@@ -1,7 +1,5 @@
 import { VotingV2Ethers } from "@uma/contracts-frontend";
-import { voteEventsBlockLookback } from "constant";
 import { decodeHexString, makeUniqueKeyForVote } from "helpers";
-import { queryFilterInChunks } from "helpers/web3/queryFilterInChunks";
 import { VoteExistsByKeyT } from "types";
 
 // This function differs from getCommittedVotes by filtering by the caller of the vote, not the voter.
@@ -21,11 +19,9 @@ export async function getCommittedVotesByCaller(
     null
   );
   const currentBlock = await votingContract.provider.getBlockNumber();
-  const result = await queryFilterInChunks(
-    votingContract,
+  const result = await votingContract.queryFilter(
     filter,
-    currentBlock - voteEventsBlockLookback,
-    currentBlock
+    currentBlock - 100000
   );
   const eventData = result?.filter(({ args }) => args.roundId === roundId);
   const committedVotes: VoteExistsByKeyT = {};
