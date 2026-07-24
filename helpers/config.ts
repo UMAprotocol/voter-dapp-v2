@@ -10,9 +10,14 @@ const Env = ss.object({
   NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS: ss.string(),
   NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID: ss.string(),
+  NEXT_PUBLIC_ONBOARD_API_KEY: ss.string(),
+  NEXT_PUBLIC_CURRENT_ENV: ss.string(),
   NEXT_PUBLIC_WALLET_CONNECT: ss.string(),
   NEXT_PUBLIC_GRAPH_STUDIO_API_KEY: ss.string(),
   // optional envs
+  NEXT_PUBLIC_CONTENTFUL_SPACE_ID: ss.optional(ss.string()),
+  NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN: ss.optional(ss.string()),
+  NEXT_PUBLIC_THE_GRAPH_API_KEY: ss.optional(ss.string()),
   NEXT_PUBLIC_GRAPH_ENDPOINT: ss.optional(ss.string()),
   NEXT_PUBLIC_DEPLOY_BLOCK: ss.optional(ss.string()),
   NEXT_PUBLIC_SIGNING_MESSAGE: ss.optional(ss.string()),
@@ -23,6 +28,7 @@ const Env = ss.object({
   NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
   NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_1: ss.optional(ss.string()),
+  NEXT_PUBLIC_PROVIDER_V3_5: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_288: ss.optional(ss.string()),
@@ -50,7 +56,14 @@ export const env = ss.create(
       process.env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID:
       process.env.NEXT_PUBLIC_BLOCKNATIVE_DAPP_ID,
+    NEXT_PUBLIC_THE_GRAPH_API_KEY: process.env.NEXT_PUBLIC_THE_GRAPH_API_KEY,
+    NEXT_PUBLIC_ONBOARD_API_KEY: process.env.NEXT_PUBLIC_ONBOARD_API_KEY,
+    NEXT_PUBLIC_CURRENT_ENV: process.env.NEXT_PUBLIC_CURRENT_ENV,
     NEXT_PUBLIC_WALLET_CONNECT: process.env.NEXT_PUBLIC_WALLET_CONNECT,
+    NEXT_PUBLIC_CONTENTFUL_SPACE_ID:
+      process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN:
+      process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
     NEXT_PUBLIC_OVERRIDE_APR: process.env.NEXT_PUBLIC_OVERRIDE_APR,
     NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
@@ -64,6 +77,7 @@ export const env = ss.create(
     NEXT_PUBLIC_PROVIDER_V3_137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,
     NEXT_PUBLIC_PROVIDER_V3_288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
     NEXT_PUBLIC_PROVIDER_V3_42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
+    NEXT_PUBLIC_PROVIDER_V3_5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     NEXT_PUBLIC_PROVIDER_V3_10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     NEXT_PUBLIC_PROVIDER_V3_11155111:
       process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
@@ -90,8 +104,12 @@ const AppConfig = ss.object({
   walletConnectProjectId: ss.string(),
   gaTag: ss.string(),
   graphStudioApiKey: ss.string(),
+  graphEndpointV1: ss.optional(ss.string()),
   graphEndpoint: ss.optional(ss.string()),
+  contentfulSpace: ss.optional(ss.string()),
+  contentfulAccessToken: ss.optional(ss.string()),
   graphV2Enabled: ss.defaulted(ss.boolean(), false),
+  contentfulEnabled: ss.defaulted(ss.boolean(), false),
   overrideApr: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
@@ -102,6 +120,7 @@ const AppConfig = ss.object({
   oov3ProviderUrl288: ss.optional(ss.string()),
   oov3ProviderUrl1514: ss.optional(ss.string()),
   oov3ProviderUrl42161: ss.optional(ss.string()),
+  oov3ProviderUrl5: ss.optional(ss.string()),
   oov3ProviderUrl10: ss.optional(ss.string()),
   oov3ProviderUrl11155111: ss.optional(ss.string()),
   oov3ProviderUrl8453: ss.optional(ss.string()),
@@ -119,6 +138,8 @@ export const appConfig = ss.create(
     votingContractAddress: env.NEXT_PUBLIC_VOTING_CONTRACT_ADDRESS,
     votingTokenContractAddress: env.NEXT_PUBLIC_VOTING_TOKEN_CONTRACT_ADDRESS,
     votingV1ContractAddress: env.NEXT_PUBLIC_VOTING_V1_CONTRACT_ADDRESS,
+    contentfulSpace: env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    contentfulAccessToken: env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
     graphEndpoint: env.NEXT_PUBLIC_GRAPH_ENDPOINT,
     signingMessage:
       env.NEXT_PUBLIC_SIGNING_MESSAGE ?? "Login to UMA Voter dApp",
@@ -129,6 +150,9 @@ export const appConfig = ss.create(
       Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1") === 11155111 ? true : false,
     walletConnectProjectId: env.NEXT_PUBLIC_WALLET_CONNECT,
     graphV2Enabled: !!env.NEXT_PUBLIC_GRAPH_ENDPOINT,
+    contentfulEnabled:
+      !!env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN &&
+      !!env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     overrideApr: env.NEXT_PUBLIC_OVERRIDE_APR,
     designatedVotingFactoryV1Address:
       env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS ??
@@ -144,6 +168,7 @@ export const appConfig = ss.create(
     oov3ProviderUrl288: process.env.NEXT_PUBLIC_PROVIDER_V3_288,
     oov3ProviderUrl1514: process.env.NEXT_PUBLIC_PROVIDER_V3_1514,
     oov3ProviderUrl42161: process.env.NEXT_PUBLIC_PROVIDER_V3_42161,
+    oov3ProviderUrl5: process.env.NEXT_PUBLIC_PROVIDER_V3_5,
     oov3ProviderUrl10: process.env.NEXT_PUBLIC_PROVIDER_V3_10,
     oov3ProviderUrl11155111: process.env.NEXT_PUBLIC_PROVIDER_V3_11155111,
     oov3ProviderUrl8453: process.env.NEXT_PUBLIC_PROVIDER_V3_8453,
@@ -197,7 +222,7 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0x137",
       token: "MATIC",
       label: "Polygon",
-      rpcUrl: appConfig.oov3ProviderUrl137 ?? "https://polygon-rpc.com",
+      rpcUrl: appConfig.oov3ProviderUrl137 as string,
     },
   },
   {
@@ -211,9 +236,7 @@ export const chainConstantsList: ChainConstantsList = [
       id: "0xaa36a7",
       token: "ETH",
       label: "SepoliaETH",
-      rpcUrl:
-        appConfig.oov3ProviderUrl11155111 ??
-        "https://ethereum-sepolia-rpc.publicnode.com",
+      rpcUrl: appConfig.oov3ProviderUrl11155111 as string,
     },
   },
   {
@@ -276,23 +299,16 @@ export const config: AppConfig & ChainConstants = {
   ...chainConstants,
 };
 
-// get provider for other chains; reuse one provider per chain so callers
-// share its connection state instead of instantiating a new one per call
-// (declared before primaryProvider, whose initializer calls getProvider)
-const providersByChainId = new Map<number, ethers.providers.JsonRpcProvider>();
+// primary provider looks at what chainId we have specified as our primary chain,
+// this is typically 1, but for testnetswe would use the testnet id
+export const primaryProvider = getProvider(config.chainId);
+
+// get provider for other chains
 export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
-  const existing = providersByChainId.get(chainId);
-  if (existing) return existing;
   const providerUrlKey = `oov3ProviderUrl${chainId}` as keyof typeof config;
   const providerUrl = config[providerUrlKey] as string | undefined;
   if (!providerUrl) {
     throw new Error(`Provider URL not found for chain Id ${chainId}`);
   }
-  const provider = new ethers.providers.JsonRpcProvider(providerUrl);
-  providersByChainId.set(chainId, provider);
-  return provider;
+  return new ethers.providers.JsonRpcProvider(providerUrl);
 }
-
-// primary provider looks at what chainId we have specified as our primary chain,
-// this is typically 1, but for testnetswe would use the testnet id
-export const primaryProvider = getProvider(config.chainId);

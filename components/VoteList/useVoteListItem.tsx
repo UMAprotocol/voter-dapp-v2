@@ -78,6 +78,7 @@ export function useVoteListItem({
     timeAsDate,
     canReveal,
     rollCount,
+    assertionChildChainId,
     assertionId,
   } = vote;
   const isMultipleValuesVote = decodedIdentifier === "MULTIPLE_VALUES";
@@ -88,12 +89,7 @@ export function useVoteListItem({
   const Icon = getVoteIcon();
   const isRolled = rollCount > 0;
   const existingVote = getDecryptedVoteAsFormattedString();
-  const { data: claim } = useAssertionClaim({
-    time: vote.time,
-    decodedIdentifier,
-    ancillaryDataL2: vote.ancillaryDataL2,
-    assertionId,
-  });
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const {
     decryptedVotesIsLoading,
     activeVotesIsLoading,

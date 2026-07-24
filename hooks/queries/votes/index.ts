@@ -1,5 +1,6 @@
 export { useActiveVotes } from "./useActiveVotes";
 export { useCommittedVotes } from "./useCommittedVotes";
+export { useContentfulData } from "./useContentfulData";
 export { useDecryptedVotes } from "./useDecryptedVotes";
 export { useEncryptedVotes } from "./useEncryptedVotes";
 export { usePastVotes } from "./usePastVotes";

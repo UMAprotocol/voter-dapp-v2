@@ -64,12 +64,7 @@ export function Details(query: VoteT) {
     useState(false);
   const { isOptimisticGovernorVote, explanationText, rules, ipfs } =
     useOptimisticGovernorData(decodedAncillaryData);
-  const { data: claim } = useAssertionClaim({
-    time,
-    decodedIdentifier,
-    ancillaryDataL2,
-    assertionId,
-  });
+  const { data: claim } = useAssertionClaim(assertionChildChainId, assertionId);
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
   const { data: bulletins } = usePolymarketBulletins(ancillaryDataL2);

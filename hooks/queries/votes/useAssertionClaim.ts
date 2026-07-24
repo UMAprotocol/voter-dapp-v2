@@ -1,33 +1,22 @@
-import { useAugmentedVoteData } from "hooks/queries/votes/useAugmentedVoteData";
+import { useQuery } from "@tanstack/react-query";
+import { assertionClaimsKey } from "constant";
+import { useHandleError } from "hooks";
+import { getAssertionClaim } from "web3";
+import { config } from "helpers/config";
 
-/**
- * An OOV3 assertion's claim comes from the augmented vote data (the server
- * resolves it from the OOV3 subgraph on the assertion's origin chain), which
- * the vote panel fetches anyway — the shared query key means at most one
- * request per vote. This replaced a client-side AssertionMade event scan over
- * a million blocks, which range-capped RPC providers reject outright.
- */
-export function useAssertionClaim(params: {
-  time?: number;
-  decodedIdentifier?: string;
-  ancillaryDataL2?: string;
-  assertionId?: string;
-}) {
-  const { data, ...queryResult } = useAugmentedVoteData({
-    time: params.time,
-    identifier: params.decodedIdentifier,
-    ancillaryData: params.ancillaryDataL2,
-    // only OOV3-originated votes have a claim — don't fetch for the rest.
-    // queryOptions.enabled replaces the base hook's guard, so restate it
-    queryOptions: {
-      enabled:
-        !!params.assertionId &&
-        !!params.time &&
-        !!params.decodedIdentifier &&
-        !!params.ancillaryDataL2,
-      staleTime: Infinity,
+export function useAssertionClaim(
+  chainId: number = config.chainId,
+  assertionId?: string
+) {
+  const { onError } = useHandleError({ isDataFetching: true });
+  const queryResult = useQuery({
+    queryKey: [assertionClaimsKey, chainId, assertionId],
+    queryFn: () => {
+      return getAssertionClaim(chainId, assertionId);
     },
+    enabled: !!assertionId,
+    onError,
   });
 
-  return { ...queryResult, data: data?.optimisticOracleV3Data?.claim };
+  return queryResult;
 }

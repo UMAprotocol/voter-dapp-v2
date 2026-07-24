@@ -11,11 +11,8 @@ import { getProvider } from "helpers/config";
 import { decodeHexString, encodeHexString } from "helpers/web3/decodeHexString";
 // moved to lib/deeplink-matching so pure consumers can import it without the
 // provider config this module needs; re-exported for existing callers
-import {
-  extractMaybeAncillaryDataFields,
-  hasL2AncillaryDataStamp,
-} from "lib/deeplink-matching";
-export { extractMaybeAncillaryDataFields, hasL2AncillaryDataStamp };
+import { extractMaybeAncillaryDataFields } from "lib/deeplink-matching";
+export { extractMaybeAncillaryDataFields };
 
 // ABI for OracleSpoke contract events
 export const PRICE_REQUEST_BRIDGED_ABI = [

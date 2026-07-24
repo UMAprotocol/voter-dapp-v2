@@ -7,14 +7,10 @@ export function useStakerDetails(address: string | undefined) {
   const { voting } = useContractsContext();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
-  const queryResult = useQuery({
+  return useQuery({
     queryKey: [stakerDetailsKey, address],
     queryFn: () => getStakerDetails(voting, address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
-
-  // disabled queries (e.g. before the wallet connects) report isLoading=true
-  // forever in react-query v4; isInitialLoading is only true while actually fetching
-  return { ...queryResult, isLoading: queryResult.isInitialLoading };
 }

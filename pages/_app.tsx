@@ -23,19 +23,7 @@ import "styles/globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { config } from "helpers";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // most data in this app changes at most once per voting phase; queries
-      // that need to be live (active votes, results) opt in to refetchInterval
-      staleTime: 30_000,
-      refetchOnWindowFocus: false,
-      // failures here are usually RPC range limits or a subgraph outage;
-      // immediate retries just multiply the errors
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

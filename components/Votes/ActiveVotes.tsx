@@ -20,7 +20,6 @@ import {
   useVoteTimingContext,
   useVoteUrl,
   useWalletContext,
-  useVotesWithOnScreenData,
 } from "hooks";
 import { useState } from "react";
 import { VoteT } from "types";
@@ -38,9 +37,6 @@ import {
 
 export function ActiveVotes() {
   const { activeVoteList } = useVotesContext();
-  // UMIP metadata (titles/descriptions for governance votes) is fetched only
-  // for votes on screen; commit/reveal logic below stays on the raw list
-  const enrichedActiveVotes = useVotesWithOnScreenData(activeVoteList);
   const { phase, roundId } = useVoteTimingContext();
   const { address } = useAccountDetails();
   const {
@@ -300,7 +296,7 @@ export function ActiveVotes() {
     selectVote(undefined, vote);
   }
 
-  const data = enrichedActiveVotes?.map((vote, index) => ({
+  const data = activeVoteList?.map((vote, index) => ({
     phase: phase,
     vote: vote,
     selectedVote: selectedVotes[vote.uniqueKey],
