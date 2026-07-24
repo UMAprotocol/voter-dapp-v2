@@ -1,5 +1,7 @@
 import { BigNumber } from "ethers";
-import { gql, request as gqlRequest } from "graphql-request";
+import { gql, Variables } from "graphql-request";
+import { SERVER_SUBGRAPH_REQUEST_TIMEOUT_MS } from "constant";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import {
   makeUniqueKeyForVote,
@@ -24,6 +26,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { ActivityStatusT } from "types";
 import { VoteSubgraphURL } from "./_common";
+
+function gqlRequest<T>(url: string, document: string, variables?: Variables) {
+  return subgraphRequest<T>(
+    url,
+    document,
+    variables,
+    SERVER_SUBGRAPH_REQUEST_TIMEOUT_MS
+  );
+}
 import { handleApiError, HttpError } from "./_utils/errors";
 import { validateQueryParams } from "./_utils/validation";
 
