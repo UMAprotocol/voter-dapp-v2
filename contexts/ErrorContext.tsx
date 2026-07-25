@@ -13,6 +13,7 @@ export interface ErrorContextState {
 export const defaultErrorContextState: ErrorContextState = {
   errorMessages: {
     default: [],
+    pageLoad: [],
     vote: [],
     stake: [],
     unstake: [],

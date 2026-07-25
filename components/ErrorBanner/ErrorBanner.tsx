@@ -12,15 +12,24 @@ import {
   Wrapper,
 } from "./styles";
 
-export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
+export function ErrorBanner({
+  errorOrigin,
+  isSticky = false,
+}: {
+  errorOrigin?: ErrorOriginT;
+  isSticky?: boolean;
+}) {
   const { isWrongChain } = useWalletContext();
   const { errorMessages, removeErrorMessage } = useErrorContext(errorOrigin);
 
-  if (!errorMessages.length && !isWrongChain) return null;
+  const showWrongChain =
+    isWrongChain && (!errorOrigin || errorOrigin === "default");
+
+  if (!errorMessages.length && !showWrongChain) return null;
 
   return (
-    <Wrapper>
-      {isWrongChain ? (
+    <Wrapper $isSticky={isSticky}>
+      {showWrongChain ? (
         <Error message={wrongChainMessage} />
       ) : (
         <>
