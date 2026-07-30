@@ -309,14 +309,6 @@ export const StakePanelWithError: Story = {
   decorators: [errorDecorator],
 };
 
-export const RemindPanel: Story = {
-  ...Template,
-  args: {
-    panelType: "remind",
-    panelOpen: true,
-  },
-};
-
 export const HistoryPanel: Story = {
   ...Template,
   args: {
