@@ -20,8 +20,6 @@ const Env = ss.object({
   NEXT_PUBLIC_OVERRIDE_APR: ss.optional(ss.string()),
   NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS: ss.optional(ss.string()),
   NEXT_PUBLIC_PHASE_LENGTH: ss.optional(ss.string()),
-  NEXT_PUBLIC_MAILCHIMP_URL: ss.optional(ss.string()),
-  NEXT_PUBLIC_MAILCHIMP_TAGS: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_1: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_10: ss.optional(ss.string()),
   NEXT_PUBLIC_PROVIDER_V3_137: ss.optional(ss.string()),
@@ -56,8 +54,6 @@ export const env = ss.create(
     NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS:
       process.env.NEXT_PUBLIC_DESIGNATED_VOTING_FACTORY_V1_ADDRESS,
     NEXT_PUBLIC_PHASE_LENGTH: process.env.NEXT_PUBLIC_PHASE_LENGTH,
-    NEXT_PUBLIC_MAILCHIMP_URL: process.env.NEXT_PUBLIC_MAILCHIMP_URL,
-    NEXT_PUBLIC_MAILCHIMP_TAGS: process.env.NEXT_PUBLIC_MAILCHIMP_TAGS,
     NEXT_PUBLIC_GRAPH_STUDIO_API_KEY:
       process.env.NEXT_PUBLIC_GRAPH_STUDIO_API_KEY,
     NEXT_PUBLIC_PROVIDER_V3_1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
@@ -95,8 +91,6 @@ const AppConfig = ss.object({
   overrideApr: ss.optional(ss.string()),
   designatedVotingFactoryV1Address: ss.string(),
   phaseLength: ss.number(),
-  mailchimpUrl: ss.optional(ss.string()),
-  mailchimpTags: ss.optional(ss.string()),
   oov3ProviderUrl1: ss.optional(ss.string()),
   oov3ProviderUrl137: ss.optional(ss.string()),
   oov3ProviderUrl288: ss.optional(ss.string()),
@@ -136,8 +130,6 @@ export const appConfig = ss.create(
         Number(env.NEXT_PUBLIC_CHAIN_ID ?? "1")
       ),
     phaseLength: Number(env.NEXT_PUBLIC_PHASE_LENGTH || 86400),
-    mailchimpUrl: env.NEXT_PUBLIC_MAILCHIMP_URL,
-    mailchimpTags: env.NEXT_PUBLIC_MAILCHIMP_TAGS,
     graphStudioApiKey: env.NEXT_PUBLIC_GRAPH_STUDIO_API_KEY,
     oov3ProviderUrl1: process.env.NEXT_PUBLIC_PROVIDER_V3_1,
     oov3ProviderUrl137: process.env.NEXT_PUBLIC_PROVIDER_V3_137,

@@ -21,7 +21,6 @@ export type PanelTypeT =
   | "vote"
   | "stake"
   | "history"
-  | "remind"
   | "delegation";
 
 export type PaginateForT =
@@ -45,5 +44,4 @@ export type ErrorOriginT =
   | "claim"
   | "claimV1"
   | "delegation"
-  | "storybook"
-  | "remind";
+  | "storybook";

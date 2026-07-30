@@ -20,7 +20,6 @@ export const defaultErrorContextState: ErrorContextState = {
     claimV1: [],
     delegation: [],
     storybook: [],
-    remind: [],
   },
   addErrorMessage: () => null,
   removeErrorMessage: () => null,
