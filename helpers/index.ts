@@ -21,6 +21,7 @@ export {
 export { makePriceRequestsByKey } from "./voting/makePriceRequestsByKey";
 export { makeUniqueKeyForVote } from "./voting/makeUniqueKeyForVote";
 export { onlyOneRequestPerAddress } from "./voting/onlyOneRequestPerAddress";
+export { pruneSelectedVotes } from "./voting/pruneSelectedVotes";
 export * from "./voting/optimisticGovernor";
 export * from "./voting/projects";
 export * from "./voting/voteTiming";
