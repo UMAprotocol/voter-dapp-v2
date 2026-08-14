@@ -28,6 +28,7 @@ import {
   getVoteMetaData,
 } from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
+import { POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA } from "./projects/constants";
 
 // Real ancillary data from a MetaMarket request.
 // ooRequester 46500f8b... is MetaMarket (not registered in voter dapp).
@@ -104,6 +105,50 @@ describe("getVoteMetaData identifier fallback options", () => {
 
       expect(result.options).toEqual(expectedYesOrNoOptions);
       expect(result.title).toBe("Will it rain tomorrow?");
+    });
+  });
+
+  describe("request with a spoofed Polymarket initializer", () => {
+    it("is not attributed to Polymarket", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(result.origin).toBe("UMA");
+    });
+
+    it("still takes its title from the ancillary data rather than the identifier", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(result.title).toBe("Hubenko Maksym vs. Ziakun Viktor");
+      // a title equal to the identifier is what makes the dispute bot fall back
+      // to "N/A" and lose the Discord thread
+      expect(result.title).not.toBe("YES_OR_NO_QUERY");
+      expect(resolveDiscordThreadTitle(result.title, "YES_OR_NO_QUERY")).toBe(
+        "Hubenko Maksym vs. Ziakun Viktor"
+      );
+    });
+
+    it("keeps the parsed vote options", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(optionLabels(result.options)).toEqual([
+        "Ziakun Viktor",
+        "Hubenko Maksym",
+        "unknown/50-50",
+        "Early request",
+        "Custom",
+      ]);
     });
   });
 
