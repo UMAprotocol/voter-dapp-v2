@@ -20,27 +20,86 @@ export const polymarketRequesters = [
   "0x69c47de9d4d3dad79590d61b9e05918e03775f24", // Polymarket UmaCtfAdapter for Managed OOv2
 ].map((a) => a.toLowerCase());
 
+// Canonical Polymarket initializer EOAs — the accounts Polymarket itself
+// initializes questions from. Kept in sync with the oracle dapp's
+// PolymarketProject and with mcp-otb's addresses.json
+// (`polymarket.canonical_initializers`).
+export const polymarketInitializers = [
+  "0xC789d2C42502A2548eEF3eDBe84dFe9ED233403A",
+  "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
+  "0xCD2CCA82e43Ca9E21d48564bB18897273Ada4a69",
+  "0x3162A9c12624DD2D4491fEA90FEb7AbBB481D7FC",
+  "0x70A66740774e7CA5739a454C60d72f2b0B7a0570",
+  "0x4ae84763ae13F0381CA6dA06B804EF9E64CE6B59",
+  "0xE4D717ae9467Be8ED8bD84A0e03a279e7150d459",
+  "0x91190A80eE09B55200f1622012eAf494Cc25a6a3",
+  "0x8A667535eB42F942186C30E70c72483612E0854b",
+  "0x084EA0bAC17aD8a23A84F596b4adcA432aa118A3",
+  "0x9E2ad3FB89B6357b601932B673f77B371ff91871",
+  "0x6e0c80c90ea6c15917308f820eac91ce2724b5b5",
+  "0xac9930b2ae455a671b62de86876a7e8587825294",
+  "0xF43d55F3A8B7484Ed4B6931f93CB6F9eF5Dd369D",
+].map((a) => a.toLowerCase());
+
 const polymarketIdentifiers = ["YES_OR_NO_QUERY", "MULTIPLE_VALUES"];
 
 export function isPolymarketRequester(address: string): boolean {
   return polymarketRequesters.includes(address.toLowerCase());
 }
 
+export function isPolymarketInitializer(address: string): boolean {
+  return polymarketInitializers.includes(address.toLowerCase());
+}
+
 export function getRequester(decodedAncillaryData: string): string | undefined {
   const match = decodedAncillaryData.match(/ooRequester:([^,]+)/) ?? [];
   return match[1] ? "0x" + match[1] : undefined;
 }
+/**
+ * Returns the *last* initializer in the ancillary data.
+ *
+ * UmaCtfAdapter appends `,initializer:<msg.sender>` to whatever ancillary data
+ * the caller supplied, so when the caller-supplied text already contains an
+ * initializer token the final one is the authoritative question creator. Reading
+ * the first match lets a caller embed any address they like — including a
+ * canonical Polymarket one — and have it shadow the real initializer.
+ */
 export function getInitializer(
   decodedAncillaryData: string
 ): string | undefined {
-  const match = decodedAncillaryData.match(/initializer:([^,]+)/);
-  return match ? "0x" + match[1] : undefined;
+  const matches = [
+    ...(decodedAncillaryData ?? "").matchAll(
+      /\binitializer\s*:\s*(?:0x)?([0-9a-fA-F]{40})\b/g
+    ),
+  ];
+  const last = matches[matches.length - 1];
+  return last ? "0x" + last[1] : undefined;
 }
 export function getChildChainId(
   decodedAncillaryData: string
 ): number | undefined {
   const match = decodedAncillaryData.match(/childChainId:(\d+)/) ?? [];
   return match[1] ? Number(match[1]) : undefined;
+}
+
+/**
+ * The Polymarket adapter contracts are permissionlessly callable — anyone can
+ * initialize a question through them — so a canonical requester address on its
+ * own is not proof that Polymarket created the request. Combined with the
+ * adapter appending `,initializer:<msg.sender>`, a third party can embed a
+ * canonical `initializer:` token in their own question text and have the real
+ * one appended after it.
+ *
+ * So when an initializer token is present, the last one wins and it must be
+ * canonical. Requests carrying no initializer token at all predate the adapters
+ * that append one, and keep the legacy requester-only classification.
+ */
+function hasCanonicalPolymarketInitializer(
+  decodedAncillaryData: string
+): boolean {
+  const initializer = getInitializer(decodedAncillaryData);
+  if (!initializer) return true;
+  return isPolymarketInitializer(initializer);
 }
 
 export function checkIfIsPolymarket(
@@ -57,7 +116,8 @@ export function checkIfIsPolymarket(
     decodedAncillaryData.includes(resultDataToken) &&
     requester &&
     isPolymarketRequester(requester) &&
-    childChainId === polymarketChainId;
+    childChainId === polymarketChainId &&
+    hasCanonicalPolymarketInitializer(decodedAncillaryData);
 
   return Boolean(isPolymarket);
 }
