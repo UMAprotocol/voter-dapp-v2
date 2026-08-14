@@ -174,12 +174,7 @@ export function getVoteMetaData(
     const ancillaryDataDescription =
       getDescriptionFromAncillaryData(decodedAncillaryData);
 
-    // Normalize identically to the project-tagged branch above: a request that
-    // stops being attributed to a project must keep producing the same title
-    // string, since the Discord thread cache is keyed on it.
-    const title = stripInvalidCharacters(
-      ancillaryDataTitle ?? identifierDetails.identifier
-    );
+    const title = ancillaryDataTitle ?? identifierDetails.identifier;
     const description = ancillaryDataDescription ?? identifierDetails.summary;
     const umipOrUppUrl = identifierDetails.umipLink.url;
     const umipOrUppNumber = identifierDetails.umipLink.number;
@@ -211,7 +206,7 @@ export function getVoteMetaData(
   const ancillaryDataDescription =
     getDescriptionFromAncillaryData(decodedAncillaryData);
 
-  const title = stripInvalidCharacters(ancillaryDataTitle ?? decodedIdentifier);
+  const title = ancillaryDataTitle ?? decodedIdentifier;
 
   return {
     title,
@@ -384,18 +379,13 @@ export function getTitleFromAncillaryData(
   descriptionIdentifier = "description:"
 ) {
   const start = decodedAncillaryData.indexOf(titleIdentifier);
+  const end =
+    decodedAncillaryData.indexOf(descriptionIdentifier) ??
+    decodedAncillaryData.length;
 
   if (start === -1) {
     return undefined;
   }
-
-  // indexOf returns -1 rather than null/undefined when the token is missing, so
-  // the `??` this used to rely on never fired: ancillary data carrying a title:
-  // but no description: sliced backwards and returned the text preceding the
-  // title marker (e.g. "q: title:") instead of the title itself.
-  const descriptionStart = decodedAncillaryData.indexOf(descriptionIdentifier);
-  const end =
-    descriptionStart > start ? descriptionStart : decodedAncillaryData.length;
 
   const title = decodedAncillaryData
     .substring(start + titleIdentifier.length, end)

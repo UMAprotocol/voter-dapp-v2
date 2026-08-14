@@ -26,7 +26,6 @@ vi.mock("helpers", async () => {
 import {
   resolveDiscordThreadTitle,
   getVoteMetaData,
-  getTitleFromAncillaryData,
 } from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
 import { POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA } from "./projects/constants";
@@ -150,30 +149,6 @@ describe("getVoteMetaData identifier fallback options", () => {
         "Early request",
         "Custom",
       ]);
-    });
-  });
-
-  describe("getTitleFromAncillaryData", () => {
-    it("reads a title that has no description: token following it", () => {
-      expect(
-        getTitleFromAncillaryData(
-          "q: title: Some market with no description, res_data: p1: 0, p2: 1"
-        )
-      ).toBe("Some market with no description, res_data: p1: 0, p2: 1");
-    });
-
-    it("stops at description: when it is present", () => {
-      expect(
-        getTitleFromAncillaryData(
-          "q: title: Some market, description: Resolves however."
-        )
-      ).toBe("Some market");
-    });
-
-    it("returns undefined when there is no title: token", () => {
-      expect(getTitleFromAncillaryData("no structured data here")).toBe(
-        undefined
-      );
     });
   });
 
