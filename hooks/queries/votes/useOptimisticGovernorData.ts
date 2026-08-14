@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { MainnetOrL1Testnet } from "types";
 
 import { useSetChain } from "@web3-onboard/react";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import { appConfig } from "helpers";
 import { useWalletContext } from "hooks/contexts/useWalletContext";
 import { useHandleError } from "hooks/helpers/useHandleError";
@@ -85,7 +86,10 @@ export async function getProposalData(
     }
   `;
 
-  return request<OptimisticGovernorProposalData>(endpoint, proposalQuery);
+  return subgraphRequest<OptimisticGovernorProposalData>(
+    endpoint,
+    proposalQuery
+  );
 }
 
 export function useOptimisticGovernorData(decodedAncillaryData: string) {

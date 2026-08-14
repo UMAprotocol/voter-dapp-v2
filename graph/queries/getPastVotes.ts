@@ -1,8 +1,9 @@
 import { BigNumber, utils } from "ethers";
-import { gql, request } from "graphql-request";
+import { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import { warnOnce } from "helpers/util/log";
 import { resolveAncillaryData } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
@@ -173,11 +174,15 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
     }
   `;
 
-  const response = await request<PastVotesQuery>(endpoint, voteDetailsQuery, {
-    // BigInt is serialized as a string
-    index: String(resolvedPriceRequestIndex),
-    latestRoundLimit: VOTE_DETAILS_LATEST_ROUND_LIMIT,
-  });
+  const response = await subgraphRequest<PastVotesQuery>(
+    endpoint,
+    voteDetailsQuery,
+    {
+      // BigInt is serialized as a string
+      index: String(resolvedPriceRequestIndex),
+      latestRoundLimit: VOTE_DETAILS_LATEST_ROUND_LIMIT,
+    }
+  );
 
   if (!response?.priceRequests?.[0]) return null;
 
@@ -278,7 +283,7 @@ export async function getUserVotesForRequests(
   `;
 
   try {
-    const response = await request<{
+    const response = await subgraphRequest<{
       priceRequests: Array<{
         resolvedPriceRequestIndex: string;
         latestRound: {

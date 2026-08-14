@@ -1,7 +1,8 @@
 import { BigNumber } from "ethers";
-import { gql, request } from "graphql-request";
+import { gql } from "graphql-request";
 import { formatBytes32String } from "helpers";
 import { config } from "helpers/config";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 
 type UpcomingRequestEntity = {
   identifier: { id: string };
@@ -35,15 +36,20 @@ export async function getUpcomingVotesFromSubgraph(currentRoundId: number) {
     }
   `;
 
-  const result = await request<{ priceRequests: UpcomingRequestEntity[] }>(
-    endpoint,
-    query
-  );
+  const result = await subgraphRequest<{
+    priceRequests: UpcomingRequestEntity[];
+  }>(endpoint, query);
 
   return result.priceRequests
     .filter(({ latestRound }) => Number(latestRound.roundId) > currentRoundId)
     .map(
-      ({ identifier: { id }, time, ancillaryData, isGovernance, rollCount }) => ({
+      ({
+        identifier: { id },
+        time,
+        ancillaryData,
+        isGovernance,
+        rollCount,
+      }) => ({
         identifier: formatBytes32String(id),
         time: BigNumber.from(time),
         ancillaryData,
