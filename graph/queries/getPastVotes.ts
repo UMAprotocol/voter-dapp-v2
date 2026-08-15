@@ -3,8 +3,7 @@ import { gql, request } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import { config } from "helpers/config";
 import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
-import { warnOnce } from "helpers/util/log";
-import { resolveAncillaryData } from "helpers/voting/resolveAncillaryData";
+import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillaryData";
 import { PastVotesQuery, RevealedVotesByAddress } from "types";
 
 const { chainId, graphEndpoint } = config;
@@ -91,10 +90,10 @@ export async function getPastVotesV2Lightweight() {
     endpoint,
     pastVotesQuery,
     "priceRequests",
-    1000 // max page size thegraph allows; the query is light so keep round-trips low
+    200 // Larger page size since query is lighter
   );
 
-  return result?.map(
+  const results = result?.map(
     ({
       identifier: { id },
       time,
@@ -108,10 +107,6 @@ export async function getPastVotesV2Lightweight() {
         time: Number(time),
         correctVote: price,
         ancillaryData,
-        // L2 ancillary data is resolved lazily for the votes on screen
-        // (see useVotesWithResolvedAncillaryData) — resolving here would mean
-        // one request per vote across the entire history
-        ancillaryDataL2: ancillaryData,
         resolvedPriceRequestIndex: String(resolvedPriceRequestIndex),
         isV1: false,
         // Placeholder data - will be fetched on demand
@@ -128,6 +123,133 @@ export async function getPastVotesV2Lightweight() {
       };
     }
   );
+
+  return resolveAncillaryDataForRequests(
+    results.map((request) => {
+      return {
+        ...request,
+        time: BigNumber.from(request.time),
+      };
+    })
+  );
+}
+
+// Full query with all nested data - for individual vote details
+export async function getPastVotesV2() {
+  const endpoint = graphEndpoint;
+  if (!endpoint) throw new Error("V2 subgraph is disabled");
+  const pastVotesQuery = gql`
+    query getPastVotes($skip: Int!, $limit: Int!) {
+      priceRequests(
+        first: $limit
+        skip: $skip
+        where: { isResolved: true }
+        orderBy: resolvedPriceRequestIndex
+        orderDirection: desc
+      ) {
+        identifier {
+          id
+        }
+        price
+        time
+        ancillaryData
+        resolvedPriceRequestIndex
+        isGovernance
+        rollCount
+        latestRound {
+          totalVotesRevealed
+          totalTokensCommitted
+          minAgreementRequirement
+          minParticipationRequirement
+          groups(first: 100) {
+            price
+            totalVoteAmount
+          }
+          committedVotes(first: 100) {
+            id
+          }
+          revealedVotes(first: 100) {
+            id
+            voter {
+              address
+            }
+            price
+          }
+        }
+      }
+    }
+  `;
+
+  const result = await fetchAllDocuments<PastVotesQuery>(
+    endpoint,
+    pastVotesQuery,
+    "priceRequests",
+    100 // Reduce page size to prevent timeouts
+  );
+
+  const results = result?.map(
+    ({
+      identifier: { id },
+      time,
+      price,
+      ancillaryData,
+      resolvedPriceRequestIndex,
+      latestRound,
+    }) => {
+      const identifier = formatBytes32String(id);
+      const correctVote = price;
+      const totalTokensVotedWith = Number(latestRound.totalVotesRevealed);
+
+      // for v1 this data is missing so we need to dynamically check this
+      const totalTokensCommitted = latestRound.totalTokensCommitted
+        ? Number(latestRound.totalTokensCommitted)
+        : undefined;
+
+      const participation = {
+        uniqueCommitAddresses: latestRound.committedVotes.length,
+        uniqueRevealAddresses: latestRound.revealedVotes.length,
+        totalTokensVotedWith,
+        totalTokensCommitted,
+        minAgreementRequirement: Number(latestRound.minAgreementRequirement),
+        minParticipationRequirement: Number(
+          latestRound.minParticipationRequirement
+        ),
+      };
+
+      const results = latestRound.groups.map(({ price, totalVoteAmount }) => ({
+        vote: price,
+        tokensVotedWith: Number(totalVoteAmount),
+      }));
+      const init: RevealedVotesByAddress = {};
+      const revealedVoteByAddress = latestRound.revealedVotes.reduce(
+        (result, vote) => {
+          result[utils.getAddress(vote.voter.address)] = vote.price;
+          return result;
+        },
+        init
+      );
+      return {
+        identifier,
+        time: Number(time),
+        correctVote,
+        ancillaryData,
+        resolvedPriceRequestIndex,
+        isV1: false,
+        participation,
+        results,
+        revealedVoteByAddress,
+      };
+    }
+  );
+
+  return resolveAncillaryDataForRequests(
+    results.map((request) => {
+      return {
+        ...request,
+        time: BigNumber.from(request.time),
+      };
+    })
+  );
 }
 
 const VOTE_DETAILS_LATEST_ROUND_LIMIT = 1000;
@@ -138,7 +260,7 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   if (!endpoint) throw new Error("V2 subgraph is disabled");
 
   const voteDetailsQuery = gql`
-    query getVoteDetails($index: BigInt!, $latestRoundLimit: Int!) {
+    query getVoteDetails($index: Int!, $latestRoundLimit: Int!) {
       priceRequests(where: { resolvedPriceRequestIndex: $index }) {
         identifier {
           id
@@ -174,8 +296,7 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
   `;
 
   const response = await request<PastVotesQuery>(endpoint, voteDetailsQuery, {
-    // BigInt is serialized as a string
-    index: String(resolvedPriceRequestIndex),
+    index: resolvedPriceRequestIndex,
     latestRoundLimit: VOTE_DETAILS_LATEST_ROUND_LIMIT,
   });
 
@@ -234,17 +355,18 @@ export async function getPastVoteDetails(resolvedPriceRequestIndex: number) {
     revealedVoteByAddress,
   };
 
-  // this result is cached permanently (usePastVoteDetails), so resolution
-  // must throw on failure — the tolerant batch helper would freeze a
-  // still-stamped fallback into the cache
-  const timeAsBigNumber = BigNumber.from(detailedVote.time);
-  const ancillaryDataL2 = await resolveAncillaryData({
-    identifier,
-    time: timeAsBigNumber,
-    ancillaryData,
-  });
+  const [resolved] = await resolveAncillaryDataForRequests([
+    {
+      ...detailedVote,
+      time: BigNumber.from(detailedVote.time),
+    },
+  ]);
 
-  return { ...detailedVote, time: timeAsBigNumber, ancillaryDataL2 };
+  return resolved;
+}
+
+export async function getPastVotes() {
+  return makePriceRequestsByKey(await getPastVotesV2Lightweight());
 }
 
 export async function getPastVotesAllVersions() {
@@ -306,9 +428,7 @@ export async function getUserVotesForRequests(
 
     return userVotes;
   } catch (error) {
-    warnOnce("user-votes-for-requests", "Error fetching user votes:", error);
-    // rethrow so callers cache this as an error to retry, not as an
-    // authoritative "did not vote on anything"
-    throw error;
+    console.error("Error fetching user votes:", error);
+    return {};
   }
 }

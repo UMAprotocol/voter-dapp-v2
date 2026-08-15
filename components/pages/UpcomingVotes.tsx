@@ -14,7 +14,6 @@ import {
   useVoteTimingContext,
   useVotesContext,
   useVoteUrl,
-  useVotesWithOnScreenData,
 } from "hooks";
 import { isUndefined } from "lodash";
 import Image from "next/image";
@@ -33,10 +32,7 @@ export function UpcomingVotes() {
   );
   const hasUpcomingVotes = !!upcomingVoteList && upcomingVoteList?.length > 0;
 
-  // UMIP metadata for governance votes is fetched only for on-screen rows
-  const enrichedVotes = useVotesWithOnScreenData(entriesToShow);
-
-  const data = enrichedVotes.map((vote) => ({
+  const data = entriesToShow.map((vote) => ({
     activityStatus: "upcoming" as const,
     vote,
     phase,

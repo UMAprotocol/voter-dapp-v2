@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { decryptedVotesKey } from "constant";
 import { decryptMessage } from "helpers";
-import { warnOnce } from "helpers/util/log";
 import { useHandleError, useWalletContext } from "hooks";
 import {
   DecryptedVoteT,
@@ -57,8 +56,7 @@ async function decryptVotes(
         }
       }
     } catch (err) {
-      warnOnce(`decrypt-vote:${uniqueKey}`, "Failed Decoding encrypted vote:", {
-        err,
+      console.warn("Failed Decoding encrypted vote:", err, {
         uniqueKey,
         encryptedVote,
       });

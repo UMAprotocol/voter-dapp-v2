@@ -1,4 +1,4 @@
-import { config } from "helpers/config";
+import {config} from 'helpers/config';
 
 export const errorFetchingVoteDataMessage =
   "Something went wrong while fetching vote data. Please refresh the page and try again.";
