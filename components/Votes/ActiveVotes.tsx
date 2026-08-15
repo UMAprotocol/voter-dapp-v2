@@ -25,6 +25,7 @@ import {
 import { useState } from "react";
 import { VoteT } from "types";
 import {
+  ActiveVotesWrapper,
   ButtonInnerWrapper,
   ButtonOuterWrapper,
   ButtonSpacer,
@@ -318,7 +319,7 @@ export function ActiveVotes() {
   }));
 
   return (
-    <>
+    <ActiveVotesWrapper>
       <Title> Active votes: </Title>
       <VoteTimeline />
       <VotesTableWrapper>
@@ -329,7 +330,7 @@ export function ActiveVotes() {
           * Changes to committed votes need to be re-committed
         </RecommittingVotesMessage>
       ) : null}
-      <ButtonOuterWrapper>
+      <ButtonOuterWrapper $stickyOnMobile>
         {actionStatus.infoText ? (
           <Tooltip label={actionStatus.infoText.tooltip}>
             <InfoText>
@@ -340,7 +341,7 @@ export function ActiveVotes() {
             </InfoText>
           </Tooltip>
         ) : null}
-        <ButtonInnerWrapper>
+        <ButtonInnerWrapper $stickyOnMobile>
           {isDirty() ? (
             <>
               <Button
@@ -375,6 +376,6 @@ export function ActiveVotes() {
         </ButtonInnerWrapper>
       </ButtonOuterWrapper>
       <Divider />
-    </>
+    </ActiveVotesWrapper>
   );
 }
