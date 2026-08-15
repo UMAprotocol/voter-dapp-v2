@@ -4,6 +4,7 @@ import {
   checkIfIsPolymarket,
   decodeHexString,
   formatNumberForDisplay,
+  formatProposedAnswer,
   getQuestionId,
   makeBlockExplorerLink,
   makeTransactionHashLink,
@@ -123,6 +124,12 @@ export function Details(query: VoteT) {
     };
   }
 
+  const proposedAnswer = formatProposedAnswer(
+    augmentedData?.proposedPrice,
+    decodedIdentifier,
+    options
+  );
+
   const optionLabels = options?.map(({ label }) => label);
   const links = [
     makeAsserterLink(),
@@ -184,6 +191,12 @@ export function Details(query: VoteT) {
             <span>{decodedIdentifier}</span>
           </IdentifierPill>
         </RequestInfoIcons>
+
+        {proposedAnswer && (
+          <Text>
+            <Strong>Proposed as:</Strong> {proposedAnswer}
+          </Text>
+        )}
 
         <PanelSectionTitle>
           <IconWrapper>

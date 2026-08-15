@@ -143,6 +143,49 @@ export function formatVoteStringWithPrecision(
   return formatted.endsWith(".0") ? formatted.slice(0, -2) : formatted;
 }
 
+// Formats a proposed price for display, e.g. "P2 (Yes)" for votes with
+// Polymarket-style options, the bare option label otherwise, or the plain
+// numeric value when no option matches.
+export function formatProposedAnswer(
+  proposedPrice: string | undefined,
+  decodedIdentifier: string,
+  options: DropdownItemT[] | undefined
+): string | undefined {
+  if (!proposedPrice) return undefined;
+
+  const isTooEarly = proposedPrice === minInt256.toString();
+  const isUnresolvable = proposedPrice === maxInt256.toString();
+
+  if (decodedIdentifier === "MULTIPLE_VALUES") {
+    if (isTooEarly) return "Early request";
+    if (isUnresolvable) return "Unresolvable";
+    if (!options?.length) return undefined;
+    try {
+      const values = decodeMultipleQuery(proposedPrice, options.length);
+      if (typeof values === "string") return undefined;
+      return options
+        .map((option, index) => `${option.label}: ${values[index]}`)
+        .join(", ");
+    } catch {
+      return undefined;
+    }
+  }
+
+  const formatted = formatVoteStringWithPrecision(
+    proposedPrice,
+    decodedIdentifier
+  );
+  const match = options?.find((option) => String(option.value) === formatted);
+  if (match) {
+    return match.secondaryLabel && /^p\d+$/i.test(match.secondaryLabel)
+      ? `${match.secondaryLabel.toUpperCase()} (${match.label})`
+      : match.label;
+  }
+  if (isTooEarly) return "Early request";
+  if (isUnresolvable) return "Unresolvable";
+  return formatted;
+}
+
 export function formatMultipleValuesVote(
   result: ResultsT[number],
   options: DropdownItemT[] | undefined,
