@@ -7,11 +7,11 @@ import { SupportedChainIds } from "types";
 import {
   ContractName,
   constructContract,
-  constructOoUiLink,
   getFromBlock,
   getNodeUrls,
   isSupportedChainId,
 } from "./_common";
+import { constructExplorerRequestLink } from "helpers/util/explorerLinks";
 import { handleApiError } from "./_utils/errors";
 import { validateBodyParams } from "./_utils/validation";
 
@@ -303,7 +303,7 @@ async function augmentRequests({ l1Requests, chainId }: RequestBody) {
     return {
       ...l1Request,
       l1RequestTxHash: votingRequestEvent.transactionHash,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         oracleRequestPriceEvent.transactionHash,
         oracleRequestPriceEvent.chainId,
         oracleRequestPriceEvent.contractType
