@@ -3,11 +3,8 @@ import assert from "assert";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { makeUniqueKeyForVote, decodeHexString } from "helpers";
-import {
-  getSubgraphConfig,
-  VoteSubgraphURL,
-  constructOoUiLink,
-} from "./_common";
+import { getSubgraphConfig, VoteSubgraphURL } from "./_common";
+import { constructExplorerRequestLink } from "helpers/util/explorerLinks";
 import { encodeHexString } from "helpers/web3/decodeHexString";
 import { handleApiError } from "./_utils/errors";
 import { validateBodyParams } from "./_utils/validation";
@@ -137,7 +134,7 @@ async function ooSkinnyQuery({
       time,
       uniqueKey: optimisticPriceRequest.id,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         requestHash,
         chainId,
         "SkinnyOptimisticOracle",
@@ -215,7 +212,7 @@ async function oov3Query({
       time,
       uniqueKey: assertionId,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         assertionHash,
         chainId,
         "OptimisticOracleV3",
@@ -309,7 +306,7 @@ async function oov2Query({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         requestHash,
         chainId,
         "OptimisticOracleV2",
@@ -397,7 +394,7 @@ async function ooManagedQuery({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         requestHash,
         chainId,
         "ManagedOptimisticOracleV2",
@@ -459,7 +456,7 @@ async function oov1Query({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructExplorerRequestLink(
         requestHash,
         chainId,
         "OptimisticOracle",

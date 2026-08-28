@@ -106,7 +106,7 @@ export function Details(query: VoteT) {
 
     return {
       href: augmentedData.ooRequestUrl,
-      label: "Optimistic Oracle UI",
+      label: "Explorer dapp",
     };
   }
 

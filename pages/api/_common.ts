@@ -4,7 +4,6 @@ import { NodeUrls, SupportedChainIds } from "types";
 import { supportedChains } from "constant";
 import * as ss from "superstruct";
 import { getContractLocal, LocalContract } from "./_contracts";
-import { config } from "helpers";
 
 export const VoteSubgraphURL: string = ss.create(
   process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,
@@ -182,33 +181,5 @@ export function getSubgraphConfig(
   );
 }
 
-export function constructOoUiLink(
-  txHash: string | undefined,
-  chainId: string | number | undefined,
-  oracleType: string | undefined,
-  eventIndex?: string | undefined
-) {
-  if (!txHash || !chainId || !oracleType) return;
-  if (!isSupportedChainId(chainId)) return;
-  const subDomain = config.isTestnet ? "testnet." : "";
-  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
-    oracleType
-  )}&eventIndex=${eventIndex ?? ""}`;
-}
-
-export function castOracleNameForOOUi(oracleType: string): string {
-  switch (oracleType) {
-    case "OptimisticOracle":
-      return "Optimistic";
-    case "OptimisticOracleV2":
-      return "OptimisticV2";
-    case "SkinnyOptimisticOracle":
-      return "Skinny";
-    case "OptimisticOracleV3":
-      return "OptimisticV3";
-    case "ManagedOptimisticOracleV2":
-      return "ManagedV2";
-    default:
-      throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
-  }
-}
+// Request links now point at the Explorer dapp; see
+// `helpers/util/explorerLinks` for the URL shape and coverage rules.
