@@ -31,8 +31,8 @@ Default.args = {
       href: "/two-key",
     },
     {
-      title: "Optimistic Oracle",
-      href: "https://oracle.uma.xyz",
+      title: "Explorer",
+      href: "https://explorer.uma.xyz",
     },
     {
       title: "Docs",
