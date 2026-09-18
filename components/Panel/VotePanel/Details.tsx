@@ -12,6 +12,7 @@ import {
   getClaimDescription,
 } from "helpers";
 import { config } from "helpers/config";
+import { isExplorerRequestLink } from "helpers/util/requestLinks";
 import { useOptimisticGovernorData } from "hooks/queries/votes/useOptimisticGovernorData";
 import {
   useAssertionClaim,
@@ -104,9 +105,13 @@ export function Details(query: VoteT) {
   function makeOoRequestLink() {
     if (!augmentedData?.ooRequestUrl) return;
 
+    // Requests the Explorer dapp does not serve still link to the oracle dapp,
+    // so the label has to follow whichever one the URL points at.
     return {
       href: augmentedData.ooRequestUrl,
-      label: "Explorer dapp",
+      label: isExplorerRequestLink(augmentedData.ooRequestUrl)
+        ? "Explorer"
+        : "Optimistic Oracle UI",
     };
   }
 

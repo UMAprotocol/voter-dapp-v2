@@ -4,6 +4,8 @@ import { NodeUrls, SupportedChainIds } from "types";
 import { supportedChains } from "constant";
 import * as ss from "superstruct";
 import { getContractLocal, LocalContract } from "./_contracts";
+import { config } from "helpers";
+import { buildRequestLink } from "helpers/util/requestLinks";
 
 export const VoteSubgraphURL: string = ss.create(
   process.env.NEXT_PUBLIC_GRAPH_ENDPOINT,
@@ -181,5 +183,22 @@ export function getSubgraphConfig(
   );
 }
 
-// Request links now point at the Explorer dapp; see
-// `helpers/util/explorerLinks` for the URL shape and coverage rules.
+/**
+ * Request link for a vote: the Explorer dapp where it serves the request,
+ * otherwise the oracle dapp link used today. See `helpers/util/requestLinks`
+ * for the URL shapes and explorer coverage rules.
+ */
+export function constructRequestLink(
+  txHash: string | undefined,
+  chainId: string | number | undefined,
+  oracleType: string | undefined,
+  eventIndex?: string | undefined
+) {
+  return buildRequestLink(
+    txHash,
+    chainId,
+    oracleType,
+    eventIndex,
+    config.isTestnet
+  );
+}
