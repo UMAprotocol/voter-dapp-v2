@@ -5,9 +5,12 @@ import { getActiveVotes, getUpcomingVotes } from "web3";
 import {
   getVoteMetaData,
   resolveDiscordThreadTitle,
+  MISSING_DISCORD_TITLE_FALLBACK,
 } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
+import { parseQuestionAncillaryData } from "lib/question-ancillary-data";
+import { matchesLegacyQuestionThread } from "lib/legacy-question-thread";
 import {
   buildThreadIdMap,
   getCachedThreadIdMap,
@@ -26,6 +29,7 @@ interface VoteInfo {
   requestKey: string;
   identifier: string;
   time: number;
+  legacyQuestion?: PriceRequestT;
 }
 
 interface ThreadMapRefreshResult {
@@ -68,6 +72,9 @@ function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
       requestKey: makeKey(discordTitle, vote.time),
       identifier: vote.identifier,
       time: vote.time,
+      legacyQuestion: parseQuestionAncillaryData(vote.decodedAncillaryData)
+        ? vote
+        : undefined,
     };
   });
 }
@@ -119,9 +126,17 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
 
 async function processVoteThread(
   voteInfo: VoteInfo,
-  threadId: string
-): Promise<number> {
+  threadId: string,
+  verifyLegacy = false
+): Promise<number | null> {
   const { messages } = await getDiscordMessagesPaginated(threadId);
+  if (
+    verifyLegacy &&
+    (!voteInfo.legacyQuestion ||
+      !(await matchesLegacyQuestionThread(voteInfo.legacyQuestion, messages)))
+  ) {
+    return null;
+  }
   const processedMessages = processRawMessages(messages);
 
   const voteDiscussion: VoteDiscussionT = {
@@ -142,7 +157,12 @@ async function processAllVotes(
   const skippedKeys: string[] = [];
 
   for (const voteInfo of voteInfos) {
-    const threadId = threadIdMap[voteInfo.requestKey];
+    const currentThreadId = threadIdMap[voteInfo.requestKey];
+    const threadId =
+      currentThreadId ??
+      (voteInfo.legacyQuestion
+        ? threadIdMap[makeKey(MISSING_DISCORD_TITLE_FALLBACK, voteInfo.time)]
+        : undefined);
 
     if (!threadId) {
       result.skipped++;
@@ -151,8 +171,17 @@ async function processAllVotes(
     }
 
     try {
-      await processVoteThread(voteInfo, threadId);
-      result.processed++;
+      const processed = await processVoteThread(
+        voteInfo,
+        threadId,
+        !currentThreadId
+      );
+      if (processed === null) {
+        result.skipped++;
+        skippedKeys.push(voteInfo.requestKey);
+      } else {
+        result.processed++;
+      }
     } catch (error) {
       result.errors.push(
         `${voteInfo.requestKey}: ${

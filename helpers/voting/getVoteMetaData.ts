@@ -1,3 +1,4 @@
+import { parseQuestionAncillaryData } from "lib/question-ancillary-data";
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
 import { utils } from "ethers";
@@ -378,6 +379,9 @@ export function getTitleFromAncillaryData(
   titleIdentifier = "title:",
   descriptionIdentifier = "description:"
 ) {
+  const question = parseQuestionAncillaryData(decodedAncillaryData);
+  if (question) return question.title;
+
   const start = decodedAncillaryData.indexOf(titleIdentifier);
   const end =
     decodedAncillaryData.indexOf(descriptionIdentifier) ??
@@ -411,6 +415,9 @@ export function getDescriptionFromAncillaryData(
   decodedAncillaryData: string,
   descriptionIdentifier = "description:"
 ) {
+  const question = parseQuestionAncillaryData(decodedAncillaryData);
+  if (question) return question.description;
+
   if (!decodedAncillaryData) {
     return undefined;
   }
