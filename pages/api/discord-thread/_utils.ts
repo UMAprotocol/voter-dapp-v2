@@ -17,7 +17,8 @@ import { createCacheKey } from "lib/cache-keys";
 import { validateRedisData } from "../_utils/validation";
 
 // Cache configuration
-export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache");
+// Rebuild the old single-ID cache so colliding thread candidates are recovered.
+export const THREAD_CACHE_KEY = createCacheKey("discord:thread_cache:v2");
 export const THREAD_MESSAGES_CACHE_KEY = createCacheKey(
   "discord:thread_messages"
 );
@@ -27,7 +28,7 @@ export const PROCESSED_THREAD_CACHE_KEY = createCacheKey(
 const MAX_DISCORD_MESSAGE = 100; // 0-100
 
 const ThreadIdMapCacheSchema = ss.type({
-  threadIdMap: ss.record(ss.string(), ss.string()),
+  threadIdMap: ss.record(ss.string(), ss.array(ss.string())),
   latestThreadId: ss.nullable(ss.string()),
   lastFullRebuildAt: ss.optional(ss.number()),
 });
@@ -535,7 +536,8 @@ function messagesToThreadIdMap(messages: RawDiscordThreadT): ThreadIdMap {
   return messages.reduce((map, message) => {
     const extracted = extractThreadKeyFromMessage(message);
     if (extracted) {
-      map[extracted.key] = extracted.threadId;
+      const ids = (map[extracted.key] ??= []);
+      if (!ids.includes(extracted.threadId)) ids.push(extracted.threadId);
     }
     return map;
   }, {} as ThreadIdMap);

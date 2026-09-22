@@ -55,8 +55,7 @@ export async function matchesLegacyQuestionThread(
   );
   return Boolean(
     url &&
-      firstMessage?.author?.bot &&
-      firstMessage.content
+      firstMessage?.content
         .split("\n")
         .some((line) => line.trim() === `**Transaction:** ${url}`)
   );

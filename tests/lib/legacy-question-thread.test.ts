@@ -49,11 +49,16 @@ function setEvents(events: (typeof event)[]) {
 beforeEach(() => setEvents([event]));
 
 describe("legacy N/A question threads", () => {
-  it("matches the exact bridged request and starter transaction", async () => {
-    expect(await matchesLegacyQuestionThread(request, [announcement])).toBe(
-      true
-    );
-  });
+  it.each([true, false])(
+    "matches the exact starter transaction when author.bot is %s",
+    async (bot) => {
+      const starter = {
+        ...announcement,
+        author: { ...announcement.author, bot },
+      };
+      expect(await matchesLegacyQuestionThread(request, [starter])).toBe(true);
+    }
+  );
 
   it("rejects a different request at the same timestamp or on another chain", async () => {
     setEvents([
