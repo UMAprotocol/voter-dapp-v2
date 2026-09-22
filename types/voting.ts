@@ -299,7 +299,7 @@ export const RawDiscordMessageSchema = ss.type({
 
 export const RawDiscordThreadSchema = ss.array(RawDiscordMessageSchema);
 
-export type ThreadIdMap = Record<string, string>;
+export type ThreadIdMap = Record<string, string[]>;
 
 export const DiscordMessageT: ss.Describe<{
   message: string;

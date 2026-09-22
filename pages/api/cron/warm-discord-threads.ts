@@ -1,13 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { VoteDiscussionT, PriceRequestT } from "types";
+import { VoteDiscussionT, PriceRequestT, ThreadIdMap } from "types";
 import { createVotingContractInstance } from "web3/contracts/createVotingContractInstance";
 import { getActiveVotes, getUpcomingVotes } from "web3";
 import {
   getVoteMetaData,
   resolveDiscordThreadTitle,
+  MISSING_DISCORD_TITLE_FALLBACK,
 } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
 import { makeKey } from "lib/discord-utils";
+import { parseQuestionAncillaryData } from "lib/question-ancillary-data";
+import { matchesLegacyQuestionThread } from "lib/legacy-question-thread";
 import {
   buildThreadIdMap,
   getCachedThreadIdMap,
@@ -26,10 +29,11 @@ interface VoteInfo {
   requestKey: string;
   identifier: string;
   time: number;
+  legacyQuestion?: PriceRequestT;
 }
 
 interface ThreadMapRefreshResult {
-  threadIdMap: Record<string, string>;
+  threadIdMap: ThreadIdMap;
   isFullRebuild: boolean;
   cachedThreadCount: number;
   newThreadCount: number;
@@ -68,6 +72,9 @@ function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
       requestKey: makeKey(discordTitle, vote.time),
       identifier: vote.identifier,
       time: vote.time,
+      legacyQuestion: parseQuestionAncillaryData(vote.decodedAncillaryData)
+        ? vote
+        : undefined,
     };
   });
 }
@@ -100,7 +107,10 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
   );
 
   const newThreadCount = Object.keys(newThreads).length;
-  const threadIdMap = { ...existingMap, ...newThreads };
+  const threadIdMap = { ...existingMap };
+  for (const [key, ids] of Object.entries(newThreads)) {
+    threadIdMap[key] = [...new Set([...(threadIdMap[key] ?? []), ...ids])];
+  }
 
   await setCachedThreadIdMap(
     threadIdMap,
@@ -119,9 +129,17 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
 
 async function processVoteThread(
   voteInfo: VoteInfo,
-  threadId: string
-): Promise<number> {
+  threadId: string,
+  verifyLegacy = false
+): Promise<number | null> {
   const { messages } = await getDiscordMessagesPaginated(threadId);
+  if (
+    verifyLegacy &&
+    (!voteInfo.legacyQuestion ||
+      !(await matchesLegacyQuestionThread(voteInfo.legacyQuestion, messages)))
+  ) {
+    return null;
+  }
   const processedMessages = processRawMessages(messages);
 
   const voteDiscussion: VoteDiscussionT = {
@@ -136,23 +154,42 @@ async function processVoteThread(
 
 async function processAllVotes(
   voteInfos: VoteInfo[],
-  threadIdMap: Record<string, string>
+  threadIdMap: ThreadIdMap
 ): Promise<ProcessingResult> {
   const result: ProcessingResult = { processed: 0, skipped: 0, errors: [] };
   const skippedKeys: string[] = [];
 
   for (const voteInfo of voteInfos) {
-    const threadId = threadIdMap[voteInfo.requestKey];
+    const currentThreadId = threadIdMap[voteInfo.requestKey]?.at(-1);
+    const threadIds = currentThreadId
+      ? [currentThreadId]
+      : voteInfo.legacyQuestion
+      ? threadIdMap[makeKey(MISSING_DISCORD_TITLE_FALLBACK, voteInfo.time)] ??
+        []
+      : [];
 
-    if (!threadId) {
+    if (threadIds.length === 0) {
       result.skipped++;
       skippedKeys.push(voteInfo.requestKey);
       continue;
     }
 
     try {
-      await processVoteThread(voteInfo, threadId);
-      result.processed++;
+      let processed: number | null = null;
+      for (const threadId of threadIds) {
+        processed = await processVoteThread(
+          voteInfo,
+          threadId,
+          !currentThreadId
+        );
+        if (processed !== null) break;
+      }
+      if (processed === null) {
+        result.skipped++;
+        skippedKeys.push(voteInfo.requestKey);
+      } else {
+        result.processed++;
+      }
     } catch (error) {
       result.errors.push(
         `${voteInfo.requestKey}: ${
