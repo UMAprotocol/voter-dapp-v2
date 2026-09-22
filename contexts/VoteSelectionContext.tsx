@@ -5,10 +5,13 @@ import {
   SetStateAction,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
+import { pruneSelectedVotes } from "helpers";
 import { usePersistedVotes } from "hooks/helpers/usePersistedVotes";
 import { SelectedVotesByKeyT, VoteT } from "types";
+import { VotesContext } from "./VotesContext";
 import { VoteTimingContext } from "./VoteTimingContext";
 
 export interface VoteSelectionContextState {
@@ -33,7 +36,19 @@ export const VoteSelectionContext = createContext<VoteSelectionContextState>(
 // click, deeplink, history) without threading callbacks through openPanel.
 export function VoteSelectionProvider({ children }: { children: ReactNode }) {
   const { roundId } = useContext(VoteTimingContext);
+  const { activeVotesByKey } = useContext(VotesContext);
   const [selectedVotes, setSelectedVotes] = usePersistedVotes(roundId);
+
+  // The persisted-votes round guard trusts the clock-derived roundId, so a
+  // skewed client clock can stamp selections with the wrong round and leak
+  // them into this one. Prune against the on-chain active list once it has
+  // loaded (undefined means still loading — pruning then would wipe
+  // legitimate persisted selections against an empty list).
+  useEffect(() => {
+    if (!activeVotesByKey) return;
+    const activeKeys = new Set(Object.keys(activeVotesByKey));
+    setSelectedVotes((selected) => pruneSelectedVotes(selected, activeKeys));
+  }, [activeVotesByKey, setSelectedVotes]);
 
   const selectVote = useCallback(
     (value: string | undefined, vote: VoteT) => {
