@@ -200,12 +200,20 @@ export function Details(query: VoteT) {
           </IdentifierPill>
         </RequestInfoIcons>
         {isPolymarket && (
-          <Text>
-            <Strong>Originally proposed:</Strong>{" "}
-            {augmentedDataResponse.isLoading
-              ? "Loading…"
-              : proposedOutcome ?? "Unavailable"}
-          </Text>
+          <ProposedOutcomeCard>
+            <dt>Originally proposed</dt>
+            <dd>
+              <Strong>
+                {augmentedDataResponse.isLoading
+                  ? "Loading…"
+                  : proposedOutcome?.label ?? "Unavailable"}
+              </Strong>
+              {!augmentedDataResponse.isLoading &&
+                proposedOutcome?.value !== undefined && (
+                  <span>Value: {proposedOutcome.value}</span>
+                )}
+            </dd>
+          </ProposedOutcomeCard>
         )}
 
         <PanelSectionTitle>
@@ -523,6 +531,35 @@ const Text = styled.p`
   font: var(--text-md);
   &:not(:last-child) {
     margin-bottom: 15px;
+  }
+`;
+
+const ProposedOutcomeCard = styled.dl`
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--grey-100);
+  border-radius: 5px;
+  background: var(--grey-50);
+
+  dt {
+    margin-bottom: 4px;
+    font: var(--text-sm);
+    color: var(--grey-800);
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    margin: 0;
+    font: var(--text-md);
+    overflow-wrap: anywhere;
+  }
+
+  dd span {
+    font: var(--text-sm);
+    color: var(--grey-800);
   }
 `;
 
