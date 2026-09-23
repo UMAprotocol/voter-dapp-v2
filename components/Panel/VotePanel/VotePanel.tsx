@@ -192,7 +192,7 @@ export function VotePanel({ content }: Props) {
         title: "Details",
         content: <Details {...content} />,
       },
-      ...(content.origin === "Polymarket"
+      ...(content.origin === "Polymarket" || content.origin === "Polymarket V2"
         ? [
             {
               title: "Discord Summary",

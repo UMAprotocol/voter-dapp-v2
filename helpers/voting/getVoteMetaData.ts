@@ -49,7 +49,7 @@ export function getVoteMetaData(
         ? maybeMakePolymarketOptions(decodedAncillaryData)
         : undefined,
       ...getUmipMetadata(decodedIdentifier),
-      origin: "Polymarket",
+      origin: "Polymarket V2",
       isGovernance: false,
       discordLink,
       isAssertion: false,

@@ -59,6 +59,7 @@ function TitleIcon({
         </TitleIconWrapper>
       );
     case "Polymarket":
+    case "Polymarket V2":
       return (
         <TitleIconWrapper>
           <PolymarketIcon />

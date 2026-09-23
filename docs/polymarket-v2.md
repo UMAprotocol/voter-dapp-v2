@@ -1,8 +1,9 @@
 # Polymarket V2 voter support
 
 V1 requests keep the existing adapter and bulletin-board flow. V2 JSON requests
-are attributed using the canonical Polygon OOReporter and Managed OO bridge
-suffix. JSON title, description, resolution mappings and product specifications
+are tagged as Polymarket V2 using the canonical Polygon OOReporter and Managed OO
+bridge suffix. Both addresses are fixed constants in `lib/polymarket-v2.ts`, not
+environment variables. JSON title, description, resolution mappings and product specifications
 are displayed without changing the original bytes used for commit/reveal.
 Early request remains a valid DVM vote, even though event-based OO proposals
 cannot propose it. Atomic outcome labels are deferred until their schema is confirmed.

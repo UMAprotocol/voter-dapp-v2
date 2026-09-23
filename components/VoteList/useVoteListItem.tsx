@@ -307,7 +307,8 @@ export function useVoteListItem({
     if (origin === "Across") return Across;
     if (origin === "Infinite Games") return InfiniteGames;
     if (origin === "OSnap") return OSnap;
-    if (origin === "Polymarket") return Polymarket;
+    if (origin === "Polymarket" || origin === "Polymarket V2")
+      return Polymarket;
     if (origin === "Predict.Fun") return PredictFunIcon;
     if (origin === "Probable") return Probable;
     if (origin === "UMA" && isGovernance) return UMAGovernance;

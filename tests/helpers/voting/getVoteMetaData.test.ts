@@ -250,7 +250,7 @@ import {
 describe("Polymarket V2 requests", () => {
   it("renders the live production JSON request and its complete resolution instructions", () => {
     const meta = getVoteMetaData("YES_OR_NO_QUERY", v2Fixture.text, undefined);
-    expect(meta.origin).toBe("Polymarket");
+    expect(meta.origin).toBe("Polymarket V2");
     expect(meta.title).toBe(
       "Will Central Park’s daily maximum temperature be at least 75°F on September 21, 2026?"
     );
@@ -313,7 +313,7 @@ describe("Polymarket V2 requests", () => {
 
   it("keeps numerical requests numeric instead of applying binary choices", () => {
     const meta = getVoteMetaData("NUMERICAL", v2Fixture.text, undefined);
-    expect(meta.origin).toBe("Polymarket");
+    expect(meta.origin).toBe("Polymarket V2");
     expect(meta.options).toBeUndefined();
   });
 });
