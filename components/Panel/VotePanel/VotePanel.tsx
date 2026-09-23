@@ -145,7 +145,7 @@ export function VotePanel({ content }: Props) {
   const { isOptimisticGovernorVote, explanationText } =
     useOptimisticGovernorData(decodedAncillaryData);
 
-  const bulletins = usePolymarketBulletins(ancillaryDataL2);
+  const bulletins = usePolymarketBulletins(ancillaryDataL2, decodedIdentifier);
 
   const optimisticGovernorTitle = isOptimisticGovernorVote
     ? getOptimisticGovernorTitle(explanationText)

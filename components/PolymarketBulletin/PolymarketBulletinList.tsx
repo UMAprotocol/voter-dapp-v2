@@ -68,6 +68,7 @@ const BulletinDate = styled.div`
 
 const BulletinText = styled.p`
   margin-top: 10px;
+  white-space: pre-wrap;
 `;
 
 const BulletinSeparator = styled.div`

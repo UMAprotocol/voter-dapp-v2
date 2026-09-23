@@ -1,3 +1,4 @@
+import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { earlyRequestMagicNumber } from "constant";
 import { DropdownItemT, VoteT } from "types";
 import chunk from "lodash/chunk";
@@ -106,6 +107,12 @@ export function checkIfIsPolymarket(
   decodedIdentifier: string,
   decodedAncillaryData: string
 ) {
+  if (parsePolymarketV2AncillaryData(decodedAncillaryData)) {
+    return ["YES_OR_NO_QUERY", "NUMERICAL"].includes(decodedIdentifier);
+  }
+  // JSON requests must not fall through to the legacy substring checks.
+  if (decodedAncillaryData.trimStart().startsWith("{")) return false;
+
   const queryTitleToken = "q: title:";
   const resultDataToken = "res_data:";
   const requester = getRequester(decodedAncillaryData);
@@ -188,6 +195,12 @@ function dynamicPolymarketOptions(
 export function maybeMakePolymarketOptions(
   decodedAncillaryData: string
 ): DropdownItemT[] | undefined {
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  if (v2) {
+    // Event-based OO proposals reject Too Early, but DVM voters can return it.
+    return maybeMakePolymarketOptions(`res_data: ${v2.resData}`);
+  }
+
   // go from most specific to least specific
   const options1 = {
     resData: `res_data: p1: 0, p2: 1, p3: 0.5, p4: ${earlyRequestMagicNumber}`,
@@ -416,7 +429,10 @@ export function sanitizeAncillaryData(decodedAncillaryData: string): string {
 export function getQuestionId({
   decodedAncillaryData,
 }: Partial<Pick<VoteT, "decodedAncillaryData">>): string | undefined {
-  if (decodedAncillaryData) {
+  if (
+    decodedAncillaryData &&
+    !parsePolymarketV2AncillaryData(decodedAncillaryData)
+  ) {
     return solidityKeccak256(
       ["string"],
       [sanitizeAncillaryData(decodedAncillaryData)]

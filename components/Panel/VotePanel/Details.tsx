@@ -1,3 +1,4 @@
+import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { Button, PanelErrorBanner, BulletinList } from "components";
 import { getOracleTypeDisplayName, supportedChains } from "constant";
 import {
@@ -72,7 +73,11 @@ export function Details(query: VoteT) {
   });
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
-  const { data: bulletins } = usePolymarketBulletins(ancillaryDataL2);
+  const {
+    data: bulletins,
+    isLoading: updatesLoading,
+    isError: updatesError,
+  } = usePolymarketBulletins(ancillaryDataL2, decodedIdentifier);
 
   const claimDescription = claim
     ? getClaimDescription(decodeHexString(claim))
@@ -123,6 +128,8 @@ export function Details(query: VoteT) {
     };
   }
 
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  const isV2 = Boolean(v2);
   const optionLabels = options?.map(({ label }) => label);
   const links = [
     makeAsserterLink(),
@@ -164,7 +171,8 @@ export function Details(query: VoteT) {
     getQuestionId({
       decodedAncillaryData,
     }),
-    shouldFetch
+    shouldFetch,
+    v2?.marketId
   );
   return (
     <PanelContentWrapper>
@@ -204,6 +212,21 @@ export function Details(query: VoteT) {
           )}
         </PanelSectionTitle>
         <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
+        {isV2 && updatesLoading && (
+          <Text role="status">Loading rule updates…</Text>
+        )}
+        {isV2 && updatesError && (
+          <Text role="alert">
+            Rule updates could not be verified. The displayed rules may be
+            incomplete. Please retry before voting.
+          </Text>
+        )}
+        {isV2 && decodedIdentifier === "NUMERICAL" && (
+          <Text>
+            Outcome labels are unavailable for this numerical request. Use the
+            outcome value specified in the resolution instructions.
+          </Text>
+        )}
         {bulletins && bulletins.length > 0 && (
           <BulletinList bulletins={bulletins} />
         )}
