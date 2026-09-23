@@ -10,10 +10,8 @@ export function useVoterFromDelegate(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [voterFromDelegateKey, address],
     queryFn: () => getVoterFromDelegate(voting, address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
   });
 
-  // disabled queries (e.g. before the wallet connects) report isLoading=true
-  // forever in react-query v4; isInitialLoading is only true while actually fetching
-  return { ...queryResult, isLoading: queryResult.isInitialLoading };
+  return queryResult;
 }

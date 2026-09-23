@@ -1,9 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  committedVotesKey,
-  committedVotesKeyByCaller,
-  encryptedVotesKey,
-} from "constant";
+import { committedVotesKey, encryptedVotesKey } from "constant";
 import { useHandleError, useVoteTimingContext } from "hooks";
 import { EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
 import { commitVotes } from "web3";
@@ -19,29 +15,19 @@ export function useCommitVotes(address: string | undefined) {
     onSuccess: (data, { formattedVotes }) => {
       clearErrors();
 
-      const addCommittedVotes = (oldCommittedVotes?: VoteExistsByKeyT) => {
-        const newCommittedVotes = { ...oldCommittedVotes };
-
-        for (const { uniqueKey } of formattedVotes) {
-          if (data?.transactionHash) {
-            newCommittedVotes[uniqueKey] = data.transactionHash;
-          }
-        }
-
-        return newCommittedVotes;
-      };
-
       queryClient.setQueryData<VoteExistsByKeyT>(
         [committedVotesKey, address, roundId],
-        addCommittedVotes
-      );
+        (oldCommittedVotes) => {
+          const newCommittedVotes = { ...oldCommittedVotes };
 
-      // the connected account is always the caller of the commit transaction;
-      // getCanReveal requires this lookup, so seed it too or reveal stays
-      // disabled until the query refetches
-      queryClient.setQueryData<VoteExistsByKeyT>(
-        [committedVotesKeyByCaller, address, roundId],
-        addCommittedVotes
+          for (const { uniqueKey } of formattedVotes) {
+            if (data?.transactionHash) {
+              newCommittedVotes[uniqueKey] = data.transactionHash;
+            }
+          }
+
+          return newCommittedVotes;
+        }
       );
 
       queryClient.setQueryData<EncryptedVotesByKeyT>(

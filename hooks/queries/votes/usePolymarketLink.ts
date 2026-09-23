@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { buildSearchParams } from "helpers/util/buildSearchParams";
-import { warnOnce } from "helpers/util/log";
 import { string, type, create, optional } from "superstruct";
 
 const returnData = type({
@@ -40,12 +39,11 @@ export function usePolymarketLink(
   shouldFetch = true
 ) {
   return useQuery({
-    queryKey: ["polymarketLink", questionId],
+    queryKey: [questionId],
     queryFn: () => getPolymarketLink(questionId),
     onError: (err) =>
-      warnOnce(
-        `polymarket-link:${questionId ?? ""}`,
-        `Unable to fetch polymarket slug for ${questionId ?? "MISSING PARAM"}`,
+      console.warn(
+        `Unable to fetch slug for tx ${questionId ?? "MISSING PARAM"}`,
         { cause: err }
       ),
     enabled: !!questionId && shouldFetch,

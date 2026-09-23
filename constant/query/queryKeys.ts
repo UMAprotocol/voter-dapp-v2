@@ -5,6 +5,7 @@ export const pastVotesKey = "pastVotesKey";
 export const decodedAdminTransactionsKey = "decodedAdminTransactionsKey";
 export const augmentedVoteDataKey = "augmentedVoteDataKey";
 export const voteDiscussionKey = "voteDiscussionKey";
+export const assertionClaimsKey = "assertionClaimsKey";
 export const discussionSummaryKey = "discussionSummary";
 // voting - user dependent
 export const encryptedVotesKey = "encryptedVotesKey";
@@ -13,7 +14,6 @@ export const committedVotesKey = "committedVotesKey";
 export const committedVotesKeyByCaller = "committedVotesKeyByCaller";
 export const revealedVotesKey = "revealedVotesKey";
 export const contentfulDataKey = "contentfulDataKey";
-export const resolvedAncillaryDataKey = "resolvedAncillaryDataKey";
 // staking
 export const tokenAllowanceKey = "tokenAllowanceKey";
 export const stakedBalanceKey = "stakedBalanceKey";
@@ -29,7 +29,13 @@ export const isOldDesignatedVotingAccountKey =
 // user
 export const userDataKey = "userDataKey";
 // delegation
-export const delegationRequestsKey = "delegationRequestsKey";
+export const delegatorSetEventForDelegateKey =
+  "delegatorSetEventForDelegateKey";
+export const delegatorSetEventsForDelegatorKey =
+  "delegatorSetEventsForDelegatorKey";
+export const receivedRequestsToBeDelegateKey =
+  "receivedRequestsToBeDelegateKey";
+export const sentRequestsToBeDelegateKey = "sentRequestsToBeDelegateKey";
 export const voterFromDelegateKey = "voterFromDelegateKey";
 export const delegateToStakerKey = "delegateToStakerKey";
 export const ignoredRequestToBeDelegateAddressesKey =

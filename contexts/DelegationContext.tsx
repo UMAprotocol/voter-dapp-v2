@@ -11,6 +11,8 @@ import {
   useCancelSentRequestToBeDelegate,
   useContractsContext,
   useDelegateToStaker,
+  useDelegatorSetEventsForDelegate,
+  useDelegatorSetEventsForDelegator,
   useIgnoreReceivedRequestToBeDelegate,
   useIgnoredRequestToBeDelegateAddresses,
   useInterval,
@@ -59,8 +61,10 @@ export interface DelegationContextState {
   isBusy: boolean;
   receivedRequestsToBeDelegateLoading: boolean;
   sentRequestsToBeDelegateLoading: boolean;
+  delegatorSetEventsForDelegateLoading: boolean;
   voterFromDelegateLoading: boolean;
   delegateToStakerLoading: boolean;
+  delegatorSetEventsForDelegatorLoading: boolean;
   ignoredRequestToBeDelegateAddressesLoading: boolean;
   isIgnoringRequestToBeDelegate: boolean;
   isSendingRequestToBeDelegate: boolean;
@@ -96,8 +100,10 @@ export const defaultDelegationContextState: DelegationContextState = {
   isBusy: false,
   receivedRequestsToBeDelegateLoading: false,
   sentRequestsToBeDelegateLoading: false,
+  delegatorSetEventsForDelegateLoading: false,
   voterFromDelegateLoading: false,
   delegateToStakerLoading: false,
+  delegatorSetEventsForDelegatorLoading: false,
   ignoredRequestToBeDelegateAddressesLoading: false,
   isIgnoringRequestToBeDelegate: false,
   isSendingRequestToBeDelegate: false,
@@ -125,6 +131,14 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     data: sentRequestsToBeDelegate,
     isLoading: sentRequestsToBeDelegateLoading,
   } = useSentRequestsToBeDelegate(address);
+  const {
+    data: delegatorSetEventsForDelegate,
+    isLoading: delegatorSetEventsForDelegateLoading,
+  } = useDelegatorSetEventsForDelegate(address);
+  const {
+    data: delegatorSetEventsForDelegator,
+    isLoading: delegatorSetEventsForDelegatorLoading,
+  } = useDelegatorSetEventsForDelegator(address);
   const { data: voterFromDelegate, isLoading: voterFromDelegateLoading } =
     useVoterFromDelegate(address);
   const { data: delegateToStaker, isLoading: delegateToStakerLoading } =
@@ -188,8 +202,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
   const isLoading =
     receivedRequestsToBeDelegateLoading ||
     sentRequestsToBeDelegateLoading ||
+    delegatorSetEventsForDelegateLoading ||
     voterFromDelegateLoading ||
     delegateToStakerLoading ||
+    delegatorSetEventsForDelegatorLoading ||
     ignoredRequestToBeDelegateAddressesLoading;
   const isMutating =
     isIgnoringRequestToBeDelegate ||
@@ -212,45 +228,93 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
     return zeroAddress;
   }
 
-  // effective relationships come straight from current contract state: a
-  // delegation exists only when voterStakes[delegator].delegate and
-  // delegateToStaker[delegate] agree. Pending requests come pre-filtered
-  // from /api/delegation-requests (see usePendingDelegationRequests).
   function getDelegationStatus(): DelegationStatusT {
     if (!address) return "no-wallet-connected";
-    // someone accepted us as their delegate
+    // if you have neither `DelegatorSet` nor `DelegateSet` events, you are neither a delegate or a delegator
+    if (
+      !getHasReceivedRequestsToBeDelegate() &&
+      !getHasSentRequestsToBeDelegate() &&
+      !getHasDelegatorSetEvents()
+    )
+      return "no-delegation";
+    // if there is a delegator set for your address, you are a delegate
     if (
       voterFromDelegate &&
       getAddress(voterFromDelegate) !== getAddress(address)
     )
       return "delegate";
-    // the delegate we set has accepted us
+    // if the `delegateToStaker` mapping for the `delegate` defined in your `voterStakes`, then you are a delegator
     if (
       delegateToStaker &&
       getAddress(address) === getAddress(delegateToStaker)
     )
       return "delegator";
+    // if the user has received a request to be another wallet's delegate but they have not accepted any, then they are a pending delegate
     if (hasPendingReceivedRequestsToBeDelegate) return "delegate-pending";
+    // if the user has sent a request to be another wallet's delegate but the other wallet has not yet accepted, then they are a pending delegator
     if (getHasPendingSentRequestsToBeDelegate()) return "delegator-pending";
+    // if none are true we assume the user has no delegation
     return "no-delegation";
   }
 
+  function getHasSentRequestsToBeDelegate() {
+    return sentRequestsToBeDelegate && sentRequestsToBeDelegate.length > 0;
+  }
+
+  function getHasReceivedRequestsToBeDelegate() {
+    return (
+      receivedRequestsToBeDelegate && receivedRequestsToBeDelegate.length > 0
+    );
+  }
+
+  function getHasDelegatorSetEvents() {
+    return (
+      delegatorSetEventsForDelegate && delegatorSetEventsForDelegate.length > 0
+    );
+  }
+
   function getHasPendingSentRequestsToBeDelegate() {
-    return getPendingSentRequestsToBeDelegate().length > 0;
+    const pendingSentRequestsToBeDelegate =
+      getPendingSentRequestsToBeDelegate();
+    const mostRecentSentRequestToBeDelegate =
+      pendingSentRequestsToBeDelegate.at(-1);
+    return (
+      mostRecentSentRequestToBeDelegate?.delegate !== zeroAddress &&
+      pendingSentRequestsToBeDelegate.length > 0
+    );
   }
 
   function getPendingReceivedRequestsToBeDelegate() {
     return (
-      receivedRequestsToBeDelegate?.filter(
-        ({ delegator }) =>
-          !ignoredRequestToBeDelegateAddresses?.includes(delegator)
-      ) ?? []
+      receivedRequestsToBeDelegate
+        ?.filter(
+          (delegateSet) =>
+            !delegatorSetEventsForDelegate?.some(
+              (delegatorSet) =>
+                delegatorSet.delegate === delegateSet.delegate &&
+                delegatorSet.delegator === delegatorSet.delegator
+            )
+        )
+        ?.filter(
+          ({ delegator }) =>
+            !ignoredRequestToBeDelegateAddresses?.includes(delegator)
+        ) ?? []
     );
   }
 
   function getPendingSentRequestsToBeDelegate() {
     if (delegate === zeroAddress) return [];
-    return sentRequestsToBeDelegate ?? [];
+
+    return (
+      sentRequestsToBeDelegate?.filter(
+        (delegateSet) =>
+          !delegatorSetEventsForDelegator?.some(
+            (delegatorSet) =>
+              delegatorSet.delegate === delegateSet.delegate &&
+              delegatorSet.delegator === delegatorSet.delegator
+          )
+      ) ?? []
+    );
   }
 
   const sendRequestToBeDelegate = useCallback(
@@ -411,8 +475,10 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       isBusy,
       receivedRequestsToBeDelegateLoading,
       sentRequestsToBeDelegateLoading,
+      delegatorSetEventsForDelegateLoading,
       voterFromDelegateLoading,
       delegateToStakerLoading,
+      delegatorSetEventsForDelegatorLoading,
       ignoredRequestToBeDelegateAddressesLoading,
       isIgnoringRequestToBeDelegate,
       isSendingRequestToBeDelegate,
@@ -429,6 +495,8 @@ export function DelegationProvider({ children }: { children: ReactNode }) {
       delegateToStakerLoading,
       delegationStatus,
       delegatorAddress,
+      delegatorSetEventsForDelegateLoading,
+      delegatorSetEventsForDelegatorLoading,
       hasPendingReceivedRequestsToBeDelegate,
       hasPendingSentRequestsToBeDelegate,
       ignoreReceivedRequestToBeDelegate,

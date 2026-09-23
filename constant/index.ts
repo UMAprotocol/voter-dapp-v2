@@ -13,5 +13,4 @@ export * from "./voting/discord";
 export * from "./voting/earlyRequestMagicNumber";
 export * from "./voting/voteTiming";
 export * from "./web3/ethersErrorCodes";
-export * from "./web3/eventQueries";
 export * from "./web3/supportedChains";

@@ -24,22 +24,36 @@ export function HistoryPanel() {
   const { pastVotesV2List } = useVotesContext();
   const { address } = useAccountDetails();
   const { isDelegate, delegatorAddress } = useDelegationContext();
-  const { data: votingAndStakingDetails, isLoading: userDataIsLoading } =
-    useUserVotingAndStakingDetails(isDelegate ? delegatorAddress : address);
+  const { data: votingAndStakingDetails } = useUserVotingAndStakingDetails(
+    isDelegate ? delegatorAddress : address
+  );
   const {
     apr,
     cumulativeCalculatedSlash,
     cumulativeCalculatedSlashPercentage,
+    voteHistoryByKey,
   } = votingAndStakingDetails ?? {};
   const { showPagination, entriesToShow, ...paginationProps } = usePagination(
     pastVotesV2List ?? []
   );
 
-  // loading must come from the query flags, not from the shape of the data:
-  // an empty voteHistoryByKey is the FINAL state for logged-out users and
-  // stakers with no history, and every vote gets a complete fallback
-  // voteHistory in VotesContext — data-shape checks here spin forever
-  const isDataLoading = userDataIsLoading || isUndefined(pastVotesV2List);
+  // Check if vote history data is actually loaded
+  // We need to ensure the user's voting data is loaded before showing the table
+  const isDataLoading =
+    isUndefined(votingAndStakingDetails) ||
+    isUndefined(pastVotesV2List) ||
+    // If we have votes but voteHistoryByKey is not populated yet
+    (pastVotesV2List.length > 0 &&
+      (!voteHistoryByKey || Object.keys(voteHistoryByKey).length === 0)) ||
+    // Check if any vote in entriesToShow is missing complete vote history data
+    entriesToShow.some((vote) => {
+      const hasCompleteHistory =
+        vote.voteHistory &&
+        vote.voteHistory.slashAmount !== undefined &&
+        vote.voteHistory.voted !== undefined &&
+        vote.voteHistory.correctness !== undefined;
+      return !hasCompleteHistory;
+    });
 
   const bonusPenaltyHighlightColor = cumulativeCalculatedSlashPercentage?.eq(0)
     ? black

@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { sentRequestsToBeDelegateKey } from "constant";
+import { delegatorSetEventsForDelegatorKey } from "constant";
 import { useContractsContext, useHandleError, useWalletContext } from "hooks";
-import { getDelegateSetEvents } from "web3";
+import { getDelegatorSetEvents } from "web3";
 
-export function useSentRequestsToBeDelegate(address: string | undefined) {
+export function useDelegatorSetEventsForDelegator(address: string | undefined) {
   const { voting } = useContractsContext();
   const { isWrongChain } = useWalletContext();
   const { onError } = useHandleError({ isDataFetching: true });
 
   const queryResult = useQuery({
-    queryKey: [sentRequestsToBeDelegateKey, address],
-    queryFn: () => getDelegateSetEvents(voting, address, "delegator"),
+    queryKey: [delegatorSetEventsForDelegatorKey, address],
+    queryFn: () => getDelegatorSetEvents(voting, address, "delegator"),
     enabled: !isWrongChain,
     onError,
   });

@@ -1,6 +1,8 @@
 export {
+  getPastVotes,
   getPastVotesAllVersions,
   getPastVoteDetails,
+  getPastVotesV2Lightweight as getPastVotesOrdered,
   getPastVotesV1,
   getUserVotesForRequests,
 } from "./queries/getPastVotes";

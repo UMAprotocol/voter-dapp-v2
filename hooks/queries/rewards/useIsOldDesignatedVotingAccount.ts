@@ -10,11 +10,9 @@ export function useIsOldDesignatedVotingAccount(address: string | undefined) {
   const queryResult = useQuery({
     queryKey: [isOldDesignatedVotingAccountKey, address],
     queryFn: () => getIsOldDesignatedVotingAccount(address),
-    enabled: !!address && !isWrongChain,
+    enabled: !isWrongChain,
     onError,
   });
 
-  // disabled queries (e.g. before the wallet connects) report isLoading=true
-  // forever in react-query v4; isInitialLoading is only true while actually fetching
-  return { ...queryResult, isLoading: queryResult.isInitialLoading };
+  return queryResult;
 }

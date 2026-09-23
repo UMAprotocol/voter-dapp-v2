@@ -8,11 +8,8 @@ import {
   voteDeeplinkQueryParam,
 } from "helpers/util/deeplink";
 import { makeProvisionalVote } from "helpers/voting/makeProvisionalVote";
-import { hasL2AncillaryDataStamp } from "lib/deeplink-matching";
 import { usePanelContext } from "hooks/contexts/usePanelContext";
 import { useVotesContext } from "hooks/contexts/useVotesContext";
-import { useVotesWithOnScreenData } from "hooks/queries/votes/useVotesWithOnScreenData";
-import { useAncillaryDataResolutionErrored } from "hooks/queries/votes/useVotesWithResolvedAncillaryData";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 import { ActivityStatusT, VoteT } from "types";
@@ -80,37 +77,16 @@ export function useVoteDeeplink() {
     activeVotesIsInitialLoading ||
     upcomingVotesIsInitialLoading ||
     pastVotesIsInitialLoading;
-  const targetFromLists = useMemo(() => {
-    if (!targetKey) return undefined;
-    for (const status of activityStatuses) {
-      const vote = voteListsByActivityStatus[status]?.find(
-        (vote) => vote.uniqueKey === targetKey
-      );
-      if (vote) return { vote, status };
-    }
-    return undefined;
-  }, [targetKey, voteListsByActivityStatus]);
-  const targetInLists = !!targetFromLists;
-
-  // past votes come out of the lists with unresolved L2 ancillary data (it is
-  // resolved lazily for on-screen rows), but the panel derives its title and
-  // description from it — resolve the deeplinked vote before showing it
-  const targetVotesToResolve = useMemo(
-    () => (targetFromLists ? [targetFromLists.vote] : []),
-    [targetFromLists]
+  const targetInLists = useMemo(
+    () =>
+      !!targetKey &&
+      activityStatuses.some((status) =>
+        voteListsByActivityStatus[status]?.some(
+          (vote) => vote.uniqueKey === targetKey
+        )
+      ),
+    [targetKey, voteListsByActivityStatus]
   );
-  const [resolvedTargetVote] = useVotesWithOnScreenData(targetVotesToResolve);
-  const targetResolutionErrored = useAncillaryDataResolutionErrored(
-    resolvedTargetVote?.uniqueKey
-  );
-  // still carrying the stamp = resolution in flight — but only while the
-  // resolution query hasn't failed outright; treating a failed resolution as
-  // pending would hold a provisional panel forever and block the canonical
-  // upgrade (navigation arrows, list row) on data that may never come
-  const targetResolutionPending =
-    !!resolvedTargetVote &&
-    hasL2AncillaryDataStamp(resolvedTargetVote.decodedAncillaryData) &&
-    !targetResolutionErrored;
 
   // canonical links: fetch the entity so the panel can render before the
   // lists load; external links seed this cache from their own resolution
@@ -234,21 +210,12 @@ export function useVoteDeeplink() {
     }
 
     // a provisional panel with the right key still needs its canonical
-    // upgrade, so it does not count as "in sync"; nor does a panel showing
-    // the vote whose lazily-loaded content (L2 ancillary data, UMIP metadata
-    // for governance votes) has since landed. contentfulData is compared by
-    // reference: both sides come from the same react-query cache entry
+    // upgrade, so it does not count as "in sync"
     const upgradingProvisional = provisionalKeyRef.current === targetKey;
-    const panelHasStaleContent =
-      panelContent?.uniqueKey === targetKey &&
-      !!resolvedTargetVote &&
-      (panelContent.ancillaryDataL2 !== resolvedTargetVote.ancillaryDataL2 ||
-        panelContent.contentfulData !== resolvedTargetVote.contentfulData);
     if (
       voteShowing &&
       panelContent?.uniqueKey === targetKey &&
-      !upgradingProvisional &&
-      !panelHasStaleContent
+      !upgradingProvisional
     ) {
       return;
     }
@@ -259,14 +226,17 @@ export function useVoteDeeplink() {
     // covering the vote the param still describes) — leave both alone
     if (panelOpen && panelType !== "vote" && !selfInitiated) return;
 
-    // the provisional vote carries server-resolved ancillary data — swapping
-    // it for a canonical vote whose lazy resolution hasn't landed yet would
-    // briefly downgrade the panel; wait for the resolved version (the effect
-    // re-runs when it arrives)
-    if (upgradingProvisional && voteShowing && targetResolutionPending) return;
-
-    const vote: VoteT | undefined = resolvedTargetVote ?? targetFromLists?.vote;
-    const status: ActivityStatusT | undefined = targetFromLists?.status;
+    let vote: VoteT | undefined;
+    let status: ActivityStatusT | undefined;
+    for (const s of activityStatuses) {
+      vote = voteListsByActivityStatus[s]?.find(
+        (v) => v.uniqueKey === targetKey
+      );
+      if (vote) {
+        status = s;
+        break;
+      }
+    }
 
     if (!vote || !status) {
       const entity =
@@ -283,10 +253,7 @@ export function useVoteDeeplink() {
           return;
         }
         if (voteShowing && panelContent?.uniqueKey === targetKey) return;
-        const provisional = makeProvisionalVote(
-          entity.request,
-          entity.uniqueKey
-        );
+        const provisional = makeProvisionalVote(entity.request, entity.uniqueKey);
         if (voteShowing) {
           showVote(provisional, []);
         } else {
@@ -330,13 +297,8 @@ export function useVoteDeeplink() {
       // there on close
       openPanel("vote", vote, { navigableVotes: votes });
     }
-    // a provisional upgrade already requested its scroll when it opened; a
-    // stale-content upgrade swaps content in place and must not re-scroll
-    if (
-      (!selfInitiated || expected?.scroll) &&
-      !upgradingProvisional &&
-      !panelHasStaleContent
-    ) {
+    // a provisional upgrade already requested its scroll when it opened
+    if ((!selfInitiated || expected?.scroll) && !upgradingProvisional) {
       requestVoteScroll(targetKey);
     }
     provisionalKeyRef.current = undefined;
@@ -345,9 +307,6 @@ export function useVoteDeeplink() {
   }, [
     targetKey,
     targetEntity,
-    targetFromLists,
-    resolvedTargetVote,
-    targetResolutionPending,
     router.isReady,
     router.pathname,
     panelOpen,

@@ -14,14 +14,9 @@ export function useEncryptedVotes(
   const queryResult = useQuery({
     queryKey: [encryptedVotesKey, address, roundId],
     queryFn: () => getEncryptedVotes(voting, votingV1, address, roundId),
-    enabled: !!address && !isWrongChain,
-    // commits can happen in another tab or device mid-round; refetching on
-    // focus is the only path that picks them up (the app default is false)
-    refetchOnWindowFocus: true,
+    enabled: !isWrongChain,
     onError,
   });
 
-  // disabled queries (e.g. before the wallet connects) report isLoading=true
-  // forever in react-query v4; isInitialLoading is only true while actually fetching
-  return { ...queryResult, isLoading: queryResult.isInitialLoading };
+  return queryResult;
 }

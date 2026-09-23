@@ -18,8 +18,6 @@ import {
   VoteOriginT,
 } from "types";
 import { checkIfIsInfiniteGames } from "./projects/infiniteGames";
-import { warnOnce } from "helpers/util/log";
-import { hasL2AncillaryDataStamp } from "lib/l2-ancillary-data";
 import * as s from "superstruct";
 import { maxInt256, minInt256 } from "constant/web3/numbers";
 import { stripInvalidCharacters } from "lib/utils";
@@ -306,15 +304,6 @@ function tryParseMultipleValues(
     discordLink,
     options: [],
   };
-  // an unresolved L2 stamp is expected while lazy ancillary-data resolution
-  // is in flight — it can never parse, so don't attempt it or log an error
-  if (hasL2AncillaryDataStamp(decodedQueryText)) {
-    return {
-      ...common,
-      title: "Multiple Values",
-      description: "Loading description…",
-    };
-  }
   try {
     return {
       ...common,
@@ -325,11 +314,7 @@ function tryParseMultipleValues(
     if (err instanceof Error) {
       description += `: ${err.message}`;
     }
-    warnOnce(
-      `multiple-values-parse:${decodedQueryText.slice(0, 64)}`,
-      "Error parsing MULTIPLE_VALUES",
-      { decodedQueryText, err }
-    );
+    console.error(`Error parsing MULTIPLE_VALUES`, decodedQueryText, err);
     return {
       ...common,
       title: "Multiple Values",
