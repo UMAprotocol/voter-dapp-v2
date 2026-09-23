@@ -11,8 +11,8 @@ cannot propose it. Atomic outcome labels are deferred until their schema is conf
 ## Originally proposed outcome
 
 Polymarket V1 and V2 vote details show the originally proposed outcome above the
-description, using the existing OO subgraph proposal lookup. Binary labels come
-from the request's resolution options; numerical requests show the value until
+description, using the existing OO subgraph proposal lookup. Outcomes use the
+request's resolution mapping, such as `P1 (No)`, `P2 (Over)`, or `P3 (50/50)`; numerical requests show the value until
 atomic outcome labels are defined. Missing proposal data displays `Unavailable`.
 This is contextual information and does not preselect a vote.
 

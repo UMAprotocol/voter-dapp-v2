@@ -206,12 +206,8 @@ export function Details(query: VoteT) {
               <Strong>
                 {augmentedDataResponse.isLoading
                   ? "Loading…"
-                  : proposedOutcome?.label ?? "Unavailable"}
+                  : proposedOutcome ?? "Unavailable"}
               </Strong>
-              {!augmentedDataResponse.isLoading &&
-                proposedOutcome?.value !== undefined && (
-                  <span>Value: {proposedOutcome.value}</span>
-                )}
             </dd>
           </ProposedOutcomeCard>
         )}
@@ -548,18 +544,9 @@ const ProposedOutcomeCard = styled.dl`
   }
 
   dd {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 4px 12px;
     margin: 0;
     font: var(--text-md);
     overflow-wrap: anywhere;
-  }
-
-  dd span {
-    font: var(--text-sm);
-    color: var(--grey-800);
   }
 `;
 
