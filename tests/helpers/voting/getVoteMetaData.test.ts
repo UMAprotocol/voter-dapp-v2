@@ -28,6 +28,7 @@ import {
   getVoteMetaData,
 } from "helpers/voting/getVoteMetaData";
 import { earlyRequestMagicNumber } from "constant/voting/earlyRequestMagicNumber";
+import { POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA } from "./projects/constants";
 
 // Real ancillary data from a MetaMarket request.
 // ooRequester 46500f8b... is MetaMarket (not registered in voter dapp).
@@ -107,6 +108,50 @@ describe("getVoteMetaData identifier fallback options", () => {
     });
   });
 
+  describe("request with a spoofed Polymarket initializer", () => {
+    it("is not attributed to Polymarket", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(result.origin).toBe("UMA");
+    });
+
+    it("still takes its title from the ancillary data rather than the identifier", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(result.title).toBe("Hubenko Maksym vs. Ziakun Viktor");
+      // a title equal to the identifier is what makes the dispute bot fall back
+      // to "N/A" and lose the Discord thread
+      expect(result.title).not.toBe("YES_OR_NO_QUERY");
+      expect(resolveDiscordThreadTitle(result.title, "YES_OR_NO_QUERY")).toBe(
+        "Hubenko Maksym vs. Ziakun Viktor"
+      );
+    });
+
+    it("keeps the parsed vote options", () => {
+      const result = getVoteMetaData(
+        "YES_OR_NO_QUERY",
+        POLYMARKET_SPOOFED_INITIALIZER_ANCIL_DATA,
+        undefined
+      );
+
+      expect(optionLabels(result.options)).toEqual([
+        "Ziakun Viktor",
+        "Hubenko Maksym",
+        "unknown/50-50",
+        "Early request",
+        "Custom",
+      ]);
+    });
+  });
+
   describe("resolveDiscordThreadTitle", () => {
     it("returns the display title when it is a real title", () => {
       expect(
@@ -151,4 +196,46 @@ describe("getVoteMetaData identifier fallback options", () => {
       expect(result.options).toBeUndefined();
     });
   });
+});
+
+describe("q/rules ancillary data", () => {
+  it("shows the question, rules, and resolution source for a bridged request", () => {
+    const metadata = getVoteMetaData(
+      "YES_OR_NO_QUERY",
+      "q:Will it be over 38°C in Guangzhou on September 20?,resolution-source:https://www.weather.gov/wrh/timeseries?site=zggg,rules:This market will resolve to the temperature range that contains the highest temperature recorded by NOAA at the Guangzhou Baiyun International Airport Station in degrees Celsius on 20 Sep '26.,market:evt-b1c2d770-7f79-44ac-aaef-d48a3913d5b8-mkt-1,ooRequester:3886fe2b177f36ba2f530d37f8bc89c5aea09203,childRequester:880d041d67aab3b062995d11d4ad9c1018a3b02f,childChainId:8453",
+      undefined
+    );
+    expect(metadata.title).toBe(
+      "Will it be over 38°C in Guangzhou on September 20?"
+    );
+    expect(metadata.description).toBe(
+      "This market will resolve to the temperature range that contains the highest temperature recorded by NOAA at the Guangzhou Baiyun International Airport Station in degrees Celsius on 20 Sep '26.\n\nResolution source: https://www.weather.gov/wrh/timeseries?site=zggg"
+    );
+    expect(metadata.options).toEqual(expectedYesOrNoOptions);
+    expect(resolveDiscordThreadTitle(metadata.title, "YES_OR_NO_QUERY")).toBe(
+      metadata.title
+    );
+  });
+
+  it("preserves commas and supports rules without a resolution source", () => {
+    const metadata = getVoteMetaData(
+      "YES_OR_NO_QUERY",
+      "q: On Tuesday, will it rain?, rules: Yes if rain, otherwise No.,ooRequester:1234",
+      undefined
+    );
+    expect(metadata.title).toBe("On Tuesday, will it rain?");
+    expect(metadata.description).toBe("Yes if rain, otherwise No.");
+  });
+});
+
+it("preserves rules mentioned inside an existing title/description request", () => {
+  const metadata = getVoteMetaData(
+    "YES_OR_NO_QUERY",
+    "q: title: Will it rain?, description: Use the report,rules: all stations count.",
+    undefined
+  );
+  expect(metadata.title).toBe("Will it rain?");
+  expect(metadata.description).toBe(
+    " Use the report,rules: all stations count."
+  );
 });

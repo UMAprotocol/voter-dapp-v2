@@ -103,10 +103,12 @@ export function ActiveVotes() {
       !!activeVoteList &&
       activeVoteList.filter((vote) => vote.decryptedVote).length ===
         activeVoteList.length;
-    // counting how many votes we have edited with committable values ( non empty )
-    const selectedVotesCount = Object.values(selectedVotes).filter(
-      (x) => x
-    ).length;
+    // counting how many on-screen votes we have edited with committable
+    // values (non empty); selectedVotes may briefly hold stale keys from a
+    // previous round, and the commit tx is built from this intersection too
+    const selectedVotesCount =
+      activeVoteList?.filter((vote) => selectedVotes[vote.uniqueKey]).length ??
+      0;
     // check if we have votes to commit by seeing there are more than 1 and its dirty
     const hasVotesToCommit =
       selectedVotesCount > 0

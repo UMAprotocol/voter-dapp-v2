@@ -10,7 +10,6 @@ import { ClaimV1Panel } from "./ClaimV1Panel";
 import { DelegationPanel } from "./DelegationPanel";
 import { HistoryPanel } from "./HistoryPanel";
 import { MenuPanel } from "./MenuPanel";
-import { RemindMePanel } from "./RemindMePanel";
 import { StakeUnstakePanel } from "./StakeUnstakePanel/StakeUnstakePanel";
 import { VotePanelWithLazyLoad } from "./VotePanel/VotePanelWithLazyLoad";
 
@@ -58,7 +57,6 @@ export function Panel() {
       claim: <ClaimPanel />,
       claimV1: <ClaimV1Panel />,
       stake: <StakeUnstakePanel />,
-      remind: <RemindMePanel />,
       history: <HistoryPanel />,
       delegation: <DelegationPanel />,
     };
