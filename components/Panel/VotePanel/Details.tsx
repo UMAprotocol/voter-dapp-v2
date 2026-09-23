@@ -1,7 +1,11 @@
 import { formatPolymarketProposedOutcome } from "lib/polymarket-proposed-outcome";
 import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { Button, PanelErrorBanner, BulletinList } from "components";
-import { getOracleTypeDisplayName, supportedChains } from "constant";
+import {
+  getOracleTypeDisplayName,
+  supportedChains,
+  mobileAndUnder,
+} from "constant";
 import {
   checkIfIsPolymarket,
   decodeHexString,
@@ -531,6 +535,10 @@ const Text = styled.p`
 `;
 
 const ProposedOutcomeCard = styled.dl`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 12px;
   margin: 0 0 20px;
   padding: 12px 14px;
   border: 1px solid var(--grey-100);
@@ -538,7 +546,7 @@ const ProposedOutcomeCard = styled.dl`
   background: var(--grey-50);
 
   dt {
-    margin-bottom: 4px;
+    margin: 0;
     font: var(--text-sm);
     color: var(--grey-800);
   }
@@ -547,6 +555,10 @@ const ProposedOutcomeCard = styled.dl`
     margin: 0;
     font: var(--text-md);
     overflow-wrap: anywhere;
+  }
+
+  @media ${mobileAndUnder} {
+    grid-template-columns: minmax(0, 1fr);
   }
 `;
 
