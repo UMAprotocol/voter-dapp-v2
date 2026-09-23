@@ -8,6 +8,14 @@ are displayed without changing the original bytes used for commit/reveal.
 Early request remains a valid DVM vote, even though event-based OO proposals
 cannot propose it. Atomic outcome labels are deferred until their schema is confirmed.
 
+## Originally proposed outcome
+
+Polymarket V1 and V2 vote details show the originally proposed outcome above the
+description, using the existing OO subgraph proposal lookup. Binary labels come
+from the request's resolution options; numerical requests show the value until
+atomic outcome labels are defined. Missing proposal data displays `Unavailable`.
+This is contextual information and does not preselect a vote.
+
 ## Market links
 
 The server queries public Gamma by the numeric `market_id` in the JSON rules.

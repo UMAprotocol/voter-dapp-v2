@@ -1,3 +1,4 @@
+import { formatPolymarketProposedOutcome } from "lib/polymarket-proposed-outcome";
 import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { Button, PanelErrorBanner, BulletinList } from "components";
 import { getOracleTypeDisplayName, supportedChains } from "constant";
@@ -162,10 +163,16 @@ export function Details(query: VoteT) {
 
   const hash = augmentedData?.originatingChainTxHash ?? "";
 
+  const isPolymarket = checkIfIsPolymarket(
+    decodedIdentifier,
+    decodedAncillaryData
+  );
+  const proposedOutcome = formatPolymarketProposedOutcome(
+    augmentedData?.proposedPrice,
+    options
+  );
   const shouldFetch =
-    checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) &&
-    Boolean(hash) &&
-    Boolean(config.chainId === 1); // skip testnet
+    isPolymarket && Boolean(hash) && Boolean(config.chainId === 1); // skip testnet
 
   const { data: polymarketLink } = usePolymarketLink(
     getQuestionId({
@@ -192,6 +199,14 @@ export function Details(query: VoteT) {
             <span>{decodedIdentifier}</span>
           </IdentifierPill>
         </RequestInfoIcons>
+        {isPolymarket && (
+          <Text>
+            <Strong>Originally proposed:</Strong>{" "}
+            {augmentedDataResponse.isLoading
+              ? "Loading…"
+              : proposedOutcome ?? "Unavailable"}
+          </Text>
+        )}
 
         <PanelSectionTitle>
           <IconWrapper>
