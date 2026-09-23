@@ -8,15 +8,16 @@ const returnData = type({
 });
 
 async function getPolymarketLink(
-  questionId: string | undefined
+  questionId: string | undefined,
+  marketId?: string
 ): Promise<string | undefined> {
-  if (!questionId) {
+  if (!questionId && !marketId) {
     throw new Error("Unable to fetch polymarket link. Missing Question ID");
   }
 
   const POLYMARKET_BASE_URL = "https://polymarket.com";
   const params = buildSearchParams({
-    questionId,
+    ...(marketId ? { marketId } : { questionId: questionId ?? "" }),
   });
 
   const response = await fetch(`/api/get-polymarket-link?${params}`, {
@@ -31,25 +32,28 @@ async function getPolymarketLink(
   }
   const data = create(await response.json(), returnData);
   if (data.slug) {
-    return `${POLYMARKET_BASE_URL}/event/${data.slug}`;
+    return `${POLYMARKET_BASE_URL}/event/${encodeURIComponent(data.slug)}`;
   }
 }
 
 export function usePolymarketLink(
   questionId: string | undefined,
-  shouldFetch = true
+  shouldFetch = true,
+  marketId?: string
 ) {
   return useQuery({
-    queryKey: ["polymarketLink", questionId],
-    queryFn: () => getPolymarketLink(questionId),
+    queryKey: ["polymarketLink", questionId, marketId],
+    queryFn: () => getPolymarketLink(questionId, marketId),
     onError: (err) =>
       warnOnce(
-        `polymarket-link:${questionId ?? ""}`,
-        `Unable to fetch polymarket slug for ${questionId ?? "MISSING PARAM"}`,
+        `polymarket-link:${marketId ?? questionId ?? ""}`,
+        `Unable to fetch polymarket slug for ${
+          marketId ?? questionId ?? "MISSING PARAM"
+        }`,
         { cause: err }
       ),
-    enabled: !!questionId && shouldFetch,
-    refetchInterval: Infinity,
-    refetchOnMount: false,
+    enabled: Boolean(questionId || marketId) && shouldFetch,
+    refetchInterval: marketId ? 60_000 : Infinity,
+    refetchOnMount: Boolean(marketId),
   });
 }

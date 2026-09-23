@@ -1,3 +1,4 @@
+import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { parseQuestionAncillaryData } from "lib/question-ancillary-data";
 import { discordLink } from "constant";
 import approvedIdentifiers from "data/approvedIdentifiersTable";
@@ -37,6 +38,24 @@ export function getVoteMetaData(
   decodedAncillaryData: string,
   umipDataFromContentful: ContentfulDataT | undefined
 ): VoteMetaDataT {
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  if (v2 && checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData)) {
+    const isYesNoQuery = decodedIdentifier === "YES_OR_NO_QUERY";
+    return {
+      title: stripInvalidCharacters(v2.title),
+      description: v2.description,
+      // Unknown mappings and numerical requests retain the numeric input.
+      options: isYesNoQuery
+        ? maybeMakePolymarketOptions(decodedAncillaryData)
+        : undefined,
+      ...getUmipMetadata(decodedIdentifier),
+      origin: "Polymarket V2",
+      isGovernance: false,
+      discordLink,
+      isAssertion: false,
+    };
+  }
+
   const isAssertion = ["assertionId:", "ooAsserter:"].every((lookup) =>
     decodedAncillaryData.includes(lookup)
   );
@@ -379,6 +398,8 @@ export function getTitleFromAncillaryData(
   titleIdentifier = "title:",
   descriptionIdentifier = "description:"
 ) {
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  if (v2) return v2.title;
   const question = parseQuestionAncillaryData(decodedAncillaryData);
   if (question) return question.title;
 
@@ -415,6 +436,8 @@ export function getDescriptionFromAncillaryData(
   decodedAncillaryData: string,
   descriptionIdentifier = "description:"
 ) {
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  if (v2) return v2.description;
   const question = parseQuestionAncillaryData(decodedAncillaryData);
   if (question) return question.description;
 

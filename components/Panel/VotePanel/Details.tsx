@@ -1,5 +1,11 @@
+import { formatPolymarketProposedOutcome } from "lib/polymarket-proposed-outcome";
+import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import { Button, PanelErrorBanner, BulletinList } from "components";
-import { getOracleTypeDisplayName, supportedChains } from "constant";
+import {
+  getOracleTypeDisplayName,
+  supportedChains,
+  mobileAndUnder,
+} from "constant";
 import {
   checkIfIsPolymarket,
   decodeHexString,
@@ -72,7 +78,11 @@ export function Details(query: VoteT) {
   });
   const isClaim = !!claim;
   const showAncillaryData = !isClaim;
-  const { data: bulletins } = usePolymarketBulletins(ancillaryDataL2);
+  const {
+    data: bulletins,
+    isLoading: updatesLoading,
+    isError: updatesError,
+  } = usePolymarketBulletins(ancillaryDataL2, decodedIdentifier);
 
   const claimDescription = claim
     ? getClaimDescription(decodeHexString(claim))
@@ -123,6 +133,8 @@ export function Details(query: VoteT) {
     };
   }
 
+  const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  const isV2 = Boolean(v2);
   const optionLabels = options?.map(({ label }) => label);
   const links = [
     makeAsserterLink(),
@@ -155,16 +167,23 @@ export function Details(query: VoteT) {
 
   const hash = augmentedData?.originatingChainTxHash ?? "";
 
+  const isPolymarket = checkIfIsPolymarket(
+    decodedIdentifier,
+    decodedAncillaryData
+  );
+  const proposedOutcome = formatPolymarketProposedOutcome(
+    augmentedData?.proposedPrice,
+    options
+  );
   const shouldFetch =
-    checkIfIsPolymarket(decodedIdentifier, decodedAncillaryData) &&
-    Boolean(hash) &&
-    Boolean(config.chainId === 1); // skip testnet
+    isPolymarket && Boolean(hash) && Boolean(config.chainId === 1); // skip testnet
 
   const { data: polymarketLink } = usePolymarketLink(
     getQuestionId({
       decodedAncillaryData,
     }),
-    shouldFetch
+    shouldFetch,
+    v2?.marketId
   );
   return (
     <PanelContentWrapper>
@@ -184,6 +203,18 @@ export function Details(query: VoteT) {
             <span>{decodedIdentifier}</span>
           </IdentifierPill>
         </RequestInfoIcons>
+        {isPolymarket && (
+          <ProposedOutcomeCard>
+            <dt>Originally proposed</dt>
+            <dd>
+              <Strong>
+                {augmentedDataResponse.isLoading
+                  ? "Loading…"
+                  : proposedOutcome ?? "Unavailable"}
+              </Strong>
+            </dd>
+          </ProposedOutcomeCard>
+        )}
 
         <PanelSectionTitle>
           <IconWrapper>
@@ -204,6 +235,21 @@ export function Details(query: VoteT) {
           )}
         </PanelSectionTitle>
         <DecodedTextAsMarkdown>{description}</DecodedTextAsMarkdown>
+        {isV2 && updatesLoading && (
+          <Text role="status">Loading rule updates…</Text>
+        )}
+        {isV2 && updatesError && (
+          <Text role="alert">
+            Rule updates could not be verified. The displayed rules may be
+            incomplete. Please retry before voting.
+          </Text>
+        )}
+        {isV2 && decodedIdentifier === "NUMERICAL" && (
+          <Text>
+            Outcome labels are unavailable for this numerical request. Use the
+            outcome value specified in the resolution instructions.
+          </Text>
+        )}
         {bulletins && bulletins.length > 0 && (
           <BulletinList bulletins={bulletins} />
         )}
@@ -485,6 +531,34 @@ const Text = styled.p`
   font: var(--text-md);
   &:not(:last-child) {
     margin-bottom: 15px;
+  }
+`;
+
+const ProposedOutcomeCard = styled.dl`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--grey-100);
+  border-radius: 5px;
+  background: var(--grey-50);
+
+  dt {
+    margin: 0;
+    font: var(--text-sm);
+    color: var(--grey-800);
+  }
+
+  dd {
+    margin: 0;
+    font: var(--text-md);
+    overflow-wrap: anywhere;
+  }
+
+  @media ${mobileAndUnder} {
+    grid-template-columns: minmax(0, 1fr);
   }
 `;
 

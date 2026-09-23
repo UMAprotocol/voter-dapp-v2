@@ -152,6 +152,7 @@ export type VoteTimelineT = {
 export type VoteOriginT =
   | "UMA"
   | "Polymarket"
+  | "Polymarket V2"
   | "Across"
   | "OSnap"
   | "Predict.Fun"

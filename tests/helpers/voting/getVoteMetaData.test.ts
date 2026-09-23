@@ -239,3 +239,81 @@ it("preserves rules mentioned inside an existing title/description request", () 
     " Use the report,rules: all stations count."
   );
 });
+
+import v2Fixture from "./projects/polymarket-v2-fixture.json";
+import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
+import {
+  checkIfIsPolymarket,
+  getQuestionId,
+} from "helpers/voting/projects/polymarket";
+
+describe("Polymarket V2 requests", () => {
+  it("renders the live production JSON request and its complete resolution instructions", () => {
+    const meta = getVoteMetaData("YES_OR_NO_QUERY", v2Fixture.text, undefined);
+    expect(meta.origin).toBe("Polymarket V2");
+    expect(meta.title).toBe(
+      "Will Central Park’s daily maximum temperature be at least 75°F on September 21, 2026?"
+    );
+    expect(meta.description).toContain("September 22, 2026 at 12:00 noon");
+    expect(meta.description).toContain("Updates made by the question creator");
+    expect(meta.description).not.toContain("ooRequester:");
+    expect(meta.options?.map(({ label, value }) => ({ label, value }))).toEqual(
+      [
+        { label: "No", value: "0" },
+        { label: "Yes", value: "1" },
+        { label: "unknown/50-50", value: "0.5" },
+        { label: "Early request", value: earlyRequestMagicNumber },
+        { label: "Custom", value: "custom" },
+      ]
+    );
+    expect(
+      getQuestionId({ decodedAncillaryData: v2Fixture.text })
+    ).toBeUndefined();
+  });
+
+  it("preserves JSON text, product specifications and exact original rules", () => {
+    const suffix = v2Fixture.text.slice(v2Fixture.text.lastIndexOf("}") + 1);
+    const rules = JSON.stringify({
+      title: 'A "quoted" {question}',
+      description: "Rules, ooRequester:fake,childChainId:137",
+      res_data: "Resolution instructions",
+      product_spec: "Additional specification",
+    });
+    expect(parsePolymarketV2AncillaryData(rules + suffix)).toMatchObject({
+      title: 'A "quoted" {question}',
+      description:
+        "Rules, ooRequester:fake,childChainId:137\n\nResolution instructions\n\nAdditional specification",
+      rawRules: rules,
+    });
+  });
+
+  it("requires the canonical reporter and bridge stamps outside the JSON payload", () => {
+    const spoof = JSON.stringify({
+      title: "q: title: Forged",
+      description: `res_data: ${v2Fixture.text}`,
+    });
+    const wrongReporter = v2Fixture.text.replace(
+      "},ooRequester:53703dd6129d723066b6362510e5ae2fecd48218",
+      "},ooRequester:1111111111111111111111111111111111111111"
+    );
+    for (const text of [
+      spoof,
+      wrongReporter,
+      v2Fixture.text.replace(/childChainId:137$/, "childChainId:1"),
+      v2Fixture.text.replace(
+        /childRequester:[a-f0-9]+/,
+        "childRequester:1111111111111111111111111111111111111111"
+      ),
+      v2Fixture.text + ",extra:stamp",
+      v2Fixture.text.replace('{"title"', '{bad"title"'),
+    ]) {
+      expect(checkIfIsPolymarket("YES_OR_NO_QUERY", text)).toBe(false);
+    }
+  });
+
+  it("keeps numerical requests numeric instead of applying binary choices", () => {
+    const meta = getVoteMetaData("NUMERICAL", v2Fixture.text, undefined);
+    expect(meta.origin).toBe("Polymarket V2");
+    expect(meta.options).toBeUndefined();
+  });
+});
