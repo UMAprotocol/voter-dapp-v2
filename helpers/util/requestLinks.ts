@@ -73,7 +73,7 @@ export function constructExplorerRequestLink(
   return `${explorerBaseUrl}/requests?${params.toString()}`;
 }
 
-export function castOracleNameForOOUi(oracleType: string): string {
+export function castOracleNameForOOUi(oracleType: string): string | undefined {
   switch (oracleType) {
     case "OptimisticOracle":
       return "Optimistic";
@@ -86,7 +86,7 @@ export function castOracleNameForOOUi(oracleType: string): string {
     case "ManagedOptimisticOracleV2":
       return "ManagedV2";
     default:
-      throw new Error("Unable to cast oracle name for OO UI: " + oracleType);
+      return undefined;
   }
 }
 
@@ -99,10 +99,13 @@ export function constructOracleDappRequestLink(
 ): string | undefined {
   if (!txHash || !chainId || !oracleType) return;
   if (!isSupportedChainId(chainId)) return;
+  const ooUiOracleType = castOracleNameForOOUi(oracleType);
+  // Unknown oracle names should omit the link, not fail vote augmentation.
+  if (!ooUiOracleType) return;
   const subDomain = isTestnet ? "testnet." : "";
-  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${castOracleNameForOOUi(
-    oracleType
-  )}&eventIndex=${eventIndex ?? ""}`;
+  return `https://${subDomain}oracle.uma.xyz/request?transactionHash=${txHash}&chainId=${chainId}&oracleType=${ooUiOracleType}&eventIndex=${
+    eventIndex ?? ""
+  }`;
 }
 
 /**

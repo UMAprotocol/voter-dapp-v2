@@ -1,5 +1,6 @@
 import {
   buildRequestLink,
+  castOracleNameForOOUi,
   constructExplorerRequestLink,
   constructOracleDappRequestLink,
   isExplorerRequestLink,
@@ -9,6 +10,32 @@ import { describe, expect, it } from "vitest";
 
 const txHash =
   "0x1371bc0385e17a7c46de8efb48297a7a194d04f6a3b9c451b2c4fe0b84558842";
+
+describe("castOracleNameForOOUi", () => {
+  it.each([
+    ["OptimisticOracle", "Optimistic"],
+    ["OptimisticOracleV2", "OptimisticV2"],
+    ["SkinnyOptimisticOracle", "Skinny"],
+    ["OptimisticOracleV3", "OptimisticV3"],
+    ["ManagedOptimisticOracleV2", "ManagedV2"],
+  ])("maps %s to %s", (oracleType, expected) => {
+    expect(castOracleNameForOOUi(oracleType)).toBe(expected);
+  });
+
+  it.each(["UnknownOracle", "OptimisticOracleV4", "optimisticOracleV2", ""])(
+    "omits links without throwing for an unmatched name: %j",
+    (oracleType) => {
+      expect(castOracleNameForOOUi(oracleType)).toBeUndefined();
+      expect(
+        constructOracleDappRequestLink(txHash, 1, oracleType, "4")
+      ).toBeUndefined();
+      expect(buildRequestLink(txHash, 137, oracleType, "4")).toBeUndefined();
+      expect(
+        buildRequestLink(txHash, 11155111, oracleType, "4", true)
+      ).toBeUndefined();
+    }
+  );
+});
 
 // Polygon mainnet OptimisticOracleV2 / ManagedOptimisticOracleV2 are the only
 // requests the explorer serves. Everything else keeps its oracle dapp link.
