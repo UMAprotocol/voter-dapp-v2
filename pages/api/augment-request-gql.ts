@@ -6,7 +6,7 @@ import { makeUniqueKeyForVote, decodeHexString } from "helpers";
 import {
   getSubgraphConfig,
   VoteSubgraphURL,
-  constructOoUiLink,
+  constructRequestLink,
 } from "./_common";
 import { encodeHexString } from "helpers/web3/decodeHexString";
 import { handleApiError } from "./_utils/errors";
@@ -137,7 +137,7 @@ async function ooSkinnyQuery({
       time,
       uniqueKey: optimisticPriceRequest.id,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructRequestLink(
         requestHash,
         chainId,
         "SkinnyOptimisticOracle",
@@ -215,7 +215,7 @@ async function oov3Query({
       time,
       uniqueKey: assertionId,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructRequestLink(
         assertionHash,
         chainId,
         "OptimisticOracleV3",
@@ -309,7 +309,7 @@ async function oov2Query({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructRequestLink(
         requestHash,
         chainId,
         "OptimisticOracleV2",
@@ -397,7 +397,7 @@ async function ooManagedQuery({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructRequestLink(
         requestHash,
         chainId,
         "ManagedOptimisticOracleV2",
@@ -459,7 +459,7 @@ async function oov1Query({
       time,
       uniqueKey,
       identifier,
-      ooRequestUrl: constructOoUiLink(
+      ooRequestUrl: constructRequestLink(
         requestHash,
         chainId,
         "OptimisticOracle",
