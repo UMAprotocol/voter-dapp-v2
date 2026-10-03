@@ -1,4 +1,4 @@
-import request from "graphql-request";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 
 /**
  * Thegraph can only return a maximum of 1000 documents at a time and does not support pagination features whereby the client can determine the total amount of documents in the store.
@@ -25,7 +25,7 @@ export async function fetchAllDocuments<
 
   do {
     const variables = { skip, limit: pageSize };
-    response = await request<RequestType>(endpoint, query, variables);
+    response = await subgraphRequest<RequestType>(endpoint, query, variables);
     allData = allData.concat(response[dataKey]);
     skip += pageSize;
     // if we get less than 1000 we know we got them all

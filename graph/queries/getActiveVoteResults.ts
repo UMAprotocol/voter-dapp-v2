@@ -1,6 +1,7 @@
 import { config } from "helpers/config";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import {
   PastVotesQuery,
   RevealedVotesByAddress,
@@ -59,7 +60,10 @@ export async function getActiveVoteResults(): Promise<
     }
   `;
 
-  const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
+  const result = await subgraphRequest<PastVotesQuery>(
+    endpoint,
+    pastVotesQuery
+  );
   const requests = result?.priceRequests?.map(
     ({
       identifier: { id },

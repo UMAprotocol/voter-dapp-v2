@@ -1,5 +1,6 @@
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 import { config } from "helpers/config";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import { SubgraphGlobals } from "types";
 const { graphEndpoint, overrideApr } = config;
 
@@ -15,6 +16,9 @@ export async function getGlobals() {
     }
   `;
 
-  const { global } = await request<SubgraphGlobals>(graphEndpoint, query);
+  const { global } = await subgraphRequest<SubgraphGlobals>(
+    graphEndpoint,
+    query
+  );
   return global;
 }
