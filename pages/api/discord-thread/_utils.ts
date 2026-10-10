@@ -7,7 +7,12 @@ import {
   ThreadIdMap,
   VoteDiscussionT,
 } from "types";
-import { discordToken, evidenceRationalDiscordChannelId } from "constant";
+import {
+  discordProxyKey,
+  discordProxyUrl,
+  discordToken,
+  evidenceRationalDiscordChannelId,
+} from "constant";
 import { sleep } from "lib/utils";
 import {
   extractValidateTitleAndTimestamp,
@@ -202,11 +207,49 @@ export function getRetryMilliseconds(
 // Discord API - Low-level Fetch
 // ============================================================================
 
+type DiscordRequestConfig = {
+  token: string;
+  proxyUrl: string;
+  proxyKey: string;
+};
+
+const discordRequestConfig: DiscordRequestConfig = {
+  token: discordToken,
+  proxyUrl: discordProxyUrl,
+  proxyKey: discordProxyKey,
+};
+
+if (Boolean(discordProxyUrl) !== Boolean(discordProxyKey)) {
+  console.warn(
+    "[discord] DISCORD_PROXY_URL and DISCORD_PROXY_KEY must both be set to use the proxy, calling Discord directly"
+  );
+}
+
+/**
+ * Resolves the URL and auth header for a Discord API endpoint.
+ * Goes through the proxy when both proxy env vars are set, otherwise calls Discord directly.
+ */
+export function getDiscordRequestTarget(
+  endpoint: string,
+  { token, proxyUrl, proxyKey }: DiscordRequestConfig = discordRequestConfig
+): { url: string; authorization: string } {
+  if (proxyUrl && proxyKey) {
+    return {
+      url: `${proxyUrl.replace(/\/+$/, "")}/discord-proxy/${endpoint}`,
+      authorization: `Bearer ${proxyKey}`,
+    };
+  }
+  return {
+    url: "https://discord.com/api/v10/" + endpoint,
+    authorization: `Bot ${token}`,
+  };
+}
+
 async function fetchDiscordEndpoint(endpoint: string): Promise<Response> {
-  const url = "https://discord.com/api/v10/" + endpoint;
+  const { url, authorization } = getDiscordRequestTarget(endpoint);
   return fetch(url, {
     headers: {
-      Authorization: `Bot ${discordToken}`,
+      Authorization: authorization,
       "Content-Type": "application/json; charset=UTF-8",
       "User-Agent": "DiscordBot (https://vote.uma.xyz, 1.0.0)",
     },
