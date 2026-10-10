@@ -9,14 +9,15 @@ const cache = vi.hoisted(() => new Map<string, unknown>());
 vi.mock("@upstash/redis", () => ({
   Redis: {
     fromEnv: () => ({
-      get: async (key: string) => structuredClone(cache.get(key) ?? null),
-      set: async (key: string, value: unknown) => {
+      get: (key: string) =>
+        Promise.resolve(structuredClone(cache.get(key) ?? null)),
+      set: (key: string, value: unknown) => {
         cache.set(key, structuredClone(value));
-        return "OK";
+        return Promise.resolve("OK");
       },
-      setex: async (key: string, _ttl: number, value: unknown) => {
+      setex: (key: string, _ttl: number, value: unknown) => {
         cache.set(key, structuredClone(value));
-        return "OK";
+        return Promise.resolve("OK");
       },
     }),
   },
@@ -34,7 +35,7 @@ vi.mock("web3/contracts/createVotingContractInstance", () => ({
 }));
 vi.mock("web3", () => ({
   getActiveVotes: vi.fn(),
-  getUpcomingVotes: async () => ({}),
+  getUpcomingVotes: () => Promise.resolve({}),
 }));
 vi.mock("lib/l2-ancillary-data", async (importOriginal) => ({
   ...(await importOriginal<typeof import("lib/l2-ancillary-data")>()),
@@ -106,7 +107,7 @@ it("keeps and matches colliding legacy threads across full and incremental refre
     >
   );
   let visible = fixtures.slice(0, 2);
-  vi.stubGlobal("fetch", async (input: string) => {
+  vi.stubGlobal("fetch", (input: string) => {
     const url = new URL(input);
     const channelId = url.pathname.split("/")[4];
     const after = url.searchParams.get("after");
@@ -119,7 +120,7 @@ it("keeps and matches colliding legacy threads across full and incremental refre
         : fixtures
             .filter(({ channelMessage }) => channelMessage.id === channelId)
             .map(({ announcement }) => announcement);
-    return Response.json(messages);
+    return Promise.resolve(Response.json(messages));
   });
 
   for (const count of [2, 3]) {
@@ -134,9 +135,50 @@ it("keeps and matches colliding legacy threads across full and incremental refre
     );
     const cachedMap = await getCachedThreadIdMap();
     expect(cachedMap?.threadIdMap[makeKey("N/A", time)]).toHaveLength(count);
-    for (const { title, transactionHash } of visible) {
+    for (const { title, transactionHash, channelMessage } of visible) {
       const discussion = await getCachedProcessedThread(makeKey(title, time));
       expect(discussion?.thread[0].message).toContain(transactionHash);
+      expect(discussion?.threadId).toBe(channelMessage.id);
     }
   }
+});
+
+it("preserves a named thread link when Discord redacts every message", async () => {
+  const time = 1791500000;
+  const id = createSnowflakeFromTimestamp(Date.now() - 1000);
+  vi.mocked(getActiveVotes).mockResolvedValue({
+    vote: {
+      identifier: formatBytes32String("YES_OR_NO_QUERY"),
+      decodedIdentifier: "YES_OR_NO_QUERY",
+      time,
+      decodedAncillaryData:
+        "q:Will it rain?,rules:Yes if rain.,ooRequester:1234",
+    } as PriceRequestT,
+  });
+  vi.stubGlobal("fetch", (input: string) => {
+    const channelId = new URL(input).pathname.split("/")[4];
+    return Promise.resolve(
+      Response.json(
+        channelId === evidenceRationalDiscordChannelId
+          ? [
+              {
+                id,
+                content: "",
+                thread: { id, name: `Will it rain? - ${time}` },
+              },
+            ]
+          : [{ id, content: "", timestamp: new Date().toISOString() }]
+      )
+    );
+  });
+  const response = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+  await handler({} as NextApiRequest, response as unknown as NextApiResponse);
+  expect(
+    await getCachedProcessedThread(makeKey("Will it rain?", time))
+  ).toEqual({
+    identifier: formatBytes32String("YES_OR_NO_QUERY"),
+    time,
+    thread: [],
+    threadId: id,
+  });
 });

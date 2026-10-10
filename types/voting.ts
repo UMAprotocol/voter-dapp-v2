@@ -323,6 +323,7 @@ export const VoteDiscussionT = ss.type({
   identifier: ss.string(),
   time: ss.number(),
   thread: ss.array(DiscordMessageT),
+  threadId: ss.optional(ss.pattern(ss.string(), /^\d{17,20}$/)),
 });
 export type VoteDiscussionT = ss.Infer<typeof VoteDiscussionT>;
 
