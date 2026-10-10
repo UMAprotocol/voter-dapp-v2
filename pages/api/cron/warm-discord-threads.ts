@@ -130,7 +130,8 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
 async function processVoteThread(
   voteInfo: VoteInfo,
   threadId: string,
-  verifyLegacy = false
+  verifyLegacy = false,
+  unambiguous = true
 ): Promise<number | null> {
   const { messages } = await getDiscordMessagesPaginated(threadId);
   if (
@@ -146,6 +147,9 @@ async function processVoteThread(
     identifier: voteInfo.identifier,
     time: voteInfo.time,
     thread: processedMessages,
+    // Legacy matches were verified above using their announcement. Ordinary
+    // title collisions are not enough evidence to publish a specific link.
+    threadId: verifyLegacy || unambiguous ? threadId : undefined,
   };
 
   await setCachedProcessedThread(voteInfo.requestKey, voteDiscussion);
@@ -180,7 +184,10 @@ async function processAllVotes(
         processed = await processVoteThread(
           voteInfo,
           threadId,
-          !currentThreadId
+          !currentThreadId,
+          threadIdMap[voteInfo.requestKey]?.length === 1 &&
+            voteInfo.requestKey !==
+              makeKey(MISSING_DISCORD_TITLE_FALLBACK, voteInfo.time)
         );
         if (processed !== null) break;
       }

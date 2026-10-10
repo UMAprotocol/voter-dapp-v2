@@ -27,7 +27,7 @@ All client-side fetching goes through react-query. Global defaults ([pages/\_app
 
 **Mainnet voting contract (RPC via ethers)** — the source of truth for the current round: active and upcoming votes are contract calls keyed by `roundId`, and per-user commit/reveal/encrypted-vote state comes from event scans bounded to roughly two rounds of blocks (`voteEventsBlockLookback`). Delegation state is also scanned from events, anchored at the contract's deploy block. These stay on RPC because the voting-v2 subgraph has no delegation handlers and drops the caller from commit/reveal events.
 
-**The voting-v2 subgraph (The Graph)** — queried directly from the client (`NEXT_PUBLIC_GRAPH_ENDPOINT`) for anything historical or aggregate: the full past-vote list (fetched *without* resolving L2 ancillary data), per-user voting/staking details and vote history, and active vote results.
+**The voting-v2 subgraph (The Graph)** — queried directly from the client (`NEXT_PUBLIC_GRAPH_ENDPOINT`) for anything historical or aggregate: the full past-vote list (fetched _without_ resolving L2 ancillary data), per-user voting/staking details and vote history, and active vote results.
 
 **L2 oracle spokes (RPC, server-side)** — requests bridged from an L2 carry a stamp in their ancillary data instead of the real payload. `/api/resolve-l2-ancillary-data` reads the original request from the child chain's OracleSpoke. The client only resolves votes that are actually rendered (see below).
 
@@ -84,6 +84,18 @@ To find Discord threads for votes, we maintain a **thread ID map** that maps vot
 2. **Full rebuilds**: Every **2 hours**, we do a full rebuild to catch any threads that may have been missed due to race conditions or API issues. Full rebuilds only look back **7 days** to avoid fetching ancient history.
 
 The request key format is `{title}-{timestamp}` with spaces removed, e.g., `U.S.strikeonSomaliabyFebruary7?-1770699603`. This key is generated both when looking up threads (from vote metadata) and when parsing Discord thread names.
+
+#### Direct discussion links
+
+`/api/discord-thread` also returns an optional `threadId`. The discussion panel links directly to that thread, including when Discord's Message Content Intent is unavailable and the messages are blank. Older processed caches can obtain the ID from the existing thread map without waiting for another cron run. Ambiguous title matches and unverified legacy `N/A` threads fall back to the discussion channel; legacy threads verified by the warmer retain their specific links.
+
+For local metadata-only validation, first pull the development environment as described above (it must include `DISCORD_TOKEN`), then run:
+
+```bash
+DISABLE_REDIS=true yarn dev -p 3000
+```
+
+In development only, this mode derives the thread map directly from the last seven days of parent-channel messages. It returns thread IDs without fetching discussion bodies or writing Redis caches. Open a current vote's discussion panel to check the link. Missing or ambiguous matches link to the channel instead. Production continues to read the cron-populated cache, with no live Discord calls on the request path. This mode does not restore summaries or historical thread coverage beyond the lookup window.
 
 ### 2. AI Summary Generation
 

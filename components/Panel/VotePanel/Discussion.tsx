@@ -1,5 +1,10 @@
 import { Button, LoadingSpinner, BulletinList } from "components";
-import { discordLink, mobileAndUnder, red500 } from "constant";
+import {
+  evidenceRationalDiscordChannelLink,
+  umaDiscordGuildId,
+  mobileAndUnder,
+  red500,
+} from "constant";
 import { format } from "date-fns";
 import { enCA } from "date-fns/locale";
 import { addOpacityToHsl } from "helpers";
@@ -105,23 +110,26 @@ function MessageItem({
 
 export function Discussion({ discussion, loading, error, bulletins }: Props) {
   const hasThread = Boolean(discussion?.thread?.length);
+  const discussionLink = discussion?.threadId
+    ? `https://discord.com/channels/${umaDiscordGuildId}/${discussion.threadId}`
+    : evidenceRationalDiscordChannelLink;
 
   return (
     <Wrapper>
       <Disclaimer>
         {error ? (
           <Text>
-            <Strong>⚠️ Error:</Strong> The Discord API recently starting rate
-            limiting our access; while we work on a solution, please visit the{" "}
+            <Strong>⚠️ Error:</Strong> Discord comments are currently
+            unavailable here. Please visit the{" "}
             <a
               className="underline"
               target="_blank"
-              href="https://discord.com/channels/718590743446290492/964000735073284127"
+              href={discussionLink}
               rel="noreferrer"
             >
-              #evidence-rational
+              discussion on Discord
             </a>{" "}
-            channel on discord.across.to for the full discussion.
+            to review the comments.
           </Text>
         ) : (
           <Text>
@@ -173,15 +181,23 @@ export function Discussion({ discussion, loading, error, bulletins }: Props) {
               ))}
             </>
           ) : (
-            <Text>No discussion found for this vote.</Text>
+            <Text>
+              {discussion?.threadId
+                ? "Comments are unavailable here. View this vote's discussion on Discord."
+                : "No discussion is available here. Check the discussion channel on Discord."}
+            </Text>
           )}
         </>
       )}
       <DiscordLinkButtonWrapper>
         <Button
           variant="primary"
-          label="Join discussion on Discord"
-          href={discordLink}
+          label={
+            discussion?.threadId
+              ? "View discussion on Discord"
+              : "View discussion channel on Discord"
+          }
+          href={discussionLink}
           width="100%"
         />
       </DiscordLinkButtonWrapper>
