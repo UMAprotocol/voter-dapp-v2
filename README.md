@@ -89,6 +89,10 @@ The request key format is `{title}-{timestamp}` with spaces removed, e.g., `U.S.
 
 `/api/discord-thread` also returns an optional `threadId`. The discussion panel links directly to that thread, including when Discord's Message Content Intent is unavailable and the messages are blank. Older processed caches can obtain the ID from the existing thread map without waiting for another cron run. Ambiguous title matches and unverified legacy `N/A` threads fall back to the discussion channel; legacy threads verified by the warmer retain their specific links.
 
+#### Temporary Discord proxy
+
+While the bot's Message Content Intent review is pending, Discord returns blank message bodies to `DISCORD_TOKEN`. Setting both `DISCORD_PROXY_URL` and `DISCORD_PROXY_KEY` routes every Discord read through a scoped proxy on UMABot (`${DISCORD_PROXY_URL}/discord-proxy/<endpoint>` with `Authorization: Bearer ${DISCORD_PROXY_KEY}`), which serves only `GET channels/{id}/messages` for the dispute-threads channel and its threads. Unset both to call Discord directly with `DISCORD_TOKEN` again.
+
 For local metadata-only validation, first pull the development environment as described above (it must include `DISCORD_TOKEN`), then run:
 
 ```bash
