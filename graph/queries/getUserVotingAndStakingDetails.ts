@@ -1,7 +1,8 @@
 import { BigNumber } from "ethers";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 import { bigNumberFromFloatString } from "helpers";
 import { config } from "helpers/config";
+import { subgraphRequest } from "helpers/util/subgraphRequest";
 import {
   UserDataQuery,
   UserDataT,
@@ -88,7 +89,7 @@ export async function getUserVotingAndStakingDetails(
   while (true) {
     const variables = { address, first: pageSize, skip };
 
-    const result = await request<{ users: FullUserNode[] }>(
+    const result = await subgraphRequest<{ users: FullUserNode[] }>(
       graphEndpoint,
       USER_WITH_VOTES_QUERY,
       variables
