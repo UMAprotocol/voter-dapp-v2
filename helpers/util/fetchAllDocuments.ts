@@ -7,6 +7,7 @@ import request from "graphql-request";
  * @param query your graphql request document
  * @param dataKey the key for the data you want. this is the root key of your graphql document
  * @param pageSize Chunk size per request. 1000 is the max we get back from thegraph but you can customize this.
+ * @param queryVariables Additional query variables preserved across every page.
  * @returns a flattened array of the document[dataKey] for all requests
  */
 export async function fetchAllDocuments<
@@ -17,14 +18,15 @@ export async function fetchAllDocuments<
   endpoint: string,
   query: string,
   dataKey: keyof RequestType,
-  pageSize = 1000
+  pageSize = 1000,
+  queryVariables: Record<string, unknown> = {}
 ) {
   let allData = new Array<RequestType[keyof RequestType][number]>();
   let skip = 0;
   let response: RequestType;
 
   do {
-    const variables = { skip, limit: pageSize };
+    const variables = { ...queryVariables, skip, limit: pageSize };
     response = await request<RequestType>(endpoint, query, variables);
     allData = allData.concat(response[dataKey]);
     skip += pageSize;

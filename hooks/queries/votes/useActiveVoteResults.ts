@@ -10,7 +10,7 @@ export function useActiveVoteResults() {
 
   const queryResult = useQuery({
     queryKey: [activeVoteResultsKey, roundId],
-    queryFn: () => getActiveVoteResults(),
+    queryFn: () => getActiveVoteResults(roundId),
     enabled: config.graphV2Enabled,
     refetchInterval: oneMinute,
     onError,

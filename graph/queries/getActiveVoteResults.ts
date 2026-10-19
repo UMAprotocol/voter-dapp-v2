@@ -1,5 +1,6 @@
 import { config } from "helpers/config";
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
+import { fetchAllDocuments } from "helpers/util/fetchAllDocuments";
 import { formatBytes32String, makePriceRequestsByKey } from "helpers";
 import {
   PastVotesQuery,
@@ -14,16 +15,24 @@ import { resolveAncillaryDataForRequests } from "helpers/voting/resolveAncillary
 
 const { graphEndpoint } = config;
 
-export async function getActiveVoteResults(): Promise<
+export async function getActiveVoteResults(
+  roundId: number
+): Promise<
   Record<UniqueKeyT, PriceRequestT & VoteParticipationT & VoteResultsT>
 > {
   const endpoint = graphEndpoint;
   if (!endpoint) throw new Error("V2 subgraph is disabled");
-  const pastVotesQuery = gql`
-    {
+  const activeVotesQuery = gql`
+    query getActiveVoteResults($roundId: BigInt!, $skip: Int!, $limit: Int!) {
       priceRequests(
-        where: { isResolved: false }
-        orderBy: resolvedPriceRequestIndex
+        first: $limit
+        skip: $skip
+        where: {
+          isResolved: false
+          isDeleted: false
+          latestRound_: { roundId: $roundId }
+        }
+        orderBy: id
         orderDirection: desc
       ) {
         identifier {
@@ -59,8 +68,17 @@ export async function getActiveVoteResults(): Promise<
     }
   `;
 
-  const result = await request<PastVotesQuery>(endpoint, pastVotesQuery);
-  const requests = result?.priceRequests?.map(
+  // Fetch only this round, including participation before the first reveal.
+  // Still paginate so a large round cannot lose results at the Graph's
+  // default 100-item cutoff. Keep pages small because round data is heavy.
+  const priceRequests = await fetchAllDocuments<PastVotesQuery>(
+    endpoint,
+    activeVotesQuery,
+    "priceRequests",
+    100,
+    { roundId: String(roundId) }
+  );
+  const requests = priceRequests.map(
     ({
       identifier: { id },
       time,
