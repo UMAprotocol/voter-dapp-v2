@@ -235,15 +235,17 @@ export function useVoteDeeplink() {
 
     // a provisional panel with the right key still needs its canonical
     // upgrade, so it does not count as "in sync"; nor does a panel showing
-    // the vote whose lazily-loaded content (L2 ancillary data, UMIP metadata
-    // for governance votes) has since landed. contentfulData is compared by
-    // reference: both sides come from the same react-query cache entry
+    // the vote whose lazily-loaded content or polled reveal results have
+    // since landed. Cached data is compared by reference so an unchanged
+    // vote does not repeatedly replace the panel.
     const upgradingProvisional = provisionalKeyRef.current === targetKey;
     const panelHasStaleContent =
       panelContent?.uniqueKey === targetKey &&
       !!resolvedTargetVote &&
       (panelContent.ancillaryDataL2 !== resolvedTargetVote.ancillaryDataL2 ||
-        panelContent.contentfulData !== resolvedTargetVote.contentfulData);
+        panelContent.contentfulData !== resolvedTargetVote.contentfulData ||
+        panelContent.results !== resolvedTargetVote.results ||
+        panelContent.participation !== resolvedTargetVote.participation);
     if (
       voteShowing &&
       panelContent?.uniqueKey === targetKey &&
