@@ -5,9 +5,17 @@ import {
   encryptedVotesKey,
 } from "constant";
 import { handleNotifications } from "helpers";
+import { getVotesToCommit } from "helpers/voting/getVotesToCommit";
 import { useHandleError, useVoteTimingContext } from "hooks";
-import { useState } from "react";
-import { CommitVotes, EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
+import { BigNumber } from "ethers";
+import { useRef, useState } from "react";
+import {
+  CommitVotes,
+  EncryptedVotesByKeyT,
+  SelectedVotesByKeyT,
+  VoteExistsByKeyT,
+  VoteT,
+} from "types";
 import { commitVotes } from "web3";
 
 const COMMIT_BATCH_SIZE = 100;
@@ -16,6 +24,12 @@ export function useCommitVotes(address: string | undefined) {
   const queryClient = useQueryClient();
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
+  // Confirmation can finish before the encrypted-vote query decrypts the new
+  // values. Retain submitted prices so an immediate retry skips them too.
+  const confirmedVotesByScope = useRef<
+    Record<string, Record<string, { price: string; transactionHash: string }>>
+  >({});
+  const scope = JSON.stringify([address, roundId]);
   const [commitBatchProgress, setCommitBatchProgress] = useState<{
     current: number;
     total: number;
@@ -24,17 +38,25 @@ export function useCommitVotes(address: string | undefined) {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async ({ voting, formattedVotes }: CommitVotes) => {
-      if (!formattedVotes.length) return;
+      const confirmedPrices = getConfirmedPrices();
+      const votesToCommit = formattedVotes.filter((vote) => {
+        const confirmedPrice = confirmedPrices[vote.uniqueKey];
+        return (
+          confirmedPrice === undefined ||
+          !BigNumber.from(confirmedPrice).eq(vote.price)
+        );
+      });
+      if (!votesToCommit.length) return;
 
       const batchSize = COMMIT_BATCH_SIZE;
-      const total = Math.ceil(formattedVotes.length / batchSize);
+      const total = Math.ceil(votesToCommit.length / batchSize);
       const confirmations: Promise<PromiseSettledResult<void>>[] = [];
       let submissionFailure: { error: unknown } | undefined;
 
       try {
         for (
           let offset = 0;
-          offset < formattedVotes.length;
+          offset < votesToCommit.length;
           offset += batchSize
         ) {
           if (total > 1) {
@@ -44,7 +66,7 @@ export function useCommitVotes(address: string | undefined) {
               submitted: false,
             });
           }
-          const batch = formattedVotes.slice(offset, offset + batchSize);
+          const batch = votesToCommit.slice(offset, offset + batchSize);
           // Request the next signature once this transaction is broadcast.
           const tx = await commitVotes({ voting, formattedVotes: batch });
           if (!tx) continue;
@@ -91,10 +113,30 @@ export function useCommitVotes(address: string | undefined) {
     onSettled: () => setCommitBatchProgress(undefined),
   });
 
+  function getConfirmedPrices() {
+    const committedVotes = queryClient.getQueryData<VoteExistsByKeyT>([
+      committedVotesKey,
+      address,
+      roundId,
+    ]);
+    return Object.fromEntries(
+      Object.entries(confirmedVotesByScope.current[scope] ?? {})
+        .filter(
+          ([uniqueKey, vote]) =>
+            committedVotes?.[uniqueKey] === vote.transactionHash
+        )
+        .map(([uniqueKey, vote]) => [uniqueKey, vote.price])
+    );
+  }
+
   function cacheCommittedVotes(
     formattedVotes: CommitVotes["formattedVotes"],
     transactionHash: string
   ) {
+    const confirmedVotes = (confirmedVotesByScope.current[scope] ??= {});
+    for (const { uniqueKey, price } of formattedVotes) {
+      confirmedVotes[uniqueKey] = { price, transactionHash };
+    }
     const addCommittedVotes = (oldCommittedVotes?: VoteExistsByKeyT) => {
       const newCommittedVotes = { ...oldCommittedVotes };
 
@@ -137,5 +179,7 @@ export function useCommitVotes(address: string | undefined) {
     isCommittingVotes: isLoading,
     commitBatchProgress,
     commitBatchSize: COMMIT_BATCH_SIZE,
+    getPendingVotes: (votes: VoteT[], selectedVotes: SelectedVotesByKeyT) =>
+      getVotesToCommit(votes, selectedVotes, getConfirmedPrices()),
   };
 }

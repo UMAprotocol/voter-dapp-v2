@@ -51,6 +51,7 @@ vi.mock("web3", async () => ({
   ...(await import("web3/mutations/votes/commitVotes")),
 }));
 vi.mock("helpers", () => ({
+  getPrecisionForIdentifier: () => 18,
   getGasFeeOverrides: () => Promise.resolve({}),
   handleNotifications: async (tx: { wait: () => Promise<unknown> }) =>
     tx.wait(),
@@ -63,10 +64,12 @@ function setup(count: number) {
       ({
         uniqueKey: `vote-${index}`,
         identifier: "identifier",
+        decodedIdentifier: "YES_OR_NO_QUERY",
         time: index,
         ancillaryData: "0x",
         hash: `hash-${index}`,
         encryptedVote: `encrypted-${index}`,
+        price: "1000000000000000000",
       } as VoteFormattedToCommitT)
   );
   let transactionNumber = 0;
@@ -88,12 +91,13 @@ function setup(count: number) {
         JSON.stringify(args),
     },
   } as unknown as CommitVotes["voting"];
+  let getPendingVotes!: ReturnType<typeof useCommitVotes>["getPendingVotes"];
   function Harness() {
-    useCommitVotes("voter");
+    getPendingVotes = useCommitVotes("voter").getPendingVotes;
     return null;
   }
   renderToString(createElement(Harness));
-  return { formattedVotes, voting, send };
+  return { formattedVotes, voting, send, getPendingVotes };
 }
 
 beforeEach(() => {
@@ -209,6 +213,86 @@ describe("commit batches", () => {
       wait: () => Promise.resolve({ transactionHash: "first-batch" }),
     });
     await pending;
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries only failed votes even when formatting generates new hashes and ciphertext", async () => {
+    const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+    send
+      .mockResolvedValueOnce({
+        wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+      })
+      .mockRejectedValueOnce(new Error("User rejected the transaction"));
+    await expect(mutation.mutate({ voting, formattedVotes })).rejects.toThrow();
+    const selections = Object.fromEntries(
+      formattedVotes.map((vote) => [vote.uniqueKey, "1"])
+    );
+    expect(getPendingVotes(formattedVotes, selections)).toEqual(
+      formattedVotes.slice(100)
+    );
+
+    const retryVotes = formattedVotes.map((vote) => ({
+      ...vote,
+      hash: `retry-${vote.hash}`,
+      encryptedVote: `retry-${vote.encryptedVote}`,
+    }));
+    await mutation.mutate({ voting, formattedVotes: retryVotes });
+
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(send.mock.calls[2][0]).toHaveLength(41);
+    expect(queryClient.getQueryData([committedVotesKey, "voter", 42])).toEqual(
+      Object.fromEntries(
+        formattedVotes.map((vote, index) => [
+          vote.uniqueKey,
+          index < 100 ? "first-batch" : "tx-1",
+        ])
+      )
+    );
+    expect(
+      queryClient.getQueryData<Record<string, string>>([
+        encryptedVotesKey,
+        "voter",
+        42,
+      ])?.["vote-0"]
+    ).toBe("encrypted-0");
+  });
+
+  it("includes deliberate edits to confirmed votes when retrying", async () => {
+    const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+    send
+      .mockResolvedValueOnce({
+        wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+      })
+      .mockRejectedValueOnce(new Error("User rejected the transaction"));
+    await expect(mutation.mutate({ voting, formattedVotes })).rejects.toThrow();
+
+    const selections = Object.fromEntries(
+      formattedVotes.map((vote, index) => [
+        vote.uniqueKey,
+        index === 0 ? "2" : "1",
+      ])
+    );
+    expect(getPendingVotes(formattedVotes, selections)).toHaveLength(42);
+    const retryVotes = formattedVotes.map((vote, index) => ({
+      ...vote,
+      price: index === 0 ? "2000000000000000000" : vote.price,
+      hash: `retry-${vote.hash}`,
+      encryptedVote: `retry-${vote.encryptedVote}`,
+    }));
+    await mutation.mutate({ voting, formattedVotes: retryVotes });
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(send.mock.calls[2][0]).toHaveLength(42);
+    expect(getPendingVotes(formattedVotes, selections)).toEqual([]);
+  });
+
+  it("does not skip a vote if its cached commit has since changed", async () => {
+    const { formattedVotes, voting, send, getPendingVotes } = setup(1);
+    await mutation.mutate({ voting, formattedVotes });
+    queryClient.setQueryData([committedVotesKey, "voter", 42], {
+      "vote-0": "another-commit",
+    });
+    expect(getPendingVotes(formattedVotes, { "vote-0": "1" })).toHaveLength(1);
+    await mutation.mutate({ voting, formattedVotes });
     expect(send).toHaveBeenCalledTimes(2);
   });
 

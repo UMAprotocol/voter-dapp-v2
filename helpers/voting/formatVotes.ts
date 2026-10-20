@@ -86,6 +86,7 @@ export async function formatVotesToCommit({
         ...vote,
         hash,
         encryptedVote,
+        price,
       };
     })
   );

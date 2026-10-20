@@ -66,15 +66,14 @@ export function ActiveVotes() {
     isCommittingVotes,
     commitBatchProgress,
     commitBatchSize,
+    getPendingVotes,
   } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const { selectedVotes, selectVote, setSelectedVotes } =
     useVoteSelectionContext();
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
-  // Count the same intersection used to build the commit transaction, excluding
-  // any stale selections from previous rounds.
-  const selectedVotesCount =
-    activeVoteList?.filter((vote) => selectedVotes[vote.uniqueKey]).length ?? 0;
+  const votesToCommit = getPendingVotes(activeVoteList ?? [], selectedVotes);
+  const selectedVotesCount = votesToCommit.length;
   const commitTransactionCount =
     commitBatchProgress?.total ??
     Math.ceil(selectedVotesCount / commitBatchSize);
@@ -111,17 +110,7 @@ export function ActiveVotes() {
     const hasStaked = stakedBalance?.gt(0) ?? false;
     const hasSigner = !!signer;
 
-    const hasPreviouslyCommittedAll =
-      !!activeVoteList &&
-      activeVoteList.filter((vote) => vote.decryptedVote).length ===
-        activeVoteList.length;
-    // check if we have votes to commit by seeing there are more than 1 and its dirty
-    const hasVotesToCommit =
-      selectedVotesCount > 0
-        ? hasPreviouslyCommittedAll
-          ? isDirty()
-          : true
-        : false;
+    const hasVotesToCommit = selectedVotesCount > 0;
     const hasVotesToReveal = getVotesToReveal().length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
@@ -280,7 +269,7 @@ export function ActiveVotes() {
       return;
 
     const formattedVotes = await formatVotesToCommit({
-      votes: activeVoteList,
+      votes: votesToCommit,
       selectedVotes,
       roundId,
       address: delegatorAddress ? delegatorAddress : address,

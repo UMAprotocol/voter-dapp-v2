@@ -191,6 +191,7 @@ export type FormatVotesToCommit = {
 export type VoteFormattedToCommitT = VoteT & {
   encryptedVote: EncryptedVoteT;
   hash: string;
+  price: string;
 };
 
 export type CommitVotes = {
