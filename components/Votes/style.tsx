@@ -15,6 +15,31 @@ export const ButtonOuterWrapper = styled.div`
   margin-top: 30px;
 `;
 
+export const RevealBatchControls = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+  font: var(--text-sm);
+  text-align: right;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  select {
+    padding: 10px 15px;
+    border: 1px solid var(--black);
+    border-radius: 5px;
+    background: var(--white);
+    color: var(--black);
+    font: var(--text-md);
+  }
+`;
+
 export const ButtonInnerWrapper = styled.div`
   display: flex;
   justify-content: end;

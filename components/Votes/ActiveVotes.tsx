@@ -8,6 +8,7 @@ import {
 } from "components";
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
+import { getVotesToReveal } from "helpers/voting/getVotesToReveal";
 import {
   useAccountDetails,
   useCommitVotes,
@@ -30,6 +31,7 @@ import {
   ButtonSpacer,
   Divider,
   InfoText,
+  RevealBatchControls,
   RecommittingVotesMessage,
   Title,
   VotesTableWrapper,
@@ -62,10 +64,18 @@ export function ActiveVotes() {
   const { openVote } = useVoteUrl();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
   const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
-  const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
+  const { revealVotesMutation, isRevealingVotes } = useRevealVotes(
+    isDelegate ? delegatorAddress : address
+  );
   const { selectedVotes, selectVote, setSelectedVotes } =
     useVoteSelectionContext();
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  const [revealBatchSize, setRevealBatchSize] = useState("all");
+  const votesToReveal = getVotesToReveal(activeVoteList);
+  const revealBatch = getVotesToReveal(
+    activeVoteList,
+    revealBatchSize === "all" ? undefined : Number(revealBatchSize)
+  );
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -116,7 +126,7 @@ export function ActiveVotes() {
           ? isDirty()
           : true
         : false;
-    const hasVotesToReveal = getVotesToReveal().length > 0;
+    const hasVotesToReveal = votesToReveal.length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
       activeVoteList?.filter((vote) => {
@@ -218,7 +228,12 @@ export function ActiveVotes() {
     }
     if (isReveal) {
       actionConfig.hidden = false;
-      actionConfig.label = "Reveal all votes";
+      actionConfig.label =
+        revealBatchSize === "all"
+          ? "Reveal all votes"
+          : `Reveal ${revealBatch.length} ${
+              revealBatch.length === 1 ? "vote" : "votes"
+            }`;
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
@@ -282,20 +297,8 @@ export function ActiveVotes() {
 
     revealVotesMutation({
       voting: votingWriter,
-      votesToReveal: getVotesToReveal(),
+      votesToReveal: revealBatch,
     });
-  }
-
-  function getVotesToReveal() {
-    return (
-      activeVoteList?.filter(
-        (vote) =>
-          vote.isCommitted &&
-          !!vote.decryptedVote &&
-          vote.isRevealed === false &&
-          vote.canReveal
-      ) ?? []
-    );
   }
 
   function clearSelectedVote(vote: VoteT) {
@@ -332,6 +335,38 @@ export function ActiveVotes() {
         </RecommittingVotesMessage>
       ) : null}
       <ButtonOuterWrapper>
+        {phase === "reveal" &&
+        address &&
+        signer &&
+        hasSigningKey &&
+        !isWrongChain ? (
+          <RevealBatchControls>
+            <label>
+              Votes per transaction
+              <select
+                value={revealBatchSize}
+                onChange={(event) => setRevealBatchSize(event.target.value)}
+                disabled={isRevealingVotes || votesToReveal.length === 0}
+                aria-describedby="reveal-batch-help"
+              >
+                <option value="all">All</option>
+                <option value="50">50</option>
+                <option value="25">25</option>
+                <option value="10">10</option>
+                <option value="1">1</option>
+              </select>
+            </label>
+            <p id="reveal-batch-help">
+              If your wallet cannot reveal all votes, choose a smaller batch.
+              Submit each batch to reveal all your votes.
+            </p>
+            <p role="status">
+              {votesToReveal.length}{" "}
+              {votesToReveal.length === 1 ? "vote" : "votes"} remaining to
+              reveal.
+            </p>
+          </RevealBatchControls>
+        ) : null}
         {actionStatus.infoText ? (
           <Tooltip label={actionStatus.infoText.tooltip}>
             <InfoText>

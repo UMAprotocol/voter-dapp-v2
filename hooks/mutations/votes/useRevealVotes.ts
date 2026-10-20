@@ -11,12 +11,18 @@ export function useRevealVotes(address: string | undefined) {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: revealVotes,
+    // A wallet or round change while confirming must not move this batch
+    // into the new account's or round's cache.
+    onMutate: () => ({
+      queryKey: [revealedVotesKey, address, roundId],
+    }),
     onError,
-    onSuccess: (data, { votesToReveal }) => {
+    onSuccess: (data, { votesToReveal }, context) => {
       clearErrors();
+      if (!context) return;
 
       queryClient.setQueryData<VoteExistsByKeyT>(
-        [revealedVotesKey, address, roundId],
+        context.queryKey,
         (oldRevealedVotes) => {
           const newRevealedVotes = { ...oldRevealedVotes };
 
