@@ -5,21 +5,16 @@ import {
   encryptedVotesKey,
 } from "constant";
 import { handleNotifications } from "helpers";
-import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
+import { useHandleError, useVoteTimingContext } from "hooks";
 import { useState } from "react";
 import { CommitVotes, EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
 import { commitVotes } from "web3";
 
-const METAMASK_COMMIT_BATCH_SIZE = 100;
+const COMMIT_BATCH_SIZE = 100;
 
 export function useCommitVotes(address: string | undefined) {
   const queryClient = useQueryClient();
   const { roundId } = useVoteTimingContext();
-  const { connectedWallet } = useAccountDetails();
-  const commitBatchSize =
-    connectedWallet?.label === "MetaMask"
-      ? METAMASK_COMMIT_BATCH_SIZE
-      : undefined;
   const { onError, clearErrors } = useHandleError();
   const [commitBatchProgress, setCommitBatchProgress] = useState<{
     current: number;
@@ -31,7 +26,7 @@ export function useCommitVotes(address: string | undefined) {
     mutationFn: async ({ voting, formattedVotes }: CommitVotes) => {
       if (!formattedVotes.length) return;
 
-      const batchSize = commitBatchSize ?? formattedVotes.length;
+      const batchSize = COMMIT_BATCH_SIZE;
       const total = Math.ceil(formattedVotes.length / batchSize);
       const confirmations: Promise<PromiseSettledResult<void>>[] = [];
       let submissionFailure: { error: unknown } | undefined;
@@ -141,6 +136,6 @@ export function useCommitVotes(address: string | undefined) {
     commitVotesMutation: mutate,
     isCommittingVotes: isLoading,
     commitBatchProgress,
-    commitBatchSize,
+    commitBatchSize: COMMIT_BATCH_SIZE,
   };
 }

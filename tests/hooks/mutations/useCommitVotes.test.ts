@@ -105,7 +105,7 @@ beforeEach(() => {
   });
 });
 
-describe("MetaMask commit batches", () => {
+describe("commit batches", () => {
   it.each([
     [0, []],
     [1, [1]],
@@ -138,15 +138,16 @@ describe("MetaMask commit batches", () => {
     );
   });
 
-  it.each(["Rabby", "Coinbase Wallet", "WalletConnect", undefined])(
-    "keeps %s commits in a single transaction",
+  it.each(["MetaMask", "Rabby", "Coinbase Wallet", "WalletConnect", undefined])(
+    "batches commits for %s",
     async (label) => {
       state.walletLabel = label;
       const { formattedVotes, voting, send } = setup(141);
       await mutation.mutate({ voting, formattedVotes });
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledTimes(2);
       expect(send).toHaveBeenCalledWith(expect.any(Array), {});
-      expect(send.mock.calls[0][0]).toHaveLength(141);
+      expect(send.mock.calls[0][0]).toHaveLength(100);
+      expect(send.mock.calls[1][0]).toHaveLength(41);
     }
   );
 

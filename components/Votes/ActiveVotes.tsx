@@ -77,7 +77,7 @@ export function ActiveVotes() {
     activeVoteList?.filter((vote) => selectedVotes[vote.uniqueKey]).length ?? 0;
   const commitTransactionCount =
     commitBatchProgress?.total ??
-    (commitBatchSize ? Math.ceil(selectedVotesCount / commitBatchSize) : 1);
+    Math.ceil(selectedVotesCount / commitBatchSize);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -179,7 +179,7 @@ export function ActiveVotes() {
             : `Submit batch ${commitBatchProgress.current} of ${commitBatchProgress.total}`;
           actionConfig.tooltip = commitBatchProgress.submitted
             ? "Waiting for your submitted transactions to confirm."
-            : "Confirm each batch in MetaMask. Each batch contains up to 100 votes.";
+            : "Confirm each batch in your wallet. Each batch contains up to 100 votes.";
         } else {
           actionConfig.tooltip = "Committing votes in progress...";
         }
@@ -355,10 +355,13 @@ export function ActiveVotes() {
               <WarningIcon />
             </IconWrapper>
             <span>
-              Your votes will be committed in {commitTransactionCount}{" "}
-              transactions. Please approve each transaction in MetaMask. You can
-              submit the next transaction without waiting for the previous one
-              to confirm.
+              Your votes will be committed in{" "}
+              <strong className="text-red-500">
+                {commitTransactionCount} transactions
+              </strong>
+              . Please approve each transaction in your wallet. You can submit
+              the next transaction without waiting for the previous one to
+              confirm.
             </span>
           </InfoText>
         ) : null}
