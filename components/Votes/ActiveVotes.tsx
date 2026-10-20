@@ -61,11 +61,23 @@ export function ActiveVotes() {
   );
   const { openVote } = useVoteUrl();
   const [{ connecting: isConnectingWallet }, connect] = useConnectWallet();
-  const { commitVotesMutation, isCommittingVotes } = useCommitVotes(address);
+  const {
+    commitVotesMutation,
+    isCommittingVotes,
+    commitBatchProgress,
+    commitBatchSize,
+  } = useCommitVotes(address);
   const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
   const { selectedVotes, selectVote, setSelectedVotes } =
     useVoteSelectionContext();
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
+  // Count the same intersection used to build the commit transaction, excluding
+  // any stale selections from previous rounds.
+  const selectedVotesCount =
+    activeVoteList?.filter((vote) => selectedVotes[vote.uniqueKey]).length ?? 0;
+  const commitTransactionCount =
+    commitBatchProgress?.total ??
+    (commitBatchSize ? Math.ceil(selectedVotesCount / commitBatchSize) : 1);
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -103,12 +115,6 @@ export function ActiveVotes() {
       !!activeVoteList &&
       activeVoteList.filter((vote) => vote.decryptedVote).length ===
         activeVoteList.length;
-    // counting how many on-screen votes we have edited with committable
-    // values (non empty); selectedVotes may briefly hold stale keys from a
-    // previous round, and the commit tx is built from this intersection too
-    const selectedVotesCount =
-      activeVoteList?.filter((vote) => selectedVotes[vote.uniqueKey]).length ??
-      0;
     // check if we have votes to commit by seeing there are more than 1 and its dirty
     const hasVotesToCommit =
       selectedVotesCount > 0
@@ -167,7 +173,13 @@ export function ActiveVotes() {
       }
       if (isCommittingVotes) {
         actionConfig.disabled = true;
-        actionConfig.tooltip = "Committing votes in progress...";
+        if (commitBatchProgress) {
+          actionConfig.label = `Committing batch ${commitBatchProgress.current} of ${commitBatchProgress.total}`;
+          actionConfig.tooltip =
+            "Confirm each batch in MetaMask. Each batch contains up to 100 votes.";
+        } else {
+          actionConfig.tooltip = "Committing votes in progress...";
+        }
         return actionConfig;
       }
       if (isDelegate) {
@@ -332,6 +344,20 @@ export function ActiveVotes() {
         </RecommittingVotesMessage>
       ) : null}
       <ButtonOuterWrapper>
+        {phase === "commit" &&
+        commitTransactionCount > 1 &&
+        (actionStatus.canCommit || isCommittingVotes) ? (
+          <InfoText role="status">
+            <IconWrapper width={20} height={20}>
+              <WarningIcon />
+            </IconWrapper>
+            <span>
+              Your votes will be committed in {commitTransactionCount}{" "}
+              transactions. Please confirm each transaction in MetaMask. The
+              next request will appear after the previous transaction confirms.
+            </span>
+          </InfoText>
+        ) : null}
         {actionStatus.infoText ? (
           <Tooltip label={actionStatus.infoText.tooltip}>
             <InfoText>

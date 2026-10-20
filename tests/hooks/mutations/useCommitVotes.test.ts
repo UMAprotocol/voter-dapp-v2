@@ -1,0 +1,224 @@
+import {
+  MutationObserver,
+  QueryClient,
+  UseMutationOptions,
+} from "@tanstack/react-query";
+import { createElement } from "react";
+import { renderToString } from "react-dom/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  committedVotesKey,
+  committedVotesKeyByCaller,
+  encryptedVotesKey,
+} from "constant";
+import { useCommitVotes } from "hooks/mutations/votes/useCommitVotes";
+import { CommitVotes, VoteFormattedToCommitT } from "types";
+
+const state = vi.hoisted(() => ({
+  walletLabel: "MetaMask" as string | undefined,
+  clearErrors: vi.fn(),
+  onError: vi.fn(),
+}));
+
+let queryClient: QueryClient;
+let mutation: MutationObserver<unknown, unknown, CommitVotes>;
+
+vi.mock("constant", async () => import("constant/query/queryKeys"));
+vi.mock("@tanstack/react-query", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@tanstack/react-query")>()),
+  useQueryClient: () => queryClient,
+  useMutation: (options: UseMutationOptions<unknown, unknown, CommitVotes>) => {
+    mutation = new MutationObserver(queryClient, options);
+    return {
+      mutate: (variables: CommitVotes) => mutation.mutate(variables),
+      isLoading: false,
+    };
+  },
+}));
+vi.mock("hooks", () => ({
+  useAccountDetails: () => ({
+    connectedWallet: state.walletLabel
+      ? { label: state.walletLabel }
+      : undefined,
+  }),
+  useVoteTimingContext: () => ({ roundId: 42 }),
+  useHandleError: () => ({
+    onError: state.onError,
+    clearErrors: state.clearErrors,
+  }),
+}));
+vi.mock("web3", async () => ({
+  ...(await import("web3/mutations/votes/commitVotes")),
+}));
+vi.mock("helpers", () => ({
+  getGasFeeOverrides: () => Promise.resolve({}),
+  handleNotifications: async (tx: { wait: () => Promise<unknown> }) =>
+    tx.wait(),
+}));
+
+function setup(count: number) {
+  const formattedVotes = Array.from(
+    { length: count },
+    (_, index) =>
+      ({
+        uniqueKey: `vote-${index}`,
+        identifier: "identifier",
+        time: index,
+        ancillaryData: "0x",
+        hash: `hash-${index}`,
+        encryptedVote: `encrypted-${index}`,
+      } as VoteFormattedToCommitT)
+  );
+  let transactionNumber = 0;
+  const send = vi.fn((..._args: unknown[]) => {
+    const transactionHash = `tx-${++transactionNumber}`;
+    return Promise.resolve({
+      wait: () => Promise.resolve({ transactionHash }),
+    });
+  });
+  const voting = {
+    provider: {},
+    functions: {
+      multicall: send,
+      commitAndEmitEncryptedVote: send,
+    },
+    interface: {
+      getFunction: () => "commitAndEmitEncryptedVote",
+      encodeFunctionData: (_fragment: string, args: unknown[]) =>
+        JSON.stringify(args),
+    },
+  } as unknown as CommitVotes["voting"];
+  function Harness() {
+    useCommitVotes("voter");
+    return null;
+  }
+  renderToString(createElement(Harness));
+  return { formattedVotes, voting, send };
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  state.walletLabel = "MetaMask";
+  queryClient = new QueryClient({
+    defaultOptions: { mutations: { retry: false, cacheTime: 0 } },
+    logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  });
+});
+
+describe("MetaMask commit batches", () => {
+  it.each([
+    [0, []],
+    [1, [1]],
+    [100, [100]],
+    [101, [100, 1]],
+    [141, [100, 41]],
+    [200, [100, 100]],
+    [201, [100, 100, 1]],
+  ])("commits %i votes in bounded transactions", async (count, sizes) => {
+    const { formattedVotes, voting, send } = setup(count);
+    await mutation.mutate({ voting, formattedVotes });
+
+    const calls = send.mock.calls;
+    expect(
+      calls.map((args) => (Array.isArray(args[0]) ? args[0].length : 1))
+    ).toEqual(sizes);
+    const encodedVotes = calls.flatMap((args) =>
+      Array.isArray(args[0]) ? args[0] : [JSON.stringify(args.slice(0, 5))]
+    );
+    expect(encodedVotes).toEqual(
+      formattedVotes.map((vote) =>
+        JSON.stringify([
+          vote.identifier,
+          vote.time,
+          vote.ancillaryData,
+          vote.hash,
+          vote.encryptedVote,
+        ])
+      )
+    );
+  });
+
+  it.each(["Rabby", "Coinbase Wallet", "WalletConnect", undefined])(
+    "keeps %s commits in a single transaction",
+    async (label) => {
+      state.walletLabel = label;
+      const { formattedVotes, voting, send } = setup(141);
+      await mutation.mutate({ voting, formattedVotes });
+      expect(send).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledWith(expect.any(Array), {});
+      expect(send.mock.calls[0][0]).toHaveLength(141);
+    }
+  );
+
+  it("waits for confirmation and caches each batch with its own transaction hash", async () => {
+    const { formattedVotes, voting, send } = setup(141);
+    let confirm!: (receipt: { transactionHash: string }) => void;
+    const receipt = new Promise<{ transactionHash: string }>((resolve) => {
+      confirm = resolve;
+    });
+    const waiting = vi.fn(() => receipt);
+    send.mockResolvedValueOnce({ wait: waiting });
+    const pending = mutation.mutate({ voting, formattedVotes });
+    await vi.waitFor(() => expect(waiting).toHaveBeenCalled());
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(
+      queryClient.getQueryData([committedVotesKey, "voter", 42])
+    ).toBeUndefined();
+
+    confirm({ transactionHash: "first-batch" });
+    await pending;
+    for (const key of [committedVotesKey, committedVotesKeyByCaller]) {
+      const committed = queryClient.getQueryData([key, "voter", 42]);
+      expect(committed).toEqual(
+        Object.fromEntries(
+          formattedVotes.map((vote, index) => [
+            vote.uniqueKey,
+            index < 100 ? "first-batch" : "tx-1",
+          ])
+        )
+      );
+    }
+    expect(queryClient.getQueryData([encryptedVotesKey, "voter", 42])).toEqual(
+      Object.fromEntries(
+        formattedVotes.map((vote) => [vote.uniqueKey, vote.encryptedVote])
+      )
+    );
+  });
+
+  it.each(["submission", "confirmation"])(
+    "preserves confirmed votes and stops after a batch fails during %s",
+    async (failure) => {
+      const { formattedVotes, voting, send } = setup(241);
+      const error = new Error("Batch failed");
+      send.mockResolvedValueOnce({
+        wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+      });
+      if (failure === "submission") {
+        send.mockRejectedValueOnce(error);
+      } else {
+        send.mockResolvedValueOnce({
+          wait: () => Promise.reject(error),
+        });
+      }
+
+      await expect(mutation.mutate({ voting, formattedVotes })).rejects.toThrow(
+        "Batch failed"
+      );
+      expect(send).toHaveBeenCalledTimes(2);
+      expect(state.onError).toHaveBeenCalled();
+      for (const key of [
+        committedVotesKey,
+        committedVotesKeyByCaller,
+        encryptedVotesKey,
+      ]) {
+        const cached = queryClient.getQueryData<Record<string, string>>([
+          key,
+          "voter",
+          42,
+        ]);
+        expect(Object.keys(cached ?? {})).toHaveLength(100);
+        expect(cached?.["vote-100"]).toBeUndefined();
+      }
+    }
+  );
+});
