@@ -310,6 +310,47 @@ describe("commit batches", () => {
     ).toBe("encrypted-0");
   });
 
+  it("skips confirmed votes after an older refetch omits the successful batch", async () => {
+    const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+    let finishRefetch!: (votes: Record<string, string>) => void;
+    const refetch = queryClient.fetchQuery({
+      queryKey: [committedVotesKey, "voter", 42],
+      queryFn: () =>
+        new Promise<Record<string, string>>((resolve) => {
+          finishRefetch = resolve;
+        }),
+    });
+    send
+      .mockResolvedValueOnce({
+        wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+      })
+      .mockRejectedValueOnce(new Error("User rejected the transaction"));
+    await expect(mutation.mutate({ voting, formattedVotes })).rejects.toThrow();
+    expect(
+      queryClient.getQueryData([committedVotesKey, "voter", 42])
+    ).toHaveProperty("vote-0", "first-batch");
+
+    finishRefetch({});
+    await refetch;
+    expect(queryClient.getQueryData([committedVotesKey, "voter", 42])).toEqual(
+      {}
+    );
+    const selections = Object.fromEntries(
+      formattedVotes.map((vote) => [vote.uniqueKey, "1"])
+    );
+    expect(getPendingVotes(formattedVotes, selections)).toEqual(
+      formattedVotes.slice(100)
+    );
+    // A deliberate edit must still be eligible despite the stale cache.
+    expect(
+      getPendingVotes(formattedVotes, { ...selections, "vote-0": "2" })
+    ).toEqual([formattedVotes[0], ...formattedVotes.slice(100)]);
+
+    await mutation.mutate({ voting, formattedVotes });
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(send.mock.calls[2][0]).toHaveLength(41);
+  });
+
   it("includes deliberate edits to confirmed votes when retrying", async () => {
     const { formattedVotes, voting, send, getPendingVotes } = setup(141);
     send

@@ -69,6 +69,9 @@ export function useCommitVotes(address: string | undefined) {
       Object.entries(confirmedVotesByScope.current[scope] ?? {})
         .filter(
           ([uniqueKey, vote]) =>
+            // A refetch from before confirmation can omit this vote. Only a
+            // different known commit should supersede our confirmed price.
+            committedVotes?.[uniqueKey] === undefined ||
             committedVotes?.[uniqueKey] === vote.transactionHash
         )
         .map(([uniqueKey, vote]) => [uniqueKey, vote.price])
