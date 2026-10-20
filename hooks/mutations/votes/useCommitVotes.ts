@@ -4,8 +4,12 @@ import {
   committedVotesKeyByCaller,
   encryptedVotesKey,
 } from "constant";
-import { handleNotifications } from "helpers";
 import { getVotesToCommit } from "helpers/voting/getVotesToCommit";
+import {
+  submitVoteBatches,
+  VOTE_BATCH_SIZE,
+  VoteBatchProgress,
+} from "helpers/voting/submitVoteBatches";
 import { useHandleError, useVoteTimingContext } from "hooks";
 import { BigNumber } from "ethers";
 import { useRef, useState } from "react";
@@ -18,8 +22,6 @@ import {
 } from "types";
 import { commitVotes } from "web3";
 
-const COMMIT_BATCH_SIZE = 100;
-
 export function useCommitVotes(address: string | undefined) {
   const queryClient = useQueryClient();
   const { roundId } = useVoteTimingContext();
@@ -30,11 +32,8 @@ export function useCommitVotes(address: string | undefined) {
     Record<string, Record<string, { price: string; transactionHash: string }>>
   >({});
   const scope = JSON.stringify([address, roundId]);
-  const [commitBatchProgress, setCommitBatchProgress] = useState<{
-    current: number;
-    total: number;
-    submitted: boolean;
-  }>();
+  const [commitBatchProgress, setCommitBatchProgress] =
+    useState<VoteBatchProgress>();
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async ({ voting, formattedVotes }: CommitVotes) => {
@@ -46,67 +45,14 @@ export function useCommitVotes(address: string | undefined) {
           !BigNumber.from(confirmedPrice).eq(vote.price)
         );
       });
-      if (!votesToCommit.length) return;
-
-      const batchSize = COMMIT_BATCH_SIZE;
-      const total = Math.ceil(votesToCommit.length / batchSize);
-      const confirmations: Promise<PromiseSettledResult<void>>[] = [];
-      let submissionFailure: { error: unknown } | undefined;
-
-      try {
-        for (
-          let offset = 0;
-          offset < votesToCommit.length;
-          offset += batchSize
-        ) {
-          if (total > 1) {
-            setCommitBatchProgress({
-              current: offset / batchSize + 1,
-              total,
-              submitted: false,
-            });
-          }
-          const batch = votesToCommit.slice(offset, offset + batchSize);
-          // Request the next signature once this transaction is broadcast.
-          const tx = await commitVotes({ voting, formattedVotes: batch });
-          if (!tx) continue;
-
-          const votesLabel = `${batch.length} ${
-            batch.length === 1 ? "vote" : "votes"
-          }`;
-          const confirmation = handleNotifications(tx, {
-            pending: `Committing ${votesLabel}...`,
-            success: `Committed ${votesLabel}`,
-            error: `Failed to commit ${votesLabel}`,
-          }).then((receipt) => {
-            cacheCommittedVotes(batch, receipt.transactionHash);
-          });
-          // Observe failures immediately, even while another wallet prompt is
-          // open, and keep tracking every transaction already submitted.
-          confirmations.push(
-            confirmation.then(
-              () => ({ status: "fulfilled", value: undefined } as const),
-              (reason: unknown) => ({ status: "rejected", reason } as const)
-            )
-          );
-        }
-      } catch (error) {
-        submissionFailure = { error };
-      }
-
-      if (total > 1) {
-        setCommitBatchProgress((progress) =>
-          progress ? { ...progress, submitted: true } : progress
-        );
-      }
-      const results = await Promise.all(confirmations);
-      if (submissionFailure) throw submissionFailure.error;
-      const failedConfirmation = results.find(
-        (result) => result.status === "rejected"
-      );
-      if (failedConfirmation?.status === "rejected") {
-        throw failedConfirmation.reason;
-      }
+      return submitVoteBatches({
+        votes: votesToCommit,
+        action: "commit",
+        submitBatch: (batch) => commitVotes({ voting, formattedVotes: batch }),
+        onConfirmed: (batch, receipt) =>
+          cacheCommittedVotes(batch, receipt.transactionHash),
+        onProgress: setCommitBatchProgress,
+      });
     },
     onError,
     onSuccess: clearErrors,
@@ -178,7 +124,7 @@ export function useCommitVotes(address: string | undefined) {
     commitVotesMutation: mutate,
     isCommittingVotes: isLoading,
     commitBatchProgress,
-    commitBatchSize: COMMIT_BATCH_SIZE,
+    commitBatchSize: VOTE_BATCH_SIZE,
     getPendingVotes: (votes: VoteT[], selectedVotes: SelectedVotesByKeyT) =>
       getVotesToCommit(votes, selectedVotes, getConfirmedPrices()),
   };

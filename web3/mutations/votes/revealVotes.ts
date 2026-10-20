@@ -1,10 +1,7 @@
-import {
-  formatVotesToReveal,
-  getGasFeeOverrides,
-  handleNotifications,
-} from "helpers";
+import { formatVotesToReveal, getGasFeeOverrides } from "helpers";
 import { RevealVotes } from "types";
 
+// Resolve after broadcast; the caller tracks confirmation separately.
 export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
   const formattedVotes = formatVotesToReveal(votesToReveal);
 
@@ -18,7 +15,7 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
 
     const { identifier, time, price, ancillaryData, salt } = vote;
 
-    const tx = await voting.functions.revealVote(
+    return voting.functions.revealVote(
       identifier,
       time,
       price,
@@ -26,12 +23,6 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
       salt,
       gasOverrides
     );
-
-    return handleNotifications(tx, {
-      pending: `Revealing 1 vote...`,
-      success: `Revealed 1 vote`,
-      error: `Failed to reveal 1 vote`,
-    });
   }
 
   const revealVoteFunctionFragment = voting.interface.getFunction(
@@ -53,11 +44,5 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
     ]);
   });
 
-  const tx = await voting.functions.multicall(calldata, gasOverrides);
-
-  return handleNotifications(tx, {
-    pending: `Revealing ${formattedVotes.length} votes...`,
-    success: `Revealed ${formattedVotes.length} votes`,
-    error: `Failed to reveal ${formattedVotes.length} votes`,
-  });
+  return voting.functions.multicall(calldata, gasOverrides);
 }

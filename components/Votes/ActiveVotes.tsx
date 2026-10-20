@@ -68,15 +68,30 @@ export function ActiveVotes() {
     commitBatchSize,
     getPendingVotes,
   } = useCommitVotes(address);
-  const { revealVotesMutation, isRevealingVotes } = useRevealVotes(address);
+  const {
+    revealVotesMutation,
+    isRevealingVotes,
+    revealBatchProgress,
+    revealBatchSize,
+    getPendingReveals,
+  } = useRevealVotes(isDelegate ? delegatorAddress : address);
   const { selectedVotes, selectVote, setSelectedVotes } =
     useVoteSelectionContext();
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const votesToCommit = getPendingVotes(activeVoteList ?? [], selectedVotes);
+  const votesToReveal = getPendingReveals(activeVoteList ?? []);
   const selectedVotesCount = votesToCommit.length;
-  const commitTransactionCount =
-    commitBatchProgress?.total ??
-    Math.ceil(selectedVotesCount / commitBatchSize);
+  const batchProgress =
+    phase === "commit" ? commitBatchProgress : revealBatchProgress;
+  const batchSize = phase === "commit" ? commitBatchSize : revealBatchSize;
+  const transactionCount =
+    batchProgress?.total ??
+    Math.ceil(
+      (phase === "commit" ? selectedVotesCount : votesToReveal.length) /
+        batchSize
+    );
+  const isSubmittingVotes =
+    phase === "commit" ? isCommittingVotes : isRevealingVotes;
 
   function isDirty(): boolean {
     return dirtyInputs.some((x) => x);
@@ -93,6 +108,24 @@ export function ActiveVotes() {
     canCommit: boolean;
     canReveal: boolean;
   };
+
+  function pendingAction(
+    actionConfig: ActionStatus,
+    tooltip: string
+  ): ActionStatus {
+    actionConfig.disabled = true;
+    actionConfig.tooltip = tooltip;
+    if (batchProgress) {
+      actionConfig.label = batchProgress.submitted
+        ? "Waiting for confirmations"
+        : `Submit batch ${batchProgress.current} of ${batchProgress.total}`;
+      actionConfig.tooltip = batchProgress.submitted
+        ? "Waiting for your submitted transactions to confirm."
+        : `Confirm each batch in your wallet. Each batch contains up to ${batchSize} votes.`;
+    }
+    return actionConfig;
+  }
+
   function calculateActionStatus(): ActionStatus {
     const actionConfig: ActionStatus = {
       hidden: true,
@@ -111,7 +144,7 @@ export function ActiveVotes() {
     const hasSigner = !!signer;
 
     const hasVotesToCommit = selectedVotesCount > 0;
-    const hasVotesToReveal = getVotesToReveal().length > 0;
+    const hasVotesToReveal = votesToReveal.length > 0;
     // the current account is editing a previously committed value from another account, either delegate or delegator
     const isEditingUnknownVote = Boolean(
       activeVoteList?.filter((vote) => {
@@ -161,18 +194,7 @@ export function ActiveVotes() {
         };
       }
       if (isCommittingVotes) {
-        actionConfig.disabled = true;
-        if (commitBatchProgress) {
-          actionConfig.label = commitBatchProgress.submitted
-            ? "Waiting for confirmations"
-            : `Submit batch ${commitBatchProgress.current} of ${commitBatchProgress.total}`;
-          actionConfig.tooltip = commitBatchProgress.submitted
-            ? "Waiting for your submitted transactions to confirm."
-            : "Confirm each batch in your wallet. Each batch contains up to 100 votes.";
-        } else {
-          actionConfig.tooltip = "Committing votes in progress...";
-        }
-        return actionConfig;
+        return pendingAction(actionConfig, "Committing votes in progress...");
       }
       if (isDelegate) {
         if (!hasStaked) {
@@ -222,7 +244,9 @@ export function ActiveVotes() {
     }
     if (isReveal) {
       actionConfig.hidden = false;
-      actionConfig.label = "Reveal all votes";
+      actionConfig.label = `Reveal ${votesToReveal.length}/${
+        activeVoteList?.length ?? 0
+      } votes`;
       if (!hasSigningKey) {
         actionConfig.label = "Sign";
         actionConfig.onClick = () => sign();
@@ -241,9 +265,7 @@ export function ActiveVotes() {
         return actionConfig;
       }
       if (isRevealingVotes) {
-        actionConfig.disabled = true;
-        actionConfig.tooltip = "Revealing votes in progress...";
-        return actionConfig;
+        return pendingAction(actionConfig, "Revealing votes in progress...");
       }
       if (!hasVotesToReveal) {
         actionConfig.disabled = true;
@@ -286,20 +308,8 @@ export function ActiveVotes() {
 
     revealVotesMutation({
       voting: votingWriter,
-      votesToReveal: getVotesToReveal(),
+      votesToReveal,
     });
-  }
-
-  function getVotesToReveal() {
-    return (
-      activeVoteList?.filter(
-        (vote) =>
-          vote.isCommitted &&
-          !!vote.decryptedVote &&
-          vote.isRevealed === false &&
-          vote.canReveal
-      ) ?? []
-    );
   }
 
   function clearSelectedVote(vote: VoteT) {
@@ -336,17 +346,19 @@ export function ActiveVotes() {
         </RecommittingVotesMessage>
       ) : null}
       <ButtonOuterWrapper>
-        {phase === "commit" &&
-        commitTransactionCount > 1 &&
-        (actionStatus.canCommit || isCommittingVotes) ? (
+        {transactionCount > 1 &&
+        (actionStatus.canCommit ||
+          actionStatus.canReveal ||
+          isSubmittingVotes) ? (
           <InfoText role="status">
             <IconWrapper width={20} height={20}>
               <WarningIcon />
             </IconWrapper>
             <span>
-              Your votes will be committed in{" "}
+              Your votes will be {phase === "commit" ? "committed" : "revealed"}{" "}
+              in{" "}
               <strong className="text-red-500">
-                {commitTransactionCount} transactions
+                {transactionCount} transactions
               </strong>
               . Please approve each transaction in your wallet. You can submit
               the next transaction without waiting for the previous one to

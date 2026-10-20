@@ -12,6 +12,7 @@ import {
   encryptedVotesKey,
 } from "constant";
 import { useCommitVotes } from "hooks/mutations/votes/useCommitVotes";
+import { formatVotesToCommit } from "helpers/voting/formatVotes";
 import { CommitVotes, VoteFormattedToCommitT } from "types";
 
 const state = vi.hoisted(() => ({
@@ -52,6 +53,11 @@ vi.mock("web3", async () => ({
 }));
 vi.mock("helpers", () => ({
   getPrecisionForIdentifier: () => 18,
+  getRandomSignedInt: () => 123,
+  solidityKeccak256: (_types: string[], values: unknown[]) =>
+    JSON.stringify(values),
+  encryptMessage: (_publicKey: string, message: string) =>
+    Promise.resolve(message),
   getGasFeeOverrides: () => Promise.resolve({}),
   handleNotifications: async (tx: { wait: () => Promise<unknown> }) =>
     tx.wait(),
@@ -110,6 +116,53 @@ beforeEach(() => {
 });
 
 describe("commit batches", () => {
+  it.each([
+    [37, [37]],
+    [101, [100, 1]],
+  ])(
+    "submits only %i selected answers from a 141-vote round",
+    async (count, sizes) => {
+      const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+      const selected = formattedVotes
+        .filter((_, index) => index % 7 !== 0)
+        .slice(0, count);
+      const selections = Object.fromEntries(
+        selected.map((vote, index) => [
+          vote.uniqueKey,
+          index % 2 === 0 ? "0" : "1",
+        ])
+      );
+      const pendingVotes = getPendingVotes(formattedVotes, selections);
+      expect(pendingVotes).toEqual(selected);
+      const votes = await formatVotesToCommit({
+        votes: pendingVotes,
+        selectedVotes: selections,
+        roundId: 42,
+        address: "voter",
+        signingKey: {
+          publicKey: "public",
+          privateKey: "private",
+          signedMessage: "signed",
+        },
+      });
+      await mutation.mutate({ voting, formattedVotes: votes });
+      expect(
+        send.mock.calls.map((args) =>
+          Array.isArray(args[0]) ? args[0].length : 1
+        )
+      ).toEqual(sizes);
+      expect(
+        Object.keys(
+          queryClient.getQueryData<Record<string, string>>([
+            committedVotesKey,
+            "voter",
+            42,
+          ]) ?? {}
+        )
+      ).toEqual(selected.map((vote) => vote.uniqueKey));
+    }
+  );
+
   it.each([
     [0, []],
     [1, [1]],

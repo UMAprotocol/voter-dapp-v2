@@ -3,6 +3,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  // Next.js preserves JSX for its own compiler; component tests need it
+  // transformed before Vite's import analysis.
+  oxc: { jsx: { runtime: "automatic" } },
   resolve: {
     alias: {
       "@uma/contracts-frontend": new URL(
