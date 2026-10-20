@@ -116,6 +116,121 @@ beforeEach(() => {
 });
 
 describe("commit batches", () => {
+  it.each([3, 71])(
+    "commits %i remaining votes after 70 historical commits",
+    async (count) => {
+      const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+      for (const vote of formattedVotes.slice(0, 70)) {
+        vote.isCommitted = true;
+        vote.canReveal = true;
+        vote.decryptedVote = { price: vote.price, salt: "123" };
+      }
+      const historicalCommits = Object.fromEntries(
+        formattedVotes
+          .slice(0, 70)
+          .map((vote) => [vote.uniqueKey, "historical"])
+      );
+      queryClient.setQueryData(
+        [committedVotesKey, "voter", 42],
+        historicalCommits
+      );
+      const selected =
+        count === 71
+          ? formattedVotes.slice(70)
+          : [formattedVotes[70], formattedVotes[100], formattedVotes[140]];
+      const selections = Object.fromEntries(
+        selected.map((vote) => [vote.uniqueKey, "1"])
+      );
+      const pending = getPendingVotes(formattedVotes, selections);
+      expect(pending).toEqual(selected);
+      const prepared = await formatVotesToCommit({
+        votes: pending,
+        selectedVotes: selections,
+        roundId: 42,
+        address: "voter",
+        signingKey: {
+          publicKey: "public",
+          privateKey: "private",
+          signedMessage: "signed",
+        },
+      });
+      await mutation.mutate({ voting, formattedVotes: prepared });
+      expect(send).toHaveBeenCalledTimes(1);
+      expect(send.mock.calls[0][0]).toHaveLength(count);
+      expect(
+        queryClient.getQueryData([committedVotesKey, "voter", 42])
+      ).toEqual({
+        ...historicalCommits,
+        ...Object.fromEntries(selected.map((vote) => [vote.uniqueKey, "tx-1"])),
+      });
+    }
+  );
+
+  it.each([
+    ["historical", 1, [1]],
+    ["historical", 37, [37]],
+    ["historical", 101, [100, 1]],
+    ["current session", 1, [1]],
+    ["current session", 37, [37]],
+    ["current session", 101, [100, 1]],
+  ] as const)(
+    "re-commits a subset of %s commits: %i selected edits",
+    async (source, count, sizes) => {
+      const { formattedVotes, voting, send, getPendingVotes } = setup(141);
+      if (source === "current session") {
+        await mutation.mutate({ voting, formattedVotes });
+        send.mockClear();
+      }
+      for (const vote of formattedVotes) {
+        vote.isCommitted = true;
+        vote.canReveal = true;
+        vote.decryptedVote = { price: vote.price, salt: "123" };
+      }
+      const selected = formattedVotes
+        .filter((_, index) => index % 7 !== 0)
+        .slice(0, count);
+      const selections = Object.fromEntries(
+        selected.map((vote, index) => [
+          vote.uniqueKey,
+          index % 2 === 0 ? "0" : "2",
+        ])
+      );
+      const pending = getPendingVotes(formattedVotes, selections);
+      expect(pending).toEqual(selected);
+      const prepared = await formatVotesToCommit({
+        votes: pending,
+        selectedVotes: selections,
+        roundId: 42,
+        address: "voter",
+        signingKey: {
+          publicKey: "public",
+          privateKey: "private",
+          signedMessage: "signed",
+        },
+      });
+      await mutation.mutate({ voting, formattedVotes: prepared });
+      expect(
+        send.mock.calls.map((args) =>
+          Array.isArray(args[0]) ? args[0].length : 1
+        )
+      ).toEqual(sizes);
+      const encodedVotes = send.mock.calls.flatMap((args) =>
+        Array.isArray(args[0]) ? args[0] : [JSON.stringify(args.slice(0, 5))]
+      );
+      expect(encodedVotes).toEqual(
+        prepared.map((vote) =>
+          JSON.stringify([
+            vote.identifier,
+            vote.time,
+            vote.ancillaryData,
+            vote.hash,
+            vote.encryptedVote,
+          ])
+        )
+      );
+    }
+  );
+
   it.each([
     [37, [37]],
     [101, [100, 1]],

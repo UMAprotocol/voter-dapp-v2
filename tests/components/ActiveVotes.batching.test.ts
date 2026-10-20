@@ -127,6 +127,26 @@ beforeEach(() => {
   );
 });
 describe("commit and reveal batching UI", () => {
+  it("enables re-committing only changed answers after the entire round was committed", async () => {
+    state.votes = state.votes.map((vote) => ({
+      ...vote,
+      isCommitted: true,
+      decryptedVote: { price: "1000000000000000000", salt: "123" },
+    }));
+    state.selectedVotes["vote-1"] = "0";
+    state.selectedVotes["vote-140"] = "2";
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    const button = state.buttons.find(
+      (button) => button.label === "Commit 2/141 votes"
+    );
+    expect(button?.disabled).toBe(false);
+    button?.onClick();
+    await vi.waitFor(() => expect(state.commit).toHaveBeenCalledTimes(1));
+    expect(state.format).toHaveBeenCalledWith(
+      expect.objectContaining({ votes: [state.votes[1], state.votes[140]] })
+    );
+  });
+
   it("submits only selected answers and does not show a multi-transaction notice for a small selection", async () => {
     state.selectedVotes = { "vote-1": "0", "vote-10": "1" };
     const html = renderToStaticMarkup(React.createElement(ActiveVotes));
