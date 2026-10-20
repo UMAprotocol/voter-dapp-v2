@@ -174,9 +174,12 @@ export function ActiveVotes() {
       if (isCommittingVotes) {
         actionConfig.disabled = true;
         if (commitBatchProgress) {
-          actionConfig.label = `Committing batch ${commitBatchProgress.current} of ${commitBatchProgress.total}`;
-          actionConfig.tooltip =
-            "Confirm each batch in MetaMask. Each batch contains up to 100 votes.";
+          actionConfig.label = commitBatchProgress.submitted
+            ? "Waiting for confirmations"
+            : `Submit batch ${commitBatchProgress.current} of ${commitBatchProgress.total}`;
+          actionConfig.tooltip = commitBatchProgress.submitted
+            ? "Waiting for your submitted transactions to confirm."
+            : "Confirm each batch in MetaMask. Each batch contains up to 100 votes.";
         } else {
           actionConfig.tooltip = "Committing votes in progress...";
         }
@@ -353,8 +356,9 @@ export function ActiveVotes() {
             </IconWrapper>
             <span>
               Your votes will be committed in {commitTransactionCount}{" "}
-              transactions. Please confirm each transaction in MetaMask. The
-              next request will appear after the previous transaction confirms.
+              transactions. Please approve each transaction in MetaMask. You can
+              submit the next transaction without waiting for the previous one
+              to confirm.
             </span>
           </InfoText>
         ) : null}

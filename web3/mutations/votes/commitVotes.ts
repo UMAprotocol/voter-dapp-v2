@@ -1,6 +1,7 @@
-import { getGasFeeOverrides, handleNotifications } from "helpers";
+import { getGasFeeOverrides } from "helpers";
 import { CommitVotes } from "types";
 
+// Resolve after broadcast; the caller tracks confirmation separately.
 export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
   if (!formattedVotes.length) return;
   const gasOverrides = await getGasFeeOverrides(voting.provider);
@@ -12,7 +13,7 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
 
     const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
 
-    const tx = await voting.functions.commitAndEmitEncryptedVote(
+    return voting.functions.commitAndEmitEncryptedVote(
       identifier,
       time,
       ancillaryData,
@@ -20,12 +21,6 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
       encryptedVote,
       gasOverrides
     );
-
-    return handleNotifications(tx, {
-      pending: `Committing 1 vote...`,
-      success: `Committed 1 vote`,
-      error: `Failed to commit 1 vote`,
-    });
   }
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -45,11 +40,5 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
     ]);
   });
 
-  const tx = await voting.functions.multicall(calldata, gasOverrides);
-
-  return handleNotifications(tx, {
-    pending: `Committing ${formattedVotes.length} votes...`,
-    success: `Committed ${formattedVotes.length} votes`,
-    error: `Failed to commit ${formattedVotes.length} votes`,
-  });
+  return voting.functions.multicall(calldata, gasOverrides);
 }

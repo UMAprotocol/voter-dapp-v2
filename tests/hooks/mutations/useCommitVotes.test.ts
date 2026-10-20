@@ -150,7 +150,7 @@ describe("MetaMask commit batches", () => {
     }
   );
 
-  it("waits for confirmation and caches each batch with its own transaction hash", async () => {
+  it("submits the next batch before mining and caches each batch only when confirmed", async () => {
     const { formattedVotes, voting, send } = setup(141);
     let confirm!: (receipt: { transactionHash: string }) => void;
     const receipt = new Promise<{ transactionHash: string }>((resolve) => {
@@ -159,11 +159,14 @@ describe("MetaMask commit batches", () => {
     const waiting = vi.fn(() => receipt);
     send.mockResolvedValueOnce({ wait: waiting });
     const pending = mutation.mutate({ voting, formattedVotes });
-    await vi.waitFor(() => expect(waiting).toHaveBeenCalled());
-    expect(send).toHaveBeenCalledTimes(1);
-    expect(
-      queryClient.getQueryData([committedVotesKey, "voter", 42])
-    ).toBeUndefined();
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(2));
+    expect(waiting).toHaveBeenCalled();
+    expect(mutation.getCurrentResult().isLoading).toBe(true);
+    expect(queryClient.getQueryData([committedVotesKey, "voter", 42])).toEqual(
+      Object.fromEntries(
+        formattedVotes.slice(100).map((vote) => [vote.uniqueKey, "tx-1"])
+      )
+    );
 
     confirm({ transactionHash: "first-batch" });
     await pending;
@@ -185,8 +188,31 @@ describe("MetaMask commit batches", () => {
     );
   });
 
+  it("waits for each broadcast before opening the next wallet request", async () => {
+    const { formattedVotes, voting, send } = setup(141);
+    let broadcast!: (tx: {
+      wait: () => Promise<{ transactionHash: string }>;
+    }) => void;
+    send.mockReturnValueOnce(
+      new Promise((resolve) => {
+        broadcast = resolve;
+      })
+    );
+    const pending = mutation.mutate({ voting, formattedVotes });
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1));
+    expect(
+      queryClient.getQueryData([committedVotesKey, "voter", 42])
+    ).toBeUndefined();
+
+    broadcast({
+      wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+    });
+    await pending;
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
   it.each(["submission", "confirmation"])(
-    "preserves confirmed votes and stops after a batch fails during %s",
+    "preserves successful batches when another batch fails during %s",
     async (failure) => {
       const { formattedVotes, voting, send } = setup(241);
       const error = new Error("Batch failed");
@@ -204,7 +230,7 @@ describe("MetaMask commit batches", () => {
       await expect(mutation.mutate({ voting, formattedVotes })).rejects.toThrow(
         "Batch failed"
       );
-      expect(send).toHaveBeenCalledTimes(2);
+      expect(send).toHaveBeenCalledTimes(failure === "submission" ? 2 : 3);
       expect(state.onError).toHaveBeenCalled();
       for (const key of [
         committedVotesKey,
@@ -216,9 +242,76 @@ describe("MetaMask commit batches", () => {
           "voter",
           42,
         ]);
-        expect(Object.keys(cached ?? {})).toHaveLength(100);
+        expect(Object.keys(cached ?? {})).toHaveLength(
+          failure === "submission" ? 100 : 141
+        );
         expect(cached?.["vote-100"]).toBeUndefined();
       }
     }
   );
+
+  it("keeps tracking a pending batch after the next wallet request is rejected", async () => {
+    const { formattedVotes, voting, send } = setup(241);
+    let confirm!: (receipt: { transactionHash: string }) => void;
+    const receipt = new Promise<{ transactionHash: string }>((resolve) => {
+      confirm = resolve;
+    });
+    send.mockResolvedValueOnce({ wait: () => receipt });
+    send.mockRejectedValueOnce(new Error("User rejected the transaction"));
+    const result = mutation
+      .mutate({ voting, formattedVotes })
+      .catch((error: unknown) => error);
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(2));
+    expect(mutation.getCurrentResult().isLoading).toBe(true);
+    expect(
+      queryClient.getQueryData([committedVotesKey, "voter", 42])
+    ).toBeUndefined();
+
+    confirm({ transactionHash: "first-batch" });
+    expect(await result).toEqual(new Error("User rejected the transaction"));
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(queryClient.getQueryData([committedVotesKey, "voter", 42])).toEqual(
+      Object.fromEntries(
+        formattedVotes
+          .slice(0, 100)
+          .map((vote) => [vote.uniqueKey, "first-batch"])
+      )
+    );
+  });
+
+  it("keeps tracking other submitted batches when one transaction fails to confirm", async () => {
+    const { formattedVotes, voting, send } = setup(141);
+    let reject!: (error: Error) => void;
+    let confirm!: (receipt: { transactionHash: string }) => void;
+    const firstReceipt = new Promise<{ transactionHash: string }>(
+      (_resolve, rejectPromise) => {
+        reject = rejectPromise;
+      }
+    );
+    const secondReceipt = new Promise<{ transactionHash: string }>(
+      (resolve) => {
+        confirm = resolve;
+      }
+    );
+    send.mockResolvedValueOnce({ wait: () => firstReceipt });
+    send.mockResolvedValueOnce({ wait: () => secondReceipt });
+    const result = mutation
+      .mutate({ voting, formattedVotes })
+      .catch((error: unknown) => error);
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(2));
+    reject(new Error("Transaction reverted"));
+    // Allow the first transaction's failure handler to run.
+    await firstReceipt.catch(() => undefined);
+    expect(mutation.getCurrentResult().isLoading).toBe(true);
+    confirm({ transactionHash: "second-batch" });
+
+    expect(await result).toEqual(new Error("Transaction reverted"));
+    expect(queryClient.getQueryData([committedVotesKey, "voter", 42])).toEqual(
+      Object.fromEntries(
+        formattedVotes
+          .slice(100)
+          .map((vote) => [vote.uniqueKey, "second-batch"])
+      )
+    );
+  });
 });

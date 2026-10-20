@@ -4,6 +4,7 @@ import {
   committedVotesKeyByCaller,
   encryptedVotesKey,
 } from "constant";
+import { handleNotifications } from "helpers";
 import { useAccountDetails, useHandleError, useVoteTimingContext } from "hooks";
 import { useState } from "react";
 import { CommitVotes, EncryptedVotesByKeyT, VoteExistsByKeyT } from "types";
@@ -23,6 +24,7 @@ export function useCommitVotes(address: string | undefined) {
   const [commitBatchProgress, setCommitBatchProgress] = useState<{
     current: number;
     total: number;
+    submitted: boolean;
   }>();
 
   const { mutate, isLoading } = useMutation({
@@ -31,25 +33,62 @@ export function useCommitVotes(address: string | undefined) {
 
       const batchSize = commitBatchSize ?? formattedVotes.length;
       const total = Math.ceil(formattedVotes.length / batchSize);
+      const confirmations: Promise<PromiseSettledResult<void>>[] = [];
+      let submissionFailure: { error: unknown } | undefined;
 
-      for (
-        let offset = 0;
-        offset < formattedVotes.length;
-        offset += batchSize
-      ) {
-        if (total > 1) {
-          setCommitBatchProgress({
-            current: offset / batchSize + 1,
-            total,
+      try {
+        for (
+          let offset = 0;
+          offset < formattedVotes.length;
+          offset += batchSize
+        ) {
+          if (total > 1) {
+            setCommitBatchProgress({
+              current: offset / batchSize + 1,
+              total,
+              submitted: false,
+            });
+          }
+          const batch = formattedVotes.slice(offset, offset + batchSize);
+          // Request the next signature once this transaction is broadcast.
+          const tx = await commitVotes({ voting, formattedVotes: batch });
+          if (!tx) continue;
+
+          const votesLabel = `${batch.length} ${
+            batch.length === 1 ? "vote" : "votes"
+          }`;
+          const confirmation = handleNotifications(tx, {
+            pending: `Committing ${votesLabel}...`,
+            success: `Committed ${votesLabel}`,
+            error: `Failed to commit ${votesLabel}`,
+          }).then((receipt) => {
+            cacheCommittedVotes(batch, receipt.transactionHash);
           });
+          // Observe failures immediately, even while another wallet prompt is
+          // open, and keep tracking every transaction already submitted.
+          confirmations.push(
+            confirmation.then(
+              () => ({ status: "fulfilled", value: undefined } as const),
+              (reason: unknown) => ({ status: "rejected", reason } as const)
+            )
+          );
         }
-        const batch = formattedVotes.slice(offset, offset + batchSize);
-        // Wait for confirmation before requesting the next transaction.
-        const receipt = await commitVotes({ voting, formattedVotes: batch });
-        if (!receipt) continue;
+      } catch (error) {
+        submissionFailure = { error };
+      }
 
-        // Keep confirmed batches available even if a later batch fails.
-        cacheCommittedVotes(batch, receipt.transactionHash);
+      if (total > 1) {
+        setCommitBatchProgress((progress) =>
+          progress ? { ...progress, submitted: true } : progress
+        );
+      }
+      const results = await Promise.all(confirmations);
+      if (submissionFailure) throw submissionFailure.error;
+      const failedConfirmation = results.find(
+        (result) => result.status === "rejected"
+      );
+      if (failedConfirmation?.status === "rejected") {
+        throw failedConfirmation.reason;
       }
     },
     onError,
