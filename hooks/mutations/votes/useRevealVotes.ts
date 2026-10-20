@@ -7,7 +7,7 @@ import {
   VoteBatchProgress,
 } from "helpers/voting/submitVoteBatches";
 import { useHandleError, useVoteTimingContext } from "hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RevealVotes, VoteExistsByKeyT, VoteT } from "types";
 import { revealVotes } from "web3";
 
@@ -15,6 +15,10 @@ export function useRevealVotes(address: string | undefined) {
   const queryClient = useQueryClient();
   const { roundId } = useVoteTimingContext();
   const { onError, clearErrors } = useHandleError();
+  // A stale refetch can omit mined reveals. Keep confirmations independently
+  // so retries cannot reveal those votes again for this account and round.
+  const confirmedRevealsByScope = useRef<Record<string, VoteExistsByKeyT>>({});
+  const scope = JSON.stringify([address, roundId]);
   const [revealBatchProgress, setRevealBatchProgress] =
     useState<VoteBatchProgress>();
 
@@ -28,16 +32,17 @@ export function useRevealVotes(address: string | undefined) {
         action: "reveal",
         submitBatch: (batch) => revealVotes({ voting, votesToReveal: batch }),
         onConfirmed: (batch, receipt) => {
+          const confirmedReveals = (confirmedRevealsByScope.current[scope] ??=
+            {});
+          const batchReveals = Object.fromEntries(
+            batch.map(({ uniqueKey }) => [uniqueKey, receipt.transactionHash])
+          );
+          Object.assign(confirmedReveals, batchReveals);
           queryClient.setQueryData<VoteExistsByKeyT>(
             queryKey,
             (oldRevealedVotes) => ({
               ...oldRevealedVotes,
-              ...Object.fromEntries(
-                batch.map(({ uniqueKey }) => [
-                  uniqueKey,
-                  receipt.transactionHash,
-                ])
-              ),
+              ...confirmedReveals,
             })
           );
         },
@@ -50,14 +55,14 @@ export function useRevealVotes(address: string | undefined) {
   });
 
   function getPendingReveals(votes: VoteT[]) {
-    return getVotesToReveal(
-      votes,
-      queryClient.getQueryData<VoteExistsByKeyT>([
+    return getVotesToReveal(votes, {
+      ...queryClient.getQueryData<VoteExistsByKeyT>([
         revealedVotesKey,
         address,
         roundId,
-      ])
-    );
+      ]),
+      ...confirmedRevealsByScope.current[scope],
+    });
   }
 
   return {

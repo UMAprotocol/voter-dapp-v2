@@ -163,6 +163,7 @@ describe("automatic reveal batches", () => {
 
   it("submits the next reveal while the first is pending and retains the submitting account and round", async () => {
     const { votesToReveal, voting, send } = setup(141, "delegator");
+    const getDelegatorPendingReveals = getPendingReveals;
     let confirm!: (receipt: Receipt) => void;
     const receipt = new Promise<Receipt>((resolve) => {
       confirm = resolve;
@@ -196,7 +197,50 @@ describe("automatic reveal batches", () => {
     expect(
       queryClient.getQueryData([revealedVotesKey, "other-account", 43])
     ).toBeUndefined();
+    queryClient.setQueryData([revealedVotesKey, "delegator", 42], {});
+    expect(getDelegatorPendingReveals(votesToReveal)).toEqual([]);
+    expect(getPendingReveals(votesToReveal)).toEqual(votesToReveal);
   });
+
+  it.each(["submission", "confirmation"])(
+    "retains confirmed reveals after a stale refetch and a %s failure",
+    async (failure) => {
+      const { votesToReveal, voting, send } = setup(141);
+      let finishRefetch!: (votes: VoteExistsByKeyT) => void;
+      const refetch = queryClient.fetchQuery({
+        queryKey: [revealedVotesKey, "voter", 42],
+        queryFn: () =>
+          new Promise<VoteExistsByKeyT>((resolve) => {
+            finishRefetch = resolve;
+          }),
+      });
+      send.mockResolvedValueOnce({
+        wait: () => Promise.resolve({ transactionHash: "first-batch" }),
+      });
+      const error = new Error("Second batch failed");
+      if (failure === "submission") send.mockRejectedValueOnce(error);
+      else send.mockResolvedValueOnce({ wait: () => Promise.reject(error) });
+      await expect(mutation?.mutate({ voting, votesToReveal })).rejects.toThrow(
+        "Second batch failed"
+      );
+      expect(
+        queryClient.getQueryData([revealedVotesKey, "voter", 42])
+      ).toHaveProperty("vote-0", "first-batch");
+
+      finishRefetch({});
+      await refetch;
+      expect(queryClient.getQueryData([revealedVotesKey, "voter", 42])).toEqual(
+        {}
+      );
+      expect(getPendingReveals(votesToReveal)).toEqual(
+        votesToReveal.slice(100)
+      );
+      await mutation?.mutate({ voting, votesToReveal });
+      expect(send).toHaveBeenCalledTimes(3);
+      expect(send.mock.calls[2][0]).toHaveLength(41);
+      expect(getPendingReveals(votesToReveal)).toEqual([]);
+    }
+  );
 
   it.each(["submission", "confirmation"])(
     "retries only the remaining votes after a %s failure",
