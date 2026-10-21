@@ -28,7 +28,6 @@ import {
   ActionInfo,
   ButtonInnerWrapper,
   ButtonOuterWrapper,
-  HideOnMobile,
   InfoText,
   RecommittingVotesMessage,
   Title,
@@ -363,11 +362,6 @@ export function ActiveVotes() {
                       {transactionCount} transactions
                     </strong>
                     . Approve each one in your wallet.
-                    <HideOnMobile>
-                      {" "}
-                      You can approve the next one before the previous one
-                      confirms.
-                    </HideOnMobile>
                   </span>
                 </InfoText>
               ) : null}
