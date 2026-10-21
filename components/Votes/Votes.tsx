@@ -27,7 +27,12 @@ export function Votes() {
     <>
       <VoteTimeline />
       <NoVotesWrapper>
-        <NoVotesMessage>No active votes</NoVotesMessage>
+        <NoVotesText>
+          <NoVotesMessage>No votes this round</NoVotesMessage>
+          <NoVotesDetail>
+            There is nothing to vote on. Your stake keeps earning&nbsp;rewards.
+          </NoVotesDetail>
+        </NoVotesText>
         <Image src={noVotesIndicator} width={220} height={220} alt="No votes" />
         <Links>
           <Button
@@ -56,9 +61,21 @@ const NoVotesWrapper = styled.div`
   margin-top: 45px;
 `;
 
+const NoVotesText = styled.div`
+  display: grid;
+  gap: 10px;
+  text-align: center;
+`;
+
 const NoVotesMessage = styled.h1`
   font: var(--header-lg);
   font-weight: 300;
+`;
+
+const NoVotesDetail = styled.p`
+  font: var(--text-md);
+  color: var(--grey-800);
+  text-wrap: balance;
 `;
 
 const Links = styled.div`
