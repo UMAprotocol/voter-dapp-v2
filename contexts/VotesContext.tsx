@@ -128,7 +128,9 @@ type VoteLookupsT = {
   decodedAdminTransactions: DecodedAdminTransactionsByIdentifierT | undefined;
 };
 
-// This function tells you if your current logged in account can reveal this vote, ie the commit was cast by your current account.
+// Only the account with the latest commit's encrypted data can reveal it.
+// A previous commit by this caller is insufficient if the other account has
+// since overwritten it: its decrypted price/salt no longer match the hash.
 // This is important in the case where a delegate or delegator could have committed, this will determine if the account can reveal.
 function getCanReveal(uniqueKey: UniqueKeyT, lookups: VoteLookupsT): boolean {
   const { committedVotes, committedVotesByCaller, committedVotesForDelegator } =
@@ -141,12 +143,13 @@ function getCanReveal(uniqueKey: UniqueKeyT, lookups: VoteLookupsT): boolean {
     // this table finds all votes as the voter for the current account
     (!!committedVotes?.[uniqueKey] &&
       // this table finds all votes as the caller for the current account
-      !!committedVotesByCaller?.[uniqueKey] &&
+      committedVotes[uniqueKey] === committedVotesByCaller?.[uniqueKey] &&
       // this table will look up your delagate if you are a delegator and find votes with them as the voter
       !committedVotesForDelegator?.[uniqueKey]) ||
     (!committedVotes?.[uniqueKey] &&
       !!committedVotesByCaller?.[uniqueKey] &&
-      !!committedVotesForDelegator?.[uniqueKey])
+      committedVotesForDelegator?.[uniqueKey] ===
+        committedVotesByCaller[uniqueKey])
   );
 }
 
