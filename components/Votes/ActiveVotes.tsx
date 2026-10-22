@@ -34,6 +34,7 @@ import {
   VotesTableWrapper,
   WarningIcon,
 } from "./style";
+import { VoteSectionLinks } from "./VoteSectionLinks";
 
 export function ActiveVotes() {
   const { activeVoteList } = useVotesContext();
@@ -346,6 +347,7 @@ export function ActiveVotes() {
       <VotesTableWrapper>
         <VoteList activityStatus="active" data={data} />
       </VotesTableWrapper>
+      <VoteSectionLinks />
       {hasActionBar ? (
         <ButtonOuterWrapper>
           {hasActionInfo ? (

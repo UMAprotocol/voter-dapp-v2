@@ -48,6 +48,9 @@ vi.mock("components/Votes/style", () => ({
   VotesTableWrapper: "div",
   WarningIcon: "svg",
 }));
+vi.mock("components/Votes/VoteSectionLinks", () => ({
+  VoteSectionLinks: () => null,
+}));
 vi.mock("helpers", () => ({
   getPrecisionForIdentifier: () => 18,
   formatVotesToCommit: (args: FormatVotesToCommit) => state.format(args),
