@@ -1,11 +1,11 @@
-import { Button, LoadingSpinner, VoteTimeline } from "components";
+import { LoadingSpinner, VoteTimeline } from "components";
 import { LoadingSpinnerWrapper } from "components/pages/styles";
-import { tabletAndUnder } from "constant";
 import { useVotesContext } from "hooks";
 import Image from "next/image";
 import noVotesIndicator from "public/assets/no-votes-indicator.png";
 import styled from "styled-components";
 import { ActiveVotes } from "./ActiveVotes";
+import { VoteSectionLinks } from "./VoteSectionLinks";
 
 // Upcoming and past votes have their own pages, so this page only shows the
 // votes a voter can act on now.
@@ -34,14 +34,7 @@ export function Votes() {
           </NoVotesDetail>
         </NoVotesText>
         <Image src={noVotesIndicator} width={220} height={220} alt="No votes" />
-        <Links>
-          <Button
-            variant="primary"
-            label="Upcoming votes"
-            href="/upcoming-votes"
-          />
-          <Button variant="secondary" label="Past votes" href="/past-votes" />
-        </Links>
+        <VoteSectionLinks />
       </NoVotesWrapper>
     </>
   );
@@ -59,6 +52,11 @@ const NoVotesWrapper = styled.div`
   justify-items: center;
   gap: 40px;
   margin-top: 45px;
+
+  /* the grid gap already spaces the section links */
+  > :last-child {
+    margin-top: 0;
+  }
 `;
 
 const NoVotesText = styled.div`
@@ -76,13 +74,4 @@ const NoVotesDetail = styled.p`
   font: var(--text-md);
   color: var(--grey-800);
   text-wrap: balance;
-`;
-
-const Links = styled.div`
-  display: flex;
-  gap: 15px;
-
-  @media ${tabletAndUnder} {
-    flex-direction: column;
-  }
 `;
