@@ -3,6 +3,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ## Getting Started
 
 **Getting your environment variables**
+
 You can only do this if you have access to UMA's vercel projects.
 
 You need to install [vercel-cli](https://vercel.com/docs/cli).
