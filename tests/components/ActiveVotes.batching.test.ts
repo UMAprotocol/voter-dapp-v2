@@ -38,10 +38,10 @@ vi.mock("components", () => ({
   VoteTimeline: () => null,
 }));
 vi.mock("components/Votes/style", () => ({
-  ActionInfo: "div",
   ButtonInnerWrapper: "div",
   ButtonOuterWrapper: "div",
-  HideOnMobile: "span",
+  ButtonSpacer: "span",
+  Divider: "hr",
   InfoText: "p",
   RecommittingVotesMessage: "p",
   Title: "h1",
