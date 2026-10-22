@@ -15,10 +15,14 @@ export function emitSuccessEvent(successEvent: {
 
 export function emitErrorEvent(errorEvent: {
   message: ReactNode;
-  pendingId: string;
+  pendingId?: string;
 }) {
   const id = uniqueId();
-  events.emit("error", { ...errorEvent, id: uniqueId() });
+  events.emit("error", {
+    ...errorEvent,
+    pendingId: errorEvent.pendingId ?? id,
+    id,
+  });
   return id;
 }
 
