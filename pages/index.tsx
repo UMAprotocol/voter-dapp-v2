@@ -12,6 +12,7 @@ import { truncateDecimals } from "helpers";
 import { useGlobals } from "hooks";
 import { isUndefined } from "lodash";
 import type { NextPage } from "next";
+import styled from "styled-components";
 
 const VotePage: NextPage = () => {
   const { data: globals } = useGlobals();
@@ -26,13 +27,27 @@ const VotePage: NextPage = () => {
           </Strong>
         </Loader>
       </Banner>
-      <PageOuterWrapper>
+      <VotePageOuterWrapper>
         <HowItWorks />
-        <PageInnerWrapper>
+        <VotePageInnerWrapper>
           <Votes />
-        </PageInnerWrapper>
-      </PageOuterWrapper>
+        </VotePageInnerWrapper>
+      </VotePageOuterWrapper>
     </Layout>
   );
 };
 export default VotePage;
+
+// Fill the page height so a short vote list still docks the action bar on
+// the footer instead of leaving a grey gap above it.
+const VotePageOuterWrapper = styled(PageOuterWrapper)`
+  display: flex;
+  flex-direction: column;
+`;
+
+const VotePageInnerWrapper = styled(PageInnerWrapper)`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+`;

@@ -25,10 +25,9 @@ import {
 import { useState } from "react";
 import { VoteT } from "types";
 import {
+  ActionInfo,
   ButtonInnerWrapper,
   ButtonOuterWrapper,
-  ButtonSpacer,
-  Divider,
   InfoText,
   RecommittingVotesMessage,
   Title,
@@ -316,6 +315,13 @@ export function ActiveVotes() {
     selectVote(undefined, vote);
   }
 
+  const showTransactionCount =
+    transactionCount > 1 &&
+    (actionStatus.canCommit || actionStatus.canReveal || isSubmittingVotes);
+  const hasActionInfo =
+    showTransactionCount || !!actionStatus.infoText || isDirty();
+  const hasActionBar = hasActionInfo || !actionStatus.hidden;
+
   const data = enrichedActiveVotes?.map((vote, index) => ({
     phase: phase,
     vote: vote,
@@ -340,77 +346,74 @@ export function ActiveVotes() {
       <VotesTableWrapper>
         <VoteList activityStatus="active" data={data} />
       </VotesTableWrapper>
-      {isDirty() ? (
-        <RecommittingVotesMessage>
-          * Changes to committed votes need to be re-committed
-        </RecommittingVotesMessage>
-      ) : null}
-      <ButtonOuterWrapper>
-        {transactionCount > 1 &&
-        (actionStatus.canCommit ||
-          actionStatus.canReveal ||
-          isSubmittingVotes) ? (
-          <InfoText role="status">
-            <IconWrapper width={20} height={20}>
-              <WarningIcon />
-            </IconWrapper>
-            <span>
-              Your votes will be {phase === "commit" ? "committed" : "revealed"}{" "}
-              in{" "}
-              <strong className="text-red-500">
-                {transactionCount} transactions
-              </strong>
-              . Please approve each transaction in your wallet. You can submit
-              the next transaction without waiting for the previous one to
-              confirm.
-            </span>
-          </InfoText>
-        ) : null}
-        {actionStatus.infoText ? (
-          <Tooltip label={actionStatus.infoText.tooltip}>
-            <InfoText>
-              <IconWrapper width={20} height={20}>
-                <WarningIcon />
-              </IconWrapper>
-              {actionStatus.infoText.label}
-            </InfoText>
-          </Tooltip>
-        ) : null}
-        <ButtonInnerWrapper>
-          {isDirty() ? (
-            <>
+      {hasActionBar ? (
+        <ButtonOuterWrapper>
+          {hasActionInfo ? (
+            <ActionInfo>
+              {showTransactionCount ? (
+                <InfoText role="status">
+                  <IconWrapper width={20} height={20}>
+                    <WarningIcon />
+                  </IconWrapper>
+                  <span>
+                    Your votes will be{" "}
+                    {phase === "commit" ? "committed" : "revealed"} in{" "}
+                    <strong className="text-red-500">
+                      {transactionCount} transactions
+                    </strong>
+                    . Approve each one in your wallet.
+                  </span>
+                </InfoText>
+              ) : null}
+              {actionStatus.infoText ? (
+                <Tooltip label={actionStatus.infoText.tooltip}>
+                  <InfoText>
+                    <IconWrapper width={20} height={20}>
+                      <WarningIcon />
+                    </IconWrapper>
+                    {actionStatus.infoText.label}
+                  </InfoText>
+                </Tooltip>
+              ) : null}
+              {isDirty() ? (
+                <RecommittingVotesMessage>
+                  * Changes to committed votes need to be re-committed
+                </RecommittingVotesMessage>
+              ) : null}
+            </ActionInfo>
+          ) : null}
+          <ButtonInnerWrapper>
+            {isDirty() ? (
               <Button
                 variant="secondary"
                 label="Reset Changes"
                 onClick={() => setSelectedVotes({})}
               />
-              <ButtonSpacer />
-            </>
-          ) : undefined}
-          {!actionStatus.hidden ? (
-            actionStatus.tooltip ? (
-              <Tooltip label={actionStatus.tooltip}>
-                <div>
-                  <Button
-                    variant="primary"
-                    label={actionStatus.label}
-                    onClick={actionStatus.onClick}
-                    disabled={actionStatus.disabled}
-                  />
-                </div>
-              </Tooltip>
-            ) : (
-              <Button
-                variant="primary"
-                label={actionStatus.label}
-                onClick={actionStatus.onClick}
-                disabled={actionStatus.disabled}
-              />
-            )
-          ) : null}
-        </ButtonInnerWrapper>
-      </ButtonOuterWrapper>
-      <Divider />
+            ) : undefined}
+            {!actionStatus.hidden ? (
+              actionStatus.tooltip ? (
+                <Tooltip label={actionStatus.tooltip}>
+                  <div>
+                    <Button
+                      variant="primary"
+                      label={actionStatus.label}
+                      onClick={actionStatus.onClick}
+                      disabled={actionStatus.disabled}
+                    />
+                  </div>
+                </Tooltip>
+              ) : (
+                <Button
+                  variant="primary"
+                  label={actionStatus.label}
+                  onClick={actionStatus.onClick}
+                  disabled={actionStatus.disabled}
+                />
+              )
+            ) : null}
+          </ButtonInnerWrapper>
+        </ButtonOuterWrapper>
+      ) : null}
     </>
   );
 }
