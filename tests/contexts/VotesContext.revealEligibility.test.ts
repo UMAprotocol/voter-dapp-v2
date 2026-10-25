@@ -10,6 +10,7 @@ const state = vi.hoisted(() => ({
   committedVotes: {} as VoteExistsByKeyT,
   committedVotesByCaller: {} as VoteExistsByKeyT,
   committedVotesForDelegator: {} as VoteExistsByKeyT,
+  revealedVoteByAddress: {} as Record<string, string>,
 }));
 
 vi.mock("helpers", () => ({ getVoteMetaData: () => ({}) }));
@@ -27,7 +28,10 @@ vi.mock("hooks", () => ({
     data: Object.fromEntries(
       Array.from({ length: 141 }, (_, index) => [
         `vote-${index}`,
-        { uniqueKey: `vote-${index}`, revealedVoteByAddress: {} },
+        {
+          uniqueKey: `vote-${index}`,
+          revealedVoteByAddress: state.revealedVoteByAddress,
+        },
       ])
     ),
   }),
@@ -69,6 +73,7 @@ beforeEach(() => {
   state.committedVotes = {};
   state.committedVotesByCaller = {};
   state.committedVotesForDelegator = {};
+  state.revealedVoteByAddress = {};
 });
 
 describe("reveal eligibility after commits from both accounts", () => {
@@ -131,5 +136,18 @@ describe("reveal eligibility after commits from both accounts", () => {
     expect(getVotesToReveal(getActiveVotes())).toEqual([]);
     state.isDelegate = true;
     expect(getVotesToReveal(getActiveVotes())).toEqual([]);
+  });
+
+  it("reveals for a delegate whose own stake is delegated to someone else", () => {
+    state.isDelegate = true;
+    // the connected address is the voter here because its own delegate
+    // committed (and revealed) for it
+    state.committedVotes = { "vote-0": "commit-by-own-delegate" };
+    state.revealedVoteByAddress = { delegate: "999" };
+    state.committedVotesForDelegator = { "vote-0": "commit-for-delegator" };
+    state.committedVotesByCaller = { "vote-0": "commit-for-delegator" };
+    const votes = getVotesToReveal(getActiveVotes());
+    expect(votes.map((vote) => vote.uniqueKey)).toEqual(["vote-0"]);
+    expect(votes[0]?.decryptedVote).toEqual({ price: "1", salt: "123" });
   });
 });

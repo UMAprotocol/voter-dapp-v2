@@ -173,7 +173,6 @@ function getVotesWithData(
   lookups: VoteLookupsT
 ): VoteT[] {
   const {
-    userAddress,
     designatedVotingV1Address,
     userOrDelegatorAddress,
     committedVotes,
@@ -189,12 +188,13 @@ function getVotesWithData(
   return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
     // this value only exists when we have votes that have revealed from the graph, using this we can
     // lookup revealed votes without a signature, just have to find the right address
+    // a delegate's own address may have reveals made by its own delegate, so
+    // only look up the account it votes for
     const pastVoteRevealed: string | undefined =
-      vote?.revealedVoteByAddress[userAddress ?? ""] ||
-      (designatedVotingV1Address &&
-        vote.revealedVoteByAddress[designatedVotingV1Address]) ||
       (userOrDelegatorAddress &&
-        vote.revealedVoteByAddress[userOrDelegatorAddress]);
+        vote?.revealedVoteByAddress[userOrDelegatorAddress]) ||
+      (designatedVotingV1Address &&
+        vote.revealedVoteByAddress[designatedVotingV1Address]);
 
     // Get the vote history with updated correctness if we have the data
     const voteHistoryForThisVote = voteHistoryByKey?.[uniqueKey]
@@ -261,6 +261,8 @@ function getVotesWithData(
   });
 }
 
+const noCommittedVotes: VoteExistsByKeyT = {};
+
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { roundId } = useVoteTimingContext();
   const { address: userAddress } = useAccountDetails();
@@ -283,8 +285,12 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: pastVotesIsLoading,
     isInitialLoading: pastVotesIsInitialLoading,
   } = usePastVotes();
-  const { data: committedVotes, isLoading: committedVotesIsLoading } =
+  const { data: ownCommittedVotes, isLoading: committedVotesIsLoading } =
     useCommittedVotes(userAddress);
+  // A delegate can also be a staker with its own delegate. Commits naming the
+  // connected address as voter then come from that other delegate, not from
+  // this account, and must not block reveals of the delegator's votes.
+  const committedVotes = isDelegate ? noCommittedVotes : ownCommittedVotes;
   const {
     data: committedVotesByCaller,
     isLoading: committedVotesByCallerIsLoading,
