@@ -173,6 +173,7 @@ function getVotesWithData(
   lookups: VoteLookupsT
 ): VoteT[] {
   const {
+    userAddress,
     designatedVotingV1Address,
     userOrDelegatorAddress,
     committedVotes,
@@ -186,15 +187,18 @@ function getVotesWithData(
   } = lookups;
   if (!priceRequests) return [];
   return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
-    // this value only exists when we have votes that have revealed from the graph, using this we can
-    // lookup revealed votes without a signature, just have to find the right address
-    // a delegate's own address may have reveals made by its own delegate, so
-    // only look up the account it votes for
-    const pastVoteRevealed: string | undefined =
-      (userOrDelegatorAddress &&
-        vote?.revealedVoteByAddress[userOrDelegatorAddress]) ||
-      (designatedVotingV1Address &&
-        vote.revealedVoteByAddress[designatedVotingV1Address]);
+    // V1 history keeps the connected wallet's lookup order, independent of its
+    // current V2 delegation. V2 reveals belong to the account it votes for.
+    const pastVoteRevealed: string | undefined = vote.isV1
+      ? vote.revealedVoteByAddress[userAddress ?? ""] ||
+        (designatedVotingV1Address &&
+          vote.revealedVoteByAddress[designatedVotingV1Address]) ||
+        (userOrDelegatorAddress &&
+          vote.revealedVoteByAddress[userOrDelegatorAddress])
+      : (userOrDelegatorAddress &&
+          vote.revealedVoteByAddress[userOrDelegatorAddress]) ||
+        (designatedVotingV1Address &&
+          vote.revealedVoteByAddress[designatedVotingV1Address]);
 
     // Get the vote history with updated correctness if we have the data
     const voteHistoryForThisVote = voteHistoryByKey?.[uniqueKey]
