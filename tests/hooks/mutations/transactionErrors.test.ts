@@ -187,6 +187,7 @@ describe("wallet error messages", () => {
       data: { originalError: { code: "INSUFFICIENT_FUNDS" } },
     },
     "insufficient funds for intrinsic transaction cost",
+    "insufficient funds for gas * price + value",
   ])(
     "explains insufficient gas for wrapped and plain wallet errors",
     (error) => {
@@ -201,6 +202,29 @@ describe("wallet error messages", () => {
   );
 
   it.each([
+    [
+      new Error("execution reverted: insufficient funds"),
+      "Execution reverted: insufficient funds",
+    ],
+    [
+      { code: "CALL_EXCEPTION", reason: "insufficient funds" },
+      "Insufficient funds",
+    ],
+    [
+      new Error("insufficient gas for code deposit"),
+      "Insufficient gas for code deposit",
+    ],
+    [
+      {
+        message: "cannot estimate gas",
+        error: { message: "execution reverted: insufficient funds" },
+      },
+      "Cannot estimate gas",
+    ],
+    [
+      new Error("execution reverted: insufficient funds for gas"),
+      "Execution reverted: insufficient funds for gas",
+    ],
     [
       new Error("execution reverted: voting is closed (code=CALL_EXCEPTION)"),
       "Execution reverted: voting is closed",

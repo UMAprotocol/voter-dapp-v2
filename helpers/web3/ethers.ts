@@ -57,7 +57,11 @@ export const formatTransactionError = (error: unknown): string => {
     }
     if (
       code === "INSUFFICIENT_FUNDS" ||
-      (message && /insufficient funds|insufficient.*gas/i.test(message))
+      // Match provider fee-balance messages, not contract reverts or gas limits.
+      (message &&
+        /^insufficient funds for (?:gas\b|intrinsic transaction cost\b)/i.test(
+          message.trim()
+        ))
     ) {
       return "Insufficient ETH to pay for gas. Add ETH to your wallet and try again.";
     }
