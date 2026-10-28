@@ -1,16 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { contentfulDataKey, oneMinute } from "constant";
-import { getVoteMetaData } from "helpers";
+import { getAdminProposalNumber, getVoteMetaData } from "helpers";
 import { warnOnce } from "helpers/util/log";
 import { ContentfulUmipsResponse } from "pages/api/contentful-umips";
 import { useMemo } from "react";
 import { ContentfulDataT, VoteT } from "types";
-
-export function getAdminProposalNumber(decodedIdentifier: string) {
-  const adminProposalNumber = Number(decodedIdentifier.split(" ")[1]);
-  if (!isNaN(adminProposalNumber)) return adminProposalNumber;
-  return null;
-}
 
 /**
  * UMIP metadata from contentful only applies to governance ("Admin N") votes,

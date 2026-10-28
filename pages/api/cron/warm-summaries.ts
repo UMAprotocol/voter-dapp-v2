@@ -6,6 +6,7 @@ import {
   resolveDiscordThreadTitle,
 } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
+import { getUmipDataByIdentifier } from "lib/contentful";
 import { makeKey } from "lib/discord-utils";
 import { getCachedProcessedThread } from "../discord-thread/_utils";
 import { getBaseUrl } from "helpers/util/http";
@@ -81,11 +82,14 @@ export default async function handler(
 
     // `title` is forwarded to /api/update-summary and used in the summary cache
     // key, so it must be the resolved lookup title matching what the frontend sends.
+    const umipData = await getUmipDataByIdentifier(
+      allVotes.map((vote) => vote.decodedIdentifier)
+    );
     const voteInfos: VoteInfo[] = allVotes.map((vote) => {
       const { title } = getVoteMetaData(
         vote.decodedIdentifier,
         vote.decodedAncillaryData,
-        undefined
+        umipData.get(vote.decodedIdentifier)
       );
       const discordTitle = resolveDiscordThreadTitle(
         title,

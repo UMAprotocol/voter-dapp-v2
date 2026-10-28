@@ -419,6 +419,12 @@ export function getTitleFromAncillaryData(
   return title.endsWith(",") ? title.slice(0, -1) : title;
 }
 
+export function getAdminProposalNumber(decodedIdentifier: string) {
+  const adminProposalNumber = Number(decodedIdentifier.split(" ")[1]);
+  if (!isNaN(adminProposalNumber)) return adminProposalNumber;
+  return null;
+}
+
 export const MISSING_DISCORD_TITLE_FALLBACK = "N/A";
 
 // getVoteMetaData's title falls back to the bare identifier when a request has

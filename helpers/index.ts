@@ -13,6 +13,7 @@ export { unixTimestampToDate } from "./util/unixTimestampToDate";
 export * from "./voting/formatVotes";
 export {
   getVoteMetaData,
+  getAdminProposalNumber,
   getDescriptionFromAncillaryData,
   getTitleFromAncillaryData,
   resolveDiscordThreadTitle,

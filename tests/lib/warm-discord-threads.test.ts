@@ -22,6 +22,18 @@ vi.mock("@upstash/redis", () => ({
     }),
   },
 }));
+vi.hoisted(() => {
+  process.env.CONTENTFUL_SPACE_ID = "space";
+  process.env.CONTENTFUL_ACCESS_TOKEN = "token";
+});
+vi.mock("contentful", () => ({
+  createClient: () => ({
+    getEntries: () =>
+      Promise.resolve({
+        items: [{ fields: { number: 217, title: "Refund burned bonds" } }],
+      }),
+  }),
+}));
 vi.mock("helpers/config", () => ({ config: {}, chainConstantsList: [] }));
 // Avoid initializing browser wallets through the helpers barrel.
 vi.mock("helpers", async () => ({
@@ -181,4 +193,47 @@ it("preserves a named thread link when Discord redacts every message", async () 
     thread: [],
     threadId: id,
   });
+});
+
+it("matches governance threads named after their Contentful title", async () => {
+  const time = 1793217035;
+  const id = createSnowflakeFromTimestamp(Date.now() - 1000);
+  vi.mocked(getActiveVotes).mockResolvedValue({
+    vote: {
+      identifier: formatBytes32String("Admin 217"),
+      decodedIdentifier: "Admin 217",
+      time,
+      decodedAncillaryData: "",
+    } as PriceRequestT,
+  });
+  vi.stubGlobal("fetch", (input: string) => {
+    const channelId = new URL(input).pathname.split("/")[4];
+    return Promise.resolve(
+      Response.json(
+        channelId === evidenceRationalDiscordChannelId
+          ? [
+              {
+                id,
+                content: "",
+                thread: { id, name: `Refund burned bonds - ${time}` },
+              },
+            ]
+          : [
+              {
+                id,
+                content: "Refund looks right",
+                author: { id: "7", username: "voter", avatar: null },
+                timestamp: new Date().toISOString(),
+              },
+            ]
+      )
+    );
+  });
+  const response = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+  await handler({} as NextApiRequest, response as unknown as NextApiResponse);
+  const discussion = await getCachedProcessedThread(
+    makeKey("Refund burned bonds", time)
+  );
+  expect(discussion?.thread[0].message).toContain("Refund looks right");
+  expect(discussion?.threadId).toBe(id);
 });

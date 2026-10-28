@@ -8,6 +8,7 @@ import {
   MISSING_DISCORD_TITLE_FALLBACK,
 } from "helpers/voting/getVoteMetaData";
 import { computeRoundId } from "helpers/voting/voteTiming";
+import { getUmipDataByIdentifier } from "lib/contentful";
 import { makeKey } from "lib/discord-utils";
 import { parseQuestionAncillaryData } from "lib/question-ancillary-data";
 import { matchesLegacyQuestionThread } from "lib/legacy-question-thread";
@@ -57,12 +58,15 @@ async function fetchAllVotes(): Promise<PriceRequestT[]> {
   return [...Object.values(activeVotesMap), ...Object.values(upcomingVotesMap)];
 }
 
-function buildVoteInfos(votes: PriceRequestT[]): VoteInfo[] {
+async function buildVoteInfos(votes: PriceRequestT[]): Promise<VoteInfo[]> {
+  const umipData = await getUmipDataByIdentifier(
+    votes.map((vote) => vote.decodedIdentifier)
+  );
   return votes.map((vote) => {
     const { title } = getVoteMetaData(
       vote.decodedIdentifier,
       vote.decodedAncillaryData,
-      undefined
+      umipData.get(vote.decodedIdentifier)
     );
     const discordTitle = resolveDiscordThreadTitle(
       title,
@@ -236,7 +240,7 @@ export default async function handler(
     }
 
     // Step 2: Build vote infos
-    const voteInfos = buildVoteInfos(votes);
+    const voteInfos = await buildVoteInfos(votes);
 
     // Step 3: Refresh thread map
     const refreshStart = Date.now();
