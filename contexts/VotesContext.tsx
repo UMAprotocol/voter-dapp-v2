@@ -187,14 +187,18 @@ function getVotesWithData(
   } = lookups;
   if (!priceRequests) return [];
   return Object.entries(priceRequests).map(([uniqueKey, vote]) => {
-    // this value only exists when we have votes that have revealed from the graph, using this we can
-    // lookup revealed votes without a signature, just have to find the right address
-    const pastVoteRevealed: string | undefined =
-      vote?.revealedVoteByAddress[userAddress ?? ""] ||
-      (designatedVotingV1Address &&
-        vote.revealedVoteByAddress[designatedVotingV1Address]) ||
-      (userOrDelegatorAddress &&
-        vote.revealedVoteByAddress[userOrDelegatorAddress]);
+    // V1 history keeps the connected wallet's lookup order, independent of its
+    // current V2 delegation. V2 reveals belong to the account it votes for.
+    const pastVoteRevealed: string | undefined = vote.isV1
+      ? vote.revealedVoteByAddress[userAddress ?? ""] ||
+        (designatedVotingV1Address &&
+          vote.revealedVoteByAddress[designatedVotingV1Address]) ||
+        (userOrDelegatorAddress &&
+          vote.revealedVoteByAddress[userOrDelegatorAddress])
+      : (userOrDelegatorAddress &&
+          vote.revealedVoteByAddress[userOrDelegatorAddress]) ||
+        (designatedVotingV1Address &&
+          vote.revealedVoteByAddress[designatedVotingV1Address]);
 
     // Get the vote history with updated correctness if we have the data
     const voteHistoryForThisVote = voteHistoryByKey?.[uniqueKey]
@@ -261,6 +265,8 @@ function getVotesWithData(
   });
 }
 
+const noCommittedVotes: VoteExistsByKeyT = {};
+
 export function VotesProvider({ children }: { children: ReactNode }) {
   const { roundId } = useVoteTimingContext();
   const { address: userAddress } = useAccountDetails();
@@ -283,8 +289,12 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     isLoading: pastVotesIsLoading,
     isInitialLoading: pastVotesIsInitialLoading,
   } = usePastVotes();
-  const { data: committedVotes, isLoading: committedVotesIsLoading } =
+  const { data: ownCommittedVotes, isLoading: committedVotesIsLoading } =
     useCommittedVotes(userAddress);
+  // A delegate can also be a staker with its own delegate. Commits naming the
+  // connected address as voter then come from that other delegate, not from
+  // this account, and must not block reveals of the delegator's votes.
+  const committedVotes = isDelegate ? noCommittedVotes : ownCommittedVotes;
   const {
     data: committedVotesByCaller,
     isLoading: committedVotesByCallerIsLoading,
