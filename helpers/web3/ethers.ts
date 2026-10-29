@@ -26,52 +26,10 @@ export const formatBytes32String = ethers.utils.formatBytes32String;
 
 export const commify = ethers.utils.commify;
 
-export const formatTransactionError = (error: unknown): string => {
-  const errors: unknown[] = [error];
-  const visited = new Set<unknown>();
-  let description: string | undefined;
-
-  // Wallets can wrap RPC errors in another error or return plain objects.
-  for (const candidate of errors) {
-    if (visited.has(candidate)) continue;
-    visited.add(candidate);
-    let message: string | undefined;
-    let code: unknown;
-    if (typeof candidate === "string") {
-      message = candidate;
-    } else if (typeof candidate === "object" && candidate !== null) {
-      const details = candidate as Record<string, unknown>;
-      code = details.code;
-      message =
-        typeof details.reason === "string"
-          ? details.reason
-          : typeof details.message === "string"
-          ? details.message
-          : undefined;
-      errors.push(
-        details.error,
-        details.data,
-        details.originalError,
-        details.cause
-      );
-    }
-    if (
-      code === "INSUFFICIENT_FUNDS" ||
-      // Match provider fee-balance messages, not contract reverts or gas limits.
-      (message &&
-        /^insufficient funds for (?:gas\b|intrinsic transaction cost\b)/i.test(
-          message.trim()
-        ))
-    ) {
-      return "Insufficient ETH to pay for gas. Add ETH to your wallet and try again.";
-    }
-    if (!description && message?.trim()) description = message;
-  }
-
-  if (!description) return "Transaction failed. Please try again.";
+export const formatTransactionError = (error: Error) => {
   // ethers transactions put all call data and debug data between parens, so we will filter it out
-  const message = description.split("(")[0] || description;
-  return capitalizeFirstLetter(message.trim());
+  const message = error.message.split("(")[0] || error.message;
+  return capitalizeFirstLetter(message);
 };
 
 export const zeroAddress = ethers.constants.AddressZero;
