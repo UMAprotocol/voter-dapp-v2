@@ -1,6 +1,5 @@
 import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
-import { emitErrorEvent, formatTransactionError } from "helpers";
-import { hasTransactionErrorNotification } from "helpers/util/handleNotifications";
+import { formatTransactionError } from "helpers";
 import { useErrorContext } from "hooks";
 import { ErrorOriginT } from "types";
 
@@ -21,9 +20,7 @@ export function useHandleError(options?: Options) {
     useErrorContext(errorOrigin);
 
   function onError(error: unknown) {
-    const isTransactionAttempt = isContractTransaction && !isDataFetching;
-    if (!isTransactionAttempt && errorMessages.includes(wrongChainMessage))
-      return;
+    if (errorMessages.includes(wrongChainMessage)) return;
 
     let message: string;
 
@@ -31,10 +28,10 @@ export function useHandleError(options?: Options) {
       message = errorFetchingVoteDataMessage;
     } else if (customErrorMessage) {
       message = customErrorMessage;
-    } else if (isContractTransaction) {
-      message = formatTransactionError(error);
     } else if (error instanceof Error) {
-      message = error.message;
+      message = isContractTransaction
+        ? formatTransactionError(error)
+        : error.message;
     } else if (typeof error === "string") {
       message = error;
     } else {
@@ -42,9 +39,6 @@ export function useHandleError(options?: Options) {
     }
 
     addErrorMessage(message);
-    if (isTransactionAttempt && !hasTransactionErrorNotification(error)) {
-      emitErrorEvent({ message });
-    }
   }
 
   return {
