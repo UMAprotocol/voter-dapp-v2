@@ -1,29 +1,13 @@
-import * as contentful from "contentful";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as ss from "superstruct";
 import { ContentfulDataT } from "types";
+import { contentfulClient, getUmipEntries } from "lib/contentful";
 import { handleApiError } from "./_utils/errors";
 import { validateQueryParams } from "./_utils/validation";
 
 // UMIP entries change rarely (new admin proposals are infrequent), so let the
 // CDN serve them and refresh in the background
 const TTL = 60 * 10;
-
-// the access token lives server-side only — a NEXT_PUBLIC_ token ships in the
-// client bundle where anyone can extract it. The NEXT_PUBLIC_-prefixed names
-// are accepted as a fallback so existing deployments keep working until the
-// env vars are renamed.
-const space =
-  process.env.CONTENTFUL_SPACE_ID ??
-  process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
-const accessToken =
-  process.env.CONTENTFUL_ACCESS_TOKEN ??
-  process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
-
-const contentfulClient =
-  space && accessToken
-    ? contentful.createClient({ space, accessToken })
-    : undefined;
 
 const RequestSchema = ss.object({
   // comma-separated admin proposal numbers, e.g. "12,34,56"
@@ -52,18 +36,13 @@ export default async function handler(
       return res.status(200).json({ entries: [] });
     }
 
-    const entries = await contentfulClient.getEntries<ContentfulDataT>({
-      content_type: "umip",
-      "fields.number[in]": numbers,
-    });
+    const entries = await getUmipEntries(numbers.split(",").map(Number));
 
     res.setHeader(
       "Cache-Control",
       `public, max-age=0, s-maxage=${TTL}, stale-while-revalidate=86400`
     );
-    return res.status(200).json({
-      entries: entries.items.map(({ fields }) => fields),
-    });
+    return res.status(200).json({ entries });
   } catch (error) {
     return handleApiError(error, res);
   }
