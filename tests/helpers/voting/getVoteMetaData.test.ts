@@ -241,6 +241,7 @@ it("preserves rules mentioned inside an existing title/description request", () 
 });
 
 import v2Fixture from "./projects/polymarket-v2-fixture.json";
+import v2Type1Fixture from "./projects/polymarket-v2-type1-fixture.json";
 import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
 import {
   checkIfIsPolymarket,
@@ -308,6 +309,106 @@ describe("Polymarket V2 requests", () => {
       v2Fixture.text.replace('{"title"', '{bad"title"'),
     ]) {
       expect(checkIfIsPolymarket("YES_OR_NO_QUERY", text)).toBe(false);
+    }
+  });
+
+  it("renders Type 1 res_data tuples as vote options", () => {
+    const meta = getVoteMetaData(
+      "YES_OR_NO_QUERY",
+      v2Type1Fixture.text,
+      undefined
+    );
+    expect(meta.origin).toBe("Polymarket V2");
+    expect(meta.title).toBe("1H Spread: Bulls (-5.5)");
+    expect(meta.description).toContain(
+      "p1: 0, p2: 1, p3: 0.5. Where p1 corresponds to Knicks, p2 corresponds to Bulls, p3 corresponds to cancel."
+    );
+    expect(
+      meta.options?.map(({ label, value, secondaryLabel }) => ({
+        label,
+        value,
+        secondaryLabel,
+      }))
+    ).toEqual([
+      { label: "Knicks", value: "0", secondaryLabel: "p1" },
+      { label: "Bulls", value: "1", secondaryLabel: "p2" },
+      { label: "cancel", value: "0.5", secondaryLabel: "p3" },
+      {
+        label: "Early request",
+        value: earlyRequestMagicNumber,
+        secondaryLabel: "p4",
+      },
+      { label: "Custom", value: "custom", secondaryLabel: undefined },
+    ]);
+    expect(parsePolymarketV2AncillaryData(v2Type1Fixture.text)?.marketId).toBe(
+      "6342374"
+    );
+  });
+
+  it("orders Type 1 outcomes by value and allows omitting 0.5", () => {
+    const suffix = v2Type1Fixture.text.slice(
+      v2Type1Fixture.text.lastIndexOf("}") + 1
+    );
+    const rules = JSON.stringify({
+      type: 1,
+      title: "Total O/U 4.5",
+      description: "Rules",
+      integration_id: "1",
+      res_data: [
+        [1, "Over"],
+        [0, "Under"],
+      ],
+      product_spec: "",
+    });
+    expect(parsePolymarketV2AncillaryData(rules + suffix)?.outcomes).toEqual([
+      { value: "0", label: "Under", code: "p1" },
+      { value: "1", label: "Over", code: "p2" },
+    ]);
+  });
+
+  it("keeps numeric input for unsupported Type 1 mappings", () => {
+    const suffix = v2Type1Fixture.text.slice(
+      v2Type1Fixture.text.lastIndexOf("}") + 1
+    );
+    const withResData = (res_data: unknown, type = 1) =>
+      JSON.stringify({
+        type,
+        title: "Title",
+        description: "Rules",
+        integration_id: "1",
+        res_data,
+        product_spec: "",
+      }) + suffix;
+    for (const text of [
+      withResData([[0, "No"]]),
+      withResData([
+        [0, "No"],
+        [1, "Yes"],
+        [1, "Again"],
+      ]),
+      withResData([
+        [0, "No"],
+        [2, "Two"],
+      ]),
+      withResData([
+        ["0", "No"],
+        ["1", "Yes"],
+      ]),
+      withResData([
+        [0, "No"],
+        [1, " "],
+      ]),
+      withResData(
+        [
+          [0, "No"],
+          [1, "Yes"],
+        ],
+        2
+      ),
+    ]) {
+      const meta = getVoteMetaData("YES_OR_NO_QUERY", text, undefined);
+      expect(meta.origin).toBe("Polymarket V2");
+      expect(meta.options).toBeUndefined();
     }
   });
 
