@@ -196,6 +196,24 @@ export function maybeMakePolymarketOptions(
   decodedAncillaryData: string
 ): DropdownItemT[] | undefined {
   const v2 = parsePolymarketV2AncillaryData(decodedAncillaryData);
+  if (v2?.outcomes) {
+    return [
+      ...v2.outcomes.map(({ label, value, code }) => ({
+        label,
+        value,
+        secondaryLabel: code,
+      })),
+      {
+        label: "Early request",
+        value: earlyRequestMagicNumber,
+        secondaryLabel: "p4",
+      },
+      {
+        label: "Custom",
+        value: "custom",
+      },
+    ];
+  }
   if (v2) {
     // Event-based OO proposals reject Too Early, but DVM voters can return it.
     return maybeMakePolymarketOptions(`res_data: ${v2.resData}`);

@@ -8,6 +8,11 @@ are displayed without changing the original bytes used for commit/reveal.
 Early request remains a valid DVM vote, even though event-based OO proposals
 cannot propose it. Atomic outcome labels are deferred until their schema is confirmed.
 
+Type 1 requests (`"type": 1`) declare `res_data` as `[value, label]` tuples and
+carry the market id as `integration_id`. Values 0 and 1 are required and 0.5 is
+optional; they map to p1, p2 and p3 regardless of array order. Any other
+mapping, or any other `type`, keeps the numeric input.
+
 ## Originally proposed outcome
 
 Polymarket V1 and V2 vote details show the originally proposed outcome above the
