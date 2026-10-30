@@ -243,6 +243,7 @@ it("preserves rules mentioned inside an existing title/description request", () 
 import v2Fixture from "./projects/polymarket-v2-fixture.json";
 import v2Type1Fixture from "./projects/polymarket-v2-type1-fixture.json";
 import { parsePolymarketV2AncillaryData } from "lib/polymarket-v2";
+import { getQuickVoteOptions } from "helpers/voting/getSelectableQuickOptions";
 import {
   checkIfIsPolymarket,
   getQuestionId,
@@ -363,6 +364,20 @@ describe("Polymarket V2 requests", () => {
     expect(parsePolymarketV2AncillaryData(rules + suffix)?.outcomes).toEqual([
       { value: "0", label: "Under", code: "p1" },
       { value: "1", label: "Over", code: "p2" },
+    ]);
+    // Quick vote keeps the declared codes instead of renumbering Early request as P3.
+    const options =
+      getVoteMetaData("YES_OR_NO_QUERY", rules + suffix, undefined).options ??
+      [];
+    expect(
+      getQuickVoteOptions(options).map(({ option, number }) => [
+        number,
+        option.label,
+      ])
+    ).toEqual([
+      [1, "Under"],
+      [2, "Over"],
+      [4, "Early request"],
     ]);
   });
 

@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { DropdownItemT, VoteT } from "types";
+import { VoteT } from "types";
 import { mobileAndUnder } from "constant";
-import { getSelectableQuickOptions } from "helpers/voting/getSelectableQuickOptions";
+import { getQuickVoteOptions } from "helpers/voting/getSelectableQuickOptions";
 
 interface Props {
   vote: VoteT;
@@ -27,13 +27,13 @@ export function VotePanelVoteInput({
     );
   }
 
-  const optionsWithoutCustom = getSelectableQuickOptions(options);
+  const quickOptions = getQuickVoteOptions(options);
   return (
     <Wrapper>
       <VoteWrapper>
         <b>Quick vote:</b>
         <OptionsGrid>
-          {optionsWithoutCustom.map((option: DropdownItemT, index: number) => (
+          {quickOptions.map(({ option, number }) => (
             <OptionButton
               key={option.value.toString()}
               $isSelected={selectedValue === option.value.toString()}
@@ -46,15 +46,15 @@ export function VotePanelVoteInput({
                 )
               }
             >
-              P{index + 1}
+              P{number}
             </OptionButton>
           ))}
         </OptionsGrid>
       </VoteWrapper>
       <div>
-        {optionsWithoutCustom.map((option: DropdownItemT, index: number) => (
+        {quickOptions.map(({ option, number }, index) => (
           <SmallText key={option.value}>
-            {index !== 0 && " · "}P{index + 1} = {option.label}
+            {index !== 0 && " · "}P{number} = {option.label}
           </SmallText>
         ))}
       </div>
