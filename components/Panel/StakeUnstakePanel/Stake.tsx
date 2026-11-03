@@ -46,8 +46,8 @@ export function Stake({
 
   const disclaimer = (
     <span>
-      I understand that once I stake my tokens, I will be slashed per vote if I
-      fail to vote or cast an incorrect vote. I also understand that I cannot
+      I understand that once I stake my tokens, I will be slashed per vote that
+      I miss or cast an incorrect vote for. I also understand that I cannot
       reclaim my staked tokens until {unstakeCoolDownFormatted} after submitting
       an unstaking request. Learn more{" "}
       <Link
