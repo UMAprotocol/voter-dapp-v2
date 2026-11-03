@@ -59,6 +59,7 @@ const Label = styled.label`
 `;
 
 const Box = styled(CustomCheckboxContainer)`
+  flex-shrink: 0;
   width: 16px;
   height: 16px;
   display: inline-grid;
