@@ -43,7 +43,7 @@ export function Stake({
       )
     : "0 seconds";
 
-  const disclaimer = `I understand that once staked, I will not be able to reclaim my tokens until ${unstakeCoolDownFormatted} after my unstaking request is submitted.`;
+  const disclaimer = `I understand that once I stake my tokens, I will be slashed if I fail to vote or cast an incorrect vote. I also understand that I cannot reclaim my tokens until ${unstakeCoolDownFormatted} after submitting an unstaking request.`;
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
