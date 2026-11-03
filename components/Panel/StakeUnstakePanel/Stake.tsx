@@ -184,6 +184,7 @@ const CheckboxWrapper = styled.div`
 
 const DisclaimerList = styled.ul`
   padding-left: 1.25em;
+  list-style: disc;
 `;
 
 const Link = styled(NextLink)`
