@@ -4,6 +4,7 @@ import { intervalToDuration } from "date-fns";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
+import NextLink from "next/link";
 import { useState } from "react";
 import styled from "styled-components";
 import {
@@ -43,7 +44,21 @@ export function Stake({
       )
     : "0 seconds";
 
-  const disclaimer = `I understand that once I stake my tokens, I will be slashed if I fail to vote or cast an incorrect vote. I also understand that I cannot reclaim my tokens until ${unstakeCoolDownFormatted} after submitting an unstaking request.`;
+  const disclaimer = (
+    <span>
+      I understand that once I stake my tokens, I will be slashed per vote if I
+      fail to vote or cast an incorrect vote. I also understand that I cannot
+      reclaim my staked tokens until {unstakeCoolDownFormatted} after submitting
+      an unstaking request. Learn more{" "}
+      <Link
+        href="https://docs.uma.xyz/using-uma/voting-walkthrough"
+        target="_blank"
+      >
+        here
+      </Link>
+      .
+    </span>
+  );
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
@@ -149,4 +164,12 @@ const AmountInputWrapper = styled.div`
 
 const CheckboxWrapper = styled.div`
   margin-bottom: 23px;
+`;
+
+const Link = styled(NextLink)`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
