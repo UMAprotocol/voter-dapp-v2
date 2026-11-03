@@ -45,11 +45,27 @@ export function Stake({
     : "0 seconds";
 
   const disclaimer = (
-    <span>
-      I understand that once I stake my tokens, I will be slashed per vote that
-      I miss or cast an incorrect vote for. I also understand that I cannot
-      reclaim my staked tokens until {unstakeCoolDownFormatted} after submitting
-      an unstaking request. Learn more{" "}
+    <div>
+      I understand that:
+      <DisclaimerList>
+        <li>
+          submitting votes requires both committing a vote during the commit
+          phase and subsequently revealing it during the reveal phase
+        </li>
+        <li>
+          my staked tokens will be slashed for every vote that I do not submit a
+          vote for
+        </li>
+        <li>
+          my staked tokens will be slashed for every vote I submit a wrong vote
+          for
+        </li>
+        <li>
+          I cannot reclaim my staked tokens until {unstakeCoolDownFormatted}{" "}
+          after submitting an unstaking request.
+        </li>
+      </DisclaimerList>
+      Learn more{" "}
       <Link
         href="https://docs.uma.xyz/using-uma/voting-walkthrough"
         target="_blank"
@@ -57,7 +73,7 @@ export function Stake({
         here
       </Link>
       .
-    </span>
+    </div>
   );
 
   function isApprove() {
@@ -164,6 +180,10 @@ const AmountInputWrapper = styled.div`
 
 const CheckboxWrapper = styled.div`
   margin-bottom: 23px;
+`;
+
+const DisclaimerList = styled.ul`
+  padding-left: 1.25em;
 `;
 
 const Link = styled(NextLink)`

@@ -52,7 +52,7 @@ export function Checkbox({
 
 const Label = styled.label`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--gap);
   color: var(--black);
   font: var(--text-xs);
@@ -60,6 +60,8 @@ const Label = styled.label`
 
 const Box = styled(CustomCheckboxContainer)`
   flex-shrink: 0;
+  /* centers the box on the first 20px line of the label */
+  margin-top: 2px;
   width: 16px;
   height: 16px;
   display: inline-grid;
