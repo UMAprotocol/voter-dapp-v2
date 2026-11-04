@@ -4,6 +4,7 @@ import { intervalToDuration } from "date-fns";
 import formatDuration from "date-fns/formatDuration";
 import { BigNumber } from "ethers";
 import { formatEther, parseEtherSafe } from "helpers";
+import NextLink from "next/link";
 import { useState } from "react";
 import styled from "styled-components";
 import {
@@ -43,7 +44,37 @@ export function Stake({
       )
     : "0 seconds";
 
-  const disclaimer = `I understand that once staked, I will not be able to reclaim my tokens until ${unstakeCoolDownFormatted} after my unstaking request is submitted.`;
+  const disclaimer = (
+    <div>
+      I understand that:
+      <DisclaimerList>
+        <li>
+          submitting votes requires both committing a vote during the commit
+          phase and subsequently revealing it during the reveal phase
+        </li>
+        <li>
+          my staked tokens will be slashed for every vote that I do not submit a
+          vote for
+        </li>
+        <li>
+          my staked tokens will be slashed for every vote I submit a wrong vote
+          for
+        </li>
+        <li>
+          I cannot reclaim my staked tokens until {unstakeCoolDownFormatted}{" "}
+          after submitting an unstaking request.
+        </li>
+      </DisclaimerList>
+      Learn more{" "}
+      <Link
+        href="https://docs.uma.xyz/using-uma/voting-walkthrough"
+        target="_blank"
+      >
+        here
+      </Link>
+      .
+    </div>
+  );
 
   function isApprove() {
     if (tokenAllowance === undefined || tokenAllowance.eq(0)) return true;
@@ -149,4 +180,17 @@ const AmountInputWrapper = styled.div`
 
 const CheckboxWrapper = styled.div`
   margin-bottom: 23px;
+`;
+
+const DisclaimerList = styled.ul`
+  padding-left: 1.25em;
+  list-style: disc;
+`;
+
+const Link = styled(NextLink)`
+  color: var(--red-500);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
