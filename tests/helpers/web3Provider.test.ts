@@ -10,8 +10,13 @@ const notFound = Object.assign(new Error("Internal JSON-RPC error."), {
   data: { code: -32000, message: "transaction not found" },
 });
 
-// A wallet RPC that errors on lookups until the transaction is mined.
-function wallet(minedAtBlock: number, lookupError: Error = notFound) {
+// A wallet RPC that errors on lookups until the transaction is mined, and on
+// receipts for two blocks after.
+function wallet(
+  minedAtBlock: number,
+  lookupError: Error = notFound,
+  Provider = Web3Provider
+) {
   let block = 100;
   const minedAt = block + minedAtBlock;
   const mined = () => block >= minedAt;
@@ -47,7 +52,7 @@ function wallet(minedAtBlock: number, lookupError: Error = notFound) {
           type: "0x0",
         });
       case "eth_getTransactionReceipt":
-        if (!mined()) return Promise.reject(lookupError);
+        if (block < minedAt + 2) return Promise.reject(lookupError);
         return Promise.resolve({
           transactionHash: hash,
           blockHash: `0x${"cd".repeat(32)}`,
@@ -67,7 +72,7 @@ function wallet(minedAtBlock: number, lookupError: Error = notFound) {
     }
     return Promise.reject(new Error(`unexpected ${method}`));
   };
-  const provider = new Web3Provider({ request }, 1);
+  const provider = new Provider({ request }, 1);
   provider.pollingInterval = 10;
   return provider;
 }
@@ -81,13 +86,17 @@ async function sendAndWait(provider: ethers.providers.Web3Provider) {
 
 describe("Web3Provider", () => {
   it("waits across blocks while the transaction is not found", async () => {
-    const receipt = await sendAndWait(wallet(20));
+    const stock = wallet(3, notFound, ethers.providers.Web3Provider);
+    await expect(sendAndWait(stock)).rejects.toBe(notFound);
+    const receipt = await sendAndWait(wallet(3));
     expect(receipt.transactionHash).toBe(hash);
     expect(receipt.status).toBe(1);
   });
 
   it("still fails on other lookup errors", async () => {
-    const error = new Error("rate limited");
-    await expect(sendAndWait(wallet(20, error))).rejects.toBe(error);
+    const error = Object.assign(new Error("Method not found"), {
+      code: -32601,
+    });
+    await expect(sendAndWait(wallet(3, error))).rejects.toBe(error);
   });
 });

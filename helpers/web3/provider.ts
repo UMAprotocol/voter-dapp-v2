@@ -15,17 +15,17 @@ export class Web3Provider extends ethers.providers.Web3Provider {
   }
 }
 
+const notFoundMessage =
+  /\b(?:transaction|receipt|txn?)\b.*\bnot (?:be )?found/i;
+
 // Wallets may nest the RPC error, e.g. MetaMask's "Internal JSON-RPC error."
 function isNotFoundError(error: unknown, depth = 0): boolean {
   if (depth > 3 || typeof error !== "object" || error === null) return false;
-  const {
-    message,
-    data,
-    error: inner,
-    cause,
-  } = error as Record<string, unknown>;
+  const e = error as Record<string, unknown>;
   return (
-    (typeof message === "string" && /not (?:be )?found/i.test(message)) ||
-    [data, inner, cause].some((e) => isNotFoundError(e, depth + 1))
+    (typeof e.message === "string" && notFoundMessage.test(e.message)) ||
+    [e.data, e.error, e.cause].some((inner) =>
+      isNotFoundError(inner, depth + 1)
+    )
   );
 }
