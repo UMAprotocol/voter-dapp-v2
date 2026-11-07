@@ -1,23 +1,16 @@
 import { ethers } from "ethers";
 
-const retryDelaysMs = [1000, 2000, 4000, 8000];
-
-// A load-balanced RPC can briefly report a just-broadcast transaction as not
-// found. Retry those lookups with backoff instead of failing the transaction.
+// Some RPCs error on a transaction they haven't seen yet (desync, private
+// submission). Return null instead so ethers keeps polling until it lands.
 export class Web3Provider extends ethers.providers.Web3Provider {
   async perform(method: string, params: unknown): Promise<unknown> {
-    for (let attempt = 0; ; attempt++) {
-      try {
-        return (await super.perform(method, params)) as unknown;
-      } catch (error) {
-        const delay = retryDelaysMs[attempt];
-        const isTransactionLookup =
-          method === "getTransaction" || method === "getTransactionReceipt";
-        if (!isTransactionLookup || !isNotFoundError(error) || !delay) {
-          throw error;
-        }
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+    try {
+      return (await super.perform(method, params)) as unknown;
+    } catch (error) {
+      const isTransactionLookup =
+        method === "getTransaction" || method === "getTransactionReceipt";
+      if (isTransactionLookup && isNotFoundError(error)) return null;
+      throw error;
     }
   }
 }

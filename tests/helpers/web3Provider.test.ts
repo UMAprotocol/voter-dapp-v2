@@ -1,65 +1,93 @@
+import { ethers } from "ethers";
 import { Web3Provider } from "helpers/web3/provider";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-const transactionHash = `0x${"ab".repeat(32)}`;
-const receipt = { transactionHash, blockNumber: "0x1" };
+const from = `0x${"11".repeat(20)}`;
+const to = `0x${"22".repeat(20)}`;
+const hash = `0x${"ab".repeat(32)}`;
 const notFound = Object.assign(new Error("Internal JSON-RPC error."), {
   code: -32603,
   data: { code: -32000, message: "transaction not found" },
 });
 
-function setup(...responses: unknown[]) {
-  const request = vi.fn();
-  for (const response of responses) {
-    if (response instanceof Error) request.mockRejectedValueOnce(response);
-    else request.mockResolvedValueOnce(response);
-  }
-  return { request, provider: new Web3Provider({ request }, 1) };
+// A wallet RPC that errors on lookups until the transaction is mined.
+function wallet(minedAtBlock: number, lookupError: Error = notFound) {
+  let block = 100;
+  const minedAt = block + minedAtBlock;
+  const mined = () => block >= minedAt;
+  const request = ({ method }: { method: string }) => {
+    switch (method) {
+      case "eth_chainId":
+        return Promise.resolve("0x1");
+      case "eth_blockNumber":
+        return Promise.resolve(ethers.utils.hexValue(++block));
+      case "eth_accounts":
+        return Promise.resolve([from]);
+      case "eth_sendTransaction":
+        return Promise.resolve(hash);
+      case "eth_getTransactionCount":
+        return Promise.resolve(mined() ? "0x1" : "0x0");
+      case "eth_getTransactionByHash":
+        if (!mined()) return Promise.reject(lookupError);
+        return Promise.resolve({
+          hash,
+          blockHash: `0x${"cd".repeat(32)}`,
+          blockNumber: ethers.utils.hexValue(minedAt),
+          transactionIndex: "0x0",
+          from,
+          to,
+          gas: "0x5208",
+          gasPrice: "0x1",
+          nonce: "0x0",
+          input: "0x",
+          value: "0x0",
+          r: `0x${"01".repeat(32)}`,
+          s: `0x${"02".repeat(32)}`,
+          v: "0x25",
+          type: "0x0",
+        });
+      case "eth_getTransactionReceipt":
+        if (!mined()) return Promise.reject(lookupError);
+        return Promise.resolve({
+          transactionHash: hash,
+          blockHash: `0x${"cd".repeat(32)}`,
+          blockNumber: ethers.utils.hexValue(minedAt),
+          transactionIndex: "0x0",
+          from,
+          to,
+          contractAddress: null,
+          cumulativeGasUsed: "0x5208",
+          gasUsed: "0x5208",
+          effectiveGasPrice: "0x1",
+          logs: [],
+          logsBloom: `0x${"00".repeat(256)}`,
+          status: "0x1",
+          type: "0x0",
+        });
+    }
+    return Promise.reject(new Error(`unexpected ${method}`));
+  };
+  const provider = new Web3Provider({ request }, 1);
+  provider.pollingInterval = 10;
+  return provider;
+}
+
+async function sendAndWait(provider: ethers.providers.Web3Provider) {
+  const tx = await provider
+    .getSigner()
+    .sendTransaction({ to, gasLimit: 21000, gasPrice: 1, nonce: 0 });
+  return tx.wait();
 }
 
 describe("Web3Provider", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it("retries transaction lookups that are not found yet", async () => {
-    const { request, provider } = setup(notFound, notFound, receipt);
-    const result = provider.perform("getTransactionReceipt", {
-      transactionHash,
-    });
-    await vi.advanceTimersByTimeAsync(999);
-    expect(request).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(2001);
-    await expect(result).resolves.toBe(receipt);
-    expect(request).toHaveBeenCalledTimes(3);
+  it("waits across blocks while the transaction is not found", async () => {
+    const receipt = await sendAndWait(wallet(20));
+    expect(receipt.transactionHash).toBe(hash);
+    expect(receipt.status).toBe(1);
   });
 
-  it("gives up after a few retries", async () => {
-    const { request, provider } = setup(...Array<unknown>(5).fill(notFound));
-    const result = provider.perform("getTransaction", { transactionHash });
-    const assertion = expect(result).rejects.toBe(notFound);
-    await vi.advanceTimersByTimeAsync(15000);
-    await assertion;
-    expect(request).toHaveBeenCalledTimes(5);
-  });
-
-  it("does not retry other errors", async () => {
-    const error = new Error("execution reverted");
-    const { request, provider } = setup(error);
-    await expect(
-      provider.perform("getTransactionReceipt", { transactionHash })
-    ).rejects.toBe(error);
-    expect(request).toHaveBeenCalledOnce();
-  });
-
-  it("does not retry other methods", async () => {
-    const { request, provider } = setup(notFound);
-    await expect(
-      provider.perform("getBlock", { blockTag: "latest" })
-    ).rejects.toBe(notFound);
-    expect(request).toHaveBeenCalledOnce();
+  it("still fails on other lookup errors", async () => {
+    const error = new Error("rate limited");
+    await expect(sendAndWait(wallet(20, error))).rejects.toBe(error);
   });
 });
