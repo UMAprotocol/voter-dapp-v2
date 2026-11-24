@@ -548,13 +548,16 @@ function messagesToThreadIdMap(messages: RawDiscordThreadT): ThreadIdMap {
  * If afterMessageId is provided, only fetches new messages (incremental update).
  * Full rebuilds are limited to FULL_REBUILD_LOOKBACK_MS to avoid fetching ancient history.
  */
-export async function buildThreadIdMap(afterMessageId?: string): Promise<{
+export async function buildThreadIdMap(
+  afterMessageId?: string,
+  oldestTimestamp = Date.now() - FULL_REBUILD_LOOKBACK_MS
+): Promise<{
   threadIdMap: ThreadIdMap;
   latestMessageId: string | undefined;
 }> {
   const isIncremental = !!afterMessageId;
   const lookbackDays = Math.round(
-    FULL_REBUILD_LOOKBACK_MS / (24 * 60 * 60 * 1000)
+    (Date.now() - oldestTimestamp) / (24 * 60 * 60 * 1000)
   );
 
   console.log(
@@ -570,7 +573,7 @@ export async function buildThreadIdMap(afterMessageId?: string): Promise<{
       )
     : await getDiscordMessagesPaginated(
         evidenceRationalDiscordChannelId,
-        Date.now() - FULL_REBUILD_LOOKBACK_MS
+        oldestTimestamp
       );
 
   const threadIdMap = messagesToThreadIdMap(fetchResult.messages);
