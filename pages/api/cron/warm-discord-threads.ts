@@ -19,6 +19,7 @@ import {
   getDiscordMessagesPaginated,
   setCachedProcessedThread,
   shouldDoFullRebuild,
+  FULL_REBUILD_LOOKBACK_MS,
 } from "../discord-thread/_utils";
 import { processRawMessages } from "../discord-thread/_message-processing";
 
@@ -83,7 +84,9 @@ async function buildVoteInfos(votes: PriceRequestT[]): Promise<VoteInfo[]> {
   });
 }
 
-async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
+async function refreshThreadIdMap(
+  voteInfos: VoteInfo[]
+): Promise<ThreadMapRefreshResult> {
   const cached = await getCachedThreadIdMap();
   const isFullRebuild = shouldDoFullRebuild(cached);
   const cachedThreadCount = Object.keys(cached?.threadIdMap ?? {}).length;
@@ -106,8 +109,15 @@ async function refreshThreadIdMap(): Promise<ThreadMapRefreshResult> {
     ? undefined
     : cached?.latestThreadId ?? undefined;
 
+  // Disputes relayed late (e.g. oversize Polygon proofs) reach the DVM long
+  // after their thread was posted, so look back to the oldest vote's request.
+  const oldestTimestamp = Math.min(
+    Date.now() - FULL_REBUILD_LOOKBACK_MS,
+    ...voteInfos.map((vote) => vote.time * 1000)
+  );
   const { threadIdMap: newThreads, latestMessageId } = await buildThreadIdMap(
-    afterMessageId
+    afterMessageId,
+    oldestTimestamp
   );
 
   const newThreadCount = Object.keys(newThreads).length;
@@ -244,7 +254,7 @@ export default async function handler(
 
     // Step 3: Refresh thread map
     const refreshStart = Date.now();
-    const { threadIdMap, isFullRebuild } = await refreshThreadIdMap();
+    const { threadIdMap, isFullRebuild } = await refreshThreadIdMap(voteInfos);
     log(`thread map refreshed (${Date.now() - refreshStart}ms)`);
 
     // Step 4: Process votes

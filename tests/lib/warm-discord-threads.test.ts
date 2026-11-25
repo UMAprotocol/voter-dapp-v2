@@ -237,3 +237,38 @@ it("matches governance threads named after their Contentful title", async () => 
   expect(discussion?.thread[0].message).toContain("Refund looks right");
   expect(discussion?.threadId).toBe(id);
 });
+
+it("finds threads older than a week for votes requested before then", async () => {
+  const time = Math.floor((Date.now() - 10 * 24 * 60 * 60 * 1000) / 1000);
+  const id = createSnowflakeFromTimestamp(time * 1000 + 60_000);
+  vi.mocked(getActiveVotes).mockResolvedValue({
+    vote: {
+      identifier: formatBytes32String("YES_OR_NO_QUERY"),
+      decodedIdentifier: "YES_OR_NO_QUERY",
+      time,
+      decodedAncillaryData:
+        "q:Will it rain?,rules:Yes if rain.,ooRequester:1234",
+    } as PriceRequestT,
+  });
+  vi.stubGlobal("fetch", (input: string) => {
+    const channelId = new URL(input).pathname.split("/")[4];
+    return Promise.resolve(
+      Response.json(
+        channelId === evidenceRationalDiscordChannelId
+          ? [
+              {
+                id,
+                content: "",
+                thread: { id, name: `Will it rain? - ${time}` },
+              },
+            ]
+          : []
+      )
+    );
+  });
+  const response = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+  await handler({} as NextApiRequest, response as unknown as NextApiResponse);
+  expect(
+    (await getCachedProcessedThread(makeKey("Will it rain?", time)))?.threadId
+  ).toBe(id);
+});
