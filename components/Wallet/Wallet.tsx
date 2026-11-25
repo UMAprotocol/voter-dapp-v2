@@ -1,5 +1,5 @@
 import { useConnectWallet, useWallets } from "@web3-onboard/react";
-import { ethers } from "ethers";
+import { Web3Provider } from "helpers/web3/provider";
 import {
   useAccountDetails,
   useContractsContext,
@@ -63,7 +63,7 @@ export function Wallet() {
       setVotingTokenWriter(undefined);
     } else {
       // After this is set you can use the provider to sign or transact
-      const provider = new ethers.providers.Web3Provider(wallet.provider);
+      const provider = new Web3Provider(wallet.provider);
       const signer = provider.getSigner();
 
       setProvider(provider);
