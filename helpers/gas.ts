@@ -46,10 +46,11 @@ export async function sendWithGasCheck<T>({
     const gasCost = await Promise.all([
       estimateGas(),
       signer.getBalance(),
+      paysOwnGas(signer),
     ]).then(
-      ([gas, balance]) => {
+      ([gas, balance, isGasPayer]) => {
         const cost = gas.mul(maxFeePerGas);
-        return balance.lt(cost) ? cost : undefined;
+        return isGasPayer && balance.lt(cost) ? cost : undefined;
       },
       // e.g. the call reverts, so ETH isn't the problem
       () => undefined
@@ -59,11 +60,26 @@ export async function sendWithGasCheck<T>({
   }
 }
 
+// A contract wallet such as a Safe doesn't pay gas itself; whoever executes its
+// transaction does. EIP-7702 delegated EOAs still pay their own.
+async function paysOwnGas(signer: ethers.Signer) {
+  if (!signer.provider) return false;
+  const code = await signer.provider.getCode(await signer.getAddress());
+  return code === "0x" || /^0xef0100[0-9a-f]{40}$/i.test(code);
+}
+
 export function insufficientEthForGasMessage(gasCost: ethers.BigNumber) {
-  // Round up so the shown cost is never below what the wallet needs.
-  const eth = Number(ethers.utils.formatEther(gasCost)).toLocaleString(
-    "en-US",
-    { maximumSignificantDigits: 2, roundingMode: "ceil" }
-  );
+  const eth = ethers.utils
+    .formatEther(ceilToSignificantDigits(gasCost, 2))
+    .replace(/\.0$/, "");
   return `Connected wallet does not have enough ETH for gas; estimated gas cost = ${eth} ETH.`;
+}
+
+// Round up so the shown cost is never below what the wallet needs. Done in wei
+// because older browsers ignore Intl.NumberFormat's roundingMode.
+function ceilToSignificantDigits(value: ethers.BigNumber, digits: number) {
+  const dropped = value.toString().length - digits;
+  if (dropped <= 0) return value;
+  const unit = ethers.BigNumber.from(10).pow(dropped);
+  return value.add(unit).sub(1).div(unit).mul(unit);
 }

@@ -15,7 +15,10 @@ const baseFee = ethers.utils.parseUnits("1.35", "gwei");
 
 // A wallet whose node, like geth and reth, caps a fee-bearing estimate at
 // balance / maxFeePerGas.
-function wallet(balance: ethers.BigNumber, { reverts = false } = {}) {
+function wallet(
+  balance: ethers.BigNumber,
+  { reverts = false, code = "0x" } = {}
+) {
   const request = ({
     method,
     params = [],
@@ -32,6 +35,8 @@ function wallet(balance: ethers.BigNumber, { reverts = false } = {}) {
         return Promise.resolve([voter]);
       case "eth_getBalance":
         return Promise.resolve(balance.toHexString());
+      case "eth_getCode":
+        return Promise.resolve(code);
       case "eth_getBlockByNumber":
         return Promise.resolve({
           number: "0x64",
@@ -80,7 +85,10 @@ function wallet(balance: ethers.BigNumber, { reverts = false } = {}) {
   return new Web3Provider({ request }, 1);
 }
 
-async function commit(balanceEth: string, options?: { reverts?: boolean }) {
+async function commit(
+  balanceEth: string,
+  options?: { reverts?: boolean; code?: string }
+) {
   const provider = wallet(ethers.utils.parseEther(balanceEth), options);
   const signer = provider.getSigner();
   const voting = new ethers.Contract(
@@ -106,6 +114,19 @@ describe("sendWithGasCheck", () => {
     await expect(commit("0")).rejects.toThrow(
       "estimated gas cost = 0.0069 ETH"
     );
+  });
+
+  it("checks an EIP-7702 delegated EOA, which pays its own gas", async () => {
+    await expect(
+      commit("0.005", { code: `0xef0100${"33".repeat(20)}` })
+    ).rejects.toThrow("estimated gas cost = 0.0069 ETH");
+  });
+
+  it("keeps the original error for a contract wallet such as a Safe", async () => {
+    // The Safe's own balance doesn't pay for gas, so it says nothing.
+    await expect(commit("0", { code: "0x6080604052" })).rejects.toMatchObject({
+      code: "UNPREDICTABLE_GAS_LIMIT",
+    });
   });
 
   it("keeps the original error when the wallet has enough ETH", async () => {
@@ -151,6 +172,9 @@ describe("insufficientEthForGasMessage", () => {
     ["0.00047496714", "0.00048"],
     ["0.0068", "0.0068"],
     ["1.234", "1.3"],
+    ["0.0991", "0.1"],
+    ["0.991", "1"],
+    ["0.000000000000000001", "0.000000000000000001"],
   ])("rounds %s ETH up to %s", (cost, shown) => {
     expect(insufficientEthForGasMessage(ethers.utils.parseEther(cost))).toBe(
       `Connected wallet does not have enough ETH for gas; estimated gas cost = ${shown} ETH.`
