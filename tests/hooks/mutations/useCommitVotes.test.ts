@@ -59,6 +59,7 @@ vi.mock("helpers", () => ({
   encryptMessage: (_publicKey: string, message: string) =>
     Promise.resolve(message),
   getGasFeeOverrides: () => Promise.resolve({}),
+  sendWithGasCheck: ({ send }: { send: () => unknown }) => send(),
   handleNotifications: async (tx: { wait: () => Promise<unknown> }) =>
     tx.wait(),
 }));

@@ -1,0 +1,159 @@
+import { ethers } from "ethers";
+import {
+  getGasFeeOverrides,
+  insufficientEthForGasMessage,
+  sendWithGasCheck,
+} from "helpers/gas";
+import { Web3Provider } from "helpers/web3/provider";
+import { describe, expect, it, vi } from "vitest";
+
+const voter = `0x${"11".repeat(20)}`;
+const votingAddress = `0x${"22".repeat(20)}`;
+// A 38-vote commit on mainnet.
+const gasNeeded = 3_369_060;
+const baseFee = ethers.utils.parseUnits("1.35", "gwei");
+
+// A wallet whose node, like geth and reth, caps a fee-bearing estimate at
+// balance / maxFeePerGas.
+function wallet(balance: ethers.BigNumber, { reverts = false } = {}) {
+  const request = ({
+    method,
+    params = [],
+  }: {
+    method: string;
+    params?: unknown[];
+  }) => {
+    switch (method) {
+      case "eth_chainId":
+        return Promise.resolve("0x1");
+      case "eth_blockNumber":
+        return Promise.resolve("0x64");
+      case "eth_accounts":
+        return Promise.resolve([voter]);
+      case "eth_getBalance":
+        return Promise.resolve(balance.toHexString());
+      case "eth_getBlockByNumber":
+        return Promise.resolve({
+          number: "0x64",
+          hash: `0x${"cd".repeat(32)}`,
+          parentHash: `0x${"ab".repeat(32)}`,
+          timestamp: "0x0",
+          nonce: "0x0000000000000000",
+          difficulty: "0x0",
+          gasLimit: "0x2aea540",
+          gasUsed: "0x0",
+          miner: votingAddress,
+          extraData: "0x",
+          baseFeePerGas: baseFee.toHexString(),
+          transactions: [],
+        });
+      case "eth_gasPrice":
+        return Promise.resolve(baseFee.toHexString());
+      case "eth_estimateGas": {
+        if (reverts) {
+          return Promise.reject({
+            code: 3,
+            message: "execution reverted: Cannot commit in reveal phase",
+          });
+        }
+        const fee: unknown = Reflect.get(Object(params[0]), "maxFeePerGas");
+        const allowance =
+          typeof fee === "string"
+            ? balance.div(fee)
+            : ethers.constants.MaxUint256;
+        if (allowance.lt(gasNeeded)) {
+          return Promise.reject({
+            code: -32000,
+            message: `gas required exceeds allowance (${allowance.toString()})`,
+          });
+        }
+        return Promise.resolve(ethers.utils.hexValue(gasNeeded));
+      }
+      case "eth_sendTransaction":
+        return Promise.reject({
+          code: 4001,
+          message: "User denied transaction signature.",
+        });
+    }
+    return Promise.reject(new Error(`unexpected ${method}`));
+  };
+  return new Web3Provider({ request }, 1);
+}
+
+async function commit(balanceEth: string, options?: { reverts?: boolean }) {
+  const provider = wallet(ethers.utils.parseEther(balanceEth), options);
+  const signer = provider.getSigner();
+  const voting = new ethers.Contract(
+    votingAddress,
+    ["function multicall(bytes[] data) returns (bytes[] results)"],
+    signer
+  );
+  const gasOverrides = await getGasFeeOverrides(provider);
+  return sendWithGasCheck({
+    signer,
+    gasOverrides,
+    estimateGas: () => voting.estimateGas.multicall([]),
+    send: () => voting.functions.multicall([], gasOverrides),
+  });
+}
+
+describe("sendWithGasCheck", () => {
+  it("says the wallet is short of ETH instead of 'cannot estimate gas'", async () => {
+    // 3,369,060 gas * (1.35 * 1.5 + 0.001) gwei = 0.00682569 ETH
+    await expect(commit("0.005")).rejects.toThrow(
+      "Connected wallet does not have enough ETH for gas; estimated gas cost = 0.0069 ETH."
+    );
+    await expect(commit("0")).rejects.toThrow(
+      "estimated gas cost = 0.0069 ETH"
+    );
+  });
+
+  it("keeps the original error when the wallet has enough ETH", async () => {
+    await expect(commit("1")).rejects.toMatchObject({
+      code: "ACTION_REJECTED",
+    });
+  });
+
+  it("keeps the original error when the call reverts", async () => {
+    await expect(commit("0", { reverts: true })).rejects.toMatchObject({
+      code: "UNPREDICTABLE_GAS_LIMIT",
+    });
+  });
+
+  it("only checks after a failed send with a fee override", async () => {
+    const estimateGas = vi.fn(() => Promise.resolve(ethers.BigNumber.from(1)));
+    const signer = new ethers.VoidSigner(voter);
+    const error = new Error("rejected");
+
+    await expect(
+      sendWithGasCheck({
+        signer,
+        gasOverrides: { maxFeePerGas: "1" },
+        estimateGas,
+        send: () => Promise.resolve("sent"),
+      })
+    ).resolves.toBe("sent");
+    await expect(
+      sendWithGasCheck({
+        signer,
+        gasOverrides: {},
+        estimateGas,
+        send: () => Promise.reject(error),
+      })
+    ).rejects.toBe(error);
+    expect(estimateGas).not.toHaveBeenCalled();
+  });
+});
+
+describe("insufficientEthForGasMessage", () => {
+  it.each([
+    ["0.00682569", "0.0069"],
+    ["0.00047496714", "0.00048"],
+    ["0.0068", "0.0068"],
+    ["1.234", "1.3"],
+  ])("rounds %s ETH up to %s", (cost, shown) => {
+    expect(insufficientEthForGasMessage(ethers.utils.parseEther(cost))).toBe(
+      `Connected wallet does not have enough ETH for gas; estimated gas cost = ${shown} ETH.`
+    );
+  });
+});

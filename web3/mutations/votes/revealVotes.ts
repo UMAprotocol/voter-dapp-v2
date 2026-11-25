@@ -1,4 +1,8 @@
-import { formatVotesToReveal, getGasFeeOverrides } from "helpers";
+import {
+  formatVotesToReveal,
+  getGasFeeOverrides,
+  sendWithGasCheck,
+} from "helpers";
 import { RevealVotes } from "types";
 
 // Resolve after broadcast; the caller tracks confirmation separately.
@@ -14,15 +18,14 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
     if (!vote) return;
 
     const { identifier, time, price, ancillaryData, salt } = vote;
+    const args = [identifier, time, price, ancillaryData, salt] as const;
 
-    return voting.functions.revealVote(
-      identifier,
-      time,
-      price,
-      ancillaryData,
-      salt,
-      gasOverrides
-    );
+    return sendWithGasCheck({
+      signer: voting.signer,
+      gasOverrides,
+      estimateGas: () => voting.estimateGas.revealVote(...args),
+      send: () => voting.functions.revealVote(...args, gasOverrides),
+    });
   }
 
   const revealVoteFunctionFragment = voting.interface.getFunction(
@@ -44,5 +47,10 @@ export async function revealVotes({ votesToReveal, voting }: RevealVotes) {
     ]);
   });
 
-  return voting.functions.multicall(calldata, gasOverrides);
+  return sendWithGasCheck({
+    signer: voting.signer,
+    gasOverrides,
+    estimateGas: () => voting.estimateGas.multicall(calldata),
+    send: () => voting.functions.multicall(calldata, gasOverrides),
+  });
 }
