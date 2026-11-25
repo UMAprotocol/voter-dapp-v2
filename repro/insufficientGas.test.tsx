@@ -195,3 +195,44 @@ describe.skipIf(!RPC)("commit with too little ETH for gas", () => {
     console.log(JSON.stringify(rows, null, 2));
   }, 120_000);
 });
+
+// Candidate fix: estimate without fee fields (node doesn't cap by balance),
+// then send with an explicit gasLimit so ethers skips its own estimate.
+describe.skipIf(!RPC)("commit with gasLimit estimated without fees", () => {
+  it("reaches the wallet even with 0 ETH", async () => {
+    const { getGasFeeOverrides } = await import("helpers/gas");
+    for (const balance of ["1", "0.0003", "0"]) {
+      const { provider, seen } = wallet(
+        ethers.utils.parseEther(balance),
+        "passthrough"
+      );
+      const voting = new ethers.Contract(
+        VOTING,
+        abi,
+        provider.getSigner(VOTER)
+      );
+      const votes = await votesFromRealCommit();
+      const calldata = votes.map((v: Record<string, unknown>) =>
+        iface.encodeFunctionData("commitAndEmitEncryptedVote", [
+          v.identifier,
+          v.time,
+          v.ancillaryData,
+          v.hash,
+          v.encryptedVote,
+        ])
+      );
+      const gasOverrides = await getGasFeeOverrides(provider);
+      const gasLimit = await voting.estimateGas.multicall(calldata);
+      const sent = await voting.functions
+        .multicall(calldata, { ...gasOverrides, gasLimit })
+        .catch((e: unknown) => (e instanceof Error ? e.message : e));
+      console.log(balance, {
+        gasLimit: gasLimit.toString(),
+        estimateRequest: seen.request,
+        broadcastAttempted: seen.broadcastAttempted,
+        result: sent,
+      });
+      expect(seen.broadcastAttempted).toBe(true);
+    }
+  }, 120_000);
+});
