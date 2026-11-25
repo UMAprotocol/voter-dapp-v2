@@ -6,6 +6,7 @@ import {
   VoteList,
   VoteTimeline,
 } from "components";
+import { wrongChainMessage } from "constant";
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -13,6 +14,7 @@ import {
   useCommitVotes,
   useContractsContext,
   useDelegationContext,
+  useErrorContext,
   useRevealVotes,
   useStakedBalance,
   useVoteSelectionContext,
@@ -22,8 +24,9 @@ import {
   useWalletContext,
   useVotesWithOnScreenData,
 } from "hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { VoteT } from "types";
+import { ActionBarErrors } from "./ActionBarErrors";
 import {
   ActionInfo,
   ButtonInnerWrapper,
@@ -77,6 +80,16 @@ export function ActiveVotes() {
   } = useRevealVotes(isDelegate ? delegatorAddress : address);
   const { selectedVotes, selectVote, setSelectedVotes } =
     useVoteSelectionContext();
+  const { errorMessages, removeErrorMessage, setErrorsShownInActionBar } =
+    useErrorContext();
+  // Show page errors in the action bar, next to the commit/reveal button that
+  // usually causes them, instead of in the banner at the top of the page. The
+  // bar always renders while there are errors, so take them over on mount.
+  useEffect(() => {
+    setErrorsShownInActionBar(true);
+    return () => setErrorsShownInActionBar(false);
+  }, [setErrorsShownInActionBar]);
+  const actionBarErrors = isWrongChain ? [wrongChainMessage] : errorMessages;
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const votesToCommit = getPendingVotes(activeVoteList ?? [], selectedVotes);
   const votesToReveal = getPendingReveals(activeVoteList ?? []);
@@ -320,7 +333,10 @@ export function ActiveVotes() {
     transactionCount > 1 &&
     (actionStatus.canCommit || actionStatus.canReveal || isSubmittingVotes);
   const hasActionInfo =
-    showTransactionCount || !!actionStatus.infoText || isDirty();
+    actionBarErrors.length > 0 ||
+    showTransactionCount ||
+    !!actionStatus.infoText ||
+    isDirty();
   const hasActionBar = hasActionInfo || !actionStatus.hidden;
 
   const data = enrichedActiveVotes?.map((vote, index) => ({
@@ -352,6 +368,12 @@ export function ActiveVotes() {
         <ButtonOuterWrapper>
           {hasActionInfo ? (
             <ActionInfo>
+              {actionBarErrors.length > 0 ? (
+                <ActionBarErrors
+                  messages={actionBarErrors}
+                  onDismiss={isWrongChain ? undefined : removeErrorMessage}
+                />
+              ) : null}
               {showTransactionCount ? (
                 <InfoText role="status">
                   <IconWrapper width={20} height={20}>
