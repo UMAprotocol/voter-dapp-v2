@@ -3,6 +3,7 @@ import { tabletAndUnder } from "constant";
 import Close from "public/assets/icons/close.svg";
 import Warning from "public/assets/icons/warning.svg";
 import styled from "styled-components";
+import { ActionBarErrorList } from "./style";
 
 // Errors in the sticky commit/reveal bar. They usually come from pressing its
 // button, when the banner at the top of the page is scrolled out of view.
@@ -14,7 +15,7 @@ export function ActionBarErrors({
   onDismiss?: (message: string) => void;
 }) {
   return (
-    <Wrapper role="alert">
+    <ActionBarErrorList role="alert">
       {messages.map((message) => (
         <ErrorMessage key={message}>
           <IconWrapper>
@@ -35,17 +36,9 @@ export function ActionBarErrors({
           ) : null}
         </ErrorMessage>
       ))}
-    </Wrapper>
+    </ActionBarErrorList>
   );
 }
-
-// errors can stack up, so scroll them rather than let the bar cover the page
-const Wrapper = styled.div`
-  display: grid;
-  gap: 8px;
-  max-height: 30vh;
-  overflow-y: auto;
-`;
 
 const ErrorMessage = styled.div`
   display: flex;
