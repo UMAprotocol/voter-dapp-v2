@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import * as ss from "superstruct";
 
 export async function getGasFeeOverrides(provider: ethers.providers.Provider) {
   const [block, feeData] = await Promise.all([
@@ -41,7 +42,7 @@ export async function sendWithGasCheck<T>({
   try {
     return await send();
   } catch (error) {
-    if (!maxFeePerGas) throw error;
+    if (!maxFeePerGas || ss.is(error, UserRejection)) throw error;
 
     const gasCost = await Promise.all([
       estimateGas(),
@@ -59,6 +60,13 @@ export async function sendWithGasCheck<T>({
     throw error;
   }
 }
+
+// ethers turns only "user denied" messages into ACTION_REJECTED; other wallets'
+// EIP-1193 4001 comes through as is. A rejection means the fee-bearing estimate
+// already passed, so ETH isn't the problem.
+const UserRejection = ss.type({
+  code: ss.union([ss.literal("ACTION_REJECTED"), ss.literal(4001)]),
+});
 
 // A contract wallet such as a Safe doesn't pay gas itself; whoever executes its
 // transaction does. EIP-7702 delegated EOAs still pay their own.

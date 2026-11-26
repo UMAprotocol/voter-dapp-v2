@@ -17,7 +17,11 @@ const baseFee = ethers.utils.parseUnits("1.35", "gwei");
 // balance / maxFeePerGas.
 function wallet(
   balance: ethers.BigNumber,
-  { reverts = false, code = "0x" } = {}
+  {
+    reverts = false,
+    code = "0x",
+    sendError = { code: 4001, message: "User denied transaction signature." },
+  } = {}
 ) {
   const request = ({
     method,
@@ -75,10 +79,7 @@ function wallet(
         return Promise.resolve(ethers.utils.hexValue(gasNeeded));
       }
       case "eth_sendTransaction":
-        return Promise.reject({
-          code: 4001,
-          message: "User denied transaction signature.",
-        });
+        return Promise.reject(sendError);
     }
     return Promise.reject(new Error(`unexpected ${method}`));
   };
@@ -87,7 +88,7 @@ function wallet(
 
 async function commit(
   balanceEth: string,
-  options?: { reverts?: boolean; code?: string }
+  options?: Parameters<typeof wallet>[1]
 ) {
   const provider = wallet(ethers.utils.parseEther(balanceEth), options);
   const signer = provider.getSigner();
@@ -130,9 +131,17 @@ describe("sendWithGasCheck", () => {
   });
 
   it("keeps the original error when the wallet has enough ETH", async () => {
+    const sendError = { code: -32603, message: "Internal JSON-RPC error." };
+    await expect(commit("1", { sendError })).rejects.toBe(sendError);
+  });
+
+  it("passes a wallet's rejection through", async () => {
     await expect(commit("1")).rejects.toMatchObject({
       code: "ACTION_REJECTED",
     });
+    // Not "user denied", so ethers keeps the wallet's own error.
+    const sendError = { code: 4001, message: "User rejected the request." };
+    await expect(commit("1", { sendError })).rejects.toBe(sendError);
   });
 
   it("keeps the original error when the call reverts", async () => {
@@ -158,6 +167,23 @@ describe("sendWithGasCheck", () => {
       sendWithGasCheck({
         signer,
         gasOverrides: {},
+        estimateGas,
+        send: () => Promise.reject(error),
+      })
+    ).rejects.toBe(error);
+    expect(estimateGas).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["ethers' ACTION_REJECTED", { code: "ACTION_REJECTED" }],
+    ["a wallet's EIP-1193 4001", { code: 4001, message: "User rejected." }],
+  ])("doesn't check when the user rejects (%s)", async (_, error) => {
+    const estimateGas = vi.fn(() => Promise.resolve(ethers.BigNumber.from(1)));
+
+    await expect(
+      sendWithGasCheck({
+        signer: new ethers.VoidSigner(voter),
+        gasOverrides: { maxFeePerGas: "1" },
         estimateGas,
         send: () => Promise.reject(error),
       })
