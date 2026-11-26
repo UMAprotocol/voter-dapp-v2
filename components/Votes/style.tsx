@@ -13,6 +13,17 @@ export const Title = styled.h1`
   margin-bottom: 20px;
 `;
 
+const actionBarErrorsMaxHeight = "30vh";
+
+// Errors in the action bar. They can stack up, so they scroll rather than let
+// the bar cover the page.
+export const ActionBarErrorList = styled.div`
+  display: grid;
+  gap: 8px;
+  max-height: ${actionBarErrorsMaxHeight};
+  overflow-y: auto;
+`;
+
 // Sticks to the bottom of the viewport while the vote list scrolls, then
 // docks below the list. Long rounds push the commit/reveal button far down.
 // The border image paints the background and top shadow edge to edge without
@@ -42,6 +53,12 @@ export const ButtonOuterWrapper = styled.div`
      them into view */
   html:has(&) {
     scroll-padding-bottom: 160px;
+  }
+
+  /* errors can make the bar up to their max height, plus the gap below them,
+     taller */
+  html:has(& ${ActionBarErrorList}) {
+    scroll-padding-bottom: calc(168px + ${actionBarErrorsMaxHeight});
   }
 
   &::after {

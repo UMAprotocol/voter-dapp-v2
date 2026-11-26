@@ -2,6 +2,7 @@ import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActiveVotes } from "components/Votes/ActiveVotes";
+import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
 import { getVotesToCommit } from "helpers/voting/getVotesToCommit";
 import { getVotesToReveal } from "helpers/voting/getVotesToReveal";
 import { VoteBatchProgress } from "helpers/voting/submitVoteBatches";
@@ -12,11 +13,19 @@ type ButtonProps = {
   disabled?: boolean;
   onClick: () => void;
 };
+type ActionBarErrorsProps = {
+  messages: string[];
+  onDismiss?: (message: string) => void;
+};
 const state = vi.hoisted(() => ({
   phase: "commit",
   selectedVotes: {} as SelectedVotesByKeyT,
   votes: [] as VoteT[],
   buttons: [] as ButtonProps[],
+  actionBarErrors: [] as ActionBarErrorsProps[],
+  errorMessages: [] as string[],
+  isWrongChain: false,
+  removeErrorMessage: vi.fn(),
   progress: undefined as VoteBatchProgress | undefined,
   isDelegate: false,
   revealAccount: undefined as string | undefined,
@@ -51,6 +60,12 @@ vi.mock("components/Votes/style", () => ({
 vi.mock("components/Votes/VoteSectionLinks", () => ({
   VoteSectionLinks: () => null,
 }));
+vi.mock("components/Votes/ActionBarErrors", () => ({
+  ActionBarErrors: (props: ActionBarErrorsProps) => {
+    state.actionBarErrors.push(props);
+    return null;
+  },
+}));
 vi.mock("helpers", () => ({
   getPrecisionForIdentifier: () => 18,
   formatVotesToCommit: (args: FormatVotesToCommit) => state.format(args),
@@ -82,6 +97,11 @@ vi.mock("hooks", () => ({
     isDelegator: false,
     delegatorAddress: state.isDelegate ? "delegator" : undefined,
   }),
+  useErrorContext: () => ({
+    errorMessages: state.errorMessages,
+    removeErrorMessage: state.removeErrorMessage,
+    setErrorsShownInActionBar: vi.fn(),
+  }),
   useStakedBalance: () => ({ data: { gt: () => true } }),
   useVoteSelectionContext: () => ({
     selectedVotes: state.selectedVotes,
@@ -100,7 +120,7 @@ vi.mock("hooks", () => ({
       },
     },
     signer: {},
-    isWrongChain: false,
+    isWrongChain: state.isWrongChain,
   }),
   useVotesWithOnScreenData: (votes: VoteT[]) => votes,
 }));
@@ -111,6 +131,9 @@ beforeEach(() => {
   state.progress = undefined;
   state.isDelegate = false;
   state.buttons = [];
+  state.actionBarErrors = [];
+  state.errorMessages = [];
+  state.isWrongChain = false;
   state.votes = Array.from(
     { length: 141 },
     (_, index) =>
@@ -201,5 +224,54 @@ describe("commit and reveal batching UI", () => {
     expect(state.reveal).toHaveBeenCalledWith(
       expect.objectContaining({ votesToReveal: [state.votes[10]] })
     );
+  });
+});
+
+describe("action bar errors", () => {
+  it("shows page errors in the action bar and lets the voter dismiss them", () => {
+    state.errorMessages = ["User rejected transaction"];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    const errors = state.actionBarErrors.at(-1);
+    expect(errors?.messages).toEqual(["User rejected transaction"]);
+    errors?.onDismiss?.("User rejected transaction");
+    expect(state.removeErrorMessage).toHaveBeenCalledWith(
+      "User rejected transaction"
+    );
+  });
+
+  it("shows the wrong chain message in place of other errors, without dismiss", () => {
+    state.errorMessages = ["User rejected transaction"];
+    state.isWrongChain = true;
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors.at(-1)).toEqual({
+      messages: [wrongChainMessage],
+      onDismiss: undefined,
+    });
+  });
+
+  it("leaves data fetching errors to the top banner", () => {
+    state.phase = "none";
+    state.errorMessages = [errorFetchingVoteDataMessage];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors).toHaveLength(0);
+
+    state.errorMessages = [errorFetchingVoteDataMessage, "Transaction failed"];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors.at(-1)?.messages).toEqual([
+      "Transaction failed",
+    ]);
+  });
+
+  it("renders the action bar for errors when it has nothing else to show", () => {
+    state.phase = "none";
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.buttons).toHaveLength(0);
+    expect(state.actionBarErrors).toHaveLength(0);
+
+    state.errorMessages = ["Something went wrong"];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors.at(-1)?.messages).toEqual([
+      "Something went wrong",
+    ]);
   });
 });

@@ -19,5 +19,7 @@ export const useErrorContext = (type: ErrorOriginT = "default") => {
     addErrorMessage,
     removeErrorMessage,
     clearErrorMessages,
+    errorsShownInActionBar: context.errorsShownInActionBar,
+    setErrorsShownInActionBar: context.setErrorsShownInActionBar,
   };
 };

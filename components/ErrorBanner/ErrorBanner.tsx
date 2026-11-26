@@ -1,5 +1,5 @@
 import { EthersErrorLink } from "components/EthersErrorLink/EthersErrorLink";
-import { wrongChainMessage } from "constant";
+import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
 import { useErrorContext, useWalletContext } from "hooks";
 import { ErrorOriginT } from "types";
 import {
@@ -14,17 +14,27 @@ import {
 
 export function ErrorBanner({ errorOrigin }: { errorOrigin?: ErrorOriginT }) {
   const { isWrongChain } = useWalletContext();
-  const { errorMessages, removeErrorMessage } = useErrorContext(errorOrigin);
+  const { errorMessages, removeErrorMessage, errorsShownInActionBar } =
+    useErrorContext(errorOrigin);
+  // The votes action bar shows the other errors and the wrong chain message,
+  // next to the button that causes them. Data fetching errors aren't caused by
+  // that button, so they stay here.
+  const messages = errorsShownInActionBar
+    ? errorMessages.filter(
+        (message) => message === errorFetchingVoteDataMessage
+      )
+    : errorMessages;
+  const showWrongChain = isWrongChain && !errorsShownInActionBar;
 
-  if (!errorMessages.length && !isWrongChain) return null;
+  if (!messages.length && !showWrongChain) return null;
 
   return (
     <Wrapper>
-      {isWrongChain ? (
+      {showWrongChain ? (
         <Error message={wrongChainMessage} />
       ) : (
         <>
-          {errorMessages.map((message) => (
+          {messages.map((message) => (
             <Error
               key={message}
               message={message}
