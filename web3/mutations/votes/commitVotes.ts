@@ -1,4 +1,4 @@
-import { getGasFeeOverrides } from "helpers";
+import { getGasFeeOverrides, sendWithGasCheck } from "helpers";
 import { CommitVotes } from "types";
 
 // Resolve after broadcast; the caller tracks confirmation separately.
@@ -12,15 +12,21 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
     if (!vote) return;
 
     const { identifier, time, ancillaryData, hash, encryptedVote } = vote;
-
-    return voting.functions.commitAndEmitEncryptedVote(
+    const args = [
       identifier,
       time,
       ancillaryData,
       hash,
       encryptedVote,
-      gasOverrides
-    );
+    ] as const;
+
+    return sendWithGasCheck({
+      signer: voting.signer,
+      gasOverrides,
+      estimateGas: () => voting.estimateGas.commitAndEmitEncryptedVote(...args),
+      send: () =>
+        voting.functions.commitAndEmitEncryptedVote(...args, gasOverrides),
+    });
   }
 
   const commitVoteFunctionFragment = voting.interface.getFunction(
@@ -40,5 +46,10 @@ export async function commitVotes({ voting, formattedVotes }: CommitVotes) {
     ]);
   });
 
-  return voting.functions.multicall(calldata, gasOverrides);
+  return sendWithGasCheck({
+    signer: voting.signer,
+    gasOverrides,
+    estimateGas: () => voting.estimateGas.multicall(calldata),
+    send: () => voting.functions.multicall(calldata, gasOverrides),
+  });
 }

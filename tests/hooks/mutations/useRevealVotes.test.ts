@@ -45,6 +45,7 @@ vi.mock("web3", async () => import("web3/mutations/votes/revealVotes"));
 vi.mock("helpers", () => ({
   formatVotesToReveal: (votes: VoteT[]) => formatVotesToReveal(votes),
   getGasFeeOverrides: () => Promise.resolve({}),
+  sendWithGasCheck: ({ send }: { send: () => unknown }) => send(),
   handleNotifications: async (tx: { wait: () => Promise<unknown> }) =>
     tx.wait(),
 }));
