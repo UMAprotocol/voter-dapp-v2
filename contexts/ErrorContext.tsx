@@ -16,7 +16,7 @@ export interface ErrorContextState {
   removeErrorMessage: (origin: ErrorOriginT, message: string) => void;
   clearErrorMessages: (origin: ErrorOriginT) => void;
   // true while the active votes action bar is on screen and shows default
-  // errors itself, so the page banner should not show them too
+  // errors itself, so the page banner keeps only data fetching errors
   errorsShownInActionBar: boolean;
   setErrorsShownInActionBar: Dispatch<SetStateAction<boolean>>;
 }

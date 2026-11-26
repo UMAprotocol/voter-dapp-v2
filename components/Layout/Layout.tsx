@@ -3,7 +3,7 @@ import {
   Header,
   OldDesignatedVotingAccountWarningBanner,
 } from "components";
-import { useErrorContext, useInitializeVoteTiming } from "hooks";
+import { useInitializeVoteTiming } from "hooks";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Meta } from "./Meta";
@@ -15,13 +15,12 @@ interface Props {
 }
 export function Layout({ children, title }: Props) {
   useInitializeVoteTiming();
-  const { errorsShownInActionBar } = useErrorContext();
 
   return (
     <>
       <Meta title={title} />
       <Main>
-        {errorsShownInActionBar ? null : <ErrorBanner />}
+        <ErrorBanner />
         <OldDesignatedVotingAccountWarningBanner />
         <Header />
         {children}

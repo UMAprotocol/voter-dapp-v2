@@ -2,7 +2,7 @@ import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActiveVotes } from "components/Votes/ActiveVotes";
-import { wrongChainMessage } from "constant";
+import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
 import { getVotesToCommit } from "helpers/voting/getVotesToCommit";
 import { getVotesToReveal } from "helpers/voting/getVotesToReveal";
 import { VoteBatchProgress } from "helpers/voting/submitVoteBatches";
@@ -247,6 +247,19 @@ describe("action bar errors", () => {
       messages: [wrongChainMessage],
       onDismiss: undefined,
     });
+  });
+
+  it("leaves data fetching errors to the top banner", () => {
+    state.phase = "none";
+    state.errorMessages = [errorFetchingVoteDataMessage];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors).toHaveLength(0);
+
+    state.errorMessages = [errorFetchingVoteDataMessage, "Transaction failed"];
+    renderToStaticMarkup(React.createElement(ActiveVotes));
+    expect(state.actionBarErrors.at(-1)?.messages).toEqual([
+      "Transaction failed",
+    ]);
   });
 
   it("renders the action bar for errors when it has nothing else to show", () => {

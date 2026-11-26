@@ -6,7 +6,7 @@ import {
   VoteList,
   VoteTimeline,
 } from "components";
-import { wrongChainMessage } from "constant";
+import { errorFetchingVoteDataMessage, wrongChainMessage } from "constant";
 import { formatVotesToCommit } from "helpers";
 import { config } from "helpers/config";
 import {
@@ -85,11 +85,16 @@ export function ActiveVotes() {
   // Show page errors in the action bar, next to the commit/reveal button that
   // usually causes them, instead of in the banner at the top of the page. The
   // bar always renders while there are errors, so take them over on mount.
+  // Data fetching errors aren't caused by the button and stay in the banner.
   useEffect(() => {
     setErrorsShownInActionBar(true);
     return () => setErrorsShownInActionBar(false);
   }, [setErrorsShownInActionBar]);
-  const actionBarErrors = isWrongChain ? [wrongChainMessage] : errorMessages;
+  const actionBarErrors = isWrongChain
+    ? [wrongChainMessage]
+    : errorMessages.filter(
+        (message) => message !== errorFetchingVoteDataMessage
+      );
   const [dirtyInputs, setDirtyInput] = useState<boolean[]>([]);
   const votesToCommit = getPendingVotes(activeVoteList ?? [], selectedVotes);
   const votesToReveal = getPendingReveals(activeVoteList ?? []);
