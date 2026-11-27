@@ -9,6 +9,13 @@ import {
   constructRequestLink,
 } from "./_common";
 import { encodeHexString } from "helpers/web3/decodeHexString";
+import { makeUniqueKeyFromAncillaryHash } from "helpers/voting/makeUniqueKeyForVote";
+import {
+  explorerQuestionId,
+  extractOoRequester,
+  findRoundForDvmTime,
+  getExplorerRequestRounds,
+} from "lib/explorer-requests";
 import { handleApiError } from "./_utils/errors";
 import { validateBodyParams } from "./_utils/validation";
 
@@ -325,7 +332,58 @@ async function oov2Query({
     throw error;
   }
 }
-async function ooManagedQuery({
+// Polygon managed requests come from the Explorer API; the managed subgraph is
+// only still used for testnets, which the explorer doesn't index.
+async function ooManagedQuery(
+  params: OracleQueryParams
+): Promise<ResponseBody> {
+  return params.chainId === 137
+    ? ooManagedExplorerQuery(params)
+    : ooManagedSubgraphQuery(params);
+}
+async function ooManagedExplorerQuery({
+  time,
+  identifier,
+  chainId,
+  ancillaryData,
+}: OracleQueryParams): Promise<ResponseBody> {
+  try {
+    const requester = extractOoRequester(ancillaryData);
+    const rounds = (
+      await getExplorerRequestRounds(explorerQuestionId(ancillaryData))
+    ).filter(
+      (round) =>
+        round.oracle_type === "managed" &&
+        (!requester || round.requester.toLowerCase() === requester)
+    );
+    const round = findRoundForDvmTime(rounds, time);
+    assert(round?.request_tx_hash, "Managed oov2 request not found");
+
+    return {
+      time,
+      uniqueKey: makeUniqueKeyFromAncillaryHash(
+        identifier,
+        round.request_timestamp,
+        round.question_id
+      ),
+      identifier,
+      ooRequestUrl: constructRequestLink(
+        round.request_tx_hash,
+        chainId,
+        "ManagedOptimisticOracleV2",
+        round.request_event_index?.toString()
+      ),
+      proposedPrice: round.proposed_price ?? undefined,
+      originatingChainTxHash: round.request_tx_hash,
+      originatingChainId: chainId,
+      originatingOracleType: "ManagedOptimisticOracleV2",
+    };
+  } catch (error) {
+    if (debug) console.warn("managed oov2 explorer error:", error);
+    throw error;
+  }
+}
+async function ooManagedSubgraphQuery({
   time,
   identifier,
   chainId,
